@@ -1,58 +1,25 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, message, Input, Drawer, Radio, RadioChangeEvent } from 'antd';
-import React, { useState, useRef } from 'react';
+import {
+  Button,
+  message,
+  Input,
+  Radio,
+  RadioChangeEvent,
+  Table,
+  Form,
+  Upload,
+  Modal,
+  Select,
+  InputNumber,
+} from 'antd';
+import React, { useState, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
-import type { ProColumns, ActionType } from '@ant-design/pro-table';
-import ProTable from '@ant-design/pro-table';
-import { ModalForm, ProFormText, ProFormTextArea } from '@ant-design/pro-form';
-import type { ProDescriptionsItemProps } from '@ant-design/pro-descriptions';
-import ProDescriptions from '@ant-design/pro-descriptions';
-import type { FormValueType } from './components/UpdateForm';
-import UpdateForm from './components/UpdateForm';
-import { rule, addRule, updateRule } from '@/services/ant-design-pro/api';
-/**
- * @en-US Add node
- * @zh-CN 添加节点
- * @param fields
- */
-const handleAdd = async (fields: API.RuleListItem) => {
-  const hide = message.loading('正在添加');
-  try {
-    await addRule({ ...fields });
-    hide();
-    message.success('Added successfully');
-    return true;
-  } catch (error) {
-    hide();
-    message.error('Adding failed, please try again!');
-    return false;
-  }
-};
-
-/**
- * @en-US Update node
- * @zh-CN 更新节点
- *
- * @param fields
- */
-const handleUpdate = async (fields: FormValueType) => {
-  const hide = message.loading('Configuring');
-  try {
-    await updateRule({
-      name: fields.name,
-      desc: fields.desc,
-      key: fields.key,
-    });
-    hide();
-
-    message.success('Configuration is successful');
-    return true;
-  } catch (error) {
-    hide();
-    message.error('Configuration failed, please try again!');
-    return false;
-  }
-};
+import { addRule } from '@/services/ant-design-pro/api';
+import './service-config-banner.less';
+import scopedClasses from '@/utils/scopedClasses';
+import { getBanners } from '@/services/banner';
+import Banner from '@/types/service-config-banner.d';
+const sc = scopedClasses('service-config-banner');
 
 /**
  *  Delete node
@@ -78,144 +45,195 @@ const handleUpdate = async (fields: FormValueType) => {
 // };
 
 const TableList: React.FC = () => {
+  const formLayout = {
+    labelCol: { span: 6 },
+    wrapperCol: { span: 14 },
+  };
   /**
    * 新建窗口的弹窗
    *  */
   const [createModalVisible, handleModalVisible] = useState<boolean>(false);
 
-  // const [edge, setEdge] = useState<Edge>(Edge.PC);
-  /**
-   * @en-US The pop-up window of the distribution update window
-   * @zh-CN 分布更新窗口的弹窗
-   * */
-  const [updateModalVisible, handleUpdateModalVisible] = useState<boolean>(false);
+  const [edge, setEdge] = useState<Banner.Edge>(Banner.Edge.PC);
 
-  const [showDetail, setShowDetail] = useState<boolean>(false);
+  const [form] = Form.useForm();
 
-  const actionRef = useRef<ActionType>();
-  const [currentRow, setCurrentRow] = useState<API.RuleListItem>();
-  // const [selectedRowsState, setSelectedRows] = useState<API.RuleListItem[]>([]);
+  const [pageInfo] = useState<Common.ResultPage>({ pageIndex: 1, pageSize: 20 }); // , setPageInfo
 
-  // const fetchUserInfo = async () => {
-  //   const userInfo = await initialState?.fetchUserInfo?.();
-  //   if (userInfo) {
-  //     await setInitialState((s) => ({
-  //       ...s,
-  //       currentUser: userInfo,
-  //     }));
-  //   }
-  // };
-
-  const columns: ProColumns<API.RuleListItem>[] = [
+  const columns = [
     {
-      title: 'Rule name',
-      dataIndex: 'name',
-      tip: 'The rule name is the unique key',
-      render: (dom, entity) => {
-        return (
-          <a
-            onClick={() => {
-              setCurrentRow(entity);
-              setShowDetail(true);
-            }}
-          >
-            {dom}
-          </a>
-        );
-      },
+      title: '排序',
+      dataIndex: 'sort',
     },
     {
-      title: 'Description',
-      dataIndex: 'desc',
-      valueType: 'textarea',
+      title: 'banner',
+      dataIndex: 'picture',
     },
     {
-      title: 'Number of service calls',
-      dataIndex: 'callNo',
-      sorter: true,
-      hideInForm: true,
-      renderText: (val: string) => `${val}${' 万 '}`,
+      title: '状态',
+      dataIndex: 'state',
     },
     {
-      title: 'Status',
-      dataIndex: 'status',
-      hideInForm: true,
-      valueEnum: {
-        0: {
-          text: 'Shut down',
-          status: 'Default',
-        },
-        1: {
-          text: 'Running',
-          status: 'Processing',
-        },
-        2: {
-          text: 'Online',
-          status: 'Success',
-        },
-        3: {
-          text: 'Abnormal',
-          status: 'Error',
-        },
-      },
+      title: '发布人',
+      dataIndex: 'publishUserName',
     },
     {
-      title: 'Last scheduled time',
-      sorter: true,
-      dataIndex: 'updatedAt',
-      valueType: 'dateTime',
-      renderFormItem: (item, { defaultRender, ...rest }, form) => {
-        const status = form.getFieldValue('status');
-        if (`${status}` === '0') {
-          return false;
-        }
-        if (`${status}` === '3') {
-          return <Input {...rest} placeholder={'Please enter the reason for the exception!'} />;
-        }
-        return defaultRender(item);
-      },
-    },
-    {
-      title: 'Operating',
+      title: '操作',
       dataIndex: 'option',
-      valueType: 'option',
-      render: (_, record) => [
-        <a
-          key="config"
-          onClick={() => {
-            handleUpdateModalVisible(true);
-            setCurrentRow(record);
-          }}
-        >
-          Configuration
+      render: () => [
+        <a key="config">编辑</a>,
+        <a key="subscribeAlert" href="https://procomponents.ant.design/">
+          删除
         </a>,
         <a key="subscribeAlert" href="https://procomponents.ant.design/">
-          Subscribe to alerts
+          下架
+        </a>,
+        <a key="subscribeAlert" href="https://procomponents.ant.design/">
+          上架
         </a>,
       ],
     },
   ];
 
-  /**
-   * 切换 app、小程序、pc
-   */
-  const handleEdgeChange = (e: RadioChangeEvent) => {
-    console.log(e);
+  const getBannerPage = async () => {
+    const banners = await getBanners(pageInfo);
+    console.log('banners', banners);
   };
 
+  useEffect(() => {
+    getBannerPage();
+  }, [pageInfo]);
+
+  /**
+   * @zh-CN 添加banner
+   * @param fields
+   */
+  const handleAdd = async (fields: API.RuleListItem) => {
+    const hide = message.loading('正在添加');
+    form.validateFields().then((value) => {
+      console.log('value', value);
+    });
+    await addRule({ ...fields });
+    hide();
+    message.success('Added successfully');
+  };
+
+  /**
+   * 切换 app、小程序、pc
+   * @returns React.ReactNode
+   */
   const selectButton = (): React.ReactNode => {
+    const handleEdgeChange = (e: RadioChangeEvent) => {
+      setEdge(e.target.value);
+    };
     return (
-      <Radio.Group value={''} onChange={handleEdgeChange}>
-        <Radio.Button value="large">Large</Radio.Button>
-        <Radio.Button value="default">Default</Radio.Button>
-        <Radio.Button value="small">Small</Radio.Button>
+      <Radio.Group value={edge} onChange={handleEdgeChange}>
+        <Radio.Button value={Banner.Edge.PC}>PC</Radio.Button>
+        <Radio.Button disabled value={Banner.Edge.APPLET}>
+          小程序
+        </Radio.Button>
+        <Radio.Button disabled value={Banner.Edge.APP}>
+          App
+        </Radio.Button>
       </Radio.Group>
     );
   };
+
+  const getModal = () => {
+    return (
+      <Modal
+        title={'新增banner'}
+        width="400px"
+        visible={createModalVisible}
+        onCancel={() => handleModalVisible(false)}
+        onOk={async (value) => {
+          await handleAdd(value as API.RuleListItem);
+          // if (success) {
+          //   handleModalVisible(false);
+          //   if (actionRef.current) {
+          //     actionRef.current.reload();
+          //   }
+          // }
+        }}
+      >
+        <Form {...formLayout} form={form} layout="horizontal">
+          <Form.Item
+            name="photo"
+            label="上传banner"
+            valuePropName="fileList"
+            // getValueFromEvent={normFile}
+            rules={[
+              {
+                required: true,
+                message: '必填',
+              },
+            ]}
+          >
+            <Upload
+              name="avatar"
+              listType="picture-card"
+              className="avatar-uploader"
+              showUploadList={false}
+              action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+              // beforeUpload={beforeUpload}
+              // onChange={this.handleChange}
+            >
+              <div>
+                <PlusOutlined />
+                <div style={{ marginTop: 8 }}>上传</div>
+              </div>
+            </Upload>
+          </Form.Item>
+          <Form.Item
+            name="belong"
+            label="所属产品"
+            rules={[
+              {
+                required: true,
+                message: '必填',
+              },
+            ]}
+          >
+            <Select placeholder="请选择">
+              <Select.Option value={Banner.Edge.PC}>PC</Select.Option>
+              <Select.Option value={Banner.Edge.APPLET}>小程序</Select.Option>
+              <Select.Option value={Banner.Edge.APP}>App</Select.Option>
+            </Select>
+          </Form.Item>
+          <Form.Item name="sort" label="展示顺序">
+            <InputNumber min={1} max={100} style={{ width: '100%' }} />
+          </Form.Item>
+          <Form.Item name="link" label="跳转链接">
+            <Input placeholder="请输入" />
+          </Form.Item>
+        </Form>
+      </Modal>
+    );
+  };
+
   return (
-    <PageContainer>
-      <ProTable<API.RuleListItem, API.PageParams>
-        headerTitle={selectButton}
+    <PageContainer className={sc('container')}>
+      {edge === Banner.Edge.PC && (
+        <>
+          <div className={sc('container-header')}>
+            {selectButton()}
+            <Button
+              type="primary"
+              key="primary"
+              onClick={() => {
+                handleModalVisible(true);
+              }}
+            >
+              <PlusOutlined /> 新增
+            </Button>
+          </div>
+          <Table columns={columns} dataSource={[]} />
+        </>
+      )}
+
+      {getModal()}
+      {/* <ProTable<API.RuleListItem, API.PageParams>
+        headerTitle={selectButton()}
         actionRef={actionRef}
         rowKey="key"
         search={false}
@@ -227,120 +245,12 @@ const TableList: React.FC = () => {
               handleModalVisible(true);
             }}
           >
-            <PlusOutlined /> New
+            <PlusOutlined /> 新增
           </Button>,
         ]}
         request={rule}
         columns={columns}
-        rowSelection={
-          {
-            // onChange: (_, selectedRows) => {
-            //   // setSelectedRows(selectedRows);
-            // },
-          }
-        }
-      />
-      {/* {selectedRowsState?.length > 0 && (
-        <FooterToolbar
-          extra={
-            <div>
-              Chosen{' '}
-              <a style={{ fontWeight: 600 }}>{selectedRowsState.length}</a>{' '}
-              项
-              &nbsp;&nbsp;
-              <span>
-                Total number of service calls{' '}
-                {selectedRowsState.reduce((pre, item) => pre + item.callNo!, 0)}{' '}
-                万
-              </span>
-            </div>
-          }
-        >
-          <Button
-            onClick={async () => {
-              await handleRemove(selectedRowsState);
-              setSelectedRows([]);
-              actionRef.current?.reloadAndRest?.();
-            }}
-          >
-            Batch deletion
-          </Button>
-          <Button type="primary">
-            Batch approval
-          </Button>
-        </FooterToolbar>
-      )} */}
-      <ModalForm
-        title={'New rule'}
-        width="400px"
-        visible={createModalVisible}
-        onVisibleChange={handleModalVisible}
-        onFinish={async (value) => {
-          const success = await handleAdd(value as API.RuleListItem);
-          if (success) {
-            handleModalVisible(false);
-            if (actionRef.current) {
-              actionRef.current.reload();
-            }
-          }
-        }}
-      >
-        <ProFormText
-          rules={[
-            {
-              required: true,
-              message: 'Rule name is required',
-            },
-          ]}
-          width="md"
-          name="name"
-        />
-        <ProFormTextArea width="md" name="desc" />
-      </ModalForm>
-      <UpdateForm
-        onSubmit={async (value) => {
-          const success = await handleUpdate(value);
-          if (success) {
-            handleUpdateModalVisible(false);
-            setCurrentRow(undefined);
-            if (actionRef.current) {
-              actionRef.current.reload();
-            }
-          }
-        }}
-        onCancel={() => {
-          handleUpdateModalVisible(false);
-          if (!showDetail) {
-            setCurrentRow(undefined);
-          }
-        }}
-        updateModalVisible={updateModalVisible}
-        values={currentRow || {}}
-      />
-
-      <Drawer
-        width={600}
-        visible={showDetail}
-        onClose={() => {
-          setCurrentRow(undefined);
-          setShowDetail(false);
-        }}
-        closable={false}
-      >
-        {currentRow?.name && (
-          <ProDescriptions<API.RuleListItem>
-            column={2}
-            title={currentRow?.name}
-            request={async () => ({
-              data: currentRow || {},
-            })}
-            params={{
-              id: currentRow?.name,
-            }}
-            columns={columns as ProDescriptionsItemProps<API.RuleListItem>[]}
-          />
-        )}
-      </Drawer>
+      /> */}
     </PageContainer>
   );
 };

@@ -1,11 +1,11 @@
 import type { Settings as LayoutSettings } from '@ant-design/pro-layout';
 import { PageLoading } from '@ant-design/pro-layout';
-import type { RunTimeLayoutConfig } from 'umi';
+import type { RunTimeLayoutConfig } from 'umi'; // RequestConfig,
 import { history } from 'umi';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
 import { currentUser as queryCurrentUser } from './services/ant-design-pro/api';
-
+// import { RequestOptionsInit } from 'umi-request';
 // const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
 
@@ -82,3 +82,19 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
     logo: require('@/assets/system/logo-img.png'),
   };
 };
+
+// // 请求拦截
+// function requestInterceptors(url: string, options: RequestOptionsInit) {
+//   console.log('url', url)
+//   // 设置代理前缀/api
+//   const newUrl = `http://10.7.106.44:3000/${url}`;
+//   const obj: any = options;
+//   return {
+//     url: newUrl,
+//     options: obj,
+//   };
+// }
+
+// export const request: RequestConfig = {
+//   requestInterceptors: [requestInterceptors],
+// };
