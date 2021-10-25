@@ -1,19 +1,12 @@
 namespace Login {
-
   /**
    * 登录参数
    */
   export type LoginParam = {
-    loginName: string
-    password: string
-  };
-
-  /**
-   * 登录结果
-   */
-  export type LoginResult = {
-    success: boolean
-    message: string
+    loginName: string;
+    password: string;
+    ticket: string;
+    storeAccount: boolean;
   };
 }
 export default Login;
