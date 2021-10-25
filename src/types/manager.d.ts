@@ -7,5 +7,9 @@ namespace Manager {
     name: string;
     phone: string;
   };
+
+  export interface CurrentUserResult extends Common.ResultCode {
+    result: CurrentUser;
+  }
 }
 export default Manager;

@@ -4,8 +4,8 @@ import type { RunTimeLayoutConfig } from 'umi'; // RequestConfig,
 import { history } from 'umi';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
-import { getCurrentManager } from './services/manager';
-import Manager from './types/manager';
+import { getCurrentManager } from '@/services/manager';
+import type Manager from '@/types/manager';
 // import { RequestOptionsInit } from 'umi-request';
 // const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
