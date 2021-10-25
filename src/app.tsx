@@ -4,7 +4,8 @@ import type { RunTimeLayoutConfig } from 'umi'; // RequestConfig,
 import { history } from 'umi';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
-import { currentUser as queryCurrentUser } from './services/ant-design-pro/api';
+import { getCurrentManager } from './services/manager';
+import Manager from './types/manager';
 // import { RequestOptionsInit } from 'umi-request';
 // const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
@@ -19,13 +20,13 @@ export const initialStateConfig = {
  * */
 export async function getInitialState(): Promise<{
   settings?: Partial<LayoutSettings>;
-  currentUser?: API.CurrentUser;
-  fetchUserInfo?: () => Promise<API.CurrentUser | undefined>;
+  currentUser?: Manager.CurrentUser;
+  fetchUserInfo?: () => Promise<Manager.CurrentUser | undefined>;
 }> {
   const fetchUserInfo = async () => {
     try {
-      const msg = await queryCurrentUser();
-      return msg.data;
+      const { result } = await getCurrentManager();
+      return result;
     } catch (error) {
       history.push(loginPath);
     }
