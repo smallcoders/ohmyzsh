@@ -24,6 +24,10 @@
     icon: 'crown',
     routes: [
       {
+        path: '/service-config',
+        redirect: '/service-config/banner',
+      },
+      {
         path: '/service-config/banner',
         name: 'banner',
         component: './service_config/banner',
@@ -37,18 +41,26 @@
         path: '/service-config/app-resource',
         name: '应用资源',
         icon: 'crown',
-        component: './service_config/app_resource',
+        hideChildrenInMenu: true,
         routes: [
+          {
+            path: '/service-config/app-resource',
+            redirect: '/service-config/app-resource/index',
+          },
+          {
+            path: '/service-config/app-resource/index',
+            hideInBreadcrumb: true,
+            name: '应用资源',
+            component: './service_config/app_resource',
+          },
           {
             path: '/service-config/app-resource/data-analysis',
             name: '综合采购数据分析',
-            hideInMenu: true,
             component: './service_config/data_analysis',
           },
           {
             path: '/service-config/app-resource/add-resource/:id',
             name: '新增应用',
-            hideInMenu: true,
             component: './service_config/add_resource',
           },
         ],

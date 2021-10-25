@@ -19,6 +19,7 @@ import './service-config-banner.less';
 import scopedClasses from '@/utils/scopedClasses';
 import { getBanners } from '@/services/banner';
 import Banner from '@/types/service-config-banner.d';
+import Common from '@/types/common';
 const sc = scopedClasses('service-config-banner');
 
 /**

@@ -1,23 +1,23 @@
 // @ts-ignore
 /* eslint-disable */
-import Banner from '@/types/service-config-banner';
+import News from '@/types/service-config-news';
 import { request } from 'umi';
 
 /** 获取当前的用户 GET /api/currentUser */
-export async function getBanners(options?: { [key: string]: any }) {
+export async function getBanners(data?: { [key: string]: any }) {
   return request<{
-    data: Banner.ResultList;
-  }>('/api/iiep-manage/newsInformation/page', {
-    method: 'GET',
-    ...(options || {}),
+    data: News.ResultList;
+  }>('/yuncong/iiep-manage/newsInformation/page', {
+    method: 'post',
+    data,
   });
 }
 
 /** 退出登录接口 POST /api/login/outLogin */
-export async function outLogin(options?: { [key: string]: any }) {
+export async function outLogin(data?: { [key: string]: any }) {
   return request<Record<string, any>>('/api/login/outLogin', {
     method: 'POST',
-    ...(options || {}),
+    data: data,
   });
 }
 

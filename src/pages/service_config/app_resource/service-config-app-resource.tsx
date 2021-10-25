@@ -157,7 +157,7 @@ export default () => {
             type="primary"
             key="primary"
             onClick={() => {
-              history.push(`/service-config/app-resource/add-resource/${1111}`);
+              history.push(`/service-config/app-resource/data-analysis`);
             }}
           >
             <PlusOutlined /> 新增

@@ -3,7 +3,8 @@ import { Button, Input, Table, Form, Upload, Modal, Select, Row, Col, DatePicker
 import { PageContainer } from '@ant-design/pro-layout';
 import './service-config-news.less';
 import scopedClasses from '@/utils/scopedClasses';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import Common from '@/types/common';
 
 const sc = scopedClasses('service-config-app-news');
 
@@ -47,6 +48,17 @@ export default () => {
     labelCol: { span: 6 },
     wrapperCol: { span: 16 },
   };
+
+  const [pageInfo] = useState<Common.ResultPage>({ pageIndex: 1, pageSize: 20 }); // , setPageInfo
+
+  const getNewsPage = async () => {
+    const banners = await getNewsList(pageInfo);
+    console.log('banners', banners);
+  };
+
+  useEffect(() => {
+    getNewsPage();
+  }, [pageInfo]);
 
   const useSearchNode = (): React.ReactNode => {
     const [searchForm] = Form.useForm();
