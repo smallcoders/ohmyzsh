@@ -11,5 +11,24 @@ namespace Manager {
   export interface CurrentUserResult extends Common.ResultCode {
     result: CurrentUser;
   }
+
+  export type Manager = {
+    id: number;
+    createTime: string;
+    updateTime: string;
+    loginName: string;
+    name: string;
+    phone: string;
+    type: string;
+    uapUserId: string;
+    creator?: Manager;
+  };
+
+  export type SaveManagerRequest = {
+    id?: number;
+    loginName?: string;
+    name: string;
+    phone: string;
+  };
 }
 export default Manager;

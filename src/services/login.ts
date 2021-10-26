@@ -3,6 +3,7 @@
 import { request } from 'umi';
 import Login from '@/types/login';
 import Common from '@/types/common';
+
 /**
  * 获取登录ticket
  * @param options

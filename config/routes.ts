@@ -91,6 +91,22 @@
     ],
   },
   {
+    path: '/manage',
+    name: '系统管理',
+    icon: 'setting',
+    routes: [
+      {
+        path: '/manage',
+        redirect: '/manage/account',
+      },
+      {
+        path: '/manage/account',
+        name: '账号管理',
+        component: './manager',
+      },
+    ],
+  },
+  {
     name: '列表',
     icon: 'table',
     path: '/list',
