@@ -5,7 +5,6 @@ import { PageContainer } from '@ant-design/pro-layout';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import { ModalForm, ProFormText } from '@ant-design/pro-form';
-
 import {
   pageQuery,
   addManager,
@@ -121,8 +120,7 @@ const ManagerTable: React.FC = () => {
     {
       title: '账号类型',
       hideInSearch: true,
-      renderText: (text: any, record: any) =>
-        record.type === 'MANAGER' ? '运营账号' : '账号管理员',
+      renderText: (text: any, record: any) => (isAdmin(record.type) ? '运营管理员' : '运营'),
     },
     {
       title: '操作',
@@ -194,7 +192,11 @@ const ManagerTable: React.FC = () => {
             label="联系方式"
           />
           <ProFormText
-            rules={[{ required: true }, { type: 'string', max: 15 }]}
+            rules={[
+              { required: true },
+              { type: 'string', max: 15 },
+              { pattern: /^[A-Za-z0-9]+$/, message: '账号只允许是数字和字母' },
+            ]}
             width="md"
             name="loginName"
             label="账号"
@@ -250,7 +252,9 @@ const ManagerTable: React.FC = () => {
         rowKey="id"
         actionRef={actionRef}
         search={{
+          span: 6,
           labelWidth: 70,
+          optionRender: (searchConfig, formProps, dom) => [dom[1], dom[0]],
         }}
         toolBarRender={() => [
           <Button type="primary" key="primary" onClick={() => setCreateModalVisible(true)}>

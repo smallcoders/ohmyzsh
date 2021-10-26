@@ -59,6 +59,28 @@ export async function resetPassword(id: number) {
 }
 
 /**
+ * 修改我的密码
+ * @param params
+ */
+export async function updateMyNameAndPhone(params: { name?: string; phone?: string }) {
+  return request<Common.ResultCode>('/iiep-manage/manager/updateMyNameAndPhone', {
+    method: 'POST',
+    params,
+  });
+}
+
+/**
+ * 修改我的密码
+ * @param params
+ */
+export async function updateMyPassword(params: { oldPassword?: string; newPassword?: string }) {
+  return request<Common.ResultCode>('/iiep-manage/manager/updateMyPassword', {
+    method: 'POST',
+    params,
+  });
+}
+
+/**
  * 分页查询
  * @param params
  */

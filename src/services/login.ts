@@ -28,7 +28,6 @@ export async function login(params: Login.LoginParam) {
 
 /**
  * 退出
- * @param options
  */
 export async function logout() {
   return request<Common.ResultCode>('/iiep-manage/uap/logout', {

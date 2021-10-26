@@ -6,6 +6,7 @@ namespace Manager {
     loginName: string;
     name: string;
     phone: string;
+    type: string;
   };
 
   export interface CurrentUserResult extends Common.ResultCode {
