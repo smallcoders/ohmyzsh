@@ -1,6 +1,6 @@
 import type { Settings as LayoutSettings } from '@ant-design/pro-layout';
 import { PageLoading } from '@ant-design/pro-layout';
-import type { RunTimeLayoutConfig } from 'umi'; // RequestConfig,
+import type { RunTimeLayoutConfig } from 'umi'; // RequestConfig
 import { history } from 'umi';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
@@ -96,6 +96,22 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
 //   };
 // }
 
-// export const request: RequestConfig = {
-//   requestInterceptors: [requestInterceptors],
-// };
+/**
+ * 登录会话过期，跳转登录页面
+ * @param response
+ * @param options
+ */
+const responseInterceptors = (response: Response) => {
+  //console.log(response);
+  // 403，会话过期
+  if (response.status === 403) {
+    history.push(loginPath);
+    throw new Error('会话已经过期，请重新登录');
+  }
+  return response;
+};
+
+export const request: RequestConfig = {
+  //requestInterceptors: [requestInterceptors],
+  responseInterceptors: [responseInterceptors],
+};

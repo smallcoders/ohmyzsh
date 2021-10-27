@@ -3,9 +3,10 @@
 import { request } from 'umi';
 import Common from '@/types/common';
 import Manager from '@/types/manager';
+import { json } from 'express';
 
 /**
- * 获取登录ticket
+ * 获取当前登录用户信息
  * @param options
  */
 export async function getCurrentManager() {
@@ -62,10 +63,10 @@ export async function resetPassword(id: number) {
  * 修改我的密码
  * @param params
  */
-export async function updateMyNameAndPhone(params: { name?: string; phone?: string }) {
+export async function updateMyNameAndPhone(data: { name?: string; phone?: string }) {
   return request<Common.ResultCode>('/iiep-manage/manager/updateMyNameAndPhone', {
     method: 'POST',
-    params,
+    data,
   });
 }
 

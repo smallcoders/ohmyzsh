@@ -3,6 +3,7 @@ import { UserOutlined } from '@ant-design/icons';
 import { ModalForm, ProFormText } from '@ant-design/pro-form';
 import { Avatar, Menu, message, Spin } from 'antd';
 import { history, useModel } from 'umi';
+import { encryptWithBase64 } from '@/utils/crypto';
 import { stringify } from 'querystring';
 import HeaderDropdown from '../HeaderDropdown';
 import type { MenuInfo } from 'rc-menu/lib/interface';
@@ -71,6 +72,13 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = () => {
     return loading;
   }
 
+  const fetchUserInfo = async () => {
+    const userInfo = await initialState?.fetchUserInfo?.();
+    if (userInfo) {
+      await setInitialState((s) => ({ ...s, currentUser: userInfo }));
+    }
+  };
+
   const handleModify = async (
     isModiifyAccount: boolean,
     params: {
@@ -78,7 +86,6 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = () => {
       phone?: string;
       oldPassword?: string;
       newPassword?: string;
-      confirmPassword?: string;
     },
   ) => {
     try {
@@ -86,8 +93,17 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = () => {
         ? await updateMyNameAndPhone(params)
         : await updateMyPassword(params);
       if (result.code === 0) {
-        message.success(`${isModiifyAccount ? '修改账号信息' : '修改密码'}成功`);
-        setEditAccountModalVisible(false);
+        if (isModiifyAccount) {
+          message.success(`修改账号信息成功`);
+          setEditAccountModalVisible(false);
+          // 更新用户信息
+          fetchUserInfo();
+        } else {
+          // 退出登录
+          message.success(`密码修改成功，请重新登录`);
+          setEditPasswordModalVisible(false);
+          loginOut();
+        }
       } else {
         message.error(result.message);
       }
@@ -104,6 +120,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = () => {
           width="400px"
           visible={editAccountModalVisible}
           onVisibleChange={setEditAccountModalVisible}
+          initialValues={currentUser}
           onFinish={async (value) => await handleModify(true, value)}
         >
           <ProFormText
@@ -131,7 +148,17 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = () => {
           width="400px"
           visible={editPasswordModalVisible}
           onVisibleChange={setEditPasswordModalVisible}
-          onFinish={async (value) => await handleModify(false, value)}
+          onFinish={async (value) => {
+            const { oldPassword, newPassword, confirmPassword } = value;
+            if (newPassword !== confirmPassword) {
+              message.error('两次密码输入不一致');
+              return;
+            }
+            await handleModify(false, {
+              oldPassword: encryptWithBase64(oldPassword),
+              newPassword: encryptWithBase64(newPassword),
+            });
+          }}
         >
           <ProFormText.Password
             rules={[{ required: true }, { type: 'string', max: 35 }]}

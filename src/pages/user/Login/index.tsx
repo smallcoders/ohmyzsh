@@ -6,7 +6,7 @@ import { history, useModel } from 'umi';
 import { encryptWithBase64, decryptWithBase64 } from '@/utils/crypto';
 import Footer from '@/components/Footer';
 import { getTicket, login } from '@/services/login';
-import Login from '@/types/login';
+import type Login from '@/types/login';
 import styles from './index.less';
 
 const localStorageKey = 'login.remember.account';
@@ -32,10 +32,10 @@ const LoginFC: React.FC = () => {
 
   const handleSubmit = async (values: Login.LoginParam) => {
     setUserLoginState(defaultLoginStatus);
-    const { loginName, password, storeAccount } = values;
+    const { loginNameOrPhone, password, storeAccount } = values;
 
     // 获取登录ticket
-    const ticketRes = await getTicket({ loginName });
+    const ticketRes = await getTicket({ loginNameOrPhone });
     if (ticketRes.code !== 0) {
       setUserLoginState({ success: false, message: ticketRes.message });
       return;
@@ -43,7 +43,7 @@ const LoginFC: React.FC = () => {
     try {
       // 登录
       const loginParam: Login.LoginParam = {
-        loginName,
+        loginNameOrPhone,
         password: encryptWithBase64(password),
         ticket: ticketRes.result,
         storeAccount,
@@ -88,15 +88,14 @@ const LoginFC: React.FC = () => {
           }}
         >
           {/*站位坑*/}
-          {!storedAccountRef.current.storeAccount && (
-            <div style={{ position: 'absolute', top: -100 }}>
-              <input id="loginName" />
-              <input id="password" type="password" />
-            </div>
-          )}
-          <div style={{ marginBottom: 50 }}></div>
+          <div style={{ position: 'absolute', top: -10000 }}>
+            <input id="loginNameOrPhone" name="loginNameOrPhone" />
+            <input id="password" name="password" type="password" />
+          </div>
+
+          <div style={{ marginBottom: 50 }} />
           <ProFormText
-            name="loginName"
+            name="loginNameOrPhone"
             fieldProps={{
               size: 'large',
               prefix: <UserOutlined className={styles.prefixIcon} />,
