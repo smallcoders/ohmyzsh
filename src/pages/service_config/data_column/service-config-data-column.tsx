@@ -1,8 +1,10 @@
-import { Button, Input, Table, Form, InputNumber, Popconfirm, Typography } from 'antd';
+import { Button, Input, Table, Form, InputNumber, Popconfirm, Typography, message } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import './service-config-data-column.less';
 import scopedClasses from '@/utils/scopedClasses';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { getDataColumnPage, removeDataColumn } from '@/services/data-column';
+import DataColumn from '@/types/data-column';
 
 const sc = scopedClasses('service-config-data-column');
 
@@ -56,12 +58,6 @@ const EditableCell: React.FC<EditableCellProps> = ({
 };
 type EditableTableProps = Parameters<typeof Table>[0];
 
-interface DataType {
-  key: React.Key;
-  title: string;
-  amount: string;
-}
-
 type ColumnTypes = Exclude<EditableTableProps['columns'], undefined>;
 
 const TableList: React.FC = () => {
@@ -73,7 +69,7 @@ const TableList: React.FC = () => {
   /**
    * table 的源数据
    */
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<DataColumn.Content[]>([]);
 
   /**
    * 正在编辑的key
@@ -94,10 +90,35 @@ const TableList: React.FC = () => {
     setEditingKey('');
   };
 
+  const getDataColumns = async () => {
+    const { result, code } = await getDataColumnPage();
+    if (code === 0) {
+      setData(result);
+    } else {
+      message.error(`请求分页数据失败`);
+    }
+  };
+
   /**
    * 删除某一行
    */
-  const onDelete = () => {};
+  const onDelete = async (id: string) => {
+    const hide = message.loading(`正在删除`);
+    const removeRes = await removeDataColumn(id);
+    if (removeRes.code === 0) {
+      hide();
+      message.success(`删除成功`);
+      getDataColumns();
+    } else {
+      hide();
+      message.error(`删除失败，原因:{${removeRes.message}}`);
+    }
+  };
+
+  useEffect(() => {
+    getDataColumnPage();
+  }, []);
+
   const onSave = async (key: React.Key) => {
     try {
       const row = (await form.validateFields()) as Item;
@@ -147,7 +168,7 @@ const TableList: React.FC = () => {
             <a href="javascript:;" onClick={() => onSave(record.key)} style={{ marginRight: 8 }}>
               保存
             </a>
-            <Popconfirm title="Sure to cancel?" onConfirm={onCancel}>
+            <Popconfirm title="确定取消么?" onConfirm={onCancel}>
               <a>取消</a>
             </Popconfirm>
           </span>
@@ -164,10 +185,12 @@ const TableList: React.FC = () => {
    * 添加一行新数据
    */
   const onAddRow = () => {
-    const newData: DataType = {
+    const newData: DataColumn.Content = {
       key: count,
+      id: 0,
       title: '',
-      amount: '',
+      amount: 0,
+      sort: 0,
     };
     form.setFieldsValue({ ...newData });
     setEditingKey(count);

@@ -20,6 +20,12 @@
       padding: 2px 10px;
       color: #333;
       font-weight: 400;
+      cursor: pointer;
+      &:hover {
+        color: #fff;
+        background: #6680ff;
+        border-radius: 15px;
+      }
     }
     .tag-selected {
       color: #fff;
@@ -37,6 +43,35 @@
     background-color: #fff;
     .ant-form-item {
       margin-bottom: 0;
+    }
+  }
+
+  .state0 {
+    position: relative;
+    padding-left: 15px;
+    &::before {
+      position: absolute;
+      top: 8px;
+      left: 0;
+      width: 8px;
+      height: 8px;
+      background-color: #ff4d4f;
+      border-radius: 4px;
+      content: ' ';
+    }
+  }
+  .state1 {
+    position: relative;
+    padding-left: 15px;
+    &::before {
+      position: absolute;
+      top: 8px;
+      left: 0;
+      width: 8px;
+      height: 8px;
+      background-color: #52c41a;
+      border-radius: 4px;
+      content: ' ';
     }
   }
 }

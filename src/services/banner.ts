@@ -1,86 +1,44 @@
 // @ts-ignore
 /* eslint-disable */
+import Common from '@/types/common';
 import Banner from '@/types/service-config-banner';
 import { request } from 'umi';
 
-/** 获取当前的用户 GET /api/currentUser */
-export async function getBanners(options?: { [key: string]: any }) {
+/** 获取banner 列表 */
+export async function getBannerPage(options?: { [key: string]: any }) {
   return request<{
     data: Banner.ResultList;
-  }>('/api/iiep-manage/newsInformation/page', {
+  }>('/iiep-manage/banner', {
     method: 'GET',
-    ...(options || {}),
+    params: { ...(options || {}) },
   });
 }
 
-/** 退出登录接口 POST /api/login/outLogin */
-export async function outLogin(options?: { [key: string]: any }) {
-  return request<Record<string, any>>('/api/login/outLogin', {
-    method: 'POST',
-    ...(options || {}),
+/**
+ * 添加
+ */
+export async function addBanner(data?: Banner.Content) {
+  return request<Common.ResultCode>('/iiep-manage/banner', {
+    method: 'post',
+    data,
   });
 }
 
-/** 登录接口 POST /api/login/account */
-export async function login(body: API.LoginParams, options?: { [key: string]: any }) {
-  return request<API.LoginResult>('/api/login/account', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    data: body,
-    ...(options || {}),
+/**
+ * 修改
+ */
+export async function updateBanner(data?: Banner.Content) {
+  return request<Common.ResultCode>('/iiep-manage/banner', {
+    method: 'put',
+    data,
   });
 }
 
-/** 此处后端没有提供注释 GET /api/notices */
-export async function getNotices(options?: { [key: string]: any }) {
-  return request<API.NoticeIconList>('/api/notices', {
-    method: 'GET',
-    ...(options || {}),
-  });
-}
-
-/** 获取规则列表 GET /api/rule */
-export async function rule(
-  params: {
-    // query
-    /** 当前的页码 */
-    current?: number;
-    /** 页面的容量 */
-    pageSize?: number;
-  },
-  options?: { [key: string]: any },
-) {
-  return request<API.RuleList>('/api/rule', {
-    method: 'GET',
-    params: {
-      ...params,
-    },
-    ...(options || {}),
-  });
-}
-
-/** 新建规则 PUT /api/rule */
-export async function updateRule(options?: { [key: string]: any }) {
-  return request<API.RuleListItem>('/api/rule', {
-    method: 'PUT',
-    ...(options || {}),
-  });
-}
-
-/** 新建规则 POST /api/rule */
-export async function addRule(options?: { [key: string]: any }) {
-  return request<API.RuleListItem>('/api/rule', {
-    method: 'POST',
-    ...(options || {}),
-  });
-}
-
-/** 删除规则 DELETE /api/rule */
-export async function removeRule(options?: { [key: string]: any }) {
-  return request<Record<string, any>>('/api/rule', {
+/**
+ * 删除
+ * */
+export async function removeBanner(id: string) {
+  return request<Common.ResultCode>(`/iiep-manage/banner/${id}`, {
     method: 'DELETE',
-    ...(options || {}),
   });
 }

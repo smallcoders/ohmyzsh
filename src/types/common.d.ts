@@ -1,5 +1,5 @@
 namespace Common {
-  export interface ResultCode {
+  export type ResultCode = {
     /**
      * 状态码
      */
@@ -8,9 +8,9 @@ namespace Common {
      * 信息
      */
     message?: string;
-  }
+  };
 
-  export interface ResultPage {
+  export type ResultPage = {
     /**
      * 一页的数量
      */
@@ -23,6 +23,10 @@ namespace Common {
      * 总数
      */
     totalCount?: number;
-  }
+    /**
+     * 总页数
+     */
+    pageTotal?: number;
+  };
 }
 export default Common;

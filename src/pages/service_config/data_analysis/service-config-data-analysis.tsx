@@ -1,65 +1,113 @@
-import { Button, Table, Row, Col, Form, Input, DatePicker } from 'antd';
+import { Button, Table, Row, Col, Form, Input, DatePicker, message } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import './service-config-data-analysis.less';
 import scopedClasses from '@/utils/scopedClasses';
-import React, { useState } from 'react';
-
+import React, { useEffect, useState } from 'react';
+import { getDataAnalyseIndexs, getDataAnalysePage } from '@/services/app-resource';
+import { history } from 'umi';
+import Common from '@/types/common';
+import AppResource from '@/types/app-resource';
+import moment from 'moment';
 const sc = scopedClasses('service-config-data-analysis');
 
 export default () => {
   const columns = [
     {
-      title: '排序',
-      dataIndex: 'sort',
-    },
-    {
-      title: '应用名称',
-      dataIndex: 'name',
-    },
-    {
-      title: '应用类型',
-      dataIndex: 'type',
-    },
-    {
-      title: '应用标签',
-      dataIndex: 'label',
-    },
-    {
-      title: '所属厂商',
+      title: '企业名称',
       dataIndex: 'orgName',
     },
     {
-      title: '尖刀应用',
-      dataIndex: 'excellent',
+      title: '联系人',
+      dataIndex: 'contactName',
     },
     {
-      title: '状态',
-      dataIndex: 'isRelease',
+      title: '联系方式',
+      dataIndex: 'contactNumber',
     },
     {
-      title: '数据分析(次)',
-      dataIndex: 'dataAnalyseKeyQuotaV',
-      render: (item: { clickCount: number; collectCount: number; tryCount: number }) => {
-        return (
-          <div>
-            点击:{item.clickCount || 0} 收藏:{item.collectCount || 0} 试用申请:{item.tryCount || 0}
-          </div>
-        );
-      },
-    },
-    {
-      title: '操作',
-      dataIndex: 'option',
-      render: () => [
-        <a href="javascript:;">编辑</a>,
-        <a href="javascript:;">删除</a>,
-        <a href="javascript:;">下架</a>,
-        <a href="javascript:;">置顶</a>,
-      ],
+      title: '操作时间',
+      dataIndex: 'operateTime',
+      render: (_: string) => moment(_).format('YYYY-MM-DD HH:mm:ss'),
     },
   ];
 
-  const [type, setType] = useState<undefined | number>();
+  /**
+   * table 数据源
+   */
+  const [dataSource, setDataSource] = useState<AppResource.DataAnalyseContent[]>([]);
+  /**
+   * 数据分析指标
+   */
+  const [dataAnalysisIndex, setDataAnalysisIndex] = useState<{
+    clickCount: number; //点击次数
+    collectCount: number; //收藏次数
+    tryCount: number; //试用次数
+  }>();
+  /**
+   * 分页信息
+   */
+  const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
+    pageIndex: 1,
+    pageSize: 20,
+    totalCount: 0,
+    pageTotal: 0,
+  });
+  /**
+   * 搜索表单
+   */
+  const [searchContent, setSearChContent] = useState<AppResource.SearchBody>();
+  /**
+   * 搜索表单 form
+   */
+  const [searchForm] = Form.useForm();
+  const prepare = async () => {
+    try {
+      const { appId, type } = history.location.query;
+
+      if (appId && type) {
+        const indexsRs = await getDataAnalyseIndexs(appId);
+        if (indexsRs.code === 0) {
+          setSearChContent({ ...setSearChContent, appId: appId as string, type: parseInt(type) });
+          setDataAnalysisIndex(indexsRs.result);
+        } else {
+          message.error(`获取数据分析指标数据失败，原因:{${indexsRs.message}}`);
+        }
+      } else {
+        history.push('/service-config/app-resource');
+      }
+    } catch (error) {
+      console.log('error', error);
+      message.error('获取初始数据失败');
+    }
+  };
+
+  const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
+    const { result, totalCount, pageTotal, code } = await getDataAnalysePage({
+      pageIndex,
+      pageSize,
+      ...searchContent,
+    });
+    if (code === 0) {
+      setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
+      setDataSource(result);
+    } else {
+      message.error(`请求分页数据失败`);
+    }
+  };
+
+  const onTableChange = (page: number, pageSize?: number | undefined) => {
+    getPage(page, pageSize);
+  };
+
+  useEffect(() => {
+    prepare();
+  }, []);
+
+  useEffect(() => {
+    if (searchContent?.appId && (searchContent?.type || searchContent?.type === 0)) {
+      getPage();
+    }
+  }, [searchContent]);
 
   const getIndexs = (): React.ReactNode => {
     return (
@@ -68,15 +116,15 @@ export default () => {
         <div>
           <div>
             <span>点击(次)</span>
-            <span>108</span>{' '}
+            <span>{dataAnalysisIndex?.clickCount || 0}</span>{' '}
           </div>
           <div>
             <span>收藏(次)</span>
-            <span>108</span>{' '}
+            <span>{dataAnalysisIndex?.collectCount || 0}</span>{' '}
           </div>
           <div>
             <span>试用申请(次)</span>
-            <span>108</span>{' '}
+            <span>{dataAnalysisIndex?.tryCount || 0}</span>{' '}
           </div>
         </div>
       </div>
@@ -109,32 +157,57 @@ export default () => {
           </span>{' '}
           {getSelfTags(
             [
-              { title: '全部', value: undefined },
               { title: '点击', value: 0 },
               { title: '收藏', value: 1 },
               { title: '试用申请', value: 2 },
             ],
-            type,
-            setType,
+            searchContent?.type,
+            (type: any) => {
+              setSearChContent({ ...searchContent, type } as AppResource.SearchBody);
+            },
           )}
         </div>
-        <Form labelCol={{ span: 6 }} wrapperCol={{ span: 16 }}>
+        <Form labelCol={{ span: 6 }} wrapperCol={{ span: 16 }} form={searchForm}>
           <Row>
             <Col span={5}>
               <Form.Item name="orgName" label="企业名称">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
-            <Col span={5}>
-              <Form.Item name="publishTime" label="时间区间">
-                <DatePicker.RangePicker />
+            <Col span={8}>
+              <Form.Item name="operateTime" label="时间区间">
+                <DatePicker.RangePicker allowClear showTime />
               </Form.Item>
             </Col>
             <Col span={4}>
-              <Button style={{ marginRight: 20 }} type="primary" key="primary" onClick={() => {}}>
+              <Button
+                style={{ marginRight: 20 }}
+                type="primary"
+                key="primary"
+                onClick={() => {
+                  const search = searchForm.getFieldsValue();
+                  if (search.operateTime) {
+                    search.beginOperateTime = moment(search.operateTime[0]).format(
+                      'YYYY-MM-DDTHH:mm:ss',
+                    );
+                    search.endOperateTime = moment(search.operateTime[1]).format(
+                      'YYYY-MM-DDTHH:mm:ss',
+                    );
+                  }
+                  setSearChContent({ ...searchContent, ...search });
+                }}
+              >
                 查询
               </Button>
-              <Button type="primary" key="primary" onClick={() => {}}>
+              <Button
+                type="primary"
+                key="primary"
+                onClick={() => {
+                  const { appId, type } = history.location.query;
+                  setSearChContent({ appId: appId as string, type: parseInt(type) });
+                  searchForm.resetFields();
+                }}
+              >
                 重置
               </Button>
             </Col>
@@ -142,7 +215,23 @@ export default () => {
         </Form>
       </div>
       <div className={sc('container-table-body')}>
-        <Table pagination={false} bordered columns={columns} dataSource={[]} />
+        <Table
+          pagination={
+            pageInfo.totalCount === 0
+              ? false
+              : {
+                  onChange: onTableChange,
+                  total: pageInfo.totalCount,
+                  current: pageInfo.pageIndex,
+                  pageSize: pageInfo.pageSize,
+                  showTotal: (total) =>
+                    `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
+                }
+          }
+          bordered
+          columns={columns}
+          dataSource={dataSource}
+        />
       </div>
     </PageContainer>
   );

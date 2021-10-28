@@ -1,7 +1,10 @@
+import Common from './common';
+
 namespace News {
-  export interface ResultList extends Common.ResultCode, Common.ResultPage {
+  export type ResultList = {
     result: Content[];
-  }
+  } & Common.ResultCode &
+    Common.ResultPage;
 
   export type Content = {
     id?: string; // 主键

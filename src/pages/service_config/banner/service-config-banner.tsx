@@ -7,43 +7,19 @@ import {
   RadioChangeEvent,
   Table,
   Form,
-  Upload,
   Modal,
   Select,
   InputNumber,
 } from 'antd';
 import React, { useState, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
-import { addRule } from '@/services/ant-design-pro/api';
 import './service-config-banner.less';
 import scopedClasses from '@/utils/scopedClasses';
-import { getBanners } from '@/services/banner';
+import { addBanner, getBannerPage } from '@/services/banner';
 import Banner from '@/types/service-config-banner.d';
 import Common from '@/types/common';
+import UploadForm from '../add_resource/upload-form';
 const sc = scopedClasses('service-config-banner');
-
-/**
- *  Delete node
- * @zh-CN 删除节点
- *
- * @param selectedRows
- */
-// const handleRemove = async (selectedRows: API.RuleListItem[]) => {
-//   const hide = message.loading('正在删除');
-//   if (!selectedRows) return true;
-//   try {
-//     await removeRule({
-//       key: selectedRows.map((row) => row.key),
-//     });
-//     hide();
-//     message.success('Deleted successfully and will refresh soon');
-//     return true;
-//   } catch (error) {
-//     hide();
-//     message.error('Delete failed, please try again');
-//     return false;
-//   }
-// };
 
 const TableList: React.FC = () => {
   const formLayout = {
@@ -53,13 +29,69 @@ const TableList: React.FC = () => {
   /**
    * 新建窗口的弹窗
    *  */
-  const [createModalVisible, handleModalVisible] = useState<boolean>(false);
+  const [createModalVisible, setModalVisible] = useState<boolean>(false);
 
   const [edge, setEdge] = useState<Banner.Edge>(Banner.Edge.PC);
 
   const [form] = Form.useForm();
 
-  const [pageInfo] = useState<Common.ResultPage>({ pageIndex: 1, pageSize: 20 }); // , setPageInfo
+  const [pageInfo, setPageInfo] = useState<Common.ResultPage>({ pageIndex: 1, pageSize: 20 }); // , setPageInfo
+
+  const [dataSource, setDataSource] = useState<Banner.Content[]>([]);
+  const [editingItem, setEditingItem] = useState<Banner.Content>({});
+  /**
+   * todo: 这里是控制弹出的modal 确定按钮是否正在loading 和 hide 有所重复。
+   */
+  const [addOrUpdateLoading, setAddOrUpdateLoading] = useState<boolean>(false);
+
+  const getBanners = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
+    const { result, totalCount, pageTotal, code } = await getBannerPage({ pageIndex, pageSize });
+    if (code === 0) {
+      setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
+      setDataSource(result);
+    } else {
+      message.error(`请求分页数据失败`);
+    }
+  };
+
+  useEffect(() => {
+    getBanners();
+  }, [pageInfo]);
+
+  const clearForm = () => {
+    form.resetFields();
+    if (editingItem.photo || editingItem.id) setEditingItem({});
+  };
+
+  /**
+   * @zh-CN 添加banner
+   * @param fields
+   */
+  const handleAdd = async () => {
+    form
+      .validateFields()
+      .then(async (value) => {
+        const tooltipMessage = editingItem.id ? '修改' : '添加';
+        const hide = message.loading(`正在${tooltipMessage}`);
+        setAddOrUpdateLoading(true);
+        const addorUpdateRes = await addBanner({ ...value });
+        if (addorUpdateRes.code === 0) {
+          setModalVisible(false);
+          hide();
+          message.success(`${tooltipMessage}成功`);
+          getBannerPage();
+          clearForm();
+        } else {
+          hide();
+          message.error(`${tooltipMessage}失败，原因:{${addorUpdateRes.message}}`);
+        }
+        setAddOrUpdateLoading(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        return;
+      });
+  };
 
   const columns = [
     {
@@ -86,38 +118,9 @@ const TableList: React.FC = () => {
         <a key="subscribeAlert" href="https://procomponents.ant.design/">
           删除
         </a>,
-        <a key="subscribeAlert" href="https://procomponents.ant.design/">
-          下架
-        </a>,
-        <a key="subscribeAlert" href="https://procomponents.ant.design/">
-          上架
-        </a>,
       ],
     },
   ];
-
-  const getBannerPage = async () => {
-    const banners = await getBanners(pageInfo);
-    console.log('banners', banners);
-  };
-
-  useEffect(() => {
-    getBannerPage();
-  }, [pageInfo]);
-
-  /**
-   * @zh-CN 添加banner
-   * @param fields
-   */
-  const handleAdd = async (fields: API.RuleListItem) => {
-    const hide = message.loading('正在添加');
-    form.validateFields().then((value) => {
-      console.log('value', value);
-    });
-    await addRule({ ...fields });
-    hide();
-    message.success('Added successfully');
-  };
 
   /**
    * 切换 app、小程序、pc
@@ -146,7 +149,7 @@ const TableList: React.FC = () => {
         title={'新增banner'}
         width="400px"
         visible={createModalVisible}
-        onCancel={() => handleModalVisible(false)}
+        onCancel={() => setModalVisible(false)}
         onOk={async (value) => {
           await handleAdd(value as API.RuleListItem);
           // if (success) {
@@ -161,8 +164,6 @@ const TableList: React.FC = () => {
           <Form.Item
             name="photo"
             label="上传banner"
-            valuePropName="fileList"
-            // getValueFromEvent={normFile}
             rules={[
               {
                 required: true,
@@ -170,20 +171,11 @@ const TableList: React.FC = () => {
               },
             ]}
           >
-            <Upload
-              name="avatar"
+            <UploadForm
               listType="picture-card"
               className="avatar-uploader"
               showUploadList={false}
-              action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-              // beforeUpload={beforeUpload}
-              // onChange={this.handleChange}
-            >
-              <div>
-                <PlusOutlined />
-                <div style={{ marginTop: 8 }}>上传</div>
-              </div>
-            </Upload>
+            />
           </Form.Item>
           <Form.Item
             name="belong"
@@ -221,37 +213,35 @@ const TableList: React.FC = () => {
             <Button
               type="primary"
               key="primary"
+              loading={addOrUpdateLoading}
               onClick={() => {
-                handleModalVisible(true);
+                setModalVisible(true);
               }}
             >
               <PlusOutlined /> 新增
             </Button>
           </div>
-          <Table columns={columns} dataSource={[]} />
+          <Table
+            bordered
+            columns={columns}
+            dataSource={dataSource}
+            pagination={
+              pageInfo.totalCount === 0
+                ? false
+                : {
+                    onChange: getBanners,
+                    total: pageInfo.totalCount,
+                    current: pageInfo.pageIndex,
+                    pageSize: pageInfo.pageSize,
+                    showTotal: (total) =>
+                      `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
+                  }
+            }
+          />
         </>
       )}
 
       {getModal()}
-      {/* <ProTable<API.RuleListItem, API.PageParams>
-        headerTitle={selectButton()}
-        actionRef={actionRef}
-        rowKey="key"
-        search={false}
-        toolBarRender={() => [
-          <Button
-            type="primary"
-            key="primary"
-            onClick={() => {
-              handleModalVisible(true);
-            }}
-          >
-            <PlusOutlined /> 新增
-          </Button>,
-        ]}
-        request={rule}
-        columns={columns}
-      /> */}
     </PageContainer>
   );
 };

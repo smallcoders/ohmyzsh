@@ -59,7 +59,7 @@
             component: './service_config/data_analysis',
           },
           {
-            path: '/service-config/app-resource/add-resource/:id',
+            path: '/service-config/app-resource/add-resource',
             name: '新增应用',
             component: './service_config/add_resource',
           },

@@ -9,13 +9,8 @@
 // --no-ignore
 export default {
   dev: {
-    '/api/': {
-      target: 'http://localhost:3000',
-      changeOrigin: true,
-      pathRewrite: { '^': '' },
-    },
-    '/yuncong/': {
-      target: 'http://10.40.95.190:9090',
+    '/iiep-manage/': {
+      target: 'http://10.7.105.219:9090',
       changeOrigin: true,
       pathRewrite: { '^': '' },
     },
