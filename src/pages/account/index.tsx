@@ -7,22 +7,22 @@ import ProTable from '@ant-design/pro-table';
 import { ModalForm, ProFormText } from '@ant-design/pro-form';
 import {
   pageQuery,
-  addManager,
-  updateManager,
-  deleteManager,
+  addAccount,
+  updateAccount,
+  deleteAccount,
   resetPassword,
   getUapDefaultPwd,
-} from '@/services/manager';
-import type Manager from '@/types/manager';
+} from '@/services/account';
+import type Account from '@/types/account';
 import type Common from '@/types/common';
 
 // 是否为管理员
 const isAdmin = (type: string) => type === 'MANAGER_ADMIN';
 
-const ManagerTable: React.FC = () => {
+const AccountTable: React.FC = () => {
   const [createModalVisible, setCreateModalVisible] = useState<boolean>(false);
   const [updateModalVisible, setUpdateModalVisible] = useState<boolean>(false);
-  const [currentRow, setCurrentRow] = useState<Manager.Manager>();
+  const [currentRow, setCurrentRow] = useState<Account.Account>();
   const actionRef = useRef<ActionType>();
   const defaultPwdRef = useRef<string>('');
   const paginationRef = useRef<any>();
@@ -41,11 +41,11 @@ const ManagerTable: React.FC = () => {
    * @param isAdd
    * @param fields
    */
-  const handleSave = async (isAdd: boolean, fields: Manager.SaveManagerRequest) => {
+  const handleSave = async (isAdd: boolean, fields: Account.SaveAccountRequest) => {
     try {
       const result: Common.ResultCode = isAdd
-        ? await addManager(fields)
-        : await updateManager(fields);
+        ? await addAccount(fields)
+        : await updateAccount(fields);
       if (result.code === 0) {
         message.success(`${isAdd ? '添加' : '修改'}账号成功`);
         setCreateModalVisible(false);
@@ -69,7 +69,7 @@ const ManagerTable: React.FC = () => {
   const handleModify = async (isDelete: boolean, id: number) => {
     try {
       const result: Common.ResultCode = isDelete
-        ? await deleteManager(id)
+        ? await deleteAccount(id)
         : await resetPassword(id);
       if (result.code === 0) {
         message.success(`${isDelete ? '删除账号' : '重置密码'}成功`);
@@ -84,7 +84,7 @@ const ManagerTable: React.FC = () => {
     }
   };
 
-  const columns: ProColumns<Manager.Manager>[] = [
+  const columns: ProColumns<Account.Account>[] = [
     {
       title: '序号',
       hideInSearch: true,
@@ -177,7 +177,7 @@ const ManagerTable: React.FC = () => {
           width="400px"
           visible={createModalVisible}
           onVisibleChange={setCreateModalVisible}
-          onFinish={async (value) => await handleSave(true, value as Manager.SaveManagerRequest)}
+          onFinish={async (value) => await handleSave(true, value as Account.SaveAccountRequest)}
         >
           <ProFormText
             rules={[{ required: true }, { type: 'string', max: 35 }]}
@@ -217,7 +217,7 @@ const ManagerTable: React.FC = () => {
           onVisibleChange={setUpdateModalVisible}
           initialValues={{ loginName, name, phone }}
           onFinish={async (value) =>
-            await handleSave(false, { ...value, id } as Manager.SaveManagerRequest)
+            await handleSave(false, { ...value, id } as Account.SaveAccountRequest)
           }
         >
           <ProFormText
@@ -275,4 +275,4 @@ const ManagerTable: React.FC = () => {
   );
 };
 
-export default ManagerTable;
+export default AccountTable;

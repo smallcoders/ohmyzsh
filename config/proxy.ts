@@ -24,7 +24,7 @@ export default {
       changeOrigin: true,
       pathRewrite: { '^': '' },
     },
-    '/iiep-manage/manager': {
+    '/iiep-manage/account': {
       target: 'http://localhost:9090',
       changeOrigin: true,
       pathRewrite: { '^': '' },

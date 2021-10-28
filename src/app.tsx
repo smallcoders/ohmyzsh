@@ -1,11 +1,11 @@
 import type { Settings as LayoutSettings } from '@ant-design/pro-layout';
 import { PageLoading } from '@ant-design/pro-layout';
-import type { RunTimeLayoutConfig } from 'umi'; // RequestConfig
+import type { RunTimeLayoutConfig, RequestConfig } from 'umi'; // RequestConfig
 import { history } from 'umi';
 import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
-import { getCurrentManager } from '@/services/manager';
-import type Manager from '@/types/manager';
+import { getCurrentUser } from '@/services/account';
+import type Account from '@/types/account';
 // import { RequestOptionsInit } from 'umi-request';
 // const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
@@ -20,12 +20,12 @@ export const initialStateConfig = {
  * */
 export async function getInitialState(): Promise<{
   settings?: Partial<LayoutSettings>;
-  currentUser?: Manager.CurrentUser;
-  fetchUserInfo?: () => Promise<Manager.CurrentUser | undefined>;
+  currentUser?: Account.CurrentUser;
+  fetchUserInfo?: () => Promise<Account.CurrentUser | undefined>;
 }> {
   const fetchUserInfo = async () => {
     try {
-      const { result } = await getCurrentManager();
+      const { result } = await getCurrentUser();
       return result;
     } catch (error) {
       history.push(loginPath);

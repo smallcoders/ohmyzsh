@@ -9,7 +9,7 @@ import HeaderDropdown from '../HeaderDropdown';
 import type { MenuInfo } from 'rc-menu/lib/interface';
 import type Common from '@/types/common';
 import { logout } from '@/services/login';
-import { updateMyNameAndPhone, updateMyPassword } from '@/services/manager';
+import { updateMyNameAndPhone, updateMyPassword } from '@/services/account';
 import styles from './index.less';
 
 export type GlobalHeaderRightProps = {

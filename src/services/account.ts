@@ -2,15 +2,14 @@
 /* eslint-disable */
 import { request } from 'umi';
 import Common from '@/types/common';
-import Manager from '@/types/manager';
-import { json } from 'express';
+import Account from '@/types/account';
 
 /**
  * 获取当前登录用户信息
  * @param options
  */
-export async function getCurrentManager() {
-  return request<Manager.CurrentUserResult>('/iiep-manage/manager/getCurrentManager', {
+export async function getCurrentUser() {
+  return request<Account.CurrentUserResult>('/iiep-manage/uap/getCurrentUser', {
     method: 'GET',
   });
 }
@@ -19,8 +18,8 @@ export async function getCurrentManager() {
  * 添加运营账号
  * @param params
  */
-export async function addManager(data: Manager.SaveManagerRequest) {
-  return request<Common.ResultCode>('/iiep-manage/manager/add', {
+export async function addAccount(data: Account.SaveAccountRequest) {
+  return request<Common.ResultCode>('/iiep-manage/account/add', {
     method: 'POST',
     data,
   });
@@ -30,8 +29,8 @@ export async function addManager(data: Manager.SaveManagerRequest) {
  * 更新运营账号
  * @param data
  */
-export async function updateManager(data: Manager.SaveManagerRequest) {
-  return request<Common.ResultCode>('/iiep-manage/manager/update', {
+export async function updateAccount(data: Account.SaveAccountRequest) {
+  return request<Common.ResultCode>('/iiep-manage/account/update', {
     method: 'POST',
     data,
   });
@@ -41,8 +40,8 @@ export async function updateManager(data: Manager.SaveManagerRequest) {
  * 删除运营账号
  * @param data
  */
-export async function deleteManager(id: number) {
-  return request<Common.ResultCode>('/iiep-manage/manager/delete', {
+export async function deleteAccount(id: number) {
+  return request<Common.ResultCode>('/iiep-manage/account/delete', {
     method: 'POST',
     params: { id },
   });
@@ -53,7 +52,7 @@ export async function deleteManager(id: number) {
  * @param id
  */
 export async function resetPassword(id: number) {
-  return request<Common.ResultCode>('/iiep-manage/manager/resetPassword', {
+  return request<Common.ResultCode>('/iiep-manage/account/resetPassword', {
     method: 'POST',
     params: { id },
   });
@@ -64,7 +63,7 @@ export async function resetPassword(id: number) {
  * @param params
  */
 export async function updateMyNameAndPhone(data: { name?: string; phone?: string }) {
-  return request<Common.ResultCode>('/iiep-manage/manager/updateMyNameAndPhone', {
+  return request<Common.ResultCode>('/iiep-manage/account/updateMyNameAndPhone', {
     method: 'POST',
     data,
   });
@@ -75,7 +74,7 @@ export async function updateMyNameAndPhone(data: { name?: string; phone?: string
  * @param params
  */
 export async function updateMyPassword(params: { oldPassword?: string; newPassword?: string }) {
-  return request<Common.ResultCode>('/iiep-manage/manager/updateMyPassword', {
+  return request<Common.ResultCode>('/iiep-manage/account/updateMyPassword', {
     method: 'POST',
     params,
   });
@@ -92,7 +91,7 @@ export async function pageQuery(params: {
   name?: string;
   phone?: string;
 }) {
-  return request('/iiep-manage/manager/pageQuery', {
+  return request('/iiep-manage/account/pageQuery', {
     method: 'POST',
     params: { ...params, pageIndex: params.current },
   }).then((json) => ({

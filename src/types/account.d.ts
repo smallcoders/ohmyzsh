@@ -1,4 +1,4 @@
-namespace Manager {
+namespace Account {
   /**
    * 当前登录用户
    */
@@ -13,7 +13,7 @@ namespace Manager {
     result: CurrentUser;
   }
 
-  export type Manager = {
+  export type Account = {
     id: number;
     createTime: string;
     updateTime: string;
@@ -22,14 +22,14 @@ namespace Manager {
     phone: string;
     type: string;
     uapUserId: string;
-    creator?: Manager;
+    creator?: Account;
   };
 
-  export type SaveManagerRequest = {
+  export type SaveAccountRequest = {
     id?: number;
     loginName?: string;
     name: string;
     phone: string;
   };
 }
-export default Manager;
+export default Account;
