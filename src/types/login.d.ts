@@ -3,7 +3,7 @@ namespace Login {
    * 登录参数
    */
   export type LoginParam = {
-    loginName: string;
+    loginNameOrPhone: string;
     password: string;
     ticket: string;
     storeAccount: boolean;

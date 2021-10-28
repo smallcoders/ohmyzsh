@@ -3,11 +3,12 @@
 import { request } from 'umi';
 import Login from '@/types/login';
 import Common from '@/types/common';
+
 /**
  * 获取登录ticket
  * @param options
  */
-export async function getTicket(params: { loginName: string }) {
+export async function getTicket(params: { loginNameOrPhone: string }) {
   return request('/iiep-manage/uap/getTicket', {
     method: 'GET',
     params: params,
@@ -27,7 +28,6 @@ export async function login(params: Login.LoginParam) {
 
 /**
  * 退出
- * @param options
  */
 export async function logout() {
   return request<Common.ResultCode>('/iiep-manage/uap/logout', {

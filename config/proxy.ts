@@ -14,6 +14,16 @@ export default {
       changeOrigin: true,
       pathRewrite: { '^': '' },
     },
+    '/iiep-manage/uap': {
+      target: 'http://10.7.105.219:9090',
+      changeOrigin: true,
+      pathRewrite: { '^': '' },
+    },
+    '/iiep-manage/account': {
+      target: 'http://10.7.105.219:9090',
+      changeOrigin: true,
+      pathRewrite: { '^': '' },
+    },
   },
   // test: {
   //   '/api/': {

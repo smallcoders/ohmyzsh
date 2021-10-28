@@ -3,9 +3,10 @@ import { message, Tooltip } from 'antd';
 import React, { useState, useRef } from 'react';
 import { ProFormCheckbox, ProFormText, LoginForm } from '@ant-design/pro-form';
 import { history, useModel } from 'umi';
+import { encryptWithBase64, decryptWithBase64 } from '@/utils/crypto';
 import Footer from '@/components/Footer';
 import { getTicket, login } from '@/services/login';
-import Login from '@/types/login';
+import type Login from '@/types/login';
 import styles from './index.less';
 
 const localStorageKey = 'login.remember.account';
@@ -15,7 +16,9 @@ const LoginFC: React.FC = () => {
   const [userLoginState, setUserLoginState] =
     useState<{ success: boolean; message?: string }>(defaultLoginStatus);
   const { initialState, setInitialState } = useModel('@@initialState');
-  const storeAccountRef = useRef(localStorage.getItem(localStorageKey) === 'true');
+  const storedAccountRef = useRef<Login.LoginParam>(
+    JSON.parse(localStorage.getItem(localStorageKey) || '{}'),
+  );
 
   const fetchUserInfo = async () => {
     const userInfo = await initialState?.fetchUserInfo?.();
@@ -29,37 +32,43 @@ const LoginFC: React.FC = () => {
 
   const handleSubmit = async (values: Login.LoginParam) => {
     setUserLoginState(defaultLoginStatus);
-    const { loginName, password, storeAccount } = values;
-    // 记住账号
-    localStorage.setItem(localStorageKey, `${storeAccount}`);
-    // 获取登录ticket
-    const ticketRes = await getTicket({ loginName });
+    const { loginNameOrPhone, password, storeAccount } = values;
 
+    // 获取登录ticket
+    const ticketRes = await getTicket({ loginNameOrPhone });
     if (ticketRes.code !== 0) {
       setUserLoginState({ success: false, message: ticketRes.message });
       return;
     }
     try {
       // 登录
-      const loginResult = await login({
-        loginName,
-        password: window.btoa(password),
+      const loginParam: Login.LoginParam = {
+        loginNameOrPhone,
+        password: encryptWithBase64(password),
         ticket: ticketRes.result,
         storeAccount,
-      });
+      };
+      const loginResult = await login(loginParam);
       if (loginResult.code === 0) {
-        message.success('登录成功！');
+        // message.success('登录成功！');
         await fetchUserInfo();
         /** 此方法会跳转到 redirect 参数所在的位置 */
         if (!history) return;
         const { query } = history.location;
         const { redirect } = query as { redirect: string };
         history.push(redirect || '/');
+        // 记录账号
+        if (storeAccount) {
+          localStorage.setItem(localStorageKey, JSON.stringify(loginParam));
+        } else {
+          localStorage.removeItem(localStorageKey);
+        }
         return;
       }
       // 如果失败去设置用户错误信息
       setUserLoginState({ success: false, message: loginResult.message });
     } catch (error) {
+      console.log(error);
       message.error('登录失败，请重试！');
     }
   };
@@ -70,7 +79,8 @@ const LoginFC: React.FC = () => {
         <LoginForm
           title="羚羊管理运营平台"
           initialValues={{
-            storeAccount: storeAccountRef.current,
+            ...storedAccountRef.current,
+            password: decryptWithBase64(storedAccountRef.current.password),
           }}
           onChange={() => setUserLoginState(defaultLoginStatus)}
           onFinish={async (values) => {
@@ -78,15 +88,14 @@ const LoginFC: React.FC = () => {
           }}
         >
           {/*站位坑*/}
-          {!storeAccountRef.current && (
-            <div style={{ position: 'absolute', top: -100 }}>
-              <input id="loginName" />
-              <input id="password" type="password" />
-            </div>
-          )}
-          <div style={{ marginBottom: 50 }}></div>
+          <div style={{ position: 'absolute', top: -10000 }}>
+            <input id="loginNameOrPhone" name="loginNameOrPhone" />
+            <input id="password" name="password" type="password" />
+          </div>
+
+          <div style={{ marginBottom: 50 }} />
           <ProFormText
-            name="loginName"
+            name="loginNameOrPhone"
             fieldProps={{
               size: 'large',
               prefix: <UserOutlined className={styles.prefixIcon} />,

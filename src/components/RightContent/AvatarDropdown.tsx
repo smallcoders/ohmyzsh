@@ -1,12 +1,16 @@
-import React, { useCallback } from 'react';
-import { LogoutOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
-import { Avatar, Menu, Spin } from 'antd';
+import React, { useCallback, useState } from 'react';
+import { UserOutlined } from '@ant-design/icons';
+import { ModalForm, ProFormText } from '@ant-design/pro-form';
+import { Avatar, Menu, message, Spin } from 'antd';
 import { history, useModel } from 'umi';
+import { encryptWithBase64 } from '@/utils/crypto';
 import { stringify } from 'querystring';
 import HeaderDropdown from '../HeaderDropdown';
-import styles from './index.less';
-import { outLogin } from '@/services/ant-design-pro/api';
 import type { MenuInfo } from 'rc-menu/lib/interface';
+import type Common from '@/types/common';
+import { logout } from '@/services/login';
+import { updateMyNameAndPhone, updateMyPassword } from '@/services/account';
+import styles from './index.less';
 
 export type GlobalHeaderRightProps = {
   menu?: boolean;
@@ -16,7 +20,7 @@ export type GlobalHeaderRightProps = {
  * 退出登录，并且将当前的 url 保存
  */
 const loginOut = async () => {
-  await outLogin();
+  await logout();
   const { query = {}, pathname } = history.location;
   const { redirect } = query;
   // Note: There may be security issues, please note
@@ -30,8 +34,10 @@ const loginOut = async () => {
   }
 };
 
-const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
+const AvatarDropdown: React.FC<GlobalHeaderRightProps> = () => {
   const { initialState, setInitialState } = useModel('@@initialState');
+  const [editAccountModalVisible, setEditAccountModalVisible] = useState<boolean>(false);
+  const [editPasswordModalVisible, setEditPasswordModalVisible] = useState<boolean>(false);
 
   const onMenuClick = useCallback(
     (event: MenuInfo) => {
@@ -40,21 +46,19 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
         setInitialState((s) => ({ ...s, currentUser: undefined }));
         loginOut();
         return;
+      } else if (key === 'modifyAccount') {
+        setEditAccountModalVisible(true);
+      } else if (key === 'modifyPwd') {
+        setEditPasswordModalVisible(true);
       }
-      history.push(`/account/${key}`);
+      //history.push(`/account/${key}`);
     },
     [setInitialState],
   );
 
   const loading = (
     <span className={`${styles.action} ${styles.account}`}>
-      <Spin
-        size="small"
-        style={{
-          marginLeft: 8,
-          marginRight: 8,
-        }}
-      />
+      <Spin size="small" style={{ marginLeft: 8, marginRight: 8 }} />
     </span>
   );
 
@@ -68,35 +72,147 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu }) => {
     return loading;
   }
 
+  const fetchUserInfo = async () => {
+    const userInfo = await initialState?.fetchUserInfo?.();
+    if (userInfo) {
+      await setInitialState((s) => ({ ...s, currentUser: userInfo }));
+    }
+  };
+
+  const handleModify = async (
+    isModiifyAccount: boolean,
+    params: {
+      name?: string;
+      phone?: string;
+      oldPassword?: string;
+      newPassword?: string;
+    },
+  ) => {
+    try {
+      const result: Common.ResultCode = isModiifyAccount
+        ? await updateMyNameAndPhone(params)
+        : await updateMyPassword(params);
+      if (result.code === 0) {
+        if (isModiifyAccount) {
+          message.success(`修改账号信息成功`);
+          setEditAccountModalVisible(false);
+          // 更新用户信息
+          fetchUserInfo();
+        } else {
+          // 退出登录
+          message.success(`密码修改成功，请重新登录`);
+          setEditPasswordModalVisible(false);
+          loginOut();
+        }
+      } else {
+        message.error(result.message);
+      }
+    } catch (error) {
+      message.error(`${isModiifyAccount ? '修改账号信息' : '修改密码'}失败，请重试！`);
+    }
+  };
+
+  const renderEditAccountModal = () => {
+    return (
+      editAccountModalVisible && (
+        <ModalForm
+          title={'修改账号信息'}
+          width="400px"
+          visible={editAccountModalVisible}
+          onVisibleChange={setEditAccountModalVisible}
+          initialValues={currentUser}
+          onFinish={async (value) => await handleModify(true, value)}
+        >
+          <ProFormText
+            rules={[{ required: true }, { type: 'string', max: 35 }]}
+            width="md"
+            name="name"
+            label="姓名"
+          />
+          <ProFormText
+            rules={[{ required: true }, { type: 'string', max: 35 }]}
+            width="md"
+            name="phone"
+            label="联系方式"
+          />
+        </ModalForm>
+      )
+    );
+  };
+
+  const renderEditPasswordModal = () => {
+    return (
+      editPasswordModalVisible && (
+        <ModalForm
+          title={'修改密码'}
+          width="400px"
+          visible={editPasswordModalVisible}
+          onVisibleChange={setEditPasswordModalVisible}
+          onFinish={async (value) => {
+            const { oldPassword, newPassword, confirmPassword } = value;
+            if (newPassword !== confirmPassword) {
+              message.error('两次密码输入不一致');
+              return;
+            }
+            await handleModify(false, {
+              oldPassword: encryptWithBase64(oldPassword),
+              newPassword: encryptWithBase64(newPassword),
+            });
+          }}
+        >
+          <ProFormText.Password
+            rules={[{ required: true }, { type: 'string', max: 35 }]}
+            width="md"
+            name="oldPassword"
+            placeholder="旧密码"
+          />
+          <ProFormText.Password
+            rules={[{ required: true }, { type: 'string', min: 8 }, { type: 'string', max: 20 }]}
+            width="md"
+            name="newPassword"
+            placeholder="新密码，8～20位密码，区分大小写"
+          />
+          <ProFormText.Password
+            rules={[{ required: true }]}
+            width="md"
+            name="confirmPassword"
+            placeholder="确认新密码"
+          />
+        </ModalForm>
+      )
+    );
+  };
+
   const menuHeaderDropdown = (
     <Menu className={styles.menu} selectedKeys={[]} onClick={onMenuClick}>
-      {menu && (
-        <Menu.Item key="center">
-          <UserOutlined />
-          个人中心
-        </Menu.Item>
-      )}
-      {menu && (
-        <Menu.Item key="settings">
-          <SettingOutlined />
-          个人设置
-        </Menu.Item>
-      )}
-      {menu && <Menu.Divider />}
-
-      <Menu.Item key="logout">
-        <LogoutOutlined />
-        退出登录
+      <Menu.Item key="info">
+        <div style={{ paddingTop: 5 }}>
+          <p style={{ marginBottom: 5 }}>
+            {currentUser.type === 'MANAGER' ? '运营' : '运营管理员'}
+          </p>
+          <p className={styles.user}>{currentUser.name}</p>
+          <p className={styles.user}>{currentUser.phone}</p>
+        </div>
       </Menu.Item>
+      <Menu.Divider />
+      <Menu.Item key="modifyAccount">修改账号信息</Menu.Item>
+      <Menu.Divider />
+      <Menu.Item key="modifyPwd">修改密码</Menu.Item>
+      <Menu.Divider />
+      <Menu.Item key="logout">退出登录</Menu.Item>
     </Menu>
   );
   return (
-    <HeaderDropdown overlay={menuHeaderDropdown}>
-      <span className={`${styles.action} ${styles.account}`}>
-        <Avatar size="small" className={styles.avatar} src={currentUser.avatar} alt="avatar" />
-        <span className={`${styles.name} anticon`}>{currentUser.name}</span>
-      </span>
-    </HeaderDropdown>
+    <div>
+      <HeaderDropdown overlay={menuHeaderDropdown}>
+        <span className={`${styles.action} ${styles.account}`}>
+          <Avatar size="default" className={styles.avatar} icon={<UserOutlined />} alt="avatar" />
+          <span className={`${styles.name} anticon`}>{currentUser.name}</span>
+        </span>
+      </HeaderDropdown>
+      {renderEditAccountModal()}
+      {renderEditPasswordModal()}
+    </div>
   );
 };
 

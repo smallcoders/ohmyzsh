@@ -21,7 +21,8 @@
   {
     path: '/service-config',
     name: '服务配置',
-    icon: 'crown',
+    icon: 'edit',
+    access: 'SERVICE_CONFIG',
     routes: [
       {
         path: '/service-config',
@@ -73,28 +74,21 @@
     ],
   },
   {
-    path: '/admin',
-    name: 'admin',
-    icon: 'crown',
-    access: 'canAdmin',
-    component: './Admin',
+    path: '/system-config',
+    name: '系统管理',
+    icon: 'setting',
+    access: 'SYSTEM_CONFIG',
     routes: [
       {
-        path: '/admin/sub-page',
-        name: 'sub-page',
-        icon: 'smile',
-        component: './Welcome',
+        path: '/system-config',
+        redirect: '/system-config/account',
       },
       {
-        component: './404',
+        path: '/system-config/account',
+        name: '账号管理',
+        component: './account',
       },
     ],
-  },
-  {
-    name: '列表',
-    icon: 'table',
-    path: '/list',
-    component: './TableList',
   },
   {
     path: '/',

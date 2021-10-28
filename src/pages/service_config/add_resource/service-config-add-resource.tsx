@@ -195,7 +195,7 @@ export default () => {
             </Form.Item>
             <Form.Item name="label" label="应用标签">
               <Select placeholder="请选择" allowClear>
-                <Select.Option value={0}>支持试用</Select.Option>
+                {/* <Select.Option value={0}>支持试用</Select.Option> */}
                 <Select.Option value={1}>平台精选</Select.Option>
                 <Select.Option value={2}>其他</Select.Option>
               </Select>
@@ -274,7 +274,7 @@ export default () => {
               ]}
             >
               <Radio.Group
-                disabled={isEditing && Boolean(editingItem.isTopApp)}
+                disabled={isEditing && Boolean(isTop)}
                 onChange={(e) => {
                   form.setFieldsValue({
                     replaceAppId: undefined,
@@ -291,7 +291,7 @@ export default () => {
             </Form.Item>
             {isTop ? (
               <>
-                {!isEditing && Boolean(editingItem.isTopApp) && (
+                {!isEditing && Boolean(isTop) && (
                   <Form.Item
                     name="replaceAppId"
                     label="替换目标"
