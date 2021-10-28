@@ -175,19 +175,21 @@ const AccountTable: React.FC = () => {
         <ModalForm
           title={'新建账号'}
           width="400px"
+          layout="horizontal"
+          labelCol={{ span: 6 }}
           visible={createModalVisible}
           onVisibleChange={setCreateModalVisible}
           onFinish={async (value) => await handleSave(true, value as Account.SaveAccountRequest)}
         >
           <ProFormText
             rules={[{ required: true }, { type: 'string', max: 35 }]}
-            width="md"
+            width="sm"
             name="name"
             label="姓名"
           />
           <ProFormText
             rules={[{ required: true }, { type: 'string', max: 35 }]}
-            width="md"
+            width="sm"
             name="phone"
             label="联系方式"
           />
@@ -197,7 +199,7 @@ const AccountTable: React.FC = () => {
               { type: 'string', max: 15 },
               { pattern: /^[A-Za-z0-9]+$/, message: '账号只允许是数字和字母' },
             ]}
-            width="md"
+            width="sm"
             name="loginName"
             label="账号"
           />
@@ -213,6 +215,8 @@ const AccountTable: React.FC = () => {
         <ModalForm
           title={'编辑账号'}
           width="400px"
+          layout="horizontal"
+          labelCol={{ span: 6 }}
           visible={updateModalVisible}
           onVisibleChange={setUpdateModalVisible}
           initialValues={{ loginName, name, phone }}
@@ -220,22 +224,16 @@ const AccountTable: React.FC = () => {
             await handleSave(false, { ...value, id } as Account.SaveAccountRequest)
           }
         >
-          <ProFormText
-            rules={[{ required: true }]}
-            width="md"
-            name="loginName"
-            label="账号"
-            readonly
-          />
+          <ProFormText width="sm" name="loginName" label="账号" readonly />
           <ProFormText
             rules={[{ required: true }, { type: 'string', max: 35 }]}
-            width="md"
+            width="sm"
             name="name"
             label="姓名"
           />
           <ProFormText
             rules={[{ required: true }, { type: 'string', max: 35 }]}
-            width="md"
+            width="sm"
             name="phone"
             label="联系方式"
           />

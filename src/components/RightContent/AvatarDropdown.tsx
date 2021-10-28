@@ -118,6 +118,8 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = () => {
         <ModalForm
           title={'修改账号信息'}
           width="400px"
+          layout="horizontal"
+          labelCol={{ span: 6 }}
           visible={editAccountModalVisible}
           onVisibleChange={setEditAccountModalVisible}
           initialValues={currentUser}
@@ -125,13 +127,13 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = () => {
         >
           <ProFormText
             rules={[{ required: true }, { type: 'string', max: 35 }]}
-            width="md"
+            width="sm"
             name="name"
             label="姓名"
           />
           <ProFormText
             rules={[{ required: true }, { type: 'string', max: 35 }]}
-            width="md"
+            width="sm"
             name="phone"
             label="联系方式"
           />
