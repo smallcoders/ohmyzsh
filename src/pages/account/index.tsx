@@ -118,11 +118,6 @@ const AccountTable: React.FC = () => {
       renderText: (text: any, record: any) => record.creator?.name,
     },
     {
-      title: '账号类型',
-      hideInSearch: true,
-      renderText: (text: any, record: any) => (isAdmin(record.type) ? '运营管理员' : '运营'),
-    },
-    {
       title: '操作',
       hideInSearch: true,
       width: 200,

@@ -59,7 +59,13 @@ const LoginFC: React.FC = () => {
         history.push(redirect || '/');
         // 记录账号
         if (storeAccount) {
-          localStorage.setItem(localStorageKey, JSON.stringify(loginParam));
+          localStorage.setItem(
+            localStorageKey,
+            JSON.stringify({
+              storeAccount: true,
+              loginNameOrPhone: loginParam.loginNameOrPhone,
+            }),
+          );
         } else {
           localStorage.removeItem(localStorageKey);
         }
