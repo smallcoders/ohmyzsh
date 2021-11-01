@@ -1,4 +1,13 @@
-﻿export default [
+﻿export const routeName = {
+  DATA_COLUMN: '/service-config/data-column', // 数据栏
+  APP_RESOURCE: '/service-config/app-resource/index', // 应用资源
+  DATA_ANALYSIS: '/service-config/app-resource/data-analysis', // 综合采购数据分析
+  ADD_APP_RESOURCE: '/service-config/app-resource/add-resource', // 新增应用资源
+  NEWS: '/service-config/news', // 新闻
+  ACCOUNT: '/system-config/account', // 账号管理
+};
+
+export default [
   {
     path: '/user',
     layout: false,
@@ -21,7 +30,7 @@
   {
     path: '/service-config',
     name: '服务配置',
-    icon: 'edit',
+    icon: 'unordered-list',
     access: 'SERVICE_CONFIG',
     routes: [
       {
@@ -34,14 +43,13 @@
         component: './service_config/banner',
       },
       {
-        path: '/service-config/data-column',
+        path: routeName.DATA_COLUMN,
         name: '数据栏',
         component: './service_config/data_column',
       },
       {
         path: '/service-config/app-resource',
         name: '应用资源',
-        icon: 'crown',
         hideChildrenInMenu: true,
         routes: [
           {
@@ -49,25 +57,25 @@
             redirect: '/service-config/app-resource/index',
           },
           {
-            path: '/service-config/app-resource/index',
+            path: routeName.APP_RESOURCE,
             hideInBreadcrumb: true,
             name: '应用资源',
             component: './service_config/app_resource',
           },
           {
-            path: '/service-config/app-resource/data-analysis',
+            path: routeName.DATA_ANALYSIS,
             name: '综合采购数据分析',
             component: './service_config/data_analysis',
           },
           {
-            path: '/service-config/app-resource/add-resource/:id',
+            path: routeName.ADD_APP_RESOURCE,
             name: '新增应用',
             component: './service_config/add_resource',
           },
         ],
       },
       {
-        path: '/service-config/news',
+        path: routeName.NEWS,
         name: '新闻资讯',
         component: './service_config/news',
       },
