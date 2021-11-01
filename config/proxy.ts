@@ -14,29 +14,5 @@ export default {
       changeOrigin: true,
       pathRewrite: { '^': '' },
     },
-    '/iiep-manage/uap': {
-      target: 'http://10.7.105.219:9090',
-      changeOrigin: true,
-      pathRewrite: { '^': '' },
-    },
-    '/iiep-manage/account': {
-      target: 'http://10.7.105.219:9090',
-      changeOrigin: true,
-      pathRewrite: { '^': '' },
-    },
   },
-  // test: {
-  //   '/api/': {
-  //     target: 'https://preview.pro.ant.design',
-  //     changeOrigin: true,
-  //     pathRewrite: { '^': '' },
-  //   },
-  // },
-  // pre: {
-  //   '/api/': {
-  //     target: 'your pre url',
-  //     changeOrigin: true,
-  //     pathRewrite: { '^': '' },
-  //   },
-  // },
 };

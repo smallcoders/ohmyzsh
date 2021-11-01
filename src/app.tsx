@@ -7,6 +7,9 @@ import RightContent from '@/components/RightContent';
 import Footer from '@/components/Footer';
 import { getCurrentUser } from '@/services/account';
 import type Account from '@/types/account';
+import moment from 'moment';
+import 'moment/locale/zh-cn';
+moment.locale('zh-cn');
 // import { RequestOptionsInit } from 'umi-request';
 // const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
@@ -65,18 +68,6 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
         history.push(loginPath);
       }
     },
-    // links: isDev
-    //   ? [
-    //     <Link to="/umi/plugin/openapi" target="_blank">
-    //       <LinkOutlined />
-    //       <span>OpenAPI 文档</span>
-    //     </Link>,
-    //     <Link to="/~docs">
-    //       <BookOutlined />
-    //       <span>业务组件文档</span>
-    //     </Link>,
-    //   ]
-    //   : [],
     menuHeaderRender: undefined,
     // 自定义 403 页面
     // unAccessible: <div>unAccessible</div>,
@@ -89,7 +80,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
 function requestInterceptors(url: string, options: RequestOptionsInit) {
   // console.log('url', url)
   // // 设置代理前缀/api
-  // const newUrl = `http://10.7.106.44:3000/${url}`;
+  // const newUrl = `http://10.7.107.89:9090${url}`;
   // const obj: any = options;
   return {
     url: url,
@@ -109,6 +100,9 @@ const responseInterceptors = (response: Response) => {
     history.push(loginPath);
     throw new Error('会话已经过期，请重新登录');
   }
+
+  console.log('response', response);
+
   return response;
 };
 

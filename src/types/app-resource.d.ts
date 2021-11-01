@@ -23,7 +23,7 @@ namespace AppResource {
      * 应用标签
      */
     label?: string;
-    /**
+    /**detailPdfId
      * 所属厂商
      */
     orgName?: string;
@@ -35,6 +35,7 @@ namespace AppResource {
      * 跳往链接，0否，1是
      */
     isSkip?: number;
+
     /**
      * 状态，1发布中、0已下架
      */
@@ -47,11 +48,30 @@ namespace AppResource {
       collectCount: number; //收藏次数
       tryCount: number; //试用次数
     };
+  };
+
+  export type Detail = Content & {
+    /**
+     * 支持试用，0否，1是
+     */
+    isSupportTry?: number;
 
     /**
      * 跳转链接
      */
     url?: string;
+    /**
+     * pdf 文件id 或者文件初始值(for antd)
+     */
+    detailPdfId?:
+      | string
+      | {
+          uid: string;
+          name: string;
+          status: string;
+          url: string;
+        }[]
+      | { response: { result: string } }[0];
   };
 
   export type DataAnalyseList = {

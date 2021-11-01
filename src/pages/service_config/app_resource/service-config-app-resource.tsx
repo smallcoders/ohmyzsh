@@ -16,7 +16,7 @@ import {
 } from '@/services/app-resource';
 import Common from '@/types/common';
 import AppResource from '@/types/app-resource.d';
-
+import { routeName } from '../../../../config/routes';
 const sc = scopedClasses('service-config-app-resource');
 
 export default () => {
@@ -24,7 +24,6 @@ export default () => {
    * 应用类型
    */
   const [appTypes, setAppTypes] = useState<{ id: string; name: string }[]>([]);
-  // const [topApps, setTopApps] = useState<{ id: string, name: string }[]>([])
   /**
    * table数据源
    */
@@ -60,7 +59,7 @@ export default () => {
       pageIndex,
       pageSize,
       ...searchContent,
-    });
+    } as Common.ResultPage & { label?: string; type?: string });
     if (code === 0) {
       setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
       setDataSource(result);
@@ -77,7 +76,7 @@ export default () => {
   }, [searchContent]);
 
   /**
-   * 准备字典 尖刀应用和应用类型
+   * 准备字典 应用类型
    */
   const prepare = async () => {
     try {
@@ -104,12 +103,11 @@ export default () => {
     const tooltipMessage = '下架';
     const hide = message.loading(`正在${tooltipMessage}`);
     const updateStateResult = await offShelf(id);
+    hide();
     if (updateStateResult.code === 0) {
-      hide();
       message.success(`${tooltipMessage}成功`);
       await getPage();
     } else {
-      hide();
       message.error(`${tooltipMessage}失败，原因:{${updateStateResult.message}}`);
     }
   };
@@ -122,12 +120,11 @@ export default () => {
     const tooltipMessage = '置顶';
     const hide = message.loading(`正在${tooltipMessage}`);
     const updateStateResult = await topApp(id);
+    hide();
     if (updateStateResult.code === 0) {
-      hide();
       message.success(`${tooltipMessage}成功`);
       await getPage();
     } else {
-      hide();
       message.error(`${tooltipMessage}失败，原因:{${updateStateResult.message}}`);
     }
   };
@@ -139,12 +136,11 @@ export default () => {
   const remove = async (id: string) => {
     const hide = message.loading(`正在删除`);
     const removeRes = await removeAppSource(id);
+    hide();
     if (removeRes.code === 0) {
-      hide();
       message.success(`删除成功`);
       getPage();
     } else {
-      hide();
       message.error(`删除失败，原因:{${removeRes.message}}`);
     }
   };
@@ -152,8 +148,7 @@ export default () => {
   const columns = [
     {
       title: '排序',
-      dataIndex: 'sort',
-      render: (_item, _record, index) => pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
+      dataIndex: 'priority',
     },
     {
       title: '应用名称',
@@ -179,7 +174,7 @@ export default () => {
     {
       title: '状态',
       dataIndex: 'releaseStatus',
-      render: (_) => {
+      render: (_: number) => {
         return _ === 0 ? (
           <div className={`state${_}`}>已下架</div>
         ) : (
@@ -198,7 +193,7 @@ export default () => {
           <div>
             点击：
             <Link
-              style={{ marginRight: 20 }}
+              style={{ marginRight: 20 }} // todo 变量名
               to={`/service-config/app-resource/data-analysis?appId=${record.id}&type=0`}
             >
               {item?.clickCount || 0}
@@ -224,16 +219,16 @@ export default () => {
     {
       title: '操作',
       dataIndex: 'option',
-      render: (_, record: AppResource.Content) => {
+      render: (_: any, record: AppResource.Content) => {
         return (
           <Space size="middle">
             <a
               href="#"
               onClick={() => {
-                history.push(`/service-config/app-resource/add-resource?id=${record.id}`);
+                history.push(`${routeName.ADD_APP_RESOURCE}?id=${record.id}`);
               }}
             >
-              编辑{' '}
+              编辑
             </a>
             {record.isTopApp === 0 && (
               <Popconfirm
@@ -250,9 +245,11 @@ export default () => {
                 下架
               </a>
             )}
-            <a href="#" onClick={() => top(record.id as string)}>
-              置顶
-            </a>
+            {record.releaseStatus === 1 && (
+              <a href="#" onClick={() => top(record.id as string)}>
+                置顶
+              </a>
+            )}
           </Space>
         );
       },
@@ -347,7 +344,7 @@ export default () => {
     );
   };
 
-  /**
+  /** // todo 拿出来
    * 自定义tags
    */
   const getSelfTags = (
@@ -375,7 +372,7 @@ export default () => {
             type="primary"
             key="primary"
             onClick={() => {
-              history.push(`/service-config/app-resource/add-resource`);
+              history.push(routeName.ADD_APP_RESOURCE);
             }}
           >
             <PlusOutlined /> 新增

@@ -14,19 +14,19 @@ namespace Common {
     /**
      * 一页的数量
      */
-    pageSize?: number;
+    pageSize: number;
     /**
      * 页标
      */
-    pageIndex?: number;
+    pageIndex: number;
     /**
      * 总数
      */
-    totalCount?: number;
+    totalCount: number;
     /**
      * 总页数
      */
-    pageTotal?: number;
+    pageTotal: number;
   };
 }
 export default Common;

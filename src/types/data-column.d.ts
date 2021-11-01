@@ -8,8 +8,8 @@ namespace DataColumn {
   export type Content = {
     id?: string; // 主键
     amount?: number; // 数据数量
-    coverPath?: string; // 封面图片访问路径
-    sort?: number; // 排序
+    title?: string; // 封面图片访问路径
+    sort: number; // 排序
   };
 }
 export default DataColumn;

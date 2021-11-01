@@ -28,7 +28,7 @@ export async function addOrUpdateAppSource(data?: AppResource.Content) {
  * 获取应用资源详情 通过id
  */
 export async function getAppSourceById(id: string) {
-  return request<Common.ResultCode & { result: AppResource.Content }>(`/iiep-manage/app/${id}`);
+  return request<Common.ResultCode & { result: AppResource.Detail }>(`/iiep-manage/app/${id}`);
 }
 
 /**
@@ -81,7 +81,7 @@ export async function getTopApps() {
  */
 export async function getDataAnalyseIndexs(id: string) {
   return request<
-    Common.ResultCode & { result: { clickCount: number; collectCount: number; tryCount: number }[] }
+    Common.ResultCode & { result: { clickCount: number; collectCount: number; tryCount: number } }
   >(`/iiep-manage/app/dataAnalyse/count?id=${id}`);
 }
 
@@ -90,13 +90,9 @@ export async function getDataAnalyseIndexs(id: string) {
  * @param id
  * @returns
  */
-export async function getDataAnalysePage(data: {
-  appId: string;
-  type: number; // 数据指标，0点击，1收藏，2试用申请
-  orgName?: string; // 企业名称
-  beginOperateTime?: string; // 尖刀应用，0否，1是
-  endOperateTime?: string; //状态，1发布中、0已下架
-}) {
+export async function getDataAnalysePage(
+  data: AppResource.SearchBody & { pageIndex: number; pageSize: number | undefined },
+) {
   return request<AppResource.DataAnalyseList>('/iiep-manage/app/dataAnalyse/page', {
     method: 'post',
     data,

@@ -21,7 +21,7 @@ import Common from '@/types/common';
 import { getNewsPage, addOrUpdateNews, removeNews, updateState } from '@/services/news';
 import News from '@/types/service-config-news';
 import moment from 'moment';
-import UploadForm from '../add_resource/upload-form';
+import UploadForm from '@/components/upload_form';
 const sc = scopedClasses('service-config-app-news');
 const stateObj = {
   0: '发布中',
@@ -52,7 +52,7 @@ export default () => {
     pageSize: 20,
     totalCount: 0,
     pageTotal: 0,
-  }); // , setPageInfo
+  });
 
   const [form] = Form.useForm();
 
@@ -70,55 +70,51 @@ export default () => {
     }
   };
 
-  const onTableChange = (page: number, pageSize?: number | undefined) => {
-    getNews(page, pageSize);
-  };
-
   const clearForm = () => {
     form.resetFields();
     setEditingItem({});
   };
 
   const addOrUpdate = async () => {
+    const tooltipMessage = editingItem.id ? '修改' : '添加';
+    const hide = message.loading(`正在${tooltipMessage}`);
     form
       .validateFields()
       .then(async (value) => {
-        const tooltipMessage = editingItem.id ? '修改' : '添加';
-        const hide = message.loading(`正在${tooltipMessage}`);
         setAddOrUpdateLoading(true);
+        if (value.publishTime) {
+          value.publishTime = moment(value.publishTime).format('YYYY-MM-DDTHH:mm:ss');
+        }
         const addorUpdateRes = await addOrUpdateNews({
           ...value,
-          publishTime: moment(value.publishTime).format('YYYY-MM-DDTHH:mm:ss'),
           id: editingItem.id,
           state: editingItem.state,
         });
+        hide();
         if (addorUpdateRes.code === 0) {
           setModalVisible(false);
-          hide();
           message.success(`${tooltipMessage}成功`);
           getNews();
           clearForm();
         } else {
-          hide();
           message.error(`${tooltipMessage}失败，原因:{${addorUpdateRes.message}}`);
         }
         setAddOrUpdateLoading(false);
       })
-      .catch((err) => {
-        console.error(err);
-        return;
+      .catch(() => {
+        hide();
+        message.error('服务器错误，请稍后重试');
       });
   };
 
   const remove = async (id: string) => {
     const hide = message.loading(`正在删除`);
     const removeRes = await removeNews(id);
+    hide();
     if (removeRes.code === 0) {
-      hide();
       message.success(`删除成功`);
       getNews();
     } else {
-      hide();
       message.error(`删除失败，原因:{${removeRes.message}}`);
     }
   };
@@ -127,12 +123,11 @@ export default () => {
     const tooltipMessage = updatedState === 0 ? '下架' : '上架';
     const hide = message.loading(`正在${tooltipMessage}`);
     const updateStateResult = await updateState({ id, action: updatedState });
+    hide();
     if (updateStateResult.code === 0) {
-      hide();
       message.success(`${tooltipMessage}成功`);
       getNews();
     } else {
-      hide();
       message.error(`${tooltipMessage}失败，原因:{${updateStateResult.message}}`);
     }
   };
@@ -141,7 +136,8 @@ export default () => {
     {
       title: '排序',
       dataIndex: 'sort',
-      render: (_item, _record, index) => pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
+      render: (_: any, _record: News.Content, index: number) =>
+        pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
       title: '标题',
@@ -150,12 +146,12 @@ export default () => {
     {
       title: '发布时间',
       dataIndex: 'publishTime',
-      render: (_) => moment(_).format('YYYY-MM-DD HH:mm:ss'),
+      render: (_: string) => moment(_).format('YYYY-MM-DD HH:mm:ss'),
     },
     {
       title: '状态',
       dataIndex: 'state',
-      render: (_) => {
+      render: (_: number) => {
         return (
           <div className={`state${_}`}>
             {Object.prototype.hasOwnProperty.call(stateObj, _) ? stateObj[_] : '状态码错误'}
@@ -170,7 +166,7 @@ export default () => {
     {
       title: '操作',
       dataIndex: 'option',
-      render: (_, record: News.Content) => {
+      render: (_: any, record: News.Content) => {
         return (
           <Space size="middle">
             <a
@@ -178,7 +174,6 @@ export default () => {
               onClick={() => {
                 setEditingItem(record);
                 setModalVisible(true);
-                console.log('record->>', record);
                 form.setFieldsValue({ ...record, publishTime: moment(record.publishTime) });
               }}
             >
@@ -196,14 +191,24 @@ export default () => {
               <a href="#">删除</a>
             </Popconfirm>
             {record.state === 0 && (
-              <a href="#" onClick={() => editState(record.id as string, 0)}>
-                下架
-              </a>
+              <Popconfirm
+                title="确定下架么？"
+                okText="确定"
+                cancelText="取消"
+                onConfirm={() => editState(record.id as string, 0)}
+              >
+                <a href="#">下架</a>
+              </Popconfirm>
             )}
             {record.state === 1 && (
-              <a href="#" onClick={() => editState(record.id as string, 1)}>
-                上架
-              </a>
+              <Popconfirm
+                title="确定上架么？"
+                okText="确定"
+                cancelText="取消"
+                onConfirm={() => editState(record.id as string, 1)}
+              >
+                <a href="#">上架</a>
+              </Popconfirm>
             )}
           </Space>
         );
@@ -300,6 +305,7 @@ export default () => {
             <UploadForm
               listType="picture-card"
               className="avatar-uploader"
+              accept=".bmp,.gif,.png,.jpeg,.jpg"
               showUploadList={false}
             />
           </Form.Item>
@@ -359,7 +365,7 @@ export default () => {
       {useSearchNode()}
       <div className={sc('container-table-header')}>
         <div className="title">
-          <span>应用列表(共{pageInfo.totalCount || 0}个)</span>
+          <span>资讯列表(共{pageInfo.totalCount || 0}个)</span>
           <Button
             type="primary"
             key="primary"
@@ -380,7 +386,7 @@ export default () => {
             pageInfo.totalCount === 0
               ? false
               : {
-                  onChange: onTableChange,
+                  onChange: getNews,
                   total: pageInfo.totalCount,
                   current: pageInfo.pageIndex,
                   pageSize: pageInfo.pageSize,

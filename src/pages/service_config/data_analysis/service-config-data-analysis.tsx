@@ -8,7 +8,13 @@ import { history } from 'umi';
 import Common from '@/types/common';
 import AppResource from '@/types/app-resource';
 import moment from 'moment';
+import { routeName } from '../../../../config/routes';
 const sc = scopedClasses('service-config-data-analysis');
+
+type RouterParams = {
+  appId?: string;
+  type?: string;
+};
 
 export default () => {
   const columns = [
@@ -60,9 +66,13 @@ export default () => {
    * 搜索表单 form
    */
   const [searchForm] = Form.useForm();
+
+  /**
+   * 准备根据路由参数获取数据
+   */
   const prepare = async () => {
     try {
-      const { appId, type } = history.location.query;
+      const { appId, type } = history.location.query as RouterParams;
 
       if (appId && type) {
         const indexsRs = await getDataAnalyseIndexs(appId);
@@ -73,7 +83,7 @@ export default () => {
           message.error(`获取数据分析指标数据失败，原因:{${indexsRs.message}}`);
         }
       } else {
-        history.push('/service-config/app-resource');
+        history.push(routeName.APP_RESOURCE);
       }
     } catch (error) {
       console.log('error', error);
@@ -81,22 +91,23 @@ export default () => {
     }
   };
 
+  /**
+   * 分页
+   * @param pageIndex
+   * @param pageSize
+   */
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     const { result, totalCount, pageTotal, code } = await getDataAnalysePage({
       pageIndex,
       pageSize,
       ...searchContent,
-    });
+    } as AppResource.SearchBody & { pageIndex: number; pageSize: number | undefined });
     if (code === 0) {
       setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
       setDataSource(result);
     } else {
       message.error(`请求分页数据失败`);
     }
-  };
-
-  const onTableChange = (page: number, pageSize?: number | undefined) => {
-    getPage(page, pageSize);
   };
 
   useEffect(() => {
@@ -203,9 +214,11 @@ export default () => {
                 type="primary"
                 key="primary"
                 onClick={() => {
-                  const { appId, type } = history.location.query;
-                  setSearChContent({ appId: appId as string, type: parseInt(type) });
-                  searchForm.resetFields();
+                  const { appId, type } = history.location.query as RouterParams;
+                  if (appId && type) {
+                    setSearChContent({ appId: appId as string, type: parseInt(type) });
+                    searchForm.resetFields();
+                  }
                 }}
               >
                 重置
@@ -220,7 +233,7 @@ export default () => {
             pageInfo.totalCount === 0
               ? false
               : {
-                  onChange: onTableChange,
+                  onChange: getPage,
                   total: pageInfo.totalCount,
                   current: pageInfo.pageIndex,
                   pageSize: pageInfo.pageSize,

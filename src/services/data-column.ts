@@ -12,7 +12,7 @@ export async function getDataColumnPage() {
 /**
  * 添加
  */
-export async function addDataColumn(data?: DataColumn.Content) {
+export async function addDataColumn(data?: DataColumn.Content[]) {
   return request<Common.ResultCode>('/iiep-manage/dataBar', {
     method: 'post',
     data,
