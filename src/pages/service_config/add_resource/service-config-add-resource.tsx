@@ -60,7 +60,7 @@ export default () => {
   /**
    * 关闭提醒 主要是 添加或者修改成功后 不需要弹出
    */
-  const [isClosejumpTooltip, setIsClosejumpTooltip] = useState<boolean>(false);
+  const [isClosejumpTooltip, setIsClosejumpTooltip] = useState<boolean>(true);
   /**
    * 是否在编辑
    */
@@ -114,26 +114,31 @@ export default () => {
 
   useEffect(() => {
     prepare();
+    window.addEventListener('beforeunload', listener);
+    return () => {
+      window.removeEventListener('beforeunload', listener);
+    };
   }, []);
 
   /**
    * 添加或者修改
    */
   const addOrUpdate = () => {
-    const tooltipMessage = isEditing ? '修改' : '添加';
-    const hide = message.loading(`正在${tooltipMessage}`);
     form
       .validateFields()
       .then(async (value: AppResource.Detail) => {
+        const tooltipMessage = isEditing ? '修改' : '添加';
+        const hide = message.loading(`正在${tooltipMessage}`);
         setAddOrUpdateLoading(true);
         const addorUpdateRes = await addOrUpdateAppSource({
           ...value,
           releaseStatus: 1,
           id: editingItem.id,
         });
+        hide();
         if (addorUpdateRes.code === 0) {
           message.success(`${tooltipMessage}成功`);
-          setIsClosejumpTooltip(true);
+          setIsClosejumpTooltip(false);
 
           history.push(routeName.APP_RESOURCE);
           // if (editingItem.id) { //如果是修改 应该返回
@@ -149,12 +154,10 @@ export default () => {
         } else {
           message.error(`${tooltipMessage}失败，原因:{${addorUpdateRes.message}}`);
         }
-        hide();
         setAddOrUpdateLoading(false);
       })
       .catch((err) => {
-        hide();
-        message.error('服务器错误，请稍后重试');
+        // message.error('服务器错误，请稍后重试');
         console.log(err);
       });
   };
@@ -167,6 +170,11 @@ export default () => {
   const formLayout = {
     labelCol: { span: 4 },
     wrapperCol: { span: 14 },
+  };
+
+  const listener = (e: any) => {
+    e.preventDefault();
+    e.returnValue = '离开当前页后，所编辑的数据将不可恢复';
   };
 
   return (
@@ -196,8 +204,8 @@ export default () => {
       }}
     >
       <Prompt
-        when={form.isFieldsTouched() && !isClosejumpTooltip}
-        message={() => '离开当前页后，所编辑的数据将不可恢复'}
+        when={isClosejumpTooltip && topApps.length > 0}
+        message={'离开当前页后，所编辑的数据将不可恢复'}
       />
       <Form className={sc('container-form')} {...formLayout} form={form}>
         <Row>
@@ -439,7 +447,14 @@ export default () => {
             </Form.Item>
             {isTry ? (
               <Form.Item name="tryTime" label="试用周期（天）">
-                <InputNumber placeholder="请输入" step={1} min={1} max={99999999} precision={0} />
+                <InputNumber
+                  placeholder="请输入"
+                  step={1}
+                  min={1}
+                  max={99999999}
+                  precision={0}
+                  style={{ width: '100%' }}
+                />
               </Form.Item>
             ) : (
               ''

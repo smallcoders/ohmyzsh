@@ -1,6 +1,6 @@
 import type { Settings as LayoutSettings } from '@ant-design/pro-layout';
 import { PageLoading } from '@ant-design/pro-layout';
-import { RequestOptionsInit } from 'umi-request';
+import { RequestOptionsInit, ResponseError } from 'umi-request';
 import type { RunTimeLayoutConfig, RequestConfig } from 'umi'; // RequestConfig
 import { history } from 'umi';
 import RightContent from '@/components/RightContent';
@@ -9,6 +9,7 @@ import { getCurrentUser } from '@/services/account';
 import type Account from '@/types/account';
 import moment from 'moment';
 import 'moment/locale/zh-cn';
+import { message } from 'antd';
 moment.locale('zh-cn');
 // import { RequestOptionsInit } from 'umi-request';
 // const isDev = process.env.NODE_ENV === 'development';
@@ -94,14 +95,10 @@ function requestInterceptors(url: string, options: RequestOptionsInit) {
  * @param options
  */
 const responseInterceptors = (response: Response) => {
-  //console.log(response);
-  // 403，会话过期
   if (response.status === 403) {
     history.push(loginPath);
     throw new Error('会话已经过期，请重新登录');
   }
-
-  console.log('response', response);
 
   return response;
 };
@@ -109,4 +106,8 @@ const responseInterceptors = (response: Response) => {
 export const request: RequestConfig = {
   requestInterceptors: [requestInterceptors],
   responseInterceptors: [responseInterceptors],
+  errorHandler: (error: ResponseError) => {
+    message.error('服务器错误');
+    throw error;
+  },
 };

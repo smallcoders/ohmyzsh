@@ -83,11 +83,11 @@ const TableList: React.FC = () => {
    * @zh-CN 添加/修改banner
    */
   const addOrUpdata = async () => {
-    const tooltipMessage = editingItem.id ? '修改' : '添加';
-    const hide = message.loading(`正在${tooltipMessage}`);
     form
       .validateFields()
       .then(async (value) => {
+        const tooltipMessage = editingItem.id ? '修改' : '添加';
+        const hide = message.loading(`正在${tooltipMessage}`);
         setAddOrUpdateLoading(true);
         const addorUpdateRes = editingItem.id
           ? await updateBanner({ ...value, id: editingItem.id })
@@ -104,8 +104,7 @@ const TableList: React.FC = () => {
         setAddOrUpdateLoading(false);
       })
       .catch((err) => {
-        hide();
-        message.error('服务器错误');
+        // message.error('服务器错误');
         console.log(err);
       });
   };
