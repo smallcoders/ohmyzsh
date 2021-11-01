@@ -45,7 +45,6 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = () => {
       if (key === 'logout') {
         setInitialState((s) => ({ ...s, currentUser: undefined }));
         loginOut();
-        return;
       } else if (key === 'modifyAccount') {
         setEditAccountModalVisible(true);
       } else if (key === 'modifyPwd') {

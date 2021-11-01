@@ -48,10 +48,17 @@ const AccountTable: React.FC = () => {
         : await updateAccount(fields);
       if (result.code === 0) {
         message.success(`${isAdd ? '添加' : '修改'}账号成功`);
-        setCreateModalVisible(false);
-        setUpdateModalVisible(false);
-        if (actionRef.current) {
-          actionRef.current.reload();
+        const { reset, reload } = actionRef.current || {};
+        if (isAdd) {
+          if (reset) {
+            reset();
+          }
+          setCreateModalVisible(false);
+        } else {
+          setUpdateModalVisible(false);
+        }
+        if (reload) {
+          reload();
         }
       } else {
         message.error(result.message);
