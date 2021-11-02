@@ -5,7 +5,9 @@ import { join } from 'path';
 import defaultSettings from './defaultSettings';
 import proxy from './proxy';
 import routes from './routes';
-
+const FileManagerPlugin = require('filemanager-webpack-plugin');
+const getVersion = (argv: string[]) =>
+  argv.find((item) => item.includes('--projectVersion='))?.replace('--projectVersion=', '');
 const { REACT_APP_ENV } = process.env;
 
 export default defineConfig({
@@ -68,5 +70,23 @@ export default defineConfig({
   nodeModulesTransform: { type: 'none' },
   mfsu: {},
   webpack5: {},
+  chainWebpack: (config) => {
+    if (process.env.NODE_ENV === 'production') {
+      config.plugin('FileManagerPlugin').use(FileManagerPlugin, [
+        {
+          events: {
+            onEnd: {
+              archive: [
+                {
+                  source: './dist',
+                  destination: `./zip/iiep-client-page-${getVersion(process.argv)}.zip`,
+                },
+              ],
+            },
+          },
+        },
+      ]);
+    }
+  },
   exportStatic: {},
 });
