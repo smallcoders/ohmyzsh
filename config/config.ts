@@ -79,7 +79,7 @@ export default defineConfig({
               archive: [
                 {
                   source: './dist',
-                  destination: `./zip/iiep-client-page-${getVersion(process.argv)}.zip`,
+                  destination: `./zip/iiep-manage-page-${getVersion(process.argv)}.zip`,
                 },
               ],
             },
