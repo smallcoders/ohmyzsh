@@ -282,16 +282,7 @@ export default () => {
               </Form.Item>
             </Col>
             <Col span={5}>
-              <Form.Item
-                name="isTopApp"
-                label="尖刀应用"
-                rules={[
-                  {
-                    required: true,
-                    message: '必填',
-                  },
-                ]}
-              >
+              <Form.Item name="isTopApp" label="尖刀应用">
                 <Select placeholder="请选择">
                   <Select.Option value={0}>否</Select.Option>
                   <Select.Option value={1}>是</Select.Option>
@@ -299,16 +290,7 @@ export default () => {
               </Form.Item>
             </Col>
             <Col span={5}>
-              <Form.Item
-                name="releaseStatus"
-                label="当前状态"
-                rules={[
-                  {
-                    required: true,
-                    message: '必填',
-                  },
-                ]}
-              >
+              <Form.Item name="releaseStatus" label="当前状态">
                 <Select placeholder="请选择">
                   <Select.Option value={0}>已下架</Select.Option>
                   <Select.Option value={1}>发布中</Select.Option>
