@@ -137,7 +137,7 @@ export default () => {
       title: '排序',
       dataIndex: 'sort',
       render: (_: any, _record: News.Content, index: number) =>
-        pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
+        _record.state === 2 ? '' : pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
       title: '标题',
