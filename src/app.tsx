@@ -38,7 +38,8 @@ export async function getInitialState(): Promise<{
     return undefined;
   };
   // 如果是登录页面，不执行
-  if (history.location.pathname !== loginPath) {
+  //console.log(history.location.pathname)
+  if (!history.location.pathname?.startsWith(loginPath)) {
     const currentUser = await fetchUserInfo();
     return {
       fetchUserInfo,
@@ -94,20 +95,20 @@ function requestInterceptors(url: string, options: RequestOptionsInit) {
  * @param response
  * @param options
  */
-const responseInterceptors = (response: Response) => {
-  if (response.status === 403) {
-    history.push(loginPath);
-    throw new Error('会话已经过期，请重新登录');
-  }
-
-  return response;
-};
+// const responseInterceptors = (response: Response) => {
+//   return response;
+// };
 
 export const request: RequestConfig = {
   requestInterceptors: [requestInterceptors],
-  responseInterceptors: [responseInterceptors],
+  //responseInterceptors: [responseInterceptors],
   errorHandler: (error: ResponseError) => {
-    message.error('服务器错误');
+    if (error.response.status === 403) {
+      history.push(loginPath);
+      message.warn('会话已经过期，请重新登录');
+    } else {
+      message.error('服务器错误');
+    }
     throw error;
   },
 };
