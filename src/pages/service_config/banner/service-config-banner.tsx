@@ -12,6 +12,7 @@ import {
   InputNumber,
   Space,
   Popconfirm,
+  Image,
 } from 'antd';
 import React, { useState, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
@@ -151,9 +152,13 @@ const TableList: React.FC = () => {
       title: 'banner',
       dataIndex: 'photoId',
       render: (photoId: string) => (
-        <div className={'banner-img'}>
-          <img src={`/iiep-manage/common/download/${photoId}`} alt="图片损坏" />
-        </div>
+        // <div className={'banner-img'}>
+        <Image
+          className={'banner-img'}
+          src={`/iiep-manage/common/download/${photoId}`}
+          alt="图片损坏"
+        />
+        // </div>
       ),
     },
     {
