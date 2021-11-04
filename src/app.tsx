@@ -10,6 +10,7 @@ import type Account from '@/types/account';
 import moment from 'moment';
 import 'moment/locale/zh-cn';
 import { message } from 'antd';
+
 moment.locale('zh-cn');
 // import { RequestOptionsInit } from 'umi-request';
 // const isDev = process.env.NODE_ENV === 'development';
@@ -103,7 +104,10 @@ export const request: RequestConfig = {
   requestInterceptors: [requestInterceptors],
   //responseInterceptors: [responseInterceptors],
   errorHandler: (error: ResponseError) => {
-    if (error.response.status === 403) {
+    const { response, type } = error;
+    if (response === null && type === 'TypeError') {
+      message.error('网络错误');
+    } else if (response?.status === 403) {
       history.push(loginPath);
       message.warn('会话已经过期，请重新登录');
     } else {
