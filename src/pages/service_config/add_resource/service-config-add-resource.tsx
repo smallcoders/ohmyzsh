@@ -220,7 +220,7 @@ export default () => {
                 },
               ]}
             >
-              <Input placeholder="请输入" />
+              <Input placeholder="请输入" maxLength={35} />
             </Form.Item>
             <Form.Item
               name="type"
@@ -257,7 +257,7 @@ export default () => {
                 },
               ]}
             >
-              <Input placeholder="请输入" />
+              <Input placeholder="请输入" maxLength={35} />
             </Form.Item>
             <Form.Item name="priority" label="应用顺序">
               <InputNumber
