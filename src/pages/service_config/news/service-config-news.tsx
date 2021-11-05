@@ -103,7 +103,7 @@ export default () => {
       })
       .catch(() => {
         hide();
-        message.error('服务器错误，请稍后重试');
+        // message.error('服务器错误，请稍后重试');
       });
   };
 
