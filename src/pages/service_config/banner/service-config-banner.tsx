@@ -201,9 +201,14 @@ const TableList: React.FC = () => {
               <a href="#">删除</a>
             </Popconfirm>
             {record.state !== 2 && (
-              <a href="#" onClick={() => off(record)}>
-                下架
-              </a>
+              <Popconfirm
+                title="确定下架么？"
+                okText="确定"
+                cancelText="取消"
+                onConfirm={() => off(record)}
+              >
+                <a href="#">下架</a>
+              </Popconfirm>
             )}
           </Space>
         );

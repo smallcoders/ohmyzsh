@@ -241,9 +241,14 @@ export default () => {
               </Popconfirm>
             )}
             {record.isTopApp === 0 && record.releaseStatus === 1 && (
-              <a href="#" onClick={() => off(record.id as string)}>
-                下架
-              </a>
+              <Popconfirm
+                title="确定下架么？"
+                okText="确定"
+                cancelText="取消"
+                onConfirm={() => off(record.id as string)}
+              >
+                <a href="#">下架</a>
+              </Popconfirm>
             )}
             {record.releaseStatus === 1 && (
               <a href="#" onClick={() => top(record.id as string)}>
