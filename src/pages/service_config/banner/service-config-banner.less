@@ -1,14 +1,16 @@
+@import '../../../global.less';
 @prefix: service-config-banner;
 
 .@{prefix}-container {
   &-header {
     display: flex;
     justify-content: space-between;
-    padding: 20px 0;
+    // padding: 20px 0;
+    padding-bottom: 20px;
   }
   .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
     color: #fff;
-    background-color: rgba(30, 152, 215) !important;
+    background-color: @primary !important;
   }
   .state0 {
     position: relative;
