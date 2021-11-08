@@ -305,36 +305,38 @@ const TableList: React.FC = () => {
     <PageContainer className={sc('container')}>
       {edge === Banner.Edge.PC && (
         <>
-          <div className={sc('container-header')}>
-            {selectButton()}
-            <Button
-              type="primary"
-              key="primary"
-              loading={addOrUpdateLoading}
-              onClick={() => {
-                setModalVisible(true);
-              }}
-            >
-              <PlusOutlined /> 新增
-            </Button>
+          <div style={{ backgroundColor: '#fff', padding: 20 }}>
+            <div className={sc('container-header')}>
+              {selectButton()}
+              <Button
+                type="primary"
+                key="primary"
+                loading={addOrUpdateLoading}
+                onClick={() => {
+                  setModalVisible(true);
+                }}
+              >
+                <PlusOutlined /> 新增
+              </Button>
+            </div>
+            <Table
+              bordered
+              columns={columns}
+              dataSource={dataSource}
+              pagination={
+                pageInfo.totalCount === 0
+                  ? false
+                  : {
+                      onChange: getBanners,
+                      total: pageInfo.totalCount,
+                      current: pageInfo.pageIndex,
+                      pageSize: pageInfo.pageSize,
+                      showTotal: (total) =>
+                        `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
+                    }
+              }
+            />
           </div>
-          <Table
-            bordered
-            columns={columns}
-            dataSource={dataSource}
-            pagination={
-              pageInfo.totalCount === 0
-                ? false
-                : {
-                    onChange: getBanners,
-                    total: pageInfo.totalCount,
-                    current: pageInfo.pageIndex,
-                    pageSize: pageInfo.pageSize,
-                    showTotal: (total) =>
-                      `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
-                  }
-            }
-          />
         </>
       )}
 

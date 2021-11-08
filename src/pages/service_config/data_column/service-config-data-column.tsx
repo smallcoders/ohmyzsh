@@ -173,7 +173,11 @@ const TableList: React.FC = () => {
       dataIndex: 'option',
       width: '10%',
       render: (_: any, record: DataColumn.Content) => {
-        return <Typography.Link onClick={() => onDelete(record.sort)}>删除</Typography.Link>;
+        return (
+          <a href="#" onClick={() => onDelete(record.sort)}>
+            删除
+          </a>
+        );
       },
     },
   ];
