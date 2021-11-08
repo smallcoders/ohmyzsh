@@ -91,7 +91,7 @@ export default () => {
       const { id } = history.location.query as { id: string | undefined };
 
       if (id) {
-        // 获取详情 塞入表单 todo：浅复制
+        // 获取详情 塞入表单
         const detailRs = await getAppSourceById(id);
         const editItem = { ...detailRs.result };
         if (detailRs.code === 0) {
