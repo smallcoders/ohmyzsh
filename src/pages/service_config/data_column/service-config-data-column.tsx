@@ -200,7 +200,7 @@ const TableList: React.FC = () => {
     const newData: DataColumn.Content = {
       title: '',
       amount: 1,
-      sort: count, // todo
+      sort: count,
     };
     form.setFieldsValue({ ...newData });
     // 中间会有上一行保存数据，并且设置当前新建行为编辑状态 需要setEditingKey 两次,在同一个范围内setstate 会合并 感觉这边会有隐患
