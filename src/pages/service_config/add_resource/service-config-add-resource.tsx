@@ -91,7 +91,7 @@ export default () => {
       const { id } = history.location.query as { id: string | undefined };
 
       if (id) {
-        // 获取详情 塞入表单 todo：浅复制
+        // 获取详情 塞入表单
         const detailRs = await getAppSourceById(id);
         const editItem = { ...detailRs.result };
         if (detailRs.code === 0) {
@@ -473,10 +473,10 @@ export default () => {
               <Radio.Group
                 onChange={(e) => {
                   setIsSkip(e.target.value);
-                  if (e.target.value === 1) {
-                    // 清空 上传详情
-                    form.setFieldsValue({ detailPdfId: undefined });
-                  } else form.setFieldsValue({ url: undefined });
+                  // if (e.target.value === 1) {
+                  //   // 清空 上传详情
+                  //   // form.setFieldsValue({ detailPdfId: undefined });
+                  // } else form.setFieldsValue({ url: undefined });
                 }}
               >
                 <Radio value={1}>是</Radio>
@@ -500,12 +500,16 @@ export default () => {
               <Form.Item
                 name="detailPdfId"
                 label="上传详情"
-                rules={[
-                  {
-                    required: true,
-                    message: '必填',
-                  },
-                ]}
+                rules={
+                  isEditing
+                    ? undefined
+                    : [
+                        {
+                          required: true,
+                          message: '必填',
+                        },
+                      ]
+                }
               >
                 <UploadForm
                   listType="picture-card"

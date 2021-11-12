@@ -55,13 +55,10 @@ const TableList: React.FC = () => {
   const [dataSource, setDataSource] = useState<Banner.Content[]>([]);
 
   const [editingItem, setEditingItem] = useState<Banner.Content>({});
-  /**
-   * todo: 这里是控制弹出的modal 确定按钮是否正在loading 和 hide 有所重复。
-   */
+
   const [addOrUpdateLoading, setAddOrUpdateLoading] = useState<boolean>(false);
 
   const getBanners = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
-    // todo 尝试 数据为 null 或者 undefined
     const { result, totalCount, pageTotal, code } = await getBannerPage({ pageIndex, pageSize });
     if (code === 0) {
       setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });

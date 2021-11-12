@@ -32,9 +32,6 @@ export default () => {
   const [createModalVisible, setModalVisible] = useState<boolean>(false);
   const [dataSource, setDataSource] = useState<News.Content[]>([]);
   const [editingItem, setEditingItem] = useState<News.Content>({});
-  /**
-   * todo: 这里是控制弹出的modal 确定按钮是否正在loading 和 hide 有所重复。
-   */
   const [addOrUpdateLoading, setAddOrUpdateLoading] = useState<boolean>(false);
   const [searchContent, setSearChContent] = useState<{
     title?: string; // 标题
