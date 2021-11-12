@@ -58,25 +58,26 @@ export default <T,>(props: {
     getPage();
   }, []);
 
-  const paginationConfig = {
-    pageSize: pageInfo.pageSize,
-    showQuickJumper: true,
-    showSizeChanger: false,
-    total: pageInfo.totalCount,
-    current: pageInfo.pageIndex,
-    showTotal() {
-      return `共 ${pageInfo.totalCount} 条     第 ${pageInfo.pageIndex}/${pageInfo.pageTotal} 页`;
-    },
-    onChange: getPage,
-  };
-
   return (
     <SelfCard title={title}>
       <Table
+        size={'small'}
+        scroll={{ y: 181 }}
         rowKey={rowKey}
         columns={columns}
         dataSource={dataSource as any[]}
-        pagination={paginationConfig}
+        pagination={{
+          size: 'small',
+          pageSize: pageInfo.pageSize,
+          showQuickJumper: true,
+          showSizeChanger: false,
+          total: pageInfo.totalCount,
+          current: pageInfo.pageIndex,
+          showTotal() {
+            return `共 ${pageInfo.totalCount} 条     第 ${pageInfo.pageIndex}/${pageInfo.pageTotal} 页`;
+          },
+          onChange: getPage,
+        }}
         loading={loading}
         {...rest}
       />

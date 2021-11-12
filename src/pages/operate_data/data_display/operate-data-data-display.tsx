@@ -10,7 +10,7 @@ import {
   getCityData,
 } from '@/services/data-display';
 import SelfCard from '@/components/self-card';
-import { Button, Col, message, Row, Select } from 'antd';
+import { Col, message, Row, Select, Typography } from 'antd';
 
 import ENTERPRISE from '@/assets/operate_data/data_display/1.svg';
 import SERVICE from '@/assets/operate_data/data_display/2.svg';
@@ -19,10 +19,9 @@ import NEED_NUM from '@/assets/operate_data/data_display/4.svg';
 import SERVICE_NUM from '@/assets/operate_data/data_display/5.svg';
 import DataDisplay from '@/types/data-display';
 import CommonTable from './components/CommonTable';
-import moment from 'moment';
 const sc = scopedClasses('operate-data-data-display');
 export default () => {
-  const [citys, setCitys] = useState<string[]>([]);
+  const [citys, setCitys] = useState<{ label: string; value: string }[]>([]);
   const [cityData, setCityData] = useState<DataDisplay.CityData>({
     org: 0,
     facilitator: 0,
@@ -31,14 +30,27 @@ export default () => {
     solutions: 0,
   });
 
+  const getCityDatas = async (cityName = '') => {
+    try {
+      const { result } = await getCityData({ cityName: cityName });
+      setCityData(result || []);
+    } catch (error) {
+      console.log('error', error);
+      message.error('获取数据失败');
+    }
+  };
+
   const prepare = async () => {
     try {
-      const [citysRes, cityDatasRes] = await Promise.all([
-        getCitys(),
-        getCityData({ cityName: '' }),
+      const { result = [] } = await getCitys();
+
+      setCitys([
+        { label: '全部', value: '' },
+        ...result.map((item) => {
+          return { label: item, value: item };
+        }),
       ]);
-      setCitys(citysRes.result || []);
-      setCityData(cityDatasRes.result || []);
+      await getCityDatas();
     } catch (error) {
       console.log('error', error);
       message.error('获取初始数据失败');
@@ -49,28 +61,32 @@ export default () => {
     prepare();
   }, []);
 
+  const separate = () => <div style={{ width: '100%', height: 24 }} />;
+
   return (
     <PageContainer className={sc('container')}>
-      <Row gutter={20}>
+      <Row gutter={40}>
         <Col span={12}>
           <SelfCard
             title="各地数据"
             extra={
               <Select
                 style={{ width: 200 }}
+                defaultValue=""
                 onChange={(e) => {
                   console.log(e);
+                  getCityDatas(e as string);
                 }}
               >
-                {citys.map((item) => (
-                  <Select.Option key={item} value={item}>
-                    {item}
+                {citys.map((item, index) => (
+                  <Select.Option key={item.label + index} value={item.value}>
+                    {item.label}
                   </Select.Option>
                 ))}
               </Select>
             }
           >
-            <Row>
+            <Row style={{ padding: 16 }}>
               <Col span={8}>
                 <div className={sc('container-data-display-item')}>
                   <img src={ENTERPRISE} />
@@ -99,7 +115,7 @@ export default () => {
                 </div>
               </Col>
               <Col span={8}>
-                <div style={{ marginTop: 24 }} className={sc('container-data-display-item')}>
+                <div style={{ marginTop: 50 }} className={sc('container-data-display-item')}>
                   <img src={NEED_NUM} />
                   <div>
                     <span>需求数量（个）</span>
@@ -108,7 +124,7 @@ export default () => {
                 </div>
               </Col>
               <Col span={8}>
-                <div style={{ marginTop: 24 }} className={sc('container-data-display-item')}>
+                <div style={{ marginTop: 50 }} className={sc('container-data-display-item')}>
                   <img src={SERVICE_NUM} />
                   <div>
                     <span>服务数量（个）</span>
@@ -126,33 +142,48 @@ export default () => {
               {
                 title: '标题',
                 dataIndex: 'title',
-                render: (_: string) => {
-                  return <Button type="link">{_}</Button>;
+                width: '50%',
+                render: (_: string, record: DataDisplay.Publish) => {
+                  return (
+                    <Typography.Paragraph
+                      className={sc('container-data-display-table-url')}
+                      onClick={() => {
+                        window.open(record.url);
+                      }}
+                      ellipsis={{ rows: 1, tooltip: true }}
+                    >
+                      {_}
+                    </Typography.Paragraph>
+                  );
                 },
               },
               {
                 title: '时间',
                 dataIndex: 'publishTime',
-                render: (_: string) => moment(_).format('YYYY-MM-DD HH:mm:ss'),
+                width: '20%',
               },
               {
                 title: '媒体',
                 dataIndex: 'media',
+                width: '20%',
               },
               {
                 title: '阅读量',
                 dataIndex: 'readNumber',
+                width: '10%',
               },
             ]}
             rowKey={''}
             onChange={getPublishPage}
           />
         </Col>
+        {separate()}
         <Col span={24}>
           <SelfCard title="培训地图">
             <img src={'/statement/map.png'} alt="图片损坏" width="100%" />
           </SelfCard>
         </Col>
+        {separate()}
         <Col span={12}>
           <CommonTable<DataDisplay.HotApp>
             title={'热门应用'}
@@ -160,6 +191,7 @@ export default () => {
               {
                 title: '应用名称',
                 dataIndex: 'name',
+                ellipsis: true,
               },
               {
                 title: '收藏量',
@@ -181,26 +213,30 @@ export default () => {
               {
                 title: '标题',
                 dataIndex: 'title',
+                width: '70%',
                 render: (_: string, record: DataDisplay.Policy) => {
                   return (
-                    <Button
-                      type="link"
+                    <Typography.Paragraph
+                      className={sc('container-data-display-table-url')}
                       onClick={() => {
-                        window.open(record.url, '_target');
+                        window.open(record.url);
                       }}
+                      ellipsis={{ rows: 1, tooltip: true }}
                     >
                       {_}
-                    </Button>
+                    </Typography.Paragraph>
                   );
                 },
               },
               {
                 title: '地区',
                 dataIndex: 'areaName',
+                width: '20%',
               },
               {
                 title: '阅读量',
                 dataIndex: 'readSum',
+                width: '10%',
               },
             ]}
             rowKey={''}
