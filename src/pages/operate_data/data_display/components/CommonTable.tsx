@@ -62,7 +62,7 @@ export default <T,>(props: {
     <SelfCard title={title}>
       <Table
         size={'small'}
-        scroll={{ y: 181 }}
+        scroll={{ y: 171 }}
         rowKey={rowKey}
         columns={columns}
         dataSource={dataSource as any[]}
