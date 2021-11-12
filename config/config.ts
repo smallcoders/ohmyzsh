@@ -71,7 +71,6 @@ export default defineConfig({
   mfsu: {},
   webpack5: {},
   chainWebpack: (config) => {
-    console.log(process.env.NODE_ENV);
     if (process.env.NODE_ENV === 'production') {
       config.plugin('FileManagerPlugin').use(FileManagerPlugin, [
         {
