@@ -82,6 +82,23 @@ export default [
     ],
   },
   {
+    path: '/operate-data',
+    name: '运营数据',
+    icon: 'unordered-list',
+    access: 'SERVICE_CONFIG',
+    routes: [
+      {
+        path: '/operate-data',
+        redirect: '/operate-data/data-display',
+      },
+      {
+        path: '/operate-data/data-display',
+        name: '数据展示',
+        component: './operate_data/data_display',
+      },
+    ],
+  },
+  {
     path: '/system-config',
     name: '系统管理',
     icon: 'setting',

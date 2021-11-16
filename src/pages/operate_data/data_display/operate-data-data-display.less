@@ -1,0 +1,32 @@
+@prefix: operate-data-data-display;
+
+.@{prefix}-container {
+  &-data-display-item {
+    display: flex;
+    > div {
+      display: grid;
+      padding: 10px;
+      :first-child {
+        color: rgba(0, 0, 0, 0.65);
+        font-size: 16px;
+      }
+      :last-child {
+        color: rgba(0, 0, 0, 0.85);
+        font-weight: 700;
+        font-size: 36px;
+        line-height: 36px;
+      }
+    }
+  }
+  &-data-display-table-url {
+    color: #6680ff;
+    cursor: pointer;
+  }
+  .ant-table-pagination.ant-pagination {
+    margin: 5px !important;
+  }
+  div.ant-typography,
+  .ant-typography p {
+    margin: 0 !important;
+  }
+}
