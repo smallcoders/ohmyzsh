@@ -335,7 +335,7 @@ export default () => {
           </Form.Item>
           <Form.Item
             name="contents" // state 	状态0发布中1待发布2已下架
-            label="咨询简介"
+            label="资讯简介"
             rules={[
               {
                 required: true,
