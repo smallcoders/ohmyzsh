@@ -3,6 +3,9 @@
   APP_RESOURCE: '/service-config/app-resource/index', // 应用资源
   DATA_ANALYSIS: '/service-config/app-resource/data-analysis', // 综合采购数据分析
   ADD_APP_RESOURCE: '/service-config/app-resource/add-resource', // 新增应用资源
+  SOLUTION: '/service-config/solution', // 服务方案
+  SOLUTION_INDEX: '/service-config/solution/index', // 服务方案
+  SOLUTION_DETAIL: '/service-config/solution/detail', // 服务方案详情
   NEWS: '/service-config/news', // 新闻
   ACCOUNT: '/system-config/account', // 账号管理
 };
@@ -71,6 +74,28 @@ export default [
             path: routeName.ADD_APP_RESOURCE,
             name: '新增应用',
             component: './service_config/add_resource',
+          },
+        ],
+      },
+      {
+        path: routeName.SOLUTION,
+        name: '服务方案',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.SOLUTION,
+            redirect: routeName.SOLUTION_INDEX,
+          },
+          {
+            path: routeName.SOLUTION_INDEX,
+            name: '服务方案',
+            hideInBreadcrumb: true,
+            component: './service_config/solution',
+          },
+          {
+            path: routeName.SOLUTION_DETAIL,
+            name: '服务详情',
+            component: './service_config/solution/detail',
           },
         ],
       },

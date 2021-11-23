@@ -1,0 +1,49 @@
+@prefix: service-config-solution;
+.@{prefix}-detail {
+  .ant-pro-card-body {
+    padding: 0 50px 0 0;
+  }
+
+  &-cover {
+    .ant-pro-card-body {
+      padding: 1px;
+    }
+
+    img {
+      max-height: 300px;
+    }
+  }
+
+  &-attachment {
+    .ant-descriptions-item-content {
+      display: block;
+    }
+
+    p {
+      margin-bottom: 2px;
+    }
+  }
+}
+
+.@{prefix}-intention-table {
+  &-title {
+    height: 60px;
+
+    p {
+      font-weight: bold;
+    }
+  }
+
+  position: relative;
+  margin-top: 8px;
+
+  .ant-pro-table-search {
+    position: absolute;
+    top: 45px;
+    left: 0;
+    z-index: 1000;
+    width: 100%;
+    height: 35px;
+    padding: 0 24px 0 16px;
+  }
+}
