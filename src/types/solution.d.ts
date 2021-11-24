@@ -1,4 +1,4 @@
-namespace SolutionType {
+namespace SolutionTypes {
   export type TreeNode = {
     name: string;
     children?: TreeNode[];
@@ -27,4 +27,4 @@ namespace SolutionType {
     attachments: { id: string; name: string; path: string; format: string }[];
   } & Solution;
 }
-export default SolutionType;
+export default SolutionTypes;

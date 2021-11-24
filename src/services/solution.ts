@@ -1,6 +1,6 @@
 import { request } from 'umi';
 import type Common from '@/types/common';
-import type SolutionType from '@/types/solution';
+import type SolutionTypes from '@/types/solution';
 
 /**
  * 服务方案分页查询
@@ -53,7 +53,7 @@ export async function unsetTop(id: number) {
  * @param id
  */
 export async function getDetail(id: any) {
-  return request<Common.ResultCode & { result: SolutionType.SolutionDetail }>(
+  return request<Common.ResultCode & { result: SolutionTypes.SolutionDetail }>(
     '/iiep-manage/solution/getDetail',
     {
       method: 'GET',

@@ -7,7 +7,7 @@ import ProTable from '@ant-design/pro-table';
 import { pageQuery, setTop, unsetTop } from '@/services/solution';
 import { getDictionaryTree } from '@/services/dictionary';
 import { getAreaTree } from '@/services/area';
-import type SolutionType from '@/types/solution';
+import type SolutionTypes from '@/types/solution';
 import type { ProSchemaValueEnumObj } from '@ant-design/pro-utils';
 import { routeName } from '@/../config/routes';
 
@@ -15,7 +15,7 @@ import { routeName } from '@/../config/routes';
  * 渲染服务类型
  * @param types
  */
-export const renderSolutionType = (types: SolutionType.TreeNode[] | undefined) => {
+export const renderSolutionType = (types: SolutionTypes.TreeNode[] | undefined) => {
   if (!types || types.length === 0) {
     return '-';
   }
@@ -66,7 +66,7 @@ const SolutionTable: React.FC = () => {
     }
   };
 
-  const columns: ProColumns<SolutionType.Solution>[] = [
+  const columns: ProColumns<SolutionTypes.Solution>[] = [
     {
       title: '序号',
       hideInSearch: true,

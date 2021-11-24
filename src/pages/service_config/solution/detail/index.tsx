@@ -7,7 +7,7 @@ import ProTable from '@ant-design/pro-table';
 import ProCard from '@ant-design/pro-card';
 import ProDescriptions from '@ant-design/pro-descriptions';
 import { getDetail, intentionPageQuery } from '@/services/solution';
-import type SolutionType from '@/types/solution';
+import type SolutionTypes from '@/types/solution';
 import scopedClasses from '@/utils/scopedClasses';
 import { renderSolutionType } from '../index';
 import './index.less';
@@ -18,13 +18,13 @@ const SolutionDetail: React.FC = () => {
   const actionRef = useRef<ActionType>();
   const [total, setTotal] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
-  const [solutionDetail, setSolutionDetail] = useState<SolutionType.SolutionDetail>();
+  const [solutionDetail, setSolutionDetail] = useState<SolutionTypes.SolutionDetail>();
 
   /**
    * 查询默认密码
    */
   useEffect(() => {
-    getDetail(history.location?.query?.id).then((e) => {
+    getDetail(history.location.query?.id).then((e) => {
       if (e.code !== 0) {
         message.error(e.message);
       } else {
@@ -34,7 +34,7 @@ const SolutionDetail: React.FC = () => {
     });
   }, []);
 
-  const columns: ProColumns<SolutionType.Solution>[] = [
+  const columns: ProColumns<SolutionTypes.Solution>[] = [
     {
       title: '企业名称',
       dataIndex: 'orgName',
@@ -99,10 +99,13 @@ const SolutionDetail: React.FC = () => {
             {solutionDetail?.provider.aboutUs}
           </ProDescriptions.Item>
           <ProDescriptions.Item className={sc('detail-attachment')} label="附件下载">
-            {solutionDetail?.attachments?.length > 0
+            {solutionDetail?.attachments?.length
               ? solutionDetail?.attachments.map((e) => (
                   <p key={e.id}>
-                    <a href={e.path} download={e.name}>{`${e.name}.${e.format}`}</a>
+                    <a
+                      href={`/iiep-manage/common/download/${e.id}`}
+                      download={e.name}
+                    >{`${e.name}.${e.format}`}</a>
                   </p>
                 ))
               : '（无）'}
@@ -129,7 +132,7 @@ const SolutionDetail: React.FC = () => {
         request={async (pagination) => {
           const result = await intentionPageQuery({
             ...pagination,
-            solutionId: history.location?.query?.id,
+            solutionId: history.location.query?.id,
           });
           setTotal(result.total);
           return result;
