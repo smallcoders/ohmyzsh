@@ -8,6 +8,8 @@ const UploadForm = (
   props: JSX.IntrinsicAttributes &
     UploadProps<any> & { children?: ReactNode } & RefAttributes<any> & { tooltip?: ReactNode } & {
       value?: string;
+      needName?: boolean;
+      maxSize?: number;
     },
 ) => {
   const [fileId, setFileId] = useState<string | undefined>();
@@ -34,7 +36,10 @@ const UploadForm = (
       const uploadResponse = info?.file?.response;
       if (uploadResponse?.code === 0 && uploadResponse.result) {
         setFileId(uploadResponse.result);
-        props.onChange?.(uploadResponse.result);
+        const value: any = props.needName
+          ? uploadResponse.result + '_+*%' + info?.file?.name
+          : uploadResponse.result;
+        props.onChange?.(value);
         setUploadLoading(false);
       } else {
         setUploadLoading(false);
@@ -44,9 +49,17 @@ const UploadForm = (
   };
 
   const beforeUpload = (file: RcFile, files: RcFile[]) => {
+    console.log(file);
     if (props.beforeUpload) {
       props.beforeUpload(file, files);
       return;
+    }
+    if (props.maxSize) {
+      const isLtLimit = file.size / 1024 / 1024 < props.maxSize;
+      if (!isLtLimit) {
+        message.error(`上传的图片大小不得超过${props.maxSize}M`);
+        return Upload.LIST_IGNORE;
+      }
     }
     if (props.accept) {
       try {

@@ -98,12 +98,16 @@ const TableList: React.FC = () => {
    * 获取数据栏
    */
   const getDataColumns = async () => {
-    const { result, code } = await getDataColumnPage();
-    if (code === 0) {
-      setData(result);
-      setCount(result.length + 1);
-    } else {
-      message.error(`请求分页数据失败`);
+    try {
+      const { result, code } = await getDataColumnPage();
+      if (code === 0) {
+        setData(result);
+        setCount(result.length + 1);
+      } else {
+        message.error(`请求分页数据失败`);
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -237,18 +241,20 @@ const TableList: React.FC = () => {
   };
 
   const submit = async (body: DataColumn.Content[] = data) => {
-    const tooltipMessage = '发布';
-    const hide = message.loading(`正在${tooltipMessage}`);
-    setPublishLoading(true);
-    const addorUpdateRes = await addDataColumn(body);
-    hide();
-    if (addorUpdateRes.code === 0) {
-      message.success(`${tooltipMessage}成功`);
-      getDataColumns();
-    } else {
-      message.error(`${tooltipMessage}失败，原因:{${addorUpdateRes.message}}`);
+    try {
+      const tooltipMessage = '发布';
+      setPublishLoading(true);
+      const addorUpdateRes = await addDataColumn(body);
+      if (addorUpdateRes.code === 0) {
+        message.success(`${tooltipMessage}成功`);
+        getDataColumns();
+      } else {
+        message.error(`${tooltipMessage}失败，原因:{${addorUpdateRes.message}}`);
+      }
+      setPublishLoading(false);
+    } catch (error) {
+      console.log(error);
     }
-    setPublishLoading(false);
   };
 
   // 发布

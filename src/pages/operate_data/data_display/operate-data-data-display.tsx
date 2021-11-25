@@ -43,7 +43,6 @@ export default () => {
   const prepare = async () => {
     try {
       const { result = [] } = await getCitys();
-
       setCitys([
         { label: '全部', value: '' },
         ...result.map((item) => {
