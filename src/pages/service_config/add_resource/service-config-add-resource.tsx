@@ -141,16 +141,6 @@ export default () => {
           setIsClosejumpTooltip(false);
 
           history.push(routeName.APP_RESOURCE);
-          // if (editingItem.id) { //如果是修改 应该返回
-          //   history.push('/service-config/app-resource')
-          // } else {
-          //   // 如果添加成功后并且添加的是尖刀应用 则需要修改此时的替换尖刀应用选项
-          //   if (value.isTopApp === 1) {
-          //     const topAppsRes = await getTopApps()
-          //     setTopApps(topAppsRes.result);
-          //   }
-          // }
-          // clearForm();
         } else {
           message.error(`${tooltipMessage}失败，原因:{${addorUpdateRes.message}}`);
         }
@@ -300,6 +290,7 @@ export default () => {
                 listType="picture-card"
                 className="avatar-uploader"
                 showUploadList={false}
+                maxSize={5}
                 accept=".bmp,.gif,.png,.jpeg,.jpg"
                 tooltip={
                   <span className={'tooltip'}>

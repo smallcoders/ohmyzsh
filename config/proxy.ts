@@ -6,6 +6,9 @@
  * For details, please see
  * https://pro.ant.design/docs/deploy
  */
+// 云聪 10.7.106.58:9090
+// 叶杨 10.7.104.146:9090
+// 开发 http://10.40.152.24:7001
 // --no-ignore
 export default {
   dev: {

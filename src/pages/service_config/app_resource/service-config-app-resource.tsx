@@ -17,6 +17,7 @@ import {
 import Common from '@/types/common';
 import AppResource from '@/types/app-resource.d';
 import { routeName } from '../../../../config/routes';
+import getSelfTags from '@/components/self-tag';
 const sc = scopedClasses('service-config-app-resource');
 
 export default () => {
@@ -193,22 +194,22 @@ export default () => {
           <div>
             点击：
             <Link
-              style={{ marginRight: 20 }} // todo 变量名
-              to={`/service-config/app-resource/data-analysis?appId=${record.id}&type=0`}
+              style={{ marginRight: 20 }}
+              to={`${routeName.DATA_ANALYSIS}?appId=${record.id}&type=0`}
             >
               {item?.clickCount || 0}
             </Link>
             收藏：
             <Link
               style={{ marginRight: 20 }}
-              to={`/service-config/app-resource/data-analysis?appId=${record.id}&type=1`}
+              to={`${routeName.DATA_ANALYSIS}?appId=${record.id}&type=1`}
             >
               {item?.collectCount || 0}
             </Link>
             试用申请：
             <Link
               style={{ marginRight: 20 }}
-              to={`/service-config/app-resource/data-analysis?appId=${record.id}&type=2`}
+              to={`${routeName.DATA_ANALYSIS}?appId=${record.id}&type=2`}
             >
               {item?.tryCount || 0}
             </Link>
@@ -330,25 +331,6 @@ export default () => {
       </div>
     );
   };
-
-  /** // todo 拿出来
-   * 自定义tags
-   */
-  const getSelfTags = (
-    options: { id?: string | number; name?: string }[],
-    selected: string | undefined,
-    onChange: { (type: any): void; (label: any): void; (arg0: string): void },
-  ): React.ReactNode =>
-    options.map((p) => (
-      <span
-        key={p.id || '' + p.name}
-        onClick={() => onChange(p.id as string)}
-        className={p.id === selected ? 'tag tag-selected' : 'tag'}
-      >
-        {p.name}
-      </span>
-    ));
-
   return (
     <PageContainer className={sc('container')}>
       {GetSearchNode()}
@@ -367,9 +349,7 @@ export default () => {
         </div>
         <Row style={{ padding: '5px 0' }}>
           {' '}
-          <span className={'tag'} style={{ marginRight: 0 }}>
-            类型：
-          </span>{' '}
+          <span style={{ marginRight: 0 }}>类型：</span>
           {getSelfTags(
             [{ name: '全部', id: undefined }, ...appTypes],
             searchContent.type,
@@ -380,9 +360,7 @@ export default () => {
         </Row>
         <Row style={{ padding: '5px 0' }}>
           {' '}
-          <span className={'tag'} style={{ marginRight: 0 }}>
-            标签：
-          </span>{' '}
+          <span style={{ marginRight: 0 }}>标签：</span>{' '}
           {getSelfTags(
             [
               { name: '全部', id: undefined },

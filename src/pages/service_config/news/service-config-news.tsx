@@ -54,16 +54,20 @@ export default () => {
   const [form] = Form.useForm();
 
   const getNews = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
-    const { result, totalCount, pageTotal, code } = await getNewsPage({
-      pageIndex,
-      pageSize,
-      ...searchContent,
-    });
-    if (code === 0) {
-      setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
-      setDataSource(result);
-    } else {
-      message.error(`请求分页数据失败`);
+    try {
+      const { result, totalCount, pageTotal, code } = await getNewsPage({
+        pageIndex,
+        pageSize,
+        ...searchContent,
+      });
+      if (code === 0) {
+        setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
+        setDataSource(result);
+      } else {
+        message.error(`请求分页数据失败`);
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -100,32 +104,35 @@ export default () => {
       })
       .catch(() => {
         hide();
-        // message.error('服务器错误，请稍后重试');
       });
   };
 
   const remove = async (id: string) => {
-    const hide = message.loading(`正在删除`);
-    const removeRes = await removeNews(id);
-    hide();
-    if (removeRes.code === 0) {
-      message.success(`删除成功`);
-      getNews();
-    } else {
-      message.error(`删除失败，原因:{${removeRes.message}}`);
+    try {
+      const removeRes = await removeNews(id);
+      if (removeRes.code === 0) {
+        message.success(`删除成功`);
+        getNews();
+      } else {
+        message.error(`删除失败，原因:{${removeRes.message}}`);
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
   const editState = async (id: string, updatedState: number) => {
-    const tooltipMessage = updatedState === 0 ? '下架' : '上架';
-    const hide = message.loading(`正在${tooltipMessage}`);
-    const updateStateResult = await updateState({ id, action: updatedState });
-    hide();
-    if (updateStateResult.code === 0) {
-      message.success(`${tooltipMessage}成功`);
-      getNews();
-    } else {
-      message.error(`${tooltipMessage}失败，原因:{${updateStateResult.message}}`);
+    try {
+      const tooltipMessage = updatedState === 0 ? '下架' : '上架';
+      const updateStateResult = await updateState({ id, action: updatedState });
+      if (updateStateResult.code === 0) {
+        message.success(`${tooltipMessage}成功`);
+        getNews();
+      } else {
+        message.error(`${tooltipMessage}失败，原因:{${updateStateResult.message}}`);
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -151,7 +158,7 @@ export default () => {
       render: (_: number) => {
         return (
           <div className={`state${_}`}>
-            {Object.prototype.hasOwnProperty.call(stateObj, _) ? stateObj[_] : '状态码错误'}
+            {Object.prototype.hasOwnProperty.call(stateObj, _) ? stateObj[_] : '--'}
           </div>
         );
       },
