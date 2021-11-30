@@ -19,7 +19,7 @@ import React, { useEffect, useState } from 'react';
 import Common from '@/types/common';
 import {
   getCoursePage,
-  getCourseType,
+  getSearchCourseType,
   removeCourse,
   setCourseTop,
   updateCourseState,
@@ -55,7 +55,7 @@ export default () => {
    */
   const prepare = async () => {
     try {
-      const { result } = (await getCourseType()) as any;
+      const { result } = (await getSearchCourseType()) as any;
       setTypes(result);
     } catch (error) {
       console.log('error', error);

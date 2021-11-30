@@ -75,6 +75,13 @@ export async function getCourseType() {
 }
 
 /**
+ * 获取搜索课程类别
+ */
+export async function getSearchCourseType() {
+  return request<Common.ResultCode>(`/iiep-manage/common/dictionary/first?label=${1}`);
+}
+
+/**
  * 根据id 获取课程
  * @param id
  * @returns
