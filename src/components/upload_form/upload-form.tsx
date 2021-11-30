@@ -32,6 +32,11 @@ const UploadForm = (
       setUploadLoading(true);
       return;
     }
+    if (info.file.status === 'error') {
+      setUploadLoading(false);
+      return;
+    }
+
     if (info.file.status === 'done') {
       const uploadResponse = info?.file?.response;
       if (uploadResponse?.code === 0 && uploadResponse.result) {
@@ -49,7 +54,6 @@ const UploadForm = (
   };
 
   const beforeUpload = (file: RcFile, files: RcFile[]) => {
-    console.log(file);
     if (props.beforeUpload) {
       props.beforeUpload(file, files);
       return;
@@ -63,9 +67,9 @@ const UploadForm = (
     }
     if (props.accept) {
       try {
-        const lastName = file.name.split('.')[1];
+        const lastName = file.name.split('.');
         const accepts = props.accept.split(',');
-        if (!accepts.includes('.' + lastName)) {
+        if (!accepts.includes('.' + lastName[lastName.length - 1])) {
           message.error(`请上传以${props.accept}后缀名开头的文件`);
           return Upload.LIST_IGNORE;
         }

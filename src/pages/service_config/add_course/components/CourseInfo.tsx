@@ -1,15 +1,16 @@
 /* eslint-disable */
-import { Input, Form, Select, InputNumber, Row, Col, message, TreeSelect, Button } from 'antd';
+import { Input, Form, InputNumber, Row, Col, message, TreeSelect, Button } from 'antd';
 import '../service-config-add-course.less';
 import scopedClasses from '@/utils/scopedClasses';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useImperativeHandle, Ref } from 'react';
 import { addCourse, updateCourse, getCourseById, getCourseType } from '@/services/course-manage';
 import UploadForm from '@/components/upload_form';
 import { history, Prompt, useModel } from 'umi';
 import CourseManage from '@/types/service-config-course-manage';
+import { routeName } from '../../../../../config/routes';
 
 const sc = scopedClasses('service-config-add-resource');
-export default () => {
+export default (props: { cRef: Ref<unknown> | undefined }) => {
   /**
    * 课程类型
    */
@@ -103,10 +104,10 @@ export default () => {
             message.error('服务器错误');
             return;
           }
+          setIsClosejumpTooltip(false);
+          history.push(`${routeName.ADD_COURSE}?courseId=${addorUpdateRes.result}`);
           message.success(`${tooltipMessage}成功`);
           setCurrent(1);
-          setIsClosejumpTooltip(false);
-
           setEditingCourse({ id: addorUpdateRes.result });
         } else {
           message.error(`${tooltipMessage}失败，原因:{${addorUpdateRes.message}}`);
@@ -123,10 +124,9 @@ export default () => {
     e.returnValue = '离开当前页后，所编辑的数据将不可恢复';
   };
 
-  // 额外的副作用 用来解决表单的设置
-  // useEffect(() => {
-  //   form.setFieldsValue({ ...editingItem });
-  // }, [editingItem]);
+  useImperativeHandle(props.cRef, () => ({
+    submit: addOrUpdate,
+  }));
 
   const formLayout = {
     labelCol: { span: 4 },
@@ -166,6 +166,8 @@ export default () => {
             >
               <TreeSelect
                 multiple
+                showSearch
+                treeNodeFilterProp="name"
                 style={{ width: '100%' }}
                 dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
                 treeData={types}

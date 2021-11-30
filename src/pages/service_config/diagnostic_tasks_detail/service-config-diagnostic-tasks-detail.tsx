@@ -220,7 +220,7 @@ export default () => {
               Topfun();
             }}
           >
-            置顶
+            回到顶部
           </Button>
         </Affix>
       }

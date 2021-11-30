@@ -12,12 +12,11 @@ import {
   message,
   Space,
   Popconfirm,
-  Typography,
 } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import './service-config-diagnostic-tasks.less';
 import scopedClasses from '@/utils/scopedClasses';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import Common from '@/types/common';
 import {
   getDiagnosticTasksPage,
@@ -178,7 +177,7 @@ export default () => {
       setSelectExperts(
         content.experts.map((p: { expertName: string; id: string; expertPhone: string }) => {
           return {
-            label: p.expertName + `(${p.expertPhone})`,
+            label: p.expertName + `（${p.expertPhone ? p.expertPhone : '无联系方式'}）`,
             value: p.id,
             expertPhone: p.expertPhone,
           };
@@ -202,36 +201,51 @@ export default () => {
     content.orgShowId = { value: content.orgId };
     form.setFieldsValue({ ...content });
   };
+  const [rowActiveIndex, setRowActiveIndex] = useState(null);
+  const onTableRow = useCallback((row, index) => {
+    return {
+      onMouseEnter: () => {
+        setRowActiveIndex(index);
+      },
+      onMouseLeave: () => {
+        setRowActiveIndex(null);
+      },
+    };
+  }, []);
 
   const columns = [
     {
       title: '排序',
       dataIndex: 'sort',
+      width: 50,
       render: (_: any, _record: DiagnosticTasks.Content, index: number) =>
         pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
       title: '诊断名称',
       dataIndex: 'name',
+      ellipsis: true,
+      width: 200,
     },
     {
       title: '诊断企业',
       dataIndex: 'orgName',
+      ellipsis: true,
+      width: 300,
     },
     {
       title: '诊断专家',
       dataIndex: 'experts',
-      render: (_: { expertName: string }[] = []) => {
-        return (
-          <Typography.Paragraph ellipsis={{ rows: 1, tooltip: true }}>
-            {_.map((p) => p.expertName).join('，')}
-          </Typography.Paragraph>
-        );
+      width: 300,
+      render: (item: { expertName: string }[] = [], _: any, index: number) => {
+        const name = item.map((p) => p.expertName).join('，');
+        return <div className={index === rowActiveIndex ? '' : 'self-ellipsis'}>{name}</div>;
       },
     },
     {
       title: '诊断时间',
       dataIndex: 'time',
+      width: 200,
       render: (_: string, record: DiagnosticTasks.Content) => (
         <div style={{ display: 'grid' }}>
           <span>起：{record.startDate}</span>
@@ -242,6 +256,7 @@ export default () => {
     {
       title: '诊断状态',
       dataIndex: 'state',
+      width: 200,
       render: (_: number) => {
         return <div className={`state${_}`}>{stateObj[_] || '--'}</div>;
       },
@@ -249,6 +264,7 @@ export default () => {
     {
       title: '操作',
       dataIndex: 'option',
+      width: 300,
       render: (_: any, record: DiagnosticTasks.Content) => {
         return (
           /**
@@ -453,8 +469,16 @@ export default () => {
               placeholder={'请输入搜索内容'}
               fetchOptions={onSearchExpert}
               maxTagCount={1}
-              onChange={(values, options: any) => {
-                setSelectExperts(options);
+              onSelect={(option: any) => {
+                setSelectExperts((preState) => {
+                  return [...preState, option];
+                });
+              }}
+              onDeselect={(option: any) => {
+                setSelectExperts((preState) => {
+                  return preState.filter((p) => p.value !== option.value);
+                });
+                console.log('options', option);
               }}
               defaultOptions={selectExperts}
               style={{ width: '100%' }}
@@ -534,7 +558,9 @@ export default () => {
       </div>
       <div className={sc('container-table-body')}>
         <Table
+          onRow={onTableRow}
           bordered
+          scroll={{ x: 1550 }}
           columns={columns}
           dataSource={dataSource}
           pagination={

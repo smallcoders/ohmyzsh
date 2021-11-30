@@ -356,9 +356,9 @@ export default () => {
                           return;
                         }
                         Modal.confirm({
-                          title: '删除确认',
+                          title: '提示',
                           icon: <ExclamationCircleOutlined />,
-                          content: '一旦删除，和附件一起删除',
+                          content: '章节内的课件内容将被同步删除',
                           okText: '确认',
                           onOk: () => remove(index),
                           cancelText: '取消',
@@ -549,6 +549,10 @@ export default () => {
       setUploadLoading(true);
       return;
     }
+    if (info.file.status === 'error') {
+      setUploadLoading(false);
+      return;
+    }
 
     if (info.file.status === 'done') {
       const uploadResponse = info?.file?.response;
@@ -571,9 +575,10 @@ export default () => {
 
   const beforeUpload = (file: RcFile) => {
     return new Promise((resolve, reject) => {
-      const lastName = file.name.split('.')[1];
+      const lastName = file.name.split('.');
       const accepts = accept.split(',');
-      if (!accepts.includes('.' + lastName)) {
+      console.log(lastName, lastName[lastName.length - 1]);
+      if (!accepts.includes('.' + lastName[lastName.length - 1])) {
         message.error(`请上传以${accept}后缀名开头的文件`);
         return reject(false);
       }
@@ -587,14 +592,14 @@ export default () => {
     action: '/iiep-manage/common/upload',
     onChange: handleChange,
     beforeUpload: beforeUpload,
-    onDrop: (e: any) => {
+    onDrop: (e: React.DragEvent) => {
       try {
-        const fileList = e.dataTransfer.files || [];
-        for (const key in fileList) {
-          const file = fileList[key];
-          const lastName = file.name.split('.')[1];
+        const fileList = (e.dataTransfer.files as FileList) || [];
+        for (let index = 0; index < fileList.length; index++) {
+          const file = fileList[index];
+          const lastName = file.name.split('.');
           const accepts = accept.split(',');
-          if (!accepts.includes('.' + lastName)) {
+          if (!accepts.includes('.' + lastName[lastName.length - 1])) {
             message.error(`${file.name}不符合标准，已忽略`);
           }
         }
@@ -603,7 +608,7 @@ export default () => {
       }
     },
     onRemove: (file: UploadFile<any>) => {
-      if (file.status === 'uploading') {
+      if (file.status === 'uploading' || file.status === 'error') {
         setUploadLoading(false);
       }
       const files_copy = [...files];

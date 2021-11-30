@@ -5,6 +5,7 @@ import scopedClasses from '@/utils/scopedClasses';
 import CourseInfo from './components/CourseInfo';
 import CourseChapters from './components/CourseChapters';
 import { history, useModel } from 'umi';
+import { useRef } from 'react';
 const sc = scopedClasses('service-config-add-course');
 const { Step } = Steps;
 
@@ -23,9 +24,15 @@ export default () => {
    */
   const isEditing = !!history.location.query?.courseId;
 
-  const { current } = useModel('useCourseManageModel', (model: { current: number }) => ({
-    current: model.current,
-  }));
+  const courseInfoRef = useRef<any>();
+
+  const { current, setCurrent } = useModel(
+    'useCourseManageModel',
+    (model: { current: number; setCurrent: React.Dispatch<React.SetStateAction<number>> }) => ({
+      current: model.current,
+      setCurrent: model.setCurrent,
+    }),
+  );
 
   return (
     <PageContainer
@@ -37,13 +44,25 @@ export default () => {
       <div className={sc('container-header')}>
         <Steps current={current}>
           {steps.map((item) => (
-            <Step key={item.title} title={item.title} />
+            <Step
+              key={item.title}
+              title={item.title}
+              onStepClick={(e) => {
+                if (current !== e) {
+                  if (e === 1) {
+                    courseInfoRef?.current?.submit();
+                  } else {
+                    setCurrent(e);
+                  }
+                }
+              }}
+            />
           ))}
         </Steps>
       </div>
       <div className={sc('container-body')}>
         <div className="steps-content">
-          {current === 0 && <CourseInfo />}
+          {current === 0 && <CourseInfo cRef={courseInfoRef} />}
           {current === 1 && <CourseChapters />}
         </div>
       </div>

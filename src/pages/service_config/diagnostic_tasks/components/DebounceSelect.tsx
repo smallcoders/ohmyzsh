@@ -21,14 +21,21 @@ function DebounceSelect<
     const loadOptions = (value: string) => {
       fetchRef.current += 1;
       const fetchId = fetchRef.current;
-      setOptions([]);
+      // setOptions([]);
       setFetching(true);
 
       fetchOptions(value).then((newOptions) => {
         if (fetchId !== fetchRef.current) {
           return;
         }
-        setOptions(newOptions);
+        const defaultOptions: any[] = [];
+        newOptions.map((p) => {
+          const index = props.defaultOptions?.findIndex((d) => d.value === p.value);
+          if (index === -1) {
+            defaultOptions.push(p);
+          }
+        });
+        setOptions([...(props.defaultOptions || []), ...defaultOptions]);
         setFetching(false);
       });
     };
@@ -37,25 +44,23 @@ function DebounceSelect<
   }, [fetchOptions, debounceTimeout]);
 
   useEffect(() => {
-    // eslint-disable-next-line
-    props.defaultOptions && setOptions(props.defaultOptions);
-  }, []);
-
+    if (props.defaultOptions) {
+      setOptions(props.defaultOptions);
+    }
+  }, [props.defaultOptions]);
   return (
     <Select<ValueType>
       labelInValue
       filterOption={false}
       onSearch={debounceFetcher}
+      // onChange={(e) => {
+      //   console.log('e', e)
+      //   props.onSet(options.filter(p => p.value === e.value))
+      //  }}
       notFoundContent={fetching ? <Spin size="small" /> : null}
       {...props}
       options={options}
-    >
-      {options.map((p) => (
-        <Select.Option {...p} value={p.value}>
-          {p.label}
-        </Select.Option>
-      ))}
-    </Select>
+    />
   );
 }
 export default DebounceSelect;
