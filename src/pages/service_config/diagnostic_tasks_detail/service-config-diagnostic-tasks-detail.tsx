@@ -136,17 +136,25 @@ export default () => {
                 <div style={{ marginTop: 10 }}>{p.content}</div>
                 <div className={sc('container-records-record-images')}>
                   <Row gutter={10}>
-                    <Image.PreviewGroup>
-                      {p.photoPath
-                        ? (p.photoPath || []).map((url) => (
-                            <Col span={8}>
-                              <div className="image-contain">
-                                <Image className="image-contain-img" src={url} alt="图片资源损坏" />
-                              </div>
-                            </Col>
-                          ))
-                        : ''}
-                    </Image.PreviewGroup>
+                    <Col sm={24} xxl={16}>
+                      <Row gutter={10}>
+                        <Image.PreviewGroup>
+                          {p.photoPath
+                            ? (p.photoPath || []).map((url) => (
+                                <Col span={8}>
+                                  <div className="image-contain">
+                                    <Image
+                                      className="image-contain-img"
+                                      src={url}
+                                      alt="图片资源损坏"
+                                    />
+                                  </div>
+                                </Col>
+                              ))
+                            : ''}
+                        </Image.PreviewGroup>
+                      </Row>
+                    </Col>
                   </Row>
                 </div>
                 <Divider plain />
