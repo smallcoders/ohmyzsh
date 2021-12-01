@@ -2,7 +2,6 @@ import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 import {
   Button,
   Input,
-  Table,
   Form,
   Modal,
   Select,
@@ -16,7 +15,7 @@ import {
 import { PageContainer } from '@ant-design/pro-layout';
 import './service-config-diagnostic-tasks.less';
 import scopedClasses from '@/utils/scopedClasses';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Common from '@/types/common';
 import {
   getDiagnosticTasksPage,
@@ -31,6 +30,7 @@ import DiagnosticTasks from '@/types/service-config-diagnostic-tasks';
 import DebounceSelect from './components/DebounceSelect';
 import { Link } from 'umi';
 import { routeName } from '../../../../config/routes';
+import SelfTable from '@/components/self_table';
 const sc = scopedClasses('service-config-diagnostic-tasks');
 const stateObj = {
   1: '待诊断',
@@ -201,45 +201,34 @@ export default () => {
     content.orgShowId = { value: content.orgId };
     form.setFieldsValue({ ...content });
   };
-  const [rowActiveIndex, setRowActiveIndex] = useState(null);
-  const onTableRow = useCallback((row, index) => {
-    return {
-      onMouseEnter: () => {
-        setRowActiveIndex(index);
-      },
-      onMouseLeave: () => {
-        setRowActiveIndex(null);
-      },
-    };
-  }, []);
 
   const columns = [
     {
       title: '排序',
       dataIndex: 'sort',
-      width: 50,
+      width: 100,
       render: (_: any, _record: DiagnosticTasks.Content, index: number) =>
         pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
       title: '诊断名称',
       dataIndex: 'name',
-      ellipsis: true,
+      isEllipsis: true,
       width: 200,
     },
     {
       title: '诊断企业',
       dataIndex: 'orgName',
-      ellipsis: true,
-      width: 300,
+      width: 200,
     },
     {
       title: '诊断专家',
       dataIndex: 'experts',
+      isEllipsis: true,
       width: 300,
-      render: (item: { expertName: string }[] = [], _: any, index: number) => {
+      render: (item: { expertName: string }[] = []) => {
         const name = item.map((p) => p.expertName).join('，');
-        return <div className={index === rowActiveIndex ? '' : 'self-ellipsis'}>{name}</div>;
+        return name;
       },
     },
     {
@@ -264,7 +253,7 @@ export default () => {
     {
       title: '操作',
       dataIndex: 'option',
-      width: 300,
+      // width: 200,
       render: (_: any, record: DiagnosticTasks.Content) => {
         return (
           /**
@@ -557,10 +546,9 @@ export default () => {
         </div>
       </div>
       <div className={sc('container-table-body')}>
-        <Table
-          onRow={onTableRow}
+        <SelfTable
           bordered
-          scroll={{ x: 1550 }}
+          scroll={{ x: 1400 }}
           columns={columns}
           dataSource={dataSource}
           pagination={

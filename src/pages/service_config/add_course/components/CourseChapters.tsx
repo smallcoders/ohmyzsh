@@ -166,7 +166,7 @@ export default () => {
       minTime: 5,
       sort: dataSource.length + 1,
       extras: [] as CourseManage.File[],
-      isOpen: false,
+      isOpen: true,
     };
     setEditingItem(newChapter);
     setDataSource([...dataSource, newChapter]);

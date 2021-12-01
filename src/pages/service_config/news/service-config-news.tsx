@@ -2,7 +2,6 @@ import { PlusOutlined } from '@ant-design/icons';
 import {
   Button,
   Input,
-  Table,
   Form,
   Modal,
   Select,
@@ -22,6 +21,7 @@ import { getNewsPage, addOrUpdateNews, removeNews, updateState } from '@/service
 import News from '@/types/service-config-news';
 import moment from 'moment';
 import UploadForm from '@/components/upload_form';
+import SelfTable from '@/components/self_table';
 const sc = scopedClasses('service-config-app-news');
 const stateObj = {
   0: '发布中',
@@ -140,21 +140,26 @@ export default () => {
     {
       title: '排序',
       dataIndex: 'sort',
+      width: 80,
       render: (_: any, _record: News.Content, index: number) =>
         _record.state === 2 ? '' : pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
       title: '标题',
       dataIndex: 'title',
+      isEllipsis: true,
+      width: 300,
     },
     {
       title: '发布时间',
       dataIndex: 'publishTime',
+      width: 200,
       render: (_: string) => moment(_).format('YYYY-MM-DD HH:mm:ss'),
     },
     {
       title: '状态',
       dataIndex: 'state',
+      width: 200,
       render: (_: number) => {
         return (
           <div className={`state${_}`}>
@@ -166,9 +171,11 @@ export default () => {
     {
       title: '浏览量',
       dataIndex: 'pageViews',
+      width: 80,
     },
     {
       title: '操作',
+      width: 200,
       dataIndex: 'option',
       render: (_: any, record: News.Content) => {
         return (
@@ -382,8 +389,9 @@ export default () => {
         </div>
       </div>
       <div className={sc('container-table-body')}>
-        <Table
+        <SelfTable
           bordered
+          scroll={{ x: 1400 }}
           columns={columns}
           dataSource={dataSource}
           pagination={

@@ -9,7 +9,7 @@ import {
   getPolicyPage,
   getCityData,
 } from '@/services/data-display';
-import SelfCard from '@/components/self-card';
+import SelfCard from '@/components/self_card';
 import { Col, message, Row, Select, Typography } from 'antd';
 
 import ENTERPRISE from '@/assets/operate_data/data_display/1.svg';

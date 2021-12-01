@@ -4,7 +4,7 @@
 import { message, Table } from 'antd';
 import { ReactNode, useEffect, useState } from 'react';
 import Common from '@/types/common';
-import SelfCard from '@/components/self-card';
+import SelfCard from '@/components/self_card';
 
 export default <T,>(props: {
   title: string | ReactNode;

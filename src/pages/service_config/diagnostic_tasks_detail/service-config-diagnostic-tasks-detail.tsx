@@ -111,7 +111,7 @@ export default () => {
               : '--'}
           </span>
         </div>
-        <span>{detail.diagnosisVO.remark}</span>
+        <div style={{ width: '60%' }}>{detail.diagnosisVO.remark}</div>
       </div>
       {separate()}
       <Row gutter={10}>
@@ -140,7 +140,9 @@ export default () => {
                       {p.photoPath
                         ? (p.photoPath || []).map((url) => (
                             <Col span={8}>
-                              <Image width={'100%'} src={url} alt="图片资源损坏" />
+                              <div className="image-contain">
+                                <Image className="image-contain-img" src={url} alt="图片资源损坏" />
+                              </div>
                             </Col>
                           ))
                         : ''}
