@@ -9,7 +9,7 @@ import Common from '@/types/common';
 import AppResource from '@/types/app-resource';
 import moment from 'moment';
 import { routeName } from '../../../../config/routes';
-import getSelfTags from '@/components/self-tag';
+import getSelfTags from '@/components/self_tag';
 const sc = scopedClasses('service-config-data-analysis');
 
 type RouterParams = {

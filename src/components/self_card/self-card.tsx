@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import './self_card.less';
+import './self-card.less';
 
 const SelfCard = (props: {
   children?: ReactNode;

@@ -17,7 +17,7 @@ import {
 import Common from '@/types/common';
 import AppResource from '@/types/app-resource.d';
 import { routeName } from '../../../../config/routes';
-import getSelfTags from '@/components/self-tag';
+import getSelfTags from '@/components/self_tag';
 const sc = scopedClasses('service-config-app-resource');
 
 export default () => {
