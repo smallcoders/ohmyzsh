@@ -179,7 +179,13 @@ export default () => {
         {separate()}
         <Col span={24}>
           <SelfCard title="培训地图">
-            <img src={'/statement/map.png'} alt="图片损坏" width="100%" />
+            <img
+              src={
+                'https://oss-beijing-m8b.openstorage.cn/iiep-prod/50f00a2b66254afaa736d1dbcdf4e447.png'
+              }
+              alt="图片损坏"
+              width="100%"
+            />
           </SelfCard>
         </Col>
         {separate()}
