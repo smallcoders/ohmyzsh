@@ -509,7 +509,7 @@ export default () => {
             label="诊断时间"
           >
             <DatePicker.RangePicker
-              disabledDate={(current) => current && current < moment().endOf('day')}
+              disabledDate={(current) => current && current < moment().endOf('day').add(-1, 'days')}
             />
           </Form.Item>
           <Form.Item
