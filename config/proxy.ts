@@ -6,16 +6,20 @@
  * For details, please see
  * https://pro.ant.design/docs/deploy
  */
+// 云聪 10.7.106.58:9090
+// 叶杨 10.7.104.146:9090
+// 开发 http://10.40.152.24:7001
+// 测试 http://10.40.152.24:10086
 // --no-ignore
 export default {
   dev: {
     '/iiep-manage/': {
-      target: 'http://10.40.152.24:7001',
+      target: 'http://10.40.152.24:10086',
       changeOrigin: true,
       pathRewrite: { '^': '' },
     },
     '/statement/': {
-      target: 'http://10.40.152.24:7001',
+      target: 'http://10.40.152.24:10086',
       changeOrigin: true,
       pathRewrite: { '^': '' },
     },

@@ -1,0 +1,86 @@
+@prefix: service-config-diagnostic-tasks-detail;
+
+.@{prefix}-container {
+  &-detail {
+    padding: 24px;
+    background-color: #fff;
+    > :nth-child(2) {
+      padding: 10px 0;
+    }
+    > :last-child {
+      font-size: 12px;
+    }
+    &-value {
+      margin-right: 30px;
+      color: #000;
+      font-weight: 500;
+      font-size: 14px;
+    }
+  }
+  &-records {
+    padding: 24px;
+    background-color: #fff;
+    &-record-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 10px;
+      > :first-child {
+        display: flex;
+        align-items: center;
+      }
+    }
+    &-record-images {
+      width: 100%;
+      padding: 10px 0;
+    }
+  }
+  &-conclusions {
+    padding: 24px;
+    background-color: #fff;
+  }
+  &-enterprises {
+    padding: 24px;
+    background-color: #fff;
+    &-content {
+      display: flex;
+      padding-top: 10px;
+      > :last-child {
+        display: grid;
+        margin-left: 10px;
+      }
+    }
+  }
+  &-experts {
+    padding: 24px;
+    background-color: #fff;
+    &-expert {
+      display: flex;
+      align-items: center;
+      margin-top: 10px;
+      > :last-child {
+        display: grid;
+      }
+    }
+  }
+
+  .image-contain {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    margin-top: 10px;
+    > :first-child {
+      width: 100%;
+      height: 100%;
+    }
+    &-img {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transform: translate(-50%, -50%);
+    }
+  }
+}

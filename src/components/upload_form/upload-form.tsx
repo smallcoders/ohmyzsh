@@ -8,6 +8,8 @@ const UploadForm = (
   props: JSX.IntrinsicAttributes &
     UploadProps<any> & { children?: ReactNode } & RefAttributes<any> & { tooltip?: ReactNode } & {
       value?: string;
+      needName?: boolean;
+      maxSize?: number;
     },
 ) => {
   const [fileId, setFileId] = useState<string | undefined>();
@@ -30,11 +32,19 @@ const UploadForm = (
       setUploadLoading(true);
       return;
     }
+    if (info.file.status === 'error') {
+      setUploadLoading(false);
+      return;
+    }
+
     if (info.file.status === 'done') {
       const uploadResponse = info?.file?.response;
       if (uploadResponse?.code === 0 && uploadResponse.result) {
         setFileId(uploadResponse.result);
-        props.onChange?.(uploadResponse.result);
+        const value: any = props.needName
+          ? uploadResponse.result + '_+*%' + info?.file?.name
+          : uploadResponse.result;
+        props.onChange?.(value);
         setUploadLoading(false);
       } else {
         setUploadLoading(false);
@@ -48,11 +58,18 @@ const UploadForm = (
       props.beforeUpload(file, files);
       return;
     }
+    if (props.maxSize) {
+      const isLtLimit = file.size / 1024 / 1024 < props.maxSize;
+      if (!isLtLimit) {
+        message.error(`上传的图片大小不得超过${props.maxSize}M`);
+        return Upload.LIST_IGNORE;
+      }
+    }
     if (props.accept) {
       try {
-        const lastName = file.name.split('.')[1];
+        const lastName = file.name.split('.');
         const accepts = props.accept.split(',');
-        if (!accepts.includes('.' + lastName)) {
+        if (!accepts.includes('.' + lastName[lastName.length - 1])) {
           message.error(`请上传以${props.accept}后缀名开头的文件`);
           return Upload.LIST_IGNORE;
         }

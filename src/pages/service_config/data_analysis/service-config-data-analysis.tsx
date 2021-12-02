@@ -9,6 +9,7 @@ import Common from '@/types/common';
 import AppResource from '@/types/app-resource';
 import moment from 'moment';
 import { routeName } from '../../../../config/routes';
+import getSelfTags from '@/components/self_tag';
 const sc = scopedClasses('service-config-data-analysis');
 
 type RouterParams = {
@@ -141,21 +142,6 @@ export default () => {
       </div>
     );
   };
-
-  const getSelfTags = (
-    options: { title: string; value?: number }[],
-    selected: undefined | number,
-    onChange: React.Dispatch<React.SetStateAction<undefined | number>>,
-  ): React.ReactNode =>
-    options.map((p) => (
-      <span
-        onClick={() => onChange(p.value)}
-        className={p.value === selected ? 'tag tag-selected' : 'tag'}
-      >
-        {p.title}
-      </span>
-    ));
-
   return (
     <PageContainer className={sc('container')}>
       {getIndexs()}
@@ -163,14 +149,12 @@ export default () => {
         <div className="title">数据指标分析</div>
         <div style={{ padding: '20px 5px' }}>
           {' '}
-          <span className={'tag'} style={{ marginRight: 0 }}>
-            数据指标：
-          </span>{' '}
+          <span style={{ marginRight: 0 }}>数据指标：</span>{' '}
           {getSelfTags(
             [
-              { title: '点击', value: 0 },
-              { title: '收藏', value: 1 },
-              { title: '试用申请', value: 2 },
+              { name: '点击', id: 0 },
+              { name: '收藏', id: 1 },
+              { name: '试用申请', id: 2 },
             ],
             searchContent?.type,
             (type: any) => {

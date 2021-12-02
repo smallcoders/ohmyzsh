@@ -2,7 +2,6 @@ import { PlusOutlined } from '@ant-design/icons';
 import {
   Button,
   Input,
-  Table,
   Form,
   Modal,
   Select,
@@ -22,6 +21,7 @@ import { getNewsPage, addOrUpdateNews, removeNews, updateState } from '@/service
 import News from '@/types/service-config-news';
 import moment from 'moment';
 import UploadForm from '@/components/upload_form';
+import SelfTable from '@/components/self_table';
 const sc = scopedClasses('service-config-app-news');
 const stateObj = {
   0: '发布中',
@@ -54,16 +54,20 @@ export default () => {
   const [form] = Form.useForm();
 
   const getNews = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
-    const { result, totalCount, pageTotal, code } = await getNewsPage({
-      pageIndex,
-      pageSize,
-      ...searchContent,
-    });
-    if (code === 0) {
-      setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
-      setDataSource(result);
-    } else {
-      message.error(`请求分页数据失败`);
+    try {
+      const { result, totalCount, pageTotal, code } = await getNewsPage({
+        pageIndex,
+        pageSize,
+        ...searchContent,
+      });
+      if (code === 0) {
+        setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
+        setDataSource(result);
+      } else {
+        message.error(`请求分页数据失败`);
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -100,32 +104,35 @@ export default () => {
       })
       .catch(() => {
         hide();
-        // message.error('服务器错误，请稍后重试');
       });
   };
 
   const remove = async (id: string) => {
-    const hide = message.loading(`正在删除`);
-    const removeRes = await removeNews(id);
-    hide();
-    if (removeRes.code === 0) {
-      message.success(`删除成功`);
-      getNews();
-    } else {
-      message.error(`删除失败，原因:{${removeRes.message}}`);
+    try {
+      const removeRes = await removeNews(id);
+      if (removeRes.code === 0) {
+        message.success(`删除成功`);
+        getNews();
+      } else {
+        message.error(`删除失败，原因:{${removeRes.message}}`);
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
   const editState = async (id: string, updatedState: number) => {
-    const tooltipMessage = updatedState === 0 ? '下架' : '上架';
-    const hide = message.loading(`正在${tooltipMessage}`);
-    const updateStateResult = await updateState({ id, action: updatedState });
-    hide();
-    if (updateStateResult.code === 0) {
-      message.success(`${tooltipMessage}成功`);
-      getNews();
-    } else {
-      message.error(`${tooltipMessage}失败，原因:{${updateStateResult.message}}`);
+    try {
+      const tooltipMessage = updatedState === 0 ? '下架' : '上架';
+      const updateStateResult = await updateState({ id, action: updatedState });
+      if (updateStateResult.code === 0) {
+        message.success(`${tooltipMessage}成功`);
+        getNews();
+      } else {
+        message.error(`${tooltipMessage}失败，原因:{${updateStateResult.message}}`);
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -133,25 +140,30 @@ export default () => {
     {
       title: '排序',
       dataIndex: 'sort',
+      width: 80,
       render: (_: any, _record: News.Content, index: number) =>
         _record.state === 2 ? '' : pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
       title: '标题',
       dataIndex: 'title',
+      isEllipsis: true,
+      width: 300,
     },
     {
       title: '发布时间',
       dataIndex: 'publishTime',
+      width: 200,
       render: (_: string) => moment(_).format('YYYY-MM-DD HH:mm:ss'),
     },
     {
       title: '状态',
       dataIndex: 'state',
+      width: 200,
       render: (_: number) => {
         return (
           <div className={`state${_}`}>
-            {Object.prototype.hasOwnProperty.call(stateObj, _) ? stateObj[_] : '状态码错误'}
+            {Object.prototype.hasOwnProperty.call(stateObj, _) ? stateObj[_] : '--'}
           </div>
         );
       },
@@ -159,9 +171,11 @@ export default () => {
     {
       title: '浏览量',
       dataIndex: 'pageViews',
+      width: 80,
     },
     {
       title: '操作',
+      width: 200,
       dataIndex: 'option',
       render: (_: any, record: News.Content) => {
         return (
@@ -375,8 +389,9 @@ export default () => {
         </div>
       </div>
       <div className={sc('container-table-body')}>
-        <Table
+        <SelfTable
           bordered
+          scroll={{ x: 1400 }}
           columns={columns}
           dataSource={dataSource}
           pagination={

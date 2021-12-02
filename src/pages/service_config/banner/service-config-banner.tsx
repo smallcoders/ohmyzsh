@@ -50,7 +50,12 @@ const TableList: React.FC = () => {
 
   const [form] = Form.useForm();
 
-  const [pageInfo, setPageInfo] = useState<Common.ResultPage>({ pageIndex: 1, pageSize: 20 });
+  const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
+    pageIndex: 1,
+    pageSize: 20,
+    totalCount: 0,
+    pageTotal: 0,
+  });
 
   const [dataSource, setDataSource] = useState<Banner.Content[]>([]);
 
@@ -59,18 +64,26 @@ const TableList: React.FC = () => {
   const [addOrUpdateLoading, setAddOrUpdateLoading] = useState<boolean>(false);
 
   const getBanners = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
-    const { result, totalCount, pageTotal, code } = await getBannerPage({ pageIndex, pageSize });
-    if (code === 0) {
-      setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
-      setDataSource(result);
-    } else {
-      message.error(`请求分页数据失败`);
+    try {
+      const { result, totalCount, pageTotal, code } = await getBannerPage({
+        pageIndex,
+        pageSize,
+        belong: edge,
+      });
+      if (code === 0) {
+        setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
+        setDataSource(result);
+      } else {
+        message.error(`请求分页数据失败`);
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
   useEffect(() => {
     getBanners();
-  }, []);
+  }, [edge]);
 
   const clearForm = () => {
     form.resetFields();
@@ -81,11 +94,11 @@ const TableList: React.FC = () => {
    * @zh-CN 添加/修改banner
    */
   const addOrUpdata = async () => {
+    const tooltipMessage = editingItem.id ? '修改' : '添加';
+    const hide = message.loading(`正在${tooltipMessage}`);
     form
       .validateFields()
       .then(async (value) => {
-        const tooltipMessage = editingItem.id ? '修改' : '添加';
-        const hide = message.loading(`正在${tooltipMessage}`);
         setAddOrUpdateLoading(true);
         const addorUpdateRes = editingItem.id
           ? await updateBanner({ ...value, id: editingItem.id })
@@ -102,6 +115,7 @@ const TableList: React.FC = () => {
         setAddOrUpdateLoading(false);
       })
       .catch((err) => {
+        hide();
         // message.error('服务器错误');
         console.log(err);
       });
@@ -112,15 +126,17 @@ const TableList: React.FC = () => {
    * @param id
    */
   const off = async (record: Banner.Content) => {
-    const tooltipMessage = '下架';
-    const hide = message.loading(`正在${tooltipMessage}`);
-    const updateStateResult = await updateState({ id: record.id as string, state: 2 });
-    hide();
-    if (updateStateResult.code === 0) {
-      message.success(`${tooltipMessage}成功`);
-      await getBanners();
-    } else {
-      message.error(`${tooltipMessage}失败，原因:{${updateStateResult.message}}`);
+    try {
+      const tooltipMessage = '下架';
+      const updateStateResult = await updateState({ id: record.id as string, state: 2 });
+      if (updateStateResult.code === 0) {
+        message.success(`${tooltipMessage}成功`);
+        await getBanners();
+      } else {
+        message.error(`${tooltipMessage}失败，原因:{${updateStateResult.message}}`);
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -129,14 +145,16 @@ const TableList: React.FC = () => {
    * @param id
    */
   const remove = async (id: string) => {
-    const hide = message.loading(`正在删除`);
-    const removeRes = await removeBanner(id);
-    hide();
-    if (removeRes.code === 0) {
-      message.success(`删除成功`);
-      getBanners();
-    } else {
-      message.error(`删除失败，原因:{${removeRes.message}}`);
+    try {
+      const removeRes = await removeBanner(id);
+      if (removeRes.code === 0) {
+        message.success(`删除成功`);
+        getBanners();
+      } else {
+        message.error(`删除失败，原因:{${removeRes.message}}`);
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -149,7 +167,6 @@ const TableList: React.FC = () => {
       title: 'banner',
       dataIndex: 'photoId',
       render: (photoId: string) => (
-        // <div className={'banner-img'}>
         <Image
           className={'banner-img'}
           src={`/iiep-manage/common/download/${photoId}`}
@@ -164,7 +181,7 @@ const TableList: React.FC = () => {
       render: (_: number) => {
         return (
           <div className={`state${_}`}>
-            {Object.prototype.hasOwnProperty.call(stateObj, _) ? stateObj[_] : '状态码错误'}
+            {Object.prototype.hasOwnProperty.call(stateObj, _) ? stateObj[_] : '--'}
           </div>
         );
       },
@@ -220,13 +237,12 @@ const TableList: React.FC = () => {
   const selectButton = (): React.ReactNode => {
     const handleEdgeChange = (e: RadioChangeEvent) => {
       setEdge(e.target.value);
+      // getBanners()
     };
     return (
       <Radio.Group value={edge} onChange={handleEdgeChange}>
         <Radio.Button value={Banner.Edge.PC}>PC</Radio.Button>
-        <Radio.Button disabled value={Banner.Edge.APPLET}>
-          小程序
-        </Radio.Button>
+        <Radio.Button value={Banner.Edge.APPLET}>小程序</Radio.Button>
         <Radio.Button disabled value={Banner.Edge.APP}>
           App
         </Radio.Button>
@@ -262,6 +278,7 @@ const TableList: React.FC = () => {
             <UploadForm
               listType="picture-card"
               className="avatar-uploader"
+              maxSize={1}
               showUploadList={false}
               accept=".bmp,.gif,.png,.jpeg,.jpg"
             />
@@ -269,7 +286,7 @@ const TableList: React.FC = () => {
           <Form.Item
             name="belong"
             label="所属产品"
-            initialValue={Banner.Edge.PC}
+            // initialValue={Banner.Edge.PC}
             rules={[
               {
                 required: true,
@@ -279,9 +296,7 @@ const TableList: React.FC = () => {
           >
             <Select placeholder="请选择">
               <Select.Option value={Banner.Edge.PC}>PC</Select.Option>
-              <Select.Option disabled value={Banner.Edge.APPLET}>
-                小程序
-              </Select.Option>
+              <Select.Option value={Banner.Edge.APPLET}>小程序</Select.Option>
               <Select.Option disabled value={Banner.Edge.APP}>
                 App
               </Select.Option>
@@ -300,42 +315,42 @@ const TableList: React.FC = () => {
 
   return (
     <PageContainer className={sc('container')}>
-      {edge === Banner.Edge.PC && (
-        <>
-          <div style={{ backgroundColor: '#fff', padding: 20 }}>
-            <div className={sc('container-header')}>
-              {selectButton()}
-              <Button
-                type="primary"
-                key="primary"
-                loading={addOrUpdateLoading}
-                onClick={() => {
-                  setModalVisible(true);
-                }}
-              >
-                <PlusOutlined /> 新增
-              </Button>
-            </div>
-            <Table
-              bordered
-              columns={columns}
-              dataSource={dataSource}
-              pagination={
-                pageInfo.totalCount === 0
-                  ? false
-                  : {
-                      onChange: getBanners,
-                      total: pageInfo.totalCount,
-                      current: pageInfo.pageIndex,
-                      pageSize: pageInfo.pageSize,
-                      showTotal: (total) =>
-                        `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
-                    }
-              }
-            />
+      {/* {edge === Banner.Edge.PC && ( */}
+      <>
+        <div style={{ backgroundColor: '#fff', padding: 20 }}>
+          <div className={sc('container-header')}>
+            {selectButton()}
+            <Button
+              type="primary"
+              key="primary"
+              loading={addOrUpdateLoading}
+              onClick={() => {
+                setModalVisible(true);
+              }}
+            >
+              <PlusOutlined /> 新增
+            </Button>
           </div>
-        </>
-      )}
+          <Table
+            bordered
+            columns={columns}
+            dataSource={dataSource}
+            pagination={
+              pageInfo.totalCount === 0
+                ? false
+                : {
+                    onChange: getBanners,
+                    total: pageInfo.totalCount,
+                    current: pageInfo.pageIndex,
+                    pageSize: pageInfo.pageSize,
+                    showTotal: (total) =>
+                      `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
+                  }
+            }
+          />
+        </div>
+      </>
+      {/* )} */}
 
       {getModal()}
     </PageContainer>
