@@ -18,10 +18,5 @@ export default {
       changeOrigin: true,
       pathRewrite: { '^': '' },
     },
-    '/statement/': {
-      target: 'http://10.40.152.24:10086',
-      changeOrigin: true,
-      pathRewrite: { '^': '' },
-    },
   },
 };
