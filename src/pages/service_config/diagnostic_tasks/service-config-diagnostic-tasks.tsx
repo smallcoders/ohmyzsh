@@ -24,6 +24,7 @@ import {
   searchExpert,
   removeDiagnosisTasks,
   updateDiagnosticTasks,
+  getDiagnosisInstitutions,
 } from '@/services/diagnostic-tasks';
 import moment from 'moment';
 import DiagnosticTasks from '@/types/service-config-diagnostic-tasks';
@@ -64,6 +65,14 @@ export default () => {
     totalCount: 0,
     pageTotal: 0,
   });
+
+  const [institutions, setInstitutions] = useState<
+    {
+      id: string;
+      name: string;
+      bag: string;
+    }[]
+  >([]);
 
   const [form] = Form.useForm();
 
@@ -169,6 +178,7 @@ export default () => {
       orgId: string;
       time: moment.Moment[];
       orgShowId: { value: string };
+      institutionId?: string;
     };
     setEditingItem(record);
     setModalVisible(true);
@@ -198,6 +208,7 @@ export default () => {
     if (content.startDate && record.endDate) {
       content.time = [moment(record.startDate), moment(record.endDate)];
     }
+    content.institutionId = record.diagnosisInstitution.id;
     content.orgShowId = { value: content.orgId };
     form.setFieldsValue({ ...content });
   };
@@ -219,6 +230,7 @@ export default () => {
     {
       title: '诊断企业',
       dataIndex: 'orgName',
+      isEllipsis: true,
       width: 200,
     },
     {
@@ -230,6 +242,13 @@ export default () => {
         const name = item.map((p) => p.expertName).join('，');
         return name;
       },
+    },
+    {
+      title: '所属机构',
+      dataIndex: 'diagnosisInstitution',
+      width: 200,
+      isEllipsis: true,
+      render: (item: any) => item.name || '--',
     },
     {
       title: '诊断时间',
@@ -292,6 +311,20 @@ export default () => {
     },
   ];
 
+  const prepare = async () => {
+    try {
+      const { result } = await getDiagnosisInstitutions();
+      setInstitutions(result);
+    } catch (error) {
+      console.log('error', error);
+      message.error('获取初始数据失败');
+    }
+  };
+
+  useEffect(() => {
+    prepare();
+  }, []);
+
   useEffect(() => {
     getDiagnosticTasks();
   }, [searchContent]);
@@ -317,21 +350,34 @@ export default () => {
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
-            <Col span={9}>
-              <Form.Item name="time" label="诊断时间">
-                <DatePicker.RangePicker allowClear />
-              </Form.Item>
-            </Col>
           </Row>
           <Row style={{ marginTop: 20 }} justify={'space-between'}>
-            <Col span={5}>
-              <Form.Item name="state" label="诊断状态">
-                <Select placeholder="请选择" allowClear>
-                  {Object.entries(stateObj).map((p) => (
-                    <Select.Option value={p[0]}>{p[1]}</Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
+            <Col span={15}>
+              <Row>
+                <Col span={8}>
+                  <Form.Item name="institutionId" label="诊断机构">
+                    <Select placeholder="请选择" allowClear>
+                      {institutions.map((p) => (
+                        <Select.Option value={p.id}>{p.name}</Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </Col>
+                <Col span={8}>
+                  <Form.Item name="time" label="诊断时间">
+                    <DatePicker.RangePicker allowClear />
+                  </Form.Item>
+                </Col>
+                <Col span={8}>
+                  <Form.Item name="state" label="诊断状态">
+                    <Select placeholder="请选择" allowClear>
+                      {Object.entries(stateObj).map((p) => (
+                        <Select.Option value={p[0]}>{p[1]}</Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </Col>
+              </Row>
             </Col>
             <Col span={3}>
               <Button
@@ -499,6 +545,22 @@ export default () => {
             ))}
           </Form.Item>
           <Form.Item
+            name="institutionId"
+            rules={[
+              {
+                required: true,
+                message: '必填',
+              },
+            ]}
+            label="所属机构"
+          >
+            <Select placeholder="请选择" allowClear>
+              {institutions.map((p) => (
+                <Select.Option value={p.id}>{p.name}</Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+          <Form.Item
             name="time"
             rules={[
               {
@@ -548,7 +610,7 @@ export default () => {
       <div className={sc('container-table-body')}>
         <SelfTable
           bordered
-          scroll={{ x: 1400 }}
+          scroll={{ x: 1600 }}
           columns={columns}
           dataSource={dataSource}
           pagination={
@@ -559,7 +621,7 @@ export default () => {
                   total: pageInfo.totalCount,
                   current: pageInfo.pageIndex,
                   pageSize: pageInfo.pageSize,
-                  showTotal: (total) =>
+                  showTotal: (total: number) =>
                     `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
                 }
           }

@@ -14,7 +14,7 @@
 export default {
   dev: {
     '/iiep-manage/': {
-      target: 'http://10.40.152.24:10086',
+      target: 'http://10.7.104.52:9092',
       changeOrigin: true,
       pathRewrite: { '^': '' },
     },

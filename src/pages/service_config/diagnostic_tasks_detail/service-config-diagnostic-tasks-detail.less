@@ -63,7 +63,30 @@
       }
     }
   }
-
+  &-org {
+    padding: 24px;
+    background-color: #fff;
+    &-content {
+      display: flex;
+      margin-top: 10px;
+      cursor: pointer;
+      > img {
+        width: 60px;
+        height: 60px;
+      }
+      > :last-child {
+        display: grid;
+        padding-left: 20px;
+        > :first-child {
+          color: rgba(0, 0, 0, 0.85);
+          font-weight: 700;
+          font-size: 20px;
+          font-family: MicrosoftYaHei-Bold;
+          line-height: 30px;
+        }
+      }
+    }
+  }
   .image-contain {
     position: relative;
     width: 100%;
