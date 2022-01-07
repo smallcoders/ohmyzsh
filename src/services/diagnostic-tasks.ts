@@ -98,3 +98,10 @@ export async function getDiagnosisRecordById(id: string) {
     }
   >(`/iiep-manage/diagnosis/record/${id}`);
 }
+
+/**
+ * 获取诊断机构
+ */
+export async function getDiagnosisInstitutions() {
+  return request<Common.ResultCode & { result: [] }>('/iiep-manage/common/diagnosisInstitutions');
+}

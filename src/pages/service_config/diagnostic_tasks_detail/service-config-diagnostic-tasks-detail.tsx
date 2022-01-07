@@ -1,11 +1,12 @@
 import { PageContainer } from '@ant-design/pro-layout';
 import './service-config-diagnostic-tasks-detail.less';
 import scopedClasses from '@/utils/scopedClasses';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import DiagnosisOrgAvatar from '@/assets/diagnosis/diagnosis-org-avatar.png';
 import { getDiagnosisRecordById } from '@/services/diagnostic-tasks';
 import { history } from 'umi';
 import moment from 'moment';
-import { Affix, Avatar, Button, Col, Divider, Image, message, Row } from 'antd';
+import { Avatar, Col, Divider, Image, message, Row } from 'antd';
 import { EnvironmentOutlined } from '@ant-design/icons';
 import DiagnosticTasks from '@/types/service-config-diagnostic-tasks';
 
@@ -23,43 +24,19 @@ export default () => {
     diagnosisRecordDetailVOList: DiagnosticTasks.Record[];
     orgInfoVO: DiagnosticTasks.OrgInfo;
     conclusionVO: DiagnosticTasks.Conclusion;
+    // diagnosisInstitution: DiagnosticTasks.DiagnosisInstitution;
   }>({
     diagnosisVO: {},
     diagnosisRecordDetailVOList: [],
     orgInfoVO: {},
     conclusionVO: {},
     experts: [],
+    // diagnosisInstitution: {},
   });
-
-  const topInterval = useRef<NodeJS.Timeout>();
 
   const separate = () => <div style={{ width: '100%', height: 24 }} />;
 
   const title = (text: string) => <span style={{ fontWeight: 700, fontSize: 16 }}>{text}</span>;
-
-  const Topfun = () => {
-    topInterval.current = setInterval(FourscrollBy, 10);
-  };
-
-  function FourscrollBy() {
-    if (document.documentElement && document.documentElement.scrollTop) {
-      //IE
-      if (document.documentElement.scrollTop <= 0) {
-        // eslint-disable-next-line
-        topInterval.current && clearInterval(topInterval.current);
-      } else {
-        window.scrollBy(0, -30);
-      }
-    } else {
-      //Chrome不支持documentElement.scrollTop
-      if (document.body.scrollTop <= 0) {
-        // eslint-disable-next-line
-        topInterval.current && clearInterval(topInterval.current);
-      } else {
-        window.scrollBy(0, -30);
-      }
-    }
-  }
 
   /**
    * 准备根据路由参数获取数据
@@ -85,10 +62,6 @@ export default () => {
 
   useEffect(() => {
     prepare();
-    return () => {
-      // eslint-disable-next-line
-      topInterval.current && clearInterval(topInterval.current);
-    };
   }, []);
 
   return (
@@ -220,20 +193,19 @@ export default () => {
               ))}
             </Row>
           </div>
+          {separate()}
+          <div className={sc('container-org')}>
+            {title('所属机构')}
+            <div className={sc('container-org-content')}>
+              <img src={DiagnosisOrgAvatar} />
+              <div>
+                <span>{detail?.diagnosisVO?.diagnosisInstitution?.name || '--'}</span>
+                <span>{detail?.diagnosisVO?.diagnosisInstitution?.bag || '--'}</span>
+              </div>
+            </div>
+          </div>
         </Col>
       </Row>
-      {
-        <Affix offsetBottom={50} style={{ position: 'absolute', bottom: 50, right: 24 }}>
-          <Button
-            type="primary"
-            onClick={() => {
-              Topfun();
-            }}
-          >
-            回到顶部
-          </Button>
-        </Affix>
-      }
     </PageContainer>
   );
 };

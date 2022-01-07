@@ -17,6 +17,11 @@ namespace DiagnosticTasks {
     state?: number; // 诊断状态 1待诊断 2诊断中 3已完成 4已延期
     remark?: string; // 描述
     originState?: number; // 源状态，用于判断已延期的诊断任务原来是待诊断还是诊断中，1待诊断 2诊断中 3已完成
+    diagnosisInstitution?: {
+      id?: string;
+      name?: string;
+      bag?: string;
+    };
   };
 
   export type Expert = {
@@ -53,6 +58,14 @@ namespace DiagnosticTasks {
     phone?: string; // 专家电话
     conclusion?: string; // 诊断结论
     files?: { format: string; name: string; path: string }[]; // 附件
+  };
+  export type DiagnosisInstitution = {
+    // 机构信息
+    name?: string;
+    id?: string;
+    bag?: string;
+    progress?: number;
+    total?: number;
   };
 }
 export default DiagnosticTasks;
