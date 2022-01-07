@@ -1,0 +1,28 @@
+@prefix: service-config-diagnostic-tasks-report;
+
+.@{prefix} {
+  &-header {
+    display: flex;
+    justify-content: center;
+    &-btns {
+      .ant-btn {
+        margin-left: 20px;
+      }
+    }
+  }
+  &-body {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+    margin-top: 20px;
+    .pdf-container {
+      .pdf-page {
+        width: 100%;
+        > canvas {
+          margin: 0 auto;
+        }
+      }
+    }
+  }
+}
