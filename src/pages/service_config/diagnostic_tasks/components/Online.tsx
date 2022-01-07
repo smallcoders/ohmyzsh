@@ -1,5 +1,5 @@
-import { CloseOutlined, PaperClipOutlined, UploadOutlined } from '@ant-design/icons';
-import { Button, Form, Select, Row, Col, message, Space, Badge, Popconfirm } from 'antd';
+import { DeleteOutlined, PaperClipOutlined, UploadOutlined } from '@ant-design/icons';
+import { Button, Form, Select, Row, Col, message, Space, Popconfirm } from 'antd';
 import '../service-config-diagnostic-tasks.less';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
@@ -114,27 +114,24 @@ export default () => {
           reportFile && (
             <div style={{ color: '#6680FF' }}>
               <PaperClipOutlined />
-              <Badge
-                count={
-                  <Popconfirm
-                    title="确定删除此报告么？"
-                    okText="确定"
-                    cancelText="取消"
-                    onConfirm={() => remove(record.id as string)}
-                  >
-                    <CloseOutlined style={{ color: '#6680FF', fontSize: 16, cursor: 'pointer' }} />
-                  </Popconfirm>
-                }
+              <a
+                href="#"
+                onClick={() => {
+                  history.push(`${routeName.DIAGNOSTIC_TASKS_REPORT}?fileId=${reportFile?.id}`);
+                }}
               >
-                <a
-                  href="#"
-                  onClick={() => {
-                    history.push(`${routeName.DIAGNOSTIC_TASKS_REPORT}?fileId=${reportFile?.id}`);
-                  }}
-                >
-                  {reportFile?.fileName}.{reportFile?.fileFormat}
-                </a>
-              </Badge>
+                {reportFile?.fileName}.{reportFile?.fileFormat}
+              </a>
+              <Popconfirm
+                title="确定删除此报告么？"
+                okText="确定"
+                cancelText="取消"
+                onConfirm={() => remove(record.id as string)}
+              >
+                <DeleteOutlined
+                  style={{ color: '#6680FF', fontSize: 16, cursor: 'pointer', marginLeft: 10 }}
+                />
+              </Popconfirm>
             </div>
           )
         );
