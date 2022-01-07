@@ -312,10 +312,13 @@ export default () => {
 
   const prepare = async () => {
     try {
-      const { result } = await getDiagnosisInstitutions();
-      setInstitutions(result);
+      const { result, code } = await getDiagnosisInstitutions();
+      if (code === 0) {
+        setInstitutions(result);
+      } else {
+        throw new Error();
+      }
     } catch (error) {
-      console.log('error', error);
       message.error('获取初始数据失败');
     }
   };

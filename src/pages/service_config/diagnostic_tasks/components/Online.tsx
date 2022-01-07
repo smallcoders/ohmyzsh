@@ -114,23 +114,21 @@ export default () => {
           reportFile && (
             <div style={{ color: '#6680FF' }}>
               <PaperClipOutlined />
-              <a
-                href="#"
+              <Button
+                type="link"
                 onClick={() => {
                   history.push(`${routeName.DIAGNOSTIC_TASKS_REPORT}?fileId=${reportFile?.id}`);
                 }}
               >
                 {reportFile?.fileName}.{reportFile?.fileFormat}
-              </a>
+              </Button>
               <Popconfirm
                 title="确定删除此报告么？"
                 okText="确定"
                 cancelText="取消"
                 onConfirm={() => remove(record.id as string)}
               >
-                <DeleteOutlined
-                  style={{ color: '#6680FF', fontSize: 16, cursor: 'pointer', marginLeft: 10 }}
-                />
+                <DeleteOutlined style={{ color: '#6680FF', fontSize: 16, cursor: 'pointer' }} />
               </Popconfirm>
             </div>
           )
