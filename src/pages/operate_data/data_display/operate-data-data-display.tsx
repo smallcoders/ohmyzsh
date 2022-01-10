@@ -19,7 +19,8 @@ import NEED_NUM from '@/assets/operate_data/data_display/4.svg';
 import SERVICE_NUM from '@/assets/operate_data/data_display/5.svg';
 import DataDisplay from '@/types/data-display';
 import CommonTable from './components/CommonTable';
-
+// import CommonTable1 from './components/CommonTable1';
+// import CommonTable2 from './components/CommonTable2';
 const sc = scopedClasses('operate-data-data-display');
 export default () => {
   const [citys, setCitys] = useState<{ label: string; value: string }[]>([]);
