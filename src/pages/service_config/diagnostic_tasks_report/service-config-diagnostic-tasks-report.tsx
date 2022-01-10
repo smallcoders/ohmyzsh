@@ -6,6 +6,7 @@ import { Button, message, Pagination } from 'antd';
 import { history } from 'umi';
 import { PageContainer } from '@ant-design/pro-layout';
 import { downloadFile } from '@/services/common';
+import { routeName } from '../../../../config/routes';
 const sc = scopedClasses('service-config-diagnostic-tasks-report');
 
 export default () => {
@@ -50,7 +51,7 @@ export default () => {
               下载报告
             </Button>
           )}
-          <Button onClick={() => history.go(-2)}>返回</Button>
+          <Button onClick={() => history.push(`${routeName.DIAGNOSTIC_TASKS}`)}>返回</Button>
         </div>
       </div>
       <div className={sc('body')}>
