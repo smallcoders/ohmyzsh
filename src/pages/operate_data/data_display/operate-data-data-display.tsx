@@ -1,7 +1,7 @@
 import { PageContainer } from '@ant-design/pro-layout';
 import './operate-data-data-display.less';
 import scopedClasses from '@/utils/scopedClasses';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   getCitys,
   getPublishPage,
@@ -19,8 +19,8 @@ import NEED_NUM from '@/assets/operate_data/data_display/4.svg';
 import SERVICE_NUM from '@/assets/operate_data/data_display/5.svg';
 import DataDisplay from '@/types/data-display';
 import CommonTable from './components/CommonTable';
-// import CommonTable1 from './components/CommonTable1';
-// import CommonTable2 from './components/CommonTable2';
+import CommonTable1 from './components/CommonTable1';
+import CommonTable2 from './components/CommonTable2';
 const sc = scopedClasses('operate-data-data-display');
 export default () => {
   const [citys, setCitys] = useState<{ label: string; value: string }[]>([]);
@@ -63,8 +63,6 @@ export default () => {
   }, []);
 
   const separate = () => <div style={{ width: '100%', height: 24 }} />;
-
-  const Table = useMemo(() => CommonTable, []);
 
   return (
     <PageContainer className={sc('container')}>
@@ -139,7 +137,7 @@ export default () => {
           </SelfCard>
         </Col>
         <Col span={12}>
-          <Table<DataDisplay.Publish>
+          <CommonTable<DataDisplay.Publish>
             title={'宣传统计'}
             columns={[
               {
@@ -194,7 +192,7 @@ export default () => {
         </Col>
         {separate()}
         <Col span={12}>
-          <Table<DataDisplay.HotApp>
+          <CommonTable1<DataDisplay.HotApp>
             title={'热门应用'}
             columns={[
               {
@@ -216,7 +214,7 @@ export default () => {
           />
         </Col>
         <Col span={12}>
-          <Table<DataDisplay.Policy>
+          <CommonTable2<DataDisplay.Policy>
             title={'热门政策'}
             columns={[
               {
