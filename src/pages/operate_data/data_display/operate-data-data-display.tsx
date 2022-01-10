@@ -19,8 +19,6 @@ import NEED_NUM from '@/assets/operate_data/data_display/4.svg';
 import SERVICE_NUM from '@/assets/operate_data/data_display/5.svg';
 import DataDisplay from '@/types/data-display';
 import CommonTable from './components/CommonTable';
-import CommonTable1 from './components/CommonTable1';
-import CommonTable2 from './components/CommonTable2';
 const sc = scopedClasses('operate-data-data-display');
 export default () => {
   const [citys, setCitys] = useState<{ label: string; value: string }[]>([]);
@@ -192,7 +190,7 @@ export default () => {
         </Col>
         {separate()}
         <Col span={12}>
-          <CommonTable1<DataDisplay.HotApp>
+          <CommonTable<DataDisplay.HotApp>
             title={'热门应用'}
             columns={[
               {
@@ -214,7 +212,7 @@ export default () => {
           />
         </Col>
         <Col span={12}>
-          <CommonTable2<DataDisplay.Policy>
+          <CommonTable<DataDisplay.Policy>
             title={'热门政策'}
             columns={[
               {
