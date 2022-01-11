@@ -360,7 +360,9 @@ export default () => {
                   <Form.Item name="institutionId" label="诊断机构">
                     <Select placeholder="请选择" allowClear>
                       {institutions.map((p) => (
-                        <Select.Option value={p.id}>{p.name}</Select.Option>
+                        <Select.Option key={p.id + p.name} value={p.id}>
+                          {p.name}
+                        </Select.Option>
                       ))}
                     </Select>
                   </Form.Item>
@@ -374,7 +376,9 @@ export default () => {
                   <Form.Item name="state" label="诊断状态">
                     <Select placeholder="请选择" allowClear>
                       {Object.entries(stateObj).map((p) => (
-                        <Select.Option value={p[0]}>{p[1]}</Select.Option>
+                        <Select.Option key={p[0] + p[1]} value={p[0]}>
+                          {p[1]}
+                        </Select.Option>
                       ))}
                     </Select>
                   </Form.Item>
@@ -530,7 +534,10 @@ export default () => {
               已选诊断专家：{selectExperts.length}人
             </div>
             {selectExperts.map((p) => (
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: 5 }}>
+              <div
+                key={p.value + p.label}
+                style={{ display: 'flex', justifyContent: 'space-between', padding: 5 }}
+              >
                 <span>{p.label}</span>
                 <DeleteOutlined
                   onClick={() => {
@@ -558,7 +565,9 @@ export default () => {
           >
             <Select placeholder="请选择" allowClear>
               {institutions.map((p) => (
-                <Select.Option value={p.id}>{p.name}</Select.Option>
+                <Select.Option key={p.id + p.name} value={p.id}>
+                  {p.name}
+                </Select.Option>
               ))}
             </Select>
           </Form.Item>

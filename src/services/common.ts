@@ -9,5 +9,6 @@ import { request } from 'umi';
 export async function downloadFile(fileId: string) {
   return request<CourseManage.ResultList>(`/iiep-manage/common/download/${fileId}`, {
     method: 'get',
+    responseType: 'blob',
   });
 }

@@ -62,3 +62,23 @@ ol {
     min-height: 100vh;
   }
 }
+
+// 多行省略
+.ellipseText(@lineNum: 1) {
+  height: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  word-break: keep-all;
+  -webkit-line-clamp: @lineNum;
+  // height: 100%;
+  // overflow: hidden;
+  // white-space: nowrap;
+  // text-overflow: ellipsis;
+  // word-break: keep-all;
+  // -webkit-line-clamp: @lineNum;
+  &:hover {
+    overflow: visible !important;
+    white-space: normal !important;
+  }
+}

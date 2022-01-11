@@ -98,6 +98,7 @@ export default () => {
     {
       title: '上次诊断时间',
       dataIndex: 'lastDiagnosisTime',
+      ellipsis: true,
       width: 200,
     },
     {
@@ -112,15 +113,19 @@ export default () => {
       render: (reportFile: any, record: DiagnosticTasks.OnlineRecord) => {
         return (
           reportFile && (
-            <div style={{ color: '#6680FF' }}>
+            <div style={{ color: '#6680FF', display: 'flex', alignItems: 'center' }}>
               <PaperClipOutlined />
               <Button
                 type="link"
+                style={{ height: 'auto' }}
                 onClick={() => {
+                  // openPDF(reportFile?.id, reportFile?.fileName)
                   history.push(`${routeName.DIAGNOSTIC_TASKS_REPORT}?fileId=${reportFile?.id}`);
                 }}
               >
-                {reportFile?.fileName}.{reportFile?.fileFormat}
+                <div className={'file-name'}>
+                  {reportFile?.fileName}.{reportFile?.fileFormat}
+                </div>
               </Button>
               <Popconfirm
                 title="确定删除此报告么？"
@@ -182,8 +187,8 @@ export default () => {
             <Col span={8}>
               <Form.Item name="status" label="诊断报告">
                 <Select placeholder="请选择" allowClear>
-                  <Select.Option value={'ON_DIAGNOSIS'}>诊断中</Select.Option>
-                  <Select.Option value={'DIAGNOSIS_FINISHED'}>诊断完成</Select.Option>
+                  <Select.Option value={'ON_DIAGNOSIS'}>未上传</Select.Option>
+                  <Select.Option value={'DIAGNOSIS_FINISHED'}>已上传</Select.Option>
                 </Select>
               </Form.Item>
             </Col>
@@ -230,6 +235,7 @@ export default () => {
       </div>
       <div className={sc('container-table-body')}>
         <SelfTable
+          rowKey={'id'}
           bordered
           scroll={{ x: 1400 }}
           columns={columns}
