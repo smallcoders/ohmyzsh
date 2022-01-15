@@ -42,6 +42,7 @@ namespace CourseManage {
     title: string; // 附件名称
     storeId: string; // 存储文件id
     isEditing?: boolean; // 是否正在编辑
+    duration?: number; // 时长
   };
 }
 export default CourseManage;
