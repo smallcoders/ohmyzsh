@@ -67,5 +67,33 @@ namespace DiagnosticTasks {
     progress?: number;
     total?: number;
   };
+
+  export enum Status {
+    /**
+     * 诊断中
+     */
+    ON_DIAGNOSIS = 'ON_DIAGNOSIS',
+    /**
+     * 诊断完成
+     */
+    DIAGNOSIS_FINISHED = 'ON_DIAGNOSIS',
+  }
+
+  export type OnlineRecord = {
+    // 诊断记录
+    id: string;
+    lastDiagnosisTime?: string; // 上次点击诊断时间
+    diagnosisCount?: number; // 诊断次数
+    org?: {
+      orgId: string;
+      orgName: string; //企业名称
+    };
+    reportFile?: {
+      //诊断报告
+      id: string;
+      fileName: string; // 文件名
+      fileFormat: string; // 文件格式
+    };
+  };
 }
 export default DiagnosticTasks;

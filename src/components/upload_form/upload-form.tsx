@@ -46,6 +46,7 @@ const UploadForm = (
           : uploadResponse.result;
         props.onChange?.(value);
         setUploadLoading(false);
+        message.success('上传成功');
       } else {
         setUploadLoading(false);
         message.error(`上传失败，原因:{${uploadResponse.message}}`);

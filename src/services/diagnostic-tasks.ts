@@ -105,3 +105,50 @@ export async function getDiagnosisRecordById(id: string) {
 export async function getDiagnosisInstitutions() {
   return request<Common.ResultCode & { result: [] }>('/iiep-manage/common/diagnosisInstitutions');
 }
+
+/**
+ * 获取线上诊断记录
+ */
+export async function getDiagnosisRecords(data?: { [key: string]: any }) {
+  return request<
+    Common.ResultCode & Common.ResultPage & { result: DiagnosticTasks.OnlineRecord[] }
+  >('/iiep-manage/onlineDiagnosis/pageQuery', {
+    method: 'post',
+    data,
+  });
+}
+
+/**
+ * 获取信通院跳转链接
+ * @param  id 企业id
+ * @returns
+ */
+export async function getXTYSkipUrl(id: string) {
+  return request<
+    Common.ResultCode & {
+      result: string;
+    }
+  >(`/iiep-manage/onlineDiagnosis/getXTYSkipUrl?id=${id}`);
+}
+
+/**
+ * 诊断记录关联诊断报告pdf文件
+ */
+export async function addOrUpdateReportFile(data?: { [key: string]: any }) {
+  return request<Common.ResultCode & { result: DiagnosticTasks.OnlineRecord[] }>(
+    '/iiep-manage/onlineDiagnosis/appendReportFile',
+    {
+      method: 'post',
+      data,
+    },
+  );
+}
+
+/**
+ * 删除诊断报告，诊断记录还原为诊断中状态
+ */
+export async function deleteReportFile(id: string) {
+  return request<Common.ResultCode>(`/iiep-manage/onlineDiagnosis/deleteReportFile?id=${id}`, {
+    method: 'delete',
+  });
+}

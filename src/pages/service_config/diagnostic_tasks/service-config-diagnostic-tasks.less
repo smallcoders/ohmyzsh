@@ -1,3 +1,4 @@
+@import '../../../global.less';
 @prefix: service-config-diagnostic-tasks;
 
 .@{prefix}-container {
@@ -108,5 +109,9 @@
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+  }
+  .file-name {
+    max-width: 320px;
+    .ellipseText(1);
   }
 }

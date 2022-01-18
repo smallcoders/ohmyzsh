@@ -2,6 +2,7 @@
   DATA_COLUMN: '/service-config/data-column', // 数据栏
   DIAGNOSTIC_TASKS: '/service-config/diagnostic-tasks/index', // 诊断任务
   DIAGNOSTIC_TASKS_DETAIL: '/service-config/diagnostic-tasks/detail', // 诊断记录
+  DIAGNOSTIC_TASKS_REPORT: '/service-config/diagnostic-tasks/report', // 诊断报告
   COURSE_MANAGE: '/service-config/course-manage/index', // 课程管理
   ADD_COURSE: '/service-config/course-manage/add', // 新增或编辑课程
   APP_RESOURCE: '/service-config/app-resource/index', // 应用资源
@@ -56,7 +57,7 @@ export default [
       },
       {
         path: '/service-config/diagnostic-tasks',
-        name: '诊断任务',
+        name: '诊断通',
         hideChildrenInMenu: true,
         routes: [
           {
@@ -66,13 +67,18 @@ export default [
           {
             path: routeName.DIAGNOSTIC_TASKS,
             hideInBreadcrumb: true,
-            name: '诊断任务',
+            name: '诊断通',
             component: './service_config/diagnostic_tasks',
           },
           {
             path: routeName.DIAGNOSTIC_TASKS_DETAIL,
             name: '诊断记录',
             component: './service_config/diagnostic_tasks_detail',
+          },
+          {
+            path: routeName.DIAGNOSTIC_TASKS_REPORT,
+            name: '诊断报告',
+            component: './service_config/diagnostic_tasks_report',
           },
         ],
       },
