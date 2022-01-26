@@ -88,15 +88,9 @@ export async function updateState(options?: { [key: string]: any }) {
 export async function getDiagnosisRecordById(id: string) {
   return request<
     Common.ResultCode & {
-      result: {
-        experts: DiagnosticTasks.Expert[];
-        diagnosisVO: DiagnosticTasks.Content;
-        diagnosisRecordDetailVOList: DiagnosticTasks.Record[];
-        orgInfoVO: DiagnosticTasks.OrgInfo;
-        conclusionVO: DiagnosticTasks.Conclusion;
-      };
+      result: DiagnosticTasks.DiagnosisTaskDetail;
     }
-  >(`/iiep-manage/diagnosis/record/${id}`);
+  >(`/iiep-manage/diagnosis/detail/${id}`);
 }
 
 /**

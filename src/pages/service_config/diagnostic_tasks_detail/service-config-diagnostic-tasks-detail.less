@@ -2,8 +2,10 @@
 
 .@{prefix}-container {
   &-detail {
+    margin-top: 20px;
     padding: 24px;
-    background-color: #fff;
+    background: #fff;
+    border-radius: 6px;
     > :nth-child(2) {
       padding: 10px 0;
     }
@@ -16,10 +18,79 @@
       font-weight: 500;
       font-size: 14px;
     }
+    .state1 {
+      position: relative;
+      padding-left: 15px;
+      color: #ff65b3;
+      &::before {
+        position: absolute;
+        top: 7px;
+        left: 0;
+        width: 8px;
+        height: 8px;
+        background-color: #ff65b3;
+        border-radius: 4px;
+        content: ' ';
+      }
+    }
+    .state2 {
+      position: relative;
+      padding-left: 15px;
+      color: #ffc833;
+      &::before {
+        position: absolute;
+        top: 7px;
+        left: 0;
+        width: 8px;
+        height: 8px;
+        background-color: #ffc833;
+        border-radius: 4px;
+        content: ' ';
+      }
+    }
+    .state3 {
+      position: relative;
+      padding-left: 15px;
+      color: #5de8a3;
+      &::before {
+        position: absolute;
+        top: 7px;
+        left: 0;
+        width: 8px;
+        height: 8px;
+        background-color: #5de8a3;
+        border-radius: 4px;
+        content: ' ';
+      }
+    }
+  }
+  &-empty {
+    display: flex;
+    justify-content: center;
+    height: 100%;
+    background: #fff;
+    border-radius: 6px;
+    > :first-child {
+      margin-top: 50px;
+    }
+  }
+  &-conclusion-add {
+    :first-child {
+      padding: 24px;
+      color: #6880ff;
+      font-weight: 400;
+      font-size: 20px;
+      line-height: 24px;
+      text-align: center;
+      background: #fff;
+      border-radius: 6px;
+      cursor: pointer;
+    }
   }
   &-records {
     padding: 24px;
-    background-color: #fff;
+    border-radius: 6px;
+    //   background: #fff;
     &-record-header {
       display: flex;
       align-items: center;
@@ -36,36 +107,193 @@
     }
   }
   &-conclusions {
+    margin-bottom: 20px;
     padding: 24px;
-    background-color: #fff;
+    background: #fff;
+    border-radius: 6px;
+  }
+  &-progress {
+    padding: 24px;
+    border-radius: 6px;
+    .ant-steps-item-process
+      > .ant-steps-item-container
+      > .ant-steps-item-content
+      > .ant-steps-item-title {
+      color: #6680ff;
+      font-weight: 700;
+      font-size: 16px;
+      text-align: center;
+    }
+  }
+  &-step {
+    background: #fff;
+    border-radius: 6px;
+  }
+  &-info {
+    padding: 24px;
+    border-radius: 6px;
+    .ant-form-item {
+      margin: 0 !important;
+    }
+    .form-item {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      width: calc(100% - 20px);
+      margin-bottom: 24px;
+    }
+    .info-remove-icon {
+      position: absolute;
+      right: -10px;
+      width: 20px;
+      height: 20px;
+      color: #fff;
+      font-size: 16px;
+      line-height: 18px;
+      text-align: center;
+      background: rgba(0, 0, 0, 0.45);
+      border-radius: 50%;
+      cursor: pointer;
+    }
   }
   &-enterprises {
     padding: 24px;
-    background-color: #fff;
+    background: #fff;
+    border-radius: 6px;
+
     &-content {
       display: flex;
       padding-top: 10px;
       > :last-child {
         display: grid;
+        align-content: space-around;
         margin-left: 10px;
+        > :first-child {
+          color: rgba(0, 0, 0, 0.85);
+          font-weight: 700;
+          font-size: 20px;
+          line-height: 24px;
+        }
       }
     }
   }
   &-experts {
     padding: 24px;
-    background-color: #fff;
-    &-expert {
+    background: #fff;
+    border-radius: 6px;
+    > :last-child {
       display: flex;
-      align-items: center;
+      flex-wrap: wrap;
       margin-top: 10px;
-      > :last-child {
-        display: grid;
+    }
+    &-expert {
+      position: relative;
+      width: 140px;
+      height: 160px;
+      margin: 0 20px 20px 0;
+      cursor: pointer;
+      img {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 5px;
+        transform: translate(-50%, -50%);
       }
+      > :first-child {
+        width: 100%;
+        height: 100%;
+      }
+      > :last-child {
+        position: absolute;
+        bottom: 0;
+        display: grid;
+        width: 100%;
+        padding: 10px;
+        color: #fff;
+        background: #000;
+        opacity: 0.5;
+      }
+    }
+  }
+
+  &-stage-info {
+    padding: 24px;
+    > div {
+      display: flex;
+      gap: 20px;
+      padding: 10px;
+    }
+    &-title {
+      flex: 1;
+      color: rgba(0, 0, 0, 0.85);
+      font-weight: 700;
+      font-size: 14px;
+    }
+    &-value {
+      display: grid;
+      flex: 4;
+      gap: 5px;
+      color: rgba(0, 0, 0, 0.65);
+      font-weight: 400;
+      font-size: 14px;
+    }
+  }
+
+  &-diagnosis-step-stage-info {
+    > div {
+      display: flex;
+      gap: 20px;
+      padding: 10px;
+    }
+    &-title {
+      width: 100px;
+      color: rgba(0, 0, 0, 0.65);
+      font-size: 16px;
+      line-height: 24px;
+      text-align: right;
+    }
+    &-value {
+      display: grid;
+      flex: 1;
+      gap: 5px;
+      color: rgba(0, 0, 0, 0.85);
+      font-size: 16px;
+      line-height: 24px;
+    }
+  }
+
+  &-diagnosis-info {
+    padding: 24px;
+    background: #fff;
+    border-radius: 6px;
+    > div {
+      display: flex;
+      gap: 20px;
+      padding: 10px;
+    }
+    &-title {
+      flex: 1;
+      color: rgba(0, 0, 0, 0.85);
+      font-weight: 700;
+      font-size: 14px;
+    }
+    &-value {
+      display: grid;
+      flex: 4;
+      gap: 5px;
+      color: rgba(0, 0, 0, 0.65);
+      font-weight: 400;
+      font-size: 14px;
     }
   }
   &-org {
     padding: 24px;
-    background-color: #fff;
+    background: #fff;
+    border-radius: 6px;
+
     &-content {
       display: flex;
       margin-top: 10px;
@@ -87,11 +315,20 @@
       }
     }
   }
+  &-nothing {
+    display: grid;
+    gap: 10px;
+    justify-content: center;
+    color: #ccc;
+    text-align: center;
+  }
   .image-contain {
     position: relative;
     width: 100%;
-    height: 200px;
+    height: 80px;
     margin-top: 10px;
+    background: #fff;
+    border-radius: 6px;
     > :first-child {
       width: 100%;
       height: 100%;
