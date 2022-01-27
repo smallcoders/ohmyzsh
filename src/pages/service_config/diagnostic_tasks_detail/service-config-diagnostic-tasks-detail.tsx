@@ -233,7 +233,7 @@ export default () => {
         <div>
           <span>提交专家：</span>
           <span className={sc('container-detail-value')}>
-            {diagnoseConclusionVO?.expertName || '--'}
+            {diagnoseConclusionVO?.expertName || '--'}（{diagnoseConclusionVO?.phone || '--'}）
           </span>
         </div>
         <span>{diagnoseConclusionVO?.conclusion}</span>
@@ -385,7 +385,7 @@ export default () => {
             </div>
           ) : (
             <>
-              {getConclusions()}
+              {diagnoseBaseInfoVO?.state === 3 && getConclusions()}
               <div className={sc('container-step')}>
                 {getProgress()}
                 {getStepInfo()}
