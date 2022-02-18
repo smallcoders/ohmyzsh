@@ -1,4 +1,4 @@
-import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
+import { DeleteOutlined } from '@ant-design/icons';
 import {
   Button,
   Input,
@@ -171,46 +171,46 @@ export default () => {
    * 列表数据 转换表单数据
    * @param record
    */
-  const edit = (record: DiagnosticTasks.Content) => {
-    const content = { ...record } as DiagnosticTasks.Content & {
-      expertShowIds: { value: string }[];
-      orgId: string;
-      time: moment.Moment[];
-      orgShowId: { value: string };
-      institutionId?: string;
-    };
-    setEditingItem(record);
-    setModalVisible(true);
-    // 修改设置表单初始数据
-    if (content.experts && content.experts.length > 0) {
-      setSelectExperts(
-        content.experts.map((p: { expertName: string; id: string; expertPhone: string }) => {
-          return {
-            label: p.expertName + `（${p.expertPhone ? p.expertPhone : '无联系方式'}）`,
-            value: p.id,
-            expertPhone: p.expertPhone,
-          };
-        }),
-      );
-      content.expertShowIds = content.experts.map((p: { id: string }) => {
-        return { value: p.id };
-      });
-    }
-    if (content.orgId) {
-      setDefaultOrgs([
-        {
-          label: content.orgName as string,
-          value: content.orgId,
-        },
-      ]);
-    }
-    if (content.startDate && record.endDate) {
-      content.time = [moment(record.startDate), moment(record.endDate)];
-    }
-    content.institutionId = record?.diagnosisInstitution?.id;
-    content.orgShowId = { value: content.orgId };
-    form.setFieldsValue({ ...content });
-  };
+  // const edit = (record: DiagnosticTasks.Content) => {
+  //   const content = { ...record } as DiagnosticTasks.Content & {
+  //     expertShowIds: { value: string }[];
+  //     orgId: string;
+  //     time: moment.Moment[];
+  //     orgShowId: { value: string };
+  //     institutionId?: string;
+  //   };
+  //   setEditingItem(record);
+  //   setModalVisible(true);
+  //   // 修改设置表单初始数据
+  //   if (content.experts && content.experts.length > 0) {
+  //     setSelectExperts(
+  //       content.experts.map((p: { expertName: string; id: string; expertPhone: string }) => {
+  //         return {
+  //           label: p.expertName + `（${p.expertPhone ? p.expertPhone : '无联系方式'}）`,
+  //           value: p.id,
+  //           expertPhone: p.expertPhone,
+  //         };
+  //       }),
+  //     );
+  //     content.expertShowIds = content.experts.map((p: { id: string }) => {
+  //       return { value: p.id };
+  //     });
+  //   }
+  //   if (content.orgId) {
+  //     setDefaultOrgs([
+  //       {
+  //         label: content.orgName as string,
+  //         value: content.orgId,
+  //       },
+  //     ]);
+  //   }
+  //   if (content.startDate && record.endDate) {
+  //     content.time = [moment(record.startDate), moment(record.endDate)];
+  //   }
+  //   content.institutionId = record?.diagnosisInstitution?.id;
+  //   content.orgShowId = { value: content.orgId };
+  //   form.setFieldsValue({ ...content });
+  // };
 
   const columns = [
     {
@@ -279,11 +279,11 @@ export default () => {
            * 待诊断时延期 可编辑
            */
           <Space size="middle">
-            {(record.state === 1 || (record.originState === 1 && record.state === 4)) && (
+            {/* {(record.state === 1 || (record.originState === 1 && record.state === 4)) && (
               <a href="#" onClick={() => edit(record)}>
                 编辑{' '}
               </a>
-            )}
+            )} */}
             <Popconfirm
               title="确定删除么？"
               okText="确定"
@@ -607,7 +607,7 @@ export default () => {
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>诊断任务列表(共{pageInfo.totalCount || 0}个)</span>
-          <Button
+          {/* <Button
             type="primary"
             key="primary"
             onClick={() => {
@@ -615,7 +615,7 @@ export default () => {
             }}
           >
             <PlusOutlined /> 新建任务
-          </Button>
+          </Button> */}
         </div>
       </div>
       <div className={sc('container-table-body')}>

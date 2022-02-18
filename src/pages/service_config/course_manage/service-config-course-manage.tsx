@@ -249,7 +249,7 @@ export default () => {
                     {p.dictName}
                   </div>
                   <span>
-                    课程长约：{p.duration} ｜ 共 {p.chapterCount} 个章节
+                    课程长约：{p.duration || '--'} ｜ 共 {p.chapterCount} 个章节
                   </span>
                   <span
                     style={{

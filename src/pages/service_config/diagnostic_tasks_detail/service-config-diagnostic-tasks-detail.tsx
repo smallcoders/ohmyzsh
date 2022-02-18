@@ -2,11 +2,10 @@ import { PageContainer } from '@ant-design/pro-layout';
 import './service-config-diagnostic-tasks-detail.less';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
-import DiagnosisOrgAvatar from '@/assets/diagnosis/diagnosis-org-avatar.png';
 import { getDiagnosisRecordById } from '@/services/diagnostic-tasks';
 import { history } from 'umi';
 import moment from 'moment';
-import { Avatar, Col, Divider, Image, message, Row } from 'antd';
+import { Avatar, Col, Divider, Empty, Image, message, Row, Steps } from 'antd';
 import { EnvironmentOutlined } from '@ant-design/icons';
 import DiagnosticTasks from '@/types/service-config-diagnostic-tasks';
 
@@ -18,21 +17,28 @@ const stateObj = {
   4: '已延期',
 };
 export default () => {
-  const [detail, setDetail] = useState<{
-    experts: DiagnosticTasks.Expert[];
-    diagnosisVO: DiagnosticTasks.Content;
-    diagnosisRecordDetailVOList: DiagnosticTasks.Record[];
-    orgInfoVO: DiagnosticTasks.OrgInfo;
-    conclusionVO: DiagnosticTasks.Conclusion;
-    // diagnosisInstitution: DiagnosticTasks.DiagnosisInstitution;
-  }>({
-    diagnosisVO: {},
-    diagnosisRecordDetailVOList: [],
-    orgInfoVO: {},
-    conclusionVO: {},
-    experts: [],
-    // diagnosisInstitution: {},
-  });
+  const [{ diagnoseBaseInfoVO, diagnosisStageVOList = [] }, setDetail] =
+    useState<DiagnosticTasks.DiagnosisTaskDetail>({
+      diagnoseBaseInfoVO: {
+        currentStage: 0,
+        diagnoseExpertVOList: [],
+        diagnoseOrgInfoVo: {},
+        diagnoseConclusionVO: {},
+        diagnosisInstitution: {},
+      },
+      diagnosisStageVOList: [],
+    });
+
+  const [diagnosisStage, setDiagnosisStage] = useState<DiagnosticTasks.DiagnosisStageEnum>();
+
+  const {
+    diagnoseExpertVOList = [],
+    diagnoseOrgInfoVo = {},
+    diagnoseConclusionVO = {},
+    diagnosisInstitution = {},
+  } = diagnoseBaseInfoVO;
+
+  const currentStage = diagnoseBaseInfoVO.currentStage || 1;
 
   const separate = () => <div style={{ width: '100%', height: 24 }} />;
 
@@ -64,145 +70,340 @@ export default () => {
     prepare();
   }, []);
 
-  return (
-    <PageContainer className={sc('container')}>
+  const getDesc = () => {
+    return (
       <div className={sc('container-detail')}>
-        {title(detail.diagnosisVO.name || '')}
+        {title(diagnoseBaseInfoVO.name || '')}
         <div>
           <span>任务编号：</span>
           <span className={sc('container-detail-value')}>
-            {detail.diagnosisVO.applicationNumber}
+            {diagnoseBaseInfoVO.applicationNumber}
           </span>
           <span>诊断时间：</span>
           <span className={sc('container-detail-value')}>
-            {detail.diagnosisVO.startDate}至{detail.diagnosisVO.endDate}
+            {diagnoseBaseInfoVO.startDate}至{diagnoseBaseInfoVO.endDate}
           </span>
           <span>诊断状态：</span>
+          <span className={`${sc('container-detail-value')} state${diagnoseBaseInfoVO?.state}`}>
+            {stateObj[diagnoseBaseInfoVO?.state] || '--'}
+          </span>
+        </div>
+        <div style={{ width: '60%' }}>{diagnoseBaseInfoVO.remark}</div>
+      </div>
+    );
+  };
+
+  const getProjectLeader = () => {
+    return (
+      <div>
+        <div className={sc('container-diagnosis-info-title')}>项目负责人</div>
+        <div className={sc('container-diagnosis-info-value')}>
+          {diagnoseBaseInfoVO.projectLeaderName || '--'}，
+          {diagnoseBaseInfoVO.projectLeaderContact || '--'}
+        </div>
+      </div>
+    );
+  };
+
+  /**
+   * 技术专家
+   * @returns
+   */
+  const getTechnician = () => {
+    return (
+      <div>
+        <div className={sc('container-diagnosis-info-title')}>技术专家</div>
+        <div className={sc('container-diagnosis-info-value')}>
+          {(diagnoseBaseInfoVO?.technicians || []).map((p) => (
+            <span key={p}>{p}</span>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  const getExperts = () => {
+    return (
+      <div>
+        <div className={sc('container-diagnosis-info-title')}>诊断专家</div>
+        <div className={sc('container-diagnosis-info-value')}>
+          {diagnoseExpertVOList.map((p: any) => (
+            <span key={p.id}>
+              {p.expertName || '--'},{p.phone || '--'}
+            </span>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  const getEnterprises = () => {
+    return (
+      <div>
+        <div className={sc('container-diagnosis-info-title')}>诊断企业</div>
+        <div className={sc('container-diagnosis-info-value')}>
+          {diagnoseOrgInfoVo?.orgName}，{diagnoseOrgInfoVo?.phone || '--'}
+        </div>
+      </div>
+    );
+  };
+
+  const getInstitution = () => {
+    return (
+      <div>
+        <div className={sc('container-diagnosis-info-title')}>诊断机构</div>
+        <div className={sc('container-diagnosis-info-value')}>
+          <span>{diagnosisInstitution?.name || '--'}</span>
+          <span>{diagnosisInstitution?.bag || '--'}</span>
+        </div>
+      </div>
+    );
+  };
+
+  const getRecords = () => {
+    const records =
+      diagnosisStageVOList[(diagnosisStage || currentStage) - 1]?.diagnosisRecords || [];
+    return (
+      <div className={sc('container-records')}>
+        {title('阶段记录')}
+        {records.length === 0 ? (
+          <div className={sc('container-nothing')}>
+            <Empty description="" />
+            <span
+              style={{
+                fontSize: 20,
+                color: 'rgba(0,0,0,0.85)',
+              }}
+            >
+              等待提交
+            </span>
+          </div>
+        ) : (
+          records.map((p) => (
+            <>
+              <div className={sc('container-records-record-header')}>
+                <div>
+                  <Avatar size={48} src={p.expertPhotoPath} />
+                  <div style={{ display: 'inline-grid', marginLeft: 10 }}>
+                    <span>{p.expertName || '--'}</span>
+                    <span>{moment(p.submitTime).format('YYYY-MM-DD HH:mm:ss')}</span>
+                  </div>
+                </div>
+                <div>
+                  <EnvironmentOutlined style={{ marginRight: 5 }} />
+                  <span>{p.address || '--'}</span>
+                </div>
+              </div>
+              <div style={{ marginTop: 10 }}>{p.content || '--'}</div>
+              <div className={sc('container-records-record-images')}>
+                <Row gutter={10}>
+                  <Image.PreviewGroup>
+                    {p.photoPath
+                      ? (p.photoPath || []).map((path) => (
+                          <Col xs={4} xxl={2} key={path}>
+                            <div className="image-contain">
+                              <Image className="image-contain-img" src={path} />
+                            </div>
+                          </Col>
+                        ))
+                      : ''}
+                  </Image.PreviewGroup>
+                </Row>
+              </div>
+              <Divider plain />
+            </>
+          ))
+        )}
+      </div>
+    );
+  };
+
+  const getConclusions = () => {
+    return (
+      <div className={sc('container-conclusions')}>
+        {title('诊断结论')}
+        <div style={{ paddingTop: 10 }}>
+          <span>提交时间：</span>
           <span className={sc('container-detail-value')}>
-            {Object.prototype.hasOwnProperty.call(stateObj, detail.diagnosisVO?.state as any)
-              ? stateObj[detail.diagnosisVO?.state as any]
+            {diagnoseConclusionVO?.submitTime
+              ? moment(diagnoseConclusionVO?.submitTime).format('YYYY-MM-DD HH:mm:ss')
               : '--'}
           </span>
         </div>
-        <div style={{ width: '60%' }}>{detail.diagnosisVO.remark}</div>
-      </div>
-      {separate()}
-      <Row gutter={10}>
-        <Col span={16}>
-          <div className={sc('container-records')}>
-            {title('诊断记录')}
-            {(detail.diagnosisRecordDetailVOList || []).map((p) => (
-              <>
-                <div className={sc('container-records-record-header')}>
-                  <div>
-                    <Avatar size={48} src={p.expertPhotoPath} />
-                    <div style={{ display: 'inline-grid', marginLeft: 10 }}>
-                      <span>{p.expertName}</span>
-                      <span>{moment(p.submitTime).format('YYYY-MM-DD HH:mm:ss')}</span>
-                    </div>
-                  </div>
-                  <div>
-                    <EnvironmentOutlined style={{ marginRight: 5 }} />
-                    <span>{p.address}</span>
-                  </div>
-                </div>
-                <div style={{ marginTop: 10 }}>{p.content}</div>
-                <div className={sc('container-records-record-images')}>
-                  <Row gutter={10}>
-                    <Col sm={24} xxl={16}>
-                      <Row gutter={10}>
-                        <Image.PreviewGroup>
-                          {p.photoPath
-                            ? (p.photoPath || []).map((url) => (
-                                <Col span={8}>
-                                  <div className="image-contain">
-                                    <Image
-                                      className="image-contain-img"
-                                      src={url}
-                                      alt="图片资源损坏"
-                                    />
-                                  </div>
-                                </Col>
-                              ))
-                            : ''}
-                        </Image.PreviewGroup>
-                      </Row>
-                    </Col>
-                  </Row>
-                </div>
-                <Divider plain />
-              </>
-            ))}
-          </div>
-          {separate()}
-          <div className={sc('container-conclusions')}>
-            {title('诊断结论')}
-            <div style={{ paddingTop: 10 }}>
-              <span>提交时间：</span>
-              <span className={sc('container-detail-value')}>
-                {detail.conclusionVO?.submitTime
-                  ? moment(detail.conclusionVO?.submitTime).format('YYYY-MM-DD HH:mm:ss')
-                  : ''}
-              </span>
-            </div>
-            <div>
-              <span>提交专家：</span>
-              <span className={sc('container-detail-value')}>
-                {detail.conclusionVO?.expertName}
-              </span>
-            </div>
-            <span>{detail.conclusionVO?.conclusion}</span>
-            {detail.conclusionVO?.files && (
-              <div style={{ paddingTop: 10 }}>
-                <span>附件：</span>
-                {detail.conclusionVO?.files.map((p) => (
-                  <a style={{ marginRight: 20 }} href={p.path}>
-                    {p.name + '.' + p.format}
+        <div>
+          <span>提交专家：</span>
+          <span className={sc('container-detail-value')}>
+            {diagnoseConclusionVO?.expertName || '--'}（{diagnoseConclusionVO?.phone || '--'}）
+          </span>
+        </div>
+        <span>{diagnoseConclusionVO?.conclusion}</span>
+        {diagnoseConclusionVO?.files && (
+          <div style={{ paddingTop: 10 }}>
+            <span>附件：</span>
+            {diagnoseConclusionVO?.files.map((p) => {
+              return (
+                <>
+                  <a target="_blank" rel="noreferrer" style={{ marginRight: 20 }} href={p.path}>
+                    {p.name}.{p.format}
                   </a>
-                ))}
-              </div>
-            )}
+                </>
+              );
+            })}
           </div>
+        )}
+      </div>
+    );
+  };
+
+  const getProgress = () => {
+    console.log('currentStage', currentStage, diagnosisStage);
+    return (
+      <div className={sc('container-progress')}>
+        {title('诊断进度')}
+        <Steps
+          size="small"
+          current={currentStage - 1}
+          // onChange={(current) => setdiagnosisStage(current + 1)}
+          progressDot
+          style={{ marginTop: 10 }}
+        >
+          {diagnosisStageVOList.map((p, index) => (
+            <Steps.Step
+              key={p.name}
+              title={
+                <span
+                  onClick={() => {
+                    if (p.stage > currentStage) return;
+                    setDiagnosisStage(p.stage);
+                  }}
+                  style={{
+                    color:
+                      index === (diagnosisStage || currentStage || 1) - 1
+                        ? '#6680ff'
+                        : 'rgba(0, 0, 0, 0.85)',
+                    cursor: p.stage > currentStage ? 'no-drop' : 'pointer',
+                  }}
+                >
+                  {p.name}
+                </span>
+              }
+              description={
+                (p.updateTime && moment(p.updateTime).format('YYYY-MM-DD HH:mm:ss')) || '等待提交'
+              }
+            />
+          ))}
+        </Steps>
+      </div>
+    );
+  };
+
+  const getStepInfo = () => {
+    const stage = diagnosisStageVOList[(diagnosisStage || currentStage) - 1] || {
+      participants: [],
+      files: [],
+    };
+    console.log(stage, diagnosisStageVOList, diagnosisStage, currentStage);
+    return (
+      <div className={sc('container-info')}>
+        {title('阶段信息')}
+        {stage.id ? (
+          <div className={sc('container-diagnosis-step-stage-info')}>
+            <div>
+              <div className={sc('container-diagnosis-step-stage-info-title')}>阶段用时：</div>
+              <div className={sc('container-diagnosis-step-stage-info-value')}>
+                {stage.startDate || '--'}~{stage.endDate || '--'}
+              </div>
+            </div>
+
+            <div>
+              <div className={sc('container-diagnosis-step-stage-info-title')}>参与人员：</div>
+              <div className={sc('container-diagnosis-step-stage-info-value')}>
+                {stage?.participants && stage.participants.map((p) => <span key={p}>{p}</span>)}
+              </div>
+            </div>
+
+            <div>
+              <div className={sc('container-diagnosis-step-stage-info-title')}>阶段描述：</div>
+              <div className={sc('container-diagnosis-step-stage-info-value')}>
+                {stage.stageDescription || '--'}
+              </div>
+            </div>
+
+            <div>
+              <div className={sc('container-diagnosis-step-stage-info-title')}>问题描述：</div>
+              <div className={sc('container-diagnosis-step-stage-info-value')}>
+                {stage.problemDescription || '--'}
+              </div>
+            </div>
+
+            <div>
+              <div className={sc('container-diagnosis-step-stage-info-title')}>附件：</div>
+              <div className={sc('container-diagnosis-step-stage-info-value')}>
+                {stage?.files &&
+                  stage?.files.map((p) => {
+                    return (
+                      <div key={p.id}>
+                        <a
+                          target="_blank"
+                          rel="noreferrer"
+                          style={{ marginRight: 20 }}
+                          href={p.path}
+                        >
+                          {p.name}.{p.format}
+                        </a>
+                      </div>
+                    );
+                  })}
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className={sc('container-nothing')}>
+            <Empty description="" />
+            <span
+              style={{
+                fontSize: 20,
+                color: 'rgba(0,0,0,0.85)',
+              }}
+            >
+              等待提交
+            </span>
+          </div>
+        )}
+      </div>
+    );
+  };
+  return (
+    <PageContainer className={sc('container')}>
+      {getDesc()}
+      {separate()}
+      <Row gutter={20}>
+        <Col span={16}>
+          {diagnoseBaseInfoVO?.state === 1 ? (
+            <div className={sc('container-empty')}>
+              <Empty description="诊断暂未开始" />
+            </div>
+          ) : (
+            <>
+              {diagnoseBaseInfoVO?.state === 3 && getConclusions()}
+              <div className={sc('container-step')}>
+                {getProgress()}
+                {getStepInfo()}
+                {getRecords()}
+              </div>
+              {separate()}
+            </>
+          )}
         </Col>
         <Col span={8}>
-          <div className={sc('container-enterprises')}>
-            {title('诊断企业')}
-            <div className={sc('container-enterprises-content')}>
-              <Image width={80} src={detail.orgInfoVO?.coverPath} alt="图片损坏" />
-              <div>
-                <span style={{ fontSize: 16 }}>{detail.orgInfoVO?.orgName}</span>
-                <span>联系人：{detail.orgInfoVO?.contactName}</span>
-                <span>手机号：{detail.orgInfoVO?.phone}</span>
-              </div>
-            </div>
-          </div>
-          {separate()}
-          <div className={sc('container-experts')}>
-            {title('诊断专家')}
-            <Row>
-              {(detail.experts || []).map((p) => (
-                <Col span={8}>
-                  <div className={sc('container-experts-expert')}>
-                    <Avatar size={48} icon="user" src={p.expertPhotoPath} />
-                    <div style={{ display: 'inline-grid', marginLeft: 10 }}>
-                      <span>{p.expertName}</span>
-                      <span>{p.expertPhone}</span>
-                    </div>
-                  </div>
-                </Col>
-              ))}
-            </Row>
-          </div>
-          {separate()}
-          <div className={sc('container-org')}>
-            {title('所属机构')}
-            <div className={sc('container-org-content')}>
-              <img src={DiagnosisOrgAvatar} />
-              <div>
-                <span>{detail?.diagnosisVO?.diagnosisInstitution?.name || '--'}</span>
-                <span>{detail?.diagnosisVO?.diagnosisInstitution?.bag || '--'}</span>
-              </div>
-            </div>
+          <div className={sc('container-diagnosis-info')}>
+            {getProjectLeader()}
+            {getTechnician()}
+            {getEnterprises()}
+            {separate()}
+            {getExperts()}
+            {separate()}
+            {getInstitution()}
           </div>
         </Col>
       </Row>

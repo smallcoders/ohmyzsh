@@ -1,15 +1,11 @@
 import React, { useEffect, useState } from 'react';
-// import PDF from 'react-pdf-js';
 import scopedClasses from '@/utils/scopedClasses';
 import './service-config-diagnostic-tasks-report.less';
 import { Button, message } from 'antd';
 import { history } from 'umi';
 import { PageContainer } from '@ant-design/pro-layout';
-// import { downloadFile } from '@/services/common';
 import { routeName } from '../../../../config/routes';
 const sc = scopedClasses('service-config-diagnostic-tasks-report');
-// import { Document, Page, pdfjs } from 'react-pdf'
-// import PDF from "./PDF";
 import { downloadFile } from '@/services/common';
 
 export default () => {

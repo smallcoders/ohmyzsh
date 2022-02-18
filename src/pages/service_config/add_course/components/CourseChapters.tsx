@@ -558,9 +558,11 @@ export default () => {
       const uploadResponse = info?.file?.response;
       if (uploadResponse?.code === 0 && uploadResponse.result) {
         const upLoadResult = info?.fileList.map((p) => {
+          console.log(p);
           return {
             title: p.name,
-            storeId: p.response?.result,
+            storeId: p.response?.result?.id,
+            duration: p.response?.result?.duration,
             isEditing: false,
           } as CourseManage.File;
         });
@@ -589,7 +591,7 @@ export default () => {
   const uploadProps = {
     name: 'file',
     multiple: true,
-    action: '/iiep-manage/common/upload',
+    action: '/iiep-manage/common/upload/record',
     onChange: handleChange,
     beforeUpload: beforeUpload,
     onDrop: (e: React.DragEvent) => {

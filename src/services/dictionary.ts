@@ -5,7 +5,7 @@ import { request } from 'umi';
  * @param label
  */
 export async function getDictionaryTree(
-  label: 'DEMAND_SOLUTION' | 'EXPERT' | 'POLICY' | 'MANAGEMENT',
+  label: 'DEMAND_SOLUTION' | 'EXPERT' | 'POLICY' | 'MANAGEMENT' | 'CREATIVE_TYPE',
 ) {
   return request('/iiep-manage/dictionary/getTree', {
     method: 'GET',

@@ -13,6 +13,9 @@
   SOLUTION_DETAIL: '/service-config/solution/detail', // 服务方案详情
   NEWS: '/service-config/news', // 新闻
   ACCOUNT: '/system-config/account', // 账号管理
+  KECHUANGVERIFY: '/user-config/KeChuangVerify', // 科创成果审核
+  KECHUANGVERIFY_INDEX: '/user-config/KeChuangVerify/index', // 科创成果审核
+  KECHUANGVERIFY_DETAIL: '/user-config/KeChuangVerify/detail', // 科创成果详情
 };
 
 export default [
@@ -178,6 +181,41 @@ export default [
     ],
   },
   {
+    path: '/user-config',
+    name: '用户管理',
+    icon: 'user',
+    access: 'SYSTEM_CONFIG',
+    routes: [
+      {
+        path: '/user-config',
+        redirect: '/user-config/KeChuangVerify',
+      },
+      {
+        path: routeName.KECHUANGVERIFY,
+        name: '科创成果审核',
+        // component: './user_config/keChuang_verify',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.KECHUANGVERIFY,
+            redirect: routeName.KECHUANGVERIFY_INDEX,
+          },
+          {
+            path: routeName.KECHUANGVERIFY_INDEX,
+            name: '科创成果审核',
+            hideInBreadcrumb: true,
+            component: './user_config/keChuang_verify',
+          },
+          {
+            path: routeName.KECHUANGVERIFY_DETAIL,
+            name: '科创成果详情',
+            component: './user_config/keChuang_verify/detail',
+          },
+        ],
+      },
+    ],
+  },
+  {
     path: '/system-config',
     name: '系统管理',
     icon: 'setting',
@@ -188,7 +226,7 @@ export default [
         redirect: '/system-config/account',
       },
       {
-        path: '/system-config/account',
+        path: routeName.ACCOUNT,
         name: '账号管理',
         component: './account',
       },
