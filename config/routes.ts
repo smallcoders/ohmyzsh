@@ -14,6 +14,7 @@
   NEWS: '/service-config/news', // 新闻
   ACCOUNT: '/system-config/account', // 账号管理
   KECHUANGVERIFY: '/user-config/KeChuangVerify', // 科创成果审核
+  LOGOUTVERIFY: '/user-config/logoutVerify', // 科创成果审核
   KECHUANGVERIFY_INDEX: '/user-config/KeChuangVerify/index', // 科创成果审核
   KECHUANGVERIFY_DETAIL: '/user-config/KeChuangVerify/detail', // 科创成果详情
 };
@@ -212,6 +213,11 @@ export default [
             component: './user_config/keChuang_verify/detail',
           },
         ],
+      },
+      {
+        path: routeName.LOGOUTVERIFY,
+        name: '注销审核',
+        component: './user_config/logout_verify',
       },
     ],
   },
