@@ -101,7 +101,7 @@ export default () => {
           </span>
         </div>
         <div className={sc('container-desc')}>
-          <span>是否选择平台经纪人代理：</span>
+          <span>是否选择平台技术经理人代理：</span>
           <span>{detail?.proxy ? '是' : '否'}</span>
         </div>
 
