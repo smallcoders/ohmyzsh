@@ -66,7 +66,7 @@ export default () => {
         </div>
         <div className={sc('container-desc')}>
           <span>技术简介：</span>
-          <span>{detail?.introduction || '--'}</span>
+          <div dangerouslySetInnerHTML={{ __html: detail?.introduction || '--' }} />
         </div>
         <div className={sc('container-desc')}>
           <span>技术转让方式：</span>
@@ -81,7 +81,9 @@ export default () => {
           <div>
             <Image.PreviewGroup>
               {detail?.covers &&
-                detail?.covers.map((p: string) => <Image key={p} width={200} src={p} />)}
+                detail?.covers.map((p: string) => (
+                  <Image key={p} height={200} width={300} src={p} />
+                ))}
             </Image.PreviewGroup>
           </div>
         </div>
