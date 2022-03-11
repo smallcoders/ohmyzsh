@@ -9,6 +9,7 @@ import {
   message,
   Space,
   Popconfirm,
+  TreeSelect,
 } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
@@ -31,7 +32,7 @@ const stateObj = {
 export default () => {
   const [dataSource, setDataSource] = useState<News.Content[]>([]);
   const [refuseContent, setRefuseContent] = useState<string>('');
-  // const [types, setTypes] = useState<any[]>([]);
+  const [types, setTypes] = useState<any[]>([]);
   const [searchContent, setSearChContent] = useState<{
     name?: string; // 标题
     startDateTime?: string; // 提交开始时间
@@ -73,17 +74,17 @@ export default () => {
     }
   };
 
-  // const prepare = async () => {
-  //   try {
-  //     const res = await getDictionaryTree('CREATIVE_TYPE');
-  //     // setTypes(res);
-  //   } catch (error) {
-  //     message.error('获取行业类型失败');
-  //   }
-  // };
-  // useEffect(() => {
-  //   prepare();
-  // }, []);
+  const prepare = async () => {
+    try {
+      const res = await getDictionaryTree('CREATIVE_TYPE');
+      setTypes(res);
+    } catch (error) {
+      message.error('获取行业类型失败');
+    }
+  };
+  useEffect(() => {
+    prepare();
+  }, []);
 
   const editState = async (record: any, { ...rest }) => {
     try {
@@ -120,7 +121,7 @@ export default () => {
         <Button
           type="link"
           onClick={() => {
-            history.push(`${routeName.KECHUANGVERIFY_DETAIL}?id=${_record.id}`);
+            history.push(`${routeName.CREATIVE_VERIFY_DETAIL}?id=${_record.id}`);
           }}
         >
           {_}
@@ -217,7 +218,7 @@ export default () => {
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
-            {/* <Col span={8}>
+            <Col span={8}>
               <Form.Item name="typeId" label="行业类型">
                 <TreeSelect
                   showSearch
@@ -229,19 +230,19 @@ export default () => {
                   fieldNames={{ label: 'name', value: 'id', children: 'children' }}
                 />
               </Form.Item>
-            </Col> */}
+            </Col>
             <Col span={8}>
               <Form.Item name="userName" label="用户名">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
+          </Row>
+          <Row>
             <Col span={8}>
               <Form.Item name="time" label="提交时间">
                 <DatePicker.RangePicker allowClear showTime />
               </Form.Item>
             </Col>
-          </Row>
-          <Row>
             <Col span={8}>
               <Form.Item name="auditState" label="审核状态">
                 <Select placeholder="请选择" allowClear>
@@ -288,7 +289,7 @@ export default () => {
       {useSearchNode()}
       <div className={sc('container-table-header')}>
         <div className="title">
-          <span>资讯列表(共{pageInfo.totalCount || 0}个)</span>
+          <span>成果列表(共{pageInfo.totalCount || 0}个)</span>
         </div>
       </div>
       <div className={sc('container-table-body')}>

@@ -13,10 +13,13 @@
   SOLUTION_DETAIL: '/service-config/solution/detail', // 服务方案详情
   NEWS: '/service-config/news', // 新闻
   ACCOUNT: '/system-config/account', // 账号管理
-  KECHUANGVERIFY: '/user-config/KeChuangVerify', // 科创成果审核
-  LOGOUTVERIFY: '/user-config/logoutVerify', // 科创成果审核
-  KECHUANGVERIFY_INDEX: '/user-config/KeChuangVerify/index', // 科创成果审核
-  KECHUANGVERIFY_DETAIL: '/user-config/KeChuangVerify/detail', // 科创成果详情
+  CREATIVE_VERIFY: '/user-config/creative-verify', // 科创成果审核
+  CREATIVE_VERIFY_INDEX: '/user-config/creative-verify/index', // 科创成果审核
+  CREATIVE_VERIFY_DETAIL: '/user-config/creative-verify/detail', // 科创成果详情
+  NEED_VERIFY: '/user-config/need_verify', // 科创成果审核
+  NEED_VERIFY_INDEX: '/user-config/need_verify/index', // 科创成果审核
+  NEED_VERIFY_DETAIL: '/user-config/need_verify/detail', // 科创成果详情
+  LOGOUTVERIFY: '/user-config/logoutVerify', // 注销审核
 };
 
 export default [
@@ -189,28 +192,49 @@ export default [
     routes: [
       {
         path: '/user-config',
-        redirect: '/user-config/KeChuangVerify',
+        redirect: routeName.CREATIVE_VERIFY,
       },
       {
-        path: routeName.KECHUANGVERIFY,
+        path: routeName.CREATIVE_VERIFY,
         name: '科创成果审核',
-        // component: './user_config/keChuang_verify',
         hideChildrenInMenu: true,
         routes: [
           {
-            path: routeName.KECHUANGVERIFY,
-            redirect: routeName.KECHUANGVERIFY_INDEX,
+            path: routeName.CREATIVE_VERIFY,
+            redirect: routeName.CREATIVE_VERIFY_INDEX,
           },
           {
-            path: routeName.KECHUANGVERIFY_INDEX,
+            path: routeName.CREATIVE_VERIFY_INDEX,
             name: '科创成果审核',
             hideInBreadcrumb: true,
-            component: './user_config/keChuang_verify',
+            component: './user_config/creative_verify',
           },
           {
-            path: routeName.KECHUANGVERIFY_DETAIL,
+            path: routeName.CREATIVE_VERIFY_DETAIL,
             name: '科创成果详情',
-            component: './user_config/keChuang_verify/detail',
+            component: './user_config/creative_verify/detail',
+          },
+        ],
+      },
+      {
+        path: routeName.NEED_VERIFY,
+        name: '创新需求审核',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.NEED_VERIFY,
+            redirect: routeName.NEED_VERIFY_INDEX,
+          },
+          {
+            path: routeName.NEED_VERIFY_INDEX,
+            name: '创新需求审核',
+            hideInBreadcrumb: true,
+            component: './user_config/need_verify',
+          },
+          {
+            path: routeName.NEED_VERIFY_DETAIL,
+            name: '创新需求详情',
+            component: './user_config/need_verify/detail',
           },
         ],
       },
