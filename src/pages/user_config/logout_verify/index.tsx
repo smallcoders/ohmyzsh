@@ -1,4 +1,14 @@
-import { Button, Input, Form, Select, Row, Col, DatePicker, message, Space } from 'antd';
+import {
+  Button,
+  Input,
+  Form,
+  Select,
+  Row,
+  Col,
+  DatePicker,
+  message as antdMessage,
+  Space,
+} from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
@@ -13,14 +23,7 @@ const sc = scopedClasses('user-config-logout-verify');
 export default () => {
   const [dataSource, setDataSource] = useState<LogoutVerify.Content[]>([]);
   // const [types, setTypes] = useState<any[]>([]);
-  const [searchContent, setSearChContent] = useState<{
-    userName?: string; // 用户名
-    certificateName?: string; // 认证名称
-    phone?: string; // 手机号
-    accountType?: string; // 账号类型，只需关注 ENTERPRISE SERVICE_PROVIDER  EXPERT 三种类型
-    submitStartTime?: string; // 提交开始时间
-    submitEndTime?: string; // 提交结束时间
-  }>({});
+  const [searchContent, setSearChContent] = useState<LogoutVerify.SearchContent>({});
 
   const formLayout = {
     labelCol: { span: 6 },
@@ -29,16 +32,14 @@ export default () => {
 
   const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
     pageIndex: 1,
-    pageSize: 5,
+    pageSize: 10,
     totalCount: 0,
     pageTotal: 0,
   });
 
-  // const [form] = Form.useForm();
-
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     try {
-      const { result, totalCount, pageTotal, code } = await getLogoutPage({
+      const { result, totalCount, pageTotal, code, message } = await getLogoutPage({
         pageIndex,
         pageSize,
         ...searchContent,
@@ -47,25 +48,25 @@ export default () => {
         setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
         setDataSource(result);
       } else {
-        message.error(`请求分页数据失败`);
+        throw new Error(message);
       }
     } catch (error) {
-      console.log(error);
+      antdMessage.error(`请求失败，原因:{${error}}`);
     }
   };
 
   const pass = async (record: any) => {
+    const tooltipMessage = '审核通过';
     try {
-      const tooltipMessage = '审核通过';
       const updateStateResult = await confirmUserDelete(record.id);
       if (updateStateResult.code === 0) {
-        message.success(`${tooltipMessage}成功`);
+        antdMessage.success(`${tooltipMessage}成功`);
         getPage();
       } else {
-        message.error(`${tooltipMessage}失败，原因:{${updateStateResult.message}}`);
+        throw new Error(updateStateResult.message);
       }
     } catch (error) {
-      console.log(error);
+      antdMessage.error(`${tooltipMessage}失败，原因:{${error}}`);
     }
   };
 
