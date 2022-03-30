@@ -1,5 +1,4 @@
 import { PageContainer } from '@ant-design/pro-layout';
-import './index.less';
 import React, { useState } from 'react';
 import AppResource from '../app_resource';
 import ConsultRecord from '../consult_record';

@@ -233,7 +233,7 @@ export default () => {
             <Form.Item name="label" label="应用标签">
               <Select placeholder="请选择" allowClear>
                 {/* <Select.Option value={0}>支持试用</Select.Option> */}
-                <Select.Option value={1}>平台精选</Select.Option>
+                <Select.Option value={1}>热门</Select.Option>
                 <Select.Option value={2}>其他</Select.Option>
               </Select>
             </Form.Item>
