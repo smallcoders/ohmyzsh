@@ -28,5 +28,11 @@ namespace Common {
      */
     pageTotal: number;
   };
+
+  export type CommonFile = {
+    id: string;
+    fileName?: string; // 文件名
+    fileFormat?: string; // 文件格式
+  };
 }
 export default Common;

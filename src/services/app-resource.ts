@@ -98,3 +98,17 @@ export async function getDataAnalysePage(
     data,
   });
 }
+
+/** 获取咨询记录分页 */
+export async function getConsultPage(data?: { [key: string]: any }) {
+  return request<AppResource.ConsultRecordList>('/iiep-manage/app/consultation/page', {
+    method: 'post',
+    data,
+  });
+}
+
+export async function markContracted(id: string) {
+  return request<Common.ResultCode & { result: any }>(
+    `/iiep-manage/app/consultation/handle?id=${id}`,
+  );
+}

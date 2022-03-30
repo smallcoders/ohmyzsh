@@ -105,5 +105,31 @@ namespace AppResource {
     beginOperateTime?: string; // 尖刀应用，0否，1是
     endOperateTime?: string; //状态，1发布中、0已下架
   };
+
+  export type ConsultRecordList = {
+    result: ConsultRecordContent[];
+  } & Common.ResultCode &
+    Common.ResultPage;
+
+  export type ConsultRecordContent = {
+    id?: string; //	咨询记录id
+    orgName?: string; //	企业名称
+    contact?: string; //	联系人
+    phone?: string; //	联系电话
+    appName?: string; //	应用名称
+    content?: string; //	应用需求
+    submitTime?: string; //	咨询时间
+    handleTime?: string; //	处理时间
+    handlerName?: string; //	操作人名 例：暮温
+    isHandle?: boolean; //	是否已处理
+  };
+
+  export type ConsultRecordSearchBody = {
+    orgName?: string; //企业名称
+    appName?: string; //应用名称
+    startDate?: string; //开始时间
+    endDate?: string; //结束时间
+    isHandle?: boolean; //是否已联系
+  };
 }
 export default AppResource;
