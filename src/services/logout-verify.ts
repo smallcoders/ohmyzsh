@@ -1,5 +1,7 @@
 // @ts-ignore
 /* eslint-disable */
+import Common from '@/types/common';
+import LogoutVerify from '@/types/user-config-logout-verify';
 import { request } from 'umi';
 
 /**
@@ -8,7 +10,7 @@ import { request } from 'umi';
  * @returns
  */
 export async function getLogoutPage(data?: { [key: string]: any }) {
-  return request<any>('/iiep-manage/user/audit/userDeleteAuditPage', {
+  return request<LogoutVerify.ResultList>('/iiep-manage/user/audit/userDeleteAuditPage', {
     method: 'post',
     data,
   });
@@ -18,5 +20,5 @@ export async function getLogoutPage(data?: { [key: string]: any }) {
  * 用户注销申请审核通过
  */
 export async function confirmUserDelete(id: string) {
-  return request<any>(`/iiep-manage/user/audit/confirmUserDelete?id=${id}`);
+  return request<Common.ResultCode>(`/iiep-manage/user/audit/confirmUserDelete?id=${id}`);
 }

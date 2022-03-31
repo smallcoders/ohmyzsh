@@ -9,21 +9,19 @@ import {
   message as antdMessage,
   Space,
 } from 'antd';
-import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
 import type Common from '@/types/common';
 import moment from 'moment';
 import SelfTable from '@/components/self_table';
-import type LogoutVerify from '@/types/user-config-logout-verify';
-import { confirmUserDelete, getLogoutPage } from '@/services/logout-verify';
+import { getConsultPage, markContracted } from '@/services/app-resource';
+import type AppResource from '@/types/app-resource';
 const sc = scopedClasses('user-config-logout-verify');
 
 export default () => {
-  const [dataSource, setDataSource] = useState<LogoutVerify.Content[]>([]);
-  // const [types, setTypes] = useState<any[]>([]);
-  const [searchContent, setSearChContent] = useState<LogoutVerify.SearchContent>({});
+  const [dataSource, setDataSource] = useState<AppResource.ConsultRecordContent[]>([]);
+  const [searchContent, setSearChContent] = useState<AppResource.ConsultRecordSearchBody>({});
 
   const formLayout = {
     labelCol: { span: 6 },
@@ -39,7 +37,7 @@ export default () => {
 
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     try {
-      const { result, totalCount, pageTotal, code, message } = await getLogoutPage({
+      const { result, totalCount, pageTotal, code, message } = await getConsultPage({
         pageIndex,
         pageSize,
         ...searchContent,
@@ -55,15 +53,15 @@ export default () => {
     }
   };
 
-  const pass = async (record: any) => {
-    const tooltipMessage = '审核通过';
+  const mark = async (record: any) => {
+    const tooltipMessage = '标记已联系';
     try {
-      const updateStateResult = await confirmUserDelete(record.id);
-      if (updateStateResult.code === 0) {
+      const markResult = await markContracted(record.id);
+      if (markResult.code === 0) {
         antdMessage.success(`${tooltipMessage}成功`);
         getPage();
       } else {
-        throw new Error(updateStateResult.message);
+        throw new Error(markResult.message);
       }
     } catch (error) {
       antdMessage.error(`${tooltipMessage}失败，原因:{${error}}`);
@@ -75,64 +73,64 @@ export default () => {
       title: '序号',
       dataIndex: 'sort',
       width: 80,
-      render: (_: any, _record: LogoutVerify.Content, index: number) =>
+      render: (_: any, _record: AppResource.Content, index: number) =>
         pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
-      title: '审核类型',
-      dataIndex: 'auditType',
-      width: 200,
-    },
-    {
-      title: '用户名',
-      dataIndex: 'userName',
+      title: '企业名称',
+      dataIndex: 'orgName',
+      width: 150,
       isEllipsis: true,
-      width: 200,
     },
     {
-      title: '认证名称',
-      dataIndex: 'certificateName',
+      title: '联系人',
+      dataIndex: 'contact',
       isEllipsis: true,
-      render: (_: string) => _ || '/',
-      width: 200,
+      width: 100,
     },
     {
-      title: '手机号',
+      title: '联系电话',
       dataIndex: 'phone',
       isEllipsis: true,
-      width: 200,
+      width: 150,
     },
     {
-      title: '账号类型',
-      dataIndex: 'accountType',
+      title: '应用名称',
+      dataIndex: 'appName',
       isEllipsis: true,
-      width: 200,
+      width: 150,
     },
     {
-      title: '提交时间',
+      title: '应用需求',
+      dataIndex: 'content',
+      isEllipsis: true,
+      width: 450,
+    },
+    {
+      title: '咨询时间',
       dataIndex: 'submitTime',
       width: 200,
       render: (_: string) => moment(_).format('YYYY-MM-DD HH:mm:ss'),
     },
     {
-      title: '审核',
+      title: '联系情况',
       width: 200,
       dataIndex: 'option',
       render: (_: any, record: any) => {
-        return !record.auditPassed ? (
+        return !record.isHandle ? (
           <div style={{ textAlign: 'center' }}>
             <Space size={20}>
-              <Button type="link" onClick={() => pass(record)}>
-                通过
+              <Button type="link" onClick={() => mark(record)}>
+                标记已联系
               </Button>
             </Space>
           </div>
         ) : (
           <div style={{ display: 'grid', justifyItems: 'center' }}>
             <span>
-              {record.auditTime ? moment(record.auditTime).format('YYYY-MM-DD HH:mm:ss') : '--'}
+              {record.handleTime ? moment(record.handleTime).format('YYYY-MM-DD HH:mm:ss') : '--'}
             </span>
-            <span>操作人：{record.auditorName}</span>
+            <span>操作人：{record.handlerName}</span>
           </div>
         );
       },
@@ -150,37 +148,31 @@ export default () => {
         <Form {...formLayout} form={searchForm}>
           <Row>
             <Col span={8}>
-              <Form.Item name="userName" label="用户名">
+              <Form.Item name="orgName" label="企业名称">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="certificateName" label="认证名称">
-                <Input placeholder="企业/服务商/专家名称" />
+              <Form.Item name="appName" label="应用名称">
+                <Input placeholder="请输入" />
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="phone" label="手机号">
-                <Input placeholder="请输入" />
+              <Form.Item name="isHandle" label="联系情况">
+                <Select placeholder="请选择" allowClear>
+                  <Select.Option value={1}>待联系</Select.Option>
+                  <Select.Option value={2}>已联系</Select.Option>
+                </Select>
               </Form.Item>
             </Col>
           </Row>
           <Row>
             <Col span={8}>
-              <Form.Item name="accountType" label="账号类型">
-                <Select placeholder="请选择" allowClear>
-                  <Select.Option value={'ENTERPRISE'}>工业企业</Select.Option>
-                  <Select.Option value={'SERVICE_PROVIDER'}>服务商</Select.Option>
-                  <Select.Option value={'EXPERT'}>专家</Select.Option>
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item name="time" label="提交时间">
+              <Form.Item name="time" label="咨询时间">
                 <DatePicker.RangePicker allowClear showTime />
               </Form.Item>
             </Col>
-            <Col offset={4} span={4}>
+            <Col offset={12} span={4}>
               <Button
                 style={{ marginRight: 20 }}
                 type="primary"
@@ -188,8 +180,11 @@ export default () => {
                 onClick={() => {
                   const search = searchForm.getFieldsValue();
                   if (search.time) {
-                    search.submitStartTime = moment(search.time[0]).format('YYYY-MM-DDTHH:mm:ss');
-                    search.submitEndTime = moment(search.time[1]).format('YYYY-MM-DDTHH:mm:ss');
+                    search.startDate = moment(search.time[0]).format('YYYY-MM-DDTHH:mm:ss');
+                    search.endDate = moment(search.time[1]).format('YYYY-MM-DDTHH:mm:ss');
+                  }
+                  if (search.isHandle) {
+                    search.isHandle = !!(search.isHandle - 1);
                   }
                   setSearChContent(search);
                 }}
@@ -214,11 +209,11 @@ export default () => {
   };
 
   return (
-    <PageContainer className={sc('container')}>
+    <>
       {useSearchNode()}
       <div className={sc('container-table-header')}>
         <div className="title">
-          <span>消息列表(共{pageInfo.totalCount || 0}个)</span>
+          <span>咨询记录列表(共{pageInfo.totalCount || 0}个)</span>
         </div>
       </div>
       <div className={sc('container-table-body')}>
@@ -241,6 +236,6 @@ export default () => {
           }
         />
       </div>
-    </PageContainer>
+    </>
   );
 };

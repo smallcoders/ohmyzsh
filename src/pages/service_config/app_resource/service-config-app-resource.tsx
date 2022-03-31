@@ -224,7 +224,7 @@ export default () => {
         return (
           <Space size="middle">
             <a
-              href="#"
+              href="javascript:void(0)"
               onClick={() => {
                 history.push(`${routeName.ADD_APP_RESOURCE}?id=${record.id}`);
               }}
@@ -332,7 +332,8 @@ export default () => {
     );
   };
   return (
-    <PageContainer className={sc('container')}>
+    // <PageContainer className={sc('container')}>
+    <>
       {GetSearchNode()}
       <div className={sc('container-table-header')}>
         <div className="title">
@@ -394,6 +395,7 @@ export default () => {
           dataSource={dataSource}
         />
       </div>
-    </PageContainer>
+    </>
+    // </PageContainer>
   );
 };

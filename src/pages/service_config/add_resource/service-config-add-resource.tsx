@@ -178,7 +178,7 @@ export default () => {
               <Link to="/service-config">服务配置</Link>
             </Breadcrumb.Item>
             <Breadcrumb.Item>
-              <Link to="/service-config/app-resource">应用资源 </Link>
+              <Link to="/service-config/app-manage">应用管理 </Link>
             </Breadcrumb.Item>
             <Breadcrumb.Item>
               {isEditing ? `${editingItem.name}应用编辑` : '添加应用'}
@@ -233,7 +233,7 @@ export default () => {
             <Form.Item name="label" label="应用标签">
               <Select placeholder="请选择" allowClear>
                 {/* <Select.Option value={0}>支持试用</Select.Option> */}
-                <Select.Option value={1}>平台精选</Select.Option>
+                <Select.Option value={1}>热门</Select.Option>
                 <Select.Option value={2}>其他</Select.Option>
               </Select>
             </Form.Item>

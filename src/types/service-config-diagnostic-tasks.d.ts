@@ -165,12 +165,9 @@ namespace DiagnosticTasks {
       orgId: string;
       orgName: string; //企业名称
     };
-    reportFile?: {
-      //诊断报告
-      id: string;
-      fileName: string; // 文件名
-      fileFormat: string; // 文件格式
-    };
+    reportFile?: Common.CommonFile;
+    conclusion?: string;
+    score?: number;
   };
 }
 export default DiagnosticTasks;

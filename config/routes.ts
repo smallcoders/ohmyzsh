@@ -6,8 +6,9 @@
   COURSE_MANAGE: '/service-config/course-manage/index', // 课程管理
   ADD_COURSE: '/service-config/course-manage/add', // 新增或编辑课程
   APP_RESOURCE: '/service-config/app-resource/index', // 应用资源
-  DATA_ANALYSIS: '/service-config/app-resource/data-analysis', // 综合采购数据分析
-  ADD_APP_RESOURCE: '/service-config/app-resource/add-resource', // 新增应用资源
+  APP_MANAGE: '/service-config/app-manage/index', // 应用管理
+  DATA_ANALYSIS: '/service-config/app-manage/data-analysis', // 综合采购数据分析
+  ADD_APP_RESOURCE: '/service-config/app-manage/add-resource', // 新增应用资源
   SOLUTION: '/service-config/solution', // 服务方案
   SOLUTION_INDEX: '/service-config/solution/index', // 服务方案
   SOLUTION_DETAIL: '/service-config/solution/detail', // 服务方案详情
@@ -108,20 +109,21 @@ export default [
           },
         ],
       },
+
       {
-        path: '/service-config/app-resource',
-        name: '应用资源',
+        path: '/service-config/app-manage',
+        name: '应用管理',
         hideChildrenInMenu: true,
         routes: [
           {
-            path: '/service-config/app-resource',
-            redirect: routeName.APP_RESOURCE,
+            path: '/service-config/app-manage',
+            redirect: routeName.APP_MANAGE,
           },
           {
-            path: routeName.APP_RESOURCE,
+            path: routeName.APP_MANAGE,
             hideInBreadcrumb: true,
             name: '应用资源',
-            component: './service_config/app_resource',
+            component: './service_config/app_manage',
           },
           {
             path: routeName.DATA_ANALYSIS,
@@ -135,6 +137,33 @@ export default [
           },
         ],
       },
+      // {
+      //   path: '/service-config/app-resource',
+      //   name: '应用资源',
+      //   hideChildrenInMenu: true,
+      //   routes: [
+      //     {
+      //       path: '/service-config/app-resource',
+      //       redirect: routeName.APP_RESOURCE,
+      //     },
+      //     {
+      //       path: routeName.APP_RESOURCE,
+      //       hideInBreadcrumb: true,
+      //       name: '应用资源',
+      //       component: './service_config/app_resource',
+      //     },
+      //     {
+      //       path: routeName.DATA_ANALYSIS,
+      //       name: '综合采购数据分析',
+      //       component: './service_config/data_analysis',
+      //     },
+      //     {
+      //       path: routeName.ADD_APP_RESOURCE,
+      //       name: '新增应用',
+      //       component: './service_config/add_resource',
+      //     },
+      //   ],
+      // },
       {
         path: routeName.SOLUTION,
         name: '服务方案',
