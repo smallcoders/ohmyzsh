@@ -243,11 +243,11 @@ export default [
           },
         ],
       },
-      // {
-      //   path: routeName.LOGOUTVERIFY,
-      //   name: '注销审核',
-      //   component: './user_config/logout_verify',
-      // },
+      {
+        path: routeName.LOGOUTVERIFY,
+        name: '注销审核',
+        component: './user_config/logout_verify',
+      },
     ],
   },
   {
