@@ -1,5 +1,17 @@
 import { UploadOutlined } from '@ant-design/icons';
-import { Button, Form, Select, Row, Col, message, Space, Input, InputNumber, Modal } from 'antd';
+import {
+  Button,
+  Form,
+  Select,
+  Row,
+  Col,
+  message,
+  Space,
+  Input,
+  InputNumber,
+  Modal,
+  DatePicker,
+} from 'antd';
 import '../service-config-diagnostic-tasks.less';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
@@ -15,11 +27,16 @@ import { history } from 'umi';
 import SelfTable from '@/components/self_table';
 import type DiagnosticTasks from '@/types/service-config-diagnostic-tasks';
 import UploadFormFile from '@/components/upload_form/upload-form-file';
+import { getAreaTree } from '@/services/area';
 const sc = scopedClasses('service-config-diagnostic-tasks');
 export default () => {
   const [dataSource, setDataSource] = useState<DiagnosticTasks.OnlineRecord[]>([]);
   const [searchContent, setSearChContent] = useState<{
     status?: DiagnosticTasks.Status; // 状态：0发布中、1待发布、2已下架
+    orgName?: string;
+    areaCode?: number;
+    startTime?: string;
+    endTime?: string;
   }>({});
   const [editingItem, setEditingItem] = useState<DiagnosticTasks.OnlineRecord | undefined>();
   const [modalVisible, setModalVisible] = useState<boolean>(false);
@@ -91,8 +108,9 @@ export default () => {
     },
     {
       title: '所属区域',
-      dataIndex: 'lastDiagnosisTime',
+      dataIndex: 'area',
       ellipsis: true,
+      render: (area: any) => area?.name || '/',
       width: 200,
     },
     {
@@ -213,6 +231,16 @@ export default () => {
   useEffect(() => {
     getDiagnosticTasks();
   }, [searchContent]);
+  const [areaOptions, setAreaOptions] = useState<any>([]);
+
+  /**
+   * 查询默认密码
+   */
+  useEffect(() => {
+    getAreaTree({}).then((data) => {
+      setAreaOptions(data?.children || []);
+    });
+  }, []);
 
   const useSearchNode = (): React.ReactNode => {
     const [searchForm] = Form.useForm();
@@ -228,18 +256,41 @@ export default () => {
                 </Select>
               </Form.Item>
             </Col>
-            <Col span={3}>
+            <Col span={8}>
+              <Form.Item name="orgName" label="企业名称">
+                <Input placeholder="请输入" />
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              <Form.Item name="areaCode" label="所属区域">
+                <Select placeholder="请选择" allowClear>
+                  {areaOptions?.map((item: any) => (
+                    <Select.Option key={item?.code} value={Number(item?.code)}>
+                      {item?.name}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+            <div style={{ height: 20, width: '100%' }} />
+            <Col span={8}>
+              <Form.Item name="time" label="诊断时间">
+                <DatePicker.RangePicker allowClear showTime />
+              </Form.Item>
+            </Col>
+            <Col span={3} offset={13}>
               <Button
                 style={{ marginRight: 20 }}
                 type="primary"
                 key="primary"
                 onClick={() => {
                   const search = searchForm.getFieldsValue();
-                  if (search.time) {
-                    search.startDate = moment(search.time[0]).format('YYYY-MM-DD');
-                    search.endDate = moment(search.time[1]).format('YYYY-MM-DD');
+                  const { time, ...rest } = search;
+                  if (time) {
+                    rest.startTime = moment(search.time[0]).format('YYYY-MM-DD HH:mm:ss');
+                    rest.endTime = moment(search.time[1]).format('YYYY-MM-DD HH:mm:ss');
                   }
-                  setSearChContent(search);
+                  setSearChContent(rest);
                 }}
               >
                 查询
