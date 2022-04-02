@@ -122,7 +122,7 @@ export default [
           {
             path: routeName.APP_MANAGE,
             hideInBreadcrumb: true,
-            name: '应用资源',
+            name: '应用管理',
             component: './service_config/app_manage',
           },
           {
