@@ -140,7 +140,7 @@ export default () => {
           message.success(`${tooltipMessage}成功`);
           setIsClosejumpTooltip(false);
 
-          history.push(routeName.APP_RESOURCE);
+          history.push(routeName.APP_MANAGE);
         } else {
           message.error(`${tooltipMessage}失败，原因:{${addorUpdateRes.message}}`);
         }
