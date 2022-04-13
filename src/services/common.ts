@@ -12,3 +12,14 @@ export async function downloadFile(fileId: string) {
     responseType: 'blob',
   });
 }
+
+/**
+ * 枚举字段查询
+ * @param label
+ * @returns
+ */
+export async function getEnumByName(label: string) {
+  return request<CourseManage.ResultList>(`/iiep-manage/common/dictionaryEnum?label=${label}`, {
+    method: 'get',
+  });
+}
