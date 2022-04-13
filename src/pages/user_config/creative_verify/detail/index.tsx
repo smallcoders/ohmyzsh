@@ -5,12 +5,35 @@ import { PageContainer } from '@ant-design/pro-layout';
 import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
 import { getCreativeDetail } from '@/services/kc-verify';
+import { getEnumByName } from '@/services/common';
 
 const sc = scopedClasses('user-config-kechuang');
 
 export default () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [detail, setDetail] = useState<any>({});
+  const [enums, setEnums] = useState<any>({});
+
+  const getDictionary = async () => {
+    try {
+      const enumsRes = await Promise.all([
+        getEnumByName('CREATIVE_ACHIEVEMENT_CATEGORY_ENUM'), // 成果类别
+        getEnumByName('CREATIVE_ACHIEVEMENT_ATTRIBUTE_ENUM'), // 属性
+        getEnumByName('CREATIVE_MATURITY_ENUM'), // 成熟度
+        getEnumByName('CREATIVE_ACHIEVEMENT_TECHNICAL_FIELD_ENUM'), // 技术领域
+        getEnumByName('TRANSFER_TYPE_ENUM'), // 技术转换
+      ]);
+      setEnums({
+        CREATIVE_ACHIEVEMENT_CATEGORY_ENUM: enumsRes[0].result,
+        CREATIVE_ACHIEVEMENT_ATTRIBUTE_ENUM: enumsRes[1].result,
+        CREATIVE_MATURITY_ENUM: enumsRes[2].result,
+        CREATIVE_ACHIEVEMENT_TECHNICAL_FIELD_ENUM: enumsRes[3].result,
+        TRANSFER_TYPE_ENUM: enumsRes[4].result,
+      });
+    } catch (error) {
+      message.error('服务器错误');
+    }
+  };
 
   const prepare = async () => {
     const id = history.location.query?.id as string;
@@ -18,6 +41,7 @@ export default () => {
     if (id) {
       try {
         const res = await getCreativeDetail(id);
+        getDictionary();
         if (res.code === 0) {
           console.log(res);
           setDetail(res.result);
@@ -32,6 +56,15 @@ export default () => {
     }
   };
 
+  const getEnum = (enumType: string, enumName: string) => {
+    try {
+      console.log(enums, enumType, enumName);
+      return enums[enumType]?.filter((p: any) => p.enumName === enumName)[0].name;
+    } catch (error) {
+      return '--';
+    }
+  };
+
   useEffect(() => {
     prepare();
   }, []);
@@ -39,56 +72,62 @@ export default () => {
   return (
     <PageContainer loading={loading}>
       <div className={sc('container')}>
-        <div className={sc('container-title')}>创新技术信息</div>
+        <div className={sc('container-title')}>技术成果信息</div>
         <div className={sc('container-desc')}>
-          <span>创新技术名称：</span>
+          <span>技术成果名称：</span>
           <span>{detail?.name || '--'}</span>
         </div>
         <div className={sc('container-desc')}>
-          <span>行业类别：</span>
+          <span>成果年份：</span>
+          <span>{detail?.achievementYear || '--'}</span>
+        </div>
+        <div className={sc('container-desc')}>
+          <span>成果类别：</span>
+          <span>{getEnum('CREATIVE_ACHIEVEMENT_CATEGORY_ENUM', detail?.category)}</span>
+        </div>
+        <div className={sc('container-desc')}>
+          <span>成果属性：</span>
+          <span>{getEnum('CREATIVE_ACHIEVEMENT_ATTRIBUTE_ENUM', detail?.attribute)}</span>
+        </div>
+        <div className={sc('container-desc')}>
+          <span>成果成熟度：</span>
+          <span>{getEnum('CREATIVE_MATURITY_ENUM', detail?.maturity)}</span>
+        </div>
+        <div className={sc('container-desc')}>
+          <span>所属技术领域：</span>
+          <span>
+            {getEnum('CREATIVE_ACHIEVEMENT_TECHNICAL_FIELD_ENUM', detail?.technicalField)}
+          </span>
+        </div>
+        <div className={sc('container-desc')}>
+          <span>主要应用行业：</span>
           <span>{detail?.types ? detail?.types.join('，') : '--'}</span>
         </div>
         <div className={sc('container-desc')}>
-          <span>是否专利：</span>
-          <span>{detail?.patent ? '是' : '否'}</span>
-        </div>
-        <div className={sc('container-desc')}>
-          <span>专利类型：</span>
-          <span>{detail?.patentType || '--'}</span>
-        </div>
-        <div className={sc('container-desc')}>
-          <span>专利号/申请号：</span>
+          <span>专利编号：</span>
           <span>{detail?.patentCode || '--'}</span>
         </div>
         <div className={sc('container-desc')}>
-          <span>专利授权日期：</span>
-          <span>{detail?.patentEmpowerDate || '--'}</span>
-        </div>
-        <div className={sc('container-desc')}>
-          <span>技术简介：</span>
+          <span>成果简介：</span>
           <div dangerouslySetInnerHTML={{ __html: detail?.introduction || '--' }} />
         </div>
         <div className={sc('container-desc')}>
-          <span>技术转让方式：</span>
-          <span>{detail?.transferType || '--'}</span>
+          <span>成果转让方式：</span>
+          <span>{getEnum('TRANSFER_TYPE_ENUM', detail?.transferType)}</span>
         </div>
         <div className={sc('container-desc')}>
-          <span>技术成熟度：</span>
-          <span>{detail?.maturity || '--'}</span>
-        </div>
-        <div className={sc('container-desc')}>
-          <span>技术图片：</span>
+          <span>成果图片：</span>
           <div>
             <Image.PreviewGroup>
               {detail?.covers &&
-                detail?.covers.map((p: string) => (
-                  <Image key={p} height={200} width={300} src={p} />
+                detail?.covers.map((p: any) => (
+                  <Image key={p?.id} height={200} width={300} src={p?.path} />
                 ))}
             </Image.PreviewGroup>
           </div>
         </div>
         <div className={sc('container-desc')}>
-          <span>证明材料：</span>
+          <span>成果附件：</span>
           <span>
             {detail?.files &&
               detail?.files.map((p: any) => {
@@ -103,22 +142,31 @@ export default () => {
           </span>
         </div>
         <div className={sc('container-desc')}>
-          <span>是否选择平台技术经理人代理：</span>
+          <span>是否需要代理：</span>
           <span>{detail?.proxy ? '是' : '否'}</span>
         </div>
 
-        <div className={sc('container-title')}>发布人信息</div>
+        <div className={sc('container-title')}>成果联系信息</div>
         <div className={sc('container-desc')}>
-          <span>发布人：</span>
-          <span>{detail?.publisherName || '--'}</span>
+          <span>联系人：</span>
+          <span>
+            {detail?.contactName || '--'}
+            {detail?.contactNameHide ? '（匿名）' : ''}
+          </span>
         </div>
         <div className={sc('container-desc')}>
-          <span>手机号码：</span>
-          <span>{detail?.phone || '--'}</span>
+          <span>联系电话：</span>
+          <span>
+            {detail?.contactPhone || '--'}
+            {detail?.contactPhoneHide ? '（隐藏）' : ''}
+          </span>
         </div>
         <div className={sc('container-desc')}>
-          <span>单位：</span>
-          <span>{detail?.workUnit || '--'}</span>
+          <span>企业名称：</span>
+          <span>
+            {detail?.enterpriseName || '--'}
+            {detail?.enterpriseNameHide ? '（隐藏）' : ''}
+          </span>
         </div>
         <div className={sc('container-desc')}>
           <span>所属区域：</span>

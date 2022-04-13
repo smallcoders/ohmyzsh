@@ -19,17 +19,19 @@ import moment from 'moment';
 import { routeName } from '@/../config/routes';
 import SelfTable from '@/components/self_table';
 import { history } from 'umi';
-import { getCreativePage, updateCreativeAudit } from '@/services/kc-verify';
+import { getDemandPage, updateDemandAudit } from '@/services/kc-verify';
 import { getDictionaryTree } from '@/services/dictionary';
+import Common from '@/types/common';
+import NeedVerify from '@/types/user-config-need-verify';
 // import { getDictionaryTree } from '@/services/dictionary';
 const sc = scopedClasses('service-config-app-news');
 const stateObj = {
-  2: '待审核',
-  3: '通过',
-  4: '拒绝',
+  AUDITING: '审核中',
+  AUDIT_PASSED: '审核通过',
+  AUDIT_REJECTED: '审核拒绝',
 };
 export default () => {
-  const [dataSource, setDataSource] = useState<News.Content[]>([]);
+  const [dataSource, setDataSource] = useState<NeedVerify.Content[]>([]);
   const [refuseContent, setRefuseContent] = useState<string>('');
   const [types, setTypes] = useState<any[]>([]);
   const [searchContent, setSearChContent] = useState<{
@@ -57,7 +59,7 @@ export default () => {
 
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     try {
-      const { result, totalCount, pageTotal, code } = await getCreativePage({
+      const { result, totalCount, pageTotal, code } = await getDemandPage({
         pageIndex,
         pageSize,
         ...searchContent,
@@ -88,7 +90,7 @@ export default () => {
   const editState = async (record: any, { ...rest }) => {
     try {
       const tooltipMessage = rest.result ? '审核通过' : '审核拒绝';
-      const updateStateResult = await updateCreativeAudit({
+      const updateStateResult = await updateDemandAudit({
         id: record.id,
         auditId: record.auditId,
         ...rest,
@@ -110,8 +112,8 @@ export default () => {
       title: '排序',
       dataIndex: 'sort',
       width: 80,
-      render: (_: any, _record: News.Content, index: number) =>
-        _record.state === 2 ? '' : pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
+      render: (_: any, _record: NeedVerify.Content, index: number) =>
+        pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
       title: '需求名称',
@@ -120,7 +122,7 @@ export default () => {
         <Button
           type="link"
           onClick={() => {
-            history.push(`${routeName.CREATIVE_VERIFY_DETAIL}?id=${_record.id}`);
+            history.push(`${routeName.NEED_VERIFY_DETAIL}?id=${_record.id}`);
           }}
         >
           {_}
@@ -163,7 +165,7 @@ export default () => {
       width: 200,
       dataIndex: 'option',
       render: (_: any, record: any) => {
-        return record.auditState === '2' ? (
+        return record.auditState === 'AUDITING' ? (
           <Space size={20}>
             <Button type="link" onClick={() => editState(record, { result: true })}>
               通过
@@ -218,7 +220,7 @@ export default () => {
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="typeId" label="所属行业">
+              <Form.Item name="type" label="所属行业">
                 <TreeSelect
                   showSearch
                   treeNodeFilterProp="name"
@@ -245,12 +247,13 @@ export default () => {
             <Col span={8}>
               <Form.Item name="auditState" label="审核状态">
                 <Select placeholder="请选择" allowClear>
-                  <Select.Option value={3}>通过</Select.Option>
-                  <Select.Option value={4}>拒绝</Select.Option>
+                  <Select.Option value={'AUDITING'}>待审核</Select.Option>
+                  <Select.Option value={'AUDIT_PASSED'}>通过</Select.Option>
+                  <Select.Option value={'AUDIT_REJECTED'}>拒绝</Select.Option>
                 </Select>
               </Form.Item>
             </Col>
-            <Col offset={12} span={4}>
+            <Col offset={4} span={4}>
               <Button
                 style={{ marginRight: 20 }}
                 type="primary"

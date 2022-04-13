@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
-import { getCreativeDetail } from '@/services/kc-verify';
+import { getDemandDetail } from '@/services/kc-verify';
 
 const sc = scopedClasses('user-config-kechuang');
 
@@ -16,7 +16,7 @@ export default () => {
     const id = history.location.query?.id as string;
     if (id) {
       try {
-        const res = await getCreativeDetail(id);
+        const res = await getDemandDetail(id);
         if (res.code === 0) {
           setDetail(res.result);
         } else {
@@ -38,15 +38,8 @@ export default () => {
     <PageContainer loading={loading}>
       <div className={sc('container')}>
         <div className={sc('container-title')}>科产需求信息</div>
-        <div className={sc('container-desc')}>
-          <div>
-            <Image.PreviewGroup>
-              {detail?.covers &&
-                detail?.covers.map((p: string) => (
-                  <Image key={p} height={200} width={300} src={p} />
-                ))}
-            </Image.PreviewGroup>
-          </div>
+        <div style={{ marginLeft: 200 }}>
+          <Image height={200} width={300} src={detail?.cover} />
         </div>
         <div className={sc('container-desc')}>
           <span>需求名称：</span>
@@ -54,27 +47,27 @@ export default () => {
         </div>
         <div className={sc('container-desc')}>
           <span>需求类型：</span>
-          <span>{detail?.patentType || '--'}</span>
+          <span>{detail?.typeName || '--'}</span>
         </div>
         <div className={sc('container-desc')}>
           <span>行业类别：</span>
-          <span>{detail?.types ? detail?.types.join('，') : '--'}</span>
+          <span>{detail?.industryTypeNames ? detail?.industryTypeNames.join('，') : '--'}</span>
         </div>
         <div className={sc('container-desc')}>
           <span>需求区域：</span>
-          <span>{detail?.patentCode || '--'}</span>
+          <span>{detail?.areaNames ? detail?.areaNames.join('，') : '--'}</span>
         </div>
         <div className={sc('container-desc')}>
           <span>需求时间范围：</span>
-          <span>{detail?.patentEmpowerDate || '--'}</span>
+          <span>{detail?.startDate ? `${detail?.startDate}~${detail?.endDate}` : '--'}</span>
         </div>
         <div className={sc('container-desc')}>
           <span>需求内容：</span>
-          <div dangerouslySetInnerHTML={{ __html: detail?.introduction || '--' }} />
+          <span>{detail?.content || '--'}</span>
         </div>
         <div className={sc('container-desc')}>
           <span>企业信息：</span>
-          <span>{detail?.transferType || '--'}</span>
+          <span>{detail?.hideOrg ? '隐藏' : '公开'}</span>
         </div>
       </div>
     </PageContainer>
