@@ -26,8 +26,8 @@ import { getDictionaryTree } from '@/services/dictionary';
 const sc = scopedClasses('service-config-app-news');
 const stateObj = {
   AUDITING: '待审核',
-  3: '通过',
-  4: '拒绝',
+  AUDIT_PASSED: '审核通过',
+  AUDIT_REJECTED: '审核拒绝',
 };
 export default () => {
   const [dataSource, setDataSource] = useState<News.Content[]>([]);
@@ -151,7 +151,7 @@ export default () => {
       title: '审核状态',
       dataIndex: 'auditState',
       width: 200,
-      render: (_: number) => {
+      render: (_: string) => {
         return (
           <div className={`state${_}`}>
             {Object.prototype.hasOwnProperty.call(stateObj, _) ? stateObj[_] : '--'}

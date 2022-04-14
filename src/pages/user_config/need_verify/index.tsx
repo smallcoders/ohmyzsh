@@ -152,7 +152,7 @@ export default () => {
       title: '审核状态',
       dataIndex: 'auditState',
       width: 200,
-      render: (_: number) => {
+      render: (_: string) => {
         return (
           <div className={`state${_}`}>
             {Object.prototype.hasOwnProperty.call(stateObj, _) ? stateObj[_] : '--'}
