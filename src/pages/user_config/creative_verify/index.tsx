@@ -26,8 +26,8 @@ import { getDictionaryTree } from '@/services/dictionary';
 const sc = scopedClasses('service-config-app-news');
 const stateObj = {
   AUDITING: '待审核',
-  AUDIT_PASSED: '审核通过',
-  AUDIT_REJECTED: '审核拒绝',
+  AUDIT_PASSED: '已通过',
+  AUDIT_REJECTED: '已拒绝',
 };
 export default () => {
   const [dataSource, setDataSource] = useState<News.Content[]>([]);

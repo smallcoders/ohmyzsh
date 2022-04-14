@@ -27,8 +27,8 @@ import NeedVerify from '@/types/user-config-need-verify';
 const sc = scopedClasses('service-config-app-news');
 const stateObj = {
   AUDITING: '审核中',
-  AUDIT_PASSED: '审核通过',
-  AUDIT_REJECTED: '审核拒绝',
+  AUDIT_PASSED: '已通过',
+  AUDIT_REJECTED: '已拒绝',
 };
 export default () => {
   const [dataSource, setDataSource] = useState<NeedVerify.Content[]>([]);
