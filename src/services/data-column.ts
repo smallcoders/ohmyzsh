@@ -37,3 +37,17 @@ export async function removeDataColumn(id: string) {
     method: 'DELETE',
   });
 }
+
+export async function getDataColumnIntroduce() {
+  return request<DataColumn.IntroduceResultList>('/iiep-manage/createDataBar');
+}
+
+/**
+ * 修改
+ */
+export async function updateDataColumnIntroduce(data?: DataColumn.IntroduceContent) {
+  return request<Common.ResultCode>('/iiep-manage/createDataBar', {
+    method: 'put',
+    data,
+  });
+}
