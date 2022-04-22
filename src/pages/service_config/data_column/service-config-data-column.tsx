@@ -1,18 +1,9 @@
 /* eslint-disable */
-import {
-  Radio,
-  Input,
-  Table,
-  Form,
-  InputNumber,
-  Typography,
-  message,
-  RadioChangeEvent,
-} from 'antd';
+import { Radio, RadioChangeEvent } from 'antd';
 
 import './service-config-data-column.less';
 import scopedClasses from '@/utils/scopedClasses';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import DataColumn from '@/types/data-column.d';
 import Home from './components/home';
 import Introduce from './components/introduce';
@@ -21,7 +12,7 @@ import { PageContainer } from '@ant-design/pro-layout';
 const sc = scopedClasses('service-config-data-column');
 
 const DColumn: React.FC = () => {
-  const [edge, setEdge] = useState<DataColumn.Type>(DataColumn.Type.INTRODUCE);
+  const [edge, setEdge] = useState<DataColumn.Type>(DataColumn.Type.HOME);
 
   const selectButton = (): React.ReactNode => {
     const handleEdgeChange = (e: RadioChangeEvent) => {

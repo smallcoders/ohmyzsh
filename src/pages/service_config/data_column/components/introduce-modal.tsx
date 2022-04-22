@@ -1,5 +1,5 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Form, Input, InputNumber, message, Modal, Radio } from 'antd';
+import { Button, Form, Input, InputNumber, Modal, Radio } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 import { useEffect, useState } from 'react';
 import '../service-config-data-column.less';
@@ -50,7 +50,6 @@ const IntroduceModal = ({ visible, setVisible, submit, detail }) => {
       })
       .catch((err) => {
         console.log(err);
-        message.error('服务器错误');
       });
   };
 
@@ -91,6 +90,17 @@ const IntroduceModal = ({ visible, setVisible, submit, detail }) => {
             onChange={(e) => {
               console.log(e);
               setControl(e.target.value);
+              if (e.target.value) {
+                form.setFieldsValue({
+                  constructions: [
+                    {
+                      title: '',
+                      value: undefined,
+                    },
+                  ],
+                });
+                setSum(0);
+              }
             }}
           >
             <Radio value={true}>是</Radio>
