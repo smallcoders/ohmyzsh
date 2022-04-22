@@ -6,16 +6,21 @@
   COURSE_MANAGE: '/service-config/course-manage/index', // 课程管理
   ADD_COURSE: '/service-config/course-manage/add', // 新增或编辑课程
   APP_RESOURCE: '/service-config/app-resource/index', // 应用资源
-  DATA_ANALYSIS: '/service-config/app-resource/data-analysis', // 综合采购数据分析
-  ADD_APP_RESOURCE: '/service-config/app-resource/add-resource', // 新增应用资源
+  APP_MANAGE: '/service-config/app-manage/index', // 应用管理
+  DATA_ANALYSIS: '/service-config/app-manage/data-analysis', // 综合采购数据分析
+  ADD_APP_RESOURCE: '/service-config/app-manage/add-resource', // 新增应用资源
   SOLUTION: '/service-config/solution', // 服务方案
   SOLUTION_INDEX: '/service-config/solution/index', // 服务方案
   SOLUTION_DETAIL: '/service-config/solution/detail', // 服务方案详情
   NEWS: '/service-config/news', // 新闻
   ACCOUNT: '/system-config/account', // 账号管理
-  KECHUANGVERIFY: '/user-config/KeChuangVerify', // 科创成果审核
-  KECHUANGVERIFY_INDEX: '/user-config/KeChuangVerify/index', // 科创成果审核
-  KECHUANGVERIFY_DETAIL: '/user-config/KeChuangVerify/detail', // 科创成果详情
+  CREATIVE_VERIFY: '/user-config/creative-verify', // 科创成果审核
+  CREATIVE_VERIFY_INDEX: '/user-config/creative-verify/index', // 科创成果审核
+  CREATIVE_VERIFY_DETAIL: '/user-config/creative-verify/detail', // 科创成果详情
+  NEED_VERIFY: '/user-config/need_verify', // 科创成果审核
+  NEED_VERIFY_INDEX: '/user-config/need_verify/index', // 科创成果审核
+  NEED_VERIFY_DETAIL: '/user-config/need_verify/detail', // 科创成果详情
+  LOGOUTVERIFY: '/user-config/logoutVerify', // 注销审核
 };
 
 export default [
@@ -107,20 +112,21 @@ export default [
           },
         ],
       },
+
       {
-        path: '/service-config/app-resource',
-        name: '应用资源',
+        path: '/service-config/app-manage',
+        name: '应用管理',
         hideChildrenInMenu: true,
         routes: [
           {
-            path: '/service-config/app-resource',
-            redirect: routeName.APP_RESOURCE,
+            path: '/service-config/app-manage',
+            redirect: routeName.APP_MANAGE,
           },
           {
-            path: routeName.APP_RESOURCE,
+            path: routeName.APP_MANAGE,
             hideInBreadcrumb: true,
-            name: '应用资源',
-            component: './service_config/app_resource',
+            name: '应用管理',
+            component: './service_config/app_manage',
           },
           {
             path: routeName.DATA_ANALYSIS,
@@ -134,6 +140,33 @@ export default [
           },
         ],
       },
+      // {
+      //   path: '/service-config/app-resource',
+      //   name: '应用资源',
+      //   hideChildrenInMenu: true,
+      //   routes: [
+      //     {
+      //       path: '/service-config/app-resource',
+      //       redirect: routeName.APP_RESOURCE,
+      //     },
+      //     {
+      //       path: routeName.APP_RESOURCE,
+      //       hideInBreadcrumb: true,
+      //       name: '应用资源',
+      //       component: './service_config/app_resource',
+      //     },
+      //     {
+      //       path: routeName.DATA_ANALYSIS,
+      //       name: '综合采购数据分析',
+      //       component: './service_config/data_analysis',
+      //     },
+      //     {
+      //       path: routeName.ADD_APP_RESOURCE,
+      //       name: '新增应用',
+      //       component: './service_config/add_resource',
+      //     },
+      //   ],
+      // },
       {
         path: routeName.SOLUTION,
         name: '服务方案',
@@ -188,30 +221,56 @@ export default [
     routes: [
       {
         path: '/user-config',
-        redirect: '/user-config/KeChuangVerify',
+        redirect: routeName.CREATIVE_VERIFY,
       },
       {
-        path: routeName.KECHUANGVERIFY,
+        path: routeName.CREATIVE_VERIFY,
         name: '科创成果审核',
-        // component: './user_config/keChuang_verify',
         hideChildrenInMenu: true,
         routes: [
           {
-            path: routeName.KECHUANGVERIFY,
-            redirect: routeName.KECHUANGVERIFY_INDEX,
+            path: routeName.CREATIVE_VERIFY,
+            redirect: routeName.CREATIVE_VERIFY_INDEX,
           },
           {
-            path: routeName.KECHUANGVERIFY_INDEX,
+            path: routeName.CREATIVE_VERIFY_INDEX,
             name: '科创成果审核',
             hideInBreadcrumb: true,
-            component: './user_config/keChuang_verify',
+            component: './user_config/creative_verify',
           },
           {
-            path: routeName.KECHUANGVERIFY_DETAIL,
+            path: routeName.CREATIVE_VERIFY_DETAIL,
             name: '科创成果详情',
-            component: './user_config/keChuang_verify/detail',
+            component: './user_config/creative_verify/detail',
           },
         ],
+      },
+      {
+        path: routeName.NEED_VERIFY,
+        name: '创新需求审核',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.NEED_VERIFY,
+            redirect: routeName.NEED_VERIFY_INDEX,
+          },
+          {
+            path: routeName.NEED_VERIFY_INDEX,
+            name: '创新需求审核',
+            hideInBreadcrumb: true,
+            component: './user_config/need_verify',
+          },
+          {
+            path: routeName.NEED_VERIFY_DETAIL,
+            name: '创新需求详情',
+            component: './user_config/need_verify/detail',
+          },
+        ],
+      },
+      {
+        path: routeName.LOGOUTVERIFY,
+        name: '注销审核',
+        component: './user_config/logout_verify',
       },
     ],
   },

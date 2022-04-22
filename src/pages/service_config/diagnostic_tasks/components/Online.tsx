@@ -1,28 +1,46 @@
-import { DeleteOutlined, PaperClipOutlined, UploadOutlined } from '@ant-design/icons';
-import { Button, Form, Select, Row, Col, message, Space, Popconfirm } from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
+import {
+  Button,
+  Form,
+  Select,
+  Row,
+  Col,
+  message,
+  Space,
+  Input,
+  InputNumber,
+  Modal,
+  DatePicker,
+} from 'antd';
 import '../service-config-diagnostic-tasks.less';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
-import Common from '@/types/common';
+import type Common from '@/types/common';
 import {
   getDiagnosisRecords,
   getXTYSkipUrl,
   addOrUpdateReportFile,
-  deleteReportFile,
 } from '@/services/diagnostic-tasks';
 import moment from 'moment';
 import { routeName } from '../../../../../config/routes';
 import { history } from 'umi';
 import SelfTable from '@/components/self_table';
-import DiagnosticTasks from '@/types/service-config-diagnostic-tasks';
-import UploadForm from '@/components/upload_form';
+import type DiagnosticTasks from '@/types/service-config-diagnostic-tasks';
+import UploadFormFile from '@/components/upload_form/upload-form-file';
+import { getAreaTree } from '@/services/area';
 const sc = scopedClasses('service-config-diagnostic-tasks');
 export default () => {
   const [dataSource, setDataSource] = useState<DiagnosticTasks.OnlineRecord[]>([]);
   const [searchContent, setSearChContent] = useState<{
     status?: DiagnosticTasks.Status; // 状态：0发布中、1待发布、2已下架
+    orgName?: string;
+    areaCode?: number;
+    startTime?: string;
+    endTime?: string;
   }>({});
-
+  const [editingItem, setEditingItem] = useState<DiagnosticTasks.OnlineRecord | undefined>();
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [addOrUpdateLoading, setAddOrUpdateLoading] = useState<boolean>(false);
   const formLayout = {
     labelCol: { span: 5 },
     wrapperCol: { span: 16 },
@@ -67,14 +85,7 @@ export default () => {
     }
   };
 
-  const remove = async (id: string) => {
-    try {
-      await deleteReportFile(id);
-      getDiagnosticTasks();
-    } catch (error) {
-      message.error('服务器报错');
-    }
-  };
+  const [form] = Form.useForm();
 
   const columns = [
     {
@@ -90,56 +101,69 @@ export default () => {
       isEllipsis: true,
       render: (org: { id: string; orgName: string }, record: DiagnosticTasks.OnlineRecord) => (
         <a href="#" onClick={() => open(record?.id)}>
-          {org.orgName}
+          {org?.orgName || ''}
         </a>
       ),
       width: 300,
     },
     {
-      title: '上次诊断时间',
+      title: '所属区域',
+      dataIndex: 'area',
+      ellipsis: true,
+      render: (area: any) => area?.name || '/',
+      width: 200,
+    },
+    {
+      title: '诊断时间',
       dataIndex: 'lastDiagnosisTime',
       ellipsis: true,
       width: 200,
     },
     {
-      title: '点击诊断次数',
-      dataIndex: 'diagnosisCount',
+      title: '总体得分',
+      dataIndex: 'score',
       width: 200,
     },
     {
-      title: '诊断报告',
-      dataIndex: 'reportFile',
-      width: 400,
-      render: (reportFile: any, record: DiagnosticTasks.OnlineRecord) => {
-        return (
-          reportFile && (
-            <div style={{ color: '#6680FF', display: 'flex', alignItems: 'center' }}>
-              <PaperClipOutlined />
-              <Button
-                type="link"
-                style={{ height: 'auto' }}
-                onClick={() => {
-                  // openPDF(reportFile?.id, reportFile?.fileName)
-                  history.push(`${routeName.DIAGNOSTIC_TASKS_REPORT}?fileId=${reportFile?.id}`);
-                }}
-              >
-                <div className={'file-name'}>
-                  {reportFile?.fileName}.{reportFile?.fileFormat}
-                </div>
-              </Button>
-              <Popconfirm
-                title="确定删除此报告么？"
-                okText="确定"
-                cancelText="取消"
-                onConfirm={() => remove(record.id as string)}
-              >
-                <DeleteOutlined style={{ color: '#6680FF', fontSize: 16, cursor: 'pointer' }} />
-              </Popconfirm>
-            </div>
-          )
-        );
-      },
+      title: '总体结果',
+      dataIndex: 'conclusion',
+      ellipsis: true,
+      width: 200,
     },
+    // {
+    //   title: '诊断报告',
+    //   dataIndex: 'reportFile',
+    //   width: 400,
+    //   render: (reportFile: any, record: DiagnosticTasks.OnlineRecord) => {
+    //     return (
+    //       reportFile && (
+    //         <div style={{ color: '#6680FF', display: 'flex', alignItems: 'center' }}>
+    //           <PaperClipOutlined />
+    //           <Button
+    //             type="link"
+    //             style={{ height: 'auto' }}
+    //             onClick={() => {
+    //               // openPDF(reportFile?.id, reportFile?.fileName)
+    //               history.push(`${routeName.DIAGNOSTIC_TASKS_REPORT}?fileId=${reportFile?.id}`);
+    //             }}
+    //           >
+    //             <div className={'file-name'}>
+    //               {reportFile?.fileName}.{reportFile?.fileFormat}
+    //             </div>
+    //           </Button>
+    //           <Popconfirm
+    //             title="确定删除此报告么？"
+    //             okText="确定"
+    //             cancelText="取消"
+    //             onConfirm={() => remove(record.id as string)}
+    //           >
+    //             <DeleteOutlined style={{ color: '#6680FF', fontSize: 16, cursor: 'pointer' }} />
+    //           </Popconfirm>
+    //         </div>
+    //       )
+    //     );
+    //   },
+    // },
     {
       title: '操作',
       dataIndex: 'option',
@@ -151,7 +175,7 @@ export default () => {
            * 待诊断时延期 可编辑
            */
           <Space size="middle">
-            <UploadForm
+            {/* <UploadForm
               accept=".pdf"
               showUploadList={false}
               onChange={async (reportFileId: any) => {
@@ -167,7 +191,37 @@ export default () => {
               }}
             >
               <Button icon={<UploadOutlined />}>上传报告</Button>
-            </UploadForm>
+            </UploadForm> onClick={() => pass(record)} */}
+            <Button
+              type="link"
+              onClick={() => {
+                const item = {
+                  score: record.score,
+                  conclusion: record.conclusion,
+                  id: record.id,
+                  reportFileId: record?.reportFile ? [record?.reportFile] : [],
+                } as any;
+                setEditingItem(item);
+                setModalVisible(true);
+                form.setFieldsValue({ ...item });
+              }}
+            >
+              编辑
+            </Button>
+            {record?.reportFile?.id && (
+              <Button
+                type="link"
+                style={{ height: 'auto' }}
+                onClick={() => {
+                  // openPDF(reportFile?.id, reportFile?.fileName)
+                  history.push(
+                    `${routeName.DIAGNOSTIC_TASKS_REPORT}?fileId=${record?.reportFile?.id}`,
+                  );
+                }}
+              >
+                查看报告
+              </Button>
+            )}
           </Space>
         );
       },
@@ -177,6 +231,16 @@ export default () => {
   useEffect(() => {
     getDiagnosticTasks();
   }, [searchContent]);
+  const [areaOptions, setAreaOptions] = useState<any>([]);
+
+  /**
+   * 查询默认密码
+   */
+  useEffect(() => {
+    getAreaTree({}).then((data) => {
+      setAreaOptions(data?.children || []);
+    });
+  }, []);
 
   const useSearchNode = (): React.ReactNode => {
     const [searchForm] = Form.useForm();
@@ -192,18 +256,41 @@ export default () => {
                 </Select>
               </Form.Item>
             </Col>
-            <Col span={3}>
+            <Col span={8}>
+              <Form.Item name="orgName" label="企业名称">
+                <Input placeholder="请输入" />
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              <Form.Item name="areaCode" label="所属区域">
+                <Select placeholder="请选择" allowClear>
+                  {areaOptions?.map((item: any) => (
+                    <Select.Option key={item?.code} value={Number(item?.code)}>
+                      {item?.name}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+            <div style={{ height: 20, width: '100%' }} />
+            <Col span={8}>
+              <Form.Item name="time" label="诊断时间">
+                <DatePicker.RangePicker allowClear showTime />
+              </Form.Item>
+            </Col>
+            <Col span={3} offset={13}>
               <Button
                 style={{ marginRight: 20 }}
                 type="primary"
                 key="primary"
                 onClick={() => {
                   const search = searchForm.getFieldsValue();
-                  if (search.time) {
-                    search.startDate = moment(search.time[0]).format('YYYY-MM-DD');
-                    search.endDate = moment(search.time[1]).format('YYYY-MM-DD');
+                  const { time, ...rest } = search;
+                  if (time) {
+                    rest.startTime = moment(search.time[0]).format('YYYY-MM-DD HH:mm:ss');
+                    rest.endTime = moment(search.time[1]).format('YYYY-MM-DD HH:mm:ss');
                   }
-                  setSearChContent(search);
+                  setSearChContent(rest);
                 }}
               >
                 查询
@@ -222,6 +309,114 @@ export default () => {
           </Row>
         </Form>
       </div>
+    );
+  };
+
+  /**
+   * 副作用清除
+   */
+  const clearForm = () => {
+    form.resetFields();
+    setEditingItem(undefined);
+  };
+
+  /**
+   * 添加或者修改
+   */
+  const addOrUpdate = async () => {
+    const tooltipMessage = '编辑';
+    form
+      .validateFields()
+      .then(async (value) => {
+        setAddOrUpdateLoading(true);
+        const params = {
+          ...value,
+          reportFileId: value.reportFileId?.map((p: { id: string }) => p.id).join(','),
+        };
+        const addorUpdateRes = await addOrUpdateReportFile({
+          ...params,
+          id: editingItem?.id,
+        });
+        if (addorUpdateRes.code === 0) {
+          setModalVisible(false);
+          message.success(`${tooltipMessage}成功`);
+          getDiagnosticTasks();
+          clearForm();
+        } else {
+          message.error(`${tooltipMessage}失败，原因:{${addorUpdateRes.message}}`);
+        }
+        setAddOrUpdateLoading(false);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  };
+
+  const useModal = (): React.ReactNode => {
+    return (
+      <Modal
+        title={'编辑任务'}
+        width="600px"
+        visible={modalVisible}
+        onCancel={() => {
+          clearForm();
+          setModalVisible(false);
+        }}
+        destroyOnClose
+        okButtonProps={{ loading: addOrUpdateLoading }}
+        onOk={async () => {
+          addOrUpdate();
+        }}
+      >
+        <Form {...formLayout} form={form} layout="horizontal">
+          <Form.Item
+            rules={[
+              {
+                required: true,
+                message: '必填',
+              },
+            ]}
+            name="score"
+            label="总体得分"
+          >
+            <InputNumber
+              precision={2}
+              placeholder="请输入"
+              maxLength={99999999}
+              style={{ width: '100%' }}
+            />
+          </Form.Item>
+          <Form.Item
+            rules={[
+              {
+                required: true,
+                message: '必填',
+              },
+            ]}
+            name="conclusion"
+            label="总体结果"
+          >
+            <Input.TextArea placeholder="请输入" maxLength={80} showCount />
+          </Form.Item>
+          <Form.Item
+            name="reportFileId" // state 	状态0发布中1待发布2已下架
+            label="上传报告"
+          >
+            <UploadFormFile accept=".pdf" showUploadList={true} maxCount={1}>
+              <Button icon={<UploadOutlined />}>上传文件</Button>
+            </UploadFormFile>
+
+            {/* <Popconfirm
+              title="确定删除此报告么？"
+              okText="确定"
+              cancelText="取消"
+              // onConfirm={() => remove(record.id as string)}
+            >
+              <DeleteOutlined style={{ color: '#6680FF', fontSize: 16, cursor: 'pointer' }} />
+            </Popconfirm> */}
+          </Form.Item>
+        </Form>
+      </Modal>
     );
   };
 
@@ -254,6 +449,7 @@ export default () => {
           }
         />
       </div>
+      {useModal()}
     </>
   );
 };

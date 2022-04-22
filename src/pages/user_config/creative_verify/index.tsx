@@ -9,6 +9,7 @@ import {
   message,
   Space,
   Popconfirm,
+  TreeSelect,
 } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
@@ -21,17 +22,17 @@ import { routeName } from '@/../config/routes';
 import SelfTable from '@/components/self_table';
 import { history } from 'umi';
 import { getCreativePage, updateCreativeAudit } from '@/services/kc-verify';
-// import { getDictionaryTree } from '@/services/dictionary';
+import { getDictionaryTree } from '@/services/dictionary';
 const sc = scopedClasses('service-config-app-news');
 const stateObj = {
-  2: '待审核',
-  3: '通过',
-  4: '拒绝',
+  AUDITING: '待审核',
+  AUDIT_PASSED: '已通过',
+  AUDIT_REJECTED: '已拒绝',
 };
 export default () => {
   const [dataSource, setDataSource] = useState<News.Content[]>([]);
   const [refuseContent, setRefuseContent] = useState<string>('');
-  // const [types, setTypes] = useState<any[]>([]);
+  const [types, setTypes] = useState<any[]>([]);
   const [searchContent, setSearChContent] = useState<{
     name?: string; // 标题
     startDateTime?: string; // 提交开始时间
@@ -73,17 +74,17 @@ export default () => {
     }
   };
 
-  // const prepare = async () => {
-  //   try {
-  //     const res = await getDictionaryTree('CREATIVE_TYPE');
-  //     // setTypes(res);
-  //   } catch (error) {
-  //     message.error('获取行业类型失败');
-  //   }
-  // };
-  // useEffect(() => {
-  //   prepare();
-  // }, []);
+  const prepare = async () => {
+    try {
+      const res = await getDictionaryTree('CREATIVE_TYPE');
+      setTypes(res);
+    } catch (error) {
+      message.error('获取行业类型失败');
+    }
+  };
+  useEffect(() => {
+    prepare();
+  }, []);
 
   const editState = async (record: any, { ...rest }) => {
     try {
@@ -120,7 +121,7 @@ export default () => {
         <Button
           type="link"
           onClick={() => {
-            history.push(`${routeName.KECHUANGVERIFY_DETAIL}?id=${_record.id}`);
+            history.push(`${routeName.CREATIVE_VERIFY_DETAIL}?id=${_record.id}`);
           }}
         >
           {_}
@@ -150,7 +151,7 @@ export default () => {
       title: '审核状态',
       dataIndex: 'auditState',
       width: 200,
-      render: (_: number) => {
+      render: (_: string) => {
         return (
           <div className={`state${_}`}>
             {Object.prototype.hasOwnProperty.call(stateObj, _) ? stateObj[_] : '--'}
@@ -163,7 +164,7 @@ export default () => {
       width: 200,
       dataIndex: 'option',
       render: (_: any, record: any) => {
-        return record.auditState === '2' ? (
+        return record.auditState === 'AUDITING' ? (
           <Space size={20}>
             <Button type="link" onClick={() => editState(record, { result: true })}>
               通过
@@ -217,8 +218,8 @@ export default () => {
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
-            {/* <Col span={8}>
-              <Form.Item name="typeId" label="行业类型">
+            <Col span={8}>
+              <Form.Item name="type" label="行业类型">
                 <TreeSelect
                   showSearch
                   treeNodeFilterProp="name"
@@ -229,28 +230,29 @@ export default () => {
                   fieldNames={{ label: 'name', value: 'id', children: 'children' }}
                 />
               </Form.Item>
-            </Col> */}
+            </Col>
             <Col span={8}>
               <Form.Item name="userName" label="用户名">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
+          </Row>
+          <Row>
             <Col span={8}>
               <Form.Item name="time" label="提交时间">
                 <DatePicker.RangePicker allowClear showTime />
               </Form.Item>
             </Col>
-          </Row>
-          <Row>
             <Col span={8}>
               <Form.Item name="auditState" label="审核状态">
                 <Select placeholder="请选择" allowClear>
-                  <Select.Option value={3}>通过</Select.Option>
-                  <Select.Option value={4}>拒绝</Select.Option>
+                  <Select.Option value={'AUDITING'}>待审核</Select.Option>
+                  <Select.Option value={'AUDIT_PASSED'}>通过</Select.Option>
+                  <Select.Option value={'AUDIT_REJECTED'}>拒绝</Select.Option>
                 </Select>
               </Form.Item>
             </Col>
-            <Col offset={12} span={4}>
+            <Col offset={4} span={4}>
               <Button
                 style={{ marginRight: 20 }}
                 type="primary"
@@ -288,7 +290,7 @@ export default () => {
       {useSearchNode()}
       <div className={sc('container-table-header')}>
         <div className="title">
-          <span>资讯列表(共{pageInfo.totalCount || 0}个)</span>
+          <span>成果列表(共{pageInfo.totalCount || 0}个)</span>
         </div>
       </div>
       <div className={sc('container-table-body')}>
