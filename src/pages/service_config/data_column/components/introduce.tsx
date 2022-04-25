@@ -89,6 +89,11 @@ const Introduce: React.FC = () => {
       width: 200,
     },
     {
+      title: '昨日新增数量',
+      dataIndex: 'addedNumber',
+      width: 100,
+    },
+    {
       title: '操作',
       dataIndex: 'option',
       width: 100,
@@ -124,13 +129,14 @@ const Introduce: React.FC = () => {
 
   return (
     <div style={{ marginTop: 20 }}>
-      <Table pagination={false} columns={columns} bordered dataSource={data} />
+      <Table scroll={{ x: 1080 }} pagination={false} columns={columns} bordered dataSource={data} />
       {visible && (
         <IntroduceModal
           visible={visible}
           setVisible={setVisible}
           submit={submit}
           detail={editingItem}
+          publishLoading={publishLoading}
         />
       )}
     </div>
