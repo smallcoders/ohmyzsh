@@ -92,7 +92,6 @@ const IntroduceModal = ({ visible, setVisible, submit, detail, publishLoading })
         >
           <Radio.Group
             onChange={(e) => {
-              console.log(e);
               setControl(e.target.value);
               if (e.target.value) {
                 form.setFieldsValue({
@@ -155,7 +154,7 @@ const IntroduceModal = ({ visible, setVisible, submit, detail, publishLoading })
                           ]}
                           name={[field.name, 'title']}
                         >
-                          <Input placeholder="数据来源" style={{ width: '100%' }} maxLength={35} />
+                          <Input placeholder="数据来源" style={{ width: '100%' }} maxLength={10} />
                         </Form.Item>
                         {line}
                         <Form.Item
@@ -219,28 +218,12 @@ const IntroduceModal = ({ visible, setVisible, submit, detail, publishLoading })
                 )}
               </Form.List>
             </Form.Item>
-            <Form.Item
-              label="昨日新增数量"
-              name={'addedNumber'}
-              initialValue={0}
-              rules={[
-                {
-                  validator: async (_, value) => {
-                    if (!value.match(/^[0-9|-]+$/)) {
-                      return Promise.reject(new Error('输入数字或“-”'));
-                    }
-                    if (value.length > 0 && value.lastIndexOf('-') > 0) {
-                      return Promise.reject(new Error('“-”位置不正确'));
-                    }
-                  },
-                },
-              ]}
-            >
-              <Input
+            <Form.Item label="昨日新增数量" name={'addedNumber'}>
+              <InputNumber
                 placeholder="请输入新增数量，24小时之后此模块没有改动，则自动清空新增数量"
                 style={{ width: '100%' }}
-                min={0}
-                max={8}
+                min={-99999999}
+                max={99999999}
               />
             </Form.Item>
           </>
