@@ -197,7 +197,7 @@ export default [
     path: '/user-config',
     name: '用户管理',
     icon: 'user',
-    access: 'SYSTEM_CONFIG',
+    access: 'SERVICE_CONFIG',
     routes: [
       {
         path: '/user-config',
