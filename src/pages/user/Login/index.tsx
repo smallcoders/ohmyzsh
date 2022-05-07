@@ -32,10 +32,10 @@ const LoginFC: React.FC = () => {
 
   const handleSubmit = async (values: Login.LoginParam) => {
     setUserLoginState(defaultLoginStatus);
-    const { loginNameOrPhone, password, storeAccount } = values;
+    const { loginNameOrPhone = '', password = '', storeAccount } = values;
 
     // 获取登录ticket
-    const ticketRes = await getTicket({ loginNameOrPhone });
+    const ticketRes = await getTicket({ loginNameOrPhone, password: encryptWithBase64(password) });
     if (ticketRes.code !== 0) {
       setUserLoginState({ success: false, message: ticketRes.message });
       return;
@@ -43,9 +43,7 @@ const LoginFC: React.FC = () => {
     try {
       // 登录
       const loginParam: Login.LoginParam = {
-        loginNameOrPhone,
-        password: encryptWithBase64(password),
-        ticket: ticketRes.result,
+        ticket: ticketRes.result.ticket,
         storeAccount,
       };
       const loginResult = await login(loginParam);
@@ -86,7 +84,7 @@ const LoginFC: React.FC = () => {
           title="羚羊管理运营平台"
           initialValues={{
             ...storedAccountRef.current,
-            password: decryptWithBase64(storedAccountRef.current.password),
+            password: decryptWithBase64(storedAccountRef.current.password || ''),
           }}
           onChange={() => setUserLoginState(defaultLoginStatus)}
           onFinish={async (values) => {

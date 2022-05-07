@@ -8,7 +8,7 @@ import Common from '@/types/common';
  * 获取登录ticket
  * @param options
  */
-export async function getTicket(params: { loginNameOrPhone: string }) {
+export async function getTicket(params: { loginNameOrPhone: string; password: string }) {
   return request('/iiep-manage/uap/getTicket', {
     method: 'GET',
     params: params,
