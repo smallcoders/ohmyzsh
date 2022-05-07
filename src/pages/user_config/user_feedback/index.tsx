@@ -16,9 +16,9 @@ import React, { useEffect, useState } from 'react';
 import type Common from '@/types/common';
 import moment from 'moment';
 import SelfTable from '@/components/self_table';
-import { getConsultPage, markContracted } from '@/services/app-resource';
 import type AppResource from '@/types/app-resource';
 import { EditTwoTone } from '@ant-design/icons';
+import { getUserFeedbackPage, updateUserFeedBackRemark } from '@/services/user-feedback';
 const sc = scopedClasses('user-config-logout-verify');
 
 export default () => {
@@ -40,7 +40,7 @@ export default () => {
 
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     try {
-      const { result, totalCount, pageTotal, code, message } = await getConsultPage({
+      const { result, totalCount, pageTotal, code, message } = await getUserFeedbackPage({
         pageIndex,
         pageSize,
         ...searchContent,
@@ -57,9 +57,9 @@ export default () => {
   };
 
   const mark = async (record: any) => {
-    const tooltipMessage = '标记已联系';
+    const tooltipMessage = '修改备注';
     try {
-      const markResult = await markContracted(record.id);
+      const markResult = await updateUserFeedBackRemark(record.id, remark);
       if (markResult.code === 0) {
         antdMessage.success(`${tooltipMessage}成功`);
         getPage();
@@ -80,47 +80,35 @@ export default () => {
         pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
-      title: '企业/个人名称',
-      dataIndex: 'orgName',
-      width: 150,
-      isEllipsis: true,
+      title: '反馈时间',
+      dataIndex: 'createTime',
+      width: 200,
+      render: (_: string) => moment(_).format('YYYY-MM-DD HH:mm:ss'),
     },
     {
       title: '联系人',
-      dataIndex: 'contact',
+      dataIndex: 'contactName',
       isEllipsis: true,
       width: 100,
     },
     {
       title: '联系电话',
-      dataIndex: 'phone',
+      dataIndex: 'tel',
       isEllipsis: true,
       width: 150,
     },
     {
-      title: '应用名称',
-      dataIndex: 'appName',
-      isEllipsis: true,
-      width: 150,
-    },
-    {
-      title: '应用需求',
+      title: '反馈内容',
       dataIndex: 'content',
       isEllipsis: true,
       width: 450,
-    },
-    {
-      title: '咨询时间',
-      dataIndex: 'submitTime',
-      width: 200,
-      render: (_: string) => moment(_).format('YYYY-MM-DD HH:mm:ss'),
     },
     {
       title: '联系情况',
       width: 200,
       dataIndex: 'option',
       render: (_: any, record: any) => {
-        return !record.isHandle ? (
+        return !record.handlerState ? (
           <div style={{ textAlign: 'center' }}>
             <Space size={20}>
               <Popconfirm
@@ -147,7 +135,7 @@ export default () => {
         ) : (
           <div style={{ display: 'grid', justifyItems: 'center' }}>
             <span>
-              {record.handleTime ? moment(record.handleTime).format('YYYY-MM-DD HH:mm:ss') : '--'}
+              {record.handlerTime ? moment(record.handlerTime).format('YYYY-MM-DD HH:mm:ss') : '--'}
             </span>
             <span>操作人：{record.handlerName}</span>
           </div>
@@ -167,31 +155,19 @@ export default () => {
         <Form {...formLayout} form={searchForm}>
           <Row>
             <Col span={8}>
-              <Form.Item name="orgName" label="企业/个人名称">
-                <Input placeholder="请输入" />
+              <Form.Item name="time" label="反馈时间">
+                <DatePicker.RangePicker allowClear showTime />
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="appName" label="应用名称">
-                <Input placeholder="请输入" />
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item name="isHandle" label="联系情况">
+              <Form.Item name="handlerState" label="联系情况">
                 <Select placeholder="请选择" allowClear>
                   <Select.Option value={1}>待联系</Select.Option>
                   <Select.Option value={2}>已联系</Select.Option>
                 </Select>
               </Form.Item>
             </Col>
-          </Row>
-          <Row>
-            <Col span={8}>
-              <Form.Item name="time" label="咨询时间">
-                <DatePicker.RangePicker allowClear showTime />
-              </Form.Item>
-            </Col>
-            <Col offset={12} span={4}>
+            <Col offset={4} span={4}>
               <Button
                 style={{ marginRight: 20 }}
                 type="primary"
@@ -199,11 +175,11 @@ export default () => {
                 onClick={() => {
                   const search = searchForm.getFieldsValue();
                   if (search.time) {
-                    search.startDate = moment(search.time[0]).format('YYYY-MM-DDTHH:mm:ss');
-                    search.endDate = moment(search.time[1]).format('YYYY-MM-DDTHH:mm:ss');
+                    search.startTime = moment(search.time[0]).format('YYYY-MM-DDTHH:mm:ss');
+                    search.endTime = moment(search.time[1]).format('YYYY-MM-DDTHH:mm:ss');
                   }
-                  if (search.isHandle) {
-                    search.isHandle = !!(search.isHandle - 1);
+                  if (search.handlerState) {
+                    search.handlerState = !!(search.handlerState - 1);
                   }
                   setSearChContent(search);
                 }}
@@ -243,7 +219,7 @@ export default () => {
           expandable={{
             expandedRowRender: (record: any) => (
               <p style={{ margin: 0 }}>
-                备注：{record.appName}
+                备注：{record.remark}
                 <Popconfirm
                   icon={null}
                   title={
@@ -261,7 +237,11 @@ export default () => {
                   cancelText="取消"
                   onConfirm={() => mark(record)}
                 >
-                  <EditTwoTone />
+                  <EditTwoTone
+                    onClick={() => {
+                      setRemark(record.remark);
+                    }}
+                  />
                 </Popconfirm>
               </p>
             ),

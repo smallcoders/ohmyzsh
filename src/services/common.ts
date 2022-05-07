@@ -23,3 +23,14 @@ export async function getEnumByName(label: string) {
     method: 'get',
   });
 }
+
+/**
+ * 字典查询
+ * @param label
+ * @returns
+ */
+export async function getDictionay(label: string) {
+  return request<CourseManage.ResultList>(`/iiep/common/dictionary?label=${label}`, {
+    method: 'get',
+  });
+}

@@ -233,9 +233,6 @@ export default () => {
   }, [searchContent]);
   const [areaOptions, setAreaOptions] = useState<any>([]);
 
-  /**
-   * 查询默认密码
-   */
   useEffect(() => {
     getAreaTree({}).then((data) => {
       setAreaOptions(data?.children || []);

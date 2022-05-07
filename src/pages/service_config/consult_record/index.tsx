@@ -16,7 +16,7 @@ import React, { useEffect, useState } from 'react';
 import type Common from '@/types/common';
 import moment from 'moment';
 import SelfTable from '@/components/self_table';
-import { getConsultPage, markContracted } from '@/services/app-resource';
+import { getConsultPage, markContracted, updateRemark } from '@/services/app-resource';
 import type AppResource from '@/types/app-resource';
 import { EditTwoTone } from '@ant-design/icons';
 const sc = scopedClasses('user-config-logout-verify');
@@ -59,7 +59,22 @@ export default () => {
   const mark = async (record: any) => {
     const tooltipMessage = '标记已联系';
     try {
-      const markResult = await markContracted(record.id);
+      const markResult = await markContracted(record.id, remark);
+      if (markResult.code === 0) {
+        antdMessage.success(`${tooltipMessage}成功`);
+        getPage();
+      } else {
+        throw new Error(markResult.message);
+      }
+    } catch (error) {
+      antdMessage.error(`${tooltipMessage}失败，原因:{${error}}`);
+    }
+  };
+
+  const updRemark = async (record: any) => {
+    const tooltipMessage = '修改';
+    try {
+      const markResult = await updateRemark(record.id, remark);
       if (markResult.code === 0) {
         antdMessage.success(`${tooltipMessage}成功`);
         getPage();
@@ -87,13 +102,13 @@ export default () => {
     },
     {
       title: '联系人',
-      dataIndex: 'contact',
+      dataIndex: 'contactName',
       isEllipsis: true,
       width: 100,
     },
     {
       title: '联系电话',
-      dataIndex: 'phone',
+      dataIndex: 'contactPhone',
       isEllipsis: true,
       width: 150,
     },
@@ -243,7 +258,7 @@ export default () => {
           expandable={{
             expandedRowRender: (record: any) => (
               <p style={{ margin: 0 }}>
-                备注：{record.appName}
+                备注：{record.remark}
                 <Popconfirm
                   icon={null}
                   title={
@@ -259,7 +274,7 @@ export default () => {
                   }
                   okText="确定"
                   cancelText="取消"
-                  onConfirm={() => mark(record)}
+                  onConfirm={() => updRemark(record)}
                 >
                   <EditTwoTone />
                 </Popconfirm>

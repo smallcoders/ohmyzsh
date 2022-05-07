@@ -112,16 +112,17 @@ namespace AppResource {
     Common.ResultPage;
 
   export type ConsultRecordContent = {
-    id?: string; //	咨询记录id
-    orgName?: string; //	企业名称
-    contact?: string; //	联系人
-    phone?: string; //	联系电话
-    appName?: string; //	应用名称
-    content?: string; //	应用需求
-    submitTime?: string; //	咨询时间
-    handleTime?: string; //	处理时间
-    handlerName?: string; //	操作人名 例：暮温
-    isHandle?: boolean; //	是否已处理
+    id?: string; //咨询记录id
+    orgName?: string; //企业名称
+    contactName?: string; //联系人
+    contactPhone?: string; //联系电话
+    appName?: string; //应用名称
+    content?: string; //应用需求
+    submitTime?: string; //咨询时间
+    isHandle?: boolean; //是否已联系
+    handleTime?: string; //处理时间
+    handlerName?: string; //操作人名 例：暮温
+    remark?: string; //备注
   };
 
   export type ConsultRecordSearchBody = {

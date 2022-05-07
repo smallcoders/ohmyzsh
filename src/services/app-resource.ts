@@ -107,8 +107,28 @@ export async function getConsultPage(data?: { [key: string]: any }) {
   });
 }
 
-export async function markContracted(id: string) {
-  return request<Common.ResultCode & { result: any }>(
-    `/iiep-manage/app/consultation/handle?id=${id}`,
-  );
+/**
+ * 标记已处理
+ * @param id
+ * @param remark
+ * @returns
+ */
+export async function markContracted(id: string, remark: string) {
+  return request<Common.ResultCode & { result: any }>(`/iiep-manage/app/consultation/handle`, {
+    method: 'post',
+    data: {
+      id,
+      remark,
+    },
+  });
+}
+
+export async function updateRemark(id: string, remark: string) {
+  return request<Common.ResultCode & { result: any }>(`/iiep-manage/app/consultation/remake`, {
+    method: 'post',
+    data: {
+      id,
+      remark,
+    },
+  });
 }
