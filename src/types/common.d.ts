@@ -1,4 +1,24 @@
 namespace Common {
+  // 审核状态
+  export enum AuditStatus {
+    /**
+     * 审核中
+     */
+    AUDITING = 'AUDITING',
+    /**
+     * 审核通过
+     */
+    AUDIT_PASSED = 'AUDIT_PASSED',
+    /**
+     * 审核拒绝
+     */
+    AUDIT_REJECTED = 'AUDIT_REJECTED',
+    /**
+     * 审核提交
+     */
+    AUDIT_SUBMIT = 'AUDIT_SUBMIT',
+  }
+
   export type ResultCode = {
     /**
      * 状态码

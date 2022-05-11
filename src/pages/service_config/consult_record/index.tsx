@@ -8,6 +8,7 @@ import {
   DatePicker,
   message as antdMessage,
   Space,
+  Popconfirm,
 } from 'antd';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
@@ -15,13 +16,15 @@ import React, { useEffect, useState } from 'react';
 import type Common from '@/types/common';
 import moment from 'moment';
 import SelfTable from '@/components/self_table';
-import { getConsultPage, markContracted } from '@/services/app-resource';
+import { getConsultPage, markContracted, updateRemark } from '@/services/app-resource';
 import type AppResource from '@/types/app-resource';
+import { EditTwoTone } from '@ant-design/icons';
 const sc = scopedClasses('user-config-logout-verify');
 
 export default () => {
   const [dataSource, setDataSource] = useState<AppResource.ConsultRecordContent[]>([]);
   const [searchContent, setSearChContent] = useState<AppResource.ConsultRecordSearchBody>({});
+  const [remark, setRemark] = useState<string>('');
 
   const formLayout = {
     labelCol: { span: 6 },
@@ -56,7 +59,22 @@ export default () => {
   const mark = async (record: any) => {
     const tooltipMessage = '标记已联系';
     try {
-      const markResult = await markContracted(record.id);
+      const markResult = await markContracted(record.id, remark);
+      if (markResult.code === 0) {
+        antdMessage.success(`${tooltipMessage}成功`);
+        getPage();
+      } else {
+        throw new Error(markResult.message);
+      }
+    } catch (error) {
+      antdMessage.error(`${tooltipMessage}失败，原因:{${error}}`);
+    }
+  };
+
+  const updRemark = async (record: any) => {
+    const tooltipMessage = '修改';
+    try {
+      const markResult = await updateRemark(record.id, remark);
       if (markResult.code === 0) {
         antdMessage.success(`${tooltipMessage}成功`);
         getPage();
@@ -77,20 +95,20 @@ export default () => {
         pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
-      title: '企业名称',
+      title: '企业/个人名称',
       dataIndex: 'orgName',
       width: 150,
       isEllipsis: true,
     },
     {
       title: '联系人',
-      dataIndex: 'contact',
+      dataIndex: 'contactName',
       isEllipsis: true,
       width: 100,
     },
     {
       title: '联系电话',
-      dataIndex: 'phone',
+      dataIndex: 'contactPhone',
       isEllipsis: true,
       width: 150,
     },
@@ -116,13 +134,37 @@ export default () => {
       title: '联系情况',
       width: 200,
       dataIndex: 'option',
+      fixed: 'right',
       render: (_: any, record: any) => {
         return !record.isHandle ? (
           <div style={{ textAlign: 'center' }}>
             <Space size={20}>
-              <Button type="link" onClick={() => mark(record)}>
-                标记已联系
-              </Button>
+              <Popconfirm
+                icon={null}
+                title={
+                  <>
+                    <Input.TextArea
+                      placeholder="可在此填写备注内容，备注非必填"
+                      onChange={(e) => setRemark(e.target.value)}
+                      value={remark}
+                      showCount
+                      maxLength={100}
+                    />
+                  </>
+                }
+                okText="确定"
+                cancelText="取消"
+                onConfirm={() => mark(record)}
+              >
+                <Button
+                  type="link"
+                  onClick={() => {
+                    setRemark(record.remark || '');
+                  }}
+                >
+                  标记已联系
+                </Button>
+              </Popconfirm>
             </Space>
           </div>
         ) : (
@@ -148,7 +190,7 @@ export default () => {
         <Form {...formLayout} form={searchForm}>
           <Row>
             <Col span={8}>
-              <Form.Item name="orgName" label="企业名称">
+              <Form.Item name="orgName" label="企业/个人名称">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
@@ -180,8 +222,8 @@ export default () => {
                 onClick={() => {
                   const search = searchForm.getFieldsValue();
                   if (search.time) {
-                    search.startDate = moment(search.time[0]).format('YYYY-MM-DDTHH:mm:ss');
-                    search.endDate = moment(search.time[1]).format('YYYY-MM-DDTHH:mm:ss');
+                    search.startDate = moment(search.time[0]).format('YYYY-MM-DD HH:mm:ss');
+                    search.endDate = moment(search.time[1]).format('YYYY-MM-DD HH:mm:ss');
                   }
                   if (search.isHandle) {
                     search.isHandle = !!(search.isHandle - 1);
@@ -221,6 +263,43 @@ export default () => {
           bordered
           scroll={{ x: 1480 }}
           columns={columns}
+          expandable={{
+            expandedRowRender: (record: any) => (
+              <p style={{ margin: 0 }}>
+                备注：{record.remark}
+                {record.isEdit && (
+                  <Popconfirm
+                    icon={null}
+                    title={
+                      <>
+                        <Input.TextArea
+                          placeholder="可在此填写备注内容，备注非必填"
+                          onChange={(e) => setRemark(e.target.value)}
+                          value={remark}
+                          showCount
+                          maxLength={100}
+                        />
+                      </>
+                    }
+                    okText="确定"
+                    cancelText="取消"
+                    onConfirm={() => updRemark(record)}
+                  >
+                    <EditTwoTone
+                      onClick={() => {
+                        setRemark(record.remark || '');
+                      }}
+                    />
+                  </Popconfirm>
+                )}
+              </p>
+            ),
+            // rowExpandable: () => true,
+            expandIcon: () => <></>,
+            defaultExpandAllRows: true,
+            expandedRowKeys: dataSource.map((p) => p.id),
+          }}
+          rowKey={'id'}
           dataSource={dataSource}
           pagination={
             pageInfo.totalCount === 0

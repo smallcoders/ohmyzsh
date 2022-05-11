@@ -6,6 +6,7 @@ import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
 import { getCreativeDetail } from '@/services/kc-verify';
 import { getEnumByName } from '@/services/common';
+import VerifyInfoDetail from '@/components/verify_info_detail/verify-info-detail';
 
 const sc = scopedClasses('user-config-kechuang');
 
@@ -58,7 +59,6 @@ export default () => {
 
   const getEnum = (enumType: string, enumName: string) => {
     try {
-      console.log(enums, enumType, enumName);
       return enums[enumType]?.filter((p: any) => p.enumName === enumName)[0].name;
     } catch (error) {
       return '--';
@@ -172,6 +172,9 @@ export default () => {
           <span>所属区域：</span>
           <span>{detail?.areaName || '--'}</span>
         </div>
+      </div>
+      <div style={{ background: '#fff', marginTop: 20, paddingTop: 20 }}>
+        <VerifyInfoDetail auditId={detail?.auditId} reset={prepare} />
       </div>
     </PageContainer>
   );

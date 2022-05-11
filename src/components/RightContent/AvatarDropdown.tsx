@@ -3,7 +3,7 @@ import { UserOutlined } from '@ant-design/icons';
 import { ModalForm, ProFormText } from '@ant-design/pro-form';
 import { Avatar, Menu, message, Spin } from 'antd';
 import { history, useModel } from 'umi';
-import { encryptWithBase64 } from '@/utils/crypto';
+import { encryptWithAES } from '@/utils/crypto';
 import { stringify } from 'querystring';
 import HeaderDropdown from '../HeaderDropdown';
 import type { MenuInfo } from 'rc-menu/lib/interface';
@@ -131,10 +131,27 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = () => {
             label="姓名"
           />
           <ProFormText
-            rules={[{ required: true }, { type: 'string', max: 35 }]}
+            rules={[
+              {
+                validator(_, value) {
+                  if (!value) {
+                    return Promise.reject(new Error('必填'));
+                  }
+                  if (
+                    !/^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$/.test(
+                      value,
+                    )
+                  ) {
+                    return Promise.reject(new Error('输入正确的手机号码'));
+                  }
+                  return Promise.resolve();
+                },
+              },
+            ]}
             width="sm"
             name="phone"
             label="联系方式"
+            required
           />
         </ModalForm>
       )
@@ -156,8 +173,8 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = () => {
               return;
             }
             await handleModify(false, {
-              oldPassword: encryptWithBase64(oldPassword),
-              newPassword: encryptWithBase64(newPassword),
+              oldPassword: encryptWithAES(oldPassword),
+              newPassword: encryptWithAES(newPassword),
             });
           }}
         >

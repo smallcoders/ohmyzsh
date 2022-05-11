@@ -9,7 +9,7 @@ import ProDescriptions from '@ant-design/pro-descriptions';
 import { getDetail, intentionPageQuery } from '@/services/solution';
 import type SolutionTypes from '@/types/solution';
 import scopedClasses from '@/utils/scopedClasses';
-import { renderSolutionType } from '../index';
+import { renderSolutionType } from '../solution';
 import './index.less';
 
 const sc = scopedClasses('service-config-solution');

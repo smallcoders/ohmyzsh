@@ -5,6 +5,7 @@ import { PageContainer } from '@ant-design/pro-layout';
 import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
 import { getDemandDetail } from '@/services/kc-verify';
+import VerifyInfoDetail from '@/components/verify_info_detail/verify-info-detail';
 
 const sc = scopedClasses('user-config-kechuang');
 
@@ -69,6 +70,9 @@ export default () => {
           <span>企业信息：</span>
           <span>{detail?.hideOrg ? '隐藏' : '公开'}</span>
         </div>
+      </div>
+      <div style={{ background: '#fff', marginTop: 20, paddingTop: 20 }}>
+        <VerifyInfoDetail auditId={detail?.auditId} reset={prepare} />
       </div>
     </PageContainer>
   );

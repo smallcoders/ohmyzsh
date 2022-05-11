@@ -21,8 +21,9 @@ import moment from 'moment';
 import { routeName } from '@/../config/routes';
 import SelfTable from '@/components/self_table';
 import { history } from 'umi';
-import { getCreativePage, updateCreativeAudit } from '@/services/kc-verify';
+import { getCreativePage } from '@/services/kc-verify';
 import { getDictionaryTree } from '@/services/dictionary';
+import { handleAudit } from '@/services/audit';
 const sc = scopedClasses('service-config-app-news');
 const stateObj = {
   AUDITING: '待审核',
@@ -89,8 +90,7 @@ export default () => {
   const editState = async (record: any, { ...rest }) => {
     try {
       const tooltipMessage = rest.result ? '审核通过' : '审核拒绝';
-      const updateStateResult = await updateCreativeAudit({
-        id: record.id,
+      const updateStateResult = await handleAudit({
         auditId: record.auditId,
         ...rest,
       });
@@ -118,14 +118,13 @@ export default () => {
       title: '成果名称',
       dataIndex: 'name',
       render: (_: string, _record: any) => (
-        <Button
-          type="link"
+        <a
           onClick={() => {
             history.push(`${routeName.CREATIVE_VERIFY_DETAIL}?id=${_record.id}`);
           }}
         >
           {_}
-        </Button>
+        </a>
       ),
       width: 300,
     },
@@ -162,6 +161,7 @@ export default () => {
     {
       title: '审核',
       width: 200,
+      fixed: 'right',
       dataIndex: 'option',
       render: (_: any, record: any) => {
         return record.auditState === 'AUDITING' ? (

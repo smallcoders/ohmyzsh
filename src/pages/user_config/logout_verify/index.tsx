@@ -117,6 +117,7 @@ export default () => {
     {
       title: '审核',
       width: 200,
+      fixed: 'right',
       dataIndex: 'option',
       render: (_: any, record: any) => {
         return !record.auditPassed ? (
