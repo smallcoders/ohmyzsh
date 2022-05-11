@@ -14,13 +14,15 @@
   SOLUTION_DETAIL: '/service-config/solution/detail', // 服务方案详情
   NEWS: '/service-config/news', // 新闻
   EXPERT_MANAGE: '/service-config/expert-manage', // 专家管理
+  EXPERT_MANAGE_INDEX: '/service-config/expert-manage/index', // 专家管理
+  EXPERT_MANAGE_DETAIL: '/service-config/expert-manage/detail', // 专家详情
   ACCOUNT: '/system-config/account', // 账号管理
-  CREATIVE_VERIFY: '/user-config/creative-verify', // 科创成果审核
-  CREATIVE_VERIFY_INDEX: '/user-config/creative-verify/index', // 科创成果审核
-  CREATIVE_VERIFY_DETAIL: '/user-config/creative-verify/detail', // 科创成果详情
-  NEED_VERIFY: '/user-config/need_verify', // 科创成果审核
-  NEED_VERIFY_INDEX: '/user-config/need-verify/index', // 科创成果审核
-  NEED_VERIFY_DETAIL: '/user-config/need-verify/detail', // 科创成果详情
+  CREATIVE_VERIFY: '/user-config/creative-verify', // 科技成果审核
+  CREATIVE_VERIFY_INDEX: '/user-config/creative-verify/index', // 科技成果审核
+  CREATIVE_VERIFY_DETAIL: '/user-config/creative-verify/detail', // 科技成果详情
+  NEED_VERIFY: '/user-config/need-verify', // 科技成果审核
+  NEED_VERIFY_INDEX: '/user-config/need-verify/index', // 科技成果审核
+  NEED_VERIFY_DETAIL: '/user-config/need-verify/detail', // 科技成果详情
   LOGOUT_VERIFY: '/user-config/logout-verify', // 注销审核
   USER_FEEDBACK: '/user-config/user-feedback', // 用户反馈
 };
@@ -167,7 +169,24 @@ export default [
       {
         path: routeName.EXPERT_MANAGE,
         name: '专家管理',
-        component: './service_config/expert_manage',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.EXPERT_MANAGE,
+            redirect: routeName.EXPERT_MANAGE_INDEX,
+          },
+          {
+            path: routeName.EXPERT_MANAGE_INDEX,
+            name: '专家管理',
+            hideInBreadcrumb: true,
+            component: './service_config/expert_manage',
+          },
+          {
+            path: routeName.EXPERT_MANAGE_DETAIL,
+            name: '专家详情',
+            component: './service_config/expert_manage/expert_detail',
+          },
+        ],
       },
       {
         path: routeName.NEWS,
@@ -215,7 +234,7 @@ export default [
       },
       {
         path: routeName.CREATIVE_VERIFY,
-        name: '科创成果审核',
+        name: '科技成果审核',
         hideChildrenInMenu: true,
         routes: [
           {
@@ -224,13 +243,13 @@ export default [
           },
           {
             path: routeName.CREATIVE_VERIFY_INDEX,
-            name: '科创成果审核',
+            name: '科技成果审核',
             hideInBreadcrumb: true,
             component: './user_config/creative_verify',
           },
           {
             path: routeName.CREATIVE_VERIFY_DETAIL,
-            name: '科创成果详情',
+            name: '科技成果详情',
             component: './user_config/creative_verify/detail',
           },
         ],

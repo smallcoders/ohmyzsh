@@ -18,7 +18,13 @@ import moment from 'moment';
 import SelfTable from '@/components/self_table';
 import type AppResource from '@/types/app-resource';
 import { EditTwoTone } from '@ant-design/icons';
-import { getUserFeedbackPage, updateUserFeedBackRemark } from '@/services/user-feedback';
+import {
+  getUserFeedbackPage,
+  markUserFeedContracted,
+  updateUserFeedBackRemark,
+} from '@/services/user-feedback';
+import { PageContainer } from '@ant-design/pro-layout';
+import UserFeedback from '@/types/user-feedback';
 const sc = scopedClasses('user-config-logout-verify');
 
 export default () => {
@@ -57,6 +63,21 @@ export default () => {
   };
 
   const mark = async (record: any) => {
+    const tooltipMessage = '标记已处理';
+    try {
+      const markResult = await markUserFeedContracted(record.id, remark);
+      if (markResult.code === 0) {
+        antdMessage.success(`${tooltipMessage}成功`);
+        getPage();
+      } else {
+        throw new Error(markResult.message);
+      }
+    } catch (error) {
+      antdMessage.error(`${tooltipMessage}失败，原因:{${error}}`);
+    }
+  };
+
+  const updRemark = async (record: any) => {
     const tooltipMessage = '修改备注';
     try {
       const markResult = await updateUserFeedBackRemark(record.id, remark);
@@ -87,13 +108,13 @@ export default () => {
     },
     {
       title: '联系人',
-      dataIndex: 'contactName',
+      dataIndex: 'contact',
       isEllipsis: true,
       width: 100,
     },
     {
       title: '联系电话',
-      dataIndex: 'tel',
+      dataIndex: 'phone',
       isEllipsis: true,
       width: 150,
     },
@@ -106,6 +127,7 @@ export default () => {
     {
       title: '联系情况',
       width: 200,
+      fixed: 'right',
       dataIndex: 'option',
       render: (_: any, record: any) => {
         return !record.handlerState ? (
@@ -128,7 +150,14 @@ export default () => {
                 cancelText="取消"
                 onConfirm={() => mark(record)}
               >
-                <Button type="link">标记已联系</Button>
+                <Button
+                  type="link"
+                  onClick={() => {
+                    setRemark(record.remark || '');
+                  }}
+                >
+                  标记已联系
+                </Button>
               </Popconfirm>
             </Space>
           </div>
@@ -204,11 +233,11 @@ export default () => {
   };
 
   return (
-    <>
+    <PageContainer className={sc('container')}>
       {useSearchNode()}
       <div className={sc('container-table-header')}>
         <div className="title">
-          <span>咨询记录列表(共{pageInfo.totalCount || 0}个)</span>
+          <span>用户反馈记录列表(共{pageInfo.totalCount || 0}个)</span>
         </div>
       </div>
       <div className={sc('container-table-body')}>
@@ -217,37 +246,40 @@ export default () => {
           scroll={{ x: 1480 }}
           columns={columns}
           expandable={{
-            expandedRowRender: (record: any) => (
+            expandedRowRender: (record: UserFeedback.Content) => (
               <p style={{ margin: 0 }}>
                 备注：{record.remark}
-                <Popconfirm
-                  icon={null}
-                  title={
-                    <>
-                      <Input.TextArea
-                        placeholder="可在此填写备注内容，备注非必填"
-                        onChange={(e) => setRemark(e.target.value)}
-                        value={remark}
-                        showCount
-                        maxLength={100}
-                      />
-                    </>
-                  }
-                  okText="确定"
-                  cancelText="取消"
-                  onConfirm={() => mark(record)}
-                >
-                  <EditTwoTone
-                    onClick={() => {
-                      setRemark(record.remark);
-                    }}
-                  />
-                </Popconfirm>
+                {record.editState && (
+                  <Popconfirm
+                    icon={null}
+                    title={
+                      <>
+                        <Input.TextArea
+                          placeholder="可在此填写备注内容，备注非必填"
+                          onChange={(e) => setRemark(e.target.value)}
+                          value={remark}
+                          showCount
+                          maxLength={100}
+                        />
+                      </>
+                    }
+                    okText="确定"
+                    cancelText="取消"
+                    onConfirm={() => updRemark(record)}
+                  >
+                    <EditTwoTone
+                      onClick={() => {
+                        setRemark(record.remark || '');
+                      }}
+                    />
+                  </Popconfirm>
+                )}
               </p>
             ),
+            // columnWidth:0,
             // rowExpandable: () => true,
             expandIcon: () => <></>,
-            defaultExpandAllRows: true,
+            // defaultExpandAllRows: true,
             expandedRowKeys: dataSource.map((p) => p.id),
           }}
           rowKey={'id'}
@@ -266,6 +298,6 @@ export default () => {
           }
         />
       </div>
-    </>
+    </PageContainer>
   );
 };

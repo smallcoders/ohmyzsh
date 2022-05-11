@@ -30,7 +30,7 @@ export async function getEnumByName(label: string) {
  * @returns
  */
 export async function getDictionay(label: string) {
-  return request<CourseManage.ResultList>(`/iiep/common/dictionary?label=${label}`, {
+  return request<CourseManage.ResultList>(`/iiep-manage/common/dictionary?label=${label}`, {
     method: 'get',
   });
 }

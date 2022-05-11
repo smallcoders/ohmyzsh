@@ -124,7 +124,7 @@ export async function markContracted(id: string, remark: string) {
 }
 
 export async function updateRemark(id: string, remark: string) {
-  return request<Common.ResultCode & { result: any }>(`/iiep-manage/app/consultation/remake`, {
+  return request<Common.ResultCode & { result: any }>(`/iiep-manage/app/consultation/remark`, {
     method: 'post',
     data: {
       id,

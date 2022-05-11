@@ -4,11 +4,12 @@ import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
 import type Common from '@/types/common';
 import SelfTable from '@/components/self_table';
-
+import { history } from 'umi';
 import { getExpertResourcePage, showTop } from '@/services/expert_manage/expert-resource';
 import type ExpertResource from '@/types/expert_manage/expert-resource';
 import { getAreaTree } from '@/services/area';
 import { getDictionay } from '@/services/common';
+import { routeName } from '../../../../../config/routes';
 const sc = scopedClasses('user-config-logout-verify');
 
 export default () => {
@@ -29,12 +30,16 @@ export default () => {
   const [areaOptions, setAreaOptions] = useState<any>([]);
   const [expertTypes, setExpertType] = useState<any>([]);
   useEffect(() => {
-    getAreaTree({}).then((data) => {
-      setAreaOptions(data?.children || []);
-    });
-    getDictionay('EXPERT_DICT ').then((data) => {
-      setExpertType(data || []);
-    });
+    try {
+      getAreaTree({}).then((data) => {
+        setAreaOptions(data?.children || []);
+      });
+      getDictionay('EXPERT_DICT').then((data) => {
+        setExpertType(data.result || []);
+      });
+    } catch (error) {
+      antdMessage.error('数据初始化错误');
+    }
   }, []);
 
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
@@ -95,23 +100,32 @@ export default () => {
       title: '专家类型',
       dataIndex: 'typeNames',
       isEllipsis: true,
-      width: 150,
+      render: (_: string[]) => (_ || []).join(','),
+      width: 450,
     },
     {
       title: '所属区域',
       dataIndex: 'areaName',
       isEllipsis: true,
-      width: 450,
+      width: 150,
     },
     {
       title: '操作',
       width: 200,
       dataIndex: 'option',
+      fixed: 'right',
       render: (_: any, record: any) => {
         return (
           <div style={{ textAlign: 'center' }}>
             <Space size={20}>
-              <Button type="link">详情</Button>
+              <Button
+                type="link"
+                onClick={() => {
+                  history.push(`${routeName.EXPERT_MANAGE_DETAIL}?id=${record.id}`);
+                }}
+              >
+                详情
+              </Button>
               <Button
                 type="link"
                 onClick={() => {
@@ -145,16 +159,16 @@ export default () => {
             <Col span={6}>
               <Form.Item name="expertType" label="专家类型">
                 <Select placeholder="请选择" allowClear>
-                  {expertTypes.map((item: any) => {
-                    <Select.Option key={item.id} value={item.id}>
-                      {item.name}
-                    </Select.Option>;
+                  {(expertTypes || []).map((item: any) => {
+                    return (
+                      <Select.Option key={item.id} value={item.id}>
+                        {item.name}
+                      </Select.Option>
+                    );
                   })}
                 </Select>
               </Form.Item>
             </Col>
-          </Row>
-          <Row>
             <Col span={6}>
               <Form.Item name="areaCode" label="所属区域">
                 <Select placeholder="请选择" allowClear>

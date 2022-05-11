@@ -19,7 +19,11 @@ import moment from 'moment';
 import SelfTable from '@/components/self_table';
 import { EditTwoTone } from '@ant-design/icons';
 import type IntendMessage from '@/types/intend-message';
-import { getIntendMessagePage, markIntendMessageContracted } from '@/services/intend-message';
+import {
+  getIntendMessagePage,
+  markIntendMessageContracted,
+  updateIntendMessageRemark,
+} from '@/services/intend-message';
 const sc = scopedClasses('user-config-logout-verify');
 
 export default () => {
@@ -72,6 +76,21 @@ export default () => {
     }
   };
 
+  const updRemark = async (record: any) => {
+    const tooltipMessage = '修改备注';
+    try {
+      const markResult = await updateIntendMessageRemark(record.id, remark);
+      if (markResult.code === 0) {
+        antdMessage.success(`${tooltipMessage}成功`);
+        getPage();
+      } else {
+        throw new Error(markResult.message);
+      }
+    } catch (error) {
+      antdMessage.error(`${tooltipMessage}失败，原因:{${error}}`);
+    }
+  };
+
   const columns = [
     {
       title: '序号',
@@ -109,6 +128,8 @@ export default () => {
               <div
                 style={{
                   display: 'grid',
+                  color: '#000',
+                  padding: 10,
                 }}
               >
                 <span>联系电话：{_?.phone}</span>
@@ -117,7 +138,7 @@ export default () => {
             }
             color={'#fff'}
           >
-            <div>{_.name}</div>
+            <a>{_.name}</a>
           </Tooltip>
         );
       },
@@ -137,6 +158,7 @@ export default () => {
     {
       title: '联系情况',
       width: 200,
+      fixed: 'right',
       dataIndex: 'option',
       render: (_: any, record: any) => {
         return !record.handlerState ? (
@@ -159,14 +181,21 @@ export default () => {
                 cancelText="取消"
                 onConfirm={() => mark(record)}
               >
-                <Button type="link">标记已联系</Button>
+                <Button
+                  type="link"
+                  onClick={() => {
+                    setRemark(record.remark || '');
+                  }}
+                >
+                  标记已联系
+                </Button>
               </Popconfirm>
             </Space>
           </div>
         ) : (
           <div style={{ display: 'grid', justifyItems: 'center' }}>
             <span>
-              {record.handleTime ? moment(record.handleTime).format('YYYY-MM-DD HH:mm:ss') : '--'}
+              {record.handlerTime ? moment(record.handlerTime).format('YYYY-MM-DD HH:mm:ss') : '--'}
             </span>
             <span>操作人：{record.handlerName}</span>
           </div>
@@ -251,7 +280,7 @@ export default () => {
       {useSearchNode()}
       <div className={sc('container-table-header')}>
         <div className="title">
-          <span>咨询记录列表(共{pageInfo.totalCount || 0}个)</span>
+          <span>意向消息列表(共{pageInfo.totalCount || 0}个)</span>
         </div>
       </div>
       <div className={sc('container-table-body')}>
@@ -260,28 +289,34 @@ export default () => {
           scroll={{ x: 1480 }}
           columns={columns}
           expandable={{
-            expandedRowRender: (record: any) => (
+            expandedRowRender: (record: IntendMessage.Content) => (
               <p style={{ margin: 0 }}>
-                备注：{record.appName}
-                <Popconfirm
-                  icon={null}
-                  title={
-                    <>
-                      <Input.TextArea
-                        placeholder="可在此填写备注内容，备注非必填"
-                        onChange={(e) => setRemark(e.target.value)}
-                        value={remark}
-                        showCount
-                        maxLength={100}
-                      />
-                    </>
-                  }
-                  okText="确定"
-                  cancelText="取消"
-                  onConfirm={() => mark(record)}
-                >
-                  <EditTwoTone />
-                </Popconfirm>
+                备注：{record.remark}
+                {record.editState && (
+                  <Popconfirm
+                    icon={null}
+                    title={
+                      <>
+                        <Input.TextArea
+                          placeholder="可在此填写备注内容，备注非必填"
+                          onChange={(e) => setRemark(e.target.value)}
+                          value={remark}
+                          showCount
+                          maxLength={100}
+                        />
+                      </>
+                    }
+                    okText="确定"
+                    cancelText="取消"
+                    onConfirm={() => updRemark(record)}
+                  >
+                    <EditTwoTone
+                      onClick={() => {
+                        setRemark(record.remark || '');
+                      }}
+                    />
+                  </Popconfirm>
+                )}
               </p>
             ),
             // rowExpandable: () => true,

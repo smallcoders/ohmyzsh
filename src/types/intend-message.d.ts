@@ -22,6 +22,7 @@ namespace IntendMessage {
     handlerState?: boolean; //处理情况
     handlerTime?: string; //处理时间
     handlerName?: string; //处理人
+    editState?: boolean;
   };
 
   export type SearchBody = {

@@ -20,6 +20,7 @@ namespace ApplyRecord {
     operatorName?: string; //	操作人姓名
     operateTime?: string; //	操作时间
     remark?: string; //	备注
+    editing?: boolean;
   };
 
   export type SearchBody = {

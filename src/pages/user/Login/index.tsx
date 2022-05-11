@@ -3,7 +3,7 @@ import { message, Tooltip } from 'antd';
 import React, { useState, useRef } from 'react';
 import { ProFormCheckbox, ProFormText, LoginForm } from '@ant-design/pro-form';
 import { history, useModel } from 'umi';
-import { encryptWithBase64, decryptWithBase64 } from '@/utils/crypto';
+import { decryptWithBase64, encryptWithAES } from '@/utils/crypto';
 import Footer from '@/components/Footer';
 import { getTicket, login } from '@/services/login';
 import type Login from '@/types/login';
@@ -33,9 +33,8 @@ const LoginFC: React.FC = () => {
   const handleSubmit = async (values: Login.LoginParam) => {
     setUserLoginState(defaultLoginStatus);
     const { loginNameOrPhone = '', password = '', storeAccount } = values;
-
     // 获取登录ticket
-    const ticketRes = await getTicket({ loginNameOrPhone, password: encryptWithBase64(password) });
+    const ticketRes = await getTicket({ loginNameOrPhone, password: encryptWithAES(password) });
     if (ticketRes.code !== 0) {
       setUserLoginState({ success: false, message: ticketRes.message });
       return;

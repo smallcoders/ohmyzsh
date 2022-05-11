@@ -19,10 +19,11 @@ import moment from 'moment';
 import { routeName } from '@/../config/routes';
 import SelfTable from '@/components/self_table';
 import { history } from 'umi';
-import { getDemandPage, updateDemandAudit } from '@/services/kc-verify';
+import { getDemandPage } from '@/services/kc-verify';
 import { getDictionaryTree } from '@/services/dictionary';
 import Common from '@/types/common';
 import NeedVerify from '@/types/user-config-need-verify';
+import { handleAudit } from '@/services/audit';
 // import { getDictionaryTree } from '@/services/dictionary';
 const sc = scopedClasses('service-config-app-news');
 const stateObj = {
@@ -90,8 +91,7 @@ export default () => {
   const editState = async (record: any, { ...rest }) => {
     try {
       const tooltipMessage = rest.result ? '审核通过' : '审核拒绝';
-      const updateStateResult = await updateDemandAudit({
-        id: record.id,
+      const updateStateResult = await handleAudit({
         auditId: record.auditId,
         ...rest,
       });
@@ -164,6 +164,7 @@ export default () => {
       title: '审核',
       width: 200,
       dataIndex: 'option',
+      fixed: 'right',
       render: (_: any, record: any) => {
         return record.auditState === 'AUDITING' ? (
           <Space size={20}>

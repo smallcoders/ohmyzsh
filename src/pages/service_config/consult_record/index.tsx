@@ -134,6 +134,7 @@ export default () => {
       title: '联系情况',
       width: 200,
       dataIndex: 'option',
+      fixed: 'right',
       render: (_: any, record: any) => {
         return !record.isHandle ? (
           <div style={{ textAlign: 'center' }}>
@@ -155,7 +156,14 @@ export default () => {
                 cancelText="取消"
                 onConfirm={() => mark(record)}
               >
-                <Button type="link">标记已联系</Button>
+                <Button
+                  type="link"
+                  onClick={() => {
+                    setRemark(record.remark || '');
+                  }}
+                >
+                  标记已联系
+                </Button>
               </Popconfirm>
             </Space>
           </div>
@@ -214,8 +222,8 @@ export default () => {
                 onClick={() => {
                   const search = searchForm.getFieldsValue();
                   if (search.time) {
-                    search.startDate = moment(search.time[0]).format('YYYY-MM-DDTHH:mm:ss');
-                    search.endDate = moment(search.time[1]).format('YYYY-MM-DDTHH:mm:ss');
+                    search.startDate = moment(search.time[0]).format('YYYY-MM-DD HH:mm:ss');
+                    search.endDate = moment(search.time[1]).format('YYYY-MM-DD HH:mm:ss');
                   }
                   if (search.isHandle) {
                     search.isHandle = !!(search.isHandle - 1);
@@ -259,25 +267,31 @@ export default () => {
             expandedRowRender: (record: any) => (
               <p style={{ margin: 0 }}>
                 备注：{record.remark}
-                <Popconfirm
-                  icon={null}
-                  title={
-                    <>
-                      <Input.TextArea
-                        placeholder="可在此填写备注内容，备注非必填"
-                        onChange={(e) => setRemark(e.target.value)}
-                        value={remark}
-                        showCount
-                        maxLength={100}
-                      />
-                    </>
-                  }
-                  okText="确定"
-                  cancelText="取消"
-                  onConfirm={() => updRemark(record)}
-                >
-                  <EditTwoTone />
-                </Popconfirm>
+                {record.isEdit && (
+                  <Popconfirm
+                    icon={null}
+                    title={
+                      <>
+                        <Input.TextArea
+                          placeholder="可在此填写备注内容，备注非必填"
+                          onChange={(e) => setRemark(e.target.value)}
+                          value={remark}
+                          showCount
+                          maxLength={100}
+                        />
+                      </>
+                    }
+                    okText="确定"
+                    cancelText="取消"
+                    onConfirm={() => updRemark(record)}
+                  >
+                    <EditTwoTone
+                      onClick={() => {
+                        setRemark(record.remark || '');
+                      }}
+                    />
+                  </Popconfirm>
+                )}
               </p>
             ),
             // rowExpandable: () => true,

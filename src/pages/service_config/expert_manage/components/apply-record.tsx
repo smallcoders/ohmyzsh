@@ -20,10 +20,11 @@ import SelfTable from '@/components/self_table';
 import { EditTwoTone } from '@ant-design/icons';
 import type ConsultRecord from '@/types/expert_manage/consult-record';
 import {
-  getConsultRecordPage,
-  markConsultRecordContracted,
-  updateConsultRecordRemark,
-} from '@/services/expert_manage/consult-record';
+  getApplyRecordPage,
+  markApplyRecordContracted,
+  updateApplyRecordRemark,
+} from '@/services/expert_manage/apply-record';
+import ApplyRecord from '@/types/expert_manage/apply-record';
 const sc = scopedClasses('user-config-logout-verify');
 
 export default () => {
@@ -45,7 +46,7 @@ export default () => {
 
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     try {
-      const { result, totalCount, pageTotal, code, message } = await getConsultRecordPage({
+      const { result, totalCount, pageTotal, code, message } = await getApplyRecordPage({
         pageIndex,
         pageSize,
         ...searchContent,
@@ -64,7 +65,7 @@ export default () => {
   const mark = async (record: any) => {
     const tooltipMessage = '标记已联系';
     try {
-      const markResult = await markConsultRecordContracted(record.id, remark);
+      const markResult = await markApplyRecordContracted(record.id, remark);
       if (markResult.code === 0) {
         antdMessage.success(`${tooltipMessage}成功`);
         getPage();
@@ -79,7 +80,7 @@ export default () => {
   const updRemark = async (record: any) => {
     const tooltipMessage = '修改';
     try {
-      const markResult = await updateConsultRecordRemark(record.id, remark);
+      const markResult = await updateApplyRecordRemark(record.id, remark);
       if (markResult.code === 0) {
         antdMessage.success(`${tooltipMessage}成功`);
         getPage();
@@ -129,6 +130,8 @@ export default () => {
               <div
                 style={{
                   display: 'grid',
+                  color: '#000',
+                  padding: 10,
                 }}
               >
                 <span>联系电话：{record?.expertPhone}</span>
@@ -137,7 +140,7 @@ export default () => {
             }
             color={'#fff'}
           >
-            <div>{_}</div>
+            <a>{_}</a>
           </Tooltip>
         );
       },
@@ -146,7 +149,7 @@ export default () => {
       title: '申请原因',
       dataIndex: 'content',
       isEllipsis: true,
-      width: 450,
+      width: 250,
     },
     {
       title: '申请时间',
@@ -157,6 +160,7 @@ export default () => {
     {
       title: '联系情况',
       width: 200,
+      fixed: 'right',
       dataIndex: 'option',
       render: (_: any, record: any) => {
         return !record.contacted ? (
@@ -179,7 +183,14 @@ export default () => {
                 cancelText="取消"
                 onConfirm={() => mark(record)}
               >
-                <Button type="link">标记已联系</Button>
+                <Button
+                  type="link"
+                  onClick={() => {
+                    setRemark(record.remark || '');
+                  }}
+                >
+                  标记已联系
+                </Button>
               </Popconfirm>
             </Space>
           </div>
@@ -238,8 +249,8 @@ export default () => {
                 onClick={() => {
                   const search = searchForm.getFieldsValue();
                   if (search.time) {
-                    search.startCreateTime = moment(search.time[0]).format('YYYY-MM-DDTHH:mm:ss');
-                    search.endCreateTime = moment(search.time[1]).format('YYYY-MM-DDTHH:mm:ss');
+                    search.startCreateTime = moment(search.time[0]).format('YYYY-MM-DD HH:mm:ss');
+                    search.endCreateTime = moment(search.time[1]).format('YYYY-MM-DD HH:mm:ss');
                   }
                   if (search.contacted) {
                     search.contacted = !!(search.contacted - 1);
@@ -277,31 +288,37 @@ export default () => {
       <div className={sc('container-table-body')}>
         <SelfTable
           bordered
-          scroll={{ x: 1480 }}
+          scroll={{ x: 1280 }}
           columns={columns}
           expandable={{
-            expandedRowRender: (record: any) => (
+            expandedRowRender: (record: ApplyRecord.Content) => (
               <p style={{ margin: 0 }}>
                 备注：{record.remark}
-                <Popconfirm
-                  icon={null}
-                  title={
-                    <>
-                      <Input.TextArea
-                        placeholder="可在此填写备注内容，备注非必填"
-                        onChange={(e) => setRemark(e.target.value)}
-                        value={remark}
-                        showCount
-                        maxLength={100}
-                      />
-                    </>
-                  }
-                  okText="确定"
-                  cancelText="取消"
-                  onConfirm={() => updRemark(record)}
-                >
-                  <EditTwoTone />
-                </Popconfirm>
+                {record.editing && (
+                  <Popconfirm
+                    icon={null}
+                    title={
+                      <>
+                        <Input.TextArea
+                          placeholder="可在此填写备注内容，备注非必填"
+                          onChange={(e) => setRemark(e.target.value)}
+                          value={remark}
+                          showCount
+                          maxLength={100}
+                        />
+                      </>
+                    }
+                    okText="确定"
+                    cancelText="取消"
+                    onConfirm={() => updRemark(record)}
+                  >
+                    <EditTwoTone
+                      onClick={() => {
+                        setRemark(record.remark || '');
+                      }}
+                    />
+                  </Popconfirm>
+                )}
               </p>
             ),
             // rowExpandable: () => true,

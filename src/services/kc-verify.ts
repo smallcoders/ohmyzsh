@@ -3,7 +3,7 @@
 import { request } from 'umi';
 
 /**
- * 获取科创成果列表
+ * 获取科技成果列表
  * @param data
  * @returns
  */

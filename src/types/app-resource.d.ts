@@ -120,7 +120,7 @@ namespace AppResource {
     content?: string; //应用需求
     submitTime?: string; //咨询时间
     isHandle?: boolean; //是否已联系
-    handleTime?: string; //处理时间
+    handlerTime?: string; //处理时间
     handlerName?: string; //操作人名 例：暮温
     remark?: string; //备注
   };

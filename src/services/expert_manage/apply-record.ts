@@ -1,12 +1,12 @@
 // @ts-ignore
 /* eslint-disable */
 import Common from '@/types/common';
-import ConsultRecord from '@/types/expert_manage/consult-record';
+import ApplyRecord from '@/types/expert_manage/apply-record';
 import { request } from 'umi';
 
 /** 获取专家管理下申请记录分页 */
-export async function getConsultRecordPage(data?: { [key: string]: any }) {
-  return request<ConsultRecord.RecordList>('/iiep-manage/expert/applyPage', {
+export async function getApplyRecordPage(data?: { [key: string]: any }) {
+  return request<ApplyRecord.RecordList>('/iiep-manage/expert/applyPage', {
     method: 'post',
     data,
   });
@@ -18,7 +18,7 @@ export async function getConsultRecordPage(data?: { [key: string]: any }) {
  * @param remark
  * @returns
  */
-export async function markApplyContracted(id: string, remark: string) {
+export async function markApplyRecordContracted(id: string, remark: string) {
   return request<Common.ResultCode & { result: any }>(`/iiep-manage/expert/applyRemark`, {
     method: 'post',
     data: {
