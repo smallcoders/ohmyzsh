@@ -138,7 +138,7 @@ export default () => {
             }
             color={'#fff'}
           >
-            <a>{_.name}</a>
+            <a>{_?.name}</a>
           </Tooltip>
         );
       },
