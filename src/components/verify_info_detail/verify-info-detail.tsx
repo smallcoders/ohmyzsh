@@ -73,6 +73,10 @@ export default (props: { auditId: string; reset: () => void }) => {
     hanldeGetAuditDetail();
   };
 
+  const onBack = () => {
+    history.back();
+  };
+
   // 提交
   const onSave = async () => {
     form
@@ -88,17 +92,13 @@ export default (props: { auditId: string; reset: () => void }) => {
           message.success(`${tooltipMessage}成功`);
           form.resetFields();
           refresh();
+          onBack();
         } else {
           message.error(`${tooltipMessage}失败，原因:{${submitRes.message}}`);
         }
         setLoading(false);
       })
       .catch(() => {});
-  };
-
-  // 取消
-  const onBack = () => {
-    history.back();
   };
 
   return (
