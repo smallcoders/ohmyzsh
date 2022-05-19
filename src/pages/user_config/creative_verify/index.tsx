@@ -119,6 +119,7 @@ export default () => {
       dataIndex: 'name',
       render: (_: string, _record: any) => (
         <a
+          href="javascript:;"
           onClick={() => {
             history.push(`${routeName.CREATIVE_VERIFY_DETAIL}?id=${_record.id}`);
           }}

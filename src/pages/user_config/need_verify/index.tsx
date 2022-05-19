@@ -119,14 +119,14 @@ export default () => {
       title: '需求名称',
       dataIndex: 'name',
       render: (_: string, _record: any) => (
-        <Button
-          type="link"
+        <a
+          href="javascript:;"
           onClick={() => {
             history.push(`${routeName.NEED_VERIFY_DETAIL}?id=${_record.id}`);
           }}
         >
           {_}
-        </Button>
+        </a>
       ),
       width: 300,
     },
