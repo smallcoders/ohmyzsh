@@ -68,7 +68,7 @@ export default () => {
         </div>
         <div className={sc('container-desc')}>
           <span>企业信息：</span>
-          <span>{detail?.hideOrg ? '隐藏' : '公开'}</span>
+          <span>{detail?.hide ? '隐藏' : '公开'}</span>
         </div>
       </div>
       <div style={{ background: '#fff', marginTop: 20, paddingTop: 20 }}>
