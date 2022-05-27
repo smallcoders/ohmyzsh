@@ -1,36 +1,26 @@
-import {
-  Button,
-  Input,
-  Form,
-  Select,
-  Row,
-  Col,
-  DatePicker,
-  message as antdMessage,
-  Space,
-  Popconfirm,
-} from 'antd';
+import { Button, Input, Form, Select, Row, Col, DatePicker, message, Popconfirm } from 'antd';
+import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
 import type Common from '@/types/common';
 import moment from 'moment';
 import SelfTable from '@/components/self_table';
-import type AppResource from '@/types/app-resource';
-import { EditTwoTone } from '@ant-design/icons';
+import CommissionerService from '@/types/commissioner-service.d';
+import { routeName } from '../../../../config/routes';
+import { history } from 'umi';
 import {
-  getUserFeedbackPage,
-  markUserFeedContracted,
-  updateUserFeedBackRemark,
-} from '@/services/user-feedback';
-import { PageContainer } from '@ant-design/pro-layout';
-import UserFeedback from '@/types/user-feedback';
-const sc = scopedClasses('user-config-logout-verify');
-
+  getCommissionerServicePage,
+  removeCommissionerService,
+} from '@/services/commissioner-service';
+const sc = scopedClasses('user-config-commissioner-service');
 export default () => {
-  const [dataSource, setDataSource] = useState<AppResource.ConsultRecordContent[]>([]);
-  const [searchContent, setSearChContent] = useState<AppResource.ConsultRecordSearchBody>({});
-  const [remark, setRemark] = useState<string>('');
+  const [dataSource, setDataSource] = useState<CommissionerService.Content[]>([]);
+  const [searchContent, setSearChContent] = useState<{
+    title?: string; // 标题
+    publishTime?: string; // 发布时间
+    state?: number; // 状态：0发布中、1待发布、2已下架
+  }>({});
 
   const formLayout = {
     labelCol: { span: 6 },
@@ -39,14 +29,14 @@ export default () => {
 
   const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
     pageIndex: 1,
-    pageSize: 10,
+    pageSize: 20,
     totalCount: 0,
     pageTotal: 0,
   });
 
-  const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
+  const getNews = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     try {
-      const { result, totalCount, pageTotal, code, message } = await getUserFeedbackPage({
+      const { result, totalCount, pageTotal, code } = await getCommissionerServicePage({
         pageIndex,
         pageSize,
         ...searchContent,
@@ -55,126 +45,116 @@ export default () => {
         setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
         setDataSource(result);
       } else {
-        throw new Error(message);
+        message.error(`请求分页数据失败`);
       }
     } catch (error) {
-      antdMessage.error(`请求失败，原因:{${error}}`);
+      console.log(error);
     }
   };
 
-  const mark = async (record: any) => {
-    const tooltipMessage = '标记已处理';
+  const remove = async (id: string) => {
     try {
-      const markResult = await markUserFeedContracted(record.id, remark);
-      if (markResult.code === 0) {
-        antdMessage.success(`${tooltipMessage}成功`);
-        getPage();
+      const removeRes = await removeCommissionerService(id);
+      if (removeRes.code === 0) {
+        message.success(`删除成功`);
+        getNews();
       } else {
-        throw new Error(markResult.message);
+        message.error(`删除失败，原因:{${removeRes.message}}`);
       }
     } catch (error) {
-      antdMessage.error(`${tooltipMessage}失败，原因:{${error}}`);
-    }
-  };
-
-  const updRemark = async (record: any) => {
-    const tooltipMessage = '修改备注';
-    try {
-      const markResult = await updateUserFeedBackRemark(record.id, remark);
-      if (markResult.code === 0) {
-        antdMessage.success(`${tooltipMessage}成功`);
-        getPage();
-      } else {
-        throw new Error(markResult.message);
-      }
-    } catch (error) {
-      antdMessage.error(`${tooltipMessage}失败，原因:{${error}}`);
+      console.log(error);
     }
   };
 
   const columns = [
     {
-      title: '序号',
+      title: '排序',
       dataIndex: 'sort',
       width: 80,
-      render: (_: any, _record: AppResource.Content, index: number) =>
+      render: (_: any, record: CommissionerService.Content, index: number) =>
         pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
-      title: '反馈时间',
+      title: '服务专员',
+      dataIndex: 'expertName',
+      render: (_: string, record: CommissionerService.Content) => {
+        return (
+          <Button
+            type="link"
+            onClick={() => {
+              history.push(`${routeName.EXPERT_MANAGE_DETAIL}?id=${record?.expertId}`);
+            }}
+          >
+            {_}
+          </Button>
+        );
+      },
+      width: 300,
+    },
+    {
+      title: '服务企业',
+      dataIndex: 'orgName',
+      isEllipsis: true,
+      width: 300,
+    },
+    {
+      title: '打卡时间',
       dataIndex: 'createTime',
       width: 200,
       render: (_: string) => moment(_).format('YYYY-MM-DD HH:mm:ss'),
     },
     {
-      title: '联系人',
-      dataIndex: 'contact',
-      isEllipsis: true,
-      width: 100,
+      title: '评分',
+      dataIndex: 'gradeDescription',
+      width: 120,
     },
     {
-      title: '联系电话',
-      dataIndex: 'phone',
+      title: '评语',
+      dataIndex: 'evaluation',
       isEllipsis: true,
+      width: 300,
+    },
+    {
+      title: '评价时间',
+      dataIndex: 'publishTime',
+      width: 200,
+      render: (_: string) => moment(_).format('YYYY-MM-DD HH:mm:ss'),
+    },
+    {
+      title: '服务记录文档',
+      dataIndex: 'wordUrl',
+      render: (_: string) =>
+        _ ? (
+          <a target="_blank" rel="noreferrer" style={{ marginRight: 20 }} href={_}>
+            查看文档
+          </a>
+        ) : (
+          <span style={{ color: '#cbc5c5' }}>查看文档</span>
+        ),
       width: 150,
     },
     {
-      title: '反馈内容',
-      dataIndex: 'content',
-      isEllipsis: true,
-      width: 450,
-    },
-    {
-      title: '联系情况',
+      title: '操作',
       width: 200,
       fixed: 'right',
       dataIndex: 'option',
-      render: (_: any, record: any) => {
-        return !record.handlerState ? (
-          <div style={{ textAlign: 'center' }}>
-            <Space size={20}>
-              <Popconfirm
-                icon={null}
-                title={
-                  <>
-                    <Input.TextArea
-                      placeholder="可在此填写备注内容，备注非必填"
-                      onChange={(e) => setRemark(e.target.value)}
-                      value={remark}
-                      showCount
-                      maxLength={100}
-                    />
-                  </>
-                }
-                okText="确定"
-                cancelText="取消"
-                onConfirm={() => mark(record)}
-              >
-                <Button
-                  type="link"
-                  onClick={() => {
-                    setRemark(record.remark || '');
-                  }}
-                >
-                  标记已联系
-                </Button>
-              </Popconfirm>
-            </Space>
-          </div>
-        ) : (
-          <div style={{ display: 'grid', justifyItems: 'center' }}>
-            <span>
-              {record.handlerTime ? moment(record.handlerTime).format('YYYY-MM-DD HH:mm:ss') : '--'}
-            </span>
-            <span>操作人：{record.handlerName}</span>
-          </div>
+      render: (_: any, record: CommissionerService.Content) => {
+        return (
+          <Popconfirm
+            title="确定删除么？"
+            okText="确定"
+            cancelText="取消"
+            onConfirm={() => remove(record.id as string)}
+          >
+            <a href="#">删除</a>
+          </Popconfirm>
         );
       },
     },
   ];
 
   useEffect(() => {
-    getPage();
+    getNews();
   }, [searchContent]);
 
   const useSearchNode = (): React.ReactNode => {
@@ -184,31 +164,63 @@ export default () => {
         <Form {...formLayout} form={searchForm}>
           <Row>
             <Col span={8}>
-              <Form.Item name="time" label="反馈时间">
+              <Form.Item name="expertName" label="服务专员">
+                <Input placeholder="请输入" />
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              <Form.Item name="enterpriseName" label="服务企业">
+                <Input placeholder="请输入" />
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              <Form.Item name="createTime" label="打卡时间">
                 <DatePicker.RangePicker allowClear showTime />
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="handlerState" label="联系情况">
+              <Form.Item name="level" label="评价情况">
                 <Select placeholder="请选择" allowClear>
-                  <Select.Option value={1}>待联系</Select.Option>
-                  <Select.Option value={2}>已联系</Select.Option>
+                  <Select.Option value={CommissionerService.EvaluationType.GOOD}>
+                    好评
+                  </Select.Option>
+                  <Select.Option value={CommissionerService.EvaluationType.MIDDLE}>
+                    中评
+                  </Select.Option>
+                  <Select.Option value={CommissionerService.EvaluationType.BAD}>差评</Select.Option>
+                  <Select.Option value={CommissionerService.EvaluationType.NONE}>
+                    待评价
+                  </Select.Option>
                 </Select>
               </Form.Item>
             </Col>
-            <Col offset={4} span={4}>
+            <Col span={8}>
+              <Form.Item name="evaluationTime" label="评价时间">
+                <DatePicker.RangePicker allowClear showTime />
+              </Form.Item>
+            </Col>
+            <Col span={4} offset={4}>
               <Button
                 style={{ marginRight: 20 }}
                 type="primary"
                 key="primary"
                 onClick={() => {
                   const search = searchForm.getFieldsValue();
-                  if (search.time) {
-                    search.startTime = moment(search.time[0]).format('YYYY-MM-DDTHH:mm:ss');
-                    search.endTime = moment(search.time[1]).format('YYYY-MM-DDTHH:mm:ss');
+                  if (search.createTime) {
+                    search.startCreateTime = moment(search.createTime[0]).format(
+                      'YYYY-MM-DD HH:mm:ss',
+                    );
+                    search.endCreateTime = moment(search.createTime[1]).format(
+                      'YYYY-MM-DD HH:mm:ss',
+                    );
                   }
-                  if (search.handlerState) {
-                    search.handlerState = !!(search.handlerState - 1);
+                  if (search.evaluationTime) {
+                    search.startEvaluationTime = moment(search.evaluationTime[0]).format(
+                      'YYYY-MM-DD HH:mm:ss',
+                    );
+                    search.endEvaluationTime = moment(search.evaluationTime[1]).format(
+                      'YYYY-MM-DD HH:mm:ss',
+                    );
                   }
                   setSearChContent(search);
                 }}
@@ -237,62 +249,24 @@ export default () => {
       {useSearchNode()}
       <div className={sc('container-table-header')}>
         <div className="title">
-          <span>用户反馈记录列表(共{pageInfo.totalCount || 0}个)</span>
+          <span>专员服务记录列表(共{pageInfo.totalCount || 0}个)</span>
         </div>
       </div>
       <div className={sc('container-table-body')}>
         <SelfTable
           bordered
-          scroll={{ x: 1480 }}
+          scroll={{ x: 1850 }}
           columns={columns}
-          expandable={{
-            expandedRowRender: (record: UserFeedback.Content) => (
-              <p style={{ margin: 0 }}>
-                备注：{record.remark}
-                {record.editState && (
-                  <Popconfirm
-                    icon={null}
-                    title={
-                      <>
-                        <Input.TextArea
-                          placeholder="可在此填写备注内容，备注非必填"
-                          onChange={(e) => setRemark(e.target.value)}
-                          value={remark}
-                          showCount
-                          maxLength={100}
-                        />
-                      </>
-                    }
-                    okText="确定"
-                    cancelText="取消"
-                    onConfirm={() => updRemark(record)}
-                  >
-                    <EditTwoTone
-                      onClick={() => {
-                        setRemark(record.remark || '');
-                      }}
-                    />
-                  </Popconfirm>
-                )}
-              </p>
-            ),
-            // columnWidth:0,
-            // rowExpandable: () => true,
-            expandIcon: () => <></>,
-            // defaultExpandAllRows: true,
-            expandedRowKeys: dataSource.map((p) => p.id),
-          }}
-          rowKey={'id'}
           dataSource={dataSource}
           pagination={
             pageInfo.totalCount === 0
               ? false
               : {
-                  onChange: getPage,
+                  onChange: getNews,
                   total: pageInfo.totalCount,
                   current: pageInfo.pageIndex,
                   pageSize: pageInfo.pageSize,
-                  showTotal: (total: number) =>
+                  showTotal: (total) =>
                     `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
                 }
           }

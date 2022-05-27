@@ -1,20 +1,34 @@
 import SelfTable from '@/components/self_table';
 import Common from '@/types/common.d';
-import ExpertResource from '@/types/expert_manage/expert-resource.d';
 import { PageContainer } from '@ant-design/pro-layout';
-import { Button, Col, DatePicker, Form, Input, message, Row, Select, Space } from 'antd';
+import {
+  Button,
+  Col,
+  DatePicker,
+  Form,
+  Input,
+  message as antdMessage,
+  Row,
+  Select,
+  Space,
+} from 'antd';
 import { routeName } from '../../../../config/routes';
 import React, { useEffect, useState } from 'react';
 import { history } from 'umi';
 import { getAreaTree } from '@/services/area';
-import './index.less'
+import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
+import moment from 'moment';
+import AuthenticationInfo from '@/types/authentication-info.d';
+import { getAuthenticationInfoPage } from '@/services/authentication-info';
 const sc = scopedClasses('user-config-authentication-info');
 export default () => {
-  const [activeKey, setActiveKey] = useState<string>('1');
+  const [activeKey, setActiveKey] = useState<AuthenticationInfo.AuthenticationType>(
+    AuthenticationInfo.AuthenticationType.ENTERPRISE,
+  );
 
-  const [dataSource, setDataSource] = useState<ExpertResource.Content[]>([]);
-  const [searchContent, setSearChContent] = useState<ExpertResource.SearchBody>({});
+  const [dataSource, setDataSource] = useState<AuthenticationInfo.Content[]>([]);
+  const [searchContent, setSearChContent] = useState<AuthenticationInfo.SearchBody>({});
 
   const formLayout = {
     labelCol: { span: 6 },
@@ -28,7 +42,6 @@ export default () => {
     pageTotal: 0,
   });
   const [areaOptions, setAreaOptions] = useState<any>([]);
-  const [expertTypes, setExpertType] = useState<any>([]);
   useEffect(() => {
     try {
       getAreaTree({}).then((data) => {
@@ -38,42 +51,27 @@ export default () => {
       //   setExpertType(data.result || []);
       // });
     } catch (error) {
-      message.error('数据初始化错误');
+      antdMessage.error('数据初始化错误');
     }
   }, []);
 
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
-    // try {
-    //   const { result, totalCount, pageTotal, code, message } = await getExpertResourcePage({
-    //     pageIndex,
-    //     pageSize,
-    //     ...searchContent,
-    //   });
-    //   if (code === 0) {
-    //     setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
-    //     setDataSource(result);
-    //   } else {
-    //     throw new Error(message);
-    //   }
-    // } catch (error) {
-    //   antdMessage.error(`请求失败，原因:{${error}}`);
-    // }
-  };
-
-  // 置顶
-  const top = async (record: any) => {
-    // const tooltipMessage = '置顶';
-    // try {
-    //   const markResult = await showTop(record.id);
-    //   if (markResult.code === 0) {
-    //     antdMessage.success(`${tooltipMessage}成功`);
-    //     getPage();
-    //   } else {
-    //     throw new Error(markResult.message);
-    //   }
-    // } catch (error) {
-    //   antdMessage.error(`${tooltipMessage}失败，原因:{${error}}`);
-    // }
+    try {
+      const { result, totalCount, pageTotal, code, message } = await getAuthenticationInfoPage({
+        pageIndex,
+        pageSize,
+        ...searchContent,
+        auditType: activeKey,
+      });
+      if (code === 0) {
+        setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
+        setDataSource(result);
+      } else {
+        throw new Error(message);
+      }
+    } catch (error) {
+      antdMessage.error(`请求失败，原因:{${error}}`);
+    }
   };
 
   const columns = [
@@ -81,37 +79,37 @@ export default () => {
       title: '序号',
       dataIndex: 'sort',
       width: 80,
-      render: (_: any, _record: ExpertResource.Content, index: number) =>
+      render: (_: any, _record: AuthenticationInfo.Content, index: number) =>
         pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
       title: '企业名称',
-      dataIndex: 'expertName',
+      dataIndex: 'orgName',
       width: 150,
       isEllipsis: true,
     },
     {
       title: '用户名',
-      dataIndex: 'phone',
+      dataIndex: 'userName',
       isEllipsis: true,
       width: 150,
     },
     {
       title: '认证时间',
-      dataIndex: 'typeNames',
+      dataIndex: 'createTime',
       isEllipsis: true,
-      render: (_: string[]) => (_ || []).join(','),
-      width: 450,
+      render: (_: string) => moment(_).format('YYYY-MM-DD HH:mm:ss'),
+      width: 200,
     },
     {
       title: '手机号',
-      dataIndex: 'areaName',
+      dataIndex: 'phone',
       isEllipsis: true,
       width: 150,
     },
     {
       title: '所属区域',
-      dataIndex: 'areaName',
+      dataIndex: 'area',
       isEllipsis: true,
       width: 150,
     },
@@ -127,7 +125,9 @@ export default () => {
               <Button
                 type="link"
                 onClick={() => {
-                  history.push(`${routeName.EXPERT_MANAGE_DETAIL}?id=${record.id}`);
+                  history.push(
+                    `${routeName.AUTHENTICATION_INFO_DETAIL}?id=${record.id}&type=${activeKey}`,
+                  );
                 }}
               >
                 编辑
@@ -141,13 +141,7 @@ export default () => {
 
   useEffect(() => {
     getPage();
-  }, [searchContent]);
-
-  
-  useEffect(() => {
-    getPage();
-  }, [activeKey]);
-  
+  }, [searchContent, activeKey]);
 
   const useSearchNode = (): React.ReactNode => {
     const [searchForm] = Form.useForm();
@@ -156,12 +150,12 @@ export default () => {
         <Form {...formLayout} form={searchForm}>
           <Row>
             <Col span={8}>
-              <Form.Item name="expertName" label="认证名称">
+              <Form.Item name="orgName" label="认证名称">
                 <Input placeholder="企业/服务机构/专家名称" />
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="expertName" label="用户名">
+              <Form.Item name="userName" label="用户名">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
@@ -173,7 +167,7 @@ export default () => {
           </Row>
           <Row>
             <Col span={8}>
-              <Form.Item name="expertName" label="手机号">
+              <Form.Item name="phone" label="手机号">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
@@ -195,6 +189,10 @@ export default () => {
                 key="primary"
                 onClick={() => {
                   const search = searchForm.getFieldsValue();
+                  if (search.time) {
+                    search.startDate = moment(search.time[0]).format('YYYY-MM-DD HH:mm:ss');
+                    search.endDate = moment(search.time[1]).format('YYYY-MM-DD HH:mm:ss');
+                  }
                   setSearChContent(search);
                 }}
               >
@@ -225,19 +223,19 @@ export default () => {
       tabList={[
         {
           tab: '工业企业',
-          key: '1',
+          key: AuthenticationInfo.AuthenticationType.ENTERPRISE,
         },
         {
           tab: '服务机构',
-          key: '2',
+          key: AuthenticationInfo.AuthenticationType.SERVICE_PROVIDER,
         },
         {
           tab: '专家',
-          key: '3',
+          key: AuthenticationInfo.AuthenticationType.EXPERT,
         },
       ]}
       tabActiveKey={activeKey}
-      onTabChange={(key: string) => setActiveKey(key)}
+      onTabChange={(key: any) => setActiveKey(key)}
     >
       <div className={sc('container-table-header')}>
         <div className="title">

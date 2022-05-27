@@ -13,7 +13,11 @@ export const VerifyListText = {
   [Common.AuditStatus.AUDIT_SUBMIT]: '审核提交',
 };
 
-export default (props: { auditId: string; reset: () => void }) => {
+export default (props: {
+  auditId: string;
+  reset: () => void;
+  before?: (state: Common.AuditStatus) => React.ReactNode;
+}) => {
   const { auditId = '', reset } = props || {};
   const [list, setList] = useState<any>([]);
   const [form] = Form.useForm();
@@ -103,6 +107,7 @@ export default (props: { auditId: string; reset: () => void }) => {
 
   return (
     <div style={{ paddingLeft: 100 }}>
+      {props.before && props.before(list && list.length > 0 && list[0].state)}
       <VerifyStepsDetail list={list} />
       <div style={{ display: 'flex', gap: 20, padding: 20 }}>
         {list && list.length > 0 && list[0].state === Common.AuditStatus.AUDITING && (

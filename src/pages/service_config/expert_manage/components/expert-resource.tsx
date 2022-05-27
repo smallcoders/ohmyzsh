@@ -1,4 +1,15 @@
-import { Button, Input, Form, Select, Row, Col, message as antdMessage, Space } from 'antd';
+import {
+  Button,
+  Input,
+  Form,
+  Select,
+  Row,
+  Col,
+  message as antdMessage,
+  Space,
+  Popconfirm,
+  Radio,
+} from 'antd';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
@@ -10,12 +21,14 @@ import type ExpertResource from '@/types/expert_manage/expert-resource';
 import { getAreaTree } from '@/services/area';
 import { getDictionay } from '@/services/common';
 import { routeName } from '../../../../../config/routes';
+import { signCommissioner } from '@/services/service-commissioner-verify';
+import SelfSelect from '@/components/self_select';
 const sc = scopedClasses('user-config-logout-verify');
 
 export default () => {
   const [dataSource, setDataSource] = useState<ExpertResource.Content[]>([]);
   const [searchContent, setSearChContent] = useState<ExpertResource.SearchBody>({});
-
+  const [selectTypes, setSelectTypes] = useState<any>([]);
   const formLayout = {
     labelCol: { span: 6 },
     wrapperCol: { span: 16 },
@@ -28,7 +41,13 @@ export default () => {
     pageTotal: 0,
   });
   const [areaOptions, setAreaOptions] = useState<any>([]);
+
   const [expertTypes, setExpertType] = useState<any>([]);
+
+  const [serviceTypes, setServiceType] = useState<any>([]);
+
+  const [isCommissioner, setIsCommissioner] = useState<boolean>(false);
+
   useEffect(() => {
     try {
       getAreaTree({}).then((data) => {
@@ -36,6 +55,9 @@ export default () => {
       });
       getDictionay('EXPERT_DICT').then((data) => {
         setExpertType(data.result || []);
+      });
+      getDictionay('COMMISSIONER_SERVICE_TYPE').then((data) => {
+        setServiceType(data.result || []);
       });
     } catch (error) {
       antdMessage.error('数据初始化错误');
@@ -75,6 +97,28 @@ export default () => {
       antdMessage.error(`${tooltipMessage}失败，原因:{${error}}`);
     }
   };
+  const [signForm] = Form.useForm();
+
+  // 标记
+  const sign = async (record: any) => {
+    const tooltipMessage = '标记';
+    try {
+      const values = {
+        commissioner: isCommissioner,
+        ids: isCommissioner ? selectTypes : undefined,
+      };
+      const markResult = await signCommissioner({ expertShowId: record.id, ...values });
+      if (markResult.code === 0) {
+        antdMessage.success(`${tooltipMessage}成功`);
+        signForm.resetFields();
+        getPage();
+      } else {
+        throw new Error(markResult.message);
+      }
+    } catch (error) {
+      antdMessage.error(`${tooltipMessage}失败，原因:{${error}}`);
+    }
+  };
 
   const columns = [
     {
@@ -101,7 +145,7 @@ export default () => {
       dataIndex: 'typeNames',
       isEllipsis: true,
       render: (_: string[]) => (_ || []).join(','),
-      width: 450,
+      width: 400,
     },
     {
       title: '所属区域',
@@ -110,14 +154,20 @@ export default () => {
       width: 150,
     },
     {
+      title: '服务专员',
+      dataIndex: 'commissioner',
+      render: (_: boolean) => (_ ? '是' : '否'),
+      width: 80,
+    },
+    {
       title: '操作',
-      width: 200,
+      width: 250,
       dataIndex: 'option',
       fixed: 'right',
-      render: (_: any, record: any) => {
+      render: (_: any, record: ExpertResource.Content) => {
         return (
           <div style={{ textAlign: 'center' }}>
-            <Space size={20}>
+            <Space size={5}>
               <Button
                 type="link"
                 onClick={() => {
@@ -134,6 +184,63 @@ export default () => {
               >
                 置顶
               </Button>
+              <Popconfirm
+                icon={<span style={{ fontSize: 18 }}>服务专员标记</span>}
+                title={
+                  <Form layout="vertical" style={{ padding: 10, width: 400 }}>
+                    <Form.Item label="服务专员">
+                      <Radio.Group
+                        value={isCommissioner}
+                        onChange={(e) => {
+                          setIsCommissioner(e.target.value);
+                        }}
+                      >
+                        <Radio value={true}>是</Radio>
+                        <Radio value={false}>否</Radio>
+                      </Radio.Group>
+                    </Form.Item>
+                    {isCommissioner && (
+                      <Form.Item label="请选择服务类型">
+                        <SelfSelect
+                          dictionary={serviceTypes}
+                          fieldNames={{
+                            label: 'name',
+                            value: 'id',
+                          }}
+                          value={selectTypes}
+                          onChange={(values) => {
+                            setSelectTypes(values);
+                          }}
+                        />
+                      </Form.Item>
+                    )}
+                  </Form>
+                }
+                okButtonProps={{
+                  disabled: isCommissioner && selectTypes?.length === 0,
+                }}
+                okText="确定"
+                cancelText="取消"
+                onConfirm={() => sign(record)}
+                onCancel={() => {
+                  // signForm.resetFields();
+                }}
+              >
+                <Button
+                  type="link"
+                  onClick={() => {
+                    setIsCommissioner(!!record.commissioner);
+                    setSelectTypes(record.serviceTypeIds || []);
+                    // signForm.setFieldsValue({
+                    //   ids: record.serviceTypeIds || [],
+                    //   commissioner: record.commissioner,
+                    // });
+                  }}
+                >
+                  {' '}
+                  服务专员标记
+                </Button>
+              </Popconfirm>
             </Space>
           </div>
         );
@@ -151,12 +258,12 @@ export default () => {
       <div className={sc('container-search')}>
         <Form {...formLayout} form={searchForm}>
           <Row>
-            <Col span={6}>
+            <Col span={8}>
               <Form.Item name="expertName" label="专家姓名">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
-            <Col span={6}>
+            <Col span={8}>
               <Form.Item name="expertType" label="专家类型">
                 <Select placeholder="请选择" allowClear>
                   {(expertTypes || []).map((item: any) => {
@@ -169,7 +276,7 @@ export default () => {
                 </Select>
               </Form.Item>
             </Col>
-            <Col span={6}>
+            <Col span={8}>
               <Form.Item name="areaCode" label="所属区域">
                 <Select placeholder="请选择" allowClear>
                   {areaOptions?.map((item: any) => (
@@ -180,7 +287,15 @@ export default () => {
                 </Select>
               </Form.Item>
             </Col>
-            <Col offset={2} span={4}>
+            <Col span={8}>
+              <Form.Item name="commissioner" label="服务专员">
+                <Select placeholder="请选择" allowClear>
+                  <Select.Option value={false}>否</Select.Option>
+                  <Select.Option value={true}>是</Select.Option>
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col offset={12} span={4}>
               <Button
                 style={{ marginRight: 20 }}
                 type="primary"

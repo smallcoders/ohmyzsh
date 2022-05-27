@@ -21,3 +21,13 @@ export async function handleAudit(data?: { [key: string]: any }) {
     data,
   });
 }
+
+/**
+ * 服务专员审核
+ */
+export async function handleAuditCommissioner(data?: { [key: string]: any }) {
+  return request<Common.ResultCode>('/iiep-manage/audit/handleAuditCommissioner', {
+    method: 'put',
+    data,
+  });
+}

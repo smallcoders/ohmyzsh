@@ -1,21 +1,37 @@
-import { PlusOutlined } from '@ant-design/icons';
-import { Button, Input, Form, Modal, DatePicker, message, Space, Popconfirm } from 'antd';
+import { MenuOutlined, PlusOutlined } from '@ant-design/icons';
+import { Button, Input, Form, Modal, message, Space, Popconfirm, Table } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
-import Common from '@/types/common';
-import { getNewsPage, addOrUpdateNews, removeNews, updateState } from '@/services/news';
-import News from '@/types/service-config-news';
 import moment from 'moment';
-import UploadForm from '@/components/upload_form';
-import SelfTable from '@/components/self_table';
+import { arrayMoveImmutable } from 'array-move';
+
+import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
+import type { SortableContainerProps, SortEnd } from 'react-sortable-hoc';
+import OrgTypeManage from '@/types/org-type-manage';
+import {
+  addOrgType,
+  getOrgTypeList,
+  removeOrgType,
+  sortOrgType,
+  updateOrgType,
+} from '@/services/org-type-manage';
 const sc = scopedClasses('service-config-app-news');
+
+const DragHandle = SortableHandle(() => <MenuOutlined style={{ cursor: 'grab', color: '#999' }} />);
+
+const SortableItem = SortableElement((props: React.HTMLAttributes<HTMLTableRowElement>) => (
+  <tr {...props} />
+));
+const SortableBody = SortableContainer((props: React.HTMLAttributes<HTMLTableSectionElement>) => (
+  <tbody {...props} />
+));
 
 export default () => {
   const [createModalVisible, setModalVisible] = useState<boolean>(false);
-  const [dataSource, setDataSource] = useState<News.Content[]>([]);
-  const [editingItem, setEditingItem] = useState<News.Content>({});
+  const [dataSource, setDataSource] = useState<OrgTypeManage.Content[]>([]);
+  const [editingItem, setEditingItem] = useState<OrgTypeManage.Content>({});
   const [addOrUpdateLoading, setAddOrUpdateLoading] = useState<boolean>(false);
 
   const formLayout = {
@@ -23,26 +39,19 @@ export default () => {
     wrapperCol: { span: 16 },
   };
 
-  const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
-    pageIndex: 1,
-    pageSize: 20,
-    totalCount: 0,
-    pageTotal: 0,
-  });
-
   const [form] = Form.useForm();
 
-  const getNews = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
+  const getPages = async () => {
     try {
-      const { result, totalCount, pageTotal, code } = await getNewsPage({
-        pageIndex,
-        pageSize,
-      });
+      const { result, code } = await getOrgTypeList();
       if (code === 0) {
-        setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
-        setDataSource(result);
+        setDataSource(
+          result.map((p, index) => {
+            return { sort: index, ...p };
+          }),
+        );
       } else {
-        message.error(`请求分页数据失败`);
+        message.error(`请求列表数据失败`);
       }
     } catch (error) {
       console.log(error);
@@ -56,24 +65,20 @@ export default () => {
 
   const addOrUpdate = async () => {
     const tooltipMessage = editingItem.id ? '修改' : '添加';
-    const hide = message.loading(`正在${tooltipMessage}`);
     form
       .validateFields()
       .then(async (value) => {
         setAddOrUpdateLoading(true);
-        if (value.publishTime) {
-          value.publishTime = moment(value.publishTime).format('YYYY-MM-DDTHH:mm:ss');
-        }
-        const addorUpdateRes = await addOrUpdateNews({
-          ...value,
-          id: editingItem.id,
-          state: editingItem.state,
-        });
-        hide();
+        const addorUpdateRes = await (editingItem.id
+          ? updateOrgType({
+              ...value,
+              id: editingItem.id,
+            })
+          : addOrgType({ ...value }));
         if (addorUpdateRes.code === 0) {
           setModalVisible(false);
           message.success(`${tooltipMessage}成功`);
-          getNews();
+          getPages();
           clearForm();
         } else {
           message.error(`${tooltipMessage}失败，原因:{${addorUpdateRes.message}}`);
@@ -81,16 +86,16 @@ export default () => {
         setAddOrUpdateLoading(false);
       })
       .catch(() => {
-        hide();
+        setAddOrUpdateLoading(false);
       });
   };
 
   const remove = async (id: string) => {
     try {
-      const removeRes = await removeNews(id);
+      const removeRes = await removeOrgType(id);
       if (removeRes.code === 0) {
         message.success(`删除成功`);
-        getNews();
+        getPages();
       } else {
         message.error(`删除失败，原因:{${removeRes.message}}`);
       }
@@ -99,13 +104,13 @@ export default () => {
     }
   };
 
-  const editState = async (id: string, updatedState: number) => {
+  const sort = async (ids: string[]) => {
     try {
-      const tooltipMessage = updatedState === 0 ? '下架' : '上架';
-      const updateStateResult = await updateState({ id, action: updatedState });
+      const tooltipMessage = '排序';
+      const updateStateResult = await sortOrgType(ids);
       if (updateStateResult.code === 0) {
         message.success(`${tooltipMessage}成功`);
-        getNews();
+        getPages();
       } else {
         message.error(`${tooltipMessage}失败，原因:{${updateStateResult.message}}`);
       }
@@ -117,30 +122,31 @@ export default () => {
   const columns = [
     {
       title: '排序',
-      dataIndex: 'sort',
+      dataIndex: 'id',
       width: 80,
-      render: (_: any, _record: News.Content, index: number) =>
-        _record.state === 2 ? '' : pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
+      className: 'drag-visible',
+      render: () => <DragHandle />,
     },
     {
       title: '类型名称',
-      dataIndex: 'title',
+      dataIndex: 'name',
+      isEllipsis: true,
+      width: 180,
+    },
+    {
+      title: '类型描述',
+      dataIndex: 'description',
       isEllipsis: true,
       width: 300,
     },
     {
-      title: '类型描述',
-      dataIndex: 'pageViews',
-      width: 80,
-    },
-    {
       title: '创建人',
-      dataIndex: 'state',
+      dataIndex: 'creatorName',
       width: 200,
     },
     {
       title: '创建时间',
-      dataIndex: 'publishTime',
+      dataIndex: 'createTime',
       width: 200,
       render: (_: string) => moment(_).format('YYYY-MM-DD HH:mm:ss'),
     },
@@ -148,36 +154,80 @@ export default () => {
       title: '操作',
       width: 200,
       dataIndex: 'option',
-      render: (_: any, record: News.Content) => {
+      render: (_: any, record: OrgTypeManage.Content) => {
         return (
           <Space size="middle">
-            <a
-              href="#"
-              onClick={() => {
-                setEditingItem(record);
-                setModalVisible(true);
-                form.setFieldsValue({ ...record, publishTime: moment(record.publishTime) });
-              }}
-            >
-              编辑{' '}
-            </a>
-            <Popconfirm
-              title="确定删除么？"
-              okText="确定"
-              cancelText="取消"
-              onConfirm={() => remove(record.id as string)}
-            >
-              <a href="#">删除</a>
-            </Popconfirm>
+            {record.isEdit && (
+              <a
+                href="#"
+                onClick={() => {
+                  setEditingItem(record);
+                  setModalVisible(true);
+                  form.setFieldsValue({ ...record });
+                }}
+              >
+                编辑{' '}
+              </a>
+            )}
+            {record.isDelete ? (
+              <a
+                href="#"
+                onClick={() => {
+                  Modal.info({
+                    title: '提示',
+                    content: '当前类型下有绑定的服务机构，请先解除绑定关系',
+                  });
+                }}
+              >
+                删除
+              </a>
+            ) : (
+              <Popconfirm
+                title="确定删除么？"
+                okText="确定"
+                cancelText="取消"
+                onConfirm={() => remove(record.id as string)}
+              >
+                <a href="#">删除</a>
+              </Popconfirm>
+            )}
           </Space>
         );
       },
     },
   ];
 
+  const onSortEnd = ({ oldIndex, newIndex }: SortEnd) => {
+    if (oldIndex !== newIndex) {
+      const newData = arrayMoveImmutable(dataSource.slice(), oldIndex, newIndex).filter(
+        (el) => !!el,
+      );
+      sort(newData.map((p) => p.id));
+    }
+  };
+
+  const DraggableContainer = (props: SortableContainerProps) => (
+    <SortableBody
+      useDragHandle
+      disableAutoscroll
+      helperClass="row-dragging"
+      onSortEnd={onSortEnd}
+      {...props}
+    />
+  );
+
+  const DraggableBodyRow: React.FC<any> = ({ className, style, ...restProps }) => {
+    const index = dataSource.findIndex((x) => x.sort === restProps['data-row-key']);
+    return <SortableItem index={index} {...restProps} />;
+  };
+
   useEffect(() => {
-    getNews();
+    getPages();
   }, []);
+
+  useEffect(() => {
+    console.log('dataSource', dataSource);
+  }, [dataSource]);
 
   const useModal = (): React.ReactNode => {
     return (
@@ -199,19 +249,27 @@ export default () => {
             rules={[
               {
                 validator: async (_, value) => {
-                  if (dataSource?.map((p) => p.title).includes(value)) {
+                  if (
+                    dataSource
+                      ?.map((p) => {
+                        if (p.id !== editingItem.id) {
+                          return p.name;
+                        }
+                      })
+                      .includes(value)
+                  ) {
                     return Promise.reject(new Error('该机构类型已存在'));
                   }
                 },
               },
             ]}
-            name="title"
+            name="name"
             label="类型名称"
             required
           >
             <Input placeholder="请输入" />
           </Form.Item>
-          <Form.Item name="contents" label="类型描述">
+          <Form.Item name="description" label="类型描述">
             <Input.TextArea
               placeholder="请输入"
               autoSize={{ minRows: 3, maxRows: 5 }}
@@ -228,7 +286,7 @@ export default () => {
     <PageContainer className={sc('container')}>
       <div className={sc('container-table-header')}>
         <div className="title">
-          <span>机构类型列表(共{pageInfo.totalCount || 0}个)</span>
+          <span>机构类型列表(共{dataSource?.length || 0}个)</span>
           <Button
             type="primary"
             key="primary"
@@ -241,23 +299,17 @@ export default () => {
         </div>
       </div>
       <div className={sc('container-table-body')}>
-        <SelfTable
-          bordered
-          scroll={{ x: 1400 }}
-          columns={columns}
+        <Table
+          pagination={false}
           dataSource={dataSource}
-          pagination={
-            pageInfo.totalCount === 0
-              ? false
-              : {
-                  onChange: getNews,
-                  total: pageInfo.totalCount,
-                  current: pageInfo.pageIndex,
-                  pageSize: pageInfo.pageSize,
-                  showTotal: (total: any) =>
-                    `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
-                }
-          }
+          columns={columns}
+          rowKey="sort"
+          components={{
+            body: {
+              wrapper: DraggableContainer,
+              row: DraggableBodyRow,
+            },
+          }}
         />
       </div>
       {useModal()}

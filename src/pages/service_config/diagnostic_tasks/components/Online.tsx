@@ -199,7 +199,16 @@ export default () => {
                   score: record.score,
                   conclusion: record.conclusion,
                   id: record.id,
-                  reportFileId: record?.reportFile ? [record?.reportFile] : [],
+                  reportFileId: record?.reportFile
+                    ? [
+                        {
+                          uid: record?.reportFile?.id,
+                          name: record?.reportFile?.fileName + '.' + record?.reportFile?.fileFormat,
+                          status: 'done',
+                          // url: record?.reportFile?.id,
+                        },
+                      ]
+                    : undefined,
                 } as any;
                 setEditingItem(item);
                 setModalVisible(true);
@@ -328,7 +337,7 @@ export default () => {
         setAddOrUpdateLoading(true);
         const params = {
           ...value,
-          reportFileId: value.reportFileId?.map((p: { id: string }) => p.id).join(','),
+          reportFileId: value.reportFileId?.map((p: { uid: string }) => p.uid).join(','),
         };
         const addorUpdateRes = await addOrUpdateReportFile({
           ...params,

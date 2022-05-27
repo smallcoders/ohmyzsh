@@ -1,0 +1,83 @@
+.self-select {
+  width: 100%;
+  &-input {
+    display: inline-block;
+    width: 100%;
+    min-width: 0;
+    padding: 4px 11px;
+    color: rgba(0, 0, 0, 0.65);
+    font-size: 14px;
+    line-height: 1.5715;
+    background-color: transparent;
+    background-image: none;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 2px;
+    transition: all 0.3s;
+  }
+  &-footer {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    justify-content: space-between;
+    &-left {
+      display: flex;
+      gap: 10px;
+      > div {
+        display: flex;
+        gap: 5px;
+        align-items: center;
+        width: 120px;
+        padding: 5px;
+        color: #6680ff;
+        background: rgba(102, 128, 255, 0.06);
+        border: 1px solid #6680ff;
+        border-radius: 2px;
+        > span {
+          display: inline-block;
+          flex: 1;
+          overflow: hidden;
+          line-height: 0.9;
+          white-space: nowrap;
+          text-align: center;
+          text-overflow: ellipsis;
+          cursor: pointer;
+        }
+      }
+      &-placeholder {
+        color: #000;
+        font-weight: 400;
+        font-size: 14px;
+        letter-spacing: 0;
+        text-align: justify;
+        opacity: 0.3;
+      }
+    }
+  }
+  &-item {
+    display: flex;
+    gap: 20px;
+    padding: 10px;
+    &-title {
+      flex: 0 0 100px;
+    }
+    &-values {
+      flex: 1;
+      font-weight: 400;
+      font-size: 14px;
+      letter-spacing: 0;
+      text-align: justify;
+      &-tag {
+        padding: 5px 0;
+        color: #333;
+        cursor: pointer;
+        transition: all 0.3s;
+        &-selected {
+          padding: 5px 0;
+          color: #6680ff;
+          cursor: pointer;
+          transition: all 0.3s;
+        }
+      }
+    }
+  }
+}

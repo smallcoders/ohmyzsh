@@ -26,7 +26,7 @@
   NEED_VERIFY_INDEX: '/verify-agency/need-verify/index', // 科技成果审核
   NEED_VERIFY_DETAIL: '/verify-agency/need-verify/detail', // 科技成果详情
   LOGOUT_VERIFY: '/verify-agency/logout-verify', // 注销审核
-  SERVICE_COMMISSIONER_VERIFY: '/user-config/service-commissioner-verify', // 服务专员审核
+  SERVICE_COMMISSIONER_VERIFY: '/verify-agency/service-commissioner-verify', // 服务专员审核
 
   AUTHENTICATION_INFO: '/user-config/authentication-info', // 认证信息
   AUTHENTICATION_INFO_INDEX: '/user-config/authentication-info/index', // 认证信息列表
@@ -240,7 +240,7 @@ export default [
       {
         path: routeName.AUTHENTICATION_INFO,
         name: '认证信息',
-        // hideChildrenInMenu: true,
+        hideChildrenInMenu: true,
         routes: [
           {
             path: routeName.AUTHENTICATION_INFO,
@@ -272,14 +272,14 @@ export default [
       },
       {
         path: routeName.ADMIN_ACCOUNT_DISTRIBUTOR,
-        name: '管理员账号分配',
+        name: '科产管理员配置',
         component: './user_config/admin_account_distributor',
       },
     ],
   },
   {
     path: '/verify-agency',
-    name: '审核代办',
+    name: '审核待办',
     icon: 'control',
     access: 'SERVICE_CONFIG',
     routes: [
