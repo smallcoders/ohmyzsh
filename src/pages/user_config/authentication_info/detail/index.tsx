@@ -99,7 +99,7 @@ export default () => {
                   };
                 })
               : [],
-            expertType: expertType ? Number(expertType) : undefined,
+            expertType: expertType ? expertType?.split(',').map((p) => Number(p)) : undefined,
             areaCode,
             ...rest,
           };
@@ -497,7 +497,7 @@ export default () => {
             placeholder="请输入"
             autoComplete="off"
             allowClear
-            maxLength={50}
+            maxLength={35}
           />
         </Form.Item>
         <Form.Item
@@ -529,7 +529,7 @@ export default () => {
           ]}
           label={`专家类型`}
         >
-          <Select placeholder="请选择" allowClear style={{ width: '300px' }}>
+          <Select mode="multiple" placeholder="请选择" allowClear style={{ width: '300px' }}>
             {expertTypeOptions?.map((item: any) => (
               <Select.Option key={item?.id} value={item?.id}>
                 {item?.name}
@@ -562,7 +562,7 @@ export default () => {
             autoComplete="off"
             showCount
             rows={3}
-            maxLength={400}
+            maxLength={500}
           />
         </Form.Item>
         <Form.Item name="fileIds" label="相关附件">
@@ -602,11 +602,11 @@ export default () => {
   };
 
   const transformExpert = (values: any) => {
-    const { fileIds, ...rest } = values;
-    console.log('values', values);
+    const { fileIds, expertType, ...rest } = values;
     return {
       id,
       fileIds: fileIds?.map((p) => p.uid).join(','),
+      expertType: expertType?.join(','),
       ...rest,
     };
   };

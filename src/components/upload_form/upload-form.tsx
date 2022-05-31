@@ -62,7 +62,7 @@ const UploadForm = (
     if (props.maxSize) {
       const isLtLimit = file.size / 1024 / 1024 < props.maxSize;
       if (!isLtLimit) {
-        message.error(`上传的图片大小不得超过${props.maxSize}M`);
+        message.error(`上传的文件大小不得超过${props.maxSize}M`);
         return Upload.LIST_IGNORE;
       }
     }

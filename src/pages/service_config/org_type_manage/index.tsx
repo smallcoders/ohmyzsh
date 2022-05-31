@@ -267,13 +267,13 @@ export default () => {
             label="类型名称"
             required
           >
-            <Input placeholder="请输入" />
+            <Input placeholder="请输入" maxLength={10} />
           </Form.Item>
           <Form.Item name="description" label="类型描述">
             <Input.TextArea
               placeholder="请输入"
               autoSize={{ minRows: 3, maxRows: 5 }}
-              maxLength={200}
+              maxLength={100}
               showCount
             />
           </Form.Item>
