@@ -169,7 +169,7 @@ export default () => {
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="enterpriseName" label="服务企业">
+              <Form.Item name="orgName" label="服务企业">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
