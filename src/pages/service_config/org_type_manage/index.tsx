@@ -169,7 +169,7 @@ export default () => {
                 编辑{' '}
               </a>
             )}
-            {record.isDelete ? (
+            {!record.isDelete ? (
               <a
                 href="#"
                 onClick={() => {
