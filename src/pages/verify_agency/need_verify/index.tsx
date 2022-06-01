@@ -180,7 +180,7 @@ export default () => {
                     onChange={(e) => setRefuseContent(e.target.value)}
                     value={refuseContent}
                     showCount
-                    maxLength={50}
+                    maxLength={200}
                   />
                 </>
               }
