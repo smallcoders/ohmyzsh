@@ -281,15 +281,25 @@ export default () => {
         <Form {...formLayout} form={form} layout="horizontal">
           <Form.Item
             rules={[
-              {
-                required: true,
-                message: '必填',
-              },
+              () => ({
+                validator(_, value) {
+                  if (!value) {
+                    return Promise.reject(new Error('必填'));
+                  }
+                  if (!/^[a-zA-Z0-9_\u4e00-\u9fa5-]+$/.test(value)) {
+                    return Promise.reject(
+                      new Error('由数字、字母、中文、下划线或者中划线组成,长度40字符以内'),
+                    );
+                  }
+                  return Promise.resolve();
+                },
+              }),
             ]}
+            required
             name="name"
             label="用户名"
           >
-            <Input placeholder="请输入" />
+            <Input placeholder="请输入" maxLength={40} />
           </Form.Item>
           <Form.Item
             name="typeIds"
@@ -304,6 +314,7 @@ export default () => {
             <Select
               placeholder="请选择"
               allowClear
+              showSearch={false}
               mode="multiple"
               dropdownRender={(menu) => (
                 <>
