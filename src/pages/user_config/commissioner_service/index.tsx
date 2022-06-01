@@ -79,14 +79,14 @@ export default () => {
       dataIndex: 'expertName',
       render: (_: string, record: CommissionerService.Content) => {
         return (
-          <Button
-            type="link"
+          <a
+            href="javascript:;"
             onClick={() => {
               history.push(`${routeName.EXPERT_MANAGE_DETAIL}?id=${record?.expertId}`);
             }}
           >
             {_}
-          </Button>
+          </a>
         );
       },
       width: 300,
@@ -101,7 +101,7 @@ export default () => {
       title: '打卡时间',
       dataIndex: 'createTime',
       width: 200,
-      render: (_: string) => moment(_).format('YYYY-MM-DD HH:mm:ss'),
+      render: (_: string) => (_ ? moment(_).format('YYYY-MM-DD HH:mm:ss') : '--'),
     },
     {
       title: '评分',
@@ -116,9 +116,9 @@ export default () => {
     },
     {
       title: '评价时间',
-      dataIndex: 'publishTime',
+      dataIndex: 'evaluationTime',
       width: 200,
-      render: (_: string) => moment(_).format('YYYY-MM-DD HH:mm:ss'),
+      render: (_: string) => (_ ? moment(_).format('YYYY-MM-DD HH:mm:ss') : '--'),
     },
     {
       title: '服务记录文档',
