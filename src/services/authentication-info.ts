@@ -93,3 +93,14 @@ export async function updateExpert(data?: { [key: string]: any }) {
     data,
   });
 }
+
+/**
+ * 查询可选的单位
+ * @param name
+ * @returns
+ */
+export async function getWorkUnit(name: string) {
+  return request<Common.ResultCode & { result: any }>(
+    `/iiep-manage/authentication/enterprise/queryWorkUnit4Register?workUnit=${name}`,
+  );
+}

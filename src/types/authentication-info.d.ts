@@ -81,6 +81,7 @@ namespace AuthenticationInfo {
 
   export type ExpertDetail = {
     id?: string; //主键
+    orgId?: string; // 工作单位id
     personalPhotoId?: string; //个人照片Id
     personalPhoto?: string; //个人照片url
     expertName?: string; //专家姓名

@@ -21,6 +21,8 @@ import {
 import moment from 'moment';
 import { getOrgTypeOptions } from '@/services/org-type-manage';
 import { getDictionaryTree } from '@/services/dictionary';
+import SelfAutoComplete from '@/components/self_auto_complete/self-auto-complete';
+import useSearchWorkUnitHook from '@/hooks/search-work-unit-hooks';
 
 const sc = scopedClasses('user-config-kechuang');
 
@@ -77,8 +79,16 @@ export default () => {
         }
         getDictionary();
         if (res.code === 0) {
-          const { formedDate, areaCode, countyCode, fileIds, fileList, expertType, ...rest } =
-            res.result;
+          const {
+            formedDate,
+            areaCode,
+            countyCode,
+            fileIds,
+            fileList,
+            expertType,
+            orgId,
+            ...rest
+          } = res.result;
 
           setDetail(res.result);
 
@@ -119,6 +129,7 @@ export default () => {
   useEffect(() => {
     prepare();
   }, [id]);
+  const handleSearchWorkUnit = useSearchWorkUnitHook();
 
   const getContractInfo = () => {
     return (
@@ -474,13 +485,32 @@ export default () => {
             },
           ]}
         >
-          <Input
+          <SelfAutoComplete
+            placeholder="工作单位"
+            style={{ width: '300px' }}
+            maxLength={50}
+            searchWordsLength={3}
+            onSearch={handleSearchWorkUnit}
+            getPopupContainer={(triggerNode: any) => triggerNode}
+            initOptions={
+              detail?.orgId
+                ? [
+                    {
+                      id: detail?.orgId,
+                      name: detail?.workUnit,
+                    },
+                  ]
+                : []
+            }
+          />
+
+          {/* <Input
             style={{ width: '300px' }}
             placeholder="请输入"
             autoComplete="off"
             allowClear
             maxLength={50}
-          />
+          /> */}
         </Form.Item>
         <Form.Item
           name="duty"

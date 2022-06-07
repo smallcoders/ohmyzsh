@@ -94,10 +94,13 @@ export default () => {
             }));
         if (addorUpdateRes.code === 0) {
           setModalVisible(false);
-          Modal.info({
-            title: '新增管理员成功',
-            content: ` 当前管理员密码初始密码为：ly@${moment().format('YYYYMMDD')}`,
-          });
+          console.log(editingItem.id);
+          if (!editingItem.id) {
+            Modal.info({
+              title: '新增管理员成功',
+              content: ` 当前管理员密码初始密码为：ly@${moment().format('YYYYMMDD')}`,
+            });
+          }
 
           getPages();
           clearForm();
