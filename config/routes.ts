@@ -28,6 +28,10 @@
   LOGOUT_VERIFY: '/verify-agency/logout-verify', // 注销审核
   SERVICE_COMMISSIONER_VERIFY: '/verify-agency/service-commissioner-verify', // 服务专员审核
 
+  ENTERPRISE_ADMIN_VERIFY: '/verify-agency/enterprise-admin-verify', // 企业管理员审核
+  ENTERPRISE_ADMIN_VERIFY_INDEX: '/verify-agency/enterprise-admin-verify/index', // 企业管理员审核
+  ENTERPRISE_ADMIN_VERIFY_DETAIL: '/verify-agency/enterprise-admin-verify/detail', // 企业管理员审核详情
+
   AUTHENTICATION_INFO: '/user-config/authentication-info', // 认证信息
   AUTHENTICATION_INFO_INDEX: '/user-config/authentication-info/index', // 认证信息列表
   AUTHENTICATION_INFO_DETAIL: '/user-config/authentication-info/detail', // 认证信息编辑
@@ -339,6 +343,28 @@ export default [
             name: '创新需求详情',
             component: './verify_agency/need_verify/detail',
           },
+        ],
+      },
+      {
+        path: routeName.ENTERPRISE_ADMIN_VERIFY,
+        name: '企业管理员审核',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.ENTERPRISE_ADMIN_VERIFY,
+            redirect: routeName.ENTERPRISE_ADMIN_VERIFY_INDEX,
+          },
+          {
+            path: routeName.ENTERPRISE_ADMIN_VERIFY_INDEX,
+            name: '企业管理员审核',
+            hideInBreadcrumb: true,
+            component: './verify_agency/enterprise_admin_verify',
+          },
+          // {
+          //   path: routeName.ENTERPRISE_ADMIN_VERIFY_DETAIL,
+          //   name: '企业管理员审核详情',
+          //   component: './verify_agency/enterprise_admin_verify/detail',
+          // },
         ],
       },
     ],
