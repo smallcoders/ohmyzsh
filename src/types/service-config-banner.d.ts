@@ -5,6 +5,8 @@ namespace Banner {
     PC = 0, // 官网-首页
     APPLET = 1, // 小程序-首页
     APPLET_CREATIVE = 3, // 小程序-科产
+    APP = 2, // APP-首页
+    APP_CREATIVE = 4, // APP-科产
   }
 
   export interface ResultList extends Common.ResultCode, Common.ResultPage {

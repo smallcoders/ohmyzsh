@@ -244,6 +244,8 @@ const TableList: React.FC = () => {
         <Radio.Button value={Banner.Edge.PC}>官网-首页</Radio.Button>
         <Radio.Button value={Banner.Edge.APPLET}>小程序-首页</Radio.Button>
         <Radio.Button value={Banner.Edge.APPLET_CREATIVE}>小程序-科产</Radio.Button>
+        <Radio.Button value={Banner.Edge.APP}>APP-首页</Radio.Button>
+        <Radio.Button value={Banner.Edge.APP_CREATIVE}>APP-科产</Radio.Button>
       </Radio.Group>
     );
   };
@@ -296,6 +298,8 @@ const TableList: React.FC = () => {
               <Select.Option value={Banner.Edge.PC}>官网-首页</Select.Option>
               <Select.Option value={Banner.Edge.APPLET}>小程序-首页</Select.Option>
               <Select.Option value={Banner.Edge.APPLET_CREATIVE}>小程序-科产</Select.Option>
+              <Select.Option value={Banner.Edge.APP}>APP-首页</Select.Option>
+              <Select.Option value={Banner.Edge.APP_CREATIVE}>APP-科产</Select.Option>
             </Select>
           </Form.Item>
           <Form.Item name="sort" label="展示顺序">

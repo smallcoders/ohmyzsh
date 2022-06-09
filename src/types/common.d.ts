@@ -19,6 +19,29 @@ namespace Common {
     AUDIT_SUBMIT = 'AUDIT_SUBMIT',
   }
 
+  export enum OrgType {
+    /**
+     * 企业
+     */
+    ENTERPRISE = 'ENTERPRISE',
+    /**
+     * 高校
+     */
+    COLLEGE = 'COLLEGE',
+    /**
+     * 科研机构
+     */
+    INSTITUTION = 'INSTITUTION',
+    /**
+     * 其他
+     */
+    OTHER = 'OTHER',
+    /**
+     * 医疗卫生
+     */
+    MEDICAL = 'MEDICAL',
+  }
+
   export type ResultCode = {
     /**
      * 状态码

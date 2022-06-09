@@ -360,11 +360,11 @@ export default [
             hideInBreadcrumb: true,
             component: './verify_agency/enterprise_admin_verify',
           },
-          // {
-          //   path: routeName.ENTERPRISE_ADMIN_VERIFY_DETAIL,
-          //   name: '企业管理员审核详情',
-          //   component: './verify_agency/enterprise_admin_verify/detail',
-          // },
+          {
+            path: routeName.ENTERPRISE_ADMIN_VERIFY_DETAIL,
+            name: '企业管理员审核详情',
+            component: './verify_agency/enterprise_admin_verify/components/detail',
+          },
         ],
       },
     ],
