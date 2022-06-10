@@ -7,7 +7,7 @@ import { request } from 'umi';
  * 下载
  */
 export async function downloadFile(fileId: string) {
-  return request<CourseManage.ResultList>(`/iiep-manage/common/download/${fileId}`, {
+  return request<CourseManage.ResultList>(`/antelope-manage/common/download/${fileId}`, {
     method: 'get',
     responseType: 'blob',
   });
@@ -19,7 +19,7 @@ export async function downloadFile(fileId: string) {
  * @returns
  */
 export async function getEnumByName(label: string) {
-  return request<CourseManage.ResultList>(`/iiep-manage/common/dictionaryEnum?label=${label}`, {
+  return request<CourseManage.ResultList>(`/antelope-manage/common/dictionaryEnum?label=${label}`, {
     method: 'get',
   });
 }
@@ -30,7 +30,7 @@ export async function getEnumByName(label: string) {
  * @returns
  */
 export async function getDictionay(label: string) {
-  return request<CourseManage.ResultList>(`/iiep-manage/common/dictionary?label=${label}`, {
+  return request<CourseManage.ResultList>(`/antelope-manage/common/dictionary?label=${label}`, {
     method: 'get',
   });
 }

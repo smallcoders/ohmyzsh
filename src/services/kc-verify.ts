@@ -8,7 +8,7 @@ import { request } from 'umi';
  * @returns
  */
 export async function getCreativePage(data?: { [key: string]: any }) {
-  return request<any>('/iiep-manage/creative/audit/page/achievement', {
+  return request<any>('/antelope-manage/creative/audit/page/achievement', {
     method: 'post',
     data,
   });
@@ -18,14 +18,14 @@ export async function getCreativePage(data?: { [key: string]: any }) {
  * 查询成果详情
  */
 export async function getCreativeDetail(id: string) {
-  return request<any>(`/iiep-manage/creative/audit/detail/achievement?id=${id}`);
+  return request<any>(`/antelope-manage/creative/audit/detail/achievement?id=${id}`);
 }
 
 /**
  * 处理成果审核
  */
 export async function updateCreativeAudit(data?: { [key: string]: any }) {
-  return request<any>('/iiep-manage/creative/audit/handleAudit/achievement', {
+  return request<any>('/antelope-manage/creative/audit/handleAudit/achievement', {
     method: 'put',
     data,
   });
@@ -35,7 +35,7 @@ export async function updateCreativeAudit(data?: { [key: string]: any }) {
  * 查询成果详情
  */
 export async function getDemandDetail(id: string) {
-  return request<any>(`/iiep-manage/creative/audit/detail/demand?id=${id}`);
+  return request<any>(`/antelope-manage/creative/audit/detail/demand?id=${id}`);
 }
 
 /**
@@ -44,7 +44,7 @@ export async function getDemandDetail(id: string) {
  * @returns
  */
 export async function getDemandPage(data?: { [key: string]: any }) {
-  return request<any>('/iiep-manage/creative/audit/page/demand', {
+  return request<any>('/antelope-manage/creative/audit/page/demand', {
     method: 'post',
     data,
   });
@@ -54,7 +54,7 @@ export async function getDemandPage(data?: { [key: string]: any }) {
  * 处理需求审核
  */
 export async function updateDemandAudit(data?: { [key: string]: any }) {
-  return request<any>('/iiep-manage/creative/audit/handleAudit/demand', {
+  return request<any>('/antelope-manage/creative/audit/handleAudit/demand', {
     method: 'put',
     data,
   });

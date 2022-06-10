@@ -226,7 +226,7 @@ export default () => {
             <span>{p.sort}</span>
             <div className={sc('container-table-body-item-content')}>
               <div>
-                <img src={`/iiep-manage/common/download/${p.coverId}`} alt="图片损坏" />
+                <img src={`/antelope-manage/common/download/${p.coverId}`} alt="图片损坏" />
                 <div>
                   <div>
                     <span

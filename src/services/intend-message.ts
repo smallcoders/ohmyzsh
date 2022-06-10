@@ -6,7 +6,7 @@ import { request } from 'umi';
 
 /** 获取用户反馈记录分页 */
 export async function getIntendMessagePage(data?: { [key: string]: any }) {
-  return request<UserFeedback.RecordList>('/iiep-manage/intendMessage', {
+  return request<UserFeedback.RecordList>('/antelope-manage/intendMessage', {
     method: 'post',
     data,
   });
@@ -19,7 +19,7 @@ export async function getIntendMessagePage(data?: { [key: string]: any }) {
  * @returns
  */
 export async function markIntendMessageContracted(id: string, remark: string) {
-  return request<Common.ResultCode & { result: any }>(`/iiep-manage/intendMessage/sign`, {
+  return request<Common.ResultCode & { result: any }>(`/antelope-manage/intendMessage/sign`, {
     method: 'put',
     data: {
       id,
@@ -35,7 +35,7 @@ export async function markIntendMessageContracted(id: string, remark: string) {
  * @returns
  */
 export async function updateIntendMessageRemark(id: string, remark: string) {
-  return request<Common.ResultCode & { result: any }>(`/iiep-manage/intendMessage/remark`, {
+  return request<Common.ResultCode & { result: any }>(`/antelope-manage/intendMessage/remark`, {
     method: 'put',
     data: {
       id,

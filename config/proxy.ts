@@ -13,8 +13,8 @@
 // --no-ignore
 export default {
   dev: {
-    '/iiep-manage/': {
-      target: 'http://10.40.152.206:10086',
+    '/antelope-manage/': {
+      target: 'http://172.30.33.222:10086',
       changeOrigin: true,
       pathRewrite: { '^': '' },
     },

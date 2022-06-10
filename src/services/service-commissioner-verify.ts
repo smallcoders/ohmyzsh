@@ -8,7 +8,7 @@ import { request } from 'umi';
  * @returns
  */
 export async function getCommissionerVerifyPage(data?: { [key: string]: any }) {
-  return request<any>('/iiep-manage/commissioner/page', {
+  return request<any>('/antelope-manage/commissioner/page', {
     method: 'post',
     data,
   });
@@ -20,7 +20,7 @@ export async function getCommissionerVerifyPage(data?: { [key: string]: any }) {
  * @returns
  */
 export async function signCommissioner(data?: { [key: string]: any }) {
-  return request<any>('/iiep-manage/commissioner/submit', {
+  return request<any>('/antelope-manage/commissioner/submit', {
     method: 'post',
     data,
   });
@@ -32,7 +32,7 @@ export async function signCommissioner(data?: { [key: string]: any }) {
  * @returns
  */
 export async function getCommissionerServicePageByUserId(data?: { [key: string]: any }) {
-  return request<any>('/iiep-manage/commissioner/service/page', {
+  return request<any>('/antelope-manage/commissioner/service/page', {
     method: 'post',
     data,
   });

@@ -19,7 +19,7 @@ const UploadForm = (
     newFileList = newFileList?.map((file: any) => {
       if (file.response) {
         if (props.isSkip) {
-          file.url = `/iiep-manage/common/download/${file?.response?.result}`;
+          file.url = `/antelope-manage/common/download/${file?.response?.result}`;
         }
         file.uid = file?.response?.result;
       }
@@ -72,7 +72,7 @@ const UploadForm = (
         {...props}
         fileList={props?.value || []}
         name="file"
-        action="/iiep-manage/common/upload"
+        action="/antelope-manage/common/upload"
         onChange={handleChange}
         beforeUpload={beforeUpload}
         onRemove={onRemove}

@@ -6,7 +6,7 @@ import { request } from 'umi';
 
 /** 获取用户反馈记录分页 */
 export async function getUserFeedbackPage(data?: { [key: string]: any }) {
-  return request<UserFeedback.RecordList>('/iiep-manage/feedback', {
+  return request<UserFeedback.RecordList>('/antelope-manage/feedback', {
     method: 'post',
     data,
   });
@@ -19,7 +19,7 @@ export async function getUserFeedbackPage(data?: { [key: string]: any }) {
  * @returns
  */
 export async function markUserFeedContracted(id: string, remark: string) {
-  return request<Common.ResultCode & { result: any }>(`/iiep-manage/feedback/sign`, {
+  return request<Common.ResultCode & { result: any }>(`/antelope-manage/feedback/sign`, {
     method: 'put',
     data: {
       id,
@@ -35,7 +35,7 @@ export async function markUserFeedContracted(id: string, remark: string) {
  * @returns
  */
 export async function updateUserFeedBackRemark(id: string, remark: string) {
-  return request<Common.ResultCode & { result: any }>(`/iiep-manage/feedback/remark`, {
+  return request<Common.ResultCode & { result: any }>(`/antelope-manage/feedback/remark`, {
     method: 'put',
     data: {
       id,

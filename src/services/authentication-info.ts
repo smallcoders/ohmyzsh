@@ -7,7 +7,7 @@ import { request } from 'umi';
 
 /** 认证信息列表 */
 export async function getAuthenticationInfoPage(data?: { [key: string]: any }) {
-  return request<AuthenticationInfo.RecordList>('/iiep-manage/authentication/page', {
+  return request<AuthenticationInfo.RecordList>('/antelope-manage/authentication/page', {
     method: 'post',
     data,
   });
@@ -21,7 +21,7 @@ export async function getAuthenticationInfoPage(data?: { [key: string]: any }) {
  */
 export async function getEnterpriseDetail(id: string) {
   return request<Common.ResultCode & { result: any }>(
-    `/iiep-manage/authentication/detail/enterprise?id=${id}`,
+    `/antelope-manage/authentication/detail/enterprise?id=${id}`,
   );
 }
 
@@ -33,7 +33,7 @@ export async function getEnterpriseDetail(id: string) {
  */
 export async function getInstitutionDetail(id: string) {
   return request<Common.ResultCode & { result: any }>(
-    `/iiep-manage/authentication/detail/institution?id=${id}`,
+    `/antelope-manage/authentication/detail/institution?id=${id}`,
   );
 }
 
@@ -45,7 +45,7 @@ export async function getInstitutionDetail(id: string) {
  */
 export async function getExpertDetail(id: string) {
   return request<Common.ResultCode & { result: any }>(
-    `/iiep-manage/authentication/detail/expert?id=${id}`,
+    `/antelope-manage/authentication/detail/expert?id=${id}`,
   );
 }
 
@@ -57,7 +57,7 @@ export async function getExpertDetail(id: string) {
  */
 export async function updateEnterprise(data?: { [key: string]: any }) {
   return request<Common.ResultCode & { result: any }>(
-    `/iiep-manage/authentication/update/enterprise`,
+    `/antelope-manage/authentication/update/enterprise`,
     {
       method: 'put',
       data,
@@ -73,7 +73,7 @@ export async function updateEnterprise(data?: { [key: string]: any }) {
  */
 export async function updateInstitution(data?: { [key: string]: any }) {
   return request<Common.ResultCode & { result: any }>(
-    `/iiep-manage/authentication/update/institution`,
+    `/antelope-manage/authentication/update/institution`,
     {
       method: 'put',
       data,
@@ -88,10 +88,13 @@ export async function updateInstitution(data?: { [key: string]: any }) {
  * @returns
  */
 export async function updateExpert(data?: { [key: string]: any }) {
-  return request<Common.ResultCode & { result: any }>(`/iiep-manage/authentication/update/expert`, {
-    method: 'put',
-    data,
-  });
+  return request<Common.ResultCode & { result: any }>(
+    `/antelope-manage/authentication/update/expert`,
+    {
+      method: 'put',
+      data,
+    },
+  );
 }
 
 /**
@@ -101,6 +104,6 @@ export async function updateExpert(data?: { [key: string]: any }) {
  */
 export async function getWorkUnit(name: string) {
   return request<Common.ResultCode & { result: any }>(
-    `/iiep-manage/authentication/enterprise/queryWorkUnit4Register?workUnit=${name}`,
+    `/antelope-manage/authentication/enterprise/queryWorkUnit4Register?workUnit=${name}`,
   );
 }

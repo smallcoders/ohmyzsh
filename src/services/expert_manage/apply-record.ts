@@ -6,7 +6,7 @@ import { request } from 'umi';
 
 /** 获取专家管理下申请记录分页 */
 export async function getApplyRecordPage(data?: { [key: string]: any }) {
-  return request<ApplyRecord.RecordList>('/iiep-manage/expert/applyPage', {
+  return request<ApplyRecord.RecordList>('/antelope-manage/expert/applyPage', {
     method: 'post',
     data,
   });
@@ -19,7 +19,7 @@ export async function getApplyRecordPage(data?: { [key: string]: any }) {
  * @returns
  */
 export async function markApplyRecordContracted(id: string, remark: string) {
-  return request<Common.ResultCode & { result: any }>(`/iiep-manage/expert/applyRemark`, {
+  return request<Common.ResultCode & { result: any }>(`/antelope-manage/expert/applyRemark`, {
     method: 'post',
     data: {
       id,
@@ -35,7 +35,7 @@ export async function markApplyRecordContracted(id: string, remark: string) {
  * @returns
  */
 export async function updateApplyRecordRemark(id: string, remark: string) {
-  return request<Common.ResultCode & { result: any }>(`/iiep-manage/expert/applyRemarkEdit`, {
+  return request<Common.ResultCode & { result: any }>(`/antelope-manage/expert/applyRemarkEdit`, {
     method: 'post',
     data: {
       id,

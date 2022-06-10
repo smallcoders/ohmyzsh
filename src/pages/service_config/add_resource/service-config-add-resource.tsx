@@ -509,7 +509,7 @@ export default () => {
                   showUploadList={false}
                 />
 
-                {/* <Upload name="file" accept=".pdf" action="/iiep-manage/common/upload" maxCount={1} beforeUpload={(file) => {
+                {/* <Upload name="file" accept=".pdf" action="/antelope-manage/common/upload" maxCount={1} beforeUpload={(file) => {
                   if (file.type !== "application/pdf") {
                     message.error(`请上传pdf文件`);
                     return Upload.LIST_IGNORE
@@ -519,7 +519,7 @@ export default () => {
                 </Upload> */}
                 {/* <UploadForm
                   name="file"
-                  action="/iiep-manage/common/upload"
+                  action="/antelope-manage/common/upload"
                   listType="picture"
                 >
                   <Button icon={<UploadOutlined />}>上传文件</Button>

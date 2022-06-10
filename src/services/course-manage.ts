@@ -6,7 +6,7 @@ import { request } from 'umi';
 
 /** 获取课程列表 */
 export async function getCoursePage(data?: { [key: string]: any }) {
-  return request<CourseManage.ResultList>('/iiep-manage/course/list', {
+  return request<CourseManage.ResultList>('/antelope-manage/course/list', {
     method: 'get',
     params: { ...(data || {}) },
   });
@@ -16,7 +16,7 @@ export async function getCoursePage(data?: { [key: string]: any }) {
  * 添加课程
  */
 export async function addCourse(data?: CourseManage.Content) {
-  return request<Common.ResultCode & { result: string }>('/iiep-manage/course', {
+  return request<Common.ResultCode & { result: string }>('/antelope-manage/course', {
     method: 'post',
     data,
   });
@@ -26,7 +26,7 @@ export async function addCourse(data?: CourseManage.Content) {
  * 修改课程
  */
 export async function updateCourse(data?: CourseManage.Content) {
-  return request<Common.ResultCode & { result: string }>('/iiep-manage/course', {
+  return request<Common.ResultCode & { result: string }>('/antelope-manage/course', {
     method: 'put',
     data,
   });
@@ -40,7 +40,7 @@ export async function addChapters(data?: {
   chapters: CourseManage.Chapter[];
   state: boolean;
 }) {
-  return request<Common.ResultCode & { result: string }>('/iiep-manage/course/chapter', {
+  return request<Common.ResultCode & { result: string }>('/antelope-manage/course/chapter', {
     method: 'post',
     data,
   });
@@ -50,7 +50,7 @@ export async function addChapters(data?: {
  * 删除课程
  * */
 export async function removeCourse(id: string) {
-  return request<Common.ResultCode>(`/iiep-manage/course/${id}`, {
+  return request<Common.ResultCode>(`/antelope-manage/course/${id}`, {
     method: 'DELETE',
   });
 }
@@ -59,7 +59,7 @@ export async function removeCourse(id: string) {
  * 修改课程状态
  * */
 export async function updateCourseState(id: string, state: boolean) {
-  return request<Common.ResultCode>(`/iiep-manage/course/state`, {
+  return request<Common.ResultCode>(`/antelope-manage/course/state`, {
     method: 'put',
     data: {
       id,
@@ -71,14 +71,14 @@ export async function updateCourseState(id: string, state: boolean) {
  * 获取课程类别
  */
 export async function getCourseType() {
-  return request<Common.ResultCode>(`/iiep-manage/common/dictionary/tree?label=${1}`);
+  return request<Common.ResultCode>(`/antelope-manage/common/dictionary/tree?label=${1}`);
 }
 
 /**
  * 获取搜索课程类别
  */
 export async function getSearchCourseType() {
-  return request<Common.ResultCode>(`/iiep-manage/common/dictionary/first?label=${1}`);
+  return request<Common.ResultCode>(`/antelope-manage/common/dictionary/first?label=${1}`);
 }
 
 /**
@@ -88,7 +88,7 @@ export async function getSearchCourseType() {
  */
 export async function getCourseById(id: string) {
   return request<Common.ResultCode & { result: CourseManage.Content }>(
-    `/iiep-manage/course?id=${id}`,
+    `/antelope-manage/course?id=${id}`,
   );
 }
 
@@ -100,14 +100,14 @@ export async function getCourseById(id: string) {
 export async function getChaptersById(courseId: string) {
   return request<
     Common.ResultCode & { result: { chapters: CourseManage.Chapter[]; state: boolean | undefined } }
-  >(`/iiep-manage/course/chapters?courseId=${courseId}`);
+  >(`/antelope-manage/course/chapters?courseId=${courseId}`);
 }
 
 /**
  * 设置课程置顶
  * */
 export async function setCourseTop(id: string) {
-  return request<Common.ResultCode>(`/iiep-manage/course/top`, {
+  return request<Common.ResultCode>(`/antelope-manage/course/top`, {
     method: 'put',
     data: {
       id,

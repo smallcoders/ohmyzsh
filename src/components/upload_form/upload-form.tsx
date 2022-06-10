@@ -23,7 +23,7 @@ const UploadForm = (
   );
   const reUpload = (
     <div className={'reupload'}>
-      <img src={`/iiep-manage/common/download/${fileId || props.value}`} alt="图片损坏" />
+      <img src={`/antelope-manage/common/download/${fileId || props.value}`} alt="图片损坏" />
       <div>重新上传</div>
     </div>
   );
@@ -88,7 +88,7 @@ const UploadForm = (
       <Upload
         {...props}
         name="file"
-        action="/iiep-manage/common/upload"
+        action="/antelope-manage/common/upload"
         onChange={handleChange}
         beforeUpload={beforeUpload}
       >

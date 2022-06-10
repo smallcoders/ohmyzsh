@@ -6,7 +6,7 @@ import { request } from 'umi';
 
 /** 获取专家管理下咨询记录分页 */
 export async function getConsultRecordPage(data?: { [key: string]: any }) {
-  return request<ConsultRecord.RecordList>('/iiep-manage/expert/consultationPage', {
+  return request<ConsultRecord.RecordList>('/antelope-manage/expert/consultationPage', {
     method: 'post',
     data,
   });
@@ -19,13 +19,16 @@ export async function getConsultRecordPage(data?: { [key: string]: any }) {
  * @returns
  */
 export async function markConsultRecordContracted(id: string, remark: string) {
-  return request<Common.ResultCode & { result: any }>(`/iiep-manage/expert/consultationRemark`, {
-    method: 'post',
-    data: {
-      id,
-      remark,
+  return request<Common.ResultCode & { result: any }>(
+    `/antelope-manage/expert/consultationRemark`,
+    {
+      method: 'post',
+      data: {
+        id,
+        remark,
+      },
     },
-  });
+  );
 }
 
 /**
@@ -36,7 +39,7 @@ export async function markConsultRecordContracted(id: string, remark: string) {
  */
 export async function updateConsultRecordRemark(id: string, remark: string) {
   return request<Common.ResultCode & { result: any }>(
-    `/iiep-manage/expert/consultationRemarkEdit`,
+    `/antelope-manage/expert/consultationRemarkEdit`,
     {
       method: 'post',
       data: {

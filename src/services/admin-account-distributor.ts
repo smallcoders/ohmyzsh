@@ -7,7 +7,7 @@ import { request } from 'umi';
  * @returns
  */
 export async function getAdminAccountPage(data?: { [key: string]: any }) {
-  return request<AdminAccountDistributor.RecordList>(`/iiep-manage/creative/admin/page`, {
+  return request<AdminAccountDistributor.RecordList>(`/antelope-manage/creative/admin/page`, {
     method: 'post',
     data,
   });
@@ -18,7 +18,7 @@ export async function getAdminAccountPage(data?: { [key: string]: any }) {
  * @returns
  */
 export async function addAdminAccount(data?: { [key: string]: any }) {
-  return request<AdminAccountDistributor.RecordList>(`/iiep-manage/creative/admin/create`, {
+  return request<AdminAccountDistributor.RecordList>(`/antelope-manage/creative/admin/create`, {
     method: 'post',
     data,
   });
@@ -29,7 +29,7 @@ export async function addAdminAccount(data?: { [key: string]: any }) {
  * @returns
  */
 export async function updateAdminAccount(data?: { [key: string]: any }) {
-  return request<Common.ResultCode & { result: any }>(`/iiep-manage/creative/admin/update`, {
+  return request<Common.ResultCode & { result: any }>(`/antelope-manage/creative/admin/update`, {
     method: 'put',
     data,
   });
@@ -39,7 +39,7 @@ export async function updateAdminAccount(data?: { [key: string]: any }) {
  * 删除
  * */
 export async function removeAdminAccount(id: string) {
-  return request<Common.ResultCode>(`/iiep-manage/creative/admin/delete?id=${id}`, {
+  return request<Common.ResultCode>(`/antelope-manage/creative/admin/delete?id=${id}`, {
     method: 'DELETE',
   });
 }
@@ -48,5 +48,5 @@ export async function removeAdminAccount(id: string) {
  * 重置密码
  * */
 export async function resetAdminAccount(id: string) {
-  return request<Common.ResultCode>(`/iiep-manage/creative/admin/reset?id=${id}`);
+  return request<Common.ResultCode>(`/antelope-manage/creative/admin/reset?id=${id}`);
 }

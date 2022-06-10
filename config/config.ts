@@ -81,7 +81,7 @@ export default defineConfig({
               archive: [
                 {
                   source: './dist',
-                  destination: `./zip/iiep-manage-page-${getVersion(process.argv)}.zip`,
+                  destination: `./zip/antelope-manage-page-${getVersion(process.argv)}.zip`,
                 },
               ],
             },

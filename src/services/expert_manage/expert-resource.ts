@@ -6,7 +6,7 @@ import { request } from 'umi';
 
 /** 获取咨询记录分页 */
 export async function getExpertResourcePage(data?: { [key: string]: any }) {
-  return request<ExpertResource.RecordList>('/iiep-manage/expert/showPage', {
+  return request<ExpertResource.RecordList>('/antelope-manage/expert/showPage', {
     method: 'post',
     data,
   });
@@ -20,7 +20,7 @@ export async function getExpertResourcePage(data?: { [key: string]: any }) {
  */
 export async function getExpertDetail(id: string) {
   return request<Common.ResultCode & { result: ExpertResource.Detail }>(
-    `/iiep-manage/expert/show?id=${id}`,
+    `/antelope-manage/expert/show?id=${id}`,
   );
 }
 
@@ -30,5 +30,5 @@ export async function getExpertDetail(id: string) {
  * @returns
  */
 export async function showTop(id: string) {
-  return request<Common.ResultCode & { result: any }>(`/iiep-manage/expert/showTop?id=${id}`);
+  return request<Common.ResultCode & { result: any }>(`/antelope-manage/expert/showTop?id=${id}`);
 }

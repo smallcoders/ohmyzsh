@@ -10,7 +10,7 @@ import { request } from 'umi';
  * @returns
  */
 export async function getEnterpriseAdminVerifyPage(data?: { [key: string]: any }) {
-  return request<EnterpriseAdminVerify.RecordList>('/iiep-manage/orgManagerRequest', {
+  return request<EnterpriseAdminVerify.RecordList>('/antelope-manage/orgManagerRequest', {
     method: 'post',
     data,
   });
@@ -20,14 +20,16 @@ export async function getEnterpriseAdminVerifyPage(data?: { [key: string]: any }
  * 详情接口
  */
 export async function getEnterpriseAdminVerifyDetail(id: string) {
-  return request<Common.ResultCode & { result: any }>(`/iiep-manage/orgManagerRequest?id=${id}`);
+  return request<Common.ResultCode & { result: any }>(
+    `/antelope-manage/orgManagerRequest?id=${id}`,
+  );
 }
 
 /**
  * 审核接口
  */
 export async function handleAuditEnterpriseAdminVerify(data?: { [key: string]: any }) {
-  return request<Common.ResultCode>('/iiep-manage/orgManagerRequest/check', {
+  return request<Common.ResultCode>('/antelope-manage/orgManagerRequest/check', {
     method: 'post',
     data,
   });

@@ -103,7 +103,7 @@ const SolutionDetail: React.FC = () => {
               ? solutionDetail?.attachments.map((e) => (
                   <p key={e.id}>
                     <a
-                      href={`/iiep-manage/common/download/${e.id}`}
+                      href={`/antelope-manage/common/download/${e.id}`}
                       download={e.name}
                     >{`${e.name}.${e.format}`}</a>
                   </p>

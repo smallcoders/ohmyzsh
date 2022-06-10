@@ -10,7 +10,7 @@ import { request } from 'umi';
  * @returns
  */
 export async function getCommissionerServicePage(data?: { [key: string]: any }) {
-  return request<CommissionerService.RecordList>('/iiep-manage/serviceRecord', {
+  return request<CommissionerService.RecordList>('/antelope-manage/serviceRecord', {
     method: 'post',
     data,
   });
@@ -20,7 +20,7 @@ export async function getCommissionerServicePage(data?: { [key: string]: any }) 
  * 删除记录
  * */
 export async function removeCommissionerService(id: string) {
-  return request<Common.ResultCode>(`/iiep-manage/serviceRecord/delete/${id}`, {
+  return request<Common.ResultCode>(`/antelope-manage/serviceRecord/delete/${id}`, {
     method: 'DELETE',
   });
 }
