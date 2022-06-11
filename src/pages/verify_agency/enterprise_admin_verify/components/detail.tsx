@@ -112,6 +112,7 @@ export default () => {
           message.success(`${tooltipMessage}成功`);
           form.resetFields();
           prepare();
+          history.goBack();
         } else {
           message.error(`${tooltipMessage}失败，原因:{${submitRes.message}}`);
         }

@@ -140,7 +140,7 @@ export default () => {
               history.push(`${routeName.ENTERPRISE_ADMIN_VERIFY_DETAIL}?id=${record.id}`);
             }}
           >
-            详情
+            {record?.state === 'UN_CHECK' ? '审核' : '详情'}
           </Button>
         );
       },
