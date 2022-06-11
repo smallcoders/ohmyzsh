@@ -19,6 +19,7 @@ namespace EnterpriseAdminVerify {
   export type Detail = {
     userName?: string; // 申请人姓名
     phone?: string; // 手机号
+    orgTypeId?: string; // 组织类型id
     orgName?: string; // 组织名称
     legalName?: string; // 法人名称
     legalCardNumber?: string; // 法人身份证号

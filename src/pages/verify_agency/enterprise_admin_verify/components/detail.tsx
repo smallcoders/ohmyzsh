@@ -15,7 +15,7 @@ import {
   handleAuditEnterpriseAdminVerify,
 } from '@/services/enterprise-admin-verify';
 import { PageContainer } from '@ant-design/pro-layout';
-import { accountTypeObj } from '..';
+// import { accountTypeObj } from '..';
 
 const sc = scopedClasses('user-config-kechuang');
 
@@ -142,17 +142,13 @@ export default () => {
         </div>
         <div className={sc('container-desc')}>
           <span>组织类型：</span>
-          <span>
-            {Object.prototype.hasOwnProperty.call(accountTypeObj, detail?.accountType || '')
-              ? accountTypeObj[detail?.accountType || '']
-              : '--'}
-          </span>
+          <span>{detail?.accountType || '--'}</span>
         </div>
         <div className={sc('container-desc')}>
           <span>组织名称：</span>
           <span>{detail?.orgName || '--'}</span>
         </div>
-        {detail?.accountType === Common.OrgType.ENTERPRISE && (
+        {detail?.orgTypeId === '1' && (
           <>
             <div className={sc('container-desc')}>
               <span>法人姓名：</span>

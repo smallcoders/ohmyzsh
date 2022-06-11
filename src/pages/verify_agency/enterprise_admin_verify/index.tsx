@@ -19,14 +19,6 @@ const stateObj = {
   INVALID: '未提交已失效',
 };
 
-export const accountTypeObj = {
-  ENTERPRISE: '企业',
-  COLLEGE: '高校',
-  INSTITUTION: '科研机构',
-  OTHER: '其他',
-  MEDICAL: '医疗卫生',
-};
-
 export default () => {
   const [dataSource, setDataSource] = useState<EnterpriseAdminVerify.Content[]>([]);
   // const [types, setTypes] = useState<any[]>([]);
@@ -102,13 +94,13 @@ export default () => {
       dataIndex: 'accountType',
       isEllipsis: true,
       width: 300,
-      render: (_: string) => {
-        return (
-          <div className={`account-type${_}`}>
-            {Object.prototype.hasOwnProperty.call(accountTypeObj, _) ? accountTypeObj[_] : '--'}
-          </div>
-        );
-      },
+      // render: (_: string) => {
+      //   return (
+      //     <div className={`account-type${_}`}>
+      //       {Object.prototype.hasOwnProperty.call(accountTypeObj, _) ? accountTypeObj[_] : '--'}
+      //     </div>
+      //   );
+      // },
     },
     {
       title: '组织名称',
