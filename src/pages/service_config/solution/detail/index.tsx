@@ -71,13 +71,28 @@ const SolutionDetail: React.FC = () => {
       <ProCard gutter={8}>
         <ProCard layout="center" className={sc('detail')}>
           <ProDescriptions column={1} title={solutionDetail?.name}>
-            <ProDescriptions.Item label="服务类型">
+            <ProDescriptions.Item label="方案类型">
               {renderSolutionType(solutionDetail?.types)}
             </ProDescriptions.Item>
-            <ProDescriptions.Item label="服务区域">
+            <ProDescriptions.Item label="方案服务区域">
               {solutionDetail?.areas?.map((e) => e.name).join('、')}
             </ProDescriptions.Item>
-            <ProDescriptions.Item label="服务内容">{solutionDetail?.content}</ProDescriptions.Item>
+            <ProDescriptions.Item label="服务行业">
+              {solutionDetail?.industry || '--'}
+            </ProDescriptions.Item>
+            <ProDescriptions.Item label="方案内容">{solutionDetail?.content}</ProDescriptions.Item>
+            <ProDescriptions.Item label="相关附件">
+              {solutionDetail?.paths &&
+                solutionDetail?.paths.map((p: any) => {
+                  return (
+                    <>
+                      <a target="_blank" rel="noreferrer" style={{ marginRight: 20 }} href={p.path}>
+                        {p.name}.{p.format}
+                      </a>
+                    </>
+                  );
+                })}
+            </ProDescriptions.Item>
           </ProDescriptions>
         </ProCard>
         <ProCard
@@ -91,8 +106,11 @@ const SolutionDetail: React.FC = () => {
       </ProCard>
 
       <ProCard style={{ marginTop: 8 }} gutter={8}>
-        <ProDescriptions column={1}>
-          <ProDescriptions.Item label="公司名称">
+        <ProDescriptions column={1} title={'服务商信息'}>
+          <ProDescriptions.Item label="服务商名称">
+            {solutionDetail?.provider.name}
+          </ProDescriptions.Item>
+          <ProDescriptions.Item label="服务商所在地">
             {solutionDetail?.provider.name}
           </ProDescriptions.Item>
           <ProDescriptions.Item label="公司简介">

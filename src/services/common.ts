@@ -34,3 +34,14 @@ export async function getDictionay(label: string) {
     method: 'get',
   });
 }
+
+/**
+ * 字典树查询
+ * @param label
+ * @returns
+ */
+ export async function getDictionayTree(label: string) {
+  return request<CourseManage.ResultList>(`/antelope-manage/common/dictionaryTree?label=${label}`, {
+    method: 'get',
+  });
+}

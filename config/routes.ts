@@ -17,6 +17,9 @@
   EXPERT_MANAGE: '/service-config/expert-manage', // 专家管理
   EXPERT_MANAGE_INDEX: '/service-config/expert-manage/index', // 专家管理
   EXPERT_MANAGE_DETAIL: '/service-config/expert-manage/detail', // 专家详情
+  REQUIREMENT_MANAGEMENT: '/service-config/requirement-management', // 需求管理
+  REQUIREMENT_MANAGEMENT_INDEX: '/service-config/requirement-management/index', // 需求管理
+  REQUIREMENT_MANAGEMENT_DETAIL: '/service-config/requirement-management/detail', // 需求管理详情
   ACCOUNT: '/system-config/account', // 账号管理
 
   CREATIVE_VERIFY: '/verify-agency/creative-verify', // 科技成果审核
@@ -27,6 +30,12 @@
   NEED_VERIFY_DETAIL: '/verify-agency/need-verify/detail', // 科技成果详情
   LOGOUT_VERIFY: '/verify-agency/logout-verify', // 注销审核
   SERVICE_COMMISSIONER_VERIFY: '/verify-agency/service-commissioner-verify', // 服务专员审核
+  SERVICE_PROGRAMME_VERIFY: '/verify-agency/service-programme-verify', // 服务方案审核
+  SERVICE_PROGRAMME_VERIFY_INDEX: '/verify-agency/service-programme-verify/index', // 服务方案审核
+  SERVICE_PROGRAMME_VERIFY_DETAIL: '/verify-agency/service-programme-verify/detail', // 服务方案审核详情
+  OFFICE_REQUIREMENT_VERIFY: '/verify-agency/office-requirement-verify', // 企业需求审核
+  OFFICE_REQUIREMENT_VERIFY_INDEX: '/verify-agency/office-requirement-verify/index', // 企业需求审核
+  OFFICE_REQUIREMENT_VERIFY_DETAIL: '/verify-agency/office-requirement-verify/detail', // 企业需求审核详情
 
   ENTERPRISE_ADMIN_VERIFY: '/verify-agency/enterprise-admin-verify', // 企业管理员审核
   ENTERPRISE_ADMIN_VERIFY_INDEX: '/verify-agency/enterprise-admin-verify/index', // 企业管理员审核
@@ -208,6 +217,28 @@ export default [
         ],
       },
       {
+        path: routeName.REQUIREMENT_MANAGEMENT,
+        name: '需求管理',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.REQUIREMENT_MANAGEMENT,
+            redirect: routeName.REQUIREMENT_MANAGEMENT_INDEX,
+          },
+          {
+            path: routeName.REQUIREMENT_MANAGEMENT_INDEX,
+            name: '需求管理',
+            hideInBreadcrumb: true,
+            component: './service_config/requirement_management/index',
+          },
+          {
+            path: routeName.REQUIREMENT_MANAGEMENT_DETAIL,
+            name: '需求详情',
+            component: './service_config/requirement_management/detail',
+          },
+        ],
+      },
+      {
         path: routeName.NEWS,
         name: '新闻资讯',
         component: './service_config/news',
@@ -346,6 +377,50 @@ export default [
         ],
       },
       {
+        path: routeName.SERVICE_PROGRAMME_VERIFY,
+        name: '服务方案审核',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.SERVICE_PROGRAMME_VERIFY,
+            redirect: routeName.SERVICE_PROGRAMME_VERIFY_INDEX,
+          },
+          {
+            path: routeName.SERVICE_PROGRAMME_VERIFY_INDEX,
+            name: '服务方案审核',
+            hideInBreadcrumb: true,
+            component: './verify_agency/service_programme_verify',
+          },
+          {
+            path: routeName.SERVICE_PROGRAMME_VERIFY_DETAIL,
+            name: '审核详情',
+            component: './verify_agency/service_programme_verify/detail',
+          },
+        ],
+      },
+      {
+        path: routeName.OFFICE_REQUIREMENT_VERIFY,
+        name: '企业需求审核',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.OFFICE_REQUIREMENT_VERIFY,
+            redirect: routeName.OFFICE_REQUIREMENT_VERIFY_INDEX,
+          },
+          {
+            path: routeName.OFFICE_REQUIREMENT_VERIFY_INDEX,
+            name: '企业需求审核',
+            hideInBreadcrumb: true,
+            component: './verify_agency/office_requirement_verify/index',
+          },
+          {
+            path: routeName.OFFICE_REQUIREMENT_VERIFY_DETAIL,
+            name: '审核详情',
+            component: './verify_agency/office_requirement_verify/detail',
+          },
+        ],
+      },
+      {
         path: routeName.ENTERPRISE_ADMIN_VERIFY,
         name: '企业管理员审核',
         hideChildrenInMenu: true,
@@ -366,7 +441,7 @@ export default [
             component: './verify_agency/enterprise_admin_verify/components/detail',
           },
         ],
-      },
+      }
     ],
   },
   {
