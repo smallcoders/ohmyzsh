@@ -81,3 +81,15 @@ export async function intentionPageQuery(params: {
     data: e.result,
   }));
 }
+
+/**
+ * 需求管理-需求类型编辑
+ * @param data
+ * @returns
+ */
+ export async function solutionEditType(data?: { [key: string]: any }) {
+  return request<any>('/antelope-manage/solution/editType', {
+    method: 'post',
+    data,
+  });
+}
