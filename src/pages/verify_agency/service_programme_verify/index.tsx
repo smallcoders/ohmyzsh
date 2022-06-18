@@ -251,7 +251,7 @@ export default () => {
               <Form.Item name="areaCode" label="方案服务区域">
                 <Select placeholder="请选择" allowClear>
                   {areaOptions?.map((p: any) => (
-                    <Select.Option key={p.id} value={p.id}>
+                    <Select.Option key={p.code} value={p.code}>
                       {p.name}
                     </Select.Option>
                   ))}
