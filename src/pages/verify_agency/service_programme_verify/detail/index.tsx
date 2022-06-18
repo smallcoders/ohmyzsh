@@ -145,7 +145,7 @@ export default () => {
         </div>
         <div className={sc('container-desc')}>
           <span>意向地：</span>
-          <span>{detail?.intendAreaName}</span>
+          <span>{detail?.intendAreaName || '--'}</span>
         </div>
       </div>
       <div style={{ background: '#fff', marginTop: 20, paddingTop: 20 }}>
