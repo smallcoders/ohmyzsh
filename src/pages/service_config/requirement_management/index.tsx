@@ -308,20 +308,26 @@ export default () => {
       width: 200,
       fixed: 'right',
       dataIndex: 'option',
-      render: (_: any, record: any) => [
-        <Button
-          key="1"
-          size="small"
-          type="link"
-          onClick={() => {
-            setEditingItem(record);
-            setModalVisible(true);
-            form.setFieldsValue({ ...record,dealName: record.typeNames?.map((e) => e).join('、') || ''});
-          }}
-        >
-          需求类型编辑
-        </Button>,
-      ],
+      render: (_: any, record: any) => {
+        return record.operationState == 'FINISHED' ?
+        (
+          <span>/</span>
+        ) :
+        (
+          <Button
+            key="1"
+            size="small"
+            type="link"
+            onClick={() => {
+              setEditingItem(record);
+              setModalVisible(true);
+              form.setFieldsValue({ ...record,dealName: record.typeNames?.map((e) => e).join('、') || ''});
+            }}
+          >
+            需求类型编辑
+          </Button>
+        )
+      }
     },
   ];
 

@@ -202,7 +202,7 @@ export default () => {
                 ? moment(record.auditTime).format('YYYY-MM-DD HH:mm:ss')
                 : '--'}
             </span>
-            <span>操作人：{record.auditUserName}</span>
+            <span>操作人：{record.auditorName}</span>
           </div>
         );
       },

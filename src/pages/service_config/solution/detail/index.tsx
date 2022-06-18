@@ -78,7 +78,7 @@ const SolutionDetail: React.FC = () => {
               {solutionDetail?.areas?.map((e) => e.name).join('、')}
             </ProDescriptions.Item>
             <ProDescriptions.Item label="服务行业">
-              {solutionDetail?.industry || '--'}
+              {solutionDetail?.industryName || '--'}
             </ProDescriptions.Item>
             <ProDescriptions.Item label="方案内容">{solutionDetail?.content}</ProDescriptions.Item>
             <ProDescriptions.Item label="相关附件">
