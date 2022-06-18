@@ -108,25 +108,26 @@ const SolutionDetail: React.FC = () => {
       <ProCard style={{ marginTop: 8 }} gutter={8}>
         <ProDescriptions column={1} title={'服务商信息'}>
           <ProDescriptions.Item label="服务商名称">
-            {solutionDetail?.provider.name}
+            {solutionDetail?.providerName}
           </ProDescriptions.Item>
           <ProDescriptions.Item label="服务商所在地">
-            {solutionDetail?.provider.name}
+            {solutionDetail?.providerAreaCode}
           </ProDescriptions.Item>
-          <ProDescriptions.Item label="公司简介">
-            {solutionDetail?.provider.aboutUs}
+        </ProDescriptions>
+        <ProDescriptions column={1} title={'联系信息'}>
+          <ProDescriptions.Item label="联系人">
+            {solutionDetail?.name}
           </ProDescriptions.Item>
-          <ProDescriptions.Item className={sc('detail-attachment')} label="附件下载">
-            {solutionDetail?.attachments?.length
-              ? solutionDetail?.attachments.map((e) => (
-                  <p key={e.id}>
-                    <a
-                      href={`/antelope-manage/common/download/${e.id}`}
-                      download={e.name}
-                    >{`${e.name}.${e.format}`}</a>
-                  </p>
-                ))
-              : '（无）'}
+          <ProDescriptions.Item label="联系电话">
+            {solutionDetail?.phone}
+          </ProDescriptions.Item>
+        </ProDescriptions>
+        <ProDescriptions column={1} title={'其他信息'}>
+          <ProDescriptions.Item label="是否参加2022安徽省工业互联网巡回大讲堂供需对接会">
+          <span>{solutionDetail?.joined? '是' : '否'}</span>
+          </ProDescriptions.Item>
+          <ProDescriptions.Item label="意向地">
+            {solutionDetail?.intendAreaName || '--'}
           </ProDescriptions.Item>
         </ProDescriptions>
       </ProCard>
