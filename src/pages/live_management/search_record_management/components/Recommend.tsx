@@ -47,11 +47,7 @@ export default () => {
   >([]);
   const [defaultOrgs, setDefaultOrgs] = useState<{ label: string; value: string }[]>([]);
   const [addOrUpdateLoading, setAddOrUpdateLoading] = useState<boolean>(false);
-  const [searchContent, setSearChContent] = useState<{
-    title?: string; // 标题
-    publishTime?: string; // 发布时间
-    state?: number; // 状态：0发布中、1待发布、2已下架
-  }>({});
+  const [searchContent] = useState<{}>({});
 
   const formLayout = {
     labelCol: { span: 8 },
@@ -84,8 +80,7 @@ export default () => {
     try {
       const { result, totalCount, pageTotal, code } = await getDiagnosticTasksPage({
         pageIndex,
-        pageSize,
-        ...searchContent,
+        pageSize
       });
       if (code === 0) {
         setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
@@ -167,51 +162,6 @@ export default () => {
     }
   };
 
-  /**
-   * 列表数据 转换表单数据
-   * @param record
-   */
-  // const edit = (record: DiagnosticTasks.Content) => {
-  //   const content = { ...record } as DiagnosticTasks.Content & {
-  //     expertShowIds: { value: string }[];
-  //     orgId: string;
-  //     time: moment.Moment[];
-  //     orgShowId: { value: string };
-  //     institutionId?: string;
-  //   };
-  //   setEditingItem(record);
-  //   setModalVisible(true);
-  //   // 修改设置表单初始数据
-  //   if (content.experts && content.experts.length > 0) {
-  //     setSelectExperts(
-  //       content.experts.map((p: { expertName: string; id: string; expertPhone: string }) => {
-  //         return {
-  //           label: p.expertName + `（${p.expertPhone ? p.expertPhone : '无联系方式'}）`,
-  //           value: p.id,
-  //           expertPhone: p.expertPhone,
-  //         };
-  //       }),
-  //     );
-  //     content.expertShowIds = content.experts.map((p: { id: string }) => {
-  //       return { value: p.id };
-  //     });
-  //   }
-  //   if (content.orgId) {
-  //     setDefaultOrgs([
-  //       {
-  //         label: content.orgName as string,
-  //         value: content.orgId,
-  //       },
-  //     ]);
-  //   }
-  //   if (content.startDate && record.endDate) {
-  //     content.time = [moment(record.startDate), moment(record.endDate)];
-  //   }
-  //   content.institutionId = record?.diagnosisInstitution?.id;
-  //   content.orgShowId = { value: content.orgId };
-  //   form.setFieldsValue({ ...content });
-  // };
-
   const columns = [
     {
       title: '排序',
@@ -221,36 +171,19 @@ export default () => {
         pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
-      title: '诊断名称',
+      title: '推荐内容',
       dataIndex: 'name',
       isEllipsis: true,
       width: 200,
     },
     {
-      title: '诊断企业',
+      title: '操作人',
       dataIndex: 'orgName',
       isEllipsis: true,
       width: 200,
     },
     {
-      title: '诊断专家',
-      dataIndex: 'experts',
-      isEllipsis: true,
-      width: 300,
-      render: (item: { expertName: string }[] = []) => {
-        const name = item.map((p) => p.expertName).join('，');
-        return name;
-      },
-    },
-    {
-      title: '所属机构',
-      dataIndex: 'diagnosisInstitution',
-      width: 200,
-      isEllipsis: true,
-      render: (item: any) => item.name || '--',
-    },
-    {
-      title: '诊断时间',
+      title: '上架时间',
       dataIndex: 'time',
       width: 200,
       render: (_: string, record: DiagnosticTasks.Content) => (
@@ -261,50 +194,30 @@ export default () => {
       ),
     },
     {
-      title: '诊断状态',
-      dataIndex: 'state',
-      width: 200,
-      render: (_: number) => {
-        return <div className={`state${_}`}>{stateObj[_] || '--'}</div>;
-      },
-    },
-    {
       title: '操作',
       dataIndex: 'option',
-      // width: 200,
-      render: (_: any, record: DiagnosticTasks.Content) => {
-        return (
-          /**
-           * 待诊断可编辑
-           * 待诊断时延期 可编辑
-           */
-          <Space size="middle">
-            {/* {(record.state === 1 || (record.originState === 1 && record.state === 4)) && (
-              <a href="#" onClick={() => edit(record)}>
-                编辑{' '}
-              </a>
-            )} */}
+      width: 200,
+      render: (_: any, record: any) => {
+        return !record.auditPassed ? (
+          <div style={{ textAlign: 'center' }}>
+            <Space size={"middle"}>
             <Popconfirm
-              title="确定删除么？"
+              title="确定下架么？"
               okText="确定"
               cancelText="取消"
               onConfirm={() => remove(record.id as string)}
             >
-              <a href="#">删除</a>
+              <a href="#">下架</a>
             </Popconfirm>
-            {/**
-             * 待诊断无诊断记录
-             * 待诊断时延期无诊断记录
-             */}
-            {!(record.state === 1 || (record.originState === 1 && record.state === 4)) && (
-              <Link
-                style={{ marginRight: 20 }}
-                to={`${routeName.DIAGNOSTIC_TASKS_DETAIL}?detailId=${record.id}`}
-              >
-                诊断记录
-              </Link>
-            )}
-          </Space>
+            </Space>
+          </div>
+        ) : (
+          <div style={{ display: 'grid', justifyItems: 'center' }}>
+            <span>
+              {record.auditTime ? moment(record.auditTime).format('YYYY-MM-DD HH:mm:ss') : '--'}
+            </span>
+            <span>操作人：{record.auditorName}</span>
+          </div>
         );
       },
     },
@@ -329,128 +242,12 @@ export default () => {
 
   useEffect(() => {
     getDiagnosticTasks();
-  }, [searchContent]);
-
-  const useSearchNode = (): React.ReactNode => {
-    const [searchForm] = Form.useForm();
-    return (
-      <div className={sc('container-search')}>
-        <Form {...formLayout} form={searchForm}>
-          <Row>
-            <Col span={5}>
-              <Form.Item name="name" label="诊断名称">
-                <Input placeholder="请输入" />
-              </Form.Item>
-            </Col>
-            <Col span={5}>
-              <Form.Item name="orgName" label="诊断企业">
-                <Input placeholder="请输入" />
-              </Form.Item>
-            </Col>
-            <Col span={5}>
-              <Form.Item name="expertName" label="诊断专家">
-                <Input placeholder="请输入" />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Row style={{ marginTop: 20 }} justify={'space-between'}>
-            <Col span={15}>
-              <Row>
-                <Col span={8}>
-                  <Form.Item name="institutionId" label="诊断机构">
-                    <Select placeholder="请选择" allowClear>
-                      {institutions.map((p) => (
-                        <Select.Option key={p.id + p.name} value={p.id}>
-                          {p.name}
-                        </Select.Option>
-                      ))}
-                    </Select>
-                  </Form.Item>
-                </Col>
-                <Col span={8}>
-                  <Form.Item name="time" label="诊断时间">
-                    <DatePicker.RangePicker allowClear />
-                  </Form.Item>
-                </Col>
-                <Col span={8}>
-                  <Form.Item name="state" label="诊断状态">
-                    <Select placeholder="请选择" allowClear>
-                      {Object.entries(stateObj).map((p) => (
-                        <Select.Option key={p[0] + p[1]} value={p[0]}>
-                          {p[1]}
-                        </Select.Option>
-                      ))}
-                    </Select>
-                  </Form.Item>
-                </Col>
-              </Row>
-            </Col>
-            <Col span={3}>
-              <Button
-                style={{ marginRight: 20 }}
-                type="primary"
-                key="primary"
-                onClick={() => {
-                  const search = searchForm.getFieldsValue();
-                  if (search.time) {
-                    search.startDate = moment(search.time[0]).format('YYYY-MM-DD');
-                    search.endDate = moment(search.time[1]).format('YYYY-MM-DD');
-                  }
-                  setSearChContent(search);
-                }}
-              >
-                查询
-              </Button>
-              <Button
-                type="primary"
-                key="primary"
-                onClick={() => {
-                  searchForm.resetFields();
-                  setSearChContent({});
-                }}
-              >
-                重置
-              </Button>
-            </Col>
-          </Row>
-        </Form>
-      </div>
-    );
-  };
-
-  /**
-   * 搜索企业
-   * @param name
-   * @returns
-   */
-  const onSearchOrg = async (name: string) => {
-    return searchOrgInfo(name).then((body) =>
-      body.result.map((p) => ({
-        label: p.orgName,
-        value: p.id,
-      })),
-    );
-  };
-
-  /**
-   * 搜索专家
-   * @param name
-   * @returns
-   */
-  const onSearchExpert = async (name: string) => {
-    return searchExpert(name).then((body) => {
-      return body.result.map((p) => ({
-        label: p.expertName + `（${p.expertPhone ? p.expertPhone : '无联系方式'}）`,
-        value: p.id,
-        expertPhone: p.expertPhone,
-      }));
-    });
-  };
+  }, []);
 
   const useModal = (): React.ReactNode => {
     return (
       <Modal
-        title={editingItem.id ? '编辑任务' : '新增任务'}
+        title={'上架推荐'}
         width="600px"
         visible={createModalVisible}
         onCancel={() => {
@@ -472,129 +269,9 @@ export default () => {
               },
             ]}
             name="name"
-            label="诊断名称"
+            label="推荐内容"
           >
             <Input placeholder="请输入" maxLength={35} />
-          </Form.Item>
-          <Form.Item
-            name="orgShowId"
-            label="选择诊断企业"
-            rules={[
-              {
-                required: true,
-                message: '必填',
-              },
-            ]}
-          >
-            <DebounceSelect
-              showSearch
-              placeholder={'请输入搜索内容'}
-              fetchOptions={onSearchOrg}
-              style={{ width: '100%' }}
-              defaultOptions={defaultOrgs}
-            />
-          </Form.Item>
-          <Form.Item
-            name="expertShowIds"
-            label="选择诊断专家"
-            rules={[
-              {
-                required: true,
-                message: '必填',
-              },
-            ]}
-            style={{ marginBottom: 0 }}
-          >
-            <DebounceSelect
-              mode="multiple"
-              placeholder={'请输入搜索内容'}
-              fetchOptions={onSearchExpert}
-              maxTagCount={1}
-              onSelect={(option: any) => {
-                setSelectExperts((preState) => {
-                  return [...preState, option];
-                });
-              }}
-              onDeselect={(option: any) => {
-                setSelectExperts((preState) => {
-                  return preState.filter((p) => p.value !== option.value);
-                });
-                console.log('options', option);
-              }}
-              defaultOptions={selectExperts}
-              style={{ width: '100%' }}
-            />
-          </Form.Item>
-          <Form.Item
-            label=" "
-            colon={false}
-            style={{ padding: 5, maxHeight: 260, overflowX: 'auto' }}
-          >
-            <div style={{ backgroundColor: 'rgb(245,245,245)', padding: 5, borderRadius: 5 }}>
-              已选诊断专家：{selectExperts.length}人
-            </div>
-            {selectExperts.map((p) => (
-              <div
-                key={p.value + p.label}
-                style={{ display: 'flex', justifyContent: 'space-between', padding: 5 }}
-              >
-                <span>{p.label}</span>
-                <DeleteOutlined
-                  onClick={() => {
-                    const selectExperts_copy = [...selectExperts];
-                    const deleteIndex = selectExperts_copy.findIndex((s) => p.value === s.value);
-                    if (deleteIndex > -1) {
-                      selectExperts_copy.splice(deleteIndex, 1);
-                      setSelectExperts(selectExperts_copy);
-                      form.setFieldsValue({ expertShowIds: [...selectExperts_copy] });
-                    }
-                  }}
-                />
-              </div>
-            ))}
-          </Form.Item>
-          <Form.Item
-            name="institutionId"
-            rules={[
-              {
-                required: true,
-                message: '必填',
-              },
-            ]}
-            label="所属机构"
-          >
-            <Select placeholder="请选择" allowClear>
-              {institutions.map((p) => (
-                <Select.Option key={p.id + p.name} value={p.id}>
-                  {p.name}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-          <Form.Item
-            name="time"
-            rules={[
-              {
-                required: true,
-                message: '必填',
-              },
-            ]}
-            label="诊断时间"
-          >
-            <DatePicker.RangePicker
-              disabledDate={(current) => current && current < moment().endOf('day').add(-1, 'days')}
-            />
-          </Form.Item>
-          <Form.Item
-            name="remark" // state 	状态0发布中1待发布2已下架
-            label="诊断说明"
-          >
-            <Input.TextArea
-              placeholder="请输入"
-              autoSize={{ minRows: 3, maxRows: 5 }}
-              maxLength={200}
-              showCount
-            />
           </Form.Item>
         </Form>
       </Modal>
@@ -603,19 +280,18 @@ export default () => {
 
   return (
     <>
-      {useSearchNode()}
       <div className={sc('container-table-header')}>
         <div className="title">
-          <span>诊断任务列表(共{pageInfo.totalCount || 0}个)</span>
-          {/* <Button
+          <span>搜索推荐列表(共{pageInfo.totalCount || 0}个)</span>
+          <Button
             type="primary"
             key="primary"
             onClick={() => {
               setModalVisible(true);
             }}
           >
-            <PlusOutlined /> 新建任务
-          </Button> */}
+            上架推荐
+          </Button>
         </div>
       </div>
       <div className={sc('container-table-body')}>

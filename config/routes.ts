@@ -512,7 +512,7 @@ export default [
       },
       {
         path: routeName.SEARCH_RECORD_MANAGEMENT,
-        name: '直播类型维护',
+        name: '搜索记录管理',
         component: './live_management/search_record_management',
       },  
     ],
