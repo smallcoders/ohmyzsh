@@ -19,9 +19,9 @@ import React, { useEffect, useState } from 'react';
 import type Common from '@/types/common';
 import {
   getDiagnosisRecords,
-  getXTYSkipUrl,
+  getPersonalSearchRecords,
   addOrUpdateReportFile,
-} from '@/services/diagnostic-tasks';
+} from '@/services/search-record';
 import moment from 'moment';
 import { routeName } from '../../../../../config/routes';
 import { history } from 'umi';
@@ -29,15 +29,16 @@ import SelfTable from '@/components/self_table';
 import type DiagnosticTasks from '@/types/service-config-diagnostic-tasks';
 import UploadFormFile from '@/components/upload_form/upload-form-file';
 import { getAreaTree } from '@/services/area';
+import { stringify } from 'rc-field-form/es/useWatch';
 const sc = scopedClasses('service-config-diagnostic-tasks');
 export default () => {
   const [dataSource, setDataSource] = useState<DiagnosticTasks.OnlineRecord[]>([]);
   const [searchContent, setSearChContent] = useState<{
     status?: DiagnosticTasks.Status; // 状态：0发布中、1待发布、2已下架
-    orgName?: string;
+    content?: string;
     areaCode?: number;
-    startTime?: string;
-    endTime?: string;
+    startDate?: string;
+    endDate?: string;
   }>({});
   const [editingItem, setEditingItem] = useState<DiagnosticTasks.OnlineRecord | undefined>();
   const [modalVisible, setModalVisible] = useState<boolean>(false);
@@ -54,8 +55,15 @@ export default () => {
     pageTotal: 0,
   });
 
+  const [userPageInfo, setUserPageInfo] = useState<Common.ResultPage>({
+    pageIndex: 1,
+    pageSize: 20,
+    totalCount: 0,
+    pageTotal: 0,
+  });
+
   /**
-   * 获取诊断任务
+   * 获取搜索记录
    * @param pageIndex
    * @param pageSize
    */
@@ -77,9 +85,14 @@ export default () => {
     }
   };
 
-  const showDrawer = async (id: string) => {
+  const showDrawer = async (id: string, pageIndex: number = 1, pageSize = userPageInfo.pageSize) => {
     try {
-      const { result } = await getXTYSkipUrl(id);
+      const { result, totalCount, pageTotal, code } = await getPersonalSearchRecords({
+        userId: id,
+        pageIndex,
+        pageSize,
+        ...searchContent
+      });
       console.log(result);
       // window.open(result);
       setDrawerSize('large');
@@ -108,31 +121,36 @@ export default () => {
     },
     {
       title: '用户名',
-      dataIndex: 'org',
-      isEllipsis: true,
-      render: (org: { id: string; orgName: string }, record: DiagnosticTasks.OnlineRecord) => (
-        <a href="#" onClick={() => showDrawer(record?.id)}>
-          {org?.orgName || ''}
-        </a>
-      ),
-      width: 300,
+      dataIndex: 'operateUserName',
+      width: 200,
+      render: (_: string, _record: any) => {
+        return _record.operateUserId ? (
+          <a
+            href="javascript:;"
+            onClick={() => {
+              showDrawer(`${_record.operateUserId}`);
+            }}
+          >
+          {_}
+         </a>
+        ) : (
+          <span>{_}</span>
+        );
+      },
     },
     {
       title: '联系方式',
-      dataIndex: 'area',
-      ellipsis: true,
-      render: (area: any) => area?.name || '/',
+      dataIndex: 'phone',
       width: 200,
     },
     {
       title: '搜索内容',
-      dataIndex: 'score',
+      dataIndex: 'content',
       width: 200,
     },
     {
       title: '搜索时间',
-      dataIndex: 'lastDiagnosisTime',
-      ellipsis: true,
+      dataIndex: 'searchTime',
       width: 200,
     }
   ];
@@ -155,17 +173,17 @@ export default () => {
         <Form {...formLayout} form={searchForm}>
           <Row>
           <Col span={6}>
-              <Form.Item name="orgName" label="搜索内容">
+              <Form.Item name="content" label="搜索内容">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
             <Col span={6}>
-              <Form.Item name="time" label="日期">
-                <DatePicker allowClear showTime />
+              <Form.Item name="date" label="日期">
+                <DatePicker.RangePicker allowClear />
               </Form.Item>
             </Col>
             <Col span={6}>
-              <Form.Item name="orgName" label="用户名">
+              <Form.Item name="userName" label="用户名">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
@@ -176,10 +194,10 @@ export default () => {
                 key="primary"
                 onClick={() => {
                   const search = searchForm.getFieldsValue();
-                  const { time, ...rest } = search;
-                  if (time) {
-                    rest.startTime = moment(search.time[0]).format('YYYY-MM-DD HH:mm:ss');
-                    rest.endTime = moment(search.time[1]).format('YYYY-MM-DD HH:mm:ss');
+                  const { date, ...rest } = search;
+                  if (date) {
+                    rest.startDate = moment(search.date[0]).format('YYYY-MM-DD');
+                    rest.endDate = moment(search.date[1]).format('YYYY-MM-DD');
                   }
                   setSearChContent(rest);
                 }}
@@ -210,7 +228,7 @@ export default () => {
         <Form {...formLayout} form={searchForm}>
           <Row>
             <Col span={10} offset={1}>
-              <Form.Item name="time" label="搜索日期">
+              <Form.Item name="date" label="搜索日期">
                 <DatePicker allowClear showTime />
               </Form.Item>
             </Col>
@@ -221,10 +239,10 @@ export default () => {
                 key="primary"
                 onClick={() => {
                   const search = searchForm.getFieldsValue();
-                  const { time, ...rest } = search;
-                  if (time) {
-                    rest.startTime = moment(search.time[0]).format('YYYY-MM-DD HH:mm:ss');
-                    rest.endTime = moment(search.time[1]).format('YYYY-MM-DD HH:mm:ss');
+                  const { date, ...rest } = search;
+                  if (date) {
+                    rest.startDate = moment(search.date[0]).format('YYYY-MM-DD');
+                    rest.endDate = moment(search.date[1]).format('YYYY-MM-DD');
                   }
                   setSearChContent(rest);
                 }}
@@ -258,7 +276,7 @@ export default () => {
       </div>
       <div className={sc('container-table-body')}>
         <SelfTable
-          rowKey={'id'}
+          rowKey={'index'}
           bordered
           scroll={{ x: 1400 }}
           columns={columns}

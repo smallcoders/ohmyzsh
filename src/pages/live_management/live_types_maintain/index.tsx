@@ -12,11 +12,11 @@ import SelfTable from '@/components/self_table';
 import AdminAccountDistributor from '@/types/admin-account-distributor.d';
 import {
   addAdminAccount,
-  getAdminAccountPage,
+  getLiveTypesPage,
   removeAdminAccount,
   resetAdminAccount,
   updateAdminAccount,
-} from '@/services/admin-account-distributor';
+} from '@/services/live-types-maintain';
 import { getOrgTypeOptions } from '@/services/org-type-manage';
 import UploadForm from '@/components/upload_form';
 const sc = scopedClasses('user-config-admin-account-distributor');
@@ -58,7 +58,7 @@ export default () => {
 
   const getPages = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     try {
-      const { result, totalCount, pageTotal, code } = await getAdminAccountPage({
+      const { result, totalCount, pageTotal, code } = await getLiveTypesPage({
         pageIndex,
         pageSize,
         ...searchContent,
