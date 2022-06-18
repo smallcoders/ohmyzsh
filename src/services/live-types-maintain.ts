@@ -1,4 +1,4 @@
-import type AdminAccountDistributor from '@/types/admin-account-distributor.d';
+import LiveTypesMaintain from '@/types/live-types-maintain.d';
 import Common from '@/types/common';
 import { request } from 'umi';
 
@@ -7,18 +7,18 @@ import { request } from 'umi';
  * @returns
  */
 export async function getLiveTypesPage(data?: { [key: string]: any }) {
-  return request<AdminAccountDistributor.RecordList>(`/antelope-live/live/type/queryTypePage`, {
+  return request<LiveTypesMaintain.RecordList>(`/antelope-live/web/type/queryTypePage`, {
     method: 'post',
     data,
   });
 }
 
 /**
- * 新增管理员
+ * 新增直播类型
  * @returns
  */
-export async function addAdminAccount(data?: { [key: string]: any }) {
-  return request<AdminAccountDistributor.RecordList>(`/antelope-manage/creative/admin/create`, {
+export async function addLiveType(data?: { [key: string]: any }) {
+  return request<LiveTypesMaintain.RecordList>(`/antelope-live/web/type/save`, {
     method: 'post',
     data,
   });
@@ -28,8 +28,8 @@ export async function addAdminAccount(data?: { [key: string]: any }) {
  * 编辑
  * @returns
  */
-export async function updateAdminAccount(data?: { [key: string]: any }) {
-  return request<Common.ResultCode & { result: any }>(`/antelope-manage/creative/admin/update`, {
+export async function updateLiveType(data?: { [key: string]: any }) {
+  return request<Common.ResultCode & { result: any }>(`/antelope-live/web/type/update`, {
     method: 'put',
     data,
   });

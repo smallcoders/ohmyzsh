@@ -31,7 +31,7 @@ export default {
     },
     '/antelope-live/': {
       // target: 'http://172.30.33.222:10086',
-      target: 'http://10.8.4.222:9095',
+      target: 'http://172.30.35.217:9095',
       changeOrigin: true,
       pathRewrite: { '^': '' },
     },

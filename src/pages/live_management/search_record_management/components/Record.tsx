@@ -18,7 +18,7 @@ import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
 import type Common from '@/types/common';
 import {
-  getDiagnosisRecords,
+  getRecordPage,
   getPersonalSearchRecords,
   addOrUpdateReportFile,
 } from '@/services/search-record';
@@ -61,6 +61,7 @@ export default () => {
     totalCount: 0,
     pageTotal: 0,
   });
+  const [userDataSource, setUserDataSource] = useState<DiagnosticTasks.OnlineRecord[]>([]);
 
   /**
    * 获取搜索记录
@@ -69,7 +70,7 @@ export default () => {
    */
   const getDiagnosticTasks = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     try {
-      const { result, totalCount, pageTotal, code } = await getDiagnosisRecords({
+      const { result, totalCount, pageTotal, code } = await getRecordPage({
         pageIndex,
         pageSize,
         ...searchContent,
@@ -93,8 +94,12 @@ export default () => {
         pageSize,
         ...searchContent
       });
-      console.log(result);
-      // window.open(result);
+      if (code === 0) {
+        setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
+        setUserDataSource(result);
+      } else {
+        message.error(`请求分页数据失败`);
+      }
       setDrawerSize('large');
       setVisible(true);
     } catch (error) {
@@ -142,6 +147,26 @@ export default () => {
       title: '联系方式',
       dataIndex: 'phone',
       width: 200,
+    },
+    {
+      title: '搜索内容',
+      dataIndex: 'content',
+      width: 200,
+    },
+    {
+      title: '搜索时间',
+      dataIndex: 'searchTime',
+      width: 200,
+    }
+  ];
+
+  const userColumns = [
+    {
+      title: '排序',
+      dataIndex: 'sort',
+      width: 100,
+      render: (_: any, _record: DiagnosticTasks.OnlineRecord, index: number) =>
+        pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
       title: '搜索内容',
@@ -302,8 +327,8 @@ export default () => {
             rowKey={'id'}
             bordered
             scroll={{ x: 1400 }}
-            columns={columns}
-            dataSource={dataSource}
+            columns={userColumns}
+            dataSource={userDataSource}
             pagination={
               pageInfo.totalCount === 0
                 ? false

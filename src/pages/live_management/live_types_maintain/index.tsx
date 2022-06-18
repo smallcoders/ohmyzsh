@@ -9,13 +9,13 @@ import React, { useEffect, useState } from 'react';
 import Common from '@/types/common';
 import moment from 'moment';
 import SelfTable from '@/components/self_table';
-import AdminAccountDistributor from '@/types/admin-account-distributor.d';
+import LiveTypesMaintain from '@/types/live-types-maintain.d';
 import {
-  addAdminAccount,
+  addLiveType,
   getLiveTypesPage,
   removeAdminAccount,
   resetAdminAccount,
-  updateAdminAccount,
+  updateLiveType,
 } from '@/services/live-types-maintain';
 import { getOrgTypeOptions } from '@/services/org-type-manage';
 import UploadForm from '@/components/upload_form';
@@ -23,8 +23,8 @@ const sc = scopedClasses('user-config-admin-account-distributor');
 export default () => {
   const { TextArea } = Input;
   const [createModalVisible, setModalVisible] = useState<boolean>(false);
-  const [dataSource, setDataSource] = useState<AdminAccountDistributor.Content[]>([]);
-  const [editingItem, setEditingItem] = useState<AdminAccountDistributor.Content>({});
+  const [dataSource, setDataSource] = useState<LiveTypesMaintain.Content[]>([]);
+  const [editingItem, setEditingItem] = useState<LiveTypesMaintain.Content>({});
   const [addOrUpdateLoading, setAddOrUpdateLoading] = useState<boolean>(false);
   const [searchContent, setSearChContent] = useState<{
     title?: string; // 标题
@@ -80,7 +80,7 @@ export default () => {
   };
 
   const addOrUpdate = async () => {
-    const tooltipMessage = editingItem.id ? '修改' : '添加';
+    const tooltipMessage = editingItem.id ? '编辑类型' : '新增类型';
     form
       .validateFields()
       .then(async (value) => {
@@ -89,11 +89,11 @@ export default () => {
           value.publishTime = moment(value.publishTime).format('YYYY-MM-DDTHH:mm:ss');
         }
         const addorUpdateRes = await (editingItem.id
-          ? updateAdminAccount({
+          ? updateLiveType({
               ...value,
               id: editingItem.id,
             })
-          : addAdminAccount({
+          : addLiveType({
               ...value,
             }));
         if (addorUpdateRes.code === 0) {
@@ -152,68 +152,81 @@ export default () => {
       title: '排序',
       dataIndex: 'sort',
       width: 80,
-      render: (_: any, _record: AdminAccountDistributor.Content, index: number) =>
+      render: (_: any, _record: LiveTypesMaintain.Content, index: number) =>
         pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
       title: '类型名称',
-      dataIndex: 'userName',
+      dataIndex: 'name',
       isEllipsis: true,
       width: 200,
     },
     {
       title: '状态',
-      dataIndex: 'viewRange',
+      dataIndex: 'status',
       isEllipsis: true,
-      width: 280,
+      width: 200,
+      render: (_: boolean) => _ ? '启用' : '禁用',
     },
     {
       title: '创建人',
-      dataIndex: 'createTime',
+      dataIndex: 'creatorUserName',
       width: 200,
-      render: (_: string) => moment(_).format('YYYY-MM-DD HH:mm:ss'),
     },
     {
       title: '创建时间',
-      dataIndex: 'creator',
-      width: 80,
+      dataIndex: 'createTime',
+      width: 80
     },
     {
       title: '操作',
       width: 120,
       fixed: 'right',
       dataIndex: 'option',
-      render: (_: any, record: AdminAccountDistributor.Content) => {
+      render: (_: any, record: LiveTypesMaintain.Content) => {
         return (
           <Space size="middle">
-            {record.isEdit && (
-              <a
-                href="#"
-                onClick={() => {
-                  setEditingItem(record);
-                  setModalVisible(true);
-                  form.setFieldsValue({ name: record?.userName, typeIds: record?.viewRangeIds });
-                }}
-              >
-                编辑
-              </a>
-            )}
-             <Popconfirm
-              title={`确定置顶么？`}
+            <a
+              href="#"
+              onClick={() => {
+                setEditingItem(record);
+                setModalVisible(true);
+                form.setFieldsValue({ name: record?.userName, typeIds: record?.id });
+              }}
+            >
+              编辑
+            </a>
+            {!record.status ? (
+              <Popconfirm
+              title={`确定启用么？`}
               okText="确定"
               cancelText="取消"
               onConfirm={() => reset(record.id as string)}
-            >
+              >
               <a href="#">启用</a>
             </Popconfirm>
-            <Popconfirm
-              title="确定删除么？"
+            )
+            :
+            (
+              <Popconfirm
+              title={`确定停用么？`}
               okText="确定"
               cancelText="取消"
-              onConfirm={() => remove(record.id as string)}
-            >
-              <a href="#">删除</a>
+              onConfirm={() => reset(record.id as string)}
+              >
+              <a href="#">停用</a>
             </Popconfirm>
+            )}
+            {!record.status && (
+              <Popconfirm
+                title="确定删除么？"
+                okText="确定"
+                cancelText="取消"
+                onConfirm={() => remove(record.id as string)}
+              >
+                <a href="#">删除</a>
+              </Popconfirm>
+            )}
           </Space>
         );
       },
@@ -260,7 +273,7 @@ export default () => {
       >
         <Form {...formLayout} form={form} layout="horizontal">
           <Form.Item 
-            name="zhujiangren"
+            name="name"
             label="类型名称"
             rules={[
               {
@@ -272,11 +285,11 @@ export default () => {
           </Form.Item>
           
           <Form.Item 
-            name="url"
+            name="status"
             label="状态">
             <Radio.Group>
-              <Radio value={1}>启用</Radio>
-              <Radio value={2}>禁用</Radio>
+              <Radio value={true}>启用</Radio>
+              <Radio value={false}>禁用</Radio>
             </Radio.Group>
           </Form.Item>
         </Form>

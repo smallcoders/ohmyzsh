@@ -17,14 +17,14 @@ import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
 import Common from '@/types/common';
 import {
-  getDiagnosticTasksPage,
-  addDiagnosticTasks,
+  getRecommendPage,
+  addRecommend,
   searchOrgInfo,
   searchExpert,
-  removeDiagnosisTasks,
+  changeRecommendStatus,
   updateDiagnosticTasks,
   getDiagnosisInstitutions,
-} from '@/services/diagnostic-tasks';
+} from '@/services/search-record';
 import moment from 'moment';
 import DiagnosticTasks from '@/types/service-config-diagnostic-tasks';
 import DebounceSelect from './DebounceSelect';
@@ -78,7 +78,7 @@ export default () => {
    */
   const getDiagnosticTasks = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     try {
-      const { result, totalCount, pageTotal, code } = await getDiagnosticTasksPage({
+      const { result, totalCount, pageTotal, code } = await getRecommendPage({
         pageIndex,
         pageSize
       });
@@ -104,30 +104,21 @@ export default () => {
   };
 
   /**
-   * 添加或者修改
+   * 添加推荐
    */
   const addOrUpdate = async () => {
-    const tooltipMessage = editingItem.id ? '修改' : '添加';
+    const tooltipMessage = '上架推荐';
     const hide = message.loading(`正在${tooltipMessage}`);
     form
       .validateFields()
       .then(async (value) => {
         setAddOrUpdateLoading(true);
         const params = {
-          ...value,
-          startDate: moment(value.time[0]).format('YYYY-MM-DD'),
-          endDate: moment(value.time[1]).format('YYYY-MM-DD'),
-          orgShowId: value.orgShowId.value,
-          expertShowIds: value.expertShowIds.map((p: { value: string }) => p.value).join(','),
+          ...value
         };
-        const addorUpdateRes = await (editingItem.id
-          ? updateDiagnosticTasks({
-              ...params,
-              id: editingItem.id,
-            })
-          : addDiagnosticTasks({
-              ...params,
-            }));
+        const addorUpdateRes = await (addRecommend({
+            ...params,
+          }));
         hide();
         if (addorUpdateRes.code === 0) {
           setModalVisible(false);
@@ -148,11 +139,14 @@ export default () => {
    * 删除
    * @param id
    */
-  const remove = async (id: string) => {
+  const remove = async (id: string, status: any) => {
     try {
-      const removeRes = await removeDiagnosisTasks(id);
+      const removeRes = await changeRecommendStatus({
+        id: id,
+        status: status
+      });
       if (removeRes.code === 0) {
-        message.success(`删除成功`);
+        message.success(`${status == 2 ? '下架' : '删除' }成功`);
         getDiagnosticTasks();
       } else {
         message.error(`删除失败，原因:{${removeRes.message}}`);
@@ -172,40 +166,34 @@ export default () => {
     },
     {
       title: '推荐内容',
-      dataIndex: 'name',
+      dataIndex: 'content',
       isEllipsis: true,
       width: 200,
     },
     {
       title: '操作人',
-      dataIndex: 'orgName',
+      dataIndex: 'addedUserName',
       isEllipsis: true,
       width: 200,
     },
     {
       title: '上架时间',
-      dataIndex: 'time',
-      width: 200,
-      render: (_: string, record: DiagnosticTasks.Content) => (
-        <div style={{ display: 'grid' }}>
-          <span>起：{record.startDate}</span>
-          <span>止：{record.endDate}</span>
-        </div>
-      ),
+      dataIndex: 'addedTime',
+      width: 200
     },
     {
       title: '操作',
       dataIndex: 'option',
       width: 200,
       render: (_: any, record: any) => {
-        return !record.auditPassed ? (
+        return record.status == 1 ? (
           <div style={{ textAlign: 'center' }}>
             <Space size={"middle"}>
             <Popconfirm
               title="确定下架么？"
               okText="确定"
               cancelText="取消"
-              onConfirm={() => remove(record.id as string)}
+              onConfirm={() => remove(record.id as string, 2)}
             >
               <a href="#">下架</a>
             </Popconfirm>
@@ -214,9 +202,9 @@ export default () => {
         ) : (
           <div style={{ display: 'grid', justifyItems: 'center' }}>
             <span>
-              {record.auditTime ? moment(record.auditTime).format('YYYY-MM-DD HH:mm:ss') : '--'}
+              {record.operateTime ? record.operateTime : '--'}
             </span>
-            <span>操作人：{record.auditorName}</span>
+            <span>操作人：{record.operateUserName}</span>
           </div>
         );
       },
@@ -268,7 +256,7 @@ export default () => {
                 message: '必填',
               },
             ]}
-            name="name"
+            name="content"
             label="推荐内容"
           >
             <Input placeholder="请输入" maxLength={35} />
