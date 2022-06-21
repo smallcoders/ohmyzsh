@@ -5,6 +5,36 @@ import DiagnosticTasks from '@/types/service-config-diagnostic-tasks';
 import LiveTypesMaintain from '@/types/live-types-maintain.d';
 import { request } from 'umi';
 
+// ----------------------直播意向采集----------------------------
+/**
+ * 分页查询
+ * @param params
+ */
+ export async function getIntentionList(data: {
+  current?: number;
+  pageSize?: number;
+}) {
+  return request('/antelope-live/web/intentionInfo/page', {
+    method: 'POST',
+    data: { ...data, pageIndex: data.current },
+  }).then((json) => ({
+    success: json.code === 0,
+    total: json.totalCount,
+    data: json.result,
+  }));
+ }
+
+ /**
+  * 标记已联系
+  * params.id 意向id
+  */
+export async function intentionSign(id: string) {
+  return request('/antelope-live/web/intentionInfo/sign', {
+    method: 'POST',
+    params: { id },
+  });
+}
+
 /** 
  * ------直播类型维护------
 */ 

@@ -60,6 +60,7 @@
   WONDERFUL_VIDEO_MANAGEMENT_DETAIL: '/live-management/wonderful-video-management/detail', // 视频详情
 
   SEARCH_RECORD_MANAGEMENT: '/live-management/search-record-management',//直播类型管理
+  ANTELOPE_LIVE_INTENTION_COLLECT: '/live-management/intention-collect',// 直播意向采集
 
 };
 
@@ -521,6 +522,11 @@ export default [
         name: '搜索记录管理',
         component: './live_management/search_record_management',
       },  
+      {
+        path: routeName.ANTELOPE_LIVE_INTENTION_COLLECT,
+        name: '直播意向采集',
+        component: './live_management/intention_collect',
+      },
     ],
   },
   {
