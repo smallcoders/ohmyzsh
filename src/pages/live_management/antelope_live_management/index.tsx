@@ -1,5 +1,5 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Input, Form, Modal, Select, Row, Col, message, Space, Popconfirm, DatePicker } from 'antd';
+import { Button, Input, Form, Modal, Select, Row, Col, message, Space, Popconfirm, DatePicker, Image } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
 import { history } from 'umi';
@@ -17,7 +17,10 @@ import {
   resetAdminAccount,
   updateAdminAccount,
 } from '@/services/admin-account-distributor';
-import { getOrgTypeOptions } from '@/services/org-type-manage';
+import {
+  queryLiveVideoPage,
+  getLiveTypesPage
+} from '@/services/search-record';
 import UploadForm from '@/components/upload_form';
 const sc = scopedClasses('user-config-admin-account-distributor');
 export default () => {
@@ -31,12 +34,22 @@ export default () => {
     publishTime?: string; // 发布时间
     state?: number; // 状态：0发布中、1待发布、2已下架
   }>({});
-
+  {/* 直播状态： 0:未开始，1:直播中，2:已结束 */}
+  const stateObj = {
+    0: '未开始',
+    1: '直播中',
+    2: '已结束'
+  };
   const [options, setOptions] = useState<any>([]);
 
   const getDictionary = async () => {
     try {
-      const res = await Promise.all([getOrgTypeOptions()]);
+      const res = await Promise.all([getLiveTypesPage(
+        {
+          pageIndex: 1,
+          pageSize: 100,
+        }
+      )]);
       console.log(res[0]);
       setOptions(res[0]?.result || []);
     } catch (error) {
@@ -58,7 +71,7 @@ export default () => {
 
   const getPages = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     try {
-      const { result, totalCount, pageTotal, code } = await getAdminAccountPage({
+      const { result, totalCount, pageTotal, code } = await queryLiveVideoPage({
         pageIndex,
         pageSize,
         ...searchContent,
@@ -157,13 +170,13 @@ export default () => {
     },
     {
       title: '直播标题',
-      dataIndex: 'userName',
+      dataIndex: 'title',
       isEllipsis: true,
       render: (_: string, _record: any) => (
         <a
           href="javascript:;"
           onClick={() => {
-            history.push(`${routeName.ANTELOPE_LIVE_MANAGEMENT_DETAIL}?id=${_record.id}`);
+            history.push(`${routeName.ANTELOPE_LIVE_MANAGEMENT_ADD}?id=${_record.id}&isDetail=1`);
           }}
         >
           {_}
@@ -173,37 +186,50 @@ export default () => {
     },
     {
       title: '封面',
-      dataIndex: 'viewRange',
+      dataIndex: 'filePath',
       isEllipsis: true,
-      width: 280,
+      width: 120,
+      render: (_: string, _record: any) => (
+        <Image width={100} src={_} />
+      ),
     },
     {
       title: '起止时间',
-      dataIndex: 'createTime',
-      width: 200,
-      render: (_: string) => moment(_).format('YYYY-MM-DD HH:mm:ss'),
+      dataIndex: 'startTime',
+      width: 240,
+      render: (_: string, _record: any) => (
+        <div>开始：{_}<br></br>结束：{_record.endTime}</div>
+      ),
     },
     {
       title: '主讲人',
-      dataIndex: 'creator',
+      dataIndex: 'speakerName',
       width: 80,
     },
     {
       title: '类型',
-      dataIndex: 'viewRange',
+      dataIndex: 'typeNames',
       isEllipsis: true,
       width: 280,
     },
     {
       title: '点击量',
-      dataIndex: 'createTime',
-      width: 200,
-      render: (_: string) => moment(_).format('YYYY-MM-DD HH:mm:ss'),
+      dataIndex: 'clickCount',
+      width: 100
     },
     {
       title: '状态',
-      dataIndex: 'creator',
-      width: 80,
+      dataIndex: 'videoStatus',
+      width: 180,
+      render: (_: number, record: any) => {
+        return (
+          <div className={`state${_}`}>
+            直播状态：{Object.prototype.hasOwnProperty.call(stateObj, _) ? stateObj[_] : '--'}<br></br>
+            上架状态：{record.lineStatus ? '线上' : '线下'}<br></br>
+            置顶状态：{record.isTop ? '是' : '否'}
+          </div>
+        );
+      },
     },
     {
       title: '操作',
@@ -213,6 +239,24 @@ export default () => {
       render: (_: any, record: AdminAccountDistributor.Content) => {
         return (
           <Space size="middle">
+            {record.videoStatus != 2 && (
+              <a
+                href="#"
+                onClick={() => {
+                  history.push(`${routeName.ANTELOPE_LIVE_MANAGEMENT_ADD}?id=${record.id}`);
+                }}
+              >
+                编辑
+              </a>
+            )}
+            <Popconfirm
+              title="确定删除么？"
+              okText="确定"
+              cancelText="取消"
+              onConfirm={() => remove(record.id as string)}
+            >
+              <a href="#">删除</a>
+            </Popconfirm>
             <Popconfirm
               title="确定下架么？"
               okText="确定"
@@ -221,18 +265,7 @@ export default () => {
             >
               <a href="#">下架</a>
             </Popconfirm>
-            {record.isEdit && (
-              <a
-                href="#"
-                onClick={() => {
-                  setEditingItem(record);
-                  setModalVisible(true);
-                  form.setFieldsValue({ name: record?.userName, typeIds: record?.viewRangeIds });
-                }}
-              >
-                编辑
-              </a>
-            )}
+            
              <Popconfirm
               title={`确定置顶么？`}
               okText="确定"
@@ -240,14 +273,6 @@ export default () => {
               onConfirm={() => reset(record.id as string)}
             >
               <a href="#">置顶</a>
-            </Popconfirm>
-            <Popconfirm
-              title="确定删除么？"
-              okText="确定"
-              cancelText="取消"
-              onConfirm={() => remove(record.id as string)}
-            >
-              <a href="#">删除</a>
             </Popconfirm>
           </Space>
         );
@@ -270,25 +295,27 @@ export default () => {
         <Form {...formLayout} form={searchForm}>
           <Row>
             <Col span={6}>
-              <Form.Item name="useName" label="直播标题">
+              <Form.Item name="title" label="直播标题">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
             <Col span={6}>
-              <Form.Item name="auditState" label="直播状态">
+              <Form.Item name="videoStatus" label="直播状态">
                 <Select placeholder="请选择" allowClear>
-                  <Select.Option value={'AUDITING'}>未开始</Select.Option>
-                  <Select.Option value={'AUDIT_PASSED'}>直播中</Select.Option>
-                  <Select.Option value={'AUDIT_REJECTED'}>已结束</Select.Option>
+                  <Select.Option value={0}>未开始</Select.Option>
+                  <Select.Option value={1}>直播中</Select.Option>
+                  <Select.Option value={2}>已结束</Select.Option>
                 </Select>
               </Form.Item>
             </Col>
             <Col span={6}>
-              <Form.Item name="auditState" label="类型">
-                <Select placeholder="请选择" allowClear>
-                  <Select.Option value={'AUDITING'}>待审核</Select.Option>
-                  <Select.Option value={'AUDIT_PASSED'}>通过</Select.Option>
-                  <Select.Option value={'AUDIT_REJECTED'}>拒绝</Select.Option>
+              <Form.Item name="typeIds" label="类型">
+                <Select placeholder="请选择" allowClear mode="multiple">
+                  {options?.map((item: any) => (
+                    <Select.Option key={item?.id} value={item?.id}>
+                      {item?.name}
+                    </Select.Option>
+                  ))}
                 </Select>
               </Form.Item>
             </Col>
@@ -501,7 +528,7 @@ export default () => {
             type="primary"
             key="primary"
             onClick={() => {
-              setModalVisible(true);
+              history.push(routeName.ANTELOPE_LIVE_MANAGEMENT_ADD);
             }}
           >
             <PlusOutlined /> 新增直播
@@ -528,7 +555,7 @@ export default () => {
           }
         />
       </div>
-      {useModal()}
+      {/* {useModal()} */}
     </PageContainer>
   );
 };

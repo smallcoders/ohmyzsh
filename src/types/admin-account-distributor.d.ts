@@ -14,6 +14,7 @@ namespace AdminAccountDistributor {
     creator?: string; // 创建人
     createTime?: string; // 创建时间
     isEdit?: boolean; // 能否编辑
+    name?: string;
   };
 }
 export default AdminAccountDistributor;

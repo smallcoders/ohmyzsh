@@ -52,6 +52,7 @@
 
   ANTELOPE_LIVE_MANAGEMENT: '/live-management/antelope-live-management', // 羚羊直播管理
   ANTELOPE_LIVE_MANAGEMENT_INDEX: '/live-management/antelope-live-management/index', // 羚羊直播管理
+  ANTELOPE_LIVE_MANAGEMENT_ADD: '/live-management/antelope-live-management/add-live', // 新增直播
   ANTELOPE_LIVE_MANAGEMENT_DETAIL: '/live-management/antelope-live-management/detail', // 直播详情
 
   WONDERFUL_VIDEO_MANAGEMENT: '/live-management/wonderful-video-management', // 精彩视频管理
@@ -481,6 +482,11 @@ export default [
             path: routeName.ANTELOPE_LIVE_MANAGEMENT_INDEX,
             name: '羚羊直播管理',
             component: './live_management/antelope_live_management',
+          },
+          {
+            path: routeName.ANTELOPE_LIVE_MANAGEMENT_ADD,
+            name: '新增直播',
+            component: './live_management/add_live',
           },
           {
             path: routeName.ANTELOPE_LIVE_MANAGEMENT_DETAIL,

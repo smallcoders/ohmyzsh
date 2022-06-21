@@ -1,9 +1,7 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Input, Form, Modal, Select, Row, Col, message, Space, Popconfirm, DatePicker, Radio } from 'antd';
+import { Button, Input, Form, Modal, message, Space, Popconfirm, Radio } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
-import { history } from 'umi';
-import { routeName } from '@/../config/routes';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
 import Common from '@/types/common';
@@ -13,12 +11,10 @@ import LiveTypesMaintain from '@/types/live-types-maintain.d';
 import {
   addLiveType,
   getLiveTypesPage,
-  removeAdminAccount,
-  resetAdminAccount,
   updateLiveType,
-} from '@/services/live-types-maintain';
+  removeLiveType
+} from '@/services/search-record';
 import { getOrgTypeOptions } from '@/services/org-type-manage';
-import UploadForm from '@/components/upload_form';
 const sc = scopedClasses('user-config-admin-account-distributor');
 export default () => {
   const { TextArea } = Input;
@@ -26,7 +22,7 @@ export default () => {
   const [dataSource, setDataSource] = useState<LiveTypesMaintain.Content[]>([]);
   const [editingItem, setEditingItem] = useState<LiveTypesMaintain.Content>({});
   const [addOrUpdateLoading, setAddOrUpdateLoading] = useState<boolean>(false);
-  const [searchContent, setSearChContent] = useState<{
+  const [searchContent] = useState<{
     title?: string; // 标题
     publishTime?: string; // 发布时间
     state?: number; // 状态：0发布中、1待发布、2已下架
@@ -37,7 +33,6 @@ export default () => {
   const getDictionary = async () => {
     try {
       const res = await Promise.all([getOrgTypeOptions()]);
-      console.log(res[0]);
       setOptions(res[0]?.result || []);
     } catch (error) {
       message.error('服务器错误');
@@ -79,6 +74,7 @@ export default () => {
     setEditingItem({});
   };
 
+  // 新增/编辑
   const addOrUpdate = async () => {
     const tooltipMessage = editingItem.id ? '编辑类型' : '新增类型';
     form
@@ -98,14 +94,11 @@ export default () => {
             }));
         if (addorUpdateRes.code === 0) {
           setModalVisible(false);
-          console.log(editingItem.id);
           if (!editingItem.id) {
-            Modal.info({
-              title: '新增管理员成功',
-              content: ` 当前管理员密码初始密码为：ly@${moment().format('YYYYMMDD')}`,
-            });
+            message.success('新增类型成功！');
+          }else {
+            message.success('编辑类型成功！');
           }
-
           getPages();
           clearForm();
         } else {
@@ -117,31 +110,36 @@ export default () => {
         setAddOrUpdateLoading(false);
       });
   };
-
+  // 删除
   const remove = async (id: string) => {
     try {
-      const removeRes = await removeAdminAccount(id);
+      const removeRes = await removeLiveType(id);
       if (removeRes.code === 0) {
         message.success(`删除成功`);
         getPages();
       } else {
-        message.error(`删除失败，原因:{${removeRes.message}}`);
+        message.error(`删除失败，原因:${removeRes.message}`);
       }
     } catch (error) {
       console.log(error);
     }
   };
-
-  const reset = async (id: string) => {
+  // 启用/停用
+  const updateStatus = async (id: string, status) => {
     try {
-      const tooltipMessage = '重置密码';
-      const updateStateResult = await resetAdminAccount(id);
-      if (updateStateResult.code === 0) {
-        message.success(`${tooltipMessage}成功`);
+      setAddOrUpdateLoading(true);
+      const addorUpdateRes = await updateLiveType({
+        status,
+        id
+      })
+      if (addorUpdateRes.code === 0) {
+        setModalVisible(false);
+        message.success('操作成功！');
         getPages();
       } else {
-        message.error(`${tooltipMessage}失败，原因:{${updateStateResult.message}}`);
+        message.error(`操作失败，原因:${addorUpdateRes.message}`);
       }
+      setAddOrUpdateLoading(false);
     } catch (error) {
       console.log(error);
     }
@@ -191,7 +189,7 @@ export default () => {
               onClick={() => {
                 setEditingItem(record);
                 setModalVisible(true);
-                form.setFieldsValue({ name: record?.userName, typeIds: record?.id });
+                form.setFieldsValue({ name: record?.name, status: record?.status });
               }}
             >
               编辑
@@ -201,7 +199,7 @@ export default () => {
               title={`确定启用么？`}
               okText="确定"
               cancelText="取消"
-              onConfirm={() => reset(record.id as string)}
+              onConfirm={() => updateStatus(record.id as string, true)}
               >
               <a href="#">启用</a>
             </Popconfirm>
@@ -212,7 +210,7 @@ export default () => {
               title={`确定停用么？`}
               okText="确定"
               cancelText="取消"
-              onConfirm={() => reset(record.id as string)}
+              onConfirm={() => updateStatus(record.id as string, false)}
               >
               <a href="#">停用</a>
             </Popconfirm>
@@ -252,7 +250,7 @@ export default () => {
   const useModal = (): React.ReactNode => {
     return (
       <Modal
-        title={editingItem.id ? '修改类型' : '新增类型'}
+        title={editingItem.id ? '编辑类型' : '新增类型'}
         width="400px"
         visible={createModalVisible}
         okButtonProps={{ loading: addOrUpdateLoading }}
@@ -271,7 +269,14 @@ export default () => {
           </Button>,
         ]}
       >
-        <Form {...formLayout} form={form} layout="horizontal">
+        <Form 
+          {...formLayout} 
+          form={form} 
+          layout="horizontal"
+          initialValues={{
+            'status': true,
+          }}
+        >
           <Form.Item 
             name="name"
             label="类型名称"
@@ -318,6 +323,7 @@ export default () => {
           bordered
           scroll={{ x: 1400 }}
           columns={columns}
+          rowKey={'id'}
           dataSource={dataSource}
           pagination={
             pageInfo.totalCount === 0

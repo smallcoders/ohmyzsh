@@ -1,5 +1,6 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Input, Form, Modal, Select, Row, Col, message, Space, Popconfirm, DatePicker, InputNumber } from 'antd';
+import { Button, Input, Form, Modal, Select, Row, Col, message, Space, Popconfirm, DatePicker, Tooltip, InputNumber, Image } from 'antd';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
 import { history } from 'umi';
@@ -12,11 +13,14 @@ import SelfTable from '@/components/self_table';
 import AdminAccountDistributor from '@/types/admin-account-distributor.d';
 import {
   addAdminAccount,
-  getAdminAccountPage,
   removeAdminAccount,
   resetAdminAccount,
   updateAdminAccount,
 } from '@/services/admin-account-distributor';
+import {
+  queryVideoPage,
+  getLiveTypesPage
+} from '@/services/search-record';
 import { getOrgTypeOptions } from '@/services/org-type-manage';
 import UploadForm from '@/components/upload_form';
 const sc = scopedClasses('user-config-admin-account-distributor');
@@ -34,9 +38,15 @@ export default () => {
 
   const [options, setOptions] = useState<any>([]);
 
+  // 获取视频类型数据，字典接口缺失，暂用分页数据
   const getDictionary = async () => {
     try {
-      const res = await Promise.all([getOrgTypeOptions()]);
+      const res = await Promise.all([getLiveTypesPage(
+        {
+          pageIndex: 1,
+          pageSize: 100,
+        }
+      )]);
       console.log(res[0]);
       setOptions(res[0]?.result || []);
     } catch (error) {
@@ -58,7 +68,7 @@ export default () => {
 
   const getPages = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     try {
-      const { result, totalCount, pageTotal, code } = await getAdminAccountPage({
+      const { result, totalCount, pageTotal, code } = await queryVideoPage({
         pageIndex,
         pageSize,
         ...searchContent,
@@ -146,7 +156,6 @@ export default () => {
       console.log(error);
     }
   };
-
   const columns = [
     {
       title: '排序',
@@ -157,13 +166,13 @@ export default () => {
     },
     {
       title: '视频标题',
-      dataIndex: 'userName',
+      dataIndex: 'title',
       isEllipsis: true,
       render: (_: string, _record: any) => (
         <a
           href="javascript:;"
           onClick={() => {
-            history.push(`${routeName.ANTELOPE_LIVE_MANAGEMENT_DETAIL}?id=${_record.id}`);
+            history.push(`${routeName.WONDERFUL_VIDEO_MANAGEMENT_DETAIL}?id=${_record.videoId}`);
           }}
         >
           {_}
@@ -173,35 +182,54 @@ export default () => {
     },
     {
       title: '封面',
-      dataIndex: 'viewRange',
+      dataIndex: 'filePath',
       isEllipsis: true,
-      width: 280,
+      width: 120,
+      render: (_: string, _record: any) => (
+        <Image width={100} src={_} />
+      ),
     },
     {
       title: '状态',
-      dataIndex: 'creator',
-      width: 80,
+      dataIndex: 'videoStatus',
+      width: 180,
+      render: (_: number, record: any) => {
+        return (
+          <div className={`state${_}`}>
+            上架状态：{record.lineStatus ? '线上' : '线下'}<br></br>
+            置顶状态：{record.isTop ? '是' : '否'}
+          </div>
+        );
+      },
     },
     {
       title: '点击量',
-      dataIndex: 'createTime',
-      width: 200,
-      render: (_: string) => moment(_).format('YYYY-MM-DD HH:mm:ss'),
+      dataIndex: 'clickCount',
+      width: 80
     },
     {
       title: '分享量',
-      dataIndex: 'createTime',
-      width: 200,
-      render: (_: string) => moment(_).format('YYYY-MM-DD HH:mm:ss'),
+      dataIndex: 'shareCount',
+      width: 100,
+      filterDropdown: (<div></div>),
+      filterIcon: 
+        <Tooltip placement="top" title="分享量=用户实际埋点数据+虚拟数据。括号中为虚拟数据">
+          <QuestionCircleOutlined />
+        </Tooltip>
     },
     {
       title: '点赞量',
-      dataIndex: 'creator',
-      width: 80,
+      dataIndex: 'goodCount',
+      width: 100,
+      filterDropdown: (<div></div>),
+      filterIcon: 
+        <Tooltip placement="top" title="点赞量=用户实际埋点数据+虚拟数据。括号中为虚拟数据">
+          <QuestionCircleOutlined />
+        </Tooltip>
     },
     {
       title: '类型',
-      dataIndex: 'viewRange',
+      dataIndex: 'typeNames',
       isEllipsis: true,
       width: 280,
     },
@@ -219,6 +247,16 @@ export default () => {
       render: (_: any, record: AdminAccountDistributor.Content) => {
         return (
           <Space size="middle">
+            <a
+              href="#"
+              onClick={() => {
+                setEditingItem(record);
+                setModalVisible(true);
+                form.setFieldsValue(record);
+              }}
+            >
+              编辑
+            </a>
             <Popconfirm
               title="确定下架么？"
               okText="确定"
@@ -227,18 +265,6 @@ export default () => {
             >
               <a href="#">下架</a>
             </Popconfirm>
-            {record.isEdit && (
-              <a
-                href="#"
-                onClick={() => {
-                  setEditingItem(record);
-                  setModalVisible(true);
-                  form.setFieldsValue({ name: record?.userName, typeIds: record?.viewRangeIds });
-                }}
-              >
-                编辑
-              </a>
-            )}
              <Popconfirm
               title={`确定置顶么？`}
               okText="确定"
@@ -276,24 +302,26 @@ export default () => {
         <Form {...formLayout} form={searchForm}>
           <Row>
             <Col span={6}>
-              <Form.Item name="useName" label="视频名称">
+              <Form.Item name="title" label="视频名称">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
             <Col span={6}>
-              <Form.Item name="auditState" label="上架状态">
+              <Form.Item name="lineStatus" label="上架状态">
                 <Select placeholder="请选择" allowClear>
-                  <Select.Option value={'AUDITING'}>线上</Select.Option>
-                  <Select.Option value={'AUDIT_PASSED'}>线下</Select.Option>
+                  <Select.Option value={true}>线上</Select.Option>
+                  <Select.Option value={false}>线下</Select.Option>
                 </Select>
               </Form.Item>
             </Col>
             <Col span={6}>
-              <Form.Item name="auditState" label="类型">
-                <Select placeholder="请选择" allowClear>
-                  <Select.Option value={'AUDITING'}>待审核</Select.Option>
-                  <Select.Option value={'AUDIT_PASSED'}>通过</Select.Option>
-                  <Select.Option value={'AUDIT_REJECTED'}>拒绝</Select.Option>
+              <Form.Item name="typeIds" label="类型">
+                <Select placeholder="请选择" allowClear mode="multiple">
+                  {options?.map((item: any) => (
+                    <Select.Option key={item?.id} value={item?.id}>
+                      {item?.name}
+                    </Select.Option>
+                  ))}
                 </Select>
               </Form.Item>
             </Col>
@@ -376,7 +404,7 @@ export default () => {
               }),
             ]}
             required
-            name="name"
+            name="title"
             label="视频标题"
           >
             <Input placeholder="请输入" maxLength={50} />
@@ -400,7 +428,7 @@ export default () => {
             />
           </Form.Item>
           <Form.Item
-            name="photoId"
+            name="fileRecordId"
             label="封面"
             rules={[
               {
@@ -430,8 +458,8 @@ export default () => {
             <Select
               placeholder="请选择"
               allowClear
-              showSearch={false}
               mode="multiple"
+              showSearch={false}
               dropdownRender={(menu) => (
                 <>
                   {menu}
@@ -471,7 +499,7 @@ export default () => {
             </Select>
           </Form.Item>
           <Form.Item 
-            name="publishTime" 
+            name="shareCount" 
             label="虚拟分享量"
             rules={[
               {

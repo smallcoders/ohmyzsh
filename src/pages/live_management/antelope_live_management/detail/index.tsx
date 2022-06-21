@@ -74,7 +74,7 @@ export default () => {
       <div className={sc('container')}>
         {/* <div className={sc('container-title')}>技术成果信息</div> */}
         <div className={sc('container-desc')}>
-          <span>直播名称：</span>
+          <span>直播间名称：</span>
           <span>{detail?.name || '--'}</span>
         </div>
         <div className={sc('container-desc')}>

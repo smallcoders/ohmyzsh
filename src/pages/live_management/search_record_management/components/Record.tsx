@@ -254,7 +254,7 @@ export default () => {
           <Row>
             <Col span={10} offset={1}>
               <Form.Item name="date" label="搜索日期">
-                <DatePicker allowClear showTime />
+                <DatePicker.RangePicker allowClear />
               </Form.Item>
             </Col>
             <Col span={8} offset={4}>

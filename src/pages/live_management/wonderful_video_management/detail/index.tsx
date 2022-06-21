@@ -1,10 +1,11 @@
-import { message, Image } from 'antd';
+import { message, Image, Tooltip } from 'antd';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 import { history } from 'umi';
 import React, { useState, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
-import { getCreativeDetail } from '@/services/kc-verify';
+import { getDetail } from '@/services/search-record';
 import { getEnumByName } from '@/services/common';
 import VerifyInfoDetail from '@/components/verify_info_detail/verify-info-detail';
 
@@ -41,7 +42,7 @@ export default () => {
 
     if (id) {
       try {
-        const res = await getCreativeDetail(id);
+        const res = await getDetail(id);
         getDictionary();
         if (res.code === 0) {
           console.log(res);
@@ -114,11 +115,20 @@ export default () => {
           <div dangerouslySetInnerHTML={{ __html: detail?.introduction || '--' }} />
         </div>
         <div className={sc('container-desc')}>
-          <span>分享量</span>
+          <span>
+            分享量
+            <Tooltip placement="top" title="分享量=用户实际埋点数据+虚拟数据。括号中为虚拟数据">
+              <QuestionCircleOutlined />
+            </Tooltip>：
+          </span>
           <span>{getEnum('CREATIVE_ACHIEVEMENT_ATTRIBUTE_ENUM', detail?.attribute)}</span>
         </div>
         <div className={sc('container-desc')}>
-          <span>点赞量：</span>
+          <span>
+            点赞量
+            <Tooltip placement="top" title="点赞量=用户实际埋点数据+虚拟数据。括号中为虚拟数据">
+              <QuestionCircleOutlined />
+            </Tooltip>：</span>
           <span>{getEnum('CREATIVE_MATURITY_ENUM', detail?.maturity)}</span>
         </div>
         <div className={sc('container-desc')}>
