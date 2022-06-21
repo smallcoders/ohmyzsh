@@ -122,8 +122,6 @@ export default () => {
           </Button>,
         ]}
         request={async (pagination) => {
-          console.log(pagination);
-
           const result = await pageQuery(pagination);
           paginationRef.current = pagination;
           return result;
