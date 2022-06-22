@@ -14,17 +14,17 @@ import {
   Image,
   Tag
 } from 'antd';
+const { RangePicker } = DatePicker;
+import moment from 'moment';
 import { PageContainer } from '@ant-design/pro-layout';
 import './live-manage-add.less';
 import scopedClasses from '@/utils/scopedClasses';
 import { useEffect, useState } from 'react';
 import {
-  addOrUpdateAppSource,
-  getAppTypes,
-  getTopApps,
-} from '@/services/app-resource';
-import {
   getVideoDetail,
+  addLive,
+  updateLive,
+  getLiveTypesPage
 } from '@/services/search-record';
 import UploadForm from '@/components/upload_form';
 import AppResource from '@/types/app-resource';
@@ -42,17 +42,9 @@ export default () => {
    */
   const [isTop, setIsTop] = useState<string | number>(1);
   /**
-   * 是否是试用 1 是 0 不是
-   */
-  const [isTry, setIsTry] = useState<string | number>(1);
-  /**
-   * 应用资源类型
+   * 直播类型
    */
   const [appTypes, setAppTypes] = useState<{ id: string; name: string }[]>([]);
-  /**
-   * 尖刀应用类型
-   */
-  const [topApps, setTopApps] = useState<{ id: string; name: string }[]>([]);
   /**
    * 正在编辑的一行记录
    */
@@ -75,18 +67,62 @@ export default () => {
    * 是否在编辑
    */
   const isEditing = Boolean(editingItem.id && !isDetail);
+  console.log(isEditing, 'isEditing');
 
   //判断初始的是否尖刀应用并且是否正在修改的开关
   const [isBeginTopAndEditing, setIsBeginTopAndEditing] = useState<boolean>(false);
 
   const [form] = Form.useForm();
 
+  const [formParams, setFormParams] = useState<object>({});
+
   const stateObj = {
     0: '未开始',
     1: '直播中',
     2: '已结束'
   };
-  const { CheckableTag } = Tag;
+
+  const options = [
+    { label: '回放', value: 'replay' },
+    { label: '客服', value: 'kf' }
+  ];
+
+  const options2 = [
+    { label: '点赞', value: 'like' },
+    { label: '货架', value: 'goods' },
+    { label: '评论', value: 'comment' },
+    { label: '分享', value: 'share' }
+  ];
+
+  // 新增直播时，直播时间选择不能选择今日今时之前的时间
+  const range = (start, end) => {
+    const result = [];
+  
+    for (let i = start; i < end; i++) {
+      result.push(i);
+    }
+  
+    return result;
+  };
+  const disabledDate = (current) => {
+    // Can not select days before today
+    return current < moment().endOf('day');
+  };
+  const disabledRangeTime = (_, type) => {
+    if (type === 'start') {
+      return {
+        disabledHours: () => range(0, 60).splice(4, 20),
+        disabledMinutes: () => range(30, 60),
+        disabledSeconds: () => [55, 56],
+      };
+    }
+  
+    return {
+      disabledHours: () => range(0, 60).splice(20, 4),
+      disabledMinutes: () => range(0, 31),
+      disabledSeconds: () => [55, 56],
+    };
+  };
 
   /**
    * 清楚表单
@@ -101,24 +137,46 @@ export default () => {
    */
   const prepare = async () => {
     try {
-      const prepareResultArray = await Promise.all([getAppTypes(), getTopApps()]);
-      setAppTypes(prepareResultArray[0].result);
-      setTopApps(prepareResultArray[1].result);
+      const prepareResultArray = await Promise.all([getLiveTypesPage({
+        pageIndex: 1,
+        pageSize: 100,
+      })]);
+      setAppTypes(prepareResultArray[0].result || []);
 
       const { id, isDetail } = history.location.query as { id: string | undefined, isDetail: string | undefined };
 
       if (id) {
         // 获取详情 塞入表单
         const detailRs = await getVideoDetail(id);
-        const editItem = { ...detailRs.result };
+        let editItem = { ...detailRs.result };
+        editItem.typeIds = editItem.typeIds?.split(',');//返回的类型为字符串，需转为数组
+        console.log(editItem, '---editItem')
         if (detailRs.code === 0) {
           editItem.isSkip = detailRs.result.url ? 1 : 0;
-          setIsTry(editItem.isSupportTry || 0);
-          setIsTop(editItem.isTopApp || 0);
           setIsSkip(editItem.isSkip);
-
-          setIsBeginTopAndEditing(Boolean(editItem.isTopApp));
-          setEditingItem(editItem);
+          // setIsBeginTopAndEditing(Boolean(editItem.isTopApp));
+          console.log(editItem, 'res---editItem');
+          let extented = [];//扩展功能数据获取
+          if(!editItem.closeReplay) {
+            extented.push('replay');
+          }
+          if(!editItem.closeKf) {
+            extented.push('kf');
+          }
+          let liveFunctions = [];//直播间功能数据获取
+          if(!editItem.closeLike) {
+            extented.push('like');
+          }
+          if(!editItem.closeGoods) {
+            extented.push('goods');
+          }
+          if(!editItem.closeComment) {
+            extented.push('comment');
+          }
+          if(!editItem.closeShare) {
+            extented.push('share');
+          }
+          setEditingItem({...editItem, extended: extented, time: [moment(editingItem.startTime), moment(editingItem.endTime)]});
         } else {
           message.error(`获取详情失败，原因:{${detailRs.message}}`);
         }
@@ -140,27 +198,53 @@ export default () => {
     };
   }, []);
 
+
   /**
-   * 添加或者修改
+   * 新增/编辑
    */
-  const addOrUpdate = () => {
+  const addOrUpdate = (lineStatus: boolean) => {
     form
       .validateFields()
       .then(async (value: AppResource.Detail) => {
-        const tooltipMessage = isEditing ? '修改' : '添加';
+        const tooltipMessage = editingItem.id ? '编辑' : '新增';
+        console.log(value, '<---value');
         const hide = message.loading(`正在${tooltipMessage}`);
         setAddOrUpdateLoading(true);
-        const addorUpdateRes = await addOrUpdateAppSource({
-          ...value,
-          releaseStatus: 1,
-          id: editingItem.id,
-        });
-        hide();
+        // // 编辑
+        let addorUpdateRes = {};
+        if(editingItem.id) {
+          addorUpdateRes = await updateLive({
+            ...value,
+            startTime: moment(value.time[0]).format('YYYY-MM-DD HH:mm:ss'),
+            endTime: moment(value.time[1]).format('YYYY-MM-DD HH:mm:ss'),
+            closeReplay: value.extended?.indexOf('replay') > -1 ? 0 : 1,
+            closeKf: value.extended?.indexOf('kf') > -1 ? 0 : 1,
+            closeLike: value.extended?.indexOf('like') > -1 ? 0 : 1,
+            closeGoods: value.extended?.indexOf('goods') > -1 ? 0 : 1,
+            closeComment: value.extended?.indexOf('comment') > -1 ? 0 : 1,
+            closeShare: value.extended?.indexOf('share') > -1 ? 0 : 1,
+            id: editingItem.id
+          });
+          hide()
+        }else {
+          addorUpdateRes = await addLive({
+            ...value,
+            startTime: moment(value.time[0]).format('YYYY-MM-DD HH:mm:ss'),
+            endTime: moment(value.time[1]).format('YYYY-MM-DD HH:mm:ss'),
+            lineStatus: lineStatus,
+            closeReplay: value.extended?.indexOf('replay') > -1 ? 0 : 1,
+            closeKf: value.extended?.indexOf('kf') > -1 ? 0 : 1,
+            closeLike: value.extended?.indexOf('like') > -1 ? 0 : 1,
+            closeGoods: value.extended?.indexOf('goods') > -1 ? 0 : 1,
+            closeComment: value.extended?.indexOf('comment') > -1 ? 0 : 1,
+            closeShare: value.extended?.indexOf('share') > -1 ? 0 : 1
+          });
+          hide();
+        }
         if (addorUpdateRes.code === 0) {
           message.success(`${tooltipMessage}成功`);
           setIsClosejumpTooltip(false);
-
-          history.push(routeName.APP_MANAGE);
+          history.push(routeName.ANTELOPE_LIVE_MANAGEMENT_INDEX);
         } else {
           message.error(`${tooltipMessage}失败，原因:{${addorUpdateRes.message}}`);
         }
@@ -206,22 +290,22 @@ export default () => {
         extra: (
           <div className="operate-btn">
             {!isDetail && (
-              <Button key="primary" loading={addOrUpdateLoading} onClick={addOrUpdate}>
+              <Button key="primary" loading={addOrUpdateLoading} onClick={() => {history.push(routeName.ANTELOPE_LIVE_MANAGEMENT_INDEX)}}>
                 取消
               </Button>
             )}
             {!isDetail && !isEditing && (
-              <Button key="primary" loading={addOrUpdateLoading} onClick={addOrUpdate}>
+              <Button key="primary2" loading={addOrUpdateLoading} onClick={() => {addOrUpdate(true)}}>
                 保存并上架
               </Button>
             )}
             {!isDetail && (
-              <Button type="primary" key="primary" loading={addOrUpdateLoading} onClick={addOrUpdate}>
+              <Button type="primary" key="primary3" loading={addOrUpdateLoading} onClick={() => {addOrUpdate(false)}}>
                 保存
               </Button>
             )}
             {isDetail && (
-              <Button key="primary" loading={addOrUpdateLoading} onClick={addOrUpdate}>
+              <Button key="primary4" loading={addOrUpdateLoading} onClick={addOrUpdate}>
                 返回
               </Button>
             )}
@@ -230,10 +314,10 @@ export default () => {
       }}
     >
       <Prompt
-        when={isClosejumpTooltip && topApps.length > 0}
+        when={isClosejumpTooltip}
         message={'离开当前页后，所编辑的数据将不可恢复'}
       />
-      <Form className={sc('container-form')} {...formLayout} form={form}>
+      <Form className={sc('container-form')} {...formLayout} form={form} labelWrap>
         <Row>
           <Col span={18}>
             <Form.Item
@@ -256,38 +340,25 @@ export default () => {
           </Col>
           {isDetail && (
             <Col span={18}>
-            <Form.Item
-              name="videoStatus"
-              label="状态"
-            > 
-              <span>
-              <CheckableTag
-                key='tag1'
-                checked={editingItem.videoStatus}
-              >
-                {Object.prototype.hasOwnProperty.call(stateObj, stateObj[editingItem.videoStatus])}
-              </CheckableTag>
-              <CheckableTag
-                key='tag2'
-                checked={editingItem.lineStatus}
-              >
-                {editingItem.lineStatus ? '线上' : '线下'}
-              </CheckableTag>
-              <CheckableTag
-                key='tag3'
-                checked={editingItem.isTop}
-              >
-                {editingItem.isTop ? '置顶' : '未置顶'}
-              </CheckableTag>
-              </span>
-            </Form.Item>
-          </Col>
+              <Form.Item
+                name="videoStatus"
+                label="状态"
+              > 
+                <span>
+                <Tag>
+                  {Object.prototype.hasOwnProperty.call(stateObj, editingItem.videoStatus) ? stateObj[editingItem.videoStatus] : '--'}
+                </Tag>
+                <Tag>{editingItem.lineStatus ? '线上' : '线下'}</Tag>
+                <Tag>{editingItem.isTop ? '置顶' : '未置顶'}</Tag>
+                </span>
+              </Form.Item>
+            </Col>
           )}
         </Row>
         <Row>
-          <Col span={5} offset={3}>
+          <Col span={6} offset={3}>
             <Form.Item
-                name="filePath"
+                name="backgroundImageId"
                 label="背景图"
                 rules={[
                   {
@@ -297,7 +368,7 @@ export default () => {
                 ]}
               >
                 {isDetail ? (
-                  <Image src={editingItem?.filePath} />
+                  <Image src={editingItem?.backgroundImagePath} width={200} />
                 ) : (
                   <UploadForm
                   listType="picture-card"
@@ -309,9 +380,9 @@ export default () => {
                 )}
               </Form.Item>
           </Col>
-          <Col span={5}>
+          <Col span={6}>
             <Form.Item
-                name="filePath"
+                name="shareImageId"
                 label="分享图"
                 rules={[
                   {
@@ -321,7 +392,7 @@ export default () => {
                 ]}
               >
                 {isDetail ? (
-                  <Image src={editingItem?.filePath} />
+                  <Image src={editingItem?.shareImagePath} width={200} />
                 ) : (
                   <UploadForm
                   listType="picture-card"
@@ -333,9 +404,9 @@ export default () => {
                 )}
               </Form.Item>
           </Col>
-          <Col span={5}>
+          <Col span={6}>
             <Form.Item
-                name="filePath"
+                name="coverImageId"
                 label="购物直播频道封面图"
                 rules={[
                   {
@@ -345,7 +416,7 @@ export default () => {
                 ]}
               >
                 {isDetail ? (
-                  <Image src={editingItem?.filePath} />
+                  <Image src={editingItem?.coverImagePath} width={200} />
                 ) : (
                   <UploadForm
                   listType="picture-card"
@@ -359,10 +430,10 @@ export default () => {
           </Col>
         </Row>
         <Row>
-          <Col span={10} offset={2}>
+          <Col span={18}>
             <Form.Item 
-              name="startTime" 
-              label="开播时间"
+              name="time" 
+              label="直播时间"
               rules={[
                 {
                   required: !isDetail,
@@ -372,9 +443,16 @@ export default () => {
               {isDetail ? (
                 <span>{editingItem?.startTime || '--'}</span>
               ) : (
-                <DatePicker allowClear showTime />
+                <RangePicker 
+                  allowClear 
+                  showTime
+                />
               )}
             </Form.Item>
+            </Col>
+        </Row>
+        <Row>
+          <Col span={10} offset={2}>
             <Form.Item
               name="speakerName"
               label="主讲人(主播昵称)"
@@ -386,13 +464,13 @@ export default () => {
               ]}
             >
               {isDetail ? (
-                <span>{editingItem?.name || '--'}</span>
+                <span>{editingItem?.speakerName || '--'}</span>
               ) : (
                 <Input placeholder="请输入" maxLength={35} />
               )}
             </Form.Item>
             <Form.Item
-              name="orgName"
+              name="anchorWechat"
               label="主播微信号"
               rules={[
                 {
@@ -402,29 +480,23 @@ export default () => {
               ]}
             >
               {isDetail ? (
-                <span>{editingItem?.name || '--'}</span>
+                <span>{editingItem?.anchorWechat || '--'}</span>
               ) : (
                 <Input placeholder="请输入" maxLength={35} />
               )}
             </Form.Item>
             <Form.Item
-              name="orgName"
+              name="createrWechat"
               label="创建者微信号"
-              rules={[
-                {
-                  required: !isDetail,
-                  message: '必填',
-                },
-              ]}
             >
               {isDetail ? (
-                <span>{editingItem?.name || '--'}</span>
+                <span>{editingItem?.createrWechat || '--'}</span>
               ) : (
                 <Input placeholder="请输入" maxLength={35} />
               )}
             </Form.Item>
             <Form.Item
-              name="isSupportTry"
+              name="isFeedsPublic"
               label="官方收录"
               rules={[
                 {
@@ -435,58 +507,29 @@ export default () => {
               initialValue={1}
             >
               {isDetail ? (
-                <span>{editingItem?.name || '--'}</span>
+                <span>{editingItem?.isFeedsPublic ? '开启' : '关闭'}</span>
               ) : (
-                <Radio.Group
-                  onChange={(e) => {
-                    form.setFieldsValue({ tryTime: undefined });
-                    setIsTry(e.target.value);
-                  }}
-                >
+                <Radio.Group>
                   <Radio value={1}>开启</Radio>
                   <Radio value={0}>关闭</Radio>
                 </Radio.Group>
               )}
             </Form.Item>
             <Form.Item 
-              name="checkbox-group1" 
+              name="extended"
               label="拓展功能"
+              extra={`${!isDetail ? '直播开始后允许修改' : ''}`}
               >
               {isDetail ? (
-                <span>{editingItem?.name || '--'}</span>
+                <span>{!editingItem.closeReplay && ('回放')} {!editingItem.closeKf && ('客服')}</span>
               ) : (
-                <Checkbox.Group>
-                  <Checkbox value="A">
-                    回放
-                  </Checkbox>
-                  <Checkbox value="B">
-                    客服
-                  </Checkbox>
-                </Checkbox.Group>
+                <Checkbox.Group options={options} />
               )}
-              {!isDetail && (<div className={'tooltip'}>
-                直播开始后允许修改
-              </div>)}
             </Form.Item>
           </Col>
           <Col span={10}>
-            <Form.Item 
-              name="endTime" 
-              label="结束时间"
-              rules={[
-                {
-                  required: !isDetail,
-                  message: '必填',
-                },
-              ]}>
-              {isDetail ? (
-                <span>{editingItem?.endTime || '--'}</span>
-              ) : (
-                <DatePicker allowClear showTime />
-              )}
-            </Form.Item>
             <Form.Item
-              name="typeNames"
+              name="typeIds"
               label="类型"
               rules={[
                 {
@@ -498,7 +541,7 @@ export default () => {
               {isDetail ? (
                 <span>{editingItem?.typeNames || '--'}</span>
               ) : (
-                <Select placeholder="请选择">
+                <Select placeholder="请选择" mode="multiple">
                   {appTypes.map((p) => (
                     <Select.Option key={'type' + p.id} value={p.id}>
                       {p.name}
@@ -508,17 +551,17 @@ export default () => {
               )}
             </Form.Item>
             <Form.Item
-              name="orgName"
+              name="subAnchorWechat"
               label="主播副号微信号"
             >
               {isDetail ? (
-                <span>{editingItem?.name || '--'}</span>
+                <span>{editingItem?.subAnchorWechat || '--'}</span>
               ) : (
                 <Input placeholder="请输入" maxLength={35} />
               )}
             </Form.Item>
             <Form.Item
-              name="isTopApp"
+              name="liveType"
               label="直播类型"
               initialValue={1}
               rules={[
@@ -529,56 +572,31 @@ export default () => {
               ]}
             >
               {isDetail ? (
-                <span>{editingItem?.name || '--'}</span>
+                <span>{editingItem.liveType ? '手机直播' : '推流设备直播'}</span>
               ) : (
-                <Radio.Group
-                  disabled={isBeginTopAndEditing}
-                  onChange={(e) => {
-                    form.setFieldsValue({
-                      replaceAppId: undefined,
-                      shortName: undefined,
-                      defaultIconId: undefined,
-                      hoverIconId: undefined,
-                    });
-                    setIsTop(e.target.value);
-                  }}
-                >
+                <Radio.Group>
                   <Radio value={1}>手机直播</Radio>
                   <Radio value={0}>推流设备直播</Radio>
                 </Radio.Group>
               )}
             </Form.Item>
             <Form.Item 
-              name="checkbox-group1" 
-              label="直播间功能">
+              name="liveFunctions" 
+              label="直播间功能"
+              extra={`${!isDetail ? '以上四个功能在开播后无法设置开启或关闭' : ''}`}
+            >
                 {isDetail ? (
-                  <span>{editingItem?.name || '--'}</span>
+                  <span>{!editingItem.closeLike && ('点赞')} {!editingItem.closeGoods && ('货架')} {!editingItem.closeComment && ('评论')} {!editingItem.closeShare && ('分享')}</span>
                 ) : (
-                  <Checkbox.Group>
-                    <Checkbox value="A">
-                      点赞
-                    </Checkbox>
-                    <Checkbox value="B">
-                      货架
-                    </Checkbox>
-                    <Checkbox value="C">
-                      评论
-                    </Checkbox>
-                    <Checkbox value="D">
-                      分享
-                    </Checkbox>
-                  </Checkbox.Group>
+                  <Checkbox.Group options={options2} />
                 )}
-                {!isDetail && (<div className={'tooltip'}>
-                  以上四个功能在开播后无法设置开启或关闭
-                </div>)}
             </Form.Item>
           </Col>
         </Row>
         <Row>
           <Col span={18}>
             <Form.Item
-              name="name"
+              name="url"
               label="URL"
             >
               {isDetail ? (
@@ -595,7 +613,7 @@ export default () => {
               <Form.Item 
                 name="start" 
                 label="点击量">
-                <span>{editingItem?.clickCount || '--'}</span>
+                <span>{editingItem?.clickCount}</span>
               </Form.Item>
               <Form.Item 
                 name="start" 
@@ -612,12 +630,12 @@ export default () => {
               <Form.Item 
                 name="start" 
                 label="上次上架人">
-                <span>{editingItem?.name || '--'}</span>
+                <span>{editingItem?.lineAccountName || '--'}</span>
               </Form.Item>
               <Form.Item 
                 name="start" 
                 label="创建人">
-                <span>{editingItem?.name || '--'}</span>
+                <span>{editingItem?.createAccountName || '--'}</span>
               </Form.Item>
             </Col>
           </Row>

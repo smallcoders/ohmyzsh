@@ -19,11 +19,8 @@ import Common from '@/types/common';
 import {
   getRecommendPage,
   addRecommend,
-  searchOrgInfo,
-  searchExpert,
   changeRecommendStatus,
-  updateDiagnosticTasks,
-  getDiagnosisInstitutions,
+  // getDiagnosisInstitutions,
 } from '@/services/search-record';
 import moment from 'moment';
 import DiagnosticTasks from '@/types/service-config-diagnostic-tasks';
@@ -213,12 +210,12 @@ export default () => {
 
   const prepare = async () => {
     try {
-      const { result, code } = await getDiagnosisInstitutions();
-      if (code === 0) {
-        setInstitutions(result);
-      } else {
-        throw new Error();
-      }
+      // const { result, code } = await getDiagnosisInstitutions();
+      // if (code === 0) {
+      //   setInstitutions(result);
+      // } else {
+      //   throw new Error();
+      // }
     } catch (error) {
       message.error('获取初始数据失败');
     }

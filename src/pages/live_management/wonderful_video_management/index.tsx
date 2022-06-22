@@ -12,16 +12,13 @@ import moment from 'moment';
 import SelfTable from '@/components/self_table';
 import AdminAccountDistributor from '@/types/admin-account-distributor.d';
 import {
-  addAdminAccount,
-  removeAdminAccount,
-  resetAdminAccount,
-  updateAdminAccount,
-} from '@/services/admin-account-distributor';
-import {
   queryVideoPage,
-  getLiveTypesPage
+  getLiveTypesPage,
+  updateVideo,
+  updateStatus,
+  addVideo,
+  removeVideo
 } from '@/services/search-record';
-import { getOrgTypeOptions } from '@/services/org-type-manage';
 import UploadForm from '@/components/upload_form';
 const sc = scopedClasses('user-config-admin-account-distributor');
 export default () => {
@@ -54,7 +51,7 @@ export default () => {
     }
   };
   const formLayout = {
-    labelCol: { span: 6 },
+    labelCol: { span: 8 },
     wrapperCol: { span: 16 },
   };
   const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
@@ -63,6 +60,27 @@ export default () => {
     totalCount: 0,
     pageTotal: 0,
   });
+
+  const [addEditButtons, setAddEditButtons] = useState<any>(
+    [
+      <Button key="back" onClick={() => {
+        clearForm();
+        setModalVisible(false);
+      }}>
+        取消
+      </Button>,
+      <Button key="submit" type="primary" onClick={() => {handleOk(true)}}>
+        保存并上架
+      </Button>,
+      <Button
+        key="link"
+        type="primary"
+        onClick={() => {handleOk(false)}}
+      >
+        保存
+      </Button>
+    ]
+  );
 
   const [form] = Form.useForm();
 
@@ -88,34 +106,56 @@ export default () => {
     form.resetFields();
     setEditingItem({});
   };
-
-  const addOrUpdate = async () => {
-    const tooltipMessage = editingItem.id ? '修改' : '添加';
+  
+  // 置顶状态修改
+  const updateTopStatus = async (id: string, status: boolean) => {
+    let params = {id, isTop: status};
+    const addorUpdateRes = await updateStatus(params);
+    if (addorUpdateRes.code === 0) {
+      setModalVisible(false);
+      if (!editingItem.id) {
+        message.success(`置顶成功！`);
+      }
+      getPages();
+      clearForm();
+    } else {
+      message.error(`置顶失败，原因:{${addorUpdateRes.message}}`);
+    }
+  }
+  // 下架/上架状态更新
+  const updateOnlineStatus = async (id: string, status: boolean) => {
+    let params = {id, lineStatus: status};
+    const addorUpdateRes = await updateStatus(params);
+    if (addorUpdateRes.code === 0) {
+      setModalVisible(false);
+      if (!editingItem.id) {
+        message.success(`${status ? '上架' : '下架'}成功！`);
+      }
+      getPages();
+      clearForm();
+    } else {
+      message.error(`${status ? '上架' : '下架'}失败，原因:{${addorUpdateRes.message}}`);
+    }
+  }
+  // 新增/编辑
+  const addOrUpdate = async (lineStatus: boolean) => {
+    const tooltipMessage = editingItem.id ? '编辑' : '新增';
     form
       .validateFields()
       .then(async (value) => {
         setAddOrUpdateLoading(true);
-        if (value.publishTime) {
-          value.publishTime = moment(value.publishTime).format('YYYY-MM-DDTHH:mm:ss');
-        }
         const addorUpdateRes = await (editingItem.id
-          ? updateAdminAccount({
+          ? updateVideo({
               ...value,
               id: editingItem.id,
             })
-          : addAdminAccount({
+          : addVideo({
               ...value,
+              lineStatus: lineStatus
             }));
         if (addorUpdateRes.code === 0) {
           setModalVisible(false);
-          console.log(editingItem.id);
-          if (!editingItem.id) {
-            Modal.info({
-              title: '新增管理员成功',
-              content: ` 当前管理员密码初始密码为：ly@${moment().format('YYYYMMDD')}`,
-            });
-          }
-
+          message.success(`${tooltipMessage}成功！`);
           getPages();
           clearForm();
         } else {
@@ -130,7 +170,7 @@ export default () => {
 
   const remove = async (id: string) => {
     try {
-      const removeRes = await removeAdminAccount(id);
+      const removeRes = await removeVideo(id);
       if (removeRes.code === 0) {
         message.success(`删除成功`);
         getPages();
@@ -142,20 +182,6 @@ export default () => {
     }
   };
 
-  const reset = async (id: string) => {
-    try {
-      const tooltipMessage = '重置密码';
-      const updateStateResult = await resetAdminAccount(id);
-      if (updateStateResult.code === 0) {
-        message.success(`${tooltipMessage}成功`);
-        getPages();
-      } else {
-        message.error(`${tooltipMessage}失败，原因:{${updateStateResult.message}}`);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
   const columns = [
     {
       title: '排序',
@@ -172,7 +198,7 @@ export default () => {
         <a
           href="javascript:;"
           onClick={() => {
-            history.push(`${routeName.WONDERFUL_VIDEO_MANAGEMENT_DETAIL}?id=${_record.videoId}`);
+            history.push(`${routeName.WONDERFUL_VIDEO_MANAGEMENT_DETAIL}?id=${_record.id}`);
           }}
         >
           {_}
@@ -182,7 +208,7 @@ export default () => {
     },
     {
       title: '封面',
-      dataIndex: 'filePath',
+      dataIndex: 'coverImagePath',
       isEllipsis: true,
       width: 120,
       render: (_: string, _record: any) => (
@@ -250,6 +276,22 @@ export default () => {
             <a
               href="#"
               onClick={() => {
+                setAddEditButtons([
+                  <Button key="back" onClick={() => {
+                    clearForm();
+                    setModalVisible(false);
+                  }}>
+                    取消
+                  </Button>,
+                  <Button
+                    key="link"
+                    type="primary"
+                    onClick={() => {handleOk(false)}}
+                  >
+                    保存
+                  </Button>
+                ]);
+                record.typeIds = record?.typeIds?.split(',') || [];
                 setEditingItem(record);
                 setModalVisible(true);
                 form.setFieldsValue(record);
@@ -257,19 +299,33 @@ export default () => {
             >
               编辑
             </a>
-            <Popconfirm
-              title="确定下架么？"
-              okText="确定"
-              cancelText="取消"
-              onConfirm={() => remove(record.id as string)}
-            >
-              <a href="#">下架</a>
-            </Popconfirm>
+            { 
+              record.lineStatus ? (
+                <Popconfirm
+                  title="确定下架么？"
+                  okText="确定"
+                  cancelText="取消"
+                  onConfirm={() => updateOnlineStatus(record.id as string, false)}
+                >
+                  <a href="#">下架</a>
+                </Popconfirm>
+              ) : (
+                <Popconfirm
+                  title="确定上架么？"
+                  okText="确定"
+                  cancelText="取消"
+                  onConfirm={() => updateOnlineStatus(record.id as string, true)}
+                >
+                  <a href="#">上架</a>
+                </Popconfirm>
+              )
+            }
+            
              <Popconfirm
               title={`确定置顶么？`}
               okText="确定"
               cancelText="取消"
-              onConfirm={() => reset(record.id as string)}
+              onConfirm={() => updateTopStatus(record.id as string, true,)}
             >
               <a href="#">置顶</a>
             </Popconfirm>
@@ -353,179 +409,189 @@ export default () => {
       </div>
     );
   };
-  const handleOk = async () => {
-    addOrUpdate();
+  const handleOk = async (lineStatus: boolean) => {
+    addOrUpdate(lineStatus);
   };
 
   const handleCancel = () => {
     clearForm();
     setModalVisible(false);
   };
+  
   const useModal = (): React.ReactNode => {
     return (
       <Modal
-        title={editingItem.id ? '修改视频' : '新增视频'}
-        width="400px"
+        title={editingItem.id ? '编辑视频' : '新增视频'}
+        width="680px"
+        onCancel={handleCancel}
         visible={createModalVisible}
         okButtonProps={{ loading: addOrUpdateLoading }}
-        onOk={handleOk}
-        onCancel={handleCancel}
-        footer={[
-          <Button key="back" onClick={handleCancel}>
-            取消
-          </Button>,
-          <Button key="submit" type="primary" onClick={handleOk}>
-            保存并上架
-          </Button>,
-          <Button
-            key="link"
-            type="primary4"
-            onClick={handleOk}
-          >
-            保存
-          </Button>,
-        ]}
+        footer={addEditButtons}
       >
         <Form {...formLayout} form={form} layout="horizontal">
-          <Form.Item
-            rules={[
-              () => ({
-                validator(_, value) {
-                  if (!value) {
-                    return Promise.reject(new Error('必填'));
-                  }
-                  if (!/^[a-zA-Z0-9_\u4e00-\u9fa5-]+$/.test(value)) {
-                    return Promise.reject(
-                      new Error('由数字、字母、中文、下划线或者中划线组成,长度40字符以内'),
-                    );
-                  }
-                  return Promise.resolve();
-                },
-              }),
-            ]}
-            required
-            name="title"
-            label="视频标题"
-          >
-            <Input placeholder="请输入" maxLength={50} />
-          </Form.Item>
-          <Form.Item
-            name="photoId"
-            label="视频"
-            rules={[
-              {
-                required: true,
-                message: '必填',
-              },
-            ]}
-          >
-            <UploadForm
-              listType="picture-card"
-              className="avatar-uploader"
-              maxSize={800}
-              showUploadList={false}
-              accept=""
-            />
-          </Form.Item>
-          <Form.Item
-            name="fileRecordId"
-            label="封面"
-            rules={[
-              {
-                required: true,
-                message: '必填',
-              },
-            ]}
-          >
-            <UploadForm
-              listType="picture-card"
-              className="avatar-uploader"
-              maxSize={5}
-              showUploadList={false}
-              accept=".bmp,.gif,.png,.jpeg,.jpg"
-            />
-          </Form.Item>
-          <Form.Item
-            name="typeIds"
-            label="类型"
-            rules={[
-              {
-                required: true,
-                message: '必选',
-              },
-            ]}
-          >
-            <Select
-              placeholder="请选择"
-              allowClear
-              mode="multiple"
-              showSearch={false}
-              dropdownRender={(menu) => (
-                <>
-                  {menu}
-                  <div style={{ height: 32 }} />
-                  <div
-                    style={{
-                      position: 'absolute',
-                      bottom: 0,
-                      background: '#fff',
-                      padding: 5,
-                      width: '100%',
-                      borderTop: '1px solid #dbd9d9',
-                    }}
-                  >
-                    <Space size={10}>
-                      <input
-                        type={'checkbox'}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            form.setFieldsValue({ typeIds: options?.map((p) => p?.id) });
-                          } else {
-                            form.setFieldsValue({ typeIds: [] });
-                          }
+          <Row>
+            <Col span={16}>
+              <Form.Item
+                rules={[
+                  () => ({
+                    validator(_, value) {
+                      if (!value) {
+                        return Promise.reject(new Error('必填'));
+                      }
+                      if (!/^[a-zA-Z0-9_\u4e00-\u9fa5-]+$/.test(value)) {
+                        return Promise.reject(
+                          new Error('由数字、字母、中文、下划线或者中划线组成,长度40字符以内'),
+                        );
+                      }
+                      return Promise.resolve();
+                    },
+                  }),
+                ]}
+                required
+                name="title"
+                label="视频标题"
+              >
+                <Input placeholder="请输入" maxLength={50} />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row>
+            <Col span={8} offset={2}>
+              <Form.Item
+                name="videoId"
+                label="视频"
+                rules={[
+                  {
+                    required: true,
+                    message: '必填',
+                  },
+                ]}
+              >
+                <UploadForm
+                  listType="picture-card"
+                  className="avatar-uploader"
+                  maxSize={800}
+                  showUploadList={false}
+                  accept=""
+                />
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              <Form.Item
+                name="coverImageId"
+                label="封面"
+                rules={[
+                  {
+                    required: true,
+                    message: '必填',
+                  },
+                ]}
+              >
+                <UploadForm
+                  listType="picture-card"
+                  className="avatar-uploader"
+                  maxSize={5}
+                  showUploadList={false}
+                  accept=".bmp,.gif,.png,.jpeg,.jpg"
+                />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row>
+            <Col span={16}>
+              <Form.Item
+                name="typeIds"
+                label="类型"
+                rules={[
+                  {
+                    required: true,
+                    message: '必选',
+                  },
+                ]}
+              >
+                <Select
+                  placeholder="请选择"
+                  allowClear
+                  mode="multiple"
+                  showSearch={false}
+                  dropdownRender={(menu) => (
+                    <>
+                      {menu}
+                      <div style={{ height: 32 }} />
+                      <div
+                        style={{
+                          position: 'absolute',
+                          bottom: 0,
+                          background: '#fff',
+                          padding: 5,
+                          width: '100%',
+                          borderTop: '1px solid #dbd9d9',
                         }}
-                      />
-                      全选
-                    </Space>
-                  </div>
-                </>
-              )}
-            >
-              {options?.map((item: any) => (
-                <Select.Option key={item?.id} value={item?.id}>
-                  {item?.name}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-          <Form.Item 
-            name="shareCount" 
-            label="虚拟分享量"
-            rules={[
-              {
-                required: true,
-                message: '必选',
-              },
-            ]}
-          >
-            <InputNumber min={0} defaultValue={0} />
-          </Form.Item>
-          <Form.Item 
-            name="url"
-            label="虚拟点赞量"
-            rules={[
-              {
-                required: true,
-                message: '必填',
-              },
-            ]}>
-            <InputNumber min={0} defaultValue={0} />
-          </Form.Item>
-          <Form.Item 
-            name="content"
-            label="内容概况">
-            <TextArea placeholder="请输入" maxLength={300} />
-          </Form.Item>
+                      >
+                        <Space size={10}>
+                          <input
+                            type={'checkbox'}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                form.setFieldsValue({ typeIds: options?.map((p) => p?.id) });
+                              } else {
+                                form.setFieldsValue({ typeIds: [] });
+                              }
+                            }}
+                          />
+                          全选
+                        </Space>
+                      </div>
+                    </>
+                  )}
+                >
+                  {options?.map((item: any) => (
+                    <Select.Option key={item?.id} value={item?.id}>
+                      {item?.name}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row>
+            <Col span={10} offset={2}>
+              <Form.Item 
+                name="shareCount" 
+                label="虚拟分享量"
+                rules={[
+                  {
+                    required: true,
+                    message: '必选',
+                  },
+                ]}
+              >
+                <InputNumber min={0} defaultValue={0} />
+              </Form.Item>
+            </Col>
+            <Col span={10}>
+              <Form.Item 
+                name="goodCount"
+                label="虚拟点赞量"
+                rules={[
+                  {
+                    required: true,
+                    message: '必填',
+                  },
+                ]}>
+                <InputNumber min={0} defaultValue={0} />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row>
+            <Col span={16}>
+              <Form.Item 
+                name="content"
+                label="内容概况">
+                <TextArea placeholder="请输入" maxLength={300} />
+              </Form.Item>
+            </Col>
+          </Row>
         </Form>
       </Modal>
     );
@@ -541,6 +607,24 @@ export default () => {
             type="primary"
             key="primary5"
             onClick={() => {
+              setAddEditButtons([
+                <Button key="back" onClick={() => {
+                  clearForm();
+                  setModalVisible(false);
+                }}>
+                  取消
+                </Button>,
+                <Button key="submit" type="primary" onClick={() => {handleOk(true)}}>
+                  保存并上架
+                </Button>,
+                <Button
+                  key="link"
+                  type="primary"
+                  onClick={() => {handleOk(false)}}
+                >
+                  保存
+                </Button>
+              ]);
               setModalVisible(true);
             }}
           >

@@ -1,4 +1,4 @@
-import { message, Image, Tooltip } from 'antd';
+import { message, Image, Tooltip, Tag } from 'antd';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { history } from 'umi';
 import React, { useState, useEffect } from 'react';
@@ -73,46 +73,51 @@ export default () => {
   return (
     <PageContainer loading={loading}>
       <div className={sc('container')}>
-        {/* <div className={sc('container-title')}>技术成果信息</div> */}
         <div className={sc('container-desc')}>
           <span>视频名称：</span>
-          <span>{detail?.name || '--'}</span>
+          <span>{detail?.title || '--'}</span>
         </div>
         <div className={sc('container-desc')}>
           <span>状态：</span>
-          <span>{detail?.achievementYear || '--'}</span>
+          <span>
+            <Tag>{detail?.lineStatus? '线上' : '线下'}</Tag> 
+            <Tag>{detail?.isTop? '置顶' : '未置顶'}</Tag>
+          </span>
         </div>
         <div className={'video-image'}>
           <span>视频：</span>
           <div>
             <Image.PreviewGroup>
-              {detail?.covers &&
-                detail?.covers.map((p: any) => (
-                  <Image key={p?.id} height={200} width={300} src={p?.path} />
-                ))}
+              {detail?.videoPath &&
+                (
+                  // <Image height={200} width={300} src={detail?.videoPath} />
+                  <video controls="controls" height={200} src={detail?.videoPath}></video>
+                )
+              }
             </Image.PreviewGroup>
           </div>
           <span>封面：</span>
           <div>
             <Image.PreviewGroup>
-              {detail?.covers &&
-                detail?.covers.map((p: any) => (
-                  <Image key={p?.id} height={200} width={300} src={p?.path} />
-                ))}
+              {detail?.coverImagePath &&
+                (
+                  <Image height={200} width={300} src={detail?.coverImagePath} />
+                )
+              }
             </Image.PreviewGroup>
           </div>
         </div>
         <div className={sc('container-desc')}>
           <span>类型：</span>
-          <span>{getEnum('CREATIVE_ACHIEVEMENT_CATEGORY_ENUM', detail?.category)}</span>
+          <span>{detail?.typeNames || '--'}</span>
         </div>
         <div className={sc('container-desc')}>
           <span>内容概况：</span>
-          <span>{detail?.patentCode || '--'}</span>
+          <span>{detail?.content || '--'}</span>
         </div>
         <div className={sc('container-desc')}>
           <span>点击量：</span>
-          <div dangerouslySetInnerHTML={{ __html: detail?.introduction || '--' }} />
+          <span>{detail?.clickCount}</span>
         </div>
         <div className={sc('container-desc')}>
           <span>
@@ -121,36 +126,34 @@ export default () => {
               <QuestionCircleOutlined />
             </Tooltip>：
           </span>
-          <span>{getEnum('CREATIVE_ACHIEVEMENT_ATTRIBUTE_ENUM', detail?.attribute)}</span>
+          <span>{detail?.shareCount}（{detail?.shareVirtualCount}）</span>
         </div>
         <div className={sc('container-desc')}>
           <span>
             点赞量
-            <Tooltip placement="top" title="点赞量=用户实际埋点数据+虚拟数据。括号中为虚拟数据">
+            <Tooltip placement="top" title="点赞量=用户实际埋点s数据+虚拟数据。括号中为虚拟数据">
               <QuestionCircleOutlined />
             </Tooltip>：</span>
-          <span>{getEnum('CREATIVE_MATURITY_ENUM', detail?.maturity)}</span>
+          <span>{detail?.goodCount}（{detail?.goodVirtualCount}）</span>
         </div>
         <div className={sc('container-desc')}>
           <span>上次上架人：</span>
-          <span>{getEnum('TRANSFER_TYPE_ENUM', detail?.transferType)}</span>
+          <span>{detail?.lineAccountName || '--'}</span>
         </div>
         <div className={sc('container-desc')}>
           <span>上次上架时间：</span>
-          <span>{detail?.proxy ? '是' : '否'}</span>
+          <span>{detail?.lineTime || '--'}</span>
         </div>
         <div className={sc('container-desc')}>
           <span>创建人：</span>
           <span>
-            {detail?.contactName || '--'}
-            {detail?.contactNameHide ? '（匿名）' : ''}
+            {detail?.releaseAccountName || '--'}
           </span>
         </div>
         <div className={sc('container-desc')}>
           <span>创建时间：</span>
           <span>
-            {detail?.contactPhone || '--'}
-            {detail?.contactPhoneHide ? '（隐藏）' : ''}
+            {detail?.createTime || '--'}
           </span>
         </div>
       </div>
