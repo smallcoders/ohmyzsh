@@ -149,7 +149,7 @@ export default () => {
         // 获取详情 塞入表单
         const detailRs = await getVideoDetail(id);
         let editItem = { ...detailRs.result };
-        editItem.typeIds = editItem.typeIds?.split(',');//返回的类型为字符串，需转为数组
+        editItem.typeIdsArr = editItem.typeIds?.split(',').map(Number);//返回的类型为字符串，需转为数组
         console.log(editItem, '---editItem')
         if (detailRs.code === 0) {
           editItem.isSkip = detailRs.result.url ? 1 : 0;
@@ -422,7 +422,7 @@ export default () => {
                   listType="picture-card"
                   className="avatar-uploader"
                   showUploadList={false}
-                  maxSize={1}
+                  maxSize={2}
                   accept=".bmp,.gif,.png,.jpeg,.jpg"
                 />
                 )}
@@ -529,7 +529,7 @@ export default () => {
           </Col>
           <Col span={10}>
             <Form.Item
-              name="typeIds"
+              name="typeIdsArr"
               label="类型"
               rules={[
                 {
