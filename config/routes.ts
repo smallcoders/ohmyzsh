@@ -530,66 +530,6 @@ export default [
     ],
   },
   {
-    path: '/live-management',
-    name: '直播管理',
-    icon: 'DesktopOutlined',
-    access: 'SERVICE_CONFIG',
-    routes: [
-      {
-        path: routeName.LIVE_TYPES_MAINTAIN,
-        name: '直播类型维护',
-        component: './live_management/live_types_maintain',
-      },
-      {
-        path: routeName.ANTELOPE_LIVE_MANAGEMENT,
-        name: '羚羊直播管理',
-        hideChildrenInMenu: true,
-        routes: [
-          {
-            path: routeName.ANTELOPE_LIVE_MANAGEMENT,
-            redirect: routeName.ANTELOPE_LIVE_MANAGEMENT_INDEX
-          },
-          {
-            path: routeName.ANTELOPE_LIVE_MANAGEMENT_INDEX,
-            name: '羚羊直播管理',
-            component: './live_management/antelope_live_management',
-          },
-          {
-            path: routeName.ANTELOPE_LIVE_MANAGEMENT_DETAIL,
-            name: '直播详情',
-            component: './live_management/antelope_live_management/detail',
-          },
-        ]
-      },
-      {
-        path: routeName.WONDERFUL_VIDEO_MANAGEMENT,
-        name: '精彩视频管理',
-        hideChildrenInMenu: true,
-        routes: [
-          {
-            path: routeName.WONDERFUL_VIDEO_MANAGEMENT,
-            redirect: routeName.WONDERFUL_VIDEO_MANAGEMENT_INDEX
-          },
-          {
-            path: routeName.WONDERFUL_VIDEO_MANAGEMENT_INDEX,
-            name: '精彩视频管理',
-            component: './live_management/wonderful_video_management',
-          },
-          {
-            path: routeName.WONDERFUL_VIDEO_MANAGEMENT_DETAIL,
-            name: '视频详情',
-            component: './live_management/wonderful_video_management/detail',
-          },
-        ]
-      },
-      {
-        path: routeName.SEARCH_RECORD_MANAGEMENT,
-        name: '直播类型维护',
-        component: './live_management/search_record_management',
-      },  
-    ],
-  },
-  {
     path: '/system-config',
     name: '系统管理',
     icon: 'setting',
