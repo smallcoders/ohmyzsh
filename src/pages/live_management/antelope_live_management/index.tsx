@@ -12,14 +12,15 @@ import SelfTable from '@/components/self_table';
 import AdminAccountDistributor from '@/types/admin-account-distributor.d';
 import {
   addAdminAccount,
-  getAdminAccountPage,
   removeAdminAccount,
   resetAdminAccount,
   updateAdminAccount,
 } from '@/services/admin-account-distributor';
 import {
   queryLiveVideoPage,
-  getLiveTypesPage
+  getLiveTypesPage,
+  updateLiveStatus,
+  removeLive
 } from '@/services/search-record';
 import UploadForm from '@/components/upload_form';
 const sc = scopedClasses('user-config-admin-account-distributor');
@@ -133,7 +134,7 @@ export default () => {
 
   const remove = async (id: string) => {
     try {
-      const removeRes = await removeAdminAccount(id);
+      const removeRes = await removeLive(id);
       if (removeRes.code === 0) {
         message.success(`删除成功`);
         getPages();
@@ -144,21 +145,36 @@ export default () => {
       console.log(error);
     }
   };
-
-  const reset = async (id: string) => {
-    try {
-      const tooltipMessage = '重置密码';
-      const updateStateResult = await resetAdminAccount(id);
-      if (updateStateResult.code === 0) {
-        message.success(`${tooltipMessage}成功`);
-        getPages();
-      } else {
-        message.error(`${tooltipMessage}失败，原因:{${updateStateResult.message}}`);
+  // 置顶状态修改
+  const updateTopStatus = async (id: string, status: boolean) => {
+    let params = {id, isTop: status};
+    const addorUpdateRes = await updateLiveStatus(params);
+    if (addorUpdateRes.code === 0) {
+      setModalVisible(false);
+      if (!editingItem.id) {
+        message.success(`置顶成功！`);
       }
-    } catch (error) {
-      console.log(error);
+      getPages();
+      clearForm();
+    } else {
+      message.error(`置顶失败，原因:{${addorUpdateRes.message}}`);
     }
-  };
+  }
+  // 下架/上架状态更新
+  const updateOnlineStatus = async (id: string, status: boolean) => {
+    let params = {id, lineStatus: status};
+    const addorUpdateRes = await updateLiveStatus(params);
+    if (addorUpdateRes.code === 0) {
+      setModalVisible(false);
+      if (!editingItem.id) {
+        message.success(`${status ? '上架' : '下架'}成功！`);
+      }
+      getPages();
+      clearForm();
+    } else {
+      message.error(`${status ? '上架' : '下架'}失败，原因:{${addorUpdateRes.message}}`);
+    }
+  }
 
   const columns = [
     {
@@ -169,7 +185,7 @@ export default () => {
         pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
-      title: '直播标题',
+      title: '直播间名称',
       dataIndex: 'title',
       isEllipsis: true,
       render: (_: string, _record: any) => (
@@ -249,6 +265,27 @@ export default () => {
                 编辑
               </a>
             )}
+            { 
+              record.lineStatus ? (
+                <Popconfirm
+                  title="确定下架么？"
+                  okText="确定"
+                  cancelText="取消"
+                  onConfirm={() => updateOnlineStatus(record.id as string, false)}
+                >
+                  <a href="#">下架</a>
+                </Popconfirm>
+              ) : (
+                <Popconfirm
+                  title="确定上架么？"
+                  okText="确定"
+                  cancelText="取消"
+                  onConfirm={() => updateOnlineStatus(record.id as string, true)}
+                >
+                  <a href="#">上架</a>
+                </Popconfirm>
+              )
+            }
             <Popconfirm
               title="确定删除么？"
               okText="确定"
@@ -257,20 +294,11 @@ export default () => {
             >
               <a href="#">删除</a>
             </Popconfirm>
-            <Popconfirm
-              title="确定下架么？"
-              okText="确定"
-              cancelText="取消"
-              onConfirm={() => remove(record.id as string)}
-            >
-              <a href="#">下架</a>
-            </Popconfirm>
-            
              <Popconfirm
               title={`确定置顶么？`}
               okText="确定"
               cancelText="取消"
-              onConfirm={() => reset(record.id as string)}
+              onConfirm={() => updateTopStatus(record.id as string, true,)}
             >
               <a href="#">置顶</a>
             </Popconfirm>
@@ -295,7 +323,7 @@ export default () => {
         <Form {...formLayout} form={searchForm}>
           <Row>
             <Col span={6}>
-              <Form.Item name="title" label="直播标题">
+              <Form.Item name="title" label="直播间名称">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
@@ -399,7 +427,7 @@ export default () => {
             ]}
             required
             name="name"
-            label="直播标题"
+            label="直播间名称"
           >
             <Input placeholder="请输入" maxLength={40} />
           </Form.Item>
