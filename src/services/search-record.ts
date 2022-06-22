@@ -14,14 +14,16 @@ import { request } from 'umi';
   current?: number;
   pageSize?: number;
 }) {
-  return request('/antelope-live/web/intentionInfo/page', {
+  return request('/antelope-manage/intentionInfo/page', {
     method: 'POST',
     data: { ...data, pageIndex: data.current },
-  }).then((json) => ({
-    success: json.code === 0,
-    total: json.totalCount,
-    data: json.result,
-  }));
+  }).then((json) => {
+    return ({
+      success: json.code === 0,
+      total: json.totalCount,
+      data: json.result,
+    })
+  });
  }
 
  /**
@@ -29,9 +31,9 @@ import { request } from 'umi';
   * params.id 意向id
   */
 export async function intentionSign(id: string) {
-  return request('/antelope-live/web/intentionInfo/sign', {
+  return request('/antelope-manage/intentionInfo/sign', {
     method: 'POST',
-    params: { id },
+    data: { id },
   });
 }
 

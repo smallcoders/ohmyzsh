@@ -78,7 +78,7 @@ const IntentionTable: React.FC = () => {
             postIntentionSign(record.id)
           }}
         >
-          标记为已沟通{_}
+          标记为已沟通
         </Button>)
       ],
     },
@@ -94,9 +94,9 @@ const IntentionTable: React.FC = () => {
         search={false}
         toolBarRender={false}
         request={async (pagination) => {
-          const result = await getIntentionList(pagination);
+          const res = await getIntentionList(pagination);
           paginationRef.current = pagination;
-          return result;
+          return res;
         }}
         columns={columns}
         pagination={{ size: 'default', showQuickJumper: true, defaultPageSize: 10 }}
