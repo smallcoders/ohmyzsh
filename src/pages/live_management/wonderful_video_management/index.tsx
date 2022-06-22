@@ -241,7 +241,12 @@ export default () => {
       filterIcon: 
         <Tooltip placement="top" title="分享量=用户实际埋点数据+虚拟数据。括号中为虚拟数据">
           <QuestionCircleOutlined />
-        </Tooltip>
+        </Tooltip>,
+      render: (_: number, record: any) => {
+        return(
+          <span>{_+record.shareVirtualCount}<br></br>({record.shareVirtualCount}) </span>
+        )
+      }
     },
     {
       title: '点赞量',
@@ -251,7 +256,12 @@ export default () => {
       filterIcon: 
         <Tooltip placement="top" title="点赞量=用户实际埋点数据+虚拟数据。括号中为虚拟数据">
           <QuestionCircleOutlined />
-        </Tooltip>
+        </Tooltip>,
+      render: (_: number, record: any) => {
+        return (
+          <span>{_+record.goodVirtualCount}<br></br>({record.goodVirtualCount}) </span>
+        )
+      }
     },
     {
       title: '类型',
