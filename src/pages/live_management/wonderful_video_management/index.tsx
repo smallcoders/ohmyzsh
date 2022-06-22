@@ -10,7 +10,7 @@ import React, { useEffect, useState } from 'react';
 import Common from '@/types/common';
 import moment from 'moment';
 import SelfTable from '@/components/self_table';
-import AdminAccountDistributor from '@/types/admin-account-distributor.d';
+import WonderfulVideoManagement from '@/types/wonderful-video-management.d';
 import {
   queryVideoPage,
   getLiveTypesPage,
@@ -24,8 +24,8 @@ const sc = scopedClasses('user-config-admin-account-distributor');
 export default () => {
   const { TextArea } = Input;
   const [createModalVisible, setModalVisible] = useState<boolean>(false);
-  const [dataSource, setDataSource] = useState<AdminAccountDistributor.Content[]>([]);
-  const [editingItem, setEditingItem] = useState<AdminAccountDistributor.Content>({});
+  const [dataSource, setDataSource] = useState<WonderfulVideoManagement.Content[]>([]);
+  const [editingItem, setEditingItem] = useState<any>({});
   const [addOrUpdateLoading, setAddOrUpdateLoading] = useState<boolean>(false);
   const [searchContent, setSearChContent] = useState<{
     title?: string; // 标题
@@ -60,27 +60,6 @@ export default () => {
     totalCount: 0,
     pageTotal: 0,
   });
-
-  const [addEditButtons, setAddEditButtons] = useState<any>(
-    [
-      <Button key="back" onClick={() => {
-        clearForm();
-        setModalVisible(false);
-      }}>
-        取消
-      </Button>,
-      <Button key="submit" type="primary" onClick={() => {handleOk(true)}}>
-        保存并上架
-      </Button>,
-      <Button
-        key="link"
-        type="primary"
-        onClick={() => {handleOk(false)}}
-      >
-        保存
-      </Button>
-    ]
-  );
 
   const [form] = Form.useForm();
 
@@ -144,15 +123,13 @@ export default () => {
       .validateFields()
       .then(async (value) => {
         setAddOrUpdateLoading(true);
+        console.log(editingItem.id, 'editingItem.id');
         const addorUpdateRes = await (editingItem.id
           ? updateVideo({
               ...value,
               id: editingItem.id,
             })
-          : addVideo({
-              ...value,
-              lineStatus: lineStatus
-            }));
+          : addVideo({ ...value }));
         if (addorUpdateRes.code === 0) {
           setModalVisible(false);
           message.success(`${tooltipMessage}成功！`);
@@ -187,7 +164,7 @@ export default () => {
       title: '排序',
       dataIndex: 'sort',
       width: 80,
-      render: (_: any, _record: AdminAccountDistributor.Content, index: number) =>
+      render: (_: any, _record: WonderfulVideoManagement.Content, index: number) =>
         pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
@@ -241,7 +218,12 @@ export default () => {
       filterIcon: 
         <Tooltip placement="top" title="分享量=用户实际埋点数据+虚拟数据。括号中为虚拟数据">
           <QuestionCircleOutlined />
-        </Tooltip>
+        </Tooltip>,
+      render: (_: number, record: any) => {
+        return(
+          <span>{_+record.shareVirtualCount}<br></br>({record.shareVirtualCount}) </span>
+        )
+      }
     },
     {
       title: '点赞量',
@@ -251,7 +233,12 @@ export default () => {
       filterIcon: 
         <Tooltip placement="top" title="点赞量=用户实际埋点数据+虚拟数据。括号中为虚拟数据">
           <QuestionCircleOutlined />
-        </Tooltip>
+        </Tooltip>,
+      render: (_: number, record: any) => {
+        return (
+          <span>{_+record.goodVirtualCount}<br></br>({record.goodVirtualCount}) </span>
+        )
+      }
     },
     {
       title: '类型',
@@ -270,27 +257,12 @@ export default () => {
       width: 200,
       fixed: 'right',
       dataIndex: 'option',
-      render: (_: any, record: AdminAccountDistributor.Content) => {
+      render: (_: any, record: any) => {
         return (
           <Space size="middle">
-            <a
-              href="#"
+            <Button
+              type="link"
               onClick={() => {
-                setAddEditButtons([
-                  <Button key="back" onClick={() => {
-                    clearForm();
-                    setModalVisible(false);
-                  }}>
-                    取消
-                  </Button>,
-                  <Button
-                    key="link"
-                    type="primary"
-                    onClick={() => {handleOk(false)}}
-                  >
-                    保存
-                  </Button>
-                ]);
                 record.typeIds = record?.typeIds?.split(',') || [];
                 setEditingItem(record);
                 setModalVisible(true);
@@ -298,7 +270,7 @@ export default () => {
               }}
             >
               编辑
-            </a>
+            </Button>
             { 
               record.lineStatus ? (
                 <Popconfirm
@@ -426,7 +398,24 @@ export default () => {
         onCancel={handleCancel}
         visible={createModalVisible}
         okButtonProps={{ loading: addOrUpdateLoading }}
-        footer={addEditButtons}
+        footer={[
+          <Button key="back" onClick={() => {
+            clearForm();
+            setModalVisible(false);
+          }}>
+            取消
+          </Button>,
+          <Button key="submit" type="primary" disabled={editingItem.id} onClick={() => {handleOk(true)}}>
+            保存并上架
+          </Button>,
+          <Button
+            key="link"
+            type="primary"
+            onClick={() => {handleOk(false)}}
+          >
+            保存
+          </Button>
+        ]}
       >
         <Form {...formLayout} form={form} layout="horizontal">
           <Row>
@@ -533,7 +522,7 @@ export default () => {
                             type={'checkbox'}
                             onChange={(e) => {
                               if (e.target.checked) {
-                                form.setFieldsValue({ typeIds: options?.map((p) => p?.id) });
+                                form.setFieldsValue({ typeIds: options?.map((p: any) => p?.id) });
                               } else {
                                 form.setFieldsValue({ typeIds: [] });
                               }
@@ -607,24 +596,6 @@ export default () => {
             type="primary"
             key="primary5"
             onClick={() => {
-              setAddEditButtons([
-                <Button key="back" onClick={() => {
-                  clearForm();
-                  setModalVisible(false);
-                }}>
-                  取消
-                </Button>,
-                <Button key="submit" type="primary" onClick={() => {handleOk(true)}}>
-                  保存并上架
-                </Button>,
-                <Button
-                  key="link"
-                  type="primary"
-                  onClick={() => {handleOk(false)}}
-                >
-                  保存
-                </Button>
-              ]);
               setModalVisible(true);
             }}
           >
@@ -647,7 +618,7 @@ export default () => {
                   total: pageInfo.totalCount,
                   current: pageInfo.pageIndex,
                   pageSize: pageInfo.pageSize,
-                  showTotal: (total) =>
+                  showTotal: (total: any) =>
                     `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
                 }
           }
