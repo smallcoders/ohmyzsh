@@ -47,6 +47,21 @@
   USER_FEEDBACK: '/user-config/user-feedback', // 用户反馈
   COMMISSIONER_SERVICE: '/user-config/commissioner-service', // 专员服务记录
   ADMIN_ACCOUNT_DISTRIBUTOR: '/user-config/admin-account-distributor', // 管理员账号分配
+
+  LIVE_TYPES_MAINTAIN: '/live-management/live-types-maintain',//直播类型管理
+
+  ANTELOPE_LIVE_MANAGEMENT: '/live-management/antelope-live-management', // 羚羊直播管理
+  ANTELOPE_LIVE_MANAGEMENT_INDEX: '/live-management/antelope-live-management/index', // 羚羊直播管理
+  ANTELOPE_LIVE_MANAGEMENT_ADD: '/live-management/antelope-live-management/add-live', // 新增直播
+  ANTELOPE_LIVE_MANAGEMENT_DETAIL: '/live-management/antelope-live-management/detail', // 直播详情
+
+  WONDERFUL_VIDEO_MANAGEMENT: '/live-management/wonderful-video-management', // 精彩视频管理
+  WONDERFUL_VIDEO_MANAGEMENT_INDEX: '/live-management/wonderful-video-management/index', // 精彩视频管理
+  WONDERFUL_VIDEO_MANAGEMENT_DETAIL: '/live-management/wonderful-video-management/detail', // 视频详情
+
+  SEARCH_RECORD_MANAGEMENT: '/live-management/search-record-management',//直播类型管理
+  ANTELOPE_LIVE_INTENTION_COLLECT: '/live-management/intention-collect',// 直播意向采集
+
 };
 
 export default [
@@ -442,6 +457,76 @@ export default [
       //     },
       //   ],
       // }
+    ],
+  },
+  {
+    path: '/live-management',
+    name: '直播管理',
+    icon: 'DesktopOutlined',
+    access: 'SERVICE_CONFIG',
+    routes: [
+      {
+        path: routeName.LIVE_TYPES_MAINTAIN,
+        name: '直播类型维护',
+        component: './live_management/live_types_maintain',
+      },
+      {
+        path: routeName.ANTELOPE_LIVE_MANAGEMENT,
+        name: '羚羊直播管理',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.ANTELOPE_LIVE_MANAGEMENT,
+            redirect: routeName.ANTELOPE_LIVE_MANAGEMENT_INDEX
+          },
+          {
+            path: routeName.ANTELOPE_LIVE_MANAGEMENT_INDEX,
+            name: '羚羊直播管理',
+            component: './live_management/antelope_live_management',
+          },
+          {
+            path: routeName.ANTELOPE_LIVE_MANAGEMENT_ADD,
+            name: '新增直播',
+            component: './live_management/add_live',
+          },
+          {
+            path: routeName.ANTELOPE_LIVE_MANAGEMENT_DETAIL,
+            name: '直播详情',
+            component: './live_management/antelope_live_management/detail',
+          },
+        ]
+      },
+      {
+        path: routeName.WONDERFUL_VIDEO_MANAGEMENT,
+        name: '精彩视频管理',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.WONDERFUL_VIDEO_MANAGEMENT,
+            redirect: routeName.WONDERFUL_VIDEO_MANAGEMENT_INDEX
+          },
+          {
+            path: routeName.WONDERFUL_VIDEO_MANAGEMENT_INDEX,
+            name: '精彩视频管理',
+            component: './live_management/wonderful_video_management',
+          },
+          {
+            path: routeName.WONDERFUL_VIDEO_MANAGEMENT_DETAIL,
+            name: '视频详情',
+            component: './live_management/wonderful_video_management/detail',
+          },
+        ]
+      },
+      {
+        path: routeName.SEARCH_RECORD_MANAGEMENT,
+        name: '搜索记录管理',
+        component: './live_management/search_record_management',
+      },  
+      {
+        path: routeName.ANTELOPE_LIVE_INTENTION_COLLECT,
+        name: '直播意向采集',
+        component: './live_management/intention_collect',
+      },
     ],
   },
   {

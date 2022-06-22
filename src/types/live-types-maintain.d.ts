@@ -1,6 +1,6 @@
 import type Common from '../common';
 
-namespace AdminAccountDistributor {
+namespace LiveTypesMaintain {
   export type RecordList = {
     result: Content[];
   } & Common.ResultCode &
@@ -10,11 +10,10 @@ namespace AdminAccountDistributor {
     id?: integer; // userid
     userName?: string; // 用户名
     viewRange?: string; // 查看范围
-    viewRangeIds?: string[]; // 查看范围id
-    creator?: string; // 创建人
+    id?: string[]; // 查看范围id
+    creatorUserName?: string; // 创建人
     createTime?: string; // 创建时间
-    isEdit?: boolean; // 能否编辑
-    name?: string;
+    status?: boolean; // 启用状态
   };
 }
-export default AdminAccountDistributor;
+export default LiveTypesMaintain;
