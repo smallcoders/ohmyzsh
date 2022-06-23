@@ -183,6 +183,7 @@ export default () => {
       }
       if(isDetail == '1') {
         setIsDetail(true);
+        setIsClosejumpTooltip(false);
       }
     } catch (error) {
       console.log('error', error);
@@ -192,10 +193,10 @@ export default () => {
 
   useEffect(() => {
     prepare();
-    window.addEventListener('beforeunload', listener);
-    return () => {
-      window.removeEventListener('beforeunload', listener);
-    };
+    // window.addEventListener('beforeunload', listener);
+    // return () => {
+    //   window.removeEventListener('beforeunload', listener);
+    // };
   }, []);
 
 
@@ -266,10 +267,10 @@ export default () => {
     wrapperCol: { span: 14 },
   };
 
-  const listener = (e: any) => {
-    e.preventDefault();
-    e.returnValue = '离开当前页后，所编辑的数据将不可恢复';
-  };
+  // const listener = (e: any) => {
+  //   e.preventDefault();
+  //   e.returnValue = '离开当前页后，所编辑的数据将不可恢复';
+  // };
 
   return (
     <PageContainer
@@ -279,7 +280,7 @@ export default () => {
         breadcrumb: (
           <Breadcrumb>
             <Breadcrumb.Item>
-              <Link to="/live-manage/antelope_live_management">羚羊直播管理 </Link>
+              <Link to="/live-management/antelope-live-management">羚羊直播管理 </Link>
             </Breadcrumb.Item>
             <Breadcrumb.Item>
               {isEditing ? `编辑直播` : isDetail ? '直播详情' : '新增直播'}
@@ -305,7 +306,9 @@ export default () => {
               </Button>
             )}
             {isDetail && (
-              <Button key="primary4" loading={addOrUpdateLoading} onClick={addOrUpdate}>
+              <Button key="primary4" loading={addOrUpdateLoading} onClick={() => {
+                history.push(routeName.ANTELOPE_LIVE_MANAGEMENT_INDEX)
+              }}>
                 返回
               </Button>
             )}
@@ -327,6 +330,21 @@ export default () => {
                 {
                   required: !isDetail,
                   message: '必填',
+                },
+                {
+                  validator(rule, value) {
+                    if(value.length<3){
+                      return Promise.reject('最短3个汉字')
+                    }
+                    if(value.length>17){
+                      return Promise.reject('最长17个汉字')
+                    }
+                    if(!value||value.length===0){
+                      return Promise.reject('必填')
+                    }else {
+                      return Promise.resolve()
+                    }
+                  },
                 },
               ]}
             > 
@@ -466,7 +484,7 @@ export default () => {
               {isDetail ? (
                 <span>{editingItem?.speakerName || '--'}</span>
               ) : (
-                <Input placeholder="请输入" maxLength={35} />
+                <Input placeholder="请输入" maxLength={15} />
               )}
             </Form.Item>
             <Form.Item
@@ -536,6 +554,18 @@ export default () => {
                   required: !isDetail,
                   message: '必填',
                 },
+                {
+                  validator(rule, value) {
+                    if(value.length>3){
+                      return Promise.reject('最多选3个')
+                    }
+                    if(!value||value.length===0){
+                      return Promise.reject('必填')
+                    }else {
+                      return Promise.resolve()
+                    }
+                  },
+                },
               ]}
             >
               {isDetail ? (
@@ -588,7 +618,7 @@ export default () => {
                 {isDetail ? (
                   <span>{!editingItem.closeLike && ('点赞')} {!editingItem.closeGoods && ('货架')} {!editingItem.closeComment && ('评论')} {!editingItem.closeShare && ('分享')}</span>
                 ) : (
-                  <Checkbox.Group options={options2} />
+                  <Checkbox.Group options={options2} disabled={editingItem.videoStatus == 1}/>
                 )}
             </Form.Item>
           </Col>
@@ -598,6 +628,22 @@ export default () => {
             <Form.Item
               name="url"
               label="URL"
+              rules={[
+                {
+                  validator(rule, value) {
+                    let r = /^(((ht|f)tps?):\/\/)?([^!@#$%^&*?.\s-]([^!@#$%^&*?.\s]{0,63}[^!@#$%^&*?.\s])?\.)+[a-z]{2,6}\/?/.test(value);
+                    if(value.length == 0) {
+                      return Promise.resolve()
+                    }else {
+                      if(!r){
+                        return Promise.reject('请输入正确的网址')
+                      }else {
+                        return Promise.resolve()
+                      }
+                    }
+                  },
+                },
+              ]}
             >
               {isDetail ? (
                 <span>{editingItem?.url || '--'}</span>
