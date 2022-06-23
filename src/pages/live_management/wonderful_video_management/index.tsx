@@ -248,13 +248,17 @@ export default () => {
     },
     {
       title: '发布人',
-      dataIndex: 'createTime',
+      dataIndex: 'releaseAccountName',
       width: 200,
-      render: (_: string) => moment(_).format('YYYY-MM-DD HH:mm:ss'),
+      render: (_: string) => {
+        return (
+          _ || '--'
+        )
+      },
     },
     {
       title: '操作',
-      width: 200,
+      width: 260,
       fixed: 'right',
       dataIndex: 'option',
       render: (_: any, record: any) => {
@@ -301,14 +305,18 @@ export default () => {
             >
               <a href="#">置顶</a>
             </Popconfirm>
-            <Popconfirm
-              title="确定删除么？"
-              okText="确定"
-              cancelText="取消"
-              onConfirm={() => remove(record.id as string)}
-            >
-              <a href="#">删除</a>
-            </Popconfirm>
+            { 
+              !record.lineStatus && (
+                <Popconfirm
+                  title="确定删除么？"
+                  okText="确定"
+                  cancelText="取消"
+                  onConfirm={() => remove(record.id as string)}
+                >
+                  <a href="#">删除</a>
+                </Popconfirm>
+              )
+            }
           </Space>
         );
       },
@@ -495,6 +503,18 @@ export default () => {
                   {
                     required: true,
                     message: '必选',
+                  },
+                  {
+                    validator(rule, value) {
+                      if(value.length>3){
+                        return Promise.reject('最多选3个')
+                      }
+                      if(!value||value.length===0){
+                        return Promise.reject('必填')
+                      }else {
+                        return Promise.resolve()
+                      }
+                    },
                   },
                 ]}
               >
