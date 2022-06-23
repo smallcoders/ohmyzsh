@@ -112,28 +112,28 @@ export default () => {
       render: (_, record) => (
         <>
           {record.status === 1 && (
-            <Button key="2" size="small" type="link" onClick={() => {}}>
+            <Button size="small" type="link" onClick={() => {}}>
               提前开始
             </Button>
           )}
 
           {record.status === 2 && (
-            <Button key="2" size="small" type="link" onClick={() => {}}>
+            <Button size="small" type="link" onClick={() => {}}>
               提前结束
             </Button>
           )}
 
           {record.listingStatus === 1 ? (
-            <Button key="2" size="small" type="link" onClick={() => {}}>
+            <Button size="small" type="link" onClick={() => {}}>
               下架
             </Button>
           ) : (
-            <Button key="2" size="small" type="link" onClick={() => {}}>
+            <Button size="small" type="link" onClick={() => {}}>
               编辑
             </Button>
           )}
 
-          <Button key="2" size="small" type="link" onClick={() => {}}>
+          <Button size="small" type="link" onClick={() => {}}>
             详情
           </Button>
         </>

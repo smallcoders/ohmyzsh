@@ -5,15 +5,23 @@ import { PageContainer } from '@ant-design/pro-layout';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import { Button } from 'antd';
-import { useRef, useState } from 'react';
+import { useCallback, useRef } from 'react';
+import { useHistory } from 'react-router-dom';
 export default () => {
-  const [createModalVisible, setCreateModalVisible] = useState(false);
-
+  const history = useHistory();
   const actionRef = useRef<ActionType>();
   const paginationRef = useRef<{ current?: number; pageSize?: number }>({
     current: 0,
     pageSize: 0,
   });
+
+  const goCreate = useCallback(() => {
+    history.push('/purchase-manage/commodity-create');
+  }, [history]);
+
+  const goDetail = useCallback(() => {
+    history.push('/purchase-manage/commodity-detail');
+  }, [history]);
 
   const columns: ProColumns<DataCommodity.Commodity>[] = [
     {
@@ -92,12 +100,12 @@ export default () => {
       width: 200,
       render: (_, record) => (
         <>
-          <Button key="2" size="small" type="link" onClick={() => {}}>
+          <Button size="small" type="link" onClick={goDetail}>
             详情
           </Button>
 
           {record.status === 0 && (
-            <Button key="2" size="small" type="link" onClick={() => {}}>
+            <Button size="small" type="link" onClick={() => {}}>
               编辑
             </Button>
           )}
@@ -105,6 +113,7 @@ export default () => {
       ),
     },
   ];
+
   return (
     <PageContainer>
       <ProTable
@@ -117,7 +126,7 @@ export default () => {
         }}
         actionRef={actionRef}
         toolBarRender={() => [
-          <Button type="primary" key="primary" onClick={() => setCreateModalVisible(true)}>
+          <Button type="primary" key="primary" onClick={goCreate}>
             <PlusOutlined /> 新增商品
           </Button>,
         ]}

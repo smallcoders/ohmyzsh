@@ -278,6 +278,18 @@ export default [
         component: './purchase_manage/commodity_manage',
       },
       {
+        path: '/purchase-manage/commodity-create',
+        name: '商品新增',
+        hideInMenu: true,
+        component: './purchase_manage/commodity_manage/create',
+      },
+      {
+        path: '/purchase-manage/commodity-detail',
+        name: '商品详情',
+        hideInMenu: true,
+        component: './purchase_manage/commodity_manage/detail',
+      },
+      {
         path: '/purchase-manage/promotions-manage',
         name: '活动管理',
         component: './purchase_manage/promotions_manage',
