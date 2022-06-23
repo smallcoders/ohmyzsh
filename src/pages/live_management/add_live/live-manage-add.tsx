@@ -149,7 +149,7 @@ export default () => {
         // 获取详情 塞入表单
         const detailRs = await getVideoDetail(id);
         let editItem = { ...detailRs.result };
-        editItem.typeIdsArr = editItem.typeIds?.split(',').map(Number);//返回的类型为字符串，需转为数组
+        editItem.typeIds = editItem.typeIds?.split(',').map(Number);//返回的类型为字符串，需转为数组
         console.log(editItem, '---editItem')
         if (detailRs.code === 0) {
           editItem.isSkip = detailRs.result.url ? 1 : 0;
@@ -529,7 +529,7 @@ export default () => {
           </Col>
           <Col span={10}>
             <Form.Item
-              name="typeIdsArr"
+              name="typeIds"
               label="类型"
               rules={[
                 {
