@@ -24,7 +24,7 @@
 export default {
   dev: {
     '/antelope-manage/': {
-      target: 'http://172.30.33.222:10086',
+      target: 'http://10.40.152.206:10086',
       // target: 'http://172.30.35.217:9095',
       changeOrigin: true,
       pathRewrite: { '^': '' },

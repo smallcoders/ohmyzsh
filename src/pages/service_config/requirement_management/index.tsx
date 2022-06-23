@@ -305,27 +305,68 @@ export default () => {
     // },
     {
       title: '操作',
-      width: 200,
+      width: 400,
       fixed: 'right',
       dataIndex: 'option',
       render: (_: any, record: any) => {
-        return record.operationState == 'FINISHED' ?
-        (
-          <span>/</span>
-        ) :
-        (
-          <Button
-            key="1"
-            size="small"
-            type="link"
-            onClick={() => {
-              setEditingItem(record);
-              setModalVisible(true);
-              form.setFieldsValue({ ...record,dealName: record.typeNames?.map((e) => e).join('、') || ''});
-            }}
-          >
-            需求类型编辑
-          </Button>
+        return (
+          <Space>
+            {record.operationState != 'FINISHED' &&
+            (
+              <Button
+                key="1"
+                size="small"
+                type="link"
+                onClick={() => {
+                  setEditingItem(record);
+                  setModalVisible(true);
+                  form.setFieldsValue({ ...record,dealName: record.typeNames?.map((e) => e).join('、') || ''});
+                }}
+              >
+                需求类型编辑
+              </Button>
+            )}
+            <Button
+              key="1"
+              size="small"
+              type="link"
+              onClick={() => {
+                
+              }}
+            >
+              节点维护
+            </Button>
+            <Button
+              key="1"
+              size="small"
+              type="link"
+              onClick={() => {
+                
+              }}
+            >
+              对接状态
+            </Button>
+            <Button
+              key="1"
+              size="small"
+              type="link"
+              onClick={() => {
+                
+              }}
+            >
+              权重
+            </Button>
+            <Button
+              key="1"
+              size="small"
+              type="link"
+              onClick={() => {
+                
+              }}
+            >
+              下架
+            </Button>
+          </Space>
         )
       }
     },
