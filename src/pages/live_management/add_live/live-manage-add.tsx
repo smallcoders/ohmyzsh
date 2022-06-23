@@ -178,7 +178,7 @@ export default () => {
           }
           setEditingItem({...editItem, extended: extented, time: [moment(editingItem.startTime), moment(editingItem.endTime)]});
         } else {
-          message.error(`获取详情失败，原因:{${detailRs.message}}`);
+          message.error(`获取详情失败，原因:${detailRs.message}`);
         }
       }
       if(isDetail == '1') {
@@ -247,7 +247,7 @@ export default () => {
           setIsClosejumpTooltip(false);
           history.push(routeName.ANTELOPE_LIVE_MANAGEMENT_INDEX);
         } else {
-          message.error(`${tooltipMessage}失败，原因:{${addorUpdateRes.message}}`);
+          message.error(`${tooltipMessage}失败，原因:${addorUpdateRes.message}`);
         }
         setAddOrUpdateLoading(false);
       })
@@ -457,6 +457,27 @@ export default () => {
                   required: !isDetail,
                   message: '必填',
                 },
+                {
+                  validator(rule, value) {
+                    const current = (new Date()).getTime();
+                    const start = (new Date(value[0])).getTime();
+                    const end = (new Date(value[1])).getTime();
+                    console.log((new Date(value[0])).getTime(), current, end);
+                    if(start - current < 600000) {
+                      return Promise.reject('开播时间需要在当前时间的10分钟后')
+                    }
+                    if(start - current > 6*30*24*60*60*1000) {
+                      return Promise.reject('开始时间不能在6个月后')
+                    }
+                    if(end - current > 24*60*60*1000) {
+                      return Promise.reject('开播时间和结束时间间隔不得超过24小时')
+                    }
+                    if(end - current < 30*60*1000) {
+                      return Promise.reject('开播时间和结束时间间隔不得短于30分钟')
+                    }
+                    return Promise.resolve();
+                  },
+                },
               ]}>
               {isDetail ? (
                 <span>{editingItem?.startTime || '--'}</span>
@@ -632,7 +653,7 @@ export default () => {
                 {
                   validator(rule, value) {
                     let r = /^(((ht|f)tps?):\/\/)?([^!@#$%^&*?.\s-]([^!@#$%^&*?.\s]{0,63}[^!@#$%^&*?.\s])?\.)+[a-z]{2,6}\/?/.test(value);
-                    if(value.length == 0) {
+                    if(!value || (value && value.length == 0)) {
                       return Promise.resolve()
                     }else {
                       if(!r){
