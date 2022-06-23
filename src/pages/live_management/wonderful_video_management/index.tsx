@@ -566,7 +566,7 @@ export default () => {
           <Row>
             <Col span={10} offset={2}>
               <Form.Item 
-                name="shareCount" 
+                name="shareVirtualCount" 
                 label="虚拟分享量"
                 rules={[
                   {
@@ -580,7 +580,7 @@ export default () => {
             </Col>
             <Col span={10}>
               <Form.Item 
-                name="goodCount"
+                name="goodVirtualCount"
                 label="虚拟点赞量"
                 rules={[
                   {
