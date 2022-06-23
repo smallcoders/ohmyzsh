@@ -129,7 +129,7 @@ export default () => {
               ...value,
               id: editingItem.id,
             })
-          : addVideo({ ...value }));
+          : addVideo({ ...value, lineStatus: lineStatus }));
         if (addorUpdateRes.code === 0) {
           setModalVisible(false);
           message.success(`${tooltipMessage}成功！`);
@@ -263,7 +263,7 @@ export default () => {
             <Button
               type="link"
               onClick={() => {
-                record.typeIds = record?.typeIds?.split(',') || [];
+                record.typeIds = record.typeIds?.split(',').map(Number);//返回的类型为字符串，需转为数组
                 setEditingItem(record);
                 setModalVisible(true);
                 form.setFieldsValue(record);
