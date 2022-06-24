@@ -466,6 +466,10 @@ export default [
     access: 'SERVICE_CONFIG',
     routes: [
       {
+        path: '/live-management',
+        redirect: routeName.LIVE_TYPES_MAINTAIN,
+      },
+      {
         path: routeName.LIVE_TYPES_MAINTAIN,
         name: '直播类型维护',
         component: './live_management/live_types_maintain',
