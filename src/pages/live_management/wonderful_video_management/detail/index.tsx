@@ -126,7 +126,7 @@ export default () => {
               <QuestionCircleOutlined />
             </Tooltip>：
           </span>
-          <span>{detail?.shareCount}（{detail?.shareVirtualCount}）</span>
+          <span>{detail?.shareCount + detail?.shareVirtualCount}（{detail?.shareVirtualCount}）</span>
         </div>
         <div className={sc('container-desc')}>
           <span>
@@ -134,7 +134,7 @@ export default () => {
             <Tooltip placement="top" title="点赞量=用户实际埋点s数据+虚拟数据。括号中为虚拟数据">
               <QuestionCircleOutlined />
             </Tooltip>：</span>
-          <span>{detail?.goodCount}（{detail?.goodVirtualCount}）</span>
+          <span>{detail?.goodCount + detail?.goodVirtualCount}（{detail?.goodVirtualCount}）</span>
         </div>
         <div className={sc('container-desc')}>
           <span>上次上架人：</span>
