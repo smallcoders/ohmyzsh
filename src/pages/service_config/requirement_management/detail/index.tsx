@@ -1,5 +1,5 @@
-import { message, Image, Timeline, Form, Button, DatePicker, Input, Space, Row, } from 'antd';
-import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { message, Image, Timeline, Form, Button, DatePicker, Input, Space, Row, AutoComplete, } from 'antd';
+import { HddFilled, MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { history } from 'umi';
 import React, { useState, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
@@ -7,7 +7,9 @@ import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
 import { 
   getOfficeRequirementVerifyDetail,
-  getConnectRecord // 对接记录列表
+  addConnectRecord,
+  getConnectRecord,
+  deleteConnectRecord // 对接记录列表
 } from '@/services/office-requirement-verify';
 import { getEnumByName } from '@/services/common';
 
@@ -16,6 +18,7 @@ const sc = scopedClasses('user-config-kechuang');
 export default () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [detail, setDetail] = useState<any>({});
+  const [timeLineData, setTimeLineData] = useState<any>([]);
   const [enums, setEnums] = useState<any>({});
 
   // 判断是否从节点维护点击来的
@@ -47,20 +50,13 @@ export default () => {
 
     if (id) {
       try {
-        // const res = await getOfficeRequirementVerifyDetail(id);
-        // getDictionary();
-        // if (res.code === 0) {
-        //   console.log(res);
-        //   setDetail(res.result);
-        // } else {
-        //   throw new Error(res.message);
-        // }
         const detailAbut = await Promise.all([
           getOfficeRequirementVerifyDetail(id),
-          getConnectRecord({demandId: id})
+          getConnectRecord(id)
         ]);
         getDictionary();
         setDetail(detailAbut[0].result);
+        setTimeLineData(detailAbut[1].result)
         console.log(detailAbut[1], '对接列表');
       } catch (error) {
         message.error('服务器错误');
@@ -74,23 +70,15 @@ export default () => {
     prepare();
   }, []);
 
-  const mockData = [
-    {time: '2021-11-14 15:44', content: '线下走访', id: 111},
-    {time: '2021-11-14 15:44', content: '平台需求', id: 222},
-    {time: '2021-11-14 15:44', content: '平台相应', id: 333},
-    {time: '2021-11-14 15:44', content: '企业发布需求', id: 444},
-    {time: '2021-11-14 15:44', content: '数据俯卧', id: 555},
-    {time: '2021-11-14 15:44', content: '蜂王浆哦发怕', id: 666}
-  ];
+  const handleAddConnect = async() => {
+    const id = history.location.query?.id as string;
+    console.log(createConnectForm.getFieldsValue(), id);
+  }
 
   const [createConnectForm] = Form.useForm();
 
   const onFinish = (values: any) => {
     console.log('Received values of form:', values);
-  };
-
-  const handleChange = () => {
-    createConnectForm.setFieldsValue({ sights: [] });
   };
 
   return (
@@ -178,8 +166,16 @@ export default () => {
             {
               isEdit && (
                 <>
-                  <Form form={createConnectForm} name="dynamic_form_nest_item" onFinish={onFinish} autoComplete="off">
-                    <Form.List name="sights">
+                  <Form 
+                    form={createConnectForm} 
+                    name="dynamic_form_nest_item" 
+                    onFinish={onFinish} autoComplete="off"
+                    initialValues={{"datas": [{
+                      connectTime: null,
+                      content: ''
+                    }]}}
+                  >
+                    <Form.List name="datas">
                       {(fields, { add, remove }) => (
                         <>
                           <Timeline.Item color="gray">
@@ -191,32 +187,35 @@ export default () => {
                               <Form.Item
                                 noStyle
                                 shouldUpdate={(prevValues, curValues) =>
-                                  prevValues.area !== curValues.area || prevValues.sights !== curValues.sights
+                                  prevValues.datas !== curValues.datas
                                 }
                               >
                                 {() => (
                                   <Form.Item
                                     {...field}
                                     label="对接时间"
-                                    name={[field.name, 'sight']}
-                                    rules={[{ required: true, message: 'Missing sight' }]}
+                                    name={[field.name, 'connectTime']}
+                                    rules={[{ required: true, message: '请选择对接时间' }]}
                                   >
-                                    <DatePicker allowClear showTime />
+                                    <DatePicker allowClear 
+                                      showTime={{
+                                        format: 'HH:mm',
+                                      }}
+                                      format="YYYY-MM-DD HH:mm" />
                                   </Form.Item>
                                 )}
                               </Form.Item>
                               <Form.Item
                                 {...field}
                                 label="对接内容"
-                                name={[field.name, 'price']}
-                                rules={[{ required: true, message: 'Missing price' }]}
+                                name={[field.name, 'content']}
+                                rules={[{ required: true, message: '请输入对接内容' }]}
                               >
                                 <Input.TextArea
                                   autoSize={false}
                                   className="message-modal-textarea"
                                   maxLength={200}
                                   showCount={true}
-                                  rows={4}
                                 />
                               </Form.Item>
                               <MinusCircleOutlined onClick={() => remove(field.name)} />
@@ -227,39 +226,28 @@ export default () => {
                       )}
                     </Form.List>
                   </Form>
-                  
-                  {/* <Timeline.Item color="gray">
-                    <Form form={createConnectForm}>
-                      <Form.Item 
-                        name={'abutStatus'} 
-                        label="对接时间">
-                          <DatePicker allowClear showTime />
-                      </Form.Item>
-                      <Form.Item 
-                        name={'abutStatus'} 
-                        label="对接内容">
-                          <Input.TextArea
-                            autoSize={false}
-                            className="message-modal-textarea"
-                            maxLength={200}
-                            showCount={true}
-                            rows={4}
-                          />
-                      </Form.Item>
-                    </Form>
-                  </Timeline.Item> */}
                 </>
               )
             }
-            {mockData.map((i) => {
+            {timeLineData.map((i: any) => {
               return (
                 <Timeline.Item color="gray">
-                  <p>对接时间：{i.time}</p>
+                  <p>对接时间：{i.connectTime}</p>
                   <p>对接内容：{i.content}</p>
                 </Timeline.Item>
               )
             })}
           </Timeline>
+          <Space style={{marginLeft: 180}}>
+            <Button type="primary" onClick={() => {
+              handleAddConnect();
+            }}>
+              提交
+            </Button>
+            <Button>
+              返回
+            </Button>
+          </Space>
         </div>
       </div>
     </PageContainer>

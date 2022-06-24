@@ -289,7 +289,7 @@ export default () => {
       render: (_: string, _record: any) => (
         <a
           onClick={() => {
-            history.push(`${routeName.REQUIREMENT_MANAGEMENT_DETAIL}?id=${_record.id}&auditId=`);
+            history.push(`${routeName.REQUIREMENT_MANAGEMENT_DETAIL}?id=${_record.id}`);
           }}
         >
           {_}
@@ -401,7 +401,7 @@ export default () => {
               size="small"
               type="link"
               onClick={() => {
-                
+                history.push(`${routeName.REQUIREMENT_MANAGEMENT_DETAIL}?id=${record.id}&isEdit=1`);
               }}
             >
               节点维护

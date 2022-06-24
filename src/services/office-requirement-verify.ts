@@ -98,10 +98,9 @@ export async function getOfficeRequirementVerifyDetail(id: string) {
  * @param data
  * @returns
  */
- export async function getConnectRecord(data?: { [key: string]: any }) {
-  return request<any>('/antelope-manage/demand/connectRecord', {
+ export async function getConnectRecord(id: string) {
+  return request<any>(`/antelope-manage/demand/connectRecord/?demandId=${id}`, {
     method: 'get',
-    data,
   });
 }
 
