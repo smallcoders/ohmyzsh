@@ -481,7 +481,7 @@ export default () => {
                 },
               ]}>
               {isDetail ? (
-                <span>{editingItem?.startTime || '--'}</span>
+                <span>开始：{editingItem?.startTime || '--'}<br></br> 结束：{editingItem?.endTime || '--'}</span>
               ) : (
                 <RangePicker 
                   allowClear 
