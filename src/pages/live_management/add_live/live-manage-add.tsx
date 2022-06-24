@@ -645,7 +645,7 @@ export default () => {
             </Form.Item>
           </Col>
         </Row>
-        <Row>
+        {/* <Row>
           <Col span={18}>
             <Form.Item
               name="url"
@@ -674,7 +674,7 @@ export default () => {
               )}
             </Form.Item>
           </Col>
-        </Row>
+        </Row> */}
         {isDetail && (
           <Row>
             <Col span={10} offset={2}>
