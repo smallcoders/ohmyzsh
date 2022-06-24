@@ -45,5 +45,89 @@ export async function getOfficeRequirementVerifyDetail(id: string) {
   });
 }
 
+/**
+ * 需求管理-权重编辑
+ * @param data
+ * @returns
+ */
+ export async function demandEditSort(data?: { [key: string]: any }) {
+  return request<any>('/antelope-manage/demand/editSort', {
+    method: 'post',
+    data,
+  });
+}
+
+/**
+ * 需求管理-对接状态编辑
+ * @param data
+ * @returns
+ */
+ export async function demandEditConnectState(data?: { [key: string]: any }) {
+  return request<any>('/antelope-manage/demand/editConnectState', {
+    method: 'post',
+    data,
+  });
+}
+
+/**
+ * 需求管理-上架
+ * @param data
+ * @returns
+ */
+ export async function demandUpper(data?: { [key: string]: any }) {
+  return request<any>('/antelope-manage/demand/upper', {
+    method: 'post',
+    data,
+  });
+}
+
+/**
+ * 需求管理-下架
+ * @param data
+ * @returns
+ */
+ export async function demandDown(data?: { [key: string]: any }) {
+  return request<any>('/antelope-manage/demand/down', {
+    method: 'post',
+    data,
+  });
+}
+
+/**
+ * 对接记录列表
+ * @param data
+ * @returns
+ */
+ export async function getConnectRecord(data?: { [key: string]: any }) {
+  return request<any>('/antelope-manage/demand/connectRecord', {
+    method: 'get',
+    data,
+  });
+}
+
+/**
+ * 对接记录列表-添加
+ * @param data
+ * @returns
+ */
+ export async function addConnectRecord(data?: { [key: string]: any }) {
+  return request<any>('/antelope-manage/demand/connectRecord', {
+    method: 'post',
+    data,
+  });
+}
+
+/**
+ * 对接记录列表-删除
+ * @param data
+ * @returns
+ */
+ export async function deleteConnectRecord(data?: { [key: string]: any }) {
+  return request<any>('/antelope-manage/demand/connectRecord', {
+    method: 'delete',
+    data,
+  });
+}
+
 
 

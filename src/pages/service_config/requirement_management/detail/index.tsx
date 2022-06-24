@@ -1,12 +1,15 @@
-import { message, Image } from 'antd';
+import { message, Image, Timeline, Form, Button, DatePicker, Input, Space, Row, } from 'antd';
+import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { history } from 'umi';
 import React, { useState, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
-import { getOfficeRequirementVerifyDetail } from '@/services/office-requirement-verify';
+import { 
+  getOfficeRequirementVerifyDetail,
+  getConnectRecord // 对接记录列表
+} from '@/services/office-requirement-verify';
 import { getEnumByName } from '@/services/common';
-import VerifyInfoDetail from '@/components/verify_info_detail/verify-info-detail';
 
 const sc = scopedClasses('user-config-kechuang');
 
@@ -14,6 +17,9 @@ export default () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [detail, setDetail] = useState<any>({});
   const [enums, setEnums] = useState<any>({});
+
+  // 判断是否从节点维护点击来的
+  const isEdit = history.location.query?.isEdit ? true : false;
 
   const getDictionary = async () => {
     try {
@@ -41,14 +47,21 @@ export default () => {
 
     if (id) {
       try {
-        const res = await getOfficeRequirementVerifyDetail(id);
+        // const res = await getOfficeRequirementVerifyDetail(id);
+        // getDictionary();
+        // if (res.code === 0) {
+        //   console.log(res);
+        //   setDetail(res.result);
+        // } else {
+        //   throw new Error(res.message);
+        // }
+        const detailAbut = await Promise.all([
+          getOfficeRequirementVerifyDetail(id),
+          getConnectRecord({demandId: id})
+        ]);
         getDictionary();
-        if (res.code === 0) {
-          console.log(res);
-          setDetail(res.result);
-        } else {
-          throw new Error(res.message);
-        }
+        setDetail(detailAbut[0].result);
+        console.log(detailAbut[1], '对接列表');
       } catch (error) {
         message.error('服务器错误');
       } finally {
@@ -57,17 +70,28 @@ export default () => {
     }
   };
 
-  const getEnum = (enumType: string, enumName: string) => {
-    try {
-      return enums[enumType]?.filter((p: any) => p.enumName === enumName)[0].name;
-    } catch (error) {
-      return '--';
-    }
-  };
-
   useEffect(() => {
     prepare();
   }, []);
+
+  const mockData = [
+    {time: '2021-11-14 15:44', content: '线下走访', id: 111},
+    {time: '2021-11-14 15:44', content: '平台需求', id: 222},
+    {time: '2021-11-14 15:44', content: '平台相应', id: 333},
+    {time: '2021-11-14 15:44', content: '企业发布需求', id: 444},
+    {time: '2021-11-14 15:44', content: '数据俯卧', id: 555},
+    {time: '2021-11-14 15:44', content: '蜂王浆哦发怕', id: 666}
+  ];
+
+  const [createConnectForm] = Form.useForm();
+
+  const onFinish = (values: any) => {
+    console.log('Received values of form:', values);
+  };
+
+  const handleChange = () => {
+    createConnectForm.setFieldsValue({ sights: [] });
+  };
 
   return (
     <PageContainer>
@@ -147,10 +171,97 @@ export default () => {
           <span>{detail?.phone}</span>
         </div>
       </div>
-      {/* 需求管理中不需要展示审核记录 */}
-      {/* <div style={{ background: '#fff', marginTop: 20, paddingTop: 20 }}>
-        <VerifyInfoDetail auditId={detail?.auditId} reset={prepare} />
-      </div> */}
+      <div className={sc('container')} style={{marginTop: 20}}>
+        <div className={sc('container-title')}>对接记录</div>
+        <div style={{padding: 20}}>
+          <Timeline>
+            {
+              isEdit && (
+                <>
+                  <Form form={createConnectForm} name="dynamic_form_nest_item" onFinish={onFinish} autoComplete="off">
+                    <Form.List name="sights">
+                      {(fields, { add, remove }) => (
+                        <>
+                          <Timeline.Item color="gray">
+                            <Button onClick={() => add()}>新增对接记录</Button>
+                          </Timeline.Item>
+                          {fields.map(field => (
+                            <Timeline.Item color="gray">
+                            <Space key={field.key} align="baseline">
+                              <Form.Item
+                                noStyle
+                                shouldUpdate={(prevValues, curValues) =>
+                                  prevValues.area !== curValues.area || prevValues.sights !== curValues.sights
+                                }
+                              >
+                                {() => (
+                                  <Form.Item
+                                    {...field}
+                                    label="对接时间"
+                                    name={[field.name, 'sight']}
+                                    rules={[{ required: true, message: 'Missing sight' }]}
+                                  >
+                                    <DatePicker allowClear showTime />
+                                  </Form.Item>
+                                )}
+                              </Form.Item>
+                              <Form.Item
+                                {...field}
+                                label="对接内容"
+                                name={[field.name, 'price']}
+                                rules={[{ required: true, message: 'Missing price' }]}
+                              >
+                                <Input.TextArea
+                                  autoSize={false}
+                                  className="message-modal-textarea"
+                                  maxLength={200}
+                                  showCount={true}
+                                  rows={4}
+                                />
+                              </Form.Item>
+                              <MinusCircleOutlined onClick={() => remove(field.name)} />
+                            </Space>
+                            </Timeline.Item>
+                          ))}
+                        </>
+                      )}
+                    </Form.List>
+                  </Form>
+                  
+                  {/* <Timeline.Item color="gray">
+                    <Form form={createConnectForm}>
+                      <Form.Item 
+                        name={'abutStatus'} 
+                        label="对接时间">
+                          <DatePicker allowClear showTime />
+                      </Form.Item>
+                      <Form.Item 
+                        name={'abutStatus'} 
+                        label="对接内容">
+                          <Input.TextArea
+                            autoSize={false}
+                            className="message-modal-textarea"
+                            maxLength={200}
+                            showCount={true}
+                            rows={4}
+                          />
+                      </Form.Item>
+                    </Form>
+                  </Timeline.Item> */}
+                </>
+              )
+            }
+            {mockData.map((i) => {
+              return (
+                <Timeline.Item color="gray">
+                  <p>对接时间：{i.time}</p>
+                  <p>对接内容：{i.content}</p>
+                </Timeline.Item>
+              )
+            })}
+          </Timeline>
+        </div>
+      </div>
     </PageContainer>
   );
 };

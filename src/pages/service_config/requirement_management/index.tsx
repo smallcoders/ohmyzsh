@@ -11,36 +11,39 @@ import {
   message,
   Space,
   Popconfirm,
-  Popover
+  InputNumber,
+  Radio
 } from 'antd';
+import {InfoOutlined} from '@ant-design/icons'
 import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
 import Common from '@/types/common';
-import ServiceCommissionerVerify from '@/types/service-config-ServiceCommissionerVerify.d';
 import moment from 'moment';
 import { getDictionay, getDictionayTree } from '@/services/common';
 import { routeName } from '@/../config/routes';
 import SelfTable from '@/components/self_table';
-import type DiagnosticTasks from '@/types/service-config-diagnostic-tasks';
 import { history } from 'umi';
-import { getDictionaryTree } from '@/services/dictionary';
-import { getRequirementManagementList, demandEditType } from '@/services/office-requirement-verify';
+import { 
+  getRequirementManagementList, 
+  demandEditType,
+  demandEditSort, //权重编辑
+  demandEditConnectState, //对接状态编辑
+  demandUpper, //上架
+  demandDown //下架
+} from '@/services/office-requirement-verify';
 const sc = scopedClasses('service-config-app-news');
-const stateObj = {
+const stateObj = {//需求状态
   ON_SHELF: '上架',
-  FINISHED: '已结束'
+  FINISHED: '已结束',
+  OFF_SHELF: '下架'
 };
-import { renderSolutionType } from '../../service_config/solution/solution';
-import {
-  queryVideoPage,
-  getLiveTypesPage,
-  updateVideo,
-  updateStatus,
-  addVideo,
-  removeVideo
-} from '@/services/search-record';
+const stateObj2 = {//对接状态
+  NOT_CONNECT: '未对接',
+  CONNECTING: '对接中',
+  CONNECT_SUCCESS: '对接成功'
+};
 export default () => {
   const [dataSource, setDataSource] = useState<any[]>([]);
   const [searchContent, setSearChContent] = useState<{
@@ -89,8 +92,13 @@ export default () => {
 
   // 下架/上架状态更新
   const updateOnlineStatus = async (id: string, status: boolean) => {
-    let params = {id, lineStatus: status};
-    const addorUpdateRes = await updateStatus(params);
+    let params = {demandId: id};
+    let addorUpdateRes = {};
+    if(status) {//上架
+      addorUpdateRes = await demandUpper(params);
+    }else {
+      addorUpdateRes = await demandDown(params);
+    }
     if (addorUpdateRes.code === 0) {
       setModalVisible(false);
       if (!editingItem.id) {
@@ -102,7 +110,39 @@ export default () => {
       message.error(`${status ? '上架' : '下架'}失败，原因:{${addorUpdateRes.message}}`);
     }
   }
-  
+
+  // 编辑权重
+  const editSort = async (id: string, value: number) => {
+    console.log(id, value);
+    const editRes = await demandEditSort({
+      id: id,
+      sort: value
+    })
+    if (editRes.code === 0) {
+      message.success(`编辑权重成功！`);
+      getPage();
+      clearForm();
+    } else {
+      message.error(`编辑权重失败，原因:{${editRes.message}}`);
+    }
+  }
+
+  // 编辑对接状态 
+  const editConnect = async (id: string, value: number) => {
+    console.log(id, value);
+    const editRes = await demandEditConnectState({
+      id: id,
+      connectState: value
+    })
+    if (editRes.code === 0) {
+      message.success(`编辑对接状态成功！`);
+      getPage();
+      clearForm();
+    } else {
+      message.error(`编辑对接状态失败，原因:{${editRes.message}}`);
+    }
+  }
+
   // 需求类型
   const [typeOptions, setTypeOptions] = useState<any>([]);
 
@@ -124,7 +164,6 @@ export default () => {
     }
   };
 
-  const [quanzhong, setQuanzhong] = useState<number>(0);
 
   
   useEffect(() => {
@@ -234,13 +273,14 @@ export default () => {
       console.log(error);
     }
   };
-
+  const [weightForm] = Form.useForm();
+  const [abutStatusForm] = Form.useForm();
   const columns = [
     {
       title: '排序',
       dataIndex: 'sort',
       width: 80,
-      render: (_: any, _record: ServiceCommissionerVerify.Content, index: number) =>
+      render: (_: any, _record: any, index: number) =>
         pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
@@ -297,12 +337,12 @@ export default () => {
       render: (_: string, _record: any) => _record.hide ? '是':'否',
       width: 300,
     },
-    // {
-    //   title: '权重',
-    //   dataIndex: 'phone',
-    //   isEllipsis: true,
-    //   width: 300,
-    // },
+    {
+      title: '权重',
+      dataIndex: 'sort',
+      isEllipsis: true,
+      width: 300,
+    },
     {
       title: '发布时间',
       dataIndex: 'publishTime',
@@ -323,12 +363,12 @@ export default () => {
     },
     {
       title: '对接状态',
-      dataIndex: 'operationState',
+      dataIndex: 'connectState',
       width: 200,
       render: (_: string) => {
         return (
           <div className={`state${_}`}>
-            {Object.prototype.hasOwnProperty.call(stateObj, _) ? stateObj[_] : '--'}
+            {Object.prototype.hasOwnProperty.call(stateObj2, _) ? stateObj2[_] : '--'}
           </div>
         );
       },
@@ -366,28 +406,34 @@ export default () => {
             >
               节点维护
             </Button>
-            <Button
-              key="1"
-              size="small"
-              type="link"
-              onClick={() => {
-                
-              }}
-            >
-              对接状态
-            </Button>
             <Popconfirm
               title={
                 <>
-                  <div>权重设置</div>
-                  <Input defaultValue={quanzhong}/>
+                  <Form form={abutStatusForm} initialValues={{abutStatus: 'NOT_CONNECT'}}>
+                    <Form.Item 
+                      name={'abutStatus'} 
+                      label="对接状态">
+                      <Radio.Group>
+                        <Radio className="radio-label" value={'NOT_CONNECT'}>
+                          未对接
+                        </Radio>
+                        <Radio className="radio-label" value={'CONNECTING'}>
+                          对接中
+                        </Radio>
+                        <Radio className="radio-label" value={'CONNECT_SUCCESS'}>
+                          对接完成
+                        </Radio>
+                      </Radio.Group>
+                    </Form.Item>
+                  </Form>
                 </>
               }
+              icon={<InfoOutlined style={{ display: 'none' }} />}
               okText="确定"
               cancelText="取消"
-              onConfirm={(value) => {
-                
-                console.log(quanzhong, 111);
+              onConfirm={() => {
+                console.log(abutStatusForm.getFieldValue('abutStatus'), record, 111);
+                editConnect(record.id, abutStatusForm.getFieldValue('abutStatus'))
               }}
             >
               <Button
@@ -395,14 +441,45 @@ export default () => {
                 size="small"
                 type="link"
                 onClick={() => {
-                  
+                  abutStatusForm.setFieldsValue({abutStatus: record.connectState})
+                }}
+              >
+                对接状态
+              </Button>
+            </Popconfirm>
+            <Popconfirm
+              title={
+                <>
+                  <Form form={weightForm}>
+                    <Form.Item 
+                      name={'weight'} 
+                      label="权重设置">
+                      <InputNumber min={1} max={100} />
+                    </Form.Item>
+                  </Form>
+                </>
+              }
+              icon={<InfoOutlined style={{ display: 'none' }} />}
+              okText="确定"
+              cancelText="取消"
+              onConfirm={() => {
+                console.log(weightForm.getFieldValue('weight'), record, 111);
+                editSort(record.id, weightForm.getFieldValue('weight'))
+              }}
+            >
+              <Button
+                key="1"
+                size="small"
+                type="link"
+                onClick={() => {
+                  weightForm.setFieldsValue({weight: record.sort})
                 }}
               >
                 权重
               </Button>
             </Popconfirm>
             { 
-              record.operationState ? (
+              record.operationState == 'ON_SHELF' && (
                 <Popconfirm
                   title="确定下架么？"
                   okText="确定"
@@ -411,7 +488,10 @@ export default () => {
                 >
                   <a href="#">下架</a>
                 </Popconfirm>
-              ) : (
+              )
+            } 
+            { 
+              record.operationState == 'OFF_SHELF' && (
                 <Popconfirm
                   title="确定上架么？"
                   okText="确定"
