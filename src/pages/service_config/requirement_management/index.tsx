@@ -9,7 +9,9 @@ import {
   TreeSelect,
   Modal,
   message,
-  Space
+  Space,
+  Popconfirm,
+  Popover
 } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
@@ -31,6 +33,14 @@ const stateObj = {
   FINISHED: '已结束'
 };
 import { renderSolutionType } from '../../service_config/solution/solution';
+import {
+  queryVideoPage,
+  getLiveTypesPage,
+  updateVideo,
+  updateStatus,
+  addVideo,
+  removeVideo
+} from '@/services/search-record';
 export default () => {
   const [dataSource, setDataSource] = useState<any[]>([]);
   const [searchContent, setSearChContent] = useState<{
@@ -76,6 +86,22 @@ export default () => {
     totalCount: 0,
     pageTotal: 0,
   });
+
+  // 下架/上架状态更新
+  const updateOnlineStatus = async (id: string, status: boolean) => {
+    let params = {id, lineStatus: status};
+    const addorUpdateRes = await updateStatus(params);
+    if (addorUpdateRes.code === 0) {
+      setModalVisible(false);
+      if (!editingItem.id) {
+        message.success(`${status ? '上架' : '下架'}成功！`);
+      }
+      getPage();
+      clearForm();
+    } else {
+      message.error(`${status ? '上架' : '下架'}失败，原因:{${addorUpdateRes.message}}`);
+    }
+  }
   
   // 需求类型
   const [typeOptions, setTypeOptions] = useState<any>([]);
@@ -97,6 +123,10 @@ export default () => {
       message.error('数据初始化错误');
     }
   };
+
+  const [quanzhong, setQuanzhong] = useState<number>(0);
+
+  
   useEffect(() => {
     prepare();
   }, []);
@@ -291,18 +321,18 @@ export default () => {
         );
       },
     },
-    // {
-    //   title: '对接状态',
-    //   dataIndex: 'operationState',
-    //   width: 200,
-    //   render: (_: string) => {
-    //     return (
-    //       <div className={`state${_}`}>
-    //         {Object.prototype.hasOwnProperty.call(stateObj, _) ? stateObj[_] : '--'}
-    //       </div>
-    //     );
-    //   },
-    // },
+    {
+      title: '对接状态',
+      dataIndex: 'operationState',
+      width: 200,
+      render: (_: string) => {
+        return (
+          <div className={`state${_}`}>
+            {Object.prototype.hasOwnProperty.call(stateObj, _) ? stateObj[_] : '--'}
+          </div>
+        );
+      },
+    },
     {
       title: '操作',
       width: 400,
@@ -346,26 +376,53 @@ export default () => {
             >
               对接状态
             </Button>
-            <Button
-              key="1"
-              size="small"
-              type="link"
-              onClick={() => {
+            <Popconfirm
+              title={
+                <>
+                  <div>权重设置</div>
+                  <Input defaultValue={quanzhong}/>
+                </>
+              }
+              okText="确定"
+              cancelText="取消"
+              onConfirm={(value) => {
                 
+                console.log(quanzhong, 111);
               }}
             >
-              权重
-            </Button>
-            <Button
-              key="1"
-              size="small"
-              type="link"
-              onClick={() => {
-                
-              }}
-            >
-              下架
-            </Button>
+              <Button
+                key="1"
+                size="small"
+                type="link"
+                onClick={() => {
+                  
+                }}
+              >
+                权重
+              </Button>
+            </Popconfirm>
+            { 
+              record.operationState ? (
+                <Popconfirm
+                  title="确定下架么？"
+                  okText="确定"
+                  cancelText="取消"
+                  onConfirm={() => updateOnlineStatus(record.id as string, false)}
+                >
+                  <a href="#">下架</a>
+                </Popconfirm>
+              ) : (
+                <Popconfirm
+                  title="确定上架么？"
+                  okText="确定"
+                  cancelText="取消"
+                  onConfirm={() => updateOnlineStatus(record.id as string, true)}
+                >
+                  <a href="#">上架</a>
+                </Popconfirm>
+              )
+            }
+            
           </Space>
         )
       }
