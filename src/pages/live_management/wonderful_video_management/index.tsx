@@ -42,6 +42,7 @@ export default () => {
         {
           pageIndex: 1,
           pageSize: 100,
+          status: 1
         }
       )]);
       console.log(res[0]);

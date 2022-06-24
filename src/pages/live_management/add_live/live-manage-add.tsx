@@ -140,6 +140,7 @@ export default () => {
       const prepareResultArray = await Promise.all([getLiveTypesPage({
         pageIndex: 1,
         pageSize: 100,
+        status: 1
       })]);
       setAppTypes(prepareResultArray[0].result || []);
 
@@ -156,27 +157,27 @@ export default () => {
           setIsSkip(editItem.isSkip);
           // setIsBeginTopAndEditing(Boolean(editItem.isTopApp));
           console.log(editItem, 'res---editItem');
-          let extented = [];//扩展功能数据获取
+          let extended = [];//扩展功能数据获取
           if(!editItem.closeReplay) {
-            extented.push('replay');
+            extended.push('replay');
           }
           if(!editItem.closeKf) {
-            extented.push('kf');
+            extended.push('kf');
           }
           let liveFunctions = [];//直播间功能数据获取
           if(!editItem.closeLike) {
-            extented.push('like');
+            liveFunctions.push('like');
           }
           if(!editItem.closeGoods) {
-            extented.push('goods');
+            liveFunctions.push('goods');
           }
           if(!editItem.closeComment) {
-            extented.push('comment');
+            liveFunctions.push('comment');
           }
           if(!editItem.closeShare) {
-            extented.push('share');
+            liveFunctions.push('share');
           }
-          setEditingItem({...editItem, extended: extented, time: [moment(editingItem.startTime), moment(editingItem.endTime)]});
+          setEditingItem({...editItem, liveFunctions, extended, time: [moment(editItem.startTime), moment(editItem.endTime)]});
         } else {
           message.error(`获取详情失败，原因:${detailRs.message}`);
         }
@@ -623,11 +624,11 @@ export default () => {
               ]}
             >
               {isDetail ? (
-                <span>{editingItem.liveType ? '手机直播' : '推流设备直播'}</span>
+                <span>{editingItem.liveType ? '推流设备直播' : '手机直播'}</span>
               ) : (
                 <Radio.Group>
-                  <Radio value={1}>手机直播</Radio>
-                  <Radio value={0}>推流设备直播</Radio>
+                  <Radio value={0}>手机直播</Radio>
+                  <Radio value={1}>推流设备直播</Radio>
                 </Radio.Group>
               )}
             </Form.Item>

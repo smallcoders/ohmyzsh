@@ -256,7 +256,7 @@ export default () => {
             name="content"
             label="推荐内容"
           >
-            <Input placeholder="请输入" maxLength={35} />
+            <Input placeholder="请输入" maxLength={12} />
           </Form.Item>
         </Form>
       </Modal>
