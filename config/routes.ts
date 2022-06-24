@@ -294,6 +294,18 @@ export default [
         name: '活动管理',
         component: './purchase_manage/promotions_manage',
       },
+      {
+        path: '/purchase-manage/promotions-create',
+        name: '活动新增',
+        hideInMenu: true,
+        component: './purchase_manage/promotions_manage/create',
+      },
+      {
+        path: '/purchase-manage/promotions-detail',
+        name: '活动详情',
+        hideInMenu: true,
+        component: './purchase_manage/promotions_manage/detail',
+      },
     ],
   },
   {
