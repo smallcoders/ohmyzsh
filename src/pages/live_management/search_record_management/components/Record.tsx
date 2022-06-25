@@ -33,6 +33,7 @@ import { stringify } from 'rc-field-form/es/useWatch';
 const sc = scopedClasses('service-config-diagnostic-tasks');
 export default () => {
   const [dataSource, setDataSource] = useState<DiagnosticTasks.OnlineRecord[]>([]);
+  // 外层列表查询条件
   const [searchContent, setSearChContent] = useState<{
     status?: DiagnosticTasks.Status; // 状态：0发布中、1待发布、2已下架
     content?: string;
@@ -40,7 +41,12 @@ export default () => {
     startDate?: string;
     endDate?: string;
   }>({});
-  const [editingItem, setEditingItem] = useState<DiagnosticTasks.OnlineRecord | undefined>();
+  // 抽屉列表查询
+  const [drawerSearchContent, setDrawerSearChContent] = useState<{
+    startDate?: string;
+    endDate?: string;
+  }>({});
+  const [editingItem, setEditingItem] = useState<any>({});
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [addOrUpdateLoading, setAddOrUpdateLoading] = useState<boolean>(false);
   const formLayout = {
@@ -86,16 +92,18 @@ export default () => {
     }
   };
 
-  const showDrawer = async (id: string, pageIndex: number = 1, pageSize = userPageInfo.pageSize) => {
+  const showDrawer = async (id: string, record: any, searchTime: any, pageIndex: number = 1, pageSize = userPageInfo.pageSize) => {
+    setEditingItem(record);
+    console.log(searchTime, 'shijian');
     try {
       const { result, totalCount, pageTotal, code } = await getPersonalSearchRecords({
         userId: id,
         pageIndex,
         pageSize,
-        ...searchContent
+        ...searchTime
       });
       if (code === 0) {
-        setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
+        setUserPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
         setUserDataSource(result);
       } else {
         message.error(`请求分页数据失败`);
@@ -131,9 +139,9 @@ export default () => {
       render: (_: string, _record: any) => {
         return _record.operateUserId ? (
           <a
-            href="javascript:;"
+            href="#!"
             onClick={() => {
-              showDrawer(`${_record.operateUserId}`);
+              showDrawer(`${_record.operateUserId}`, _record);
             }}
           >
           {_}
@@ -166,7 +174,7 @@ export default () => {
       dataIndex: 'sort',
       width: 100,
       render: (_: any, _record: DiagnosticTasks.OnlineRecord, index: number) =>
-        pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
+      userPageInfo.pageSize * (userPageInfo.pageIndex - 1) + index + 1,
     },
     {
       title: '搜索内容',
@@ -269,7 +277,9 @@ export default () => {
                     rest.startDate = moment(search.date[0]).format('YYYY-MM-DD');
                     rest.endDate = moment(search.date[1]).format('YYYY-MM-DD');
                   }
-                  setSearChContent(rest);
+                  // setDrawerSearChContent(rest);
+                  console.log(rest, '查询时间');
+                  showDrawer(editingItem.operateUserId, editingItem, rest);
                 }}
               >
                 查询
@@ -279,7 +289,7 @@ export default () => {
                 key="primary2"
                 onClick={() => {
                   searchForm.resetFields();
-                  setSearChContent({});
+                  showDrawer(editingItem.operateUserId, editingItem);
                 }}
               >
                 重置
@@ -320,7 +330,7 @@ export default () => {
           }
         />
       </div>
-      <Drawer title="用户名" placement="right" onClose={onClose} visible={visible} size={drawerSize}>
+      <Drawer title={`${editingItem.operateUserName}`} placement="right" onClose={onClose} visible={visible} size={drawerSize}>
         {useDrawerSearchNode()}
         <div className={sc('container-table-body')}>
           <SelfTable
@@ -330,15 +340,15 @@ export default () => {
             columns={userColumns}
             dataSource={userDataSource}
             pagination={
-              pageInfo.totalCount === 0
+              userPageInfo.totalCount === 0
                 ? false
                 : {
-                    onChange: getDiagnosticTasks,
-                    total: pageInfo.totalCount,
-                    current: pageInfo.pageIndex,
-                    pageSize: pageInfo.pageSize,
+                    onChange: showDrawer,
+                    total: userPageInfo.totalCount,
+                    current: userPageInfo.pageIndex,
+                    pageSize: userPageInfo.pageSize,
                     showTotal: (total: number) =>
-                      `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
+                      `共${total}条记录 第${userPageInfo.pageIndex}/${userPageInfo.pageTotal || 1}页`,
                   }
             }
           />

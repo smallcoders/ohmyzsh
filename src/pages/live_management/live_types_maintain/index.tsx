@@ -286,7 +286,7 @@ export default () => {
                 message: '必填',
               },
             ]}>
-            <Input placeholder="请输入" maxLength={40} />
+            <Input placeholder="请输入" maxLength={16} />
           </Form.Item>
           
           <Form.Item 

@@ -42,6 +42,7 @@ export default () => {
         {
           pageIndex: 1,
           pageSize: 100,
+          status: 1
         }
       )]);
       console.log(res[0]);
@@ -173,7 +174,7 @@ export default () => {
       isEllipsis: true,
       render: (_: string, _record: any) => (
         <a
-          href="javascript:;"
+          href="#!"
           onClick={() => {
             history.push(`${routeName.WONDERFUL_VIDEO_MANAGEMENT_DETAIL}?id=${_record.id}`);
           }}
@@ -248,13 +249,17 @@ export default () => {
     },
     {
       title: '发布人',
-      dataIndex: 'createTime',
+      dataIndex: 'releaseAccountName',
       width: 200,
-      render: (_: string) => moment(_).format('YYYY-MM-DD HH:mm:ss'),
+      render: (_: string) => {
+        return (
+          _ || '--'
+        )
+      },
     },
     {
       title: '操作',
-      width: 200,
+      width: 260,
       fixed: 'right',
       dataIndex: 'option',
       render: (_: any, record: any) => {
@@ -301,14 +306,18 @@ export default () => {
             >
               <a href="#">置顶</a>
             </Popconfirm>
-            <Popconfirm
-              title="确定删除么？"
-              okText="确定"
-              cancelText="取消"
-              onConfirm={() => remove(record.id as string)}
-            >
-              <a href="#">删除</a>
-            </Popconfirm>
+            { 
+              !record.lineStatus && (
+                <Popconfirm
+                  title="确定删除么？"
+                  okText="确定"
+                  cancelText="取消"
+                  onConfirm={() => remove(record.id as string)}
+                >
+                  <a href="#">删除</a>
+                </Popconfirm>
+              )
+            }
           </Space>
         );
       },
@@ -496,6 +505,18 @@ export default () => {
                     required: true,
                     message: '必选',
                   },
+                  {
+                    validator(rule, value) {
+                      if(value.length>3){
+                        return Promise.reject('最多选3个')
+                      }
+                      if(!value||value.length===0){
+                        return Promise.reject('必填')
+                      }else {
+                        return Promise.resolve()
+                      }
+                    },
+                  },
                 ]}
               >
                 <Select
@@ -546,7 +567,7 @@ export default () => {
           <Row>
             <Col span={10} offset={2}>
               <Form.Item 
-                name="shareCount" 
+                name="shareVirtualCount" 
                 label="虚拟分享量"
                 rules={[
                   {
@@ -560,7 +581,7 @@ export default () => {
             </Col>
             <Col span={10}>
               <Form.Item 
-                name="goodCount"
+                name="goodVirtualCount"
                 label="虚拟点赞量"
                 rules={[
                   {
