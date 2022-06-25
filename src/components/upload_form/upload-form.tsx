@@ -10,6 +10,7 @@ const UploadForm = (
       value?: string;
       needName?: boolean;
       maxSize?: number;
+      maxSizeKb?: number;
     },
 ) => {
   const [fileId, setFileId] = useState<string | undefined>();
@@ -63,6 +64,13 @@ const UploadForm = (
       const isLtLimit = file.size / 1024 / 1024 < props.maxSize;
       if (!isLtLimit) {
         message.error(`上传的文件大小不得超过${props.maxSize}M`);
+        return Upload.LIST_IGNORE;
+      }
+    }
+    if(props.maxSizeKb) {
+      const isLtLimit = file.size / 1024 < props.maxSizeKb;
+      if (!isLtLimit) {
+        message.error(`上传的文件大小不得超过${props.maxSizeKb}KB`);
         return Upload.LIST_IGNORE;
       }
     }
