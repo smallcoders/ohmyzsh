@@ -1,6 +1,7 @@
 // @ts-ignore
 /* eslint-disable */
 import { request } from 'umi';
+import Common from '@/types/common';
 
 /**
  * 企业需求审核审核列表
@@ -121,10 +122,9 @@ export async function getOfficeRequirementVerifyDetail(id: string) {
  * @param data
  * @returns
  */
- export async function deleteConnectRecord(data?: { [key: string]: any }) {
-  return request<any>('/antelope-manage/demand/connectRecord', {
-    method: 'delete',
-    data,
+ export async function deleteConnectRecord(id: string) {
+  return request<Common.ResultCode>(`/antelope-manage/demand/connectRecord?demandConnectId=${id}`, {
+    method: 'DELETE'
   });
 }
 
