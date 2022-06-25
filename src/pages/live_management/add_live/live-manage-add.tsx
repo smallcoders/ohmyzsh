@@ -62,7 +62,7 @@ export default () => {
   /**
    * 关闭提醒 主要是 添加或者修改成功后 不需要弹出
    */
-  const [isClosejumpTooltip, setIsClosejumpTooltip] = useState<boolean>(true);
+  const [isClosejumpTooltip, setIsClosejumpTooltip] = useState<boolean>(false);
   /**
    * 是否在编辑
    */
@@ -185,6 +185,8 @@ export default () => {
       if(isDetail == '1') {
         setIsDetail(true);
         setIsClosejumpTooltip(false);
+      }else {
+        setIsClosejumpTooltip(true);
       }
     } catch (error) {
       console.log('error', error);
@@ -194,10 +196,6 @@ export default () => {
 
   useEffect(() => {
     prepare();
-    // window.addEventListener('beforeunload', listener);
-    // return () => {
-    //   window.removeEventListener('beforeunload', listener);
-    // };
   }, []);
 
 
@@ -221,10 +219,10 @@ export default () => {
             endTime: moment(value.time[1]).format('YYYY-MM-DD HH:mm:ss'),
             closeReplay: value.extended?.indexOf('replay') > -1 ? 0 : 1,
             closeKf: value.extended?.indexOf('kf') > -1 ? 0 : 1,
-            closeLike: value.extended?.indexOf('like') > -1 ? 0 : 1,
-            closeGoods: value.extended?.indexOf('goods') > -1 ? 0 : 1,
-            closeComment: value.extended?.indexOf('comment') > -1 ? 0 : 1,
-            closeShare: value.extended?.indexOf('share') > -1 ? 0 : 1,
+            closeLike: value.liveFunctions?.indexOf('like') > -1 ? 0 : 1,
+            closeGoods: value.liveFunctions?.indexOf('goods') > -1 ? 0 : 1,
+            closeComment: value.liveFunctions?.indexOf('comment') > -1 ? 0 : 1,
+            closeShare: value.liveFunctions?.indexOf('share') > -1 ? 0 : 1,
             id: editingItem.id
           });
           hide()
@@ -236,21 +234,21 @@ export default () => {
             lineStatus: lineStatus,
             closeReplay: value.extended?.indexOf('replay') > -1 ? 0 : 1,
             closeKf: value.extended?.indexOf('kf') > -1 ? 0 : 1,
-            closeLike: value.extended?.indexOf('like') > -1 ? 0 : 1,
-            closeGoods: value.extended?.indexOf('goods') > -1 ? 0 : 1,
-            closeComment: value.extended?.indexOf('comment') > -1 ? 0 : 1,
-            closeShare: value.extended?.indexOf('share') > -1 ? 0 : 1
+            closeLike: value.liveFunctions?.indexOf('like') > -1 ? 0 : 1,
+            closeGoods: value.liveFunctions?.indexOf('goods') > -1 ? 0 : 1,
+            closeComment: value.liveFunctions?.indexOf('comment') > -1 ? 0 : 1,
+            closeShare: value.liveFunctions?.indexOf('share') > -1 ? 0 : 1
           });
           hide();
         }
         if (addorUpdateRes.code === 0) {
           message.success(`${tooltipMessage}成功`);
           setIsClosejumpTooltip(false);
-          history.push(routeName.ANTELOPE_LIVE_MANAGEMENT_INDEX);
+          setAddOrUpdateLoading(false);
+          history.push(routeName.ANTELOPE_LIVE_MANAGEMENT);
         } else {
           message.error(`${tooltipMessage}失败，原因:${addorUpdateRes.message}`);
-        }
-        setAddOrUpdateLoading(false);
+        } 
       })
       .catch((err) => {
         // message.error('服务器错误，请稍后重试');
@@ -268,11 +266,6 @@ export default () => {
     wrapperCol: { span: 14 },
   };
 
-  // const listener = (e: any) => {
-  //   e.preventDefault();
-  //   e.returnValue = '离开当前页后，所编辑的数据将不可恢复';
-  // };
-
   return (
     <PageContainer
       className={sc('container')}
@@ -280,6 +273,9 @@ export default () => {
         title: isEditing ? `编辑直播` : isDetail ? '直播详情' : '新增直播',
         breadcrumb: (
           <Breadcrumb>
+            <Breadcrumb.Item>
+              <Link to="/live-management/live-types-maintain">直播管理 </Link>
+            </Breadcrumb.Item>
             <Breadcrumb.Item>
               <Link to="/live-management/antelope-live-management">羚羊直播管理 </Link>
             </Breadcrumb.Item>
@@ -292,7 +288,7 @@ export default () => {
         extra: (
           <div className="operate-btn">
             {!isDetail && (
-              <Button key="primary" loading={addOrUpdateLoading} onClick={() => {history.push(routeName.ANTELOPE_LIVE_MANAGEMENT_INDEX)}}>
+              <Button key="primary" loading={addOrUpdateLoading} onClick={() => {history.push(routeName.ANTELOPE_LIVE_MANAGEMENT)}}>
                 取消
               </Button>
             )}
@@ -308,7 +304,7 @@ export default () => {
             )}
             {isDetail && (
               <Button key="primary4" loading={addOrUpdateLoading} onClick={() => {
-                history.push(routeName.ANTELOPE_LIVE_MANAGEMENT_INDEX)
+                history.push(routeName.ANTELOPE_LIVE_MANAGEMENT)
               }}>
                 返回
               </Button>
@@ -318,10 +314,11 @@ export default () => {
       }}
     >
       <Prompt
-        when={isClosejumpTooltip}
+        when={isClosejumpTooltip && !isDetail}
         message={'离开当前页后，所编辑的数据将不可恢复'}
       />
-      <Form className={sc('container-form')} {...formLayout} form={form} labelWrap>
+      <Form className={sc('container-form')} {...formLayout} form={form} labelWrap
+        initialValues={{liveFunctions: ['like', 'goods', 'comment', 'share']}}>
         <Row>
           <Col span={18}>
             <Form.Item
@@ -615,7 +612,7 @@ export default () => {
             <Form.Item
               name="liveType"
               label="直播类型"
-              initialValue={1}
+              initialValue={0}
               rules={[
                 {
                   required: !isDetail,

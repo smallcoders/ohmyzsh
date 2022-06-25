@@ -174,7 +174,7 @@ export default () => {
       isEllipsis: true,
       render: (_: string, _record: any) => (
         <a
-          href="javascript:;"
+          href="#!"
           onClick={() => {
             history.push(`${routeName.WONDERFUL_VIDEO_MANAGEMENT_DETAIL}?id=${_record.id}`);
           }}
