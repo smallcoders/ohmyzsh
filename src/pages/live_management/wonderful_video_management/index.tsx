@@ -1,5 +1,9 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Input, Form, Modal, Select, Row, Col, message, Space, Popconfirm, DatePicker, Tooltip, InputNumber, Image } from 'antd';
+import { Button, Input, Form, Modal, Select, Row, Col, message, Space, Popconfirm, DatePicker, Upload, Tooltip, InputNumber, Image } from 'antd';
+import type { UploadProps } from 'antd';
+import { RcFile, UploadChangeParam } from 'antd/lib/upload';
+import { UploadFile } from 'antd/lib/upload/interface';
+import CourseManage from '@/types/service-config-course-manage';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
@@ -413,6 +417,66 @@ export default () => {
     setModalVisible(false);
   };
   
+  const [uploadLoading, setUploadLoading] = useState<boolean>(false);
+  const accept = '.mp4';
+  const [files, setFiles] = useState<CourseManage.File[]>([]);
+  const handleChange = (info: UploadChangeParam<UploadFile<any>>) => {
+    if (info.file.status === 'uploading') {
+      setUploadLoading(true);
+      return;
+    }
+    if (info.file.status === 'error') {
+      setUploadLoading(false);
+      return;
+    }
+    if (info.file.status === 'done') {
+      const uploadResponse = info?.file?.response;
+      if (uploadResponse?.code === 0 && uploadResponse.result) {
+        const upLoadResult = info?.fileList.map((p) => {
+          console.log(p);
+          return {
+            title: p.name,
+            storeId: p.response?.result?.id,
+            duration: p.response?.result?.duration,
+            isEditing: false,
+          };
+        });
+        setFiles(upLoadResult);
+        setUploadLoading(false);
+      } else {
+        setUploadLoading(false);
+        message.error(`上传失败，原因:{${uploadResponse.message}}`);
+      }
+    }
+  };
+  const props: UploadProps = {
+    name: 'file',
+    accept: ".mp4",
+    action: '/antelope-manage/common/upload/record',
+    // onChange: handleChange,
+    onRemove: (file: UploadFile<any>) => {
+      if (file.status === 'uploading' || file.status === 'error') {
+        setUploadLoading(false);
+      }
+      const files_copy = [...files];
+      const existIndex = files_copy.findIndex((p) => p.storeId === file?.response?.result);
+      if (existIndex > -1) {
+        files_copy.splice(existIndex, 1);
+        setFiles(files_copy);
+      }
+    },
+    onChange(info) {
+      if (info.file.status !== 'uploading') {
+        console.log(info.file, info.fileList);
+      }
+      if (info.file.status === 'done') {
+        message.success(`${info.file.name} 上传成功`);
+      } else if (info.file.status === 'error') {
+        message.error(`${info.file.name} file upload failed.`);
+      }
+    }
+  };
+  
   const useModal = (): React.ReactNode => {
     return (
       <Modal
@@ -440,7 +504,8 @@ export default () => {
           </Button>
         ]}
       >
-        <Form {...formLayout} form={form} layout="horizontal">
+        <Form {...formLayout} form={form} layout="horizontal"
+          initialValues={{shareVirtualCount: 0, goodVirtualCount: 0}}>
           <Row>
             <Col span={16}>
               <Form.Item
@@ -452,7 +517,7 @@ export default () => {
                       }
                       if (!/^[a-zA-Z0-9_\u4e00-\u9fa5-]+$/.test(value)) {
                         return Promise.reject(
-                          new Error('由数字、字母、中文、下划线或者中划线组成,长度40字符以内'),
+                          new Error('由数字、字母、中文、下划线或者中划线组成,长度50字符以内'),
                         );
                       }
                       return Promise.resolve();
@@ -468,27 +533,7 @@ export default () => {
             </Col>
           </Row>
           <Row>
-            <Col span={8} offset={2}>
-              <Form.Item
-                name="videoId"
-                label="视频"
-                rules={[
-                  {
-                    required: true,
-                    message: '必填',
-                  },
-                ]}
-              >
-                <UploadForm
-                  listType="picture-card"
-                  className="avatar-uploader"
-                  maxSize={800}
-                  showUploadList={false}
-                  accept=""
-                />
-              </Form.Item>
-            </Col>
-            <Col span={8}>
+            <Col span={16}>
               <Form.Item
                 name="coverImageId"
                 label="封面"
@@ -506,6 +551,31 @@ export default () => {
                   showUploadList={false}
                   accept=".bmp,.gif,.png,.jpeg,.jpg"
                 />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row>
+            <Col span={16}>
+              <Form.Item
+                name="videoId"
+                label="视频"
+                rules={[
+                  {
+                    required: true,
+                    message: '必填',
+                  },
+                ]}
+              >
+                <Upload {...props}>
+                  <Button type="primary">上传</Button>
+                </Upload>
+                {/* <UploadForm
+                  listType="picture-card"
+                  className="avatar-uploader"
+                  maxSize={800}
+                  showUploadList={false}
+                  accept=".mp4"
+                /> */}
               </Form.Item>
             </Col>
           </Row>
@@ -583,27 +653,15 @@ export default () => {
               <Form.Item 
                 name="shareVirtualCount" 
                 label="虚拟分享量"
-                rules={[
-                  {
-                    required: true,
-                    message: '必选',
-                  },
-                ]}
               >
-                <InputNumber min={0} defaultValue={0} />
+                <InputNumber min={0} />
               </Form.Item>
             </Col>
             <Col span={10}>
               <Form.Item 
                 name="goodVirtualCount"
-                label="虚拟点赞量"
-                rules={[
-                  {
-                    required: true,
-                    message: '必填',
-                  },
-                ]}>
-                <InputNumber min={0} defaultValue={0} />
+                label="虚拟点赞量">
+                <InputNumber min={0} />
               </Form.Item>
             </Col>
           </Row>
