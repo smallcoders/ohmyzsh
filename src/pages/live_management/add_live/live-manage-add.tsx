@@ -374,32 +374,9 @@ export default () => {
         <Row>
           <Col span={6} offset={3}>
             <Form.Item
-                name="backgroundImageId"
-                label="背景图"
-                rules={[
-                  {
-                    required: !isDetail,
-                    message: '必填',
-                  },
-                ]}
-              >
-                {isDetail ? (
-                  <Image src={editingItem?.backgroundImagePath} width={200} />
-                ) : (
-                  <UploadForm
-                  listType="picture-card"
-                  className="avatar-uploader"
-                  showUploadList={false}
-                  maxSize={1}
-                  accept=".bmp,.gif,.png,.jpeg,.jpg"
-                />
-                )}
-              </Form.Item>
-          </Col>
-          <Col span={6}>
-            <Form.Item
                 name="shareImageId"
-                label="分享图"
+                label="直播卡片封面"
+                // extra={`${!isDetail ? '图片建议大小为 800像素 * 800像素。图片大小不超过 300KB。图片内容遵循平台规范后更容易被推荐。' : ''}`}
                 rules={[
                   {
                     required: !isDetail,
@@ -414,6 +391,37 @@ export default () => {
                   listType="picture-card"
                   className="avatar-uploader"
                   showUploadList={false}
+                  maxSizeKb={300}
+                  tooltip={
+                    <span className={'tooltip'}>仅支持JPG、PNG、JPEG,建议比例16*9，大小在300kb以下</span>
+                  }
+                  accept=".bmp,.gif,.png,.jpeg,.jpg"
+                />
+                )}
+              </Form.Item>
+          </Col>
+          <Col span={6}>
+            <Form.Item
+                name="backgroundImageId"
+                label="分享卡片封面"
+                // extra={`${!isDetail ? '用户在微信对话框内分享的直播间将以分享卡片的形式呈现。建议尺寸：800像素 * 640像素，图片大小不得超过1M' : ''}`}
+                rules={[
+                  {
+                    required: !isDetail,
+                    message: '必填',
+                  },
+                ]}
+              >
+                {isDetail ? (
+                  <Image src={editingItem?.backgroundImagePath} width={200} />
+                ) : (
+                  <UploadForm
+                  listType="picture-card"
+                  className="avatar-uploader"
+                  showUploadList={false}
+                  tooltip={
+                    <span className={'tooltip'}>仅支持JPG、PNG、JPEG,建议尺寸800*640，大小在1M以下</span>
+                  }
                   maxSize={1}
                   accept=".bmp,.gif,.png,.jpeg,.jpg"
                 />
@@ -423,7 +431,8 @@ export default () => {
           <Col span={6}>
             <Form.Item
                 name="coverImageId"
-                label="购物直播频道封面图"
+                label="直播间背景墙"
+                // extra={`${!isDetail ? '直播间背景墙是每个直播间的默认背景。建议尺寸：600像素 * 1300像素，图片大小不得超过 3M。' : ''}`}
                 rules={[
                   {
                     required: !isDetail,
@@ -438,7 +447,10 @@ export default () => {
                   listType="picture-card"
                   className="avatar-uploader"
                   showUploadList={false}
-                  maxSize={2}
+                  maxSize={3}
+                  tooltip={
+                    <span className={'tooltip'}>仅支持JPG、PNG、JPEG,建议尺寸600*1300，大小在3M以下</span>
+                  }
                   accept=".bmp,.gif,.png,.jpeg,.jpg"
                 />
                 )}
