@@ -148,16 +148,17 @@ export default () => {
   // 置顶状态修改
   const updateTopStatus = async (id: string, status: boolean) => {
     let params = {id, isTop: status};
+    const tooltipMessage = status ? '置顶' : '取消置顶';
     const addorUpdateRes = await updateLiveStatus(params);
     if (addorUpdateRes.code === 0) {
       setModalVisible(false);
       if (!editingItem.id) {
-        message.success(`置顶成功！`);
+        message.success(`${tooltipMessage}成功！`);
       }
       getPages();
       clearForm();
     } else {
-      message.error(`置顶失败，原因:{${addorUpdateRes.message}}`);
+      message.error(`${tooltipMessage}失败，原因:${addorUpdateRes.message}`);
     }
   }
   // 下架/上架状态更新
@@ -294,14 +295,27 @@ export default () => {
             >
               <a href="#">删除</a>
             </Popconfirm>
-             <Popconfirm
-              title={`确定置顶么？`}
-              okText="确定"
-              cancelText="取消"
-              onConfirm={() => updateTopStatus(record.id as string, true,)}
-            >
-              <a href="#">置顶</a>
-            </Popconfirm>
+            {
+              record.isTop ? (
+                <Popconfirm
+                  title={`确定取消置顶么？`}
+                  okText="确定"
+                  cancelText="取消"
+                  onConfirm={() => updateTopStatus(record.id as string, false,)}
+                >
+                  <a href="#">取消置顶</a>
+                </Popconfirm>
+              ) : (
+                <Popconfirm
+                  title={`确定置顶么？`}
+                  okText="确定"
+                  cancelText="取消"
+                  onConfirm={() => updateTopStatus(record.id as string, true,)}
+                >
+                  <a href="#">置顶</a>
+                </Popconfirm>
+              )
+            }
           </Space>
         );
       },
