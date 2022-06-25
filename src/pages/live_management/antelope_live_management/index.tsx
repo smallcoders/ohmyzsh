@@ -190,7 +190,7 @@ export default () => {
       isEllipsis: true,
       render: (_: string, _record: any) => (
         <a
-          href="javascript:;"
+          href="#!"
           onClick={() => {
             history.push(`${routeName.ANTELOPE_LIVE_MANAGEMENT_ADD}?id=${_record.id}&isDetail=1`);
           }}
@@ -361,7 +361,7 @@ export default () => {
               </Button>
               <Button
                 type="primary"
-                key="primary"
+                key="primary2"
                 onClick={() => {
                   searchForm.resetFields();
                   setSearChContent({});
@@ -392,7 +392,7 @@ export default () => {
           <span>直播列表(共{pageInfo.totalCount || 0}个)</span>
           <Button
             type="primary"
-            key="primary"
+            key="primary3"
             onClick={() => {
               history.push(routeName.ANTELOPE_LIVE_MANAGEMENT_ADD);
             }}
@@ -406,6 +406,7 @@ export default () => {
           bordered
           scroll={{ x: 1400 }}
           columns={columns}
+          rowKey="id"
           dataSource={dataSource}
           pagination={
             pageInfo.totalCount === 0

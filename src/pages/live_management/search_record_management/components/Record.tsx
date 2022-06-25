@@ -139,7 +139,7 @@ export default () => {
       render: (_: string, _record: any) => {
         return _record.operateUserId ? (
           <a
-            href="javascript:;"
+            href="#!"
             onClick={() => {
               showDrawer(`${_record.operateUserId}`, _record);
             }}
