@@ -129,13 +129,20 @@ export default () => {
       .validateFields()
       .then(async (value) => {
         setAddOrUpdateLoading(true);
-        console.log(editingItem.id, 'editingItem.id');
+        // console.log(value, '--value');
+        console.log(files, '--files');
+        // console.log({
+        //   ...value,
+        //   lineStatus: lineStatus,
+        //   videoId: files[0].storeId
+        // });
         const addorUpdateRes = await (editingItem.id
           ? updateVideo({
               ...value,
               id: editingItem.id,
+              videoId: files[0].storeId
             })
-          : addVideo({ ...value, lineStatus: lineStatus }));
+          : addVideo({ ...value, lineStatus: lineStatus, videoId: files[0].storeId }));
         if (addorUpdateRes.code === 0) {
           setModalVisible(false);
           message.success(`${tooltipMessage}成功！`);
@@ -274,9 +281,12 @@ export default () => {
               type="link"
               onClick={() => {
                 record.typeIds = record.typeIds?.split(',').map(Number);//返回的类型为字符串，需转为数组
-                setEditingItem(record);
+                setEditingItem({...record});
+                setFiles([
+                  {title: record.videoName+'.mp4', storeId: record.videoId}
+                ]);
                 setModalVisible(true);
-                form.setFieldsValue(record);
+                form.setFieldsValue({...record, videoId: [{uid: '-1', name: record.videoName+'.mp4', status: 'done',}]});
               }}
             >
               编辑
@@ -418,42 +428,11 @@ export default () => {
   };
   
   const [uploadLoading, setUploadLoading] = useState<boolean>(false);
-  const accept = '.mp4';
   const [files, setFiles] = useState<CourseManage.File[]>([]);
-  const handleChange = (info: UploadChangeParam<UploadFile<any>>) => {
-    if (info.file.status === 'uploading') {
-      setUploadLoading(true);
-      return;
-    }
-    if (info.file.status === 'error') {
-      setUploadLoading(false);
-      return;
-    }
-    if (info.file.status === 'done') {
-      const uploadResponse = info?.file?.response;
-      if (uploadResponse?.code === 0 && uploadResponse.result) {
-        const upLoadResult = info?.fileList.map((p) => {
-          console.log(p);
-          return {
-            title: p.name,
-            storeId: p.response?.result?.id,
-            duration: p.response?.result?.duration,
-            isEditing: false,
-          };
-        });
-        setFiles(upLoadResult);
-        setUploadLoading(false);
-      } else {
-        setUploadLoading(false);
-        message.error(`上传失败，原因:{${uploadResponse.message}}`);
-      }
-    }
-  };
   const props: UploadProps = {
     name: 'file',
-    accept: ".mp4",
+    // accept: ".mp4",
     action: '/antelope-manage/common/upload/record',
-    // onChange: handleChange,
     onRemove: (file: UploadFile<any>) => {
       if (file.status === 'uploading' || file.status === 'error') {
         setUploadLoading(false);
@@ -470,6 +449,23 @@ export default () => {
         console.log(info.file, info.fileList);
       }
       if (info.file.status === 'done') {
+        // fileList = [...info.fileList];
+        // console.log(fileList, '--fileList');
+        const uploadResponse = info?.file?.response;
+        if (uploadResponse?.code === 0 && uploadResponse.result) {
+          const upLoadResult = info?.fileList.map((p) => {
+            return {
+              title: p.name,
+              storeId: p.response?.result?.id,
+              // duration: p.response?.result?.duration
+            };
+          });
+          setFiles(upLoadResult);
+          setUploadLoading(false);
+        } else {
+          setUploadLoading(false);
+          message.error(`上传失败，原因:{${uploadResponse.message}}`);
+        }
         message.success(`${info.file.name} 上传成功`);
       } else if (info.file.status === 'error') {
         message.error(`${info.file.name} file upload failed.`);
@@ -566,7 +562,7 @@ export default () => {
                   },
                 ]}
               >
-                <Upload {...props}>
+                <Upload {...props} maxCount={1}>
                   <Button type="primary">上传</Button>
                 </Upload>
                 {/* <UploadForm
