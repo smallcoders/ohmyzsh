@@ -583,12 +583,6 @@ export default () => {
               <Form.Item 
                 name="shareVirtualCount" 
                 label="虚拟分享量"
-                rules={[
-                  {
-                    required: true,
-                    message: '必选',
-                  },
-                ]}
               >
                 <InputNumber min={0} defaultValue={0} />
               </Form.Item>
@@ -596,13 +590,7 @@ export default () => {
             <Col span={10}>
               <Form.Item 
                 name="goodVirtualCount"
-                label="虚拟点赞量"
-                rules={[
-                  {
-                    required: true,
-                    message: '必填',
-                  },
-                ]}>
+                label="虚拟点赞量">
                 <InputNumber min={0} defaultValue={0} />
               </Form.Item>
             </Col>

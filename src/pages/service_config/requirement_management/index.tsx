@@ -551,6 +551,7 @@ export default () => {
               <Form.Item name="operationState" label="需求状态">
                 <Select placeholder="请选择" allowClear>
                   <Select.Option key={'ON_SHELF'} value={'ON_SHELF'}>上架</Select.Option>
+                  <Select.Option key={'OFF_SHELF'} value={'OFF_SHELF'}>下架</Select.Option>
                   <Select.Option key={'FINISHED'} value={'FINISHED'}>已结束</Select.Option>
                 </Select>
               </Form.Item>

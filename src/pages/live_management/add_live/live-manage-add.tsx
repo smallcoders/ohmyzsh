@@ -472,17 +472,16 @@ export default () => {
                     const current = (new Date()).getTime();
                     const start = (new Date(value[0])).getTime();
                     const end = (new Date(value[1])).getTime();
-                    console.log((new Date(value[0])).getTime(), current, end);
                     if(start - current < 600000) {
                       return Promise.reject('开播时间需要在当前时间的10分钟后')
                     }
                     if(start - current > 6*30*24*60*60*1000) {
                       return Promise.reject('开始时间不能在6个月后')
                     }
-                    if(end - current > 24*60*60*1000) {
+                    if(end - start > 24*60*60*1000) {
                       return Promise.reject('开播时间和结束时间间隔不得超过24小时')
                     }
-                    if(end - current < 30*60*1000) {
+                    if(end - start < 30*60*1000) {
                       return Promise.reject('开播时间和结束时间间隔不得短于30分钟')
                     }
                     return Promise.resolve();
