@@ -19,6 +19,7 @@ import moment from 'moment';
 import SelfTable from '@/components/self_table';
 import type LogoutVerify from '@/types/user-config-logout-verify';
 import { confirmUserDelete, getLogoutPage } from '@/services/logout-verify';
+import { getBillPage } from '@/services/purchase';
 const sc = scopedClasses('user-config-logout-verify');
 
 export default () => {
@@ -40,7 +41,7 @@ export default () => {
 
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     try {
-      const { result, totalCount, pageTotal, code, message } = await getLogoutPage({
+      const { result, totalCount, pageTotal, code, message } = await getBillPage({
         pageIndex,
         pageSize,
         ...searchContent,
@@ -157,17 +158,17 @@ export default () => {
         <Form {...formLayout} form={searchForm}>
           <Row>
             <Col span={8}>
-              <Form.Item name="userName" label="订单编号">
+              <Form.Item name="orderNo" label="订单编号">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="certificateName" label="活动名称">
+              <Form.Item name="actName" label="活动名称">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="accountType" label="发票类型">
+              <Form.Item name="invoiceType" label="发票类型">
                 <Select placeholder="请选择" allowClear>
                   <Select.Option value={'ENTERPRISE'}>增值税专用发票</Select.Option>
                   <Select.Option value={'SERVICE_PROVIDER'}>增值税普通发票</Select.Option>
@@ -177,7 +178,7 @@ export default () => {
           </Row>
           <Row>
             <Col span={8}>
-              <Form.Item name="accountType" label="开票形式">
+              <Form.Item name="invoiceForm" label="开票形式">
                 <Select placeholder="请选择" allowClear>
                   <Select.Option value={'ENTERPRISE'}>电子发票</Select.Option>
                   <Select.Option value={'SERVICE_PROVIDER'}>纸质发票</Select.Option>
