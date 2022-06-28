@@ -6,6 +6,7 @@ import React, { useState, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
+import { routeName } from '../../../../../config/routes';
 import { 
   getOfficeRequirementVerifyDetail,
   addConnectRecord,
@@ -275,7 +276,9 @@ export default () => {
             }}>
               提交
             </Button>
-            <Button>
+            <Button onClick={() => {
+              history.push(routeName.REQUIREMENT_MANAGEMENT);
+            }}>
               返回
             </Button>
           </Space>
