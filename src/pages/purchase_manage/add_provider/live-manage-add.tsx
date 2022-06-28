@@ -4,15 +4,11 @@ import {
   Input,
   Form,
   Select,
-  Checkbox,
   Row,
   Col,
-  Radio,
   message,
   Breadcrumb,
-  DatePicker,
-  Image,
-  Tag
+  DatePicker
 } from 'antd';
 const { RangePicker } = DatePicker;
 import moment from 'moment';
@@ -26,6 +22,7 @@ import {
   updateLive,
   getLiveTypesPage
 } from '@/services/search-record';
+import { getProviderDetails } from '@/services/purchase';
 import UploadForm from '@/components/upload_form';
 import AppResource from '@/types/app-resource';
 import { Link, history, Prompt } from 'umi';
@@ -37,10 +34,6 @@ export default () => {
    * 是否跳转连接 1 跳转 0 不跳
    */
   const [isSkip, setIsSkip] = useState<string | number>(1);
-  /**
-   * 是否是尖刀应用 1 是 0 不是
-   */
-  const [isTop, setIsTop] = useState<string | number>(1);
   /**
    * 直播类型
    */
@@ -69,30 +62,9 @@ export default () => {
   const isEditing = Boolean(editingItem.id && !isDetail);
   console.log(isEditing, 'isEditing');
 
-  //判断初始的是否尖刀应用并且是否正在修改的开关
-  const [isBeginTopAndEditing, setIsBeginTopAndEditing] = useState<boolean>(false);
-
   const [form] = Form.useForm();
 
   const [formParams, setFormParams] = useState<object>({});
-
-  const stateObj = {
-    0: '未开始',
-    1: '直播中',
-    2: '已结束'
-  };
-
-  const options = [
-    { label: '回放', value: 'replay' },
-    { label: '客服', value: 'kf' }
-  ];
-
-  const options2 = [
-    { label: '点赞', value: 'like' },
-    { label: '货架', value: 'goods' },
-    { label: '评论', value: 'comment' },
-    { label: '分享', value: 'share' }
-  ];
 
   // 新增直播时，直播时间选择不能选择今日今时之前的时间
   const range = (start, end) => {
@@ -147,36 +119,14 @@ export default () => {
 
       if (id) {
         // 获取详情 塞入表单
-        const detailRs = await getVideoDetail(id);
+        const detailRs = await getProviderDetails({id});
         let editItem = { ...detailRs.result };
-        editItem.typeIds = editItem.typeIds?.split(',').map(Number);//返回的类型为字符串，需转为数组
         console.log(editItem, '---editItem')
         if (detailRs.code === 0) {
           editItem.isSkip = detailRs.result.url ? 1 : 0;
           setIsSkip(editItem.isSkip);
-          // setIsBeginTopAndEditing(Boolean(editItem.isTopApp));
           console.log(editItem, 'res---editItem');
-          let extented = [];//扩展功能数据获取
-          if(!editItem.closeReplay) {
-            extented.push('replay');
-          }
-          if(!editItem.closeKf) {
-            extented.push('kf');
-          }
-          let liveFunctions = [];//直播间功能数据获取
-          if(!editItem.closeLike) {
-            extented.push('like');
-          }
-          if(!editItem.closeGoods) {
-            extented.push('goods');
-          }
-          if(!editItem.closeComment) {
-            extented.push('comment');
-          }
-          if(!editItem.closeShare) {
-            extented.push('share');
-          }
-          setEditingItem({...editItem, extended: extented, time: [moment(editingItem.startTime), moment(editingItem.endTime)]});
+          setEditingItem({...editItem});
         } else {
           message.error(`获取详情失败，原因:{${detailRs.message}}`);
         }
@@ -317,7 +267,7 @@ export default () => {
         <Row>
           <Col span={10} offset={2}>
             <Form.Item
-              name="title"
+              name="providerId"
               label="供应商编号"
               rules={[
                 {
@@ -327,7 +277,7 @@ export default () => {
               ]}
             > 
               {isDetail ? (
-                <span>{editingItem?.title || '--'}</span>
+                <span>{editingItem?.providerId || '--'}</span>
               ) : (
                 <Input placeholder="请输入" maxLength={30} />
               )}
@@ -355,21 +305,21 @@ export default () => {
               )}
             </Form.Item>
             <Form.Item
-              name="createrWechat"
+              name="phoneNum"
               label="手机"
             >
               {isDetail ? (
-                <span>{editingItem?.createrWechat || '--'}</span>
+                <span>{editingItem?.phoneNum || '--'}</span>
               ) : (
                 <Input placeholder="请输入" maxLength={30} />
               )}
             </Form.Item>
             <Form.Item
-              name="createrWechat"
+              name="eMail"
               label="邮箱"
             >
               {isDetail ? (
-                <span>{editingItem?.createrWechat || '--'}</span>
+                <span>{editingItem?.eMail || '--'}</span>
               ) : (
                 <Input placeholder="请输入" maxLength={30} />
               )}
@@ -377,7 +327,7 @@ export default () => {
           </Col>
           <Col span={10}>
           <Form.Item
-              name="title"
+              name="providerName"
               label="供应商名称"
               rules={[
                 {
@@ -387,37 +337,37 @@ export default () => {
               ]}
             > 
               {isDetail ? (
-                <span>{editingItem?.title || '--'}</span>
+                <span>{editingItem?.providerName || '--'}</span>
               ) : (
                 <Input placeholder="请输入" maxLength={30} />
               )}
             </Form.Item>
             <Form.Item
-              name="createrWechat"
+              name="contactsName"
               label="联系人"
             >
               {isDetail ? (
-                <span>{editingItem?.createrWechat || '--'}</span>
+                <span>{editingItem?.contactsName || '--'}</span>
               ) : (
                 <Input placeholder="请输入" maxLength={30} />
               )}
             </Form.Item>
             <Form.Item
-              name="createrWechat"
+              name="telNum"
               label="座机"
             >
               {isDetail ? (
-                <span>{editingItem?.createrWechat || '--'}</span>
+                <span>{editingItem?.telNum || '--'}</span>
               ) : (
                 <Input placeholder="请输入" maxLength={30} />
               )}
             </Form.Item>
             <Form.Item
-              name="typeIds"
+              name="district"
               label="所属地区"
             >
               {isDetail ? (
-                <span>{editingItem?.typeNames || '--'}</span>
+                <span>{editingItem?.district || '--'}</span>
               ) : (
                 <Select placeholder="请选择">
                   {appTypes.map((p) => (
@@ -433,11 +383,11 @@ export default () => {
         <Row>
           <Col span={18}>
             <Form.Item
-              name="createrWechat"
+              name="address"
               label="详细地址"
             >
               {isDetail ? (
-                <span>{editingItem?.createrWechat || '--'}</span>
+                <span>{editingItem?.address || '--'}</span>
               ) : (
                 <Input placeholder="请输入" maxLength={100} />
               )}
@@ -447,21 +397,21 @@ export default () => {
         <Row>
           <Col span={10} offset={2}>
             <Form.Item
-              name="title"
+              name="bankAccount"
               label="银行账号"
             > 
               {isDetail ? (
-                <span>{editingItem?.title || '--'}</span>
+                <span>{editingItem?.bankAccount || '--'}</span>
               ) : (
                 <Input placeholder="请输入" maxLength={100} />
               )}
             </Form.Item>
             <Form.Item
-              name="title"
+              name="bankCardPersonName"
               label="持卡人姓名"
             > 
               {isDetail ? (
-                <span>{editingItem?.title || '--'}</span>
+                <span>{editingItem?.bankCardPersonName || '--'}</span>
               ) : (
                 <Input placeholder="请输入" maxLength={30} />
               )}
@@ -479,11 +429,11 @@ export default () => {
               )}
             </Form.Item>
             <Form.Item
-              name="title"
+              name="licensedTaxNum"
               label="税务登记号"
             > 
               {isDetail ? (
-                <span>{editingItem?.title || '--'}</span>
+                <span>{editingItem?.licensedTaxNum || '--'}</span>
               ) : (
                 <Input placeholder="请输入" maxLength={30} />
               )}
@@ -494,31 +444,31 @@ export default () => {
         <Row>
           <Col span={10} offset={2}>
             <Form.Item 
-              name="time" 
+              name="payCompanyName" 
               label="公司名称"
             >
               {isDetail ? (
-                <span>{editingItem?.startTime || '--'}</span>
+                <span>{editingItem?.payCompanyName || '--'}</span>
               ) : (
                 <Input />
               )}
             </Form.Item>
             <Form.Item 
-              name="time" 
+              name="payBankDepositName" 
               label="开户行"
             >
               {isDetail ? (
-                <span>{editingItem?.startTime || '--'}</span>
+                <span>{editingItem?.payBankDepositName || '--'}</span>
               ) : (
                 <Input />
               )}
             </Form.Item>
             <Form.Item 
-              name="time" 
+              name="payTaxNum" 
               label="税号"
             >
               {isDetail ? (
-                <span>{editingItem?.startTime || '--'}</span>
+                <span>{editingItem?.payTaxNum || '--'}</span>
               ) : (
                 <Input />
               )}
@@ -526,31 +476,31 @@ export default () => {
           </Col>
           <Col span={10}>
             <Form.Item 
-              name="time" 
+              name="payBankAccount" 
               label="银行账户"
             >
               {isDetail ? (
-                <span>{editingItem?.startTime || '--'}</span>
+                <span>{editingItem?.payBankAccount || '--'}</span>
               ) : (
                 <Input />
               )}
             </Form.Item>
             <Form.Item 
-              name="time" 
+              name="payUnionpay" 
               label="银联号"
             >
               {isDetail ? (
-                <span>{editingItem?.startTime || '--'}</span>
+                <span>{editingItem?.payUnionpay || '--'}</span>
               ) : (
                 <Input />
               )}
             </Form.Item>
             <Form.Item 
-              name="time" 
+              name="payPhoneNum" 
               label="电话"
             >
               {isDetail ? (
-                <span>{editingItem?.startTime || '--'}</span>
+                <span>{editingItem?.payPhoneNum || '--'}</span>
               ) : (
                 <Input />
               )}
@@ -560,11 +510,11 @@ export default () => {
         <Row>
           <Col span={18}>
             <Form.Item 
-              name="time" 
+              name="payAddress" 
               label="地址"
             >
               {isDetail ? (
-                <span>{editingItem?.startTime || '--'}</span>
+                <span>{editingItem?.payAddress || '--'}</span>
               ) : (
                 <Input />
               )}

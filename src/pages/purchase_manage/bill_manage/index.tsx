@@ -18,7 +18,6 @@ import type Common from '@/types/common';
 import moment from 'moment';
 import SelfTable from '@/components/self_table';
 import type LogoutVerify from '@/types/user-config-logout-verify';
-import { confirmUserDelete, getLogoutPage } from '@/services/logout-verify';
 import { getBillPage } from '@/services/purchase';
 const sc = scopedClasses('user-config-logout-verify');
 
@@ -57,21 +56,6 @@ export default () => {
     }
   };
 
-  const pass = async (record: any) => {
-    const tooltipMessage = '审核通过';
-    try {
-      const updateStateResult = await confirmUserDelete(record.id);
-      if (updateStateResult.code === 0) {
-        antdMessage.success(`${tooltipMessage}成功`);
-        getPage();
-      } else {
-        throw new Error(updateStateResult.message);
-      }
-    } catch (error) {
-      antdMessage.error(`${tooltipMessage}失败，原因:{${error}}`);
-    }
-  };
-
   const columns = [
     {
       title: '序号',
@@ -82,49 +66,52 @@ export default () => {
     },
     {
       title: '订单编号',
-      dataIndex: 'auditType',
+      dataIndex: 'orderNo',
       width: 200,
     },
     {
       title: '活动名称',
-      dataIndex: 'userName',
+      dataIndex: 'actName',
       isEllipsis: true,
       width: 200,
     },
     {
       title: '活动编码',
-      dataIndex: 'certificateName',
+      dataIndex: 'actNo',
       isEllipsis: true,
-      render: (_: string) => _ || '/',
+      render: (_: string) => _ || '--',
       width: 200,
     },
     {
       title: '发票类型',
-      dataIndex: 'phone',
+      dataIndex: 'invoiceType',
+      render: (_: number) => _ == 1 ? '增值税专用发票' : '增值税普通发票',
       isEllipsis: true,
       width: 200,
     },
     {
       title: '发票抬头',
-      dataIndex: 'accountType',
+      dataIndex: 'orgName',
       isEllipsis: true,
       width: 200,
     },
     {
       title: '发票金额',
-      dataIndex: 'phone',
+      dataIndex: 'totalPrice',
+      render: (_: string) => '¥'+_ || '--',
       isEllipsis: true,
       width: 200,
     },
     {
       title: '开票形式',
-      dataIndex: 'accountType',
+      dataIndex: 'invoiceForm',
+      render: (_: number) => _ == 1 ? '纸质发票' : '电子发票',
       isEllipsis: true,
       width: 200,
     },
     {
       title: '创建时间',
-      dataIndex: 'submitTime',
+      dataIndex: 'createTime',
       width: 200,
       render: (_: string) => moment(_).format('YYYY-MM-DD HH:mm:ss'),
     },
@@ -138,7 +125,7 @@ export default () => {
           <div style={{ textAlign: 'center' }}>
             <Space size={20}>
               {/* 跳转到订单管理-订单详情，且选中「发票信息」页签 */}
-              <Button type="link" onClick={() => pass(record)}>
+              <Button type="link" onClick={() => {console.log(111)}}>
                 查看详情
               </Button>
             </Space>
@@ -170,8 +157,8 @@ export default () => {
             <Col span={8}>
               <Form.Item name="invoiceType" label="发票类型">
                 <Select placeholder="请选择" allowClear>
-                  <Select.Option value={'ENTERPRISE'}>增值税专用发票</Select.Option>
-                  <Select.Option value={'SERVICE_PROVIDER'}>增值税普通发票</Select.Option>
+                  <Select.Option value={1}>增值税专用发票</Select.Option>
+                  <Select.Option value={0}>增值税普通发票</Select.Option>
                 </Select>
               </Form.Item>
             </Col>
@@ -180,8 +167,8 @@ export default () => {
             <Col span={8}>
               <Form.Item name="invoiceForm" label="开票形式">
                 <Select placeholder="请选择" allowClear>
-                  <Select.Option value={'ENTERPRISE'}>电子发票</Select.Option>
-                  <Select.Option value={'SERVICE_PROVIDER'}>纸质发票</Select.Option>
+                  <Select.Option value={0}>电子发票</Select.Option>
+                  <Select.Option value={1}>纸质发票</Select.Option>
                 </Select>
               </Form.Item>
             </Col>
@@ -198,8 +185,8 @@ export default () => {
                 onClick={() => {
                   const search = searchForm.getFieldsValue();
                   if (search.time) {
-                    search.submitStartTime = moment(search.time[0]).format('YYYY-MM-DDTHH:mm:ss');
-                    search.submitEndTime = moment(search.time[1]).format('YYYY-MM-DDTHH:mm:ss');
+                    search.createTimeStart = moment(search.time[0]).format('YYYY-MM-DD HH:mm:ss');
+                    search.createTimeEnd = moment(search.time[1]).format('YYYY-MM-DD HH:mm:ss');
                   }
                   setSearChContent(search);
                 }}

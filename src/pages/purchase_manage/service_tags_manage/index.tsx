@@ -1,21 +1,13 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Input, Form, Modal, message, Space, Popconfirm, Radio, Row, Col } from 'antd';
-const { TextArea } = Input;
+import { Button, Input, Form, Modal, message, Space, Popconfirm, Row, Col } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
 import Common from '@/types/common';
-import moment from 'moment';
 import SelfTable from '@/components/self_table';
 import LiveTypesMaintain from '@/types/live-types-maintain.d';
-import {
-  addLiveType,
-  getLiveTypesPage,
-  updateLiveType,
-  removeLiveType
-} from '@/services/search-record';
-import { getOrgTypeOptions } from '@/services/org-type-manage';
+import { getLabelPage, updateLabel } from '@/services/purchase';
 const sc = scopedClasses('user-config-admin-account-distributor');
 export default () => {
   const { TextArea } = Input;
@@ -24,19 +16,9 @@ export default () => {
   const [editingItem, setEditingItem] = useState<LiveTypesMaintain.Content>({});
   const [addOrUpdateLoading, setAddOrUpdateLoading] = useState<boolean>(false);
   const [searchContent, setSearChContent] = useState<{
-    title?: string; // 服务标签
+    label?: string; // 服务标签
   }>({});
 
-  const [options, setOptions] = useState<any>([]);
-
-  const getDictionary = async () => {
-    try {
-      const res = await Promise.all([getOrgTypeOptions()]);
-      setOptions(res[0]?.result || []);
-    } catch (error) {
-      message.error('服务器错误');
-    }
-  };
   const formLayout = {
     labelCol: { span: 6 },
     wrapperCol: { span: 16 },
@@ -53,9 +35,10 @@ export default () => {
 
   const getPages = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     try {
-      const { result, totalCount, pageTotal, code } = await getLiveTypesPage({
+      const { result, totalCount, pageTotal, code } = await getLabelPage({
         pageIndex,
         pageSize,
+        labelType: 1,
         ...searchContent,
       });
       if (code === 0) {
@@ -76,29 +59,24 @@ export default () => {
 
   // 新增/编辑
   const addOrUpdate = async () => {
-    const tooltipMessage = editingItem.id ? '编辑类型' : '新增类型';
+    const tooltipMessage = editingItem.id ? '编辑服务标签' : '新增服务类型';
     form
       .validateFields()
       .then(async (value) => {
         setAddOrUpdateLoading(true);
-        if (value.publishTime) {
-          value.publishTime = moment(value.publishTime).format('YYYY-MM-DDTHH:mm:ss');
-        }
         const addorUpdateRes = await (editingItem.id
-          ? updateLiveType({
+          ? updateLabel({
               ...value,
               id: editingItem.id,
+              labelType: 1
             })
-          : addLiveType({
+          : updateLabel({
               ...value,
+              labelType: 1
             }));
         if (addorUpdateRes.code === 0) {
           setModalVisible(false);
-          if (!editingItem.id) {
-            message.success('新增类型成功！');
-          }else {
-            message.success('编辑类型成功！');
-          }
+          message.success(`${tooltipMessage}成功！`);
           getPages();
           clearForm();
         } else {
@@ -113,7 +91,7 @@ export default () => {
   // 删除
   const remove = async (id: string) => {
     try {
-      const removeRes = await removeLiveType(id);
+      const removeRes = await updateLabel({id, state: 1, labelType: 1});
       if (removeRes.code === 0) {
         message.success(`删除成功`);
         getPages();
@@ -124,30 +102,10 @@ export default () => {
       console.log(error);
     }
   };
-  // 启用/停用
-  const updateStatus = async (id: string, status) => {
-    try {
-      setAddOrUpdateLoading(true);
-      const addorUpdateRes = await updateLiveType({
-        status,
-        id
-      })
-      if (addorUpdateRes.code === 0) {
-        setModalVisible(false);
-        message.success('操作成功！');
-        getPages();
-      } else {
-        message.error(`操作失败，原因:${addorUpdateRes.message}`);
-      }
-      setAddOrUpdateLoading(false);
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   const columns = [
     {
-      title: '排序',
+      title: '序号',
       dataIndex: 'sort',
       width: 80,
       render: (_: any, _record: LiveTypesMaintain.Content, index: number) =>
@@ -155,13 +113,13 @@ export default () => {
     },
     {
       title: '服务标签',
-      dataIndex: 'name',
+      dataIndex: 'label',
       isEllipsis: true,
       width: 100,
     },
     {
       title: '服务说明',
-      dataIndex: 'creatorUserName',
+      dataIndex: 'labelContent',
       width: 200,
     },
     {
@@ -177,7 +135,7 @@ export default () => {
               onClick={() => {
                 setEditingItem(record);
                 setModalVisible(true);
-                form.setFieldsValue({ name: record?.name, status: record?.status });
+                form.setFieldsValue({ label: record?.label, labelContent: record?.labelContent });
               }}
             >
               编辑
@@ -199,10 +157,6 @@ export default () => {
   useEffect(() => {
     getPages();
   }, [searchContent]);
-
-  useEffect(() => {
-    getDictionary();
-  }, []);
 
   const handleOk = async () => {
     addOrUpdate();
@@ -228,7 +182,7 @@ export default () => {
           <Button
             key="link"
             type="primary"
-            onClick={handleOk}
+            onClick={() => {addOrUpdate()}}
           >
             确定
           </Button>,
@@ -241,7 +195,7 @@ export default () => {
           labelWrap
         >
           <Form.Item 
-            name="name"
+            name="label"
             label="服务标签名称"
             rules={[
               {
@@ -252,7 +206,7 @@ export default () => {
             <Input placeholder="请输入" maxLength={10} />
           </Form.Item>
           <Form.Item 
-            name="name"
+            name="labelContent"
             label="内容"
             rules={[
               {
@@ -273,7 +227,7 @@ export default () => {
         <Form {...formLayout} form={searchForm}>
           <Row>
             <Col span={8}>
-              <Form.Item name="userName" label="服务标签">
+              <Form.Item name="label" label="服务标签">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
@@ -281,7 +235,7 @@ export default () => {
               <Button
                 style={{ marginRight: 20 }}
                 type="primary"
-                key="primary"
+                key="primary1"
                 onClick={() => {
                   const search = searchForm.getFieldsValue();
                   setSearChContent(search);
@@ -291,7 +245,7 @@ export default () => {
               </Button>
               <Button
                 type="primary"
-                key="primary"
+                key="primary2"
                 onClick={() => {
                   searchForm.resetFields();
                   setSearChContent({});
@@ -314,7 +268,7 @@ export default () => {
           <span>服务标签列表(共{pageInfo.totalCount || 0}个)</span>
           <Button
             type="primary"
-            key="primary"
+            key="primary3"
             onClick={() => {
               setModalVisible(true);
             }}

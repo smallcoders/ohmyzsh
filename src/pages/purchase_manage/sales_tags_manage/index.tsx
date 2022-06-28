@@ -9,13 +9,7 @@ import Common from '@/types/common';
 import moment from 'moment';
 import SelfTable from '@/components/self_table';
 import LiveTypesMaintain from '@/types/live-types-maintain.d';
-import {
-  addLiveType,
-  getLiveTypesPage,
-  updateLiveType,
-  removeLiveType
-} from '@/services/search-record';
-import { getOrgTypeOptions } from '@/services/org-type-manage';
+import { getLabelPage, updateLabel } from '@/services/purchase';
 const sc = scopedClasses('user-config-admin-account-distributor');
 export default () => {
   const { TextArea } = Input;
@@ -27,16 +21,6 @@ export default () => {
     title?: string; // 促销标签
   }>({});
 
-  const [options, setOptions] = useState<any>([]);
-
-  const getDictionary = async () => {
-    try {
-      const res = await Promise.all([getOrgTypeOptions()]);
-      setOptions(res[0]?.result || []);
-    } catch (error) {
-      message.error('服务器错误');
-    }
-  };
   const formLayout = {
     labelCol: { span: 6 },
     wrapperCol: { span: 16 },
@@ -49,14 +33,14 @@ export default () => {
   });
 
   const [form] = Form.useForm();
-  // const [searchForm] = Form.useForm();
 
   const getPages = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     try {
-      const { result, totalCount, pageTotal, code } = await getLiveTypesPage({
+      const { result, totalCount, pageTotal, code } = await getLabelPage({
         pageIndex,
         pageSize,
         ...searchContent,
+        labelType: 0
       });
       if (code === 0) {
         setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
@@ -76,7 +60,7 @@ export default () => {
 
   // 新增/编辑
   const addOrUpdate = async () => {
-    const tooltipMessage = editingItem.id ? '编辑类型' : '新增类型';
+    const tooltipMessage = editingItem.id ? '编辑促销标签' : '新增促销标签';
     form
       .validateFields()
       .then(async (value) => {
@@ -85,20 +69,18 @@ export default () => {
           value.publishTime = moment(value.publishTime).format('YYYY-MM-DDTHH:mm:ss');
         }
         const addorUpdateRes = await (editingItem.id
-          ? updateLiveType({
+          ? updateLabel({
               ...value,
               id: editingItem.id,
+              labelType: 0
             })
-          : addLiveType({
+          : updateLabel({
               ...value,
+              labelType: 0
             }));
         if (addorUpdateRes.code === 0) {
           setModalVisible(false);
-          if (!editingItem.id) {
-            message.success('新增类型成功！');
-          }else {
-            message.success('编辑类型成功！');
-          }
+          message.success(`${tooltipMessage}成功！`);
           getPages();
           clearForm();
         } else {
@@ -113,7 +95,7 @@ export default () => {
   // 删除
   const remove = async (id: string) => {
     try {
-      const removeRes = await removeLiveType(id);
+      const removeRes = await updateLabel({id, state: 1, labelType: 0});
       if (removeRes.code === 0) {
         message.success(`删除成功`);
         getPages();
@@ -124,50 +106,30 @@ export default () => {
       console.log(error);
     }
   };
-  // 启用/停用
-  const updateStatus = async (id: string, status) => {
-    try {
-      setAddOrUpdateLoading(true);
-      const addorUpdateRes = await updateLiveType({
-        status,
-        id
-      })
-      if (addorUpdateRes.code === 0) {
-        setModalVisible(false);
-        message.success('操作成功！');
-        getPages();
-      } else {
-        message.error(`操作失败，原因:${addorUpdateRes.message}`);
-      }
-      setAddOrUpdateLoading(false);
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   const columns = [
     {
-      title: '排序',
+      title: '序号',
       dataIndex: 'sort',
-      width: 80,
+      width: 30,
       render: (_: any, _record: LiveTypesMaintain.Content, index: number) =>
         pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
       title: '促销标签',
-      dataIndex: 'name',
+      dataIndex: 'label',
       isEllipsis: true,
-      width: 100,
+      width: 70,
     },
     {
       title: '促销说明',
-      dataIndex: 'creatorUserName',
+      dataIndex: 'labelContent',
       width: 200,
     },
     {
       title: '操作',
-      width: 120,
-      // fixed: 'right',
+      width: 50,
+      fixed: 'right',
       dataIndex: 'option',
       render: (_: any, record: LiveTypesMaintain.Content) => {
         return (
@@ -177,7 +139,7 @@ export default () => {
               onClick={() => {
                 setEditingItem(record);
                 setModalVisible(true);
-                form.setFieldsValue({ name: record?.name, status: record?.status });
+                form.setFieldsValue({ label: record?.label, labelContent: record?.labelContent });
               }}
             >
               编辑
@@ -199,10 +161,6 @@ export default () => {
   useEffect(() => {
     getPages();
   }, [searchContent]);
-
-  useEffect(() => {
-    getDictionary();
-  }, []);
 
   const handleOk = async () => {
     addOrUpdate();
@@ -241,7 +199,7 @@ export default () => {
           labelWrap
         >
           <Form.Item 
-            name="name"
+            name="label"
             label="促销标签名称"
             rules={[
               {
@@ -252,7 +210,7 @@ export default () => {
             <Input placeholder="请输入" maxLength={10} />
           </Form.Item>
           <Form.Item 
-            name="name"
+            name="labelContent"
             label="内容"
             rules={[
               {

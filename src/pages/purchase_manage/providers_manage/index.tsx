@@ -1,6 +1,7 @@
 import { PlusOutlined, DownloadOutlined } from '@ant-design/icons';
 import { Button, Input, Form, Modal, message, Space, Popconfirm, Radio, Row, Col } from 'antd';
 const { TextArea } = Input;
+import { history } from 'umi';
 import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
@@ -15,7 +16,9 @@ import {
   updateLiveType,
   removeLiveType
 } from '@/services/search-record';
+import { getProviderPage } from '@/services/purchase';
 import { getOrgTypeOptions } from '@/services/org-type-manage';
+import { routeName } from '@/../config/routes';
 const sc = scopedClasses('user-config-admin-account-distributor');
 export default () => {
   const { TextArea } = Input;
@@ -49,11 +52,10 @@ export default () => {
   });
 
   const [form] = Form.useForm();
-  // const [searchForm] = Form.useForm();
 
   const getPages = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     try {
-      const { result, totalCount, pageTotal, code } = await getLiveTypesPage({
+      const { result, totalCount, pageTotal, code } = await getProviderPage({
         pageIndex,
         pageSize,
         ...searchContent,
@@ -371,7 +373,8 @@ export default () => {
               type="primary"
               key="primary"
               onClick={() => {
-                setModalVisible(true);
+                // setModalVisible(true);
+                history.push(`${routeName.PROVIDERS_MANAGE_ADD}`)
               }}
             >
               <PlusOutlined /> 新增供应商
