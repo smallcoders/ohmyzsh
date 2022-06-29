@@ -8,7 +8,8 @@ import {
   Col,
   message,
   Breadcrumb,
-  DatePicker
+  DatePicker,
+  Cascader
 } from 'antd';
 const { RangePicker } = DatePicker;
 import moment from 'moment';
@@ -16,14 +17,13 @@ import { PageContainer } from '@ant-design/pro-layout';
 import './live-manage-add.less';
 import scopedClasses from '@/utils/scopedClasses';
 import { useEffect, useState } from 'react';
-import {
-  getVideoDetail,
-  addLive,
-  updateLive,
-  getLiveTypesPage
-} from '@/services/search-record';
-import { getProviderDetails } from '@/services/purchase';
-import UploadForm from '@/components/upload_form';
+import { listAllAreaCode } from '@/services/common';
+import { 
+  getProviderDetails, 
+  addProvider, 
+  getAllProviderTypes,
+  updateProvider
+} from '@/services/purchase';
 import AppResource from '@/types/app-resource';
 import { Link, history, Prompt } from 'umi';
 import { routeName } from '../../../../config/routes';
@@ -37,7 +37,7 @@ export default () => {
   /**
    * 直播类型
    */
-  const [appTypes, setAppTypes] = useState<{ id: string; name: string }[]>([]);
+  const [appTypes, setAppTypes] = useState<any>([]);
   /**
    * 正在编辑的一行记录
    */
@@ -55,16 +55,55 @@ export default () => {
   /**
    * 关闭提醒 主要是 添加或者修改成功后 不需要弹出
    */
-  const [isClosejumpTooltip, setIsClosejumpTooltip] = useState<boolean>(true);
+  const [isClosejumpTooltip, setIsClosejumpTooltip] = useState<boolean>(false);
   /**
    * 是否在编辑
    */
   const isEditing = Boolean(editingItem.id && !isDetail);
-  console.log(isEditing, 'isEditing');
 
   const [form] = Form.useForm();
 
   const [formParams, setFormParams] = useState<object>({});
+
+  // const cascaderOptions = [
+  //   {
+  //     value: 'zhejiang',
+  //     label: 'Zhejiang',
+  //     children: [
+  //       {
+  //         value: 'hangzhou',
+  //         label: 'Hangzhou',
+  //         children: [
+  //           {
+  //             value: 'xihu',
+  //             label: 'West Lake',
+  //           },
+  //         ],
+  //       },
+  //     ],
+  //   },
+  //   {
+  //     value: 'jiangsu',
+  //     label: 'Jiangsu',
+  //     children: [
+  //       {
+  //         value: 'nanjing',
+  //         label: 'Nanjing',
+  //         children: [
+  //           {
+  //             value: 'zhonghuamen',
+  //             label: 'Zhong Hua Men',
+  //           },
+  //         ],
+  //       },
+  //     ],
+  //   },
+  // ];
+  const [cascaderOptions, setCascaderOptions] = useState<object>([]);
+
+  const onChange = (value) => {
+    console.log(value);
+  }; 
 
   // 新增直播时，直播时间选择不能选择今日今时之前的时间
   const range = (start, end) => {
@@ -75,25 +114,6 @@ export default () => {
     }
   
     return result;
-  };
-  const disabledDate = (current) => {
-    // Can not select days before today
-    return current < moment().endOf('day');
-  };
-  const disabledRangeTime = (_, type) => {
-    if (type === 'start') {
-      return {
-        disabledHours: () => range(0, 60).splice(4, 20),
-        disabledMinutes: () => range(30, 60),
-        disabledSeconds: () => [55, 56],
-      };
-    }
-  
-    return {
-      disabledHours: () => range(0, 60).splice(20, 4),
-      disabledMinutes: () => range(0, 31),
-      disabledSeconds: () => [55, 56],
-    };
   };
 
   /**
@@ -109,30 +129,30 @@ export default () => {
    */
   const prepare = async () => {
     try {
-      const prepareResultArray = await Promise.all([getLiveTypesPage({
-        pageIndex: 1,
-        pageSize: 100,
-      })]);
-      setAppTypes(prepareResultArray[0].result || []);
-
       const { id, isDetail } = history.location.query as { id: string | undefined, isDetail: string | undefined };
 
       if (id) {
         // 获取详情 塞入表单
         const detailRs = await getProviderDetails({id});
-        let editItem = { ...detailRs.result };
-        console.log(editItem, '---editItem')
         if (detailRs.code === 0) {
-          editItem.isSkip = detailRs.result.url ? 1 : 0;
-          setIsSkip(editItem.isSkip);
-          console.log(editItem, 'res---editItem');
+          let editItem = { ...detailRs.result };
+          if(editItem.province) {
+            editItem.pcds = [editItem.province, editItem.city, editItem.district, editItem.street || ''];
+          }
+          console.log(editItem, '---editItem');
+          // editItem.isSkip = detailRs.result.url ? 1 : 0;
+          // setIsSkip(0);
           setEditingItem({...editItem});
+          form.setFieldsValue({ ...editItem });
         } else {
           message.error(`获取详情失败，原因:{${detailRs.message}}`);
         }
       }
       if(isDetail == '1') {
         setIsDetail(true);
+        setIsClosejumpTooltip(false);
+      }else {
+        setIsClosejumpTooltip(true);
       }
     } catch (error) {
       console.log('error', error);
@@ -140,19 +160,32 @@ export default () => {
     }
   };
 
+  // 获取省、市、区/县数据及所有供应商类型
+  const getDictionary = async () => {
+    try {
+      const res = await Promise.all([
+        listAllAreaCode(),
+        getAllProviderTypes()
+      ]);
+      console.log(res[1]);
+      setCascaderOptions(res[0]?.result || [])
+      setAppTypes(res[1]?.result || []);
+    } catch (error) {
+      message.error('服务器错误');
+    }
+  };
+
   useEffect(() => {
     prepare();
-    window.addEventListener('beforeunload', listener);
-    return () => {
-      window.removeEventListener('beforeunload', listener);
-    };
   }, []);
 
-
+  useEffect(() => {
+    getDictionary();
+  }, []);
   /**
    * 新增/编辑
    */
-  const addOrUpdate = (lineStatus: boolean) => {
+  const addOrUpdate = () => {
     form
       .validateFields()
       .then(async (value: AppResource.Detail) => {
@@ -163,38 +196,30 @@ export default () => {
         // // 编辑
         let addorUpdateRes = {};
         if(editingItem.id) {
-          addorUpdateRes = await updateLive({
+          addorUpdateRes = await updateProvider({
             ...value,
-            startTime: moment(value.time[0]).format('YYYY-MM-DD HH:mm:ss'),
-            endTime: moment(value.time[1]).format('YYYY-MM-DD HH:mm:ss'),
-            closeReplay: value.extended?.indexOf('replay') > -1 ? 0 : 1,
-            closeKf: value.extended?.indexOf('kf') > -1 ? 0 : 1,
-            closeLike: value.extended?.indexOf('like') > -1 ? 0 : 1,
-            closeGoods: value.extended?.indexOf('goods') > -1 ? 0 : 1,
-            closeComment: value.extended?.indexOf('comment') > -1 ? 0 : 1,
-            closeShare: value.extended?.indexOf('share') > -1 ? 0 : 1,
+            province: value.pcds ? value.pcds[0] : '',
+            city: value.pcds ? value.pcds[1] : '',
+            district: value.pcds ? value.pcds[2] : '',
+            street: value.pcds ? value.pcds[3] : '',
             id: editingItem.id
           });
           hide()
         }else {
-          addorUpdateRes = await addLive({
+          console.log({...value}, '新增供应商参数');
+          addorUpdateRes = await addProvider({
             ...value,
-            startTime: moment(value.time[0]).format('YYYY-MM-DD HH:mm:ss'),
-            endTime: moment(value.time[1]).format('YYYY-MM-DD HH:mm:ss'),
-            lineStatus: lineStatus,
-            closeReplay: value.extended?.indexOf('replay') > -1 ? 0 : 1,
-            closeKf: value.extended?.indexOf('kf') > -1 ? 0 : 1,
-            closeLike: value.extended?.indexOf('like') > -1 ? 0 : 1,
-            closeGoods: value.extended?.indexOf('goods') > -1 ? 0 : 1,
-            closeComment: value.extended?.indexOf('comment') > -1 ? 0 : 1,
-            closeShare: value.extended?.indexOf('share') > -1 ? 0 : 1
+            province: value.pcds? value.pcds[0] : '',
+            city: value.pcds? value.pcds[1] : '',
+            district: value.pcds? value.pcds[2] : '',
+            street: value.pcds? value.pcds[3] : '',
           });
           hide();
         }
         if (addorUpdateRes.code === 0) {
           message.success(`${tooltipMessage}成功`);
           setIsClosejumpTooltip(false);
-          history.push(routeName.ANTELOPE_LIVE_MANAGEMENT_INDEX);
+          history.push(routeName.PROVIDERS_MANAGE);
         } else {
           message.error(`${tooltipMessage}失败，原因:{${addorUpdateRes.message}}`);
         }
@@ -206,19 +231,9 @@ export default () => {
       });
   };
 
-  // 额外的副作用 用来解决表单的设置
-  useEffect(() => {
-    form.setFieldsValue({ ...editingItem });
-  }, [editingItem]);
-
   const formLayout = {
     labelCol: { span: 6 },
     wrapperCol: { span: 14 },
-  };
-
-  const listener = (e: any) => {
-    e.preventDefault();
-    e.returnValue = '离开当前页后，所编辑的数据将不可恢复';
   };
 
   return (
@@ -240,17 +255,17 @@ export default () => {
         extra: (
           <div className="operate-btn">
             {!isDetail && (
-              <Button key="primary" loading={addOrUpdateLoading} onClick={() => {history.push(routeName.ANTELOPE_LIVE_MANAGEMENT_INDEX)}}>
+              <Button key="primary" loading={addOrUpdateLoading} onClick={() => {history.push(routeName.PROVIDERS_MANAGE)}}>
                 取消
               </Button>
             )}
             {!isDetail && (
-              <Button type="primary" key="primary3" loading={addOrUpdateLoading} onClick={() => {addOrUpdate(false)}}>
+              <Button type="primary" key="primary3" loading={addOrUpdateLoading} onClick={() => {addOrUpdate()}}>
                 保存
               </Button>
             )}
             {isDetail && (
-              <Button key="primary4" loading={addOrUpdateLoading} onClick={addOrUpdate}>
+              <Button key="primary4" loading={addOrUpdateLoading} onClick={() => {history.push(routeName.PROVIDERS_MANAGE)}}>
                 返回
               </Button>
             )}
@@ -259,7 +274,7 @@ export default () => {
       }}
     >
       <Prompt
-        when={isClosejumpTooltip}
+        when={isClosejumpTooltip && !isDetail}
         message={'离开当前页后，所编辑的数据将不可恢复'}
       />
       <Form className={sc('container-form')} {...formLayout} form={form} labelWrap>
@@ -283,7 +298,7 @@ export default () => {
               )}
             </Form.Item>
             <Form.Item
-              name="typeIds"
+              name="providerTypeId"
               label="类型"
               rules={[
                 {
@@ -293,12 +308,12 @@ export default () => {
               ]}
             >
               {isDetail ? (
-                <span>{editingItem?.typeNames || '--'}</span>
+                <span>{editingItem?.providerTypeName || '--'}</span>
               ) : (
-                <Select placeholder="请选择" mode="multiple">
-                  {appTypes.map((p) => (
-                    <Select.Option key={'type' + p.id} value={p.id}>
-                      {p.name}
+                <Select placeholder="请选择">
+                  {appTypes.map((p: any) => (
+                    <Select.Option key={p.id} value={p.id}>
+                      {p.providerTypeName}
                     </Select.Option>
                   ))}
                 </Select>
@@ -315,11 +330,11 @@ export default () => {
               )}
             </Form.Item>
             <Form.Item
-              name="eMail"
+              name="email"
               label="邮箱"
             >
               {isDetail ? (
-                <span>{editingItem?.eMail || '--'}</span>
+                <span>{editingItem?.email || '--'}</span>
               ) : (
                 <Input placeholder="请输入" maxLength={30} />
               )}
@@ -363,19 +378,21 @@ export default () => {
               )}
             </Form.Item>
             <Form.Item
-              name="district"
+              name="pcds"
               label="所属地区"
             >
               {isDetail ? (
-                <span>{editingItem?.district || '--'}</span>
+                <span>{
+                  editingItem.province ?
+                  editingItem.province + ' / ' + editingItem.city + ' / ' + editingItem.district+ ' / ' + editingItem.street||''
+                  : '--'}</span>
               ) : (
-                <Select placeholder="请选择">
-                  {appTypes.map((p) => (
-                    <Select.Option key={'type' + p.id} value={p.id}>
-                      {p.name}
-                    </Select.Option>
-                  ))}
-                </Select>
+                <Cascader
+                  fieldNames={{ label: 'name', value: 'name', children: 'nodes' }}
+                  options={cascaderOptions}
+                  expandTrigger="hover"
+                  onChange={onChange}
+                />
               )}
             </Form.Item>
           </Col>
@@ -419,11 +436,11 @@ export default () => {
           </Col>
           <Col span={10}>
             <Form.Item
-              name="title"
+              name="bankName"
               label="开户银行"
             > 
               {isDetail ? (
-                <span>{editingItem?.title || '--'}</span>
+                <span>{editingItem?.bankName || '--'}</span>
               ) : (
                 <Input placeholder="请输入" maxLength={100} />
               )}
@@ -527,7 +544,7 @@ export default () => {
               <Form.Item 
                 name="start" 
                 label="创建人">
-                <span>{editingItem?.lineAccountName || '--'}</span>
+                <span>{editingItem?.createUser || '--'}</span>
               </Form.Item>
             </Col>
             <Col span={10}>

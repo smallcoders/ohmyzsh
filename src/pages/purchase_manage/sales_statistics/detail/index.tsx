@@ -8,7 +8,7 @@ import ProTable from '@ant-design/pro-table';
 import SelfTable from '@/components/self_table';
 import ProCard from '@ant-design/pro-card';
 import ProDescriptions from '@ant-design/pro-descriptions';
-import { getDetail, intentionPageQuery } from '@/services/solution';
+import { getActivityDetails } from '@/services/purchase';
 import type DiagnosticTasks from '@/types/service-config-diagnostic-tasks';
 import type SolutionTypes from '@/types/solution';
 import scopedClasses from '@/utils/scopedClasses';
@@ -37,16 +37,26 @@ const SolutionDetail: React.FC = () => {
 
   const getDiagnosticTasks = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     try {
-      const { result, totalCount, pageTotal, code } = await getRecordPage({
+      const { result, code } = await getActivityDetails({
         pageIndex,
-        pageSize
+        pageSize,
+        id: history.location.query?.id,
       });
       if (code === 0) {
-        setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
-        setDataSource(result);
+        console.log(result);
+        const {payOrderListVos, statisticsActivityInfoListVO} = result;
+        setSolutionDetail(statisticsActivityInfoListVO);
+        // setPageInfo({ 
+        //   totalCount: payOrderListVos.total, 
+        //   pageTotal, 
+        //   pageIndex: payOrderListVos.current, 
+        //   pageSize: payOrderListVos.size 
+        // });
+        // setDataSource(result);
       } else {
         message.error(`请求分页数据失败`);
       }
+      setLoading(false);
     } catch (error) {
       console.log(error);
     }
@@ -56,14 +66,20 @@ const SolutionDetail: React.FC = () => {
    * 查询默认密码
    */
   useEffect(() => {
-    getDetail(history.location.query?.id).then((e) => {
-      if (e.code !== 0) {
-        message.error(e.message);
-      } else {
-        setSolutionDetail(e.result);
-        setLoading(false);
-      }
-    });
+    // getActivityDetails(
+    //   {
+    //     id: history.location.query?.id,
+    //     pageIndex: pageInfo.pageIndex,
+    //     pageSize
+    //   }
+    // ).then((e) => {
+    //   if (e.code !== 0) {
+    //     message.error(e.message);
+    //   } else {
+    //     setSolutionDetail(e.result);
+    //     setLoading(false);
+    //   }
+    // });
     getDiagnosticTasks();
   }, []);
 
@@ -139,37 +155,37 @@ const SolutionDetail: React.FC = () => {
           <Col span={10} offset={2}>
             <div>
               <label>活动编码：</label>
-              <span>{solutionDetail?.areas?.map((e) => e.name).join('、')}</span>
+              <span>{solutionDetail?.actNo}</span>
             </div>
             <div>
               <label>活动时间：</label>
-              <span>{solutionDetail?.areas?.map((e) => e.name).join('、')}</span>
+              <span>{solutionDetail?.startTime + '~' + solutionDetail?.endTime}</span>
             </div>
             <div>
               <label>订单总金额：</label>
-              <span>{solutionDetail?.areas?.map((e) => e.name).join('、')}</span>
+              <span>{solutionDetail?.totalPrice}</span>
             </div>
             <div>
               <label>活动状态：</label>
-              <span>{solutionDetail?.areas?.map((e) => e.name).join('、')}</span>
+              <span>{solutionDetail?.actStateCn}</span>
             </div>
           </Col>
           <Col span={10}>
           <div>
               <label>活动名称：</label>
-              <span>{solutionDetail?.areas?.map((e) => e.name).join('、')}</span>
+              <span>{solutionDetail?.name}</span>
             </div>
             <div>
               <label>订单总数：</label>
-              <span>{solutionDetail?.areas?.map((e) => e.name).join('、')}</span>
+              <span>{solutionDetail?.orderSum}</span>
             </div>
             <div>
               <label>上架状态：</label>
-              <span>{solutionDetail?.areas?.map((e) => e.name).join('、')}</span>
+              <span>{solutionDetail?.addedStateCn}</span>
             </div>
             <div>
               <label>创建时间：</label>
-              <span>{solutionDetail?.areas?.map((e) => e.name).join('、')}</span>
+              <span>{solutionDetail?.createTime}</span>
             </div>
           </Col>
         </Row>

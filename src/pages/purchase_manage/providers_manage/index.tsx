@@ -1,45 +1,24 @@
 import { PlusOutlined, DownloadOutlined } from '@ant-design/icons';
-import { Button, Input, Form, Modal, message, Space, Popconfirm, Radio, Row, Col } from 'antd';
-const { TextArea } = Input;
+import { Button, Input, Form, message, Space, Popconfirm, Row, Col } from 'antd';
 import { history } from 'umi';
 import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
 import Common from '@/types/common';
-import moment from 'moment';
 import SelfTable from '@/components/self_table';
 import LiveTypesMaintain from '@/types/live-types-maintain.d';
-import {
-  addLiveType,
-  getLiveTypesPage,
-  updateLiveType,
-  removeLiveType
-} from '@/services/search-record';
-import { getProviderPage } from '@/services/purchase';
-import { getOrgTypeOptions } from '@/services/org-type-manage';
+import { getProviderPage, removeProvider } from '@/services/purchase';
 import { routeName } from '@/../config/routes';
 const sc = scopedClasses('user-config-admin-account-distributor');
 export default () => {
-  const { TextArea } = Input;
-  const [createModalVisible, setModalVisible] = useState<boolean>(false);
   const [dataSource, setDataSource] = useState<LiveTypesMaintain.Content[]>([]);
   const [editingItem, setEditingItem] = useState<LiveTypesMaintain.Content>({});
   const [addOrUpdateLoading, setAddOrUpdateLoading] = useState<boolean>(false);
   const [searchContent, setSearChContent] = useState<{
-    title?: string; // 供应商名称
+    providerName?: string; // 供应商名称
   }>({});
-
-  const [options, setOptions] = useState<any>([]);
-
-  const getDictionary = async () => {
-    try {
-      const res = await Promise.all([getOrgTypeOptions()]);
-      setOptions(res[0]?.result || []);
-    } catch (error) {
-      message.error('服务器错误');
-    }
-  };
+  
   const formLayout = {
     labelCol: { span: 6 },
     wrapperCol: { span: 16 },
@@ -71,77 +50,16 @@ export default () => {
     }
   };
 
-  const clearForm = () => {
-    form.resetFields();
-    setEditingItem({});
-  };
-
-  // 新增/编辑
-  const addOrUpdate = async () => {
-    const tooltipMessage = editingItem.id ? '编辑类型' : '新增类型';
-    form
-      .validateFields()
-      .then(async (value) => {
-        setAddOrUpdateLoading(true);
-        if (value.publishTime) {
-          value.publishTime = moment(value.publishTime).format('YYYY-MM-DDTHH:mm:ss');
-        }
-        const addorUpdateRes = await (editingItem.id
-          ? updateLiveType({
-              ...value,
-              id: editingItem.id,
-            })
-          : addLiveType({
-              ...value,
-            }));
-        if (addorUpdateRes.code === 0) {
-          setModalVisible(false);
-          if (!editingItem.id) {
-            message.success('新增类型成功！');
-          }else {
-            message.success('编辑类型成功！');
-          }
-          getPages();
-          clearForm();
-        } else {
-          message.error(`${tooltipMessage}失败，原因:{${addorUpdateRes.message}}`);
-        }
-        setAddOrUpdateLoading(false);
-      })
-      .catch(() => {
-        setAddOrUpdateLoading(false);
-      });
-  };
   // 删除
   const remove = async (id: string) => {
     try {
-      const removeRes = await removeLiveType(id);
+      const removeRes = await removeProvider(id);
       if (removeRes.code === 0) {
         message.success(`删除成功`);
         getPages();
       } else {
         message.error(`删除失败，原因:${removeRes.message}`);
       }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  // 启用/停用
-  const updateStatus = async (id: string, status) => {
-    try {
-      setAddOrUpdateLoading(true);
-      const addorUpdateRes = await updateLiveType({
-        status,
-        id
-      })
-      if (addorUpdateRes.code === 0) {
-        setModalVisible(false);
-        message.success('操作成功！');
-        getPages();
-      } else {
-        message.error(`操作失败，原因:${addorUpdateRes.message}`);
-      }
-      setAddOrUpdateLoading(false);
     } catch (error) {
       console.log(error);
     }
@@ -157,49 +75,43 @@ export default () => {
     },
     {
       title: '供应商编号',
-      dataIndex: 'name',
+      dataIndex: 'providerId',
       isEllipsis: true,
       width: 100,
     },
     {
       title: '供应商名称',
-      dataIndex: 'name',
+      dataIndex: 'providerName',
       isEllipsis: true,
       width: 100,
     },
     {
       title: '供应商类型',
-      dataIndex: 'name',
+      dataIndex: 'providerTypeName',
       isEllipsis: true,
       width: 100,
     },
     {
       title: '联系人',
-      dataIndex: 'name',
+      dataIndex: 'contactsName',
       isEllipsis: true,
       width: 100,
     },
     {
       title: '联系人手机',
-      dataIndex: 'name',
+      dataIndex: 'phoneNum',
       isEllipsis: true,
       width: 100,
     },
     {
       title: '座机号码',
-      dataIndex: 'name',
-      isEllipsis: true,
-      width: 100,
-    },
-    {
-      title: '排序',
-      dataIndex: 'name',
+      dataIndex: 'telNum',
       isEllipsis: true,
       width: 100,
     },
     {
       title: '创建时间',
-      dataIndex: 'creatorUserName',
+      dataIndex: 'updateTime',
       width: 200,
     },
     {
@@ -213,9 +125,7 @@ export default () => {
             <a
               href="#"
               onClick={() => {
-                setEditingItem(record);
-                setModalVisible(true);
-                form.setFieldsValue({ name: record?.name, status: record?.status });
+                history.push(`${routeName.PROVIDERS_MANAGE_ADD}?id=${record.id}&isDetail=1`)
               }}
             >
               详情
@@ -223,9 +133,7 @@ export default () => {
             <a
               href="#"
               onClick={() => {
-                setEditingItem(record);
-                setModalVisible(true);
-                form.setFieldsValue({ name: record?.name, status: record?.status });
+                history.push(`${routeName.PROVIDERS_MANAGE_ADD}?id=${record.id}`)
               }}
             >
               编辑
@@ -248,72 +156,6 @@ export default () => {
     getPages();
   }, [searchContent]);
 
-  useEffect(() => {
-    getDictionary();
-  }, []);
-
-  const handleOk = async () => {
-    addOrUpdate();
-  };
-
-  const handleCancel = () => {
-    clearForm();
-    setModalVisible(false);
-  };
-  const useModal = (): React.ReactNode => {
-    return (
-      <Modal
-        title={editingItem.id ? '编辑服务标签' : '新增服务标签'}
-        width="600px"
-        visible={createModalVisible}
-        okButtonProps={{ loading: addOrUpdateLoading }}
-        onOk={handleOk}
-        onCancel={handleCancel}
-        footer={[
-          <Button key="back" onClick={handleCancel}>
-            取消
-          </Button>,
-          <Button
-            key="link"
-            type="primary"
-            onClick={handleOk}
-          >
-            确定
-          </Button>,
-        ]}
-      >
-        <Form 
-          {...formLayout} 
-          form={form} 
-          layout="horizontal"
-          labelWrap
-        >
-          <Form.Item 
-            name="name"
-            label="服务标签名称"
-            rules={[
-              {
-                required: true,
-                message: '必填',
-              },
-            ]}>
-            <Input placeholder="请输入" maxLength={10} />
-          </Form.Item>
-          <Form.Item 
-            name="name"
-            label="内容"
-            rules={[
-              {
-                required: true,
-                message: '必填',
-              },
-            ]}>
-              <TextArea placeholder="请输入" rows={4} maxLength={200} />
-          </Form.Item>
-        </Form>
-      </Modal>
-    );
-  };
   const useSearchNode = (): React.ReactNode => {
     const [searchForm] = Form.useForm();
     return (
@@ -321,7 +163,7 @@ export default () => {
         <Form {...formLayout} form={searchForm}>
           <Row>
             <Col span={8}>
-              <Form.Item name="userName" label="供应商名称">
+              <Form.Item name="providerName" label="供应商名称">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
@@ -329,7 +171,7 @@ export default () => {
               <Button
                 style={{ marginRight: 20 }}
                 type="primary"
-                key="primary"
+                key="primary1"
                 onClick={() => {
                   const search = searchForm.getFieldsValue();
                   setSearChContent(search);
@@ -339,7 +181,7 @@ export default () => {
               </Button>
               <Button
                 type="primary"
-                key="primary"
+                key="primary2"
                 onClick={() => {
                   searchForm.resetFields();
                   setSearChContent({});
@@ -362,18 +204,17 @@ export default () => {
           <span>供应商列表(共{pageInfo.totalCount || 0}个)</span>
           <Space>
             <Button
-              key="primary"
+              key="primary3"
               onClick={() => {
-                setModalVisible(true);
+                
               }}
             >
               <DownloadOutlined /> 导出
             </Button>
             <Button
               type="primary"
-              key="primary"
+              key="primary4"
               onClick={() => {
-                // setModalVisible(true);
                 history.push(`${routeName.PROVIDERS_MANAGE_ADD}`)
               }}
             >
@@ -403,7 +244,6 @@ export default () => {
           }
         />
       </div>
-      {useModal()}
     </PageContainer>
   );
 };

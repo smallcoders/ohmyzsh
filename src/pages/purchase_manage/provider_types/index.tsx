@@ -1,6 +1,5 @@
 import { PlusOutlined } from '@ant-design/icons';
 import { Button, Input, Form, Modal, message, Space, Popconfirm, Radio, Row, Col, InputNumber } from 'antd';
-const { TextArea } = Input;
 import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
@@ -10,22 +9,18 @@ import moment from 'moment';
 import SelfTable from '@/components/self_table';
 import LiveTypesMaintain from '@/types/live-types-maintain.d';
 import {
-  addLiveType,
-  getLiveTypesPage,
-  updateLiveType,
-  removeLiveType
-} from '@/services/search-record';
+  getProviderTypesPage,
+  addProviderType,
+  updateProviderType,
+  removeProviderType
+} from '@/services/purchase';
 import { getOrgTypeOptions } from '@/services/org-type-manage';
 const sc = scopedClasses('user-config-admin-account-distributor');
 export default () => {
-  const { TextArea } = Input;
   const [createModalVisible, setModalVisible] = useState<boolean>(false);
   const [dataSource, setDataSource] = useState<LiveTypesMaintain.Content[]>([]);
   const [editingItem, setEditingItem] = useState<LiveTypesMaintain.Content>({});
   const [addOrUpdateLoading, setAddOrUpdateLoading] = useState<boolean>(false);
-  const [searchContent, setSearChContent] = useState<{
-    title?: string; // 类型名称
-  }>({});
 
   const [options, setOptions] = useState<any>([]);
 
@@ -53,10 +48,9 @@ export default () => {
 
   const getPages = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     try {
-      const { result, totalCount, pageTotal, code } = await getLiveTypesPage({
+      const { result, totalCount, pageTotal, code } = await getProviderTypesPage({
         pageIndex,
-        pageSize,
-        ...searchContent,
+        pageSize
       });
       if (code === 0) {
         setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
@@ -85,11 +79,11 @@ export default () => {
           value.publishTime = moment(value.publishTime).format('YYYY-MM-DDTHH:mm:ss');
         }
         const addorUpdateRes = await (editingItem.id
-          ? updateLiveType({
+          ? updateProviderType({
               ...value,
               id: editingItem.id,
             })
-          : addLiveType({
+          : addProviderType({
               ...value,
             }));
         if (addorUpdateRes.code === 0) {
@@ -113,7 +107,7 @@ export default () => {
   // 删除
   const remove = async (id: string) => {
     try {
-      const removeRes = await removeLiveType(id);
+      const removeRes = await removeProviderType(id);
       if (removeRes.code === 0) {
         message.success(`删除成功`);
         getPages();
@@ -135,24 +129,24 @@ export default () => {
     },
     {
       title: '类型名称',
-      dataIndex: 'name',
+      dataIndex: 'providerTypeName',
       isEllipsis: true,
       width: 100,
     },
     {
       title: '权重',
-      dataIndex: 'creatorUserName',
+      dataIndex: 'weight',
       width: 80,
     },
     {
       title: '创建时间',
-      dataIndex: 'creatorUserName',
+      dataIndex: 'createTime',
       width: 100,
     },
     {
       title: '操作',
-      width: 120,
-      // fixed: 'right',
+      width: 80,
+      fixed: 'right',
       dataIndex: 'option',
       render: (_: any, record: LiveTypesMaintain.Content) => {
         return (
@@ -162,7 +156,7 @@ export default () => {
               onClick={() => {
                 setEditingItem(record);
                 setModalVisible(true);
-                form.setFieldsValue({ name: record?.name, status: record?.status });
+                form.setFieldsValue({ providerTypeName: record?.providerTypeName, weight: record?.weight });
               }}
             >
               编辑
@@ -183,7 +177,7 @@ export default () => {
 
   useEffect(() => {
     getPages();
-  }, [searchContent]);
+  }, []);
 
   useEffect(() => {
     getDictionary();
@@ -213,7 +207,7 @@ export default () => {
           <Button
             key="link"
             type="primary"
-            onClick={handleOk}
+            onClick={() => {addOrUpdate()}}
           >
             确定
           </Button>,
@@ -224,9 +218,10 @@ export default () => {
           form={form} 
           layout="horizontal"
           labelWrap
+          initialValues={{weight: 1}}
         >
           <Form.Item 
-            name="name"
+            name="providerTypeName"
             label="类型名称"
             rules={[
               {
@@ -237,10 +232,10 @@ export default () => {
             <Input placeholder="请输入" maxLength={10} />
           </Form.Item>
           <Form.Item 
-            name="name"
+            name="weight"
             label="权重"
           >
-            <InputNumber min={0} defaultValue={1} />
+            <InputNumber min={0} />
           </Form.Item>
         </Form>
       </Modal>
