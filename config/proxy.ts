@@ -13,14 +13,14 @@
 // --no-ignore
 /*
   服务器地址匹配
-  1.0 
+  1.0
     dev    http://10.40.152.206:10086
     test    http://10.40.152.24:10086
   2.0
     dev    http://172.30.33.222:10086
     test    http://172.30.33.212:10086
 
-*/ 
+*/
 export default {
   dev: {
     '/antelope-manage/': {
@@ -42,6 +42,11 @@ export default {
     },
     '/antelope-common/': {
       target: 'http://172.30.33.222:10086',
+      changeOrigin: true,
+      pathRewrite: { '^': '' },
+    },
+    '/antelope-pay/': {
+      target: 'http://172.30.33.222:10086/',
       changeOrigin: true,
       pathRewrite: { '^': '' },
     },

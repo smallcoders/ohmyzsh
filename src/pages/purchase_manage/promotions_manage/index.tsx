@@ -7,10 +7,11 @@ import { PageContainer } from '@ant-design/pro-layout';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import { Button } from 'antd';
-import { useRef, useState } from 'react';
+import { useCallback, useRef } from 'react';
+import { useHistory } from 'umi';
 
 export default () => {
-  const [createModalVisible, setCreateModalVisible] = useState(false);
+  const history = useHistory();
 
   const actionRef = useRef<ActionType>();
   const paginationRef = useRef<{ current?: number; pageSize?: number }>({
@@ -219,6 +220,11 @@ export default () => {
       />
     );
   };
+
+  const goCreate = useCallback(() => {
+    history.push('/purchase-manage/promotions-create');
+  }, [history]);
+
   return (
     <PageContainer>
       <ProTable
@@ -232,7 +238,7 @@ export default () => {
         }}
         actionRef={actionRef}
         toolBarRender={() => [
-          <Button type="primary" key="primary" onClick={() => setCreateModalVisible(true)}>
+          <Button type="primary" key="primary" onClick={goCreate}>
             <PlusOutlined /> 新增活动
           </Button>,
         ]}

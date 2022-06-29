@@ -7,7 +7,6 @@ import ProTable from '@ant-design/pro-table';
 import { Button } from 'antd';
 import { useCallback, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
-
 export default () => {
   const history = useHistory();
   const actionRef = useRef<ActionType>();
@@ -20,13 +19,6 @@ export default () => {
     history.push('/purchase-manage/commodity-create');
   }, [history]);
 
-  const goEdit = useCallback(
-    (record: { id: number }) => {
-      history.push(`/purchase-manage/commodity-create?id=${record.id}`);
-    },
-    [history],
-  );
-
   const goDetail = useCallback(() => {
     history.push('/purchase-manage/commodity-detail');
   }, [history]);
@@ -36,51 +28,43 @@ export default () => {
       title: '序号',
       hideInSearch: true,
       renderText: (_, __, index: number) =>
-        ((paginationRef.current.current ?? 0) - 1) * (paginationRef.current.pageSize ?? 10) +
+        (paginationRef.current.current ?? 0 - 1) * (paginationRef.current.pageSize ?? 0) +
         index +
         1,
     },
     {
+      title: '商品订货编码',
+      dataIndex: 'barcode',
+      valueType: 'textarea',
+      order: 4,
+    },
+    {
+      title: '商品图',
+      dataIndex: 'thumbnail',
+      valueType: 'textarea',
+      hideInSearch: true,
+    },
+    {
       title: '商品名称',
-      dataIndex: 'productName',
+      dataIndex: 'name',
       valueType: 'textarea',
       order: 5,
     },
     {
-      title: '商品图',
-      dataIndex: 'productPic',
-      valueType: 'image',
-      hideInSearch: true,
-    },
-
-    {
       title: '商品型号',
-      dataIndex: 'productModel',
+      dataIndex: 'unemarque',
       valueType: 'textarea',
       hideInSearch: true,
     },
     {
       title: '商品采购价格',
-      dataIndex: 'purchasePricePart',
+      dataIndex: 'price',
       valueType: 'textarea',
       hideInSearch: true,
     },
     {
-      title: '商品状态',
-      dataIndex: 'finishStatus',
-      valueType: 'select',
-      valueEnum: {
-        1: {
-          text: '已完成',
-        },
-        0: {
-          text: '未完成',
-        },
-      },
-    },
-    {
       title: '销售状态',
-      dataIndex: 'saleStatus',
+      dataIndex: 'status',
       valueType: 'select',
       valueEnum: {
         1: {
@@ -93,19 +77,19 @@ export default () => {
     },
     {
       title: '供应商',
-      dataIndex: 'providerName',
+      dataIndex: 'supplier',
       valueType: 'textarea',
       order: 4,
     },
     {
       title: '最新操作时间',
-      dataIndex: 'updateTime',
-      valueType: 'textarea',
+      dataIndex: 'updateDate',
+      valueType: 'dateTime',
       hideInSearch: true,
     },
     {
       title: '最新操作时间',
-      dataIndex: 'updateTime',
+      dataIndex: 'updateDate',
       valueType: 'dateTimeRange',
       hideInTable: true,
       order: 4,
@@ -120,8 +104,8 @@ export default () => {
             详情
           </Button>
 
-          {record.saleStatus === 0 && (
-            <Button size="small" type="link" onClick={() => goEdit(record)}>
+          {record.status === 0 && (
+            <Button size="small" type="link" onClick={() => {}}>
               编辑
             </Button>
           )}
@@ -149,7 +133,7 @@ export default () => {
         request={async (pagination) => {
           const result = await pageQuery(pagination);
           paginationRef.current = pagination;
-          return { total: result.totalCount, success: true, data: result.result };
+          return result;
         }}
         columns={columns}
         pagination={{ size: 'default', showQuickJumper: true, defaultPageSize: 10 }}

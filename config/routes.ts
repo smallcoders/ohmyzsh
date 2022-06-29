@@ -361,6 +361,23 @@ export default [
         hideInMenu: true,
         component: './purchase_manage/sales_statistics/detail',
       },
+      {
+        path: '/purchase-manage/promotions-create',
+        name: '活动新增',
+        hideInMenu: true,
+        component: './purchase_manage/promotions_manage/create',
+      },
+      {
+        path: '/purchase-manage/promotions-detail',
+        name: '活动详情',
+        hideInMenu: true,
+        component: './purchase_manage/promotions_manage/detail',
+      },
+      {
+        path: '/purchase-manage/order-manage',
+        name: '订单管理',
+        component: './purchase_manage/order_manage',
+      },
     ],
   },
   {
