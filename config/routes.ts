@@ -320,6 +320,11 @@ export default [
         component: './purchase_manage/promotions_manage',
       },
       {
+        path: '/purchase-manage/order-manage',
+        name: '订单管理',
+        component: './purchase_manage/order_manage',
+      },
+      {
         path: routeName.BILL_MANAGEMENT,
         name: '发票管理',
         component: './purchase_manage/bill_manage',
@@ -372,11 +377,6 @@ export default [
         name: '活动详情',
         hideInMenu: true,
         component: './purchase_manage/promotions_manage/detail',
-      },
-      {
-        path: '/purchase-manage/order-manage',
-        name: '订单管理',
-        component: './purchase_manage/order_manage',
       },
     ],
   },

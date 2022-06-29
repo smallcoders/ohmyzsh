@@ -2,6 +2,47 @@ import Common from '@/types/common';
 import LogoutVerify from '@/types/user-config-logout-verify';
 import { request } from 'umi';
 
+// ----------------------活动管理----------------------------
+/**
+ * 分页查询
+ * @param params
+ */
+ export async function getActivityManageList(data?: { [key: string]: any }) {
+  return request<LogoutVerify.ResultList>('/antelope-pay/mng/activity/pageQuery', {
+    method: 'post',
+    data,
+  });
+}
+/**
+ * 新增活动查询可上架商品列表
+ * @param params
+ */
+ export async function getActivityProducts(options?: { [key: string]: any }) {
+  return request<LogoutVerify.ResultList>('/antelope-pay/mng/activity/queryProduct', {
+    method: 'get',
+    params: { ...(options || {}) },
+  });
+}
+/**
+ * 新增活动
+ * @param params
+ */
+ export async function createActivity(data?: { [key: string]: any }) {
+  return request<LogoutVerify.ResultList>('/antelope-pay/mng/activity/create', {
+    method: 'post',
+    data,
+  });
+}
+/**
+ * 查看活动详情
+ * @param params
+ */
+export async function getActivityDetail(id: string) { // 活动详情
+  return request(`/antelope-pay/mng/activity/queryDetail?id=${id}`, {
+    method: 'GET'
+  });
+}
+
 // ----------------------发票管理----------------------------
 /**
  * 分页查询
