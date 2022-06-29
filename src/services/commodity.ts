@@ -15,13 +15,6 @@ export async function pageQuery(data: any) {
     },
   );
 }
-
-export async function queryProduct(id: string | number) {
-  return request<Common.ResultCode & { result: DataCommodity.ProductInfo }>(
-    `/antelope-pay/product/queryProduct/${id}`,
-  );
-}
-
 export async function queryProductDetail(id: string | number) {
   return request<
     Common.ResultCode & {
@@ -33,6 +26,12 @@ export async function queryProductDetail(id: string | number) {
       };
     }
   >(`/antelope-pay/product/queryProduct/${id}`);
+}
+
+export async function queryProduct(id: string | number) {
+  return request<Common.ResultCode & { result: DataCommodity.ProductInfo }>(
+    `/antelope-pay/product/queryProduct/${id}`,
+  );
 }
 
 export async function addProduct(data: any) {
@@ -63,4 +62,72 @@ export async function querySpecs(productId: number | string) {
   return request<Common.ResultCode & { result: DataCommodity.SpecInfo[] }>(
     `/antelope-pay/product/querySpecs/${productId}`,
   );
+}
+
+export async function deleteSpecs(data: any) {
+  return request<Common.ResultCode & { result: DataCommodity.SpecInfo[] }>(
+    `/antelope-pay/mng/product/deleteSpecs`,
+    {
+      method: 'POST',
+      data,
+    },
+  );
+}
+
+export async function goToSpecsPrice(data: any) {
+  return request<Common.ResultCode & { result: DataCommodity.PriceInfo[] }>(
+    `/antelope-pay/mng/product/goToSpecsPrice`,
+    {
+      method: 'POST',
+      data,
+    },
+  );
+}
+
+export async function addSpecsPrice(data: any) {
+  return request<
+    Common.ResultCode & {
+      result: any;
+    }
+  >('/antelope-pay/mng/product/addSpecsPrice', {
+    method: 'POST',
+    data,
+  });
+}
+export async function queryParam(productId: number | string) {
+  return request<Common.ResultCode & { result: DataCommodity.ParamInfo[] }>(
+    `/antelope-pay/product/queryParam/${productId}`,
+  );
+}
+
+export async function addParam(data: any) {
+  return request<
+    Common.ResultCode & {
+      result: number;
+    }
+  >('/antelope-pay/mng/product/addParam', {
+    method: 'POST',
+    data,
+  });
+}
+
+export async function deleteParam(data: any) {
+  return request<Common.ResultCode & { result: DataCommodity.SpecInfo[] }>(
+    `/antelope-pay/mng/product/deleteParam`,
+    {
+      method: 'POST',
+      data,
+    },
+  );
+}
+
+export async function addProductDetail(data: any) {
+  return request<
+    Common.ResultCode & {
+      result: number;
+    }
+  >('/antelope-pay/mng/product/addProductDetail', {
+    method: 'POST',
+    data,
+  });
 }

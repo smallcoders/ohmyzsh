@@ -3,7 +3,6 @@ import { PageContainer } from '@ant-design/pro-layout';
 import { Steps } from 'antd';
 import { useCallback, useMemo, useState } from 'react';
 import StepsForm0 from './components/StepsForm0';
-import type { SpecData } from './components/StepsForm1';
 import StepsForm1 from './components/StepsForm1';
 import StepsForm2 from './components/StepsForm2';
 import StepsForm3 from './components/StepsForm3';
@@ -21,8 +20,7 @@ export interface StepFormProps {
 export default () => {
   const [productId, setProductId] = useState<number | string>();
   const [loading, setloading] = useState(false);
-  const [specs, setSpecs] = useState<SpecData[]>([]);
-  const [current, setCurrent] = useState(0);
+  const [current, setCurrent] = useState(2);
 
   const changeCurrent = useCallback((val: number) => {
     setCurrent((v) => v + val);
@@ -32,21 +30,11 @@ export default () => {
     switch (current) {
       case 1:
         return (
-          <StepsForm1
-            id={productId}
-            currentChange={changeCurrent}
-            onConfirm={setSpecs}
-            changeLoading={setloading}
-          />
+          <StepsForm1 id={productId} currentChange={changeCurrent} changeLoading={setloading} />
         );
       case 2:
         return (
-          <StepsForm2
-            id={productId}
-            specs={specs}
-            currentChange={changeCurrent}
-            changeLoading={setloading}
-          />
+          <StepsForm2 id={productId} currentChange={changeCurrent} changeLoading={setloading} />
         );
       case 3:
         return (
@@ -65,7 +53,7 @@ export default () => {
           />
         );
     }
-  }, [changeCurrent, specs, current, productId]);
+  }, [changeCurrent, current, productId]);
 
   return (
     <PageContainer loading={loading} title={false} className="commodity-create">
