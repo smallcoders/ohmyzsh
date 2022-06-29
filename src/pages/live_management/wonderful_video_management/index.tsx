@@ -129,13 +129,12 @@ export default () => {
       .validateFields()
       .then(async (value) => {
         setAddOrUpdateLoading(true);
-        // console.log(value, '--value');
         console.log(files, '--files');
-        // console.log({
-        //   ...value,
-        //   lineStatus: lineStatus,
-        //   videoId: files[0].storeId
-        // });
+        console.log({
+          ...value,
+          lineStatus: lineStatus,
+          videoId: files[0].storeId
+        });
         const addorUpdateRes = await (editingItem.id
           ? updateVideo({
               ...value,
@@ -286,7 +285,7 @@ export default () => {
                   {title: record.videoName+'.mp4', storeId: record.videoId}
                 ]);
                 setModalVisible(true);
-                form.setFieldsValue({...record, videoId: [{uid: '-1', name: record.videoName+'.mp4', status: 'done',}]});
+                form.setFieldsValue({...record, videoId: [{uid: record.videoId, name: record.videoName+'.mp4', status: 'done',}]});
               }}
             >
               编辑
@@ -429,9 +428,23 @@ export default () => {
   
   const [uploadLoading, setUploadLoading] = useState<boolean>(false);
   const [files, setFiles] = useState<CourseManage.File[]>([]);
-  const props: UploadProps = {
+  const normFile = (e: any) => {
+    const isLt2M = e.file.size / 1024 / 1024 < 2;
+    console.log('Upload event:', e);
+    if (Array.isArray(e)) {
+      return e;
+    }
+    if (!isLt2M) {
+      message.error('视频大小不得超过800M!');
+      return []
+    }
+    return e?.fileList;
+  };
+  const props = {
     name: 'file',
-    // accept: ".mp4",
+    accept: ".mp4",
+    maxCount: 1,
+    maxSize: 800,
     action: '/antelope-manage/common/upload/record',
     onRemove: (file: UploadFile<any>) => {
       if (file.status === 'uploading' || file.status === 'error') {
@@ -445,19 +458,16 @@ export default () => {
       }
     },
     onChange(info) {
-      if (info.file.status !== 'uploading') {
-        console.log(info.file, info.fileList);
-      }
+      // if (info.file.status !== 'uploading') {
+      //   console.log(info.file, info.fileList);
+      // }
       if (info.file.status === 'done') {
-        // fileList = [...info.fileList];
-        // console.log(fileList, '--fileList');
         const uploadResponse = info?.file?.response;
         if (uploadResponse?.code === 0 && uploadResponse.result) {
           const upLoadResult = info?.fileList.map((p) => {
             return {
               title: p.name,
-              storeId: p.response?.result?.id,
-              // duration: p.response?.result?.duration
+              storeId: p.response?.result?.id
             };
           });
           setFiles(upLoadResult);
@@ -501,7 +511,12 @@ export default () => {
         ]}
       >
         <Form {...formLayout} form={form} layout="horizontal"
-          initialValues={{shareVirtualCount: 0, goodVirtualCount: 0}}>
+          initialValues={
+            {
+              shareVirtualCount: 0, 
+              goodVirtualCount: 0
+            }
+          }>
           <Row>
             <Col span={16}>
               <Form.Item
@@ -555,6 +570,8 @@ export default () => {
               <Form.Item
                 name="videoId"
                 label="视频"
+                valuePropName="fileList"
+                getValueFromEvent={normFile}
                 rules={[
                   {
                     required: true,
@@ -562,16 +579,9 @@ export default () => {
                   },
                 ]}
               >
-                <Upload {...props} maxCount={1}>
+                <Upload {...props}>
                   <Button type="primary">上传</Button>
                 </Upload>
-                {/* <UploadForm
-                  listType="picture-card"
-                  className="avatar-uploader"
-                  maxSize={800}
-                  showUploadList={false}
-                  accept=".mp4"
-                /> */}
               </Form.Item>
             </Col>
           </Row>
