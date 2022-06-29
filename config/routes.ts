@@ -306,6 +306,11 @@ export default [
         hideInMenu: true,
         component: './purchase_manage/promotions_manage/detail',
       },
+      {
+        path: '/purchase-manage/order-manage',
+        name: '订单管理',
+        component: './purchase_manage/order_manage',
+      },
     ],
   },
   {

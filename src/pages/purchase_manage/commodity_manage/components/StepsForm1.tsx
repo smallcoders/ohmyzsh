@@ -1,3 +1,4 @@
+import { addSpecs } from '@/services/commodity';
 import { ProFormText } from '@ant-design/pro-form';
 import type { ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
@@ -7,106 +8,82 @@ import type { StepFormProps } from '../create';
 
 export interface SpecData {
   id: number;
-  name: string;
-  value: string[];
+  specsName: string;
+  specsValue: string;
 }
 
-interface Props {
-  onConfirm: (data: SpecData[]) => void;
-}
-export default (props: Props & StepFormProps) => {
-  const [data, setData] = useState<SpecData[]>([
-    { id: 1, value: ['8G', '16G'], name: '内存' },
-    { id: 2, value: ['128G', '256G'], name: '硬盘' },
-  ]);
-  const [editId, setEditId] = useState<number>();
+export default (props: StepFormProps) => {
+  const { id, changeLoading, currentChange } = props;
+  const [data, setData] = useState<SpecData[]>([]);
+  const [editRecord, setEditRecord] = useState<SpecData>();
   const [addModalShow, setAddModalShow] = useState(false);
 
-  const [form] = Form.useForm<{ name: string; value: string }>();
+  const [form] = Form.useForm<{ specsName: string; specsValue: string }>();
 
-  const addHandle = useCallback(() => {
+  const showAdd = useCallback(() => {
     setAddModalShow(true);
   }, []);
 
   const editHandle = useCallback(
     (record: SpecData) => {
-      form.setFieldsValue({ name: record.name, value: record.value.join(',') });
-      setEditId(record.id);
+      form.setFieldsValue({ specsName: record.specsName, specsValue: record.specsValue });
+      setEditRecord(record);
       setAddModalShow(true);
     },
     [form],
   );
 
-  const delHandle = useCallback((record: { id: number }) => {
-    setData((_data) => _data.filter((v) => v.id !== record.id));
+  const delHandle = useCallback((index: number) => {
+    setData((_data) => _data.filter((_, i) => i !== index));
   }, []);
 
   const modalCandel = useCallback(() => {
     form.resetFields();
     setAddModalShow(false);
-    setEditId(undefined);
+    setEditRecord(undefined);
   }, [form]);
 
-  const modalConfirm = useCallback(() => {
+  const modalConfirm = useCallback(async () => {
     const val = form.getFieldsValue();
-    setData((_data) => {
-      if (editId) {
-        return _data.map((item) =>
-          item.id === editId
-            ? {
-                ...item,
-                name: val.name,
-                value: val.value
-                  .split(',')
-                  .map((v) => v.trim())
-                  .filter((v) => v),
-              }
-            : item,
-        );
-      }
-      return [
-        ..._data,
-        {
-          id: _data.length + 1,
-          name: val.name,
-          value: val.value
-            .split(',')
-            .map((v) => v.trim())
-            .filter((v) => v),
-        },
-      ];
-    });
+    const _data = editRecord ? { ...editRecord, ...val } : val;
+    const res = await addSpecs({ ..._data, productId: id });
+    if (!res.code) return;
+    if (!editRecord) {
+      setData((oldVal) => [...oldVal, { ...val, id: res.result }]);
+    } else {
+      setData((oldVal) =>
+        oldVal.map((item) => (item.id === editRecord.id ? { ...val, id: res.result } : item)),
+      );
+    }
     modalCandel();
-  }, [form, editId, modalCandel]);
+  }, [form, editRecord, id, modalCandel]);
 
   const columns: ProColumns<SpecData>[] = [
     {
       title: '序号',
-      dataIndex: 'id',
-      valueType: 'text',
+      render: (_, __, index) => index + 1,
     },
 
     {
       title: '规格名',
-      dataIndex: 'name',
+      dataIndex: 'specsName',
       valueType: 'text',
     },
     {
       title: '规格值',
-      dataIndex: 'value',
+      dataIndex: 'specsValue',
       valueType: 'text',
-      renderText: (_, record) => record.value.join(', '),
     },
 
     {
       title: '操作',
       valueType: 'option',
-      render: (_, record) => (
+      render: (_, record, index) => (
         <>
-          <Button size="small" type="link" onClick={() => editHandle(record)}>
+          <Button size="small" type="link" onClick={() => editHandle(record, index)}>
             编辑
           </Button>
-          <Button size="small" type="link" onClick={() => delHandle(record)}>
+          <Button size="small" type="link" onClick={() => delHandle(index)}>
             删除
           </Button>
         </>
@@ -115,21 +92,20 @@ export default (props: Props & StepFormProps) => {
   ];
 
   const onFinish = useCallback(async () => {
-    props.onConfirm(data);
-    props.currentChange(1);
-  }, [props, data]);
+    currentChange(2);
+  }, [currentChange]);
   return (
     <div>
       <ProTable
         style={{ marginBottom: 20 }}
-        rowKey="name"
+        rowKey="id"
         options={false}
         search={false}
         pagination={false}
         dataSource={data}
         columns={columns}
         toolBarRender={() => [
-          <Button type="primary" key="primary" onClick={addHandle}>
+          <Button type="primary" key="primary" onClick={showAdd}>
             新增规格
           </Button>,
         ]}
@@ -149,13 +125,13 @@ export default (props: Props & StepFormProps) => {
       >
         <Form form={form} labelCol={{ span: 4 }} onFinish={modalConfirm}>
           <ProFormText
-            name="name"
+            name="specsName"
             label="规格名称"
             placeholder="请输入"
             rules={[{ required: true }]}
           />
           <ProFormText
-            name="value"
+            name="specsValue"
             label="规格值"
             placeholder='使用", "隔开多个规格值'
             rules={[

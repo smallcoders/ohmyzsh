@@ -1,7 +1,7 @@
 import ProCard from '@ant-design/pro-card';
 import { PageContainer } from '@ant-design/pro-layout';
 import { Steps } from 'antd';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import StepsForm0 from './components/StepsForm0';
 import type { SpecData } from './components/StepsForm1';
 import StepsForm1 from './components/StepsForm1';
@@ -13,19 +13,62 @@ import './create.less';
 const { Step } = Steps;
 
 export interface StepFormProps {
+  id?: number | string;
   currentChange: (current: number) => void;
+  changeLoading: (loading: boolean) => void;
 }
 
 export default () => {
+  const [productId, setProductId] = useState<number | string>();
+  const [loading, setloading] = useState(false);
   const [specs, setSpecs] = useState<SpecData[]>([]);
-  const [current, setCurrent] = useState(4);
+  const [current, setCurrent] = useState(0);
 
   const changeCurrent = useCallback((val: number) => {
     setCurrent((v) => v + val);
   }, []);
 
+  const FormContent = useMemo(() => {
+    switch (current) {
+      case 1:
+        return (
+          <StepsForm1
+            id={productId}
+            currentChange={changeCurrent}
+            onConfirm={setSpecs}
+            changeLoading={setloading}
+          />
+        );
+      case 2:
+        return (
+          <StepsForm2
+            id={productId}
+            specs={specs}
+            currentChange={changeCurrent}
+            changeLoading={setloading}
+          />
+        );
+      case 3:
+        return (
+          <StepsForm3 id={productId} currentChange={changeCurrent} changeLoading={setloading} />
+        );
+      case 4:
+        return (
+          <StepsForm4 id={productId} currentChange={changeCurrent} changeLoading={setloading} />
+        );
+      default:
+        return (
+          <StepsForm0
+            setProductId={setProductId}
+            currentChange={changeCurrent}
+            changeLoading={setloading}
+          />
+        );
+    }
+  }, [changeCurrent, specs, current, productId]);
+
   return (
-    <PageContainer title={false} className="commodity-create">
+    <PageContainer loading={loading} title={false} className="commodity-create">
       <ProCard direction="column" ghost gutter={[0, 8]}>
         <ProCard>
           <Steps current={current}>
@@ -36,13 +79,7 @@ export default () => {
             <Step title="商品详情" />
           </Steps>
         </ProCard>
-        <ProCard>
-          {current === 0 && <StepsForm0 currentChange={changeCurrent} />}
-          {current === 1 && <StepsForm1 currentChange={changeCurrent} onConfirm={setSpecs} />}
-          {current === 2 && <StepsForm2 currentChange={changeCurrent} specs={specs} />}
-          {current === 3 && <StepsForm3 currentChange={changeCurrent} />}
-          {current === 4 && <StepsForm4 currentChange={changeCurrent} />}
-        </ProCard>
+        <ProCard>{FormContent}</ProCard>
       </ProCard>
     </PageContainer>
   );

@@ -6,6 +6,43 @@ import { useState } from 'react';
 
 const { Column } = Table;
 
+interface Pic {
+  id: number;
+  picId: string;
+  banner: string;
+}
+
+enum AddedState {
+  OnShelf = 0, // 上架
+  DownShelf = 1, // 下架
+  Temporary = 2, // 暂存
+}
+
+interface Spec {
+  specsId?: string;
+  salePrice?: number; // 活动售价
+  markPrice?: number; // 划线价
+}
+
+interface Product {
+  productId: number;
+  specs: number;
+}
+interface CreateActData {
+  id?: number;
+  actNo?: string; // 活动编码
+  name?: string;
+  startTime?: string; // YYYY_MM_DD HH:mm:ss
+  endTime?: string;
+  sortNo?: number; // 排序权重
+  firstPic?: Pic; // 首页图
+  otherPic?: Pic[]; // 活动图
+  content?: string; // 活动介绍
+  actSpreadWord?: string; // 促销词
+  addedState?: AddedState;
+  product?: AddedState;
+}
+
 export default () => {
   const [dateNow] = useState(new Date());
   const [loading, setLoading] = useState(false);
