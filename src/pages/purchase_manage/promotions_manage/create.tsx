@@ -1,6 +1,6 @@
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
-import { Button, DatePicker, Form, Input, Table, Upload, Space, message, Popconfirm, Modal, Breadcrumb, Image } from 'antd';
+import { Button, DatePicker, Form, Input, Table, Upload, Space, message, Popconfirm, Modal, Breadcrumb, Image, InputNumber } from 'antd';
 import { RcFile, UploadChangeParam } from 'antd/lib/upload';
 import type { ColumnsType } from 'antd/lib/table';
 import { UploadFile } from 'antd/lib/upload/interface';
@@ -93,7 +93,7 @@ export default () => {
         //   console.log(editItem, 'res---editItem');
           setEditingItem({
             ...editItem, 
-            // startTime: [moment(editingItem.startDate), moment(editingItem.endDate)]
+            time: [moment(editingItem.startTime), moment(editingItem.endTime)]
           });
         // } else {
         //   message.error(`获取详情失败，原因:{${detailRs.message}}`);
@@ -176,53 +176,14 @@ export default () => {
       render: (_: any, record: any) => {
         return (
           <Space size="middle">
-            {record.videoStatus != 2 && (
-              <a
-                href="#"
-                onClick={() => {
-                  // history.push(`${routeName.ANTELOPE_LIVE_MANAGEMENT_ADD}?id=${record.id}`);
-                }}
-              >
-                编辑
-              </a>
-            )}
-            { 
-              record.lineStatus ? (
-                <Popconfirm
-                  title="确定下架么？"
-                  okText="确定"
-                  cancelText="取消"
-                  // onConfirm={() => updateOnlineStatus(record.id as string, false)}
-                >
-                  <a href="#">下架</a>
-                </Popconfirm>
-              ) : (
-                <Popconfirm
-                  title="确定上架么？"
-                  okText="确定"
-                  cancelText="取消"
-                  // onConfirm={() => updateOnlineStatus(record.id as string, true)}
-                >
-                  <a href="#">上架</a>
-                </Popconfirm>
-              )
-            }
-            <Popconfirm
-              title="确定删除么？"
-              okText="确定"
-              cancelText="取消"
-              // onConfirm={() => remove(record.id as string)}
+            <a
+              href="#"
+              onClick={() => {
+                // history.push(`${routeName.ANTELOPE_LIVE_MANAGEMENT_ADD}?id=${record.id}`);
+              }}
             >
-              <a href="#">删除</a>
-            </Popconfirm>
-             <Popconfirm
-              title={`确定置顶么？`}
-              okText="确定"
-              cancelText="取消"
-              // onConfirm={() => updateTopStatus(record.id as string, true,)}
-            >
-              <a href="#">置顶</a>
-            </Popconfirm>
+              详情
+            </a>
           </Space>
         );
       },
@@ -344,7 +305,6 @@ export default () => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [choosedProducts, setChoosedProducts] = useState<any>([]); //已选商品数据
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-  let selectKeys: any = []; // 存储选中的数据
   const handleOk = async () => {
     let arr: any = [];
     if(selectedRowKeys) {
@@ -372,6 +332,17 @@ export default () => {
     setModalVisible(false);
     setSelectedRowKeys([]);
   };
+  const [weightForm] = Form.useForm();
+  // 权重设置
+  const editSort = (value: number, index: number) => {
+    let arr = JSON.parse(JSON.stringify(choosedProducts))
+    arr[index].sortNo = value;
+    setChoosedProducts(arr);
+  }
+  const remove = (index: number) => {
+    let arr = JSON.parse(JSON.stringify(choosedProducts)).splice(index, 1);
+    setChoosedProducts(arr);
+  }
   const chooseColumns: ColumnsType<DataType> = [
     {
       title: '序号',
@@ -416,7 +387,7 @@ export default () => {
     },
     {
       title: '权重',
-      dataIndex: 'videoStatus',
+      dataIndex: 'sortNo',
       width: 180
     },
     {
@@ -424,7 +395,7 @@ export default () => {
       width: 240,
       fixed: 'right',
       dataIndex: 'option',
-      render: (_: any, record: any) => {
+      render: (_: any, record: any, index: number) => {
         return (
           <Space size="middle">
             <a
@@ -443,22 +414,45 @@ export default () => {
             >
               设置价格
             </a>
-            <a
-              href="#"
-              onClick={() => {
-                // history.push(`${routeName.ANTELOPE_LIVE_MANAGEMENT_ADD}?id=${record.id}`);
+            <Popconfirm
+              title={
+                <>
+                  <Form form={weightForm}>
+                    <Form.Item 
+                      name={'weight'} 
+                      label="权重设置">
+                      <InputNumber min={1} max={100} placeholder="请输入1-100的整数，数字越大排名越小" />
+                    </Form.Item>
+                  </Form>
+                </>
+              }
+              icon={<PlusOutlined style={{ display: 'none' }} />}
+              okText="确定"
+              cancelText="取消"
+              onConfirm={() => {
+                // console.log(weightForm.getFieldValue('weight'), record, 111);
+                editSort(weightForm.getFieldValue('weight'), index)
               }}
             >
-              权重设置
-            </a>
-            <a
-              href="#"
-              onClick={() => {
-                // history.push(`${routeName.ANTELOPE_LIVE_MANAGEMENT_ADD}?id=${record.id}`);
-              }}
+              <Button
+                key="1"
+                size="small"
+                type="link"
+                onClick={() => {
+                  weightForm.setFieldsValue({weight: record.sort})
+                }}
+              >
+                权重设置
+              </Button>
+            </Popconfirm>
+            <Popconfirm
+              title="确定删除么？"
+              okText="确定"
+              cancelText="取消"
+              onConfirm={() => remove(index)}
             >
-              删除
-            </a>
+              <a href="#">删除</a>
+            </Popconfirm>
           </Space>
         );
       },
@@ -546,8 +540,8 @@ export default () => {
         const hide = message.loading(`正在${tooltipMessage}`);
         console.log({
           ...value,
-          startTime: moment(value.startTime[0]).format('YYYY-MM-DD HH:mm:ss'),
-          endTime: moment(value.startTime[1]).format('YYYY-MM-DD HH:mm:ss'),
+          startTime: moment(value.time[0]).format('YYYY-MM-DD HH:mm:ss'),
+          endTime: moment(value.time[1]).format('YYYY-MM-DD HH:mm:ss'),
           firstPic: files,
           otherPic: files2,
           sortNo: value.sortNo ? Number(value.sortNo) : null
@@ -572,8 +566,8 @@ export default () => {
         }else {
           addorUpdateRes = await createActivity({
             ...value,
-            startTime: moment(value.startTime[0]).format('YYYY-MM-DD HH:mm:ss'),
-            endTime: moment(value.startTime[1]).format('YYYY-MM-DD HH:mm:ss'),
+            startTime: moment(value.time[0]).format('YYYY-MM-DD HH:mm:ss'),
+            endTime: moment(value.time[1]).format('YYYY-MM-DD HH:mm:ss'),
             firstPic: files,
             otherPic: files2,
             sortNo: value.sortNo ? Number(value.sortNo) : null,
@@ -595,6 +589,11 @@ export default () => {
         console.log(err);
       });
   };
+
+  // 额外的副作用 用来解决表单的设置
+  useEffect(() => {
+    form.setFieldsValue({ ...editingItem });
+  }, [editingItem]);
 
   return (
     <PageContainer 
@@ -629,12 +628,12 @@ export default () => {
             <Input placeholder="请输入" />
           )}
         </Form.Item>
-        <Form.Item label="活动开始时间" name="startTime" rules={[{ required: !isDetail }]}>
+        <Form.Item label="活动开始时间" name="time" rules={[{ required: !isDetail }]}>
           {isDetail ? (
             <span>{editingItem?.startTime + '~' + editingItem?.endTime || '--'}</span>
           ) : (
             <DatePicker.RangePicker
-              format="YYYY-MM-DD HH:mm:ss"
+              // format="YYYY-MM-DD HH:mm:ss"
               showTime
               allowClear
             />
