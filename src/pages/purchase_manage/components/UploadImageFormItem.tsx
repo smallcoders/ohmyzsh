@@ -57,8 +57,11 @@ export default function (
   const onFileChange = useCallback(
     (info) => {
       if (onChange) {
-        const val = single ? info.path || '' : [value, info.path].join(',');
-        onChange(val);
+        if (value && !single) {
+          onChange([value, info.path].join(','));
+        } else {
+          onChange(info.path);
+        }
       }
     },
     [onChange, value, single],
