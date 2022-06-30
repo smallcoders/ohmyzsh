@@ -73,7 +73,6 @@ export default () => {
   const prepare = async () => {
     try {
       const { id, isDetail } = history.location.query as { id: string | undefined, isDetail: string | undefined };
-
       if (id) {
         // 获取详情 塞入表单
         const detailRs = await getActivityDetail(id);
@@ -100,7 +99,7 @@ export default () => {
           setEditingItem({
             ...editItem, 
             time: [moment(editItem.startTime), moment(editItem.endTime)],
-            firstPic: [{uid: editItem.firstPic.picId,name: 'image.png',  status: 'done',url: editItem.firstPic.banner}],
+            firstPic: [{uid: editItem.firstPic?.picId,name: 'image.png',  status: 'done',url: editItem.firstPic?.banner}],
             otherPic: actImgs
           });
           setFiles([
