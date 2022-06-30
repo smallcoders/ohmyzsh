@@ -20,7 +20,7 @@ namespace DataCommodity {
     productBrandEn: string;
     spreadWord: string;
     productModel: string;
-    supplier: string;
+    supplier: number;
     supplierName: string;
     productOrg: string;
     productPic: string;
@@ -39,7 +39,7 @@ namespace DataCommodity {
       labelContent: string;
       labelType: number;
       state: number;
-    };
+    }[];
     serverIds: string;
     serverContent: {
       id: number;
@@ -47,7 +47,7 @@ namespace DataCommodity {
       labelContent: string;
       labelType: number;
       state: number;
-    };
+    }[];
     banner: string;
     finishStatus: 0 | 1;
     salePricePart: string;

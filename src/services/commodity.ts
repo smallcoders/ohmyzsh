@@ -26,7 +26,7 @@ export async function queryProductDetail(id: string | number) {
         payProductParamList: DataCommodity.ParamInfo[];
       };
     }
-  >(`/antelope-pay/product/queryProduct/${id}`);
+  >(`/antelope-pay/product/queryProductDetail/${id}`);
 }
 
 export async function queryProduct(id: string | number) {

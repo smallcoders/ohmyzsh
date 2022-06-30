@@ -27,9 +27,12 @@ export default () => {
     [history],
   );
 
-  const goDetail = useCallback(() => {
-    history.push('/purchase-manage/commodity-detail');
-  }, [history]);
+  const goDetail = useCallback(
+    (record: { id: number }) => {
+      history.push(`/purchase-manage/commodity-detail?id=${record.id}`);
+    },
+    [history],
+  );
 
   const columns: ProColumns<DataCommodity.Commodity>[] = [
     {
@@ -116,7 +119,7 @@ export default () => {
       width: 200,
       render: (_, record) => (
         <>
-          <Button size="small" type="link" onClick={goDetail}>
+          <Button size="small" type="link" onClick={() => goDetail(record)}>
             详情
           </Button>
 

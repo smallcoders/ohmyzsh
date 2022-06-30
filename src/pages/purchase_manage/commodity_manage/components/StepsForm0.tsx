@@ -126,7 +126,7 @@ export default (props: StepFormProps & { setProductId: (id: string | number) => 
         <UploadImageFormItem listType="picture-card" maxCount={10} />
       </ProForm.Item>
 
-      <Form.Item name="supplier" label="供应商">
+      <Form.Item name="supplier" label="供应商" rules={[{ required: true }]}>
         <ProviderSelect />
       </Form.Item>
     </ProForm>
