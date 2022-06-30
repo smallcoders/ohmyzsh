@@ -48,6 +48,16 @@ export async function getDictionayTree(label: string) {
 }
 
 /**
+ * 获取三级树形地区列表。省、市、区/县
+ * @param label
+ * @returns
+ */
+export async function listAllAreaCode() {
+  return request<CourseManage.ResultList>(`/antelope-common/common/district/listAllAreaCode`, {
+    method: 'get',
+  });
+}
+/**
  * 上传附件
  * @param data FormData
  * @returns
