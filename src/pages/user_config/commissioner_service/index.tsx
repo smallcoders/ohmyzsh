@@ -80,7 +80,7 @@ export default () => {
       render: (_: string, record: CommissionerService.Content) => {
         return (
           <a
-            href="javascript:;"
+            href="#!"
             onClick={() => {
               history.push(`${routeName.EXPERT_MANAGE_DETAIL}?id=${record?.expertId}`);
             }}

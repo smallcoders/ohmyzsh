@@ -1,6 +1,6 @@
 import type Common from '../common';
 
-namespace AdminAccountDistributor {
+namespace WonderfulVideoManagement {
   export type RecordList = {
     result: Content[];
   } & Common.ResultCode &
@@ -15,6 +15,8 @@ namespace AdminAccountDistributor {
     createTime?: string; // 创建时间
     isEdit?: boolean; // 能否编辑
     name?: string;
+    typeIds?: any;
+    lineStatus?: boolean;
   };
 }
-export default AdminAccountDistributor;
+export default WonderfulVideoManagement;
