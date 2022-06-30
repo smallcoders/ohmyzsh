@@ -1,41 +1,56 @@
 import { pageQuery as commodityPageQuery } from '@/services/commodity';
 import { pageQuery } from '@/services/promotions';
+import { getActivityManageList, changeActState } from '@/services/purchase';
 import type DataCommodity from '@/types/data-commodity';
 import type DataPromotions from '@/types/data-promotions';
 import { PlusOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { Button } from 'antd';
-import { useCallback, useRef } from 'react';
+import { Button, Image, Popconfirm, message } from 'antd';
+import { useCallback, useRef, useState } from 'react';
 import { useHistory } from 'umi';
+import type Common from '@/types/common';
 
 export default () => {
   const history = useHistory();
 
   const actionRef = useRef<ActionType>();
-  const paginationRef = useRef<{ current?: number; pageSize?: number }>({
-    current: 0,
-    pageSize: 0,
+
+  const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
+    pageIndex: 1,
+    pageSize: 20,
+    totalCount: 0,
+    pageTotal: 0,
   });
 
-  const pagination2Ref = useRef<{ current?: number; pageSize?: number }>({
-    current: 0,
-    pageSize: 0,
-  });
+  // 更改活动状态
+  const addOrUpdate = async (params: object) => {
+    try {
+      const removeRes = await changeActState({...params});
+      if (removeRes.code === 0) {
+        message.success(`操作成功`);
+        if(actionRef.current) {
+          actionRef.current.reload();
+        }
+      } else {
+        message.error(`操作失败，原因:{${removeRes.message}}`);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const columns: ProColumns<DataPromotions.Promotions>[] = [
     {
       title: '序号',
       hideInSearch: true,
-      renderText: (_, __, index: number) =>
-        ((paginationRef.current.current ?? 1) - 1) * (paginationRef.current.pageSize ?? 0) +
-        index +
-        1,
+      render: (_: any, _record: any, index: number) =>
+        pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
       title: '活动编码',
-      dataIndex: 'code',
+      dataIndex: 'actNo',
       valueType: 'textarea',
       hideInSearch: true,
     },
@@ -43,65 +58,84 @@ export default () => {
       title: '活动名称',
       dataIndex: 'name',
       valueType: 'textarea',
+      hideInSearch: true,
+    },
+    {
+      title: '活动名称',
+      dataIndex: 'actName',
+      valueType: 'textarea',
+      hideInTable: true,
       order: 5,
     },
     {
       title: '商品数量',
       dataIndex: 'commoditys',
-      valueType: 'textarea',
-      order: 4,
+      hideInSearch: true,
+      // valueType: 'textarea',
+      // order: 4,
+      render: (_: string, _record: any) => _record.product ?  _record.product.length : 0
     },
     {
       title: '活动时间',
       dataIndex: 'time',
-      valueType: 'dateTime',
       hideInSearch: true,
+      render: (_: string, _record: any) => _record?.startTime + '~' + _record?.endTime
     },
     {
       title: '上架状态',
-      dataIndex: 'listingStatus',
+      dataIndex: 'addedState',
       valueType: 'select',
       valueEnum: {
-        1: {
+        0: {
           text: '上架',
         },
-        0: {
+        1: {
           text: '下架',
+        },
+        2: {
+          text: '暂存',
         },
       },
     },
     {
       title: '活动状态',
-      dataIndex: 'status',
+      dataIndex: 'actState',
       valueType: 'select',
       valueEnum: {
-        1: {
+        0: {
           text: '未开始',
         },
-        2: {
+        1: {
           text: '进行中',
         },
-        3: {
+        2: {
           text: '已结束',
         },
       },
       order: 5,
     },
     {
+      title: '商品名称',
+      dataIndex: 'productName',
+      valueType: 'textarea',
+      hideInTable: true,
+      order: 5,
+    },
+    {
       title: '活动权重',
-      dataIndex: 'order',
+      dataIndex: 'sortNo',
       valueType: 'textarea',
       hideInSearch: true,
     },
     {
       title: '最新操作时间',
-      dataIndex: 'updateDate',
+      dataIndex: 'updateTime',
       valueType: 'dateTime',
       hideInSearch: true,
     },
     {
-      title: '最新操作时间',
-      dataIndex: 'updateDate',
+      title: '操作时间',
+      dataIndex: 'updateTime',
       valueType: 'dateTimeRange',
       hideInTable: true,
       order: 4,
@@ -112,29 +146,50 @@ export default () => {
       width: 200,
       render: (_, record) => (
         <>
-          {record.status === 1 && (
-            <Button size="small" type="link" onClick={() => {}}>
-              提前开始
-            </Button>
+          {record.actState === 0 && (// 未开始的可提前开始
+            <Popconfirm
+              title="确定提前开始么？"
+              okText="提前开始"
+              cancelText="取消"
+              onConfirm={() => addOrUpdate({id: record.id, actState: 1})}
+            >
+              <a href="#">提前开始</a>
+            </Popconfirm>
           )}
 
-          {record.status === 2 && (
-            <Button size="small" type="link" onClick={() => {}}>
-              提前结束
-            </Button>
+          {record.actState === 1 && (// 进行中的可提前结束
+            <Popconfirm
+              title="确定提前结束么？"
+              okText="提前结束"
+              cancelText="取消"
+              onConfirm={() => addOrUpdate({id: record.id, actState: 2})}
+            >
+              <a href="#">提前结束</a>
+            </Popconfirm>
           )}
 
-          {record.listingStatus === 1 ? (
-            <Button size="small" type="link" onClick={() => {}}>
-              下架
-            </Button>
-          ) : (
-            <Button size="small" type="link" onClick={() => {}}>
+          {record.addedState == 0 && (
+            <Popconfirm
+              title="确定下架么？"
+              okText="下架"
+              cancelText="取消"
+              onConfirm={() => addOrUpdate({id: record.id, addedState: 1})}
+            >
+              <a href="#">下架</a>
+            </Popconfirm>
+          )}
+          
+          {(record.addedState != 0 && record.actState != 2) && ( // 上架及活动结束的都不能编辑
+            <Button size="small" type="link" onClick={() => {
+              history.push(`/purchase-manage/promotions-create?id=${record.id}`);
+            }}>
               编辑
             </Button>
           )}
 
-          <Button size="small" type="link" onClick={() => {}}>
+          <Button size="small" type="link" onClick={() => {
+            history.push(`/purchase-manage/promotions-create?id=${record.id}&isDetail=1`);
+          }}>
             详情
           </Button>
         </>
@@ -142,53 +197,52 @@ export default () => {
     },
   ];
 
-  const expandedRowRender = (data: DataPromotions.Promotions) => {
+  const expandedRowRender = (record: any) => {
     const _columns: ProColumns<DataCommodity.Commodity>[] = [
       {
         title: '序号',
-        hideInSearch: true,
-        renderText: (_, __, index: number) =>
-          (pagination2Ref.current.current ?? 0 - 1) * (pagination2Ref.current.pageSize ?? 0) +
-          index +
-          1,
+        hideInSearch: true, 
+        renderText: (_, __, index: number) => index + 1,
       },
       {
         title: '商品订货编码',
-        dataIndex: 'barcode',
+        dataIndex: 'productNo',
         valueType: 'textarea',
       },
       {
         title: '商品图',
-        dataIndex: 'thumbnail',
-        valueType: 'textarea',
+        dataIndex: 'productPic',
+        render: (_: string, _record: any) => (
+          <Image width={100} src={_} />
+        ),
       },
       {
         title: '商品名称',
-        dataIndex: 'name',
+        dataIndex: 'productName',
         valueType: 'textarea',
       },
       {
         title: '商品型号',
-        dataIndex: 'unemarque',
+        dataIndex: 'productModel',
         valueType: 'textarea',
       },
       {
         title: '商品原价',
-        dataIndex: 'price',
+        dataIndex: 'purchasePricePart',
         valueType: 'textarea',
       },
       {
         title: '商品售价',
-        dataIndex: 'price',
+        dataIndex: 'SalePricePart',
         valueType: 'textarea',
       },
       {
         title: '商品划线价',
-        renderText: () => '/',
+        dataIndex: 'OriginPricePart'
       },
       {
         title: '销售状态',
-        dataIndex: 'status',
+        dataIndex: 'addedState',
         valueType: 'select',
         valueEnum: {
           1: {
@@ -211,26 +265,48 @@ export default () => {
         headerTitle={false}
         search={false}
         options={false}
-        request={async (pagination) => {
-          const result = await commodityPageQuery({ ...pagination, pageSize: data.commoditys });
-          pagination2Ref.current = pagination;
-          return result;
-        }}
+        dataSource={tableData[record.id]}
         pagination={false}
       />
     );
   };
+  const [loadingObj, setLoadingObj] = useState<any>({});
 
-  const goCreate = useCallback(() => {
-    history.push('/purchase-manage/promotions-create');
-  }, [history]);
+  const [tableData, setTableData] = useState<any>([]);
+  
+  const queryExpandedData = async(record: any, key: any) => {
+    try {
+      const table = {...tableData};
+      const loading = {...loadingObj};
+      const data:any = record.product || [];
+      table[key] = data;
+      loading[key] = false;
+      setTableData(table);
+      setLoadingObj(loading);
+    } catch(err) {
+      console.log(err);
+    }
+  }
+
+  const onExpand = (expanded: any, record: any) => {
+    const key = record?.id;
+    // console.log(expanded, record, 111);
+    if (tableData[key]?.length) return;
+    const loading = { ...loadingObj };
+    loading[key] = true;
+    setLoadingObj(loading);
+    queryExpandedData(record, key);
+  }
 
   return (
     <PageContainer>
       <ProTable
         options={false}
         rowKey="id"
-        expandable={{ expandedRowRender }}
+        expandable = {{
+          onExpand,
+          expandedRowRender
+        }}
         search={{
           span: 8,
           labelWidth: 100,
@@ -238,14 +314,26 @@ export default () => {
         }}
         actionRef={actionRef}
         toolBarRender={() => [
-          <Button type="primary" key="primary" onClick={goCreate}>
+          <Button type="primary" key="primary" onClick={() => {
+            history.push('/purchase-manage/promotions-create');
+          }}>
             <PlusOutlined /> 新增活动
           </Button>,
         ]}
-        request={async (pagination) => {
-          const result = await pageQuery(pagination);
-          paginationRef.current = pagination;
-          return result;
+        request={async (filter) => {
+          // console.log(filter)
+          let params = {
+            ...filter,
+            pageIndex: filter.current,
+            startDate: filter.updateTime?[0] : '',
+            endDate: filter.updateTime?[1] : ''
+          };
+          const result = await getActivityManageList(params);
+          // pageInfo.current = pagination;
+          return Promise.resolve({
+            data: result.result,
+            success: true,
+          });
         }}
         columns={columns}
         pagination={{ size: 'default', showQuickJumper: true, defaultPageSize: 10 }}
