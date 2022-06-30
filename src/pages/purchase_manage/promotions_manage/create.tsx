@@ -11,7 +11,7 @@ import {
   createActivity, // 新增活动
   getActivityDetail, // 活动详情
 } from '@/services/purchase';
-import moment from 'moment';
+import moment, { relativeTimeRounding } from 'moment';
 import { useState, useEffect } from 'react';
 import { Link, history, Prompt } from 'umi';
 import { routeName } from '../../../../config/routes';
@@ -108,25 +108,25 @@ export default () => {
     }
   };
 
-  const [dateNow] = useState(new Date());
   const [loading, setLoading] = useState(false);
-
   const [form] = Form.useForm();
-  
   const [pageInfo, setPageInfo] = useState<any>({
     pageIndex: 1,
     pageSize: 5,
     totalCount: 0,
     pageTotal: 0,
   });
-  const [dataSource, setDataSource] = useState<any>([]);
+  const [dataSource, setDataSource] = useState<any>([]);//可选商品数据
+  
   const columns = [
     {
-      title: '排序',
+      title: '序号',
       dataIndex: 'sort',
       width: 80,
       render: (_: any, _record: any, index: number) =>
         pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
+      // render: (_: any, _record: any, index: number) =>
+      //  index + 1,
     },
     {
       title: '商品名称',
@@ -137,16 +137,15 @@ export default () => {
     {
       title: '商品图',
       dataIndex: 'productPic',
-      isEllipsis: true,
+      render: (_: string, _record: any) => (
+        <Image width={100} src={_} />
+      ),
       width: 120
     },
     {
       title: '商品型号',
       dataIndex: 'productModel',
-      width: 240,
-      render: (_: string, _record: any) => (
-        <div>开始：{_}<br></br>结束：{_record.endTime}</div>
-      ),
+      width: 120
     },
     {
       title: '商品采购价',
@@ -251,8 +250,8 @@ export default () => {
     prepare();
   }, []);
 
-  const [files, setFiles] = useState<any>([]);
-  const [files2, setFiles2] = useState<any>([]);
+  const [files, setFiles] = useState<any>([]); // 首页图
+  const [files2, setFiles2] = useState<any>([]); // 活动图
   const uploadButton = (
     <div>
       {loading ? <LoadingOutlined /> : <PlusOutlined />}
@@ -260,7 +259,6 @@ export default () => {
     </div>
   );
   const [uploadLoading, setUploadLoading] = useState<boolean>(false);
-  const accept = '.bmp,.gif,.png,.jpeg,.jpg';
   const handleChange = (info: UploadChangeParam<UploadFile<any>>) => {
     if (info.file.status === 'uploading') {
       setUploadLoading(true);
@@ -342,35 +340,44 @@ export default () => {
     }
   };
 
-  const beforeUpload = (file: RcFile) => {
-    return new Promise((resolve, reject) => {
-      const lastName = file.name.split('.');
-      const accepts = accept.split(',');
-      console.log(lastName, lastName[lastName.length - 1]);
-      if (!accepts.includes('.' + lastName[lastName.length - 1])) {
-        message.error(`请上传以${accept}后缀名开头的文件`);
-        return reject(false);
-      }
-      return resolve(true);
-    });
-  };
-
   // 选择商品弹框
   const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [choosedProducts, setChoosedProducts] = useState<any>([]); //已选商品数据
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  let selectKeys: any = []; // 存储选中的数据
   const handleOk = async () => {
-    
+    let arr: any = [];
+    if(selectedRowKeys) {
+      selectedRowKeys.map((i: any) => {
+        arr.push(JSON.parse(i))
+      }) 
+    }
+    let list = choosedProducts.concat(arr);
+    let res: any = [];
+    list.forEach((item: any) => {
+      let flag = res.some(e => {
+        if(item.id === e.id){
+          return true;
+        }
+      })
+      if(!flag){
+        res.push(item)
+      }
+    })
+    setChoosedProducts(res);
+    setSelectedRowKeys([]);
+    setModalVisible(false);
   };
   const handleCancel = () => {
     setModalVisible(false);
+    setSelectedRowKeys([]);
   };
-  // const chooseColumns = [
   const chooseColumns: ColumnsType<DataType> = [
     {
       title: '序号',
       dataIndex: 'sort',
       width: 80,
-      render: (_: any, _record: any, index: number) =>
-        pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
+      render: (_: any, _record: any, index: number) => index + 1,
     },
     {
       title: '商品名称',
@@ -381,16 +388,15 @@ export default () => {
     {
       title: '商品图',
       dataIndex: 'productPic',
-      // isEllipsis: true,
+      render: (_: string, _record: any) => (
+        <Image width={100} src={_} />
+      ),
       width: 120
     },
     {
       title: '商品型号',
       dataIndex: 'productModel',
-      width: 240,
-      render: (_: string, _record: any) => (
-        <div>开始：{_}<br></br>结束：{_record.endTime}</div>
-      ),
+      width: 120
     },
     {
       title: '商品采购价',
@@ -415,7 +421,7 @@ export default () => {
     },
     {
       title: '操作',
-      width: 100,
+      width: 240,
       fixed: 'right',
       dataIndex: 'option',
       render: (_: any, record: any) => {
@@ -427,31 +433,49 @@ export default () => {
                 // history.push(`${routeName.ANTELOPE_LIVE_MANAGEMENT_ADD}?id=${record.id}`);
               }}
             >
-              详情
+              商品详情
+            </a>
+            <a
+              href="#"
+              onClick={() => {
+                // history.push(`${routeName.ANTELOPE_LIVE_MANAGEMENT_ADD}?id=${record.id}`);
+              }}
+            >
+              设置价格
+            </a>
+            <a
+              href="#"
+              onClick={() => {
+                // history.push(`${routeName.ANTELOPE_LIVE_MANAGEMENT_ADD}?id=${record.id}`);
+              }}
+            >
+              权重设置
+            </a>
+            <a
+              href="#"
+              onClick={() => {
+                // history.push(`${routeName.ANTELOPE_LIVE_MANAGEMENT_ADD}?id=${record.id}`);
+              }}
+            >
+              删除
             </a>
           </Space>
         );
       },
     },
   ];
+  // 选择商品弹框
   const useModal = (): React.ReactNode => {
-    const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
     const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
-      console.log('selectedRowKeys changed: ', selectedRowKeys);
+      console.log('selectedRowKeys changed: ', newSelectedRowKeys);
       setSelectedRowKeys(newSelectedRowKeys);
     };
     const start = () => {
-      Table.SELECTION_ALL
-      // setLoading(true);
-      // // ajax request after empty completing
-      // setTimeout(() => {
-        
-      //   // setSelectedRowKeys([]);
-      //   // setLoading(false);
-      // }, 1000);
+      Table.SELECTION_ALL;
     };
   
     const rowSelection = {
+      preserveSelectedRowKeys: true, // 设置翻页保存key
       selectedRowKeys,
       onChange: onSelectChange,
     };
@@ -488,9 +512,9 @@ export default () => {
           <Table
             bordered
             scroll={{ x: 1400 }}
-            rowKey={'id'}
+            rowKey={(r: any) => {return JSON.stringify(r)}}
             rowSelection={rowSelection}
-            columns={chooseColumns}
+            columns={columns}
             dataSource={dataSource}
             pagination={
               pageInfo.totalCount === 0
@@ -513,7 +537,7 @@ export default () => {
   /**
    * 新增/编辑
    */
-  const addOrUpdate = () => {
+  const addOrUpdate = (addedState: number) => {
     form
       .validateFields()
       .then(async (value: any) => {
@@ -525,7 +549,8 @@ export default () => {
           startTime: moment(value.startTime[0]).format('YYYY-MM-DD HH:mm:ss'),
           endTime: moment(value.startTime[1]).format('YYYY-MM-DD HH:mm:ss'),
           firstPic: files,
-          otherPic: files2
+          otherPic: files2,
+          sortNo: value.sortNo ? Number(value.sortNo) : null
         });
         // setAddOrUpdateLoading(true);
         // // 编辑
@@ -550,7 +575,9 @@ export default () => {
             startTime: moment(value.startTime[0]).format('YYYY-MM-DD HH:mm:ss'),
             endTime: moment(value.startTime[1]).format('YYYY-MM-DD HH:mm:ss'),
             firstPic: files,
-            otherPic: files2
+            otherPic: files2,
+            sortNo: value.sortNo ? Number(value.sortNo) : null,
+            addedState: addedState
           });
         //   hide();
         }
@@ -701,26 +728,15 @@ export default () => {
         <SelfTable
           bordered
           scroll={{ x: 1400 }}
-          columns={columns}
+          columns={chooseColumns}
           rowKey={'id'}
-          dataSource={dataSource}
-          pagination={
-            pageInfo.totalCount === 0
-              ? false
-              : {
-                  onChange: getProducts,
-                  total: pageInfo.totalCount,
-                  current: pageInfo.pageIndex,
-                  pageSize: pageInfo.pageSize,
-                  showTotal: (total) =>
-                    `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
-                }
-          }
+          dataSource={choosedProducts}
+          pagination={false}
         />
       </div>
-      <Space style={{}}>
-        <Button type="primary" onClick={() => {addOrUpdate()}}>上架</Button>
-        <Button>暂存</Button>
+      <Space style={{marginTop: 10}}>
+        <Button type="primary" onClick={() => {addOrUpdate(0)}}>上架</Button>
+        <Button onClick={() => {addOrUpdate(2)}}>暂存</Button>
         <Button>返回</Button>
       </Space>
       {useModal()}

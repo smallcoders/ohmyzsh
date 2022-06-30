@@ -157,12 +157,16 @@ export default () => {
               下架
             </Button>
           ) : (
-            <Button size="small" type="link" onClick={() => {}}>
+            <Button size="small" type="link" onClick={() => {
+              history.push(`/purchase-manage/promotions-create?id=${record.id}`);
+            }}>
               编辑
             </Button>
           )}
 
-          <Button size="small" type="link" onClick={() => {}}>
+          <Button size="small" type="link" onClick={() => {
+            history.push(`/purchase-manage/promotions-create?id=${record.id}&isDetail=1`);
+          }}>
             详情
           </Button>
         </>

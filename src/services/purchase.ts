@@ -34,6 +34,16 @@ import { request } from 'umi';
   });
 }
 /**
+ * 编辑活动
+ * @returns
+ */
+ export async function updateActivity(data?: { [key: string]: any }) {
+  return request<Common.ResultCode & { result: any }>(`/antelope-pay/mng/activity/update`, {
+    method: 'put',
+    data,
+  });
+}
+/**
  * 查看活动详情
  * @param params
  */
