@@ -79,7 +79,7 @@ const UploadForm = (
         return Upload.LIST_IGNORE;
       }
     }
-    if(props.maxSizeKb) {
+    if (props.maxSizeKb) {
       const isLtLimit = file.size / 1024 < props.maxSizeKb;
       if (!isLtLimit) {
         message.error(`上传的文件大小不得超过${props.maxSizeKb}KB`);

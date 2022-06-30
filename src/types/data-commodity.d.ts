@@ -20,7 +20,7 @@ namespace DataCommodity {
     productBrandEn: string;
     spreadWord: string;
     productModel: string;
-    supplier: string;
+    supplier: number;
     supplierName: string;
     productOrg: string;
     productPic: string;
@@ -39,7 +39,7 @@ namespace DataCommodity {
       labelContent: string;
       labelType: number;
       state: number;
-    };
+    }[];
     serverIds: string;
     serverContent: {
       id: number;
@@ -47,7 +47,7 @@ namespace DataCommodity {
       labelContent: string;
       labelType: number;
       state: number;
-    };
+    }[];
     banner: string;
     finishStatus: 0 | 1;
     salePricePart: string;
@@ -90,6 +90,22 @@ namespace DataCommodity {
     updateTime: string;
   };
 
-  export type DetailInfo = {};
+  export type Label = {
+    id: number;
+    label: string;
+    labelContent: string;
+    labelType: 0 | 1;
+    state: 0 | 1;
+    updateTime: string;
+    createTime: string;
+  };
+
+  export type Provider = {
+    id: number;
+    providerTypeName: string;
+    weight: number;
+    createTime: string;
+    operateUser: string;
+  };
 }
 export default DataCommodity;

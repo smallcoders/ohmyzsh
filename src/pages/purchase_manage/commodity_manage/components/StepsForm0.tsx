@@ -1,9 +1,10 @@
+import DebounceSelect from '@/components/DebounceSelect';
 import useQuery from '@/hooks/useQuery';
-import { addProduct, queryProduct } from '@/services/commodity';
+import { addProduct, queryLabel, queryProduct, queryProvider } from '@/services/commodity';
 import type { ProFormInstance } from '@ant-design/pro-form';
-import ProForm, { ProFormSelect, ProFormText } from '@ant-design/pro-form';
-import { Button, Space } from 'antd';
-import { useCallback, useEffect, useRef } from 'react';
+import ProForm, { ProFormText } from '@ant-design/pro-form';
+import { Button, Form, Select, Space } from 'antd';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useHistory } from 'umi';
 import UploadImageFormItem from '../../components/UploadImageFormItem';
 import type { StepFormProps } from '../create';
@@ -20,7 +21,7 @@ interface ProductForm {
 }
 
 export default (props: StepFormProps & { setProductId: (id: string | number) => void }) => {
-  const { currentChange, changeLoading, setProductId } = props;
+  const { currentChange, setChanged, setProductId } = props;
   const history = useHistory();
   const query = useQuery();
   const formRef = useRef<ProFormInstance<ProductForm>>();
@@ -42,6 +43,7 @@ export default (props: StepFormProps & { setProductId: (id: string | number) => 
     if (query.id) {
       queryProduct(query.id)
         .then((res) => {
+          if (res.code) return;
           const data = {
             productName: res.result.productName,
             productModel: res.result.productModel,
@@ -56,7 +58,7 @@ export default (props: StepFormProps & { setProductId: (id: string | number) => 
         })
         .finally(() => {});
     }
-  }, [query, changeLoading]);
+  }, [query]);
 
   return (
     <ProForm
@@ -79,6 +81,7 @@ export default (props: StepFormProps & { setProductId: (id: string | number) => 
         ),
       }}
       onFinish={onFinish}
+      onChange={() => setChanged(true)}
     >
       <ProFormText
         name="productName"
@@ -93,8 +96,12 @@ export default (props: StepFormProps & { setProductId: (id: string | number) => 
         rules={[{ required: true }]}
       />
 
-      <ProFormSelect name="saleIds" label="商品促销标签" placeholder="请输入" />
-      <ProFormSelect name="serverIds" label="服务标签" placeholder="请输入" />
+      <Form.Item name="saleIds" label="商品促销标签">
+        <LabelSelect labelType={0} />
+      </Form.Item>
+      <Form.Item name="serverIds" label="服务标签">
+        <LabelSelect labelType={1} />
+      </Form.Item>
       <ProFormText
         name="productOrg"
         label="商品单位"
@@ -106,6 +113,7 @@ export default (props: StepFormProps & { setProductId: (id: string | number) => 
         name="productPic"
         label="商品封面图"
         extra="图片格式仅支持JPG、PNG、JPEG,建议尺寸XXXX*XXXX，大小在5M以下"
+        rules={[{ required: true }]}
       >
         <UploadImageFormItem listType="picture-card" maxCount={1} />
       </ProForm.Item>
@@ -113,16 +121,85 @@ export default (props: StepFormProps & { setProductId: (id: string | number) => 
         name="banner"
         label="商品轮播图"
         extra="图片格式仅支持JPG、PNG、JPEG,建议尺寸XXXX*XXXX，大小在5M以下，最大支持10张图片"
+        rules={[{ required: true }]}
       >
         <UploadImageFormItem listType="picture-card" maxCount={10} />
       </ProForm.Item>
 
-      <ProFormText
-        name="supplier"
-        label="供应商"
-        placeholder="请输入"
-        rules={[{ required: true }]}
-      />
+      <Form.Item name="supplier" label="供应商" rules={[{ required: true }]}>
+        <ProviderSelect />
+      </Form.Item>
     </ProForm>
   );
 };
+
+function LabelSelect(props: {
+  value?: string;
+  labelType: 0 | 1;
+  onChange?: (val: string) => void;
+}) {
+  const { value, labelType, onChange } = props;
+
+  const selected = useMemo(() => {
+    return value?.split(',').filter((item) => item.trim()) || [];
+  }, [value]);
+
+  const selectChanged = useCallback(
+    (values: string[]) => {
+      if (onChange) {
+        onChange(values.join(','));
+      }
+    },
+    [onChange],
+  );
+
+  const fetchOptions = useCallback(
+    async (search: string) => {
+      const res = await queryLabel({ labelType, label: search, pageSize: 30, pageIndex: 1 });
+
+      if (res.code) {
+        return [];
+      }
+
+      return res.result.map((item) => {
+        return {
+          label: item.label,
+          value: item.id.toString(),
+        };
+      });
+    },
+    [labelType],
+  );
+
+  return (
+    <DebounceSelect
+      value={selected}
+      placeholder="请输入"
+      mode="multiple"
+      onChange={selectChanged}
+      fetchOptions={fetchOptions}
+    />
+  );
+}
+
+function ProviderSelect(props: { value?: string; onChange?: (val: string) => void }) {
+  const { value, onChange } = props;
+  const [options, setOptions] = useState<{ label: string; value: string }[]>([]);
+
+  const fetchOptions = useCallback(async () => {
+    const res = await queryProvider();
+    console.log(res);
+
+    if (!res.code) {
+      setOptions(
+        res.result.map((item) => ({ label: item.providerTypeName, value: item.id.toString() })),
+      );
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchOptions();
+  }, [fetchOptions]);
+
+  return <Select value={value} placeholder="请输入" options={options} onChange={onChange} />;
+}

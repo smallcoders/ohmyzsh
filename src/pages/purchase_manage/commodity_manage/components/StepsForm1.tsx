@@ -1,20 +1,19 @@
-import { addSpecs } from '@/services/commodity';
+import { addSpecs, deleteSpecs, querySpecs } from '@/services/commodity';
+import type DataCommodity from '@/types/data-commodity';
 import { ProFormText } from '@ant-design/pro-form';
 import type { ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { Button, Form, Modal } from 'antd';
-import { useCallback, useState } from 'react';
+import { Button, Form, Modal, Space } from 'antd';
+import { useCallback, useEffect, useState } from 'react';
 import type { StepFormProps } from '../create';
 
-export interface SpecData {
-  id: number;
-  specsName: string;
-  specsValue: string;
-}
-
+export type SpecData = Omit<
+  DataCommodity.SpecInfo,
+  'productId' | 'state' | 'createTime' | 'updateTime'
+>;
 export default (props: StepFormProps) => {
-  const { id, changeLoading, currentChange } = props;
-  const [data, setData] = useState<SpecData[]>([]);
+  const { id, currentChange } = props;
+  const [specs, setSpecs] = useState<SpecData[]>([]);
   const [editRecord, setEditRecord] = useState<SpecData>();
   const [addModalShow, setAddModalShow] = useState(false);
 
@@ -33,9 +32,13 @@ export default (props: StepFormProps) => {
     [form],
   );
 
-  const delHandle = useCallback((index: number) => {
-    setData((_data) => _data.filter((_, i) => i !== index));
-  }, []);
+  const delHandle = useCallback(
+    (record: SpecData) => {
+      deleteSpecs({ productId: id, ids: [record.id] });
+      setSpecs((oldVal) => oldVal.filter((item) => item.id !== record.id));
+    },
+    [id],
+  );
 
   const modalCandel = useCallback(() => {
     form.resetFields();
@@ -47,11 +50,11 @@ export default (props: StepFormProps) => {
     const val = form.getFieldsValue();
     const _data = editRecord ? { ...editRecord, ...val } : val;
     const res = await addSpecs({ ..._data, productId: id });
-    if (!res.code) return;
+
     if (!editRecord) {
-      setData((oldVal) => [...oldVal, { ...val, id: res.result }]);
+      setSpecs((oldVal) => [...oldVal, { ...val, id: res.result }]);
     } else {
-      setData((oldVal) =>
+      setSpecs((oldVal) =>
         oldVal.map((item) => (item.id === editRecord.id ? { ...val, id: res.result } : item)),
       );
     }
@@ -78,12 +81,12 @@ export default (props: StepFormProps) => {
     {
       title: '操作',
       valueType: 'option',
-      render: (_, record, index) => (
+      render: (_, record) => (
         <>
-          <Button size="small" type="link" onClick={() => editHandle(record, index)}>
+          <Button size="small" type="link" onClick={() => editHandle(record)}>
             编辑
           </Button>
-          <Button size="small" type="link" onClick={() => delHandle(index)}>
+          <Button size="small" type="link" onClick={() => delHandle(record)}>
             删除
           </Button>
         </>
@@ -92,8 +95,18 @@ export default (props: StepFormProps) => {
   ];
 
   const onFinish = useCallback(async () => {
-    currentChange(2);
+    currentChange(1);
   }, [currentChange]);
+
+  useEffect(() => {
+    if (id) {
+      querySpecs(id).then((res) => {
+        if (!res.code) {
+          setSpecs(res.result);
+        }
+      });
+    }
+  }, [id]);
   return (
     <div>
       <ProTable
@@ -102,7 +115,7 @@ export default (props: StepFormProps) => {
         options={false}
         search={false}
         pagination={false}
-        dataSource={data}
+        dataSource={specs}
         columns={columns}
         toolBarRender={() => [
           <Button type="primary" key="primary" onClick={showAdd}>
@@ -111,10 +124,12 @@ export default (props: StepFormProps) => {
         ]}
       />
       <div className="form-footer">
-        <Button onClick={() => props.currentChange(-1)}>上一步</Button>
-        <Button type="primary" onClick={onFinish}>
-          下一步
-        </Button>
+        <Space>
+          <Button onClick={() => props.currentChange(-1)}>上一步</Button>
+          <Button type="primary" onClick={onFinish}>
+            下一步
+          </Button>
+        </Space>
       </div>
       <Modal
         visible={addModalShow}

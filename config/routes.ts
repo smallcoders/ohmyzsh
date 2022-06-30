@@ -295,7 +295,7 @@ export default [
     routes: [
       {
         path: '/purchase-manage',
-        redirect: '/purchase-manage/data-display',
+        redirect: '/purchase-manage/commodity-manage',
       },
       {
         path: '/purchase-manage/commodity-manage',
