@@ -5,14 +5,15 @@ import { RcFile, UploadChangeParam } from 'antd/lib/upload';
 import type { ColumnsType } from 'antd/lib/table';
 import { UploadFile } from 'antd/lib/upload/interface';
 import SelfTable from '@/components/self_table';
-import UploadForm from '@/components/upload_form';
 import {
   getActivityProducts,
   createActivity, // 新增活动
+  updateActivity, // 编辑活动
   getActivityDetail, // 活动详情
+  getProductPriceList, // 设置价格时查看对应商品规格信息
 } from '@/services/purchase';
-import moment, { relativeTimeRounding } from 'moment';
-import { useState, useEffect } from 'react';
+import moment from 'moment';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { Link, history, Prompt } from 'umi';
 import { routeName } from '../../../../config/routes';
 
@@ -71,33 +72,45 @@ export default () => {
 
   const prepare = async () => {
     try {
-      // const prepareResultArray = await Promise.all([getLiveTypesPage({
-      //   pageIndex: 1,
-      //   pageSize: 100,
-      // })]);
-      // setAppTypes(prepareResultArray[0].result || []);
-
       const { id, isDetail } = history.location.query as { id: string | undefined, isDetail: string | undefined };
 
       if (id) {
         // 获取详情 塞入表单
         const detailRs = await getActivityDetail(id);
-        console.log(detailRs, 'detailRs');
         let editItem = { ...detailRs.result };
-        // editItem.typeIds = editItem.typeIds?.split(',').map(Number);//返回的类型为字符串，需转为数组
         console.log(editItem, '---editItem')
-        // if (detailRs.code === 0) {
-        //   editItem.isSkip = detailRs.result.url ? 1 : 0;
-        //   setIsSkip(editItem.isSkip);
-        //   // setIsBeginTopAndEditing(Boolean(editItem.isTopApp));
-        //   console.log(editItem, 'res---editItem');
+        if (detailRs.code === 0) {
+          let actImgs:any = [];
+          if(editItem.otherPic) {
+            editItem.otherPic.map((i: any) => {
+              actImgs.push(
+                {
+                  uid: i.picId,
+                  name: 'image.png',  
+                  status: 'done',
+                  url: i.banner
+                }
+              )
+            }) 
+          }
           setEditingItem({
             ...editItem, 
-            time: [moment(editingItem.startTime), moment(editingItem.endTime)]
+            time: [moment(editItem.startTime), moment(editItem.endTime)],
+            firstPic: [{uid: editItem.firstPic.picId,name: 'image.png',  status: 'done',url: editItem.firstPic.banner}],
+            otherPic: actImgs
           });
-        // } else {
-        //   message.error(`获取详情失败，原因:{${detailRs.message}}`);
-        // }
+          setFiles([
+            {
+              picId: editItem.firstPic?.picId,
+              banner: editItem.firstPic?.banner
+            }
+          ]);
+          if(editItem.otherPic) {
+            setFiles2(editItem.otherPic)
+          }
+        } else {
+          message.error(`获取详情失败，原因:{${detailRs.message}}`);
+        }
       }
       if(isDetail == '1') {
         setIsDetail(true);
@@ -107,6 +120,11 @@ export default () => {
       message.error('获取初始数据失败');
     }
   };
+
+  // 额外的副作用 用来解决表单的设置
+  useEffect(() => {
+    form.setFieldsValue({ ...editingItem });
+  }, [editingItem]);
 
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
@@ -206,6 +224,20 @@ export default () => {
     }
   };
 
+  const getProductPrices = async (id: string) => {
+    try {
+      const res = await getProductPriceList(id);
+      if (res.code === 0) {
+        setPriceDataSource(res.result);
+      } else {
+        message.error(`请求分页数据失败`);
+      }
+      setPriceModalVisible(true);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     getProducts();
     prepare();
@@ -219,6 +251,23 @@ export default () => {
       <div style={{ marginTop: 8 }}>Upload</div>
     </div>
   );
+  const normFile = (e: any) => {
+    console.log('Upload event:', e);
+    if (Array.isArray(e)) {
+      return e;
+    }
+    return e?.fileList;
+    // const isLt2M = e.file.size / 1024 / 1024 < 2;
+    // console.log('Upload event:', e);
+    // if (Array.isArray(e)) {
+    //   return e;
+    // }
+    // if (!isLt2M) {
+    //   message.error('视频大小不得超过800M!');
+    //   return []
+    // }
+    // return e?.fileList;
+  };
   const [uploadLoading, setUploadLoading] = useState<boolean>(false);
   const handleChange = (info: UploadChangeParam<UploadFile<any>>) => {
     if (info.file.status === 'uploading') {
@@ -301,7 +350,7 @@ export default () => {
     }
   };
 
-  // 选择商品弹框
+  // --------------------选择商品弹框开始------------------
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [choosedProducts, setChoosedProducts] = useState<any>([]); //已选商品数据
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
@@ -409,7 +458,7 @@ export default () => {
             <a
               href="#"
               onClick={() => {
-                // history.push(`${routeName.ANTELOPE_LIVE_MANAGEMENT_ADD}?id=${record.id}`);
+                getProductPrices(record.id);
               }}
             >
               设置价格
@@ -430,7 +479,6 @@ export default () => {
               okText="确定"
               cancelText="取消"
               onConfirm={() => {
-                // console.log(weightForm.getFieldValue('weight'), record, 111);
                 editSort(weightForm.getFieldValue('weight'), index)
               }}
             >
@@ -458,7 +506,7 @@ export default () => {
       },
     },
   ];
-  // 选择商品弹框
+  
   const useModal = (): React.ReactNode => {
     const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
       console.log('selectedRowKeys changed: ', newSelectedRowKeys);
@@ -527,16 +575,207 @@ export default () => {
       </Modal>
     );
   };
+  // --------------------选择商品弹框结束------------------
+
+  //  --------------------设置价格弹框开始------------------
+  const [priceModalVisible, setPriceModalVisible] = useState<boolean>(false);
+  const [priceDataSource, setPriceDataSource] = useState([]);
+  const setPriceOk = async () => {
+    console.log(priceDataSource, 'priceDataSource')
+    setPriceModalVisible(false);
+  };
+  const cancelSetPrice = () => {
+    setPriceModalVisible(false);
+  };
+  const EditableContext = React.createContext(null);
+
+  const EditableRow = ({ index, ...props }) => {
+    const [form] = Form.useForm();
+    return (
+      <Form form={form} component={false}>
+        <EditableContext.Provider value={form}>
+          <tr {...props} />
+        </EditableContext.Provider>
+      </Form>
+    );
+  };
+
+  const EditableCell = ({
+    title,
+    editable,
+    children,
+    dataIndex,
+    record,
+    handleSave,
+    ...restProps
+  }) => {
+    const [editing, setEditing] = useState(false);
+    const inputRef = useRef(null);
+    const form = useContext(EditableContext);
+    useEffect(() => {
+      if (editing) {
+        inputRef.current.focus();
+      }
+    }, [editing]);
+
+    const toggleEdit = () => {
+      setEditing(!editing);
+      form.setFieldsValue({
+        [dataIndex]: record[dataIndex],
+      });
+    };
+
+    const save = async () => {
+      try {
+        const values = await form.validateFields();
+        toggleEdit();
+        handleSave({ ...record, ...values });
+      } catch (errInfo) {
+        console.log('Save failed:', errInfo);
+      }
+    };
+
+    let childNode = children;
+
+    if (editable) {
+      childNode = editing ? (
+        <Form.Item
+          style={{
+            margin: 0,
+          }}
+          name={dataIndex}
+          rules={[
+            {
+              required: true,
+              message: `${title} is required.`,
+            },
+          ]}
+        >
+          <Input ref={inputRef} onPressEnter={save} onBlur={save} />
+        </Form.Item>
+      ) : (
+        <div
+          className="editable-cell-value-wrap"
+          style={{
+            paddingRight: 24,
+          }}
+          onClick={toggleEdit}
+        >
+          {children}
+        </div>
+      );
+    }
+
+    return <td {...restProps}>{childNode}</td>;
+  };
+
+  const defaultColumns = [
+    {
+      title: '规格名',
+      dataIndex: 'specsTitle',
+      width: '30%',
+    },
+    {
+      title: '规格值',
+      dataIndex: 'specs',
+    },
+    {
+      title: '商品采购价（元）',
+      dataIndex: 'purchasePrice',
+    },
+    {
+      title: '商品销售价（元）',
+      dataIndex: 'salePrice',
+      editable: true,
+    },
+    {
+      title: '商品划线价（元）',
+      dataIndex: 'originPrice',
+      editable: true,
+    }
+  ];
+
+  const handleSave = (row: any) => {
+    const newData = [...priceDataSource];
+    const index = newData.findIndex((item) => row.key === item.key);
+    const item = newData[index];
+    newData.splice(index, 1, { ...item, ...row });
+    console.log(newData, 'handleSave后的数据');
+    setPriceDataSource(newData);
+  };
+
+  const components = {
+    body: {
+      row: EditableRow,
+      cell: EditableCell,
+    },
+  };
+  const priceColumns = defaultColumns.map((col) => {
+    if (!col.editable) {
+      return col;
+    }
+    return {
+      ...col,
+      onCell: (record) => ({
+        record,
+        editable: col.editable,
+        dataIndex: col.dataIndex,
+        title: col.title,
+        handleSave,
+      }),
+    };
+  });
+  
+  const setPriceModal = (): React.ReactNode => {
+    return (
+      <Modal
+        title={ '配置商品活动价'}
+        width="800px"
+        visible={priceModalVisible}
+        onOk={setPriceOk}
+        onCancel={cancelSetPrice}
+        footer={[
+          <Button key="back" onClick={cancelSetPrice}>
+            取消
+          </Button>,
+          <Button
+            key="link"
+            type="primary"
+            onClick={setPriceOk}
+          >
+            确定
+          </Button>,
+        ]}
+      >
+        <div className={'container-table-body'} style={{marginTop: 10}}>
+          <div style={{ marginBottom: 16 }}>
+            商品名称？？？？？？
+          </div>
+          <Table
+            components={components}
+            rowKey={'id'}
+            rowClassName={() => 'editable-row'}
+            bordered
+            dataSource={priceDataSource}
+            columns={priceColumns}
+          />
+        </div>
+      </Modal>
+    );
+  };
 
   /**
    * 新增/编辑
    */
+  /**
+   * 添加或者修改 loading
+   */
+  const [addOrUpdateLoading, setAddOrUpdateLoading] = useState<boolean>(false);
   const addOrUpdate = (addedState: number) => {
     form
       .validateFields()
       .then(async (value: any) => {
-        const tooltipMessage = editingItem.id ? '编辑' : '新增';
-        // console.log(value, '<---value');
+        const tooltipMessage = editingItem.id ? '活动编辑' : '活动新增';
         const hide = message.loading(`正在${tooltipMessage}`);
         console.log({
           ...value,
@@ -546,23 +785,21 @@ export default () => {
           otherPic: files2,
           sortNo: value.sortNo ? Number(value.sortNo) : null
         });
-        // setAddOrUpdateLoading(true);
+        setAddOrUpdateLoading(true);
         // // 编辑
         let addorUpdateRes = {};
         if(editingItem.id) {
-        //   addorUpdateRes = await updateLive({
-        //     ...value,
-        //     startTime: moment(value.time[0]).format('YYYY-MM-DD HH:mm:ss'),
-        //     endTime: moment(value.time[1]).format('YYYY-MM-DD HH:mm:ss'),
-        //     closeReplay: value.extended?.indexOf('replay') > -1 ? 0 : 1,
-        //     closeKf: value.extended?.indexOf('kf') > -1 ? 0 : 1,
-        //     closeLike: value.extended?.indexOf('like') > -1 ? 0 : 1,
-        //     closeGoods: value.extended?.indexOf('goods') > -1 ? 0 : 1,
-        //     closeComment: value.extended?.indexOf('comment') > -1 ? 0 : 1,
-        //     closeShare: value.extended?.indexOf('share') > -1 ? 0 : 1,
-        //     id: editingItem.id
-        //   });
-        //   hide()
+          addorUpdateRes = await updateActivity({
+            ...value,
+            startTime: moment(value.time[0]).format('YYYY-MM-DD HH:mm:ss'),
+            endTime: moment(value.time[1]).format('YYYY-MM-DD HH:mm:ss'),
+            firstPic: files,
+            otherPic: files2,
+            sortNo: value.sortNo ? Number(value.sortNo) : null,
+            addedState: addedState,
+            id: editingItem.id
+          });
+          hide()
         }else {
           addorUpdateRes = await createActivity({
             ...value,
@@ -573,7 +810,7 @@ export default () => {
             sortNo: value.sortNo ? Number(value.sortNo) : null,
             addedState: addedState
           });
-        //   hide();
+          hide();
         }
         if (addorUpdateRes.code === 0) {
           message.success(`${tooltipMessage}成功`);
@@ -582,18 +819,13 @@ export default () => {
         } else {
           message.error(`${tooltipMessage}失败，原因:{${addorUpdateRes.message}}`);
         }
-        // setAddOrUpdateLoading(false);
+        setAddOrUpdateLoading(false);
       })
       .catch((err) => {
         // message.error('服务器错误，请稍后重试');
         console.log(err);
       });
   };
-
-  // 额外的副作用 用来解决表单的设置
-  useEffect(() => {
-    form.setFieldsValue({ ...editingItem });
-  }, [editingItem]);
 
   return (
     <PageContainer 
@@ -656,15 +888,12 @@ export default () => {
         <Form.Item
           label="首页采购图"
           name="firstPic"
+          valuePropName="fileList"
+          getValueFromEvent={normFile}
           extra={`${!isDetail ? '图片格式仅支持JPG、PNG、JPEG,建议尺寸XXXX*XXXX，大小在5M以下' : ''}`}
         >
           {isDetail ? (
-            // <Image.PreviewGroup>
-            //   {editingItem?.firstPic &&
-            //     editingItem?.firstPic.map((p: any) => (
-                  <Image height={200} width={300} src={editingItem.firstPic?.banner} />
-            //     ))}
-            // </Image.PreviewGroup>
+            <Image height={200} width={300} src={editingItem.firstPic?.banner} />
           ) : (
             <Upload 
               maxCount={1} 
@@ -682,6 +911,8 @@ export default () => {
         <Form.Item
           label="活动图"
           name="otherPic"
+          valuePropName="fileList"
+          getValueFromEvent={normFile}
           extra={`${!isDetail ? '图片格式仅支持JPG、PNG、JPEG,建议尺寸XXXX*XXXX，大小在5M以下，支持3张图片' : ''}`}
           rules={[{ required: !isDetail }]}
         >
@@ -734,11 +965,12 @@ export default () => {
         />
       </div>
       <Space style={{marginTop: 10}}>
-        <Button type="primary" onClick={() => {addOrUpdate(0)}}>上架</Button>
-        <Button onClick={() => {addOrUpdate(2)}}>暂存</Button>
-        <Button>返回</Button>
+        <Button type="primary" loading={addOrUpdateLoading} onClick={() => {addOrUpdate(0)}}>上架</Button>
+        <Button loading={addOrUpdateLoading} onClick={() => {addOrUpdate(2)}}>暂存</Button>
+        <Button loading={addOrUpdateLoading} onClick={() => {history.push(`/purchase-manage/promotions-manage`);}}>返回</Button>
       </Space>
       {useModal()}
+      {setPriceModal()}
     </PageContainer>
   );
 };

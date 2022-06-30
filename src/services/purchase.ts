@@ -24,6 +24,15 @@ import { request } from 'umi';
   });
 }
 /**
+ * 设置价格时查看对应商品规格信息
+ * @param params
+ */
+ export async function getProductPriceList(id: string) {
+  return request<LogoutVerify.ResultList>(`/antelope-pay/product/queryPrice/${id}`, {
+    method: 'get'
+  });
+}
+/**
  * 新增活动
  * @param params
  */
@@ -39,6 +48,16 @@ import { request } from 'umi';
  */
  export async function updateActivity(data?: { [key: string]: any }) {
   return request<Common.ResultCode & { result: any }>(`/antelope-pay/mng/activity/update`, {
+    method: 'put',
+    data,
+  });
+}
+/**
+ * 更改活动状态及下架
+ * @returns
+ */
+ export async function changeActState(data?: { [key: string]: any }) {
+  return request<Common.ResultCode & { result: any }>(`/antelope-pay/mng/activity/changeState`, {
     method: 'put',
     data,
   });

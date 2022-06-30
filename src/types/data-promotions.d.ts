@@ -15,6 +15,8 @@ namespace DataPromotions {
     status: Status;
     order: number;
     updateDate: number;
+    addedState?: number;
+    actState?: number;
   };
 }
 export default DataPromotions;

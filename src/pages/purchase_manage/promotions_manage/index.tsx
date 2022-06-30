@@ -1,17 +1,16 @@
 import { pageQuery as commodityPageQuery } from '@/services/commodity';
 import { pageQuery } from '@/services/promotions';
-import { getActivityManageList } from '@/services/purchase';
+import { getActivityManageList, changeActState } from '@/services/purchase';
 import type DataCommodity from '@/types/data-commodity';
 import type DataPromotions from '@/types/data-promotions';
 import { PlusOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { Button, Image } from 'antd';
+import { Button, Image, Popconfirm, message } from 'antd';
 import { useCallback, useRef, useState } from 'react';
 import { useHistory } from 'umi';
 import type Common from '@/types/common';
-import { keyBy } from 'lodash';
 
 export default () => {
   const history = useHistory();
@@ -25,15 +24,22 @@ export default () => {
     pageTotal: 0,
   });
 
-  const paginationRef = useRef<{ pageIndex?: number; pageSize?: number }>({
-    pageIndex: 1,
-    pageSize: 20,
-  });
-
-  const pagination2Ref = useRef<{ pageIndex?: number; pageSize?: number }>({
-    pageIndex: 0,
-    pageSize: 0,
-  });
+  // 更改活动状态
+  const addOrUpdate = async (params: object) => {
+    try {
+      const removeRes = await changeActState({...params});
+      if (removeRes.code === 0) {
+        message.success(`操作成功`);
+        if(actionRef.current) {
+          actionRef.current.reload();
+        }
+      } else {
+        message.error(`操作失败，原因:{${removeRes.message}}`);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const columns: ProColumns<DataPromotions.Promotions>[] = [
     {
@@ -140,23 +146,40 @@ export default () => {
       width: 200,
       render: (_, record) => (
         <>
-          {record.status === 1 && (
-            <Button size="small" type="link" onClick={() => {}}>
-              提前开始
-            </Button>
+          {record.actState === 0 && (// 未开始的可提前开始
+            <Popconfirm
+              title="确定提前开始么？"
+              okText="提前开始"
+              cancelText="取消"
+              onConfirm={() => addOrUpdate({id: record.id, actState: 1})}
+            >
+              <a href="#">提前开始</a>
+            </Popconfirm>
           )}
 
-          {record.status === 2 && (
-            <Button size="small" type="link" onClick={() => {}}>
-              提前结束
-            </Button>
+          {record.actState === 1 && (// 进行中的可提前结束
+            <Popconfirm
+              title="确定提前结束么？"
+              okText="提前结束"
+              cancelText="取消"
+              onConfirm={() => addOrUpdate({id: record.id, actState: 2})}
+            >
+              <a href="#">提前结束</a>
+            </Popconfirm>
           )}
 
-          {record.listingStatus === 1 ? (
-            <Button size="small" type="link" onClick={() => {}}>
-              下架
-            </Button>
-          ) : (
+          {record.addedState == 0 && (
+            <Popconfirm
+              title="确定下架么？"
+              okText="下架"
+              cancelText="取消"
+              onConfirm={() => addOrUpdate({id: record.id, addedState: 1})}
+            >
+              <a href="#">下架</a>
+            </Popconfirm>
+          )}
+          
+          {(record.addedState != 0 && record.actState != 2) && ( // 上架及活动结束的都不能编辑
             <Button size="small" type="link" onClick={() => {
               history.push(`/purchase-manage/promotions-create?id=${record.id}`);
             }}>
@@ -312,11 +335,6 @@ export default () => {
             success: true,
           });
         }}
-        // request={async (pagination) => {
-        //   const result = await pageQuery(pagination);
-        //   paginationRef.current = pagination;
-        //   return result;
-        // }}
         columns={columns}
         pagination={{ size: 'default', showQuickJumper: true, defaultPageSize: 10 }}
       />
