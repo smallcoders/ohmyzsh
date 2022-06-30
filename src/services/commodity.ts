@@ -15,6 +15,7 @@ export async function pageQuery(data: any) {
     },
   );
 }
+
 export async function queryProductDetail(id: string | number) {
   return request<
     Common.ResultCode & {
@@ -130,4 +131,20 @@ export async function addProductDetail(data: any) {
     method: 'POST',
     data,
   });
+}
+
+export async function queryLabel(data: any) {
+  return request<Common.ResultCode & Common.ResultPage & { result: DataCommodity.Label[] }>(
+    '/antelope-pay/mng/label/query',
+    {
+      method: 'POST',
+      data: { ...data },
+    },
+  );
+}
+
+export async function queryProvider() {
+  return request<Common.ResultCode & { result: DataCommodity.Provider[] }>(
+    '/antelope-pay/provider/type/all',
+  );
 }

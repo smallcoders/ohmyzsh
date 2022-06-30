@@ -1,12 +1,12 @@
+import FormEdit from '@/components/FormEdit';
 import { addProductDetail, queryProduct } from '@/services/commodity';
-import { ProFormTextArea } from '@ant-design/pro-form';
 import { Button, Form, Space } from 'antd';
 import { useCallback, useEffect, useRef } from 'react';
 import { useHistory } from 'umi';
 import type { StepFormProps } from '../create';
 
 export default (props: StepFormProps) => {
-  const { id = 29, currentChange } = props;
+  const { id, currentChange, setChanged } = props;
   const [form] = Form.useForm();
   const typeRef = useRef<0 | 1>(0);
   const history = useHistory();
@@ -51,31 +51,25 @@ export default (props: StepFormProps) => {
 
   return (
     <div>
-      <Form form={form} labelCol={{ span: 4 }} layout="vertical" onFinish={save}>
-        <ProFormTextArea
-          name="productContent"
-          label="商品介绍"
-          placeholder="请输入"
-          rules={[{ required: true }]}
-        />
-        <ProFormTextArea
-          name="productArgs"
-          label="商品参数"
-          placeholder="请输入"
-          rules={[{ required: true }]}
-        />
-        <ProFormTextArea
-          name="productDetail"
-          label="商品细节"
-          placeholder="请输入"
-          rules={[{ required: true }]}
-        />
-        <ProFormTextArea
-          name="productApp"
-          label="商品应用"
-          placeholder="请输入"
-          rules={[{ required: true }]}
-        />
+      <Form
+        form={form}
+        labelCol={{ span: 4 }}
+        layout="vertical"
+        onChange={() => setChanged(true)}
+        onFinish={save}
+      >
+        <Form.Item name="productContent" label="商品介绍" rules={[{ required: true }]}>
+          <FormEdit />
+        </Form.Item>
+        <Form.Item name="productArgs" label="商品参数" rules={[{ required: true }]}>
+          <FormEdit />
+        </Form.Item>
+        <Form.Item name="productDetail" label="商品细节" rules={[{ required: true }]}>
+          <FormEdit />
+        </Form.Item>
+        <Form.Item name="productApp" label="商品应用" rules={[{ required: true }]}>
+          <FormEdit />
+        </Form.Item>
       </Form>
       <div className="form-footer">
         <Space>

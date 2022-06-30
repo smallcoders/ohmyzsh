@@ -3,7 +3,7 @@ import type DataCommodity from '@/types/data-commodity';
 import { ProFormText, ProFormTextArea } from '@ant-design/pro-form';
 import type { ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { Button, Form, Modal } from 'antd';
+import { Button, Form, Modal, Space } from 'antd';
 import { useCallback, useEffect, useState } from 'react';
 import type { StepFormProps } from '../create';
 
@@ -12,7 +12,7 @@ type ParameterData = Omit<
   'productId' | 'state' | 'createTime' | 'updateTime'
 >;
 export default (props: StepFormProps) => {
-  const { id = 29, currentChange } = props;
+  const { id, currentChange } = props;
   const [params, setParams] = useState<ParameterData[]>([]);
   const [editRecord, setEditRecord] = useState<ParameterData>();
   const [addModalShow, setAddModalShow] = useState(false);
@@ -130,10 +130,12 @@ export default (props: StepFormProps) => {
         ]}
       />
       <div className="form-footer">
-        <Button onClick={() => props.currentChange(-1)}>上一步</Button>
-        <Button type="primary" onClick={onFinish}>
-          下一步
-        </Button>
+        <Space>
+          <Button onClick={() => props.currentChange(-1)}>上一步</Button>
+          <Button type="primary" onClick={onFinish}>
+            下一步
+          </Button>
+        </Space>
       </div>
       <Modal
         visible={addModalShow}

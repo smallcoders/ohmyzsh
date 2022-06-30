@@ -90,6 +90,22 @@ namespace DataCommodity {
     updateTime: string;
   };
 
-  export type DetailInfo = {};
+  export type Label = {
+    id: number;
+    label: string;
+    labelContent: string;
+    labelType: 0 | 1;
+    state: 0 | 1;
+    updateTime: string;
+    createTime: string;
+  };
+
+  export type Provider = {
+    id: number;
+    providerTypeName: string;
+    weight: number;
+    createTime: string;
+    operateUser: string;
+  };
 }
 export default DataCommodity;

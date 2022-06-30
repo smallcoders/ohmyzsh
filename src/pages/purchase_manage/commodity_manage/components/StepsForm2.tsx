@@ -10,7 +10,7 @@ import type { StepFormProps } from '../create';
 type TableDataRow = DataCommodity.PriceInfo & Record<string, any>;
 
 export default (props: StepFormProps) => {
-  const { id = 29, currentChange } = props;
+  const { id, currentChange, setChanged } = props;
   const [prices, setPrices] = useState<TableDataRow[]>([]);
   const [editableKeys, setEditableKeys] = useState<number[]>([]);
   const [columns, setColumns] = useState<ProColumns<TableDataRow>[]>([]);
@@ -42,6 +42,7 @@ export default (props: StepFormProps) => {
 
     setEditableKeys(data.map((item) => item.id));
     setPrices(data);
+    form.setFieldsValue({ transportFee: res.result[0].transportFee });
 
     let specCol: ProColumns<TableDataRow, any>[] = res.result[0].specsTitle
       .split(',')
@@ -83,7 +84,20 @@ export default (props: StepFormProps) => {
         valueType: 'text',
         formItemProps: () => {
           return {
-            rules: [{ required: true, message: '此项为必填项' }],
+            rules: [
+              { required: true, message: '此项为必填项' },
+              ({ getFieldsValue }) => ({
+                validator(_, value) {
+                  const values = getFieldsValue();
+
+                  const arr = Object.keys(values).map((key) => values[key].productNo);
+                  if (arr.filter((item) => item === value).length > 1) {
+                    return Promise.reject(new Error('此编码已存在！'));
+                  }
+                  return Promise.resolve();
+                },
+              }),
+            ],
           };
         },
       },
@@ -167,7 +181,10 @@ export default (props: StepFormProps) => {
         pagination={false}
         value={prices}
         columns={columns}
-        onChange={setPrices}
+        onChange={(e) => {
+          setChanged(true);
+          setPrices(e);
+        }}
         recordCreatorProps={false}
         editableFormRef={formRef}
         editable={{
@@ -176,7 +193,7 @@ export default (props: StepFormProps) => {
         }}
       />
 
-      <Form form={form} style={{ width: 600 }}>
+      <Form form={form} style={{ width: 600 }} onChange={() => setChanged(true)}>
         <Form.Item label="运费" name="transportFee" rules={[{ required: true }]}>
           <Input addonAfter="元" type="number" />
         </Form.Item>
