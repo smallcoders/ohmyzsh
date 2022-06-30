@@ -201,7 +201,7 @@ export default () => {
             <a
               href="#"
               onClick={() => {
-                // history.push(`${routeName.ANTELOPE_LIVE_MANAGEMENT_ADD}?id=${record.id}`);
+                history.push(`/purchase-manage/commodity-detail?id=${record.id}`);
               }}
             >
               详情
@@ -455,7 +455,7 @@ export default () => {
             <a
               href="#"
               onClick={() => {
-                // history.push(`${routeName.ANTELOPE_LIVE_MANAGEMENT_ADD}?id=${record.id}`);
+                history.push(`/purchase-manage/commodity-detail?id=${record.id}`);
               }}
             >
               商品详情

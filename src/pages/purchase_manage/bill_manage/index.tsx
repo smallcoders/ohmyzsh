@@ -18,7 +18,7 @@ import type Common from '@/types/common';
 import moment from 'moment';
 import SelfTable from '@/components/self_table';
 import type LogoutVerify from '@/types/user-config-logout-verify';
-import { getBillPage } from '@/services/purchase';
+import { getBillPage, exportBillPage } from '@/services/purchase';
 const sc = scopedClasses('user-config-logout-verify');
 
 export default () => {
@@ -209,6 +209,10 @@ export default () => {
       </div>
     );
   };
+  const exportPage = async () => {
+   const res  = await exportBillPage();
+   console.log(res);
+  }
 
   return (
     <PageContainer className={sc('container')}>
@@ -216,7 +220,8 @@ export default () => {
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>发票列表(共{pageInfo.totalCount || 0}个)</span>
-          <Button type='primary' icon={<DownloadOutlined />}>导出</Button>
+          <Button type='primary' icon={<DownloadOutlined />} 
+            onClick={exportPage}>导出</Button>
         </div>
       </div>
       <div className={sc('container-table-body')}>

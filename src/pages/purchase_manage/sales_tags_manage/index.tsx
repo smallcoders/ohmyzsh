@@ -231,7 +231,7 @@ export default () => {
         <Form {...formLayout} form={searchForm}>
           <Row>
             <Col span={8}>
-              <Form.Item name="userName" label="促销标签">
+              <Form.Item name="label" label="促销标签">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
