@@ -278,6 +278,57 @@ export default [
     ],
   },
   {
+    path: '/purchase-manage',
+    name: '采购管理',
+    icon: 'account-book',
+    access: 'SERVICE_CONFIG',
+    routes: [
+      {
+        path: '/purchase-manage',
+        redirect: '/purchase-manage/data-display',
+      },
+      {
+        path: '/purchase-manage/commodity-manage',
+        name: '商品管理',
+        component: './purchase_manage/commodity_manage',
+      },
+      {
+        path: '/purchase-manage/commodity-create',
+        name: '商品新增',
+        hideInMenu: true,
+        component: './purchase_manage/commodity_manage/create',
+      },
+      {
+        path: '/purchase-manage/commodity-detail',
+        name: '商品详情',
+        hideInMenu: true,
+        component: './purchase_manage/commodity_manage/detail',
+      },
+      {
+        path: '/purchase-manage/promotions-manage',
+        name: '活动管理',
+        component: './purchase_manage/promotions_manage',
+      },
+      {
+        path: '/purchase-manage/promotions-create',
+        name: '活动新增',
+        hideInMenu: true,
+        component: './purchase_manage/promotions_manage/create',
+      },
+      {
+        path: '/purchase-manage/promotions-detail',
+        name: '活动详情',
+        hideInMenu: true,
+        component: './purchase_manage/promotions_manage/detail',
+      },
+      {
+        path: '/purchase-manage/order-manage',
+        name: '订单管理',
+        component: './purchase_manage/order_manage',
+      },
+    ],
+  },
+  {
     path: '/user-config',
     name: '用户管理',
     icon: 'user',
