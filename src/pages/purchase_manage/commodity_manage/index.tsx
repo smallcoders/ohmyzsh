@@ -103,7 +103,7 @@ export default () => {
     {
       title: '最新操作时间',
       dataIndex: 'updateTime',
-      valueType: 'textarea',
+      valueType: 'dateTime',
       hideInSearch: true,
     },
     {
@@ -150,7 +150,13 @@ export default () => {
           </Button>,
         ]}
         request={async (pagination) => {
-          const result = await pageQuery(pagination);
+          const timer = pagination.updateTime
+            ? {
+                timeStart: pagination.updateTime[0],
+                timeEnd: pagination.updateTime[1],
+              }
+            : {};
+          const result = await pageQuery({ ...pagination, ...timer });
           paginationRef.current = pagination;
           return { total: result.totalCount, success: true, data: result.result };
         }}
