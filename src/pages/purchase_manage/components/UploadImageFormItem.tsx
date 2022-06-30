@@ -46,20 +46,22 @@ export default function (
       return [];
     }
 
-    return value.split(',').map((item) => {
-      return item.trim();
-    });
+    return value
+      .split(',')
+      .filter((item) => item.trim())
+      .map((item) => {
+        return item.trim();
+      });
   }, [value, single]);
 
   const onFileChange = useCallback(
     (info) => {
       if (onChange) {
-        const val = [value, info.path].join(',');
-
+        const val = single ? info.path || '' : [value, info.path].join(',');
         onChange(val);
       }
     },
-    [onChange, value],
+    [onChange, value, single],
   );
 
   const onRemove = useCallback(
