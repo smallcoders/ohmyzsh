@@ -51,7 +51,7 @@
   LIVE_TYPES_MAINTAIN: '/live-management/live-types-maintain',//直播类型管理
 
   ANTELOPE_LIVE_MANAGEMENT: '/live-management/antelope-live-management', // 羚羊直播管理
-  ANTELOPE_LIVE_MANAGEMENT_INDEX: '/live-management/antelope-live-management/index', // 羚羊直播管理
+  // ANTELOPE_LIVE_MANAGEMENT_INDEX: '/live-management/antelope-live-management/index', // 羚羊直播管理
   ANTELOPE_LIVE_MANAGEMENT_ADD: '/live-management/antelope-live-management/add-live', // 新增直播
   ANTELOPE_LIVE_MANAGEMENT_DETAIL: '/live-management/antelope-live-management/detail', // 直播详情
 
@@ -569,6 +569,10 @@ export default [
     access: 'SERVICE_CONFIG',
     routes: [
       {
+        path: '/live-management',
+        redirect: routeName.LIVE_TYPES_MAINTAIN,
+      },
+      {
         path: routeName.LIVE_TYPES_MAINTAIN,
         name: '直播类型维护',
         component: './live_management/live_types_maintain',
@@ -578,12 +582,12 @@ export default [
         name: '羚羊直播管理',
         hideChildrenInMenu: true,
         routes: [
+          // {
+          //   path: routeName.ANTELOPE_LIVE_MANAGEMENT,
+          //   redirect: routeName.ANTELOPE_LIVE_MANAGEMENT_INDEX
+          // },
           {
             path: routeName.ANTELOPE_LIVE_MANAGEMENT,
-            redirect: routeName.ANTELOPE_LIVE_MANAGEMENT_INDEX
-          },
-          {
-            path: routeName.ANTELOPE_LIVE_MANAGEMENT_INDEX,
             name: '羚羊直播管理',
             component: './live_management/antelope_live_management',
           },
@@ -604,12 +608,12 @@ export default [
         name: '精彩视频管理',
         hideChildrenInMenu: true,
         routes: [
+          // {
+          //   path: routeName.WONDERFUL_VIDEO_MANAGEMENT,
+          //   redirect: routeName.WONDERFUL_VIDEO_MANAGEMENT_INDEX
+          // },
           {
             path: routeName.WONDERFUL_VIDEO_MANAGEMENT,
-            redirect: routeName.WONDERFUL_VIDEO_MANAGEMENT_INDEX
-          },
-          {
-            path: routeName.WONDERFUL_VIDEO_MANAGEMENT_INDEX,
             name: '精彩视频管理',
             component: './live_management/wonderful_video_management',
           },

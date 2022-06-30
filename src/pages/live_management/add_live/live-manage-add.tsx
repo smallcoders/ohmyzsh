@@ -62,7 +62,7 @@ export default () => {
   /**
    * 关闭提醒 主要是 添加或者修改成功后 不需要弹出
    */
-  const [isClosejumpTooltip, setIsClosejumpTooltip] = useState<boolean>(true);
+  const [isClosejumpTooltip, setIsClosejumpTooltip] = useState<boolean>(false);
   /**
    * 是否在编辑
    */
@@ -140,6 +140,7 @@ export default () => {
       const prepareResultArray = await Promise.all([getLiveTypesPage({
         pageIndex: 1,
         pageSize: 100,
+        status: 1
       })]);
       setAppTypes(prepareResultArray[0].result || []);
 
@@ -156,33 +157,36 @@ export default () => {
           setIsSkip(editItem.isSkip);
           // setIsBeginTopAndEditing(Boolean(editItem.isTopApp));
           console.log(editItem, 'res---editItem');
-          let extented = [];//扩展功能数据获取
+          let extended = [];//扩展功能数据获取
           if(!editItem.closeReplay) {
-            extented.push('replay');
+            extended.push('replay');
           }
           if(!editItem.closeKf) {
-            extented.push('kf');
+            extended.push('kf');
           }
           let liveFunctions = [];//直播间功能数据获取
           if(!editItem.closeLike) {
-            extented.push('like');
+            liveFunctions.push('like');
           }
           if(!editItem.closeGoods) {
-            extented.push('goods');
+            liveFunctions.push('goods');
           }
           if(!editItem.closeComment) {
-            extented.push('comment');
+            liveFunctions.push('comment');
           }
           if(!editItem.closeShare) {
-            extented.push('share');
+            liveFunctions.push('share');
           }
-          setEditingItem({...editItem, extended: extented, time: [moment(editingItem.startTime), moment(editingItem.endTime)]});
+          setEditingItem({...editItem, liveFunctions, extended, time: [moment(editItem.startTime), moment(editItem.endTime)]});
         } else {
-          message.error(`获取详情失败，原因:{${detailRs.message}}`);
+          message.error(`获取详情失败，原因:${detailRs.message}`);
         }
       }
       if(isDetail == '1') {
         setIsDetail(true);
+        setIsClosejumpTooltip(false);
+      }else {
+        setIsClosejumpTooltip(true);
       }
     } catch (error) {
       console.log('error', error);
@@ -192,10 +196,6 @@ export default () => {
 
   useEffect(() => {
     prepare();
-    window.addEventListener('beforeunload', listener);
-    return () => {
-      window.removeEventListener('beforeunload', listener);
-    };
   }, []);
 
 
@@ -219,10 +219,10 @@ export default () => {
             endTime: moment(value.time[1]).format('YYYY-MM-DD HH:mm:ss'),
             closeReplay: value.extended?.indexOf('replay') > -1 ? 0 : 1,
             closeKf: value.extended?.indexOf('kf') > -1 ? 0 : 1,
-            closeLike: value.extended?.indexOf('like') > -1 ? 0 : 1,
-            closeGoods: value.extended?.indexOf('goods') > -1 ? 0 : 1,
-            closeComment: value.extended?.indexOf('comment') > -1 ? 0 : 1,
-            closeShare: value.extended?.indexOf('share') > -1 ? 0 : 1,
+            closeLike: value.liveFunctions?.indexOf('like') > -1 ? 0 : 1,
+            closeGoods: value.liveFunctions?.indexOf('goods') > -1 ? 0 : 1,
+            closeComment: value.liveFunctions?.indexOf('comment') > -1 ? 0 : 1,
+            closeShare: value.liveFunctions?.indexOf('share') > -1 ? 0 : 1,
             id: editingItem.id
           });
           hide()
@@ -234,21 +234,21 @@ export default () => {
             lineStatus: lineStatus,
             closeReplay: value.extended?.indexOf('replay') > -1 ? 0 : 1,
             closeKf: value.extended?.indexOf('kf') > -1 ? 0 : 1,
-            closeLike: value.extended?.indexOf('like') > -1 ? 0 : 1,
-            closeGoods: value.extended?.indexOf('goods') > -1 ? 0 : 1,
-            closeComment: value.extended?.indexOf('comment') > -1 ? 0 : 1,
-            closeShare: value.extended?.indexOf('share') > -1 ? 0 : 1
+            closeLike: value.liveFunctions?.indexOf('like') > -1 ? 0 : 1,
+            closeGoods: value.liveFunctions?.indexOf('goods') > -1 ? 0 : 1,
+            closeComment: value.liveFunctions?.indexOf('comment') > -1 ? 0 : 1,
+            closeShare: value.liveFunctions?.indexOf('share') > -1 ? 0 : 1
           });
           hide();
         }
         if (addorUpdateRes.code === 0) {
           message.success(`${tooltipMessage}成功`);
           setIsClosejumpTooltip(false);
-          history.push(routeName.ANTELOPE_LIVE_MANAGEMENT_INDEX);
+          setAddOrUpdateLoading(false);
+          history.push(routeName.ANTELOPE_LIVE_MANAGEMENT);
         } else {
-          message.error(`${tooltipMessage}失败，原因:{${addorUpdateRes.message}}`);
-        }
-        setAddOrUpdateLoading(false);
+          message.error(`${tooltipMessage}失败，原因:${addorUpdateRes.message}`);
+        } 
       })
       .catch((err) => {
         // message.error('服务器错误，请稍后重试');
@@ -266,11 +266,6 @@ export default () => {
     wrapperCol: { span: 14 },
   };
 
-  const listener = (e: any) => {
-    e.preventDefault();
-    e.returnValue = '离开当前页后，所编辑的数据将不可恢复';
-  };
-
   return (
     <PageContainer
       className={sc('container')}
@@ -279,7 +274,10 @@ export default () => {
         breadcrumb: (
           <Breadcrumb>
             <Breadcrumb.Item>
-              <Link to="/live-manage/antelope_live_management">羚羊直播管理 </Link>
+              <Link to="/live-management/live-types-maintain">直播管理 </Link>
+            </Breadcrumb.Item>
+            <Breadcrumb.Item>
+              <Link to="/live-management/antelope-live-management">羚羊直播管理 </Link>
             </Breadcrumb.Item>
             <Breadcrumb.Item>
               {isEditing ? `编辑直播` : isDetail ? '直播详情' : '新增直播'}
@@ -290,7 +288,7 @@ export default () => {
         extra: (
           <div className="operate-btn">
             {!isDetail && (
-              <Button key="primary" loading={addOrUpdateLoading} onClick={() => {history.push(routeName.ANTELOPE_LIVE_MANAGEMENT_INDEX)}}>
+              <Button key="primary" loading={addOrUpdateLoading} onClick={() => {history.push(routeName.ANTELOPE_LIVE_MANAGEMENT)}}>
                 取消
               </Button>
             )}
@@ -305,7 +303,9 @@ export default () => {
               </Button>
             )}
             {isDetail && (
-              <Button key="primary4" loading={addOrUpdateLoading} onClick={addOrUpdate}>
+              <Button key="primary4" loading={addOrUpdateLoading} onClick={() => {
+                history.push(routeName.ANTELOPE_LIVE_MANAGEMENT)
+              }}>
                 返回
               </Button>
             )}
@@ -314,10 +314,11 @@ export default () => {
       }}
     >
       <Prompt
-        when={isClosejumpTooltip}
+        when={isClosejumpTooltip && !isDetail}
         message={'离开当前页后，所编辑的数据将不可恢复'}
       />
-      <Form className={sc('container-form')} {...formLayout} form={form} labelWrap>
+      <Form className={sc('container-form')} {...formLayout} form={form} labelWrap
+        initialValues={{liveFunctions: ['like', 'goods', 'comment', 'share']}}>
         <Row>
           <Col span={18}>
             <Form.Item
@@ -327,6 +328,21 @@ export default () => {
                 {
                   required: !isDetail,
                   message: '必填',
+                },
+                {
+                  validator(rule, value) {
+                    if(value.length<3){
+                      return Promise.reject('最短3个汉字')
+                    }
+                    if(value.length>17){
+                      return Promise.reject('最长17个汉字')
+                    }
+                    if(!value||value.length===0){
+                      return Promise.reject('必填')
+                    }else {
+                      return Promise.resolve()
+                    }
+                  },
                 },
               ]}
             > 
@@ -358,32 +374,9 @@ export default () => {
         <Row>
           <Col span={6} offset={3}>
             <Form.Item
-                name="backgroundImageId"
-                label="背景图"
-                rules={[
-                  {
-                    required: !isDetail,
-                    message: '必填',
-                  },
-                ]}
-              >
-                {isDetail ? (
-                  <Image src={editingItem?.backgroundImagePath} width={200} />
-                ) : (
-                  <UploadForm
-                  listType="picture-card"
-                  className="avatar-uploader"
-                  showUploadList={false}
-                  maxSize={1}
-                  accept=".bmp,.gif,.png,.jpeg,.jpg"
-                />
-                )}
-              </Form.Item>
-          </Col>
-          <Col span={6}>
-            <Form.Item
                 name="shareImageId"
-                label="分享图"
+                label="直播卡片封面"
+                // extra={`${!isDetail ? '图片建议大小为 800像素 * 800像素。图片大小不超过 300KB。图片内容遵循平台规范后更容易被推荐。' : ''}`}
                 rules={[
                   {
                     required: !isDetail,
@@ -398,6 +391,37 @@ export default () => {
                   listType="picture-card"
                   className="avatar-uploader"
                   showUploadList={false}
+                  maxSizeKb={300}
+                  tooltip={
+                    <span className={'tooltip'}>仅支持JPG、PNG、JPEG,建议比例16*9，大小在300kb以下</span>
+                  }
+                  accept=".bmp,.gif,.png,.jpeg,.jpg"
+                />
+                )}
+              </Form.Item>
+          </Col>
+          <Col span={6}>
+            <Form.Item
+                name="backgroundImageId"
+                label="分享卡片封面"
+                // extra={`${!isDetail ? '用户在微信对话框内分享的直播间将以分享卡片的形式呈现。建议尺寸：800像素 * 640像素，图片大小不得超过1M' : ''}`}
+                rules={[
+                  {
+                    required: !isDetail,
+                    message: '必填',
+                  },
+                ]}
+              >
+                {isDetail ? (
+                  <Image src={editingItem?.backgroundImagePath} width={200} />
+                ) : (
+                  <UploadForm
+                  listType="picture-card"
+                  className="avatar-uploader"
+                  showUploadList={false}
+                  tooltip={
+                    <span className={'tooltip'}>仅支持JPG、PNG、JPEG,建议尺寸800*640，大小在1M以下</span>
+                  }
                   maxSize={1}
                   accept=".bmp,.gif,.png,.jpeg,.jpg"
                 />
@@ -407,7 +431,8 @@ export default () => {
           <Col span={6}>
             <Form.Item
                 name="coverImageId"
-                label="购物直播频道封面图"
+                label="直播间背景墙"
+                // extra={`${!isDetail ? '直播间背景墙是每个直播间的默认背景。建议尺寸：600像素 * 1300像素，图片大小不得超过 3M。' : ''}`}
                 rules={[
                   {
                     required: !isDetail,
@@ -422,7 +447,10 @@ export default () => {
                   listType="picture-card"
                   className="avatar-uploader"
                   showUploadList={false}
-                  maxSize={2}
+                  maxSize={3}
+                  tooltip={
+                    <span className={'tooltip'}>仅支持JPG、PNG、JPEG,建议尺寸600*1300，大小在3M以下</span>
+                  }
                   accept=".bmp,.gif,.png,.jpeg,.jpg"
                 />
                 )}
@@ -439,9 +467,29 @@ export default () => {
                   required: !isDetail,
                   message: '必填',
                 },
+                {
+                  validator(rule, value) {
+                    const current = (new Date()).getTime();
+                    const start = (new Date(value[0])).getTime();
+                    const end = (new Date(value[1])).getTime();
+                    if(start - current < 600000) {
+                      return Promise.reject('开播时间需要在当前时间的10分钟后')
+                    }
+                    if(start - current > 6*30*24*60*60*1000) {
+                      return Promise.reject('开始时间不能在6个月后')
+                    }
+                    if(end - start > 24*60*60*1000) {
+                      return Promise.reject('开播时间和结束时间间隔不得超过24小时')
+                    }
+                    if(end - start < 30*60*1000) {
+                      return Promise.reject('开播时间和结束时间间隔不得短于30分钟')
+                    }
+                    return Promise.resolve();
+                  },
+                },
               ]}>
               {isDetail ? (
-                <span>{editingItem?.startTime || '--'}</span>
+                <span>开始：{editingItem?.startTime || '--'}<br></br> 结束：{editingItem?.endTime || '--'}</span>
               ) : (
                 <RangePicker 
                   allowClear 
@@ -466,7 +514,7 @@ export default () => {
               {isDetail ? (
                 <span>{editingItem?.speakerName || '--'}</span>
               ) : (
-                <Input placeholder="请输入" maxLength={35} />
+                <Input placeholder="请输入" maxLength={15} />
               )}
             </Form.Item>
             <Form.Item
@@ -536,6 +584,18 @@ export default () => {
                   required: !isDetail,
                   message: '必填',
                 },
+                {
+                  validator(rule, value) {
+                    if(value.length>3){
+                      return Promise.reject('最多选3个')
+                    }
+                    if(!value||value.length===0){
+                      return Promise.reject('必填')
+                    }else {
+                      return Promise.resolve()
+                    }
+                  },
+                },
               ]}
             >
               {isDetail ? (
@@ -563,7 +623,7 @@ export default () => {
             <Form.Item
               name="liveType"
               label="直播类型"
-              initialValue={1}
+              initialValue={0}
               rules={[
                 {
                   required: !isDetail,
@@ -572,11 +632,11 @@ export default () => {
               ]}
             >
               {isDetail ? (
-                <span>{editingItem.liveType ? '手机直播' : '推流设备直播'}</span>
+                <span>{editingItem.liveType ? '推流设备直播' : '手机直播'}</span>
               ) : (
                 <Radio.Group>
-                  <Radio value={1}>手机直播</Radio>
-                  <Radio value={0}>推流设备直播</Radio>
+                  <Radio value={0}>手机直播</Radio>
+                  <Radio value={1}>推流设备直播</Radio>
                 </Radio.Group>
               )}
             </Form.Item>
@@ -588,16 +648,32 @@ export default () => {
                 {isDetail ? (
                   <span>{!editingItem.closeLike && ('点赞')} {!editingItem.closeGoods && ('货架')} {!editingItem.closeComment && ('评论')} {!editingItem.closeShare && ('分享')}</span>
                 ) : (
-                  <Checkbox.Group options={options2} />
+                  <Checkbox.Group options={options2} disabled={editingItem.videoStatus == 1}/>
                 )}
             </Form.Item>
           </Col>
         </Row>
-        <Row>
+        {/* <Row>
           <Col span={18}>
             <Form.Item
               name="url"
               label="URL"
+              rules={[
+                {
+                  validator(rule, value) {
+                    let r = /^(((ht|f)tps?):\/\/)?([^!@#$%^&*?.\s-]([^!@#$%^&*?.\s]{0,63}[^!@#$%^&*?.\s])?\.)+[a-z]{2,6}\/?/.test(value);
+                    if(!value || (value && value.length == 0)) {
+                      return Promise.resolve()
+                    }else {
+                      if(!r){
+                        return Promise.reject('请输入正确的网址')
+                      }else {
+                        return Promise.resolve()
+                      }
+                    }
+                  },
+                },
+              ]}
             >
               {isDetail ? (
                 <span>{editingItem?.url || '--'}</span>
@@ -606,7 +682,7 @@ export default () => {
               )}
             </Form.Item>
           </Col>
-        </Row>
+        </Row> */}
         {isDetail && (
           <Row>
             <Col span={10} offset={2}>

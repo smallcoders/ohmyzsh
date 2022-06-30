@@ -42,6 +42,7 @@ export default () => {
         {
           pageIndex: 1,
           pageSize: 100,
+          status: 1
         }
       )]);
       console.log(res[0]);
@@ -89,16 +90,17 @@ export default () => {
   // 置顶状态修改
   const updateTopStatus = async (id: string, status: boolean) => {
     let params = {id, isTop: status};
+    const tooltipMessage = status ? '置顶' : '取消置顶';
     const addorUpdateRes = await updateStatus(params);
     if (addorUpdateRes.code === 0) {
       setModalVisible(false);
       if (!editingItem.id) {
-        message.success(`置顶成功！`);
+        message.success(`${tooltipMessage}成功！`);
       }
       getPages();
       clearForm();
     } else {
-      message.error(`置顶失败，原因:{${addorUpdateRes.message}}`);
+      message.error(`${tooltipMessage}失败，原因:{${addorUpdateRes.message}}`);
     }
   }
   // 下架/上架状态更新
@@ -173,7 +175,7 @@ export default () => {
       isEllipsis: true,
       render: (_: string, _record: any) => (
         <a
-          href="javascript:;"
+          href="#!"
           onClick={() => {
             history.push(`${routeName.WONDERFUL_VIDEO_MANAGEMENT_DETAIL}?id=${_record.id}`);
           }}
@@ -248,13 +250,17 @@ export default () => {
     },
     {
       title: '发布人',
-      dataIndex: 'createTime',
+      dataIndex: 'releaseAccountName',
       width: 200,
-      render: (_: string) => moment(_).format('YYYY-MM-DD HH:mm:ss'),
+      render: (_: string) => {
+        return (
+          _ || '--'
+        )
+      },
     },
     {
       title: '操作',
-      width: 200,
+      width: 260,
       fixed: 'right',
       dataIndex: 'option',
       render: (_: any, record: any) => {
@@ -292,23 +298,40 @@ export default () => {
                 </Popconfirm>
               )
             }
-            
-             <Popconfirm
-              title={`确定置顶么？`}
-              okText="确定"
-              cancelText="取消"
-              onConfirm={() => updateTopStatus(record.id as string, true,)}
-            >
-              <a href="#">置顶</a>
-            </Popconfirm>
-            <Popconfirm
-              title="确定删除么？"
-              okText="确定"
-              cancelText="取消"
-              onConfirm={() => remove(record.id as string)}
-            >
-              <a href="#">删除</a>
-            </Popconfirm>
+            {
+              record.isTop ? (
+                <Popconfirm
+                  title={`确定取消置顶么？`}
+                  okText="确定"
+                  cancelText="取消"
+                  onConfirm={() => updateTopStatus(record.id as string, false,)}
+                >
+                  <a href="#">取消置顶</a>
+                </Popconfirm>
+              ) : (
+                <Popconfirm
+                  title={`确定置顶么？`}
+                  okText="确定"
+                  cancelText="取消"
+                  onConfirm={() => updateTopStatus(record.id as string, true,)}
+                >
+                  <a href="#">置顶</a>
+                </Popconfirm>
+              )
+            }
+             
+            { 
+              !record.lineStatus && (
+                <Popconfirm
+                  title="确定删除么？"
+                  okText="确定"
+                  cancelText="取消"
+                  onConfirm={() => remove(record.id as string)}
+                >
+                  <a href="#">删除</a>
+                </Popconfirm>
+              )
+            }
           </Space>
         );
       },
@@ -496,6 +519,18 @@ export default () => {
                     required: true,
                     message: '必选',
                   },
+                  {
+                    validator(rule, value) {
+                      if(value.length>3){
+                        return Promise.reject('最多选3个')
+                      }
+                      if(!value||value.length===0){
+                        return Promise.reject('必填')
+                      }else {
+                        return Promise.resolve()
+                      }
+                    },
+                  },
                 ]}
               >
                 <Select
@@ -546,28 +581,16 @@ export default () => {
           <Row>
             <Col span={10} offset={2}>
               <Form.Item 
-                name="shareCount" 
+                name="shareVirtualCount" 
                 label="虚拟分享量"
-                rules={[
-                  {
-                    required: true,
-                    message: '必选',
-                  },
-                ]}
               >
                 <InputNumber min={0} defaultValue={0} />
               </Form.Item>
             </Col>
             <Col span={10}>
               <Form.Item 
-                name="goodCount"
-                label="虚拟点赞量"
-                rules={[
-                  {
-                    required: true,
-                    message: '必填',
-                  },
-                ]}>
+                name="goodVirtualCount"
+                label="虚拟点赞量">
                 <InputNumber min={0} defaultValue={0} />
               </Form.Item>
             </Col>
