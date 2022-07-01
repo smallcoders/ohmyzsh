@@ -87,13 +87,33 @@ export default (
         name="productName"
         label="商品名称"
         placeholder="名称可包含商品中英品牌、名称等等信息"
-        rules={[{ required: true }]}
+        rules={[
+          { required: true },
+          () => ({
+            validator(_, value) {
+              if (value.length > 100) {
+                return Promise.reject(new Error('商品名称不可超过100个字符'));
+              }
+              return Promise.resolve();
+            },
+          }),
+        ]}
       />
       <ProFormText
         name="productModel"
         label="商品型号"
         placeholder="请输入"
-        rules={[{ required: true }]}
+        rules={[
+          { required: true },
+          () => ({
+            validator(_, value) {
+              if (value.length > 30) {
+                return Promise.reject(new Error('商品型号不可超过30个字符'));
+              }
+              return Promise.resolve();
+            },
+          }),
+        ]}
       />
 
       <Form.Item name="saleIds" label="商品促销标签">
