@@ -3,6 +3,7 @@ import ProCard from '@ant-design/pro-card';
 import { PageContainer } from '@ant-design/pro-layout';
 import { Modal, Steps } from 'antd';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useHistory } from 'umi';
 import StepsForm0 from './components/StepsForm0';
 import StepsForm1 from './components/StepsForm1';
 import StepsForm2 from './components/StepsForm2';
@@ -21,6 +22,7 @@ export interface StepFormProps {
 const { confirm } = Modal;
 
 export default () => {
+  const history = useHistory();
   const query = useQuery();
   const [productId, setProductId] = useState<number | string>();
   const [current, setCurrent] = useState(0);
@@ -59,6 +61,14 @@ export default () => {
     [isEdit, isChanged, showConfirm],
   );
 
+  const goBack = useCallback(() => {
+    if (isChanged) {
+      showConfirm(() => history.goBack());
+    } else {
+      history.goBack();
+    }
+  }, [isChanged, history, showConfirm]);
+
   useEffect(() => {
     setIsChanged(false);
   }, [current]);
@@ -87,10 +97,11 @@ export default () => {
             setProductId={setProductId}
             currentChange={changeCurrent}
             setChanged={setIsChanged}
+            goBack={goBack}
           />
         );
     }
-  }, [changeCurrent, current, productId]);
+  }, [changeCurrent, current, goBack, productId]);
 
   useEffect(() => {
     if (query.id) {

@@ -5,7 +5,6 @@ import type { ProFormInstance } from '@ant-design/pro-form';
 import ProForm, { ProFormText } from '@ant-design/pro-form';
 import { Button, Form, Select, Space } from 'antd';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useHistory } from 'umi';
 import UploadImageFormItem from '../../components/UploadImageFormItem';
 import type { StepFormProps } from '../create';
 
@@ -16,13 +15,14 @@ interface ProductForm {
   serverIds: string;
   productOrg: string;
   productPic: string;
-  supplier: string;
+  supplier: number;
   banner: string;
 }
 
-export default (props: StepFormProps & { setProductId: (id: string | number) => void }) => {
-  const { currentChange, setChanged, setProductId } = props;
-  const history = useHistory();
+export default (
+  props: StepFormProps & { setProductId: (id: string | number) => void; goBack: () => void },
+) => {
+  const { currentChange, setChanged, setProductId, goBack } = props;
   const query = useQuery();
   const formRef = useRef<ProFormInstance<ProductForm>>();
   const onFinish = useCallback(
@@ -75,7 +75,7 @@ export default (props: StepFormProps & { setProductId: (id: string | number) => 
               <Button type="primary" onClick={() => p.submit()}>
                 保存，下一步
               </Button>
-              <Button onClick={() => history.goBack()}>取消</Button>
+              <Button onClick={goBack}>返回</Button>
             </Space>
           </div>
         ),
@@ -189,8 +189,6 @@ function ProviderSelect(props: { value?: string; onChange?: (val: string) => voi
 
   const fetchOptions = useCallback(async () => {
     const res = await queryProvider();
-    console.log(res);
-
     if (!res.code) {
       setOptions(
         res.result.map((item) => ({ label: item.providerTypeName, value: item.id.toString() })),
@@ -202,5 +200,7 @@ function ProviderSelect(props: { value?: string; onChange?: (val: string) => voi
     fetchOptions();
   }, [fetchOptions]);
 
-  return <Select value={value} placeholder="请输入" options={options} onChange={onChange} />;
+  return (
+    <Select value={value?.toString()} placeholder="请输入" options={options} onChange={onChange} />
+  );
 }
