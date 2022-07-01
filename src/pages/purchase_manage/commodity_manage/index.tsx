@@ -5,12 +5,13 @@ import { PageContainer } from '@ant-design/pro-layout';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import { Button } from 'antd';
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
 export default () => {
   const history = useHistory();
   const actionRef = useRef<ActionType>();
+  const [total, setTotal] = useState(0);
   const paginationRef = useRef<{ current?: number; pageSize?: number }>({
     current: 0,
     pageSize: 0,
@@ -145,6 +146,7 @@ export default () => {
         }}
         actionRef={actionRef}
         toolBarRender={() => [
+          <div>商品列表（共{total}个）</div>,
           <Button type="primary" key="primary" onClick={goCreate}>
             <PlusOutlined /> 新增商品
           </Button>,
@@ -158,6 +160,7 @@ export default () => {
             : {};
           const result = await pageQuery({ ...pagination, ...timer });
           paginationRef.current = pagination;
+          setTotal(result.totalCount);
           return { total: result.totalCount, success: true, data: result.result };
         }}
         columns={columns}
