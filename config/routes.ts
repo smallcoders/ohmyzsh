@@ -538,28 +538,28 @@ export default [
           },
         ],
       },
-      // {
-      //   path: routeName.ENTERPRISE_ADMIN_VERIFY,
-      //   name: '企业管理员审核',
-      //   hideChildrenInMenu: true,
-      //   routes: [
-      //     {
-      //       path: routeName.ENTERPRISE_ADMIN_VERIFY,
-      //       redirect: routeName.ENTERPRISE_ADMIN_VERIFY_INDEX,
-      //     },
-      //     {
-      //       path: routeName.ENTERPRISE_ADMIN_VERIFY_INDEX,
-      //       name: '企业管理员审核',
-      //       hideInBreadcrumb: true,
-      //       component: './verify_agency/enterprise_admin_verify',
-      //     },
-      //     {
-      //       path: routeName.ENTERPRISE_ADMIN_VERIFY_DETAIL,
-      //       name: '企业管理员审核详情',
-      //       component: './verify_agency/enterprise_admin_verify/components/detail',
-      //     },
-      //   ],
-      // }
+      {
+        path: routeName.ENTERPRISE_ADMIN_VERIFY,
+        name: '企业管理员审核',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.ENTERPRISE_ADMIN_VERIFY,
+            redirect: routeName.ENTERPRISE_ADMIN_VERIFY_INDEX,
+          },
+          {
+            path: routeName.ENTERPRISE_ADMIN_VERIFY_INDEX,
+            name: '企业管理员审核',
+            hideInBreadcrumb: true,
+            component: './verify_agency/enterprise_admin_verify',
+          },
+          {
+            path: routeName.ENTERPRISE_ADMIN_VERIFY_DETAIL,
+            name: '企业管理员审核详情',
+            component: './verify_agency/enterprise_admin_verify/components/detail',
+          },
+        ],
+      }
     ],
   },
   {

@@ -7,7 +7,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { Button, Image, Popconfirm, message } from 'antd';
+import { Button, Image, Popconfirm, message, Space } from 'antd';
 import { useCallback, useRef, useState } from 'react';
 import { useHistory } from 'umi';
 import type Common from '@/types/common';
@@ -145,7 +145,7 @@ export default () => {
       hideInSearch: true,
       width: 200,
       render: (_, record) => (
-        <>
+        <Space>
           {record.actState === 0 && (// 未开始的可提前开始
             <Popconfirm
               title="确定提前开始么？"
@@ -156,7 +156,6 @@ export default () => {
               <a href="#">提前开始</a>
             </Popconfirm>
           )}
-
           {record.actState === 1 && (// 进行中的可提前结束
             <Popconfirm
               title="确定提前结束么？"
@@ -192,7 +191,7 @@ export default () => {
           }}>
             详情
           </Button>
-        </>
+        </Space>
       ),
     },
   ];
@@ -204,11 +203,11 @@ export default () => {
         hideInSearch: true, 
         renderText: (_, __, index: number) => index + 1,
       },
-      {
-        title: '商品订货编码',
-        dataIndex: 'productNo',
-        valueType: 'textarea',
-      },
+      // {
+      //   title: '商品订货编码',
+      //   dataIndex: 'productNo',
+      //   valueType: 'textarea',
+      // },
       {
         title: '商品图',
         dataIndex: 'productPic',

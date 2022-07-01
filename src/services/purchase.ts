@@ -83,6 +83,16 @@ export async function getActivityDetail(id: string) { // 活动详情
       data,
     });
 }
+/**
+ * 导出发票
+ * @param params
+ */
+ export async function exportBillPage(data?: { [key: string]: any }) {
+  return request<LogoutVerify.ResultList>('/antelope-pay/mng/invoice/export', {
+    method: 'post',
+    data,
+  });
+}
 
 // ----------------------标签管理----------------------------
 /**
@@ -115,6 +125,15 @@ export async function getProviderPage(data?: { [key: string]: any }) {
   return request<LogoutVerify.ResultList>('/antelope-pay/provider/search', {
     method: 'post',
     data
+  });
+}
+/**
+ * 供应商-导出
+ * @param params
+ */
+export async function exportProvider(providerName: string) {
+  return request<LogoutVerify.ResultList>(`/antelope-pay/provider/download?providerName=${providerName}`, {
+    method: 'get'
   });
 }
 /**

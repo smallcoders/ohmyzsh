@@ -73,7 +73,6 @@ export default () => {
   const prepare = async () => {
     try {
       const { id, isDetail } = history.location.query as { id: string | undefined, isDetail: string | undefined };
-
       if (id) {
         // 获取详情 塞入表单
         const detailRs = await getActivityDetail(id);
@@ -81,6 +80,10 @@ export default () => {
         console.log(editItem, '---editItem')
         if (detailRs.code === 0) {
           let actImgs:any = [];
+          // 已选商品数据回显
+          if(editItem.product) {
+            setChoosedProducts(editItem.product);
+          }
           if(editItem.otherPic) {
             editItem.otherPic.map((i: any) => {
               actImgs.push(
@@ -96,7 +99,7 @@ export default () => {
           setEditingItem({
             ...editItem, 
             time: [moment(editItem.startTime), moment(editItem.endTime)],
-            firstPic: [{uid: editItem.firstPic.picId,name: 'image.png',  status: 'done',url: editItem.firstPic.banner}],
+            firstPic: [{uid: editItem.firstPic?.picId,name: 'image.png',  status: 'done',url: editItem.firstPic?.banner}],
             otherPic: actImgs
           });
           setFiles([
@@ -197,7 +200,7 @@ export default () => {
             <a
               href="#"
               onClick={() => {
-                // history.push(`${routeName.ANTELOPE_LIVE_MANAGEMENT_ADD}?id=${record.id}`);
+                history.push(`/purchase-manage/commodity-detail?id=${record.id}`);
               }}
             >
               详情
@@ -224,7 +227,8 @@ export default () => {
     }
   };
 
-  const getProductPrices = async (id: string) => {
+  const getProductPrices = async (id: string, index: number) => {
+    setCurrentSetIndex(index); //保存当前修改商品的index
     try {
       const res = await getProductPriceList(id);
       if (res.code === 0) {
@@ -450,7 +454,7 @@ export default () => {
             <a
               href="#"
               onClick={() => {
-                // history.push(`${routeName.ANTELOPE_LIVE_MANAGEMENT_ADD}?id=${record.id}`);
+                history.push(`/purchase-manage/commodity-detail?id=${record.id}`);
               }}
             >
               商品详情
@@ -458,7 +462,7 @@ export default () => {
             <a
               href="#"
               onClick={() => {
-                getProductPrices(record.id);
+                getProductPrices(record.id, index);
               }}
             >
               设置价格
@@ -580,8 +584,18 @@ export default () => {
   //  --------------------设置价格弹框开始------------------
   const [priceModalVisible, setPriceModalVisible] = useState<boolean>(false);
   const [priceDataSource, setPriceDataSource] = useState([]);
+  const [currentSetIndex, setCurrentSetIndex] = useState<number>(-1);
   const setPriceOk = async () => {
-    console.log(priceDataSource, 'priceDataSource')
+    // 校验商品销售价是否全部填了
+    console.log(currentSetIndex, 'currentSetIndex');
+    console.log(priceDataSource, 'priceDataSource');
+    console.log(choosedProducts, 'choosedProducts');
+    let arr = [...choosedProducts];
+    let list = arr.map((item,index)=>
+      index == currentSetIndex ? {...item, specs: priceDataSource} : item
+    );
+    console.log(list);
+    setChoosedProducts(list)
     setPriceModalVisible(false);
   };
   const cancelSetPrice = () => {
@@ -644,12 +658,12 @@ export default () => {
             margin: 0,
           }}
           name={dataIndex}
-          rules={[
-            {
-              required: true,
-              message: `${title} is required.`,
-            },
-          ]}
+          // rules={[
+          //   {
+          //     required: true,
+          //     message: `${title}必填.`,
+          //   },
+          // ]}
         >
           <Input ref={inputRef} onPressEnter={save} onBlur={save} />
         </Form.Item>
@@ -687,17 +701,22 @@ export default () => {
       title: '商品销售价（元）',
       dataIndex: 'salePrice',
       editable: true,
+      render: (_: number, record: any) => _ || 0
     },
     {
       title: '商品划线价（元）',
       dataIndex: 'originPrice',
       editable: true,
+      render: (_: number, record: any) => _ || 0
     }
   ];
 
   const handleSave = (row: any) => {
     const newData = [...priceDataSource];
-    const index = newData.findIndex((item) => row.key === item.key);
+    console.log(row.id, row);
+    const index = newData.findIndex((item) => row.id === item.id);
+    console.log(index);
+    // console.log(index, 121212);
     const item = newData[index];
     newData.splice(index, 1, { ...item, ...row });
     console.log(newData, 'handleSave后的数据');
@@ -783,7 +802,8 @@ export default () => {
           endTime: moment(value.time[1]).format('YYYY-MM-DD HH:mm:ss'),
           firstPic: files,
           otherPic: files2,
-          sortNo: value.sortNo ? Number(value.sortNo) : null
+          sortNo: value.sortNo ? Number(value.sortNo) : null,
+          product: choosedProducts || []
         });
         setAddOrUpdateLoading(true);
         // // 编辑
@@ -797,6 +817,7 @@ export default () => {
             otherPic: files2,
             sortNo: value.sortNo ? Number(value.sortNo) : null,
             addedState: addedState,
+            product: choosedProducts || [],
             id: editingItem.id
           });
           hide()
@@ -808,7 +829,8 @@ export default () => {
             firstPic: files,
             otherPic: files2,
             sortNo: value.sortNo ? Number(value.sortNo) : null,
-            addedState: addedState
+            addedState: addedState,
+            product: choosedProducts || []
           });
           hide();
         }
@@ -965,8 +987,12 @@ export default () => {
         />
       </div>
       <Space style={{marginTop: 10}}>
-        <Button type="primary" loading={addOrUpdateLoading} onClick={() => {addOrUpdate(0)}}>上架</Button>
-        <Button loading={addOrUpdateLoading} onClick={() => {addOrUpdate(2)}}>暂存</Button>
+        {!isDetail && (
+          <>
+            <Button type="primary" loading={addOrUpdateLoading} onClick={() => {addOrUpdate(0)}}>上架</Button>
+            <Button loading={addOrUpdateLoading} onClick={() => {addOrUpdate(2)}}>暂存</Button>
+          </>
+        )}
         <Button loading={addOrUpdateLoading} onClick={() => {history.push(`/purchase-manage/promotions-manage`);}}>返回</Button>
       </Space>
       {useModal()}
