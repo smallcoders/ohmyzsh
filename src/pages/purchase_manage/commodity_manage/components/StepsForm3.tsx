@@ -3,7 +3,7 @@ import type DataCommodity from '@/types/data-commodity';
 import { ProFormText, ProFormTextArea } from '@ant-design/pro-form';
 import type { ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { Button, Form, Modal, Space } from 'antd';
+import { Button, Form, message, Modal, Space } from 'antd';
 import { useCallback, useEffect, useState } from 'react';
 import type { StepFormProps } from '../create';
 
@@ -33,9 +33,11 @@ export default (props: StepFormProps) => {
   );
 
   const delHandle = useCallback(
-    (record: ParameterData) => {
-      deleteParam({ productId: id, ids: [record.id] });
-      setParams((oldVal) => oldVal.filter((item) => item.id !== record.id));
+    async (record: ParameterData) => {
+      const res = await deleteParam({ productId: id, ids: JSON.stringify([record.id]) });
+      if (!res.code) {
+        setParams((oldVal) => oldVal.filter((item) => item.id !== record.id));
+      }
     },
     [id],
   );
@@ -103,8 +105,12 @@ export default (props: StepFormProps) => {
   ];
 
   const onFinish = useCallback(async () => {
+    if (params.length === 0) {
+      message.error('至少需要一条参数！');
+      return;
+    }
     currentChange(1);
-  }, [currentChange]);
+  }, [currentChange, params]);
 
   useEffect(() => {
     if (id) {
@@ -124,7 +130,7 @@ export default (props: StepFormProps) => {
         dataSource={params}
         columns={columns}
         toolBarRender={() => [
-          <Button disabled={params.length >= 20} type="primary" key="primary" onClick={addHandle}>
+          <Button disabled={params.length >= 30} type="primary" key="primary" onClick={addHandle}>
             新增参数
           </Button>,
         ]}
@@ -145,12 +151,37 @@ export default (props: StepFormProps) => {
         onCancel={modalCandel}
       >
         <Form form={form} labelCol={{ span: 4 }} onFinish={modalConfirm}>
-          <ProFormText name="name" label="名称" placeholder="请输入" rules={[{ required: true }]} />
+          <ProFormText
+            name="name"
+            label="名称"
+            placeholder="请输入"
+            rules={[
+              { required: true },
+              () => ({
+                validator(_, value) {
+                  if (value.length > 20) {
+                    return Promise.reject(new Error('名称不可超过20个字符'));
+                  }
+                  return Promise.resolve();
+                },
+              }),
+            ]}
+          />
           <ProFormTextArea
             name="content"
             label="内容"
             placeholder="请输入"
-            rules={[{ required: true }]}
+            rules={[
+              { required: true },
+              () => ({
+                validator(_, value) {
+                  if (value.length > 200) {
+                    return Promise.reject(new Error('内容不可超过200个字符'));
+                  }
+                  return Promise.resolve();
+                },
+              }),
+            ]}
           />
         </Form>
       </Modal>

@@ -24,6 +24,8 @@ export default (props: StepFormProps) => {
 
     const res = await goToSpecsPrice({ productId: id });
 
+    if (res.code) return;
+
     const data = res.result.map((item) => {
       const specs = item.specs.split(',').filter((v) => v.trim());
       const specsData: Record<string, string> = {};
@@ -37,12 +39,14 @@ export default (props: StepFormProps) => {
       return {
         ...item,
         ...specsData,
+        purchasePrice: item.purchasePrice / 100,
+        salePrice: item.salePrice / 100,
       };
     });
 
     setEditableKeys(data.map((item) => item.id));
     setPrices(data);
-    form.setFieldsValue({ transportFee: res.result[0].transportFee });
+    form.setFieldsValue({ transportFee: res.result[0].transportFee || 0 });
 
     let specCol: ProColumns<TableDataRow, any>[] = res.result[0].specsTitle
       .split(',')
@@ -111,7 +115,17 @@ export default (props: StepFormProps) => {
         valueType: 'number',
         formItemProps: () => {
           return {
-            rules: [{ required: true, message: '此项为必填项' }],
+            rules: [
+              { required: true, message: '此项为必填项' },
+              ({}) => ({
+                validator(_, value) {
+                  if (/^[0-9]*$/.test(value.replace('.', ''))) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(new Error('此项为数字'));
+                },
+              }),
+            ],
           };
         },
       },
@@ -125,13 +139,23 @@ export default (props: StepFormProps) => {
         valueType: 'number',
         formItemProps: () => {
           return {
-            rules: [{ required: true, message: '此项为必填项' }],
+            rules: [
+              { required: true, message: '此项为必填项' },
+              ({}) => ({
+                validator(_, value) {
+                  if (/^[0-9]*$/.test(value.replace('.', ''))) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(new Error('此项为数字'));
+                },
+              }),
+            ],
           };
         },
       },
     ];
     setColumns(col);
-  }, [id]);
+  }, [id, form]);
 
   const onFinish = useCallback(async () => {
     setloading(true);
@@ -145,8 +169,8 @@ export default (props: StepFormProps) => {
         id: item.id,
         specs: item.specs,
         productNo: values[item.id].productNo,
-        purchasePrice: values[item.id].purchasePrice,
-        salePrice: values[item.id].salePrice,
+        purchasePrice: Number(values[item.id].purchasePrice) * 100,
+        salePrice: Number(values[item.id].salePrice) * 100,
       };
     });
     const queryDta = {
