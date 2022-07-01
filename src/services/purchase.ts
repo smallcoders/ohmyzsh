@@ -128,6 +128,15 @@ export async function getProviderPage(data?: { [key: string]: any }) {
   });
 }
 /**
+ * 供应商-导出
+ * @param params
+ */
+export async function exportProvider(providerName: string) {
+  return request<LogoutVerify.ResultList>(`/antelope-pay/provider/download?providerName=${providerName}`, {
+    method: 'get'
+  });
+}
+/**
  * 供应商详情
  * @param params
  */

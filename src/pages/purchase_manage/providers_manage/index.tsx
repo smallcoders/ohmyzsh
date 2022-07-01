@@ -8,7 +8,7 @@ import React, { useEffect, useState } from 'react';
 import Common from '@/types/common';
 import SelfTable from '@/components/self_table';
 import LiveTypesMaintain from '@/types/live-types-maintain.d';
-import { getProviderPage, removeProvider } from '@/services/purchase';
+import { getProviderPage, removeProvider, exportProvider } from '@/services/purchase';
 import { routeName } from '@/../config/routes';
 const sc = scopedClasses('user-config-admin-account-distributor');
 export default () => {
@@ -59,6 +59,21 @@ export default () => {
         getPages();
       } else {
         message.error(`删除失败，原因:${removeRes.message}`);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // 导出
+  const exportProviderTypes = async () => {
+    try {
+      const exportRes = await exportProvider(searchContent.providerName|| '');
+      if (exportRes.code === 0) {
+        message.success(`导出成功`);
+        getPages();
+      } else {
+        message.error(`导出失败，原因:${exportRes.message}`);
       }
     } catch (error) {
       console.log(error);
@@ -206,7 +221,7 @@ export default () => {
             <Button
               key="primary3"
               onClick={() => {
-                
+                exportProviderTypes()
               }}
             >
               <DownloadOutlined /> 导出
