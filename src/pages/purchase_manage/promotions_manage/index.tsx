@@ -203,11 +203,11 @@ export default () => {
         hideInSearch: true, 
         renderText: (_, __, index: number) => index + 1,
       },
-      {
-        title: '商品订货编码',
-        dataIndex: 'productNo',
-        valueType: 'textarea',
-      },
+      // {
+      //   title: '商品订货编码',
+      //   dataIndex: 'productNo',
+      //   valueType: 'textarea',
+      // },
       {
         title: '商品图',
         dataIndex: 'productPic',

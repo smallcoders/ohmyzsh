@@ -70,19 +70,6 @@ export default () => {
       width: 200,
     },
     {
-      title: '活动名称',
-      dataIndex: 'actName',
-      isEllipsis: true,
-      width: 200,
-    },
-    {
-      title: '活动编码',
-      dataIndex: 'actNo',
-      isEllipsis: true,
-      render: (_: string) => _ || '--',
-      width: 200,
-    },
-    {
       title: '发票类型',
       dataIndex: 'invoiceType',
       render: (_: number) => _ == 1 ? '增值税专用发票' : '增值税普通发票',
@@ -146,11 +133,6 @@ export default () => {
           <Row>
             <Col span={8}>
               <Form.Item name="orderNo" label="订单编号">
-                <Input placeholder="请输入" />
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item name="actName" label="活动名称">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
