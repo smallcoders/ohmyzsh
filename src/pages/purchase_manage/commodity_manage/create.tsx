@@ -94,6 +94,7 @@ export default () => {
       default:
         return (
           <StepsForm0
+            id={productId}
             setProductId={setProductId}
             currentChange={changeCurrent}
             setChanged={setIsChanged}

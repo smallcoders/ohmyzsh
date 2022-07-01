@@ -1,5 +1,4 @@
 import DebounceSelect from '@/components/DebounceSelect';
-import useQuery from '@/hooks/useQuery';
 import { addProduct, queryLabel, queryProduct, queryProvider } from '@/services/commodity';
 import type { ProFormInstance } from '@ant-design/pro-form';
 import ProForm, { ProFormText } from '@ant-design/pro-form';
@@ -22,26 +21,27 @@ interface ProductForm {
 export default (
   props: StepFormProps & { setProductId: (id: string | number) => void; goBack: () => void },
 ) => {
-  const { currentChange, setChanged, setProductId, goBack } = props;
-  const query = useQuery();
+  const { id, currentChange, setChanged, setProductId, goBack } = props;
+
   const formRef = useRef<ProFormInstance<ProductForm>>();
+
   const onFinish = useCallback(
     async (value: ProductForm) => {
       const data: ProductForm & { id?: number | string } = value;
-      if (query.id) {
-        data.id = query.id;
+      if (id) {
+        data.id = id;
       }
 
       const res = await addProduct(data);
       setProductId(res.result.id);
       currentChange(1);
     },
-    [currentChange, setProductId, query],
+    [currentChange, id, setProductId],
   );
 
   useEffect(() => {
-    if (query.id) {
-      queryProduct(query.id)
+    if (id) {
+      queryProduct(id)
         .then((res) => {
           if (res.code) return;
           const data = {
@@ -58,7 +58,7 @@ export default (
         })
         .finally(() => {});
     }
-  }, [query]);
+  }, [id]);
 
   return (
     <ProForm
