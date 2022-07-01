@@ -200,12 +200,19 @@ export default () => {
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>活动列表(共{pageInfo.totalCount || 0}个)</span>
-          <Button type='primary' icon={<DownloadOutlined />}>导出</Button>
+          <a
+            key="primary3"
+            className='export-btn'
+            href={`/antelope-pay/statistics/activity/download/activity/list?actNo=${searchContent.actNo || ''}`}
+          >
+            导出
+          </a>
+          {/* <Button type='primary' icon={<DownloadOutlined />}>导出</Button> */}
         </div>
       </div>
       <div className={sc('container-table-body')}>
         <SelfTable
-          rowKey={'index'}
+          rowKey={'id'}
           bordered
           scroll={{ x: 1400 }}
           columns={columns}

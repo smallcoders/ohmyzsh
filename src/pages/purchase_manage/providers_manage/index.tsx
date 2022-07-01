@@ -65,21 +65,6 @@ export default () => {
     }
   };
 
-  // 导出
-  const exportProviderTypes = async () => {
-    try {
-      const exportRes = await exportProvider(searchContent.providerName|| '');
-      if (exportRes.code === 0) {
-        message.success(`导出成功`);
-        getPages();
-      } else {
-        message.error(`导出失败，原因:${exportRes.message}`);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const columns = [
     {
       title: '序号',
@@ -126,7 +111,7 @@ export default () => {
     },
     {
       title: '创建时间',
-      dataIndex: 'updateTime',
+      dataIndex: 'createTime',
       width: 200,
     },
     {
@@ -218,14 +203,13 @@ export default () => {
         <div className="title">
           <span>供应商列表(共{pageInfo.totalCount || 0}个)</span>
           <Space>
-            <Button
+            <a
               key="primary3"
-              onClick={() => {
-                exportProviderTypes()
-              }}
+              className='export-btn'
+              href={`/antelope-pay/provider/download?providerName=${searchContent.providerName || ''}`}
             >
-              <DownloadOutlined /> 导出
-            </Button>
+              导出
+            </a>
             <Button
               type="primary"
               key="primary4"

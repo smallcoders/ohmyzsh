@@ -374,7 +374,7 @@ export default () => {
         <Row>
           <Col span={6} offset={3}>
             <Form.Item
-                name="shareImageId"
+                name="coverImageId"
                 label="直播卡片封面"
                 // extra={`${!isDetail ? '图片建议大小为 800像素 * 800像素。图片大小不超过 300KB。图片内容遵循平台规范后更容易被推荐。' : ''}`}
                 rules={[
@@ -402,7 +402,7 @@ export default () => {
           </Col>
           <Col span={6}>
             <Form.Item
-                name="backgroundImageId"
+                name="shareImageId"
                 label="分享卡片封面"
                 // extra={`${!isDetail ? '用户在微信对话框内分享的直播间将以分享卡片的形式呈现。建议尺寸：800像素 * 640像素，图片大小不得超过1M' : ''}`}
                 rules={[
@@ -430,7 +430,7 @@ export default () => {
           </Col>
           <Col span={6}>
             <Form.Item
-                name="coverImageId"
+                name="backgroundImageId"
                 label="直播间背景墙"
                 // extra={`${!isDetail ? '直播间背景墙是每个直播间的默认背景。建议尺寸：600像素 * 1300像素，图片大小不得超过 3M。' : ''}`}
                 rules={[

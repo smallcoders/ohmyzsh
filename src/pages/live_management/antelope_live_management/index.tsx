@@ -203,7 +203,7 @@ export default () => {
     },
     {
       title: '封面',
-      dataIndex: 'filePath',
+      dataIndex: 'coverImagePath',
       isEllipsis: true,
       width: 120,
       render: (_: string, _record: any) => (

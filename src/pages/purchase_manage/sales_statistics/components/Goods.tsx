@@ -188,15 +188,13 @@ export default () => {
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>商品列表(共{pageInfo.totalCount || 0}个)</span>
-          <Button
-            type="primary"
-            key="primary"
-            onClick={() => {
-              
-            }}
+          <a
+            key="primary3"
+            className='export-btn'
+            href={`/antelope-pay/statistics/product/download?productNo=${searchContent.productNo || ''}`}
           >
             导出
-          </Button>
+          </a>
         </div>
       </div>
       <div className={sc('container-table-body')}>
