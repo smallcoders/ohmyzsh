@@ -383,9 +383,16 @@ export default () => {
   const [weightForm] = Form.useForm();
   // 权重设置
   const editSort = (value: number, index: number) => {
-    let arr = JSON.parse(JSON.stringify(choosedProducts))
-    arr[index].sortNo = value;
-    setChoosedProducts(arr);
+    weightForm
+      .validateFields()
+      .then(() => {
+        let arr = JSON.parse(JSON.stringify(choosedProducts))
+        arr[index].sortNo = value;
+        setChoosedProducts(arr);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
   const remove = (index: number) => {
     let arr = JSON.parse(JSON.stringify(choosedProducts)).filter(
@@ -473,7 +480,20 @@ export default () => {
                   <Form form={weightForm}>
                     <Form.Item 
                       name={'weight'} 
-                      label="权重设置">
+                      label="权重设置"
+                      rules={[
+                        {
+                          validator(rule, value) {
+                            let r = /^100$|^(?:\d|[1-9]\d|1[0-4]\d)?$/.test(value);
+                            if(!r){
+                              return Promise.reject('请输入1-100的整数')
+                            }else {
+                              return Promise.resolve()
+                              }
+                          },
+                        },
+                      ]}
+                      >
                       <InputNumber min={1} max={100} placeholder="请输入1-100的整数，数字越大排名越小" />
                     </Form.Item>
                   </Form>
@@ -904,7 +924,22 @@ export default () => {
             />
           )}
         </Form.Item>
-        <Form.Item label="活动权重" name="sortNo" rules={[{ required: !isDetail }]}>
+        <Form.Item label="活动权重" name="sortNo" 
+          rules={[{
+            validator(rule, value) {
+              let r = /^100$|^(?:\d|[1-9]\d|1[0-4]\d)?$/.test(value);
+              if(value) {
+                if(!r){
+                  return Promise.reject('请输入1-100的整数')
+                }else {
+                  return Promise.resolve()
+                }
+              }else {
+                return Promise.resolve()
+              }
+            },
+          }]}
+        >
           {isDetail ? (
             <span>{editingItem?.sortNo || '--'}</span>
           ) : (
