@@ -1,7 +1,8 @@
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 import { message, Upload } from 'antd';
-import { RcFile, UploadChangeParam, UploadFile, UploadProps } from 'antd/lib/upload/interface';
-import { ReactNode, RefAttributes, useState } from 'react';
+import type { RcFile, UploadChangeParam, UploadFile, UploadProps } from 'antd/lib/upload/interface';
+import type { ReactNode, RefAttributes } from 'react';
+import { useState } from 'react';
 import './upload-form.less';
 
 const UploadForm = (
@@ -10,6 +11,7 @@ const UploadForm = (
       value?: string;
       needName?: boolean;
       maxSize?: number;
+      changeLoading?: (loaidng: boolean) => void;
       maxSizeKb?: number;
     },
 ) => {
@@ -28,13 +30,23 @@ const UploadForm = (
       <div>重新上传</div>
     </div>
   );
+
   const handleChange = (info: UploadChangeParam<UploadFile<any>>) => {
+    const setLoading = (loading: boolean) => {
+      if (props.changeLoading) {
+        props.changeLoading(loading);
+      }
+      setUploadLoading(loading);
+    };
     if (info.file.status === 'uploading') {
-      setUploadLoading(true);
+      setLoading(true);
       return;
     }
     if (info.file.status === 'error') {
-      setUploadLoading(false);
+      if (props.changeLoading) {
+        props.changeLoading(false);
+      }
+      setLoading(false);
       return;
     }
 
@@ -46,10 +58,10 @@ const UploadForm = (
           ? uploadResponse.result + '_+*%' + info?.file?.name
           : uploadResponse.result;
         props.onChange?.(value);
-        setUploadLoading(false);
+        setLoading(false);
         message.success('上传成功');
       } else {
-        setUploadLoading(false);
+        setLoading(false);
         message.error(`上传失败，原因:{${uploadResponse.message}}`);
       }
     }
@@ -67,7 +79,7 @@ const UploadForm = (
         return Upload.LIST_IGNORE;
       }
     }
-    if(props.maxSizeKb) {
+    if (props.maxSizeKb) {
       const isLtLimit = file.size / 1024 < props.maxSizeKb;
       if (!isLtLimit) {
         message.error(`上传的文件大小不得超过${props.maxSizeKb}KB`);
@@ -96,7 +108,7 @@ const UploadForm = (
       <Upload
         {...props}
         name="file"
-        action="/antelope-manage/common/upload"
+        action={props.action || '/antelope-manage/common/upload'}
         onChange={handleChange}
         beforeUpload={beforeUpload}
       >
