@@ -1,11 +1,9 @@
 import DebounceSelect from '@/components/DebounceSelect';
-import useQuery from '@/hooks/useQuery';
 import { addProduct, queryLabel, queryProduct, queryProvider } from '@/services/commodity';
 import type { ProFormInstance } from '@ant-design/pro-form';
 import ProForm, { ProFormText } from '@ant-design/pro-form';
 import { Button, Form, Select, Space } from 'antd';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useHistory } from 'umi';
 import UploadImageFormItem from '../../components/UploadImageFormItem';
 import type { StepFormProps } from '../create';
 
@@ -16,32 +14,34 @@ interface ProductForm {
   serverIds: string;
   productOrg: string;
   productPic: string;
-  supplier: string;
+  supplier: number;
   banner: string;
 }
 
-export default (props: StepFormProps & { setProductId: (id: string | number) => void }) => {
-  const { currentChange, setChanged, setProductId } = props;
-  const history = useHistory();
-  const query = useQuery();
+export default (
+  props: StepFormProps & { setProductId: (id: string | number) => void; goBack: () => void },
+) => {
+  const { id, currentChange, setChanged, setProductId, goBack } = props;
+
   const formRef = useRef<ProFormInstance<ProductForm>>();
+
   const onFinish = useCallback(
     async (value: ProductForm) => {
       const data: ProductForm & { id?: number | string } = value;
-      if (query.id) {
-        data.id = query.id;
+      if (id) {
+        data.id = id;
       }
 
       const res = await addProduct(data);
       setProductId(res.result.id);
       currentChange(1);
     },
-    [currentChange, setProductId, query],
+    [currentChange, id, setProductId],
   );
 
   useEffect(() => {
-    if (query.id) {
-      queryProduct(query.id)
+    if (id) {
+      queryProduct(id)
         .then((res) => {
           if (res.code) return;
           const data = {
@@ -58,7 +58,7 @@ export default (props: StepFormProps & { setProductId: (id: string | number) => 
         })
         .finally(() => {});
     }
-  }, [query]);
+  }, [id]);
 
   return (
     <ProForm
@@ -75,7 +75,7 @@ export default (props: StepFormProps & { setProductId: (id: string | number) => 
               <Button type="primary" onClick={() => p.submit()}>
                 保存，下一步
               </Button>
-              <Button onClick={() => history.goBack()}>取消</Button>
+              <Button onClick={goBack}>返回</Button>
             </Space>
           </div>
         ),
@@ -87,13 +87,33 @@ export default (props: StepFormProps & { setProductId: (id: string | number) => 
         name="productName"
         label="商品名称"
         placeholder="名称可包含商品中英品牌、名称等等信息"
-        rules={[{ required: true }]}
+        rules={[
+          { required: true },
+          () => ({
+            validator(_, value) {
+              if (value.length > 100) {
+                return Promise.reject(new Error('商品名称不可超过100个字符'));
+              }
+              return Promise.resolve();
+            },
+          }),
+        ]}
       />
       <ProFormText
         name="productModel"
         label="商品型号"
         placeholder="请输入"
-        rules={[{ required: true }]}
+        rules={[
+          { required: true },
+          () => ({
+            validator(_, value) {
+              if (value.length > 30) {
+                return Promise.reject(new Error('商品型号不可超过30个字符'));
+              }
+              return Promise.resolve();
+            },
+          }),
+        ]}
       />
 
       <Form.Item name="saleIds" label="商品促销标签">
@@ -146,6 +166,7 @@ function LabelSelect(props: {
 
   const selectChanged = useCallback(
     (values: string[]) => {
+      if (values.length > 3) return;
       if (onChange) {
         onChange(values.join(','));
       }
@@ -188,8 +209,6 @@ function ProviderSelect(props: { value?: string; onChange?: (val: string) => voi
 
   const fetchOptions = useCallback(async () => {
     const res = await queryProvider();
-    console.log(res);
-
     if (!res.code) {
       setOptions(
         res.result.map((item) => ({ label: item.providerTypeName, value: item.id.toString() })),
@@ -201,5 +220,7 @@ function ProviderSelect(props: { value?: string; onChange?: (val: string) => voi
     fetchOptions();
   }, [fetchOptions]);
 
-  return <Select value={value} placeholder="请输入" options={options} onChange={onChange} />;
+  return (
+    <Select value={value?.toString()} placeholder="请输入" options={options} onChange={onChange} />
+  );
 }

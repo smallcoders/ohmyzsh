@@ -33,9 +33,11 @@ export default (props: StepFormProps) => {
   );
 
   const delHandle = useCallback(
-    (record: SpecData) => {
-      deleteSpecs({ productId: id, ids: [record.id] });
-      setSpecs((oldVal) => oldVal.filter((item) => item.id !== record.id));
+    async (record: SpecData) => {
+      const res = await deleteSpecs({ productId: id, ids: JSON.stringify([record.id]) });
+      if (!res.code) {
+        setSpecs((oldVal) => oldVal.filter((item) => item.id !== record.id));
+      }
     },
     [id],
   );
@@ -118,7 +120,7 @@ export default (props: StepFormProps) => {
         dataSource={specs}
         columns={columns}
         toolBarRender={() => [
-          <Button type="primary" key="primary" onClick={showAdd}>
+          <Button type="primary" key="primary" disabled={specs.length >= 10} onClick={showAdd}>
             新增规格
           </Button>,
         ]}
