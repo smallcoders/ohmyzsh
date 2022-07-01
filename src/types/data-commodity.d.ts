@@ -103,6 +103,7 @@ namespace DataCommodity {
   export type Provider = {
     id: number;
     providerTypeName: string;
+    providerName: string;
     weight: number;
     createTime: string;
     operateUser: string;
