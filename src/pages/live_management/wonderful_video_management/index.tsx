@@ -1,5 +1,9 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Input, Form, Modal, Select, Row, Col, message, Space, Popconfirm, DatePicker, Tooltip, InputNumber, Image } from 'antd';
+import { Button, Input, Form, Modal, Select, Row, Col, message, Space, Popconfirm, DatePicker, Upload, Tooltip, InputNumber, Image } from 'antd';
+import type { UploadProps } from 'antd';
+import { RcFile, UploadChangeParam } from 'antd/lib/upload';
+import { UploadFile } from 'antd/lib/upload/interface';
+import CourseManage from '@/types/service-config-course-manage';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
@@ -125,13 +129,19 @@ export default () => {
       .validateFields()
       .then(async (value) => {
         setAddOrUpdateLoading(true);
-        console.log(editingItem.id, 'editingItem.id');
+        console.log(files, '--files');
+        console.log({
+          ...value,
+          lineStatus: lineStatus,
+          videoId: files[0].storeId
+        });
         const addorUpdateRes = await (editingItem.id
           ? updateVideo({
               ...value,
               id: editingItem.id,
+              videoId: files[0].storeId
             })
-          : addVideo({ ...value, lineStatus: lineStatus }));
+          : addVideo({ ...value, lineStatus: lineStatus, videoId: files[0].storeId }));
         if (addorUpdateRes.code === 0) {
           setModalVisible(false);
           message.success(`${tooltipMessage}成功！`);
@@ -270,9 +280,12 @@ export default () => {
               type="link"
               onClick={() => {
                 record.typeIds = record.typeIds?.split(',').map(Number);//返回的类型为字符串，需转为数组
-                setEditingItem(record);
+                setEditingItem({...record});
+                setFiles([
+                  {title: record.videoName+'.mp4', storeId: record.videoId}
+                ]);
                 setModalVisible(true);
-                form.setFieldsValue(record);
+                form.setFieldsValue({...record, videoId: [{uid: record.videoId, name: record.videoName+'.mp4', status: 'done',}]});
               }}
             >
               编辑
@@ -413,6 +426,63 @@ export default () => {
     setModalVisible(false);
   };
   
+  const [uploadLoading, setUploadLoading] = useState<boolean>(false);
+  const [files, setFiles] = useState<CourseManage.File[]>([]);
+  const normFile = (e: any) => {
+    const isLt2M = e.file.size / 1024 / 1024 < 2;
+    console.log('Upload event:', e);
+    if (Array.isArray(e)) {
+      return e;
+    }
+    if (!isLt2M) {
+      message.error('视频大小不得超过800M!');
+      return []
+    }
+    return e?.fileList;
+  };
+  const props = {
+    name: 'file',
+    accept: ".mp4",
+    maxCount: 1,
+    maxSize: 800,
+    action: '/antelope-manage/common/upload/record',
+    onRemove: (file: UploadFile<any>) => {
+      if (file.status === 'uploading' || file.status === 'error') {
+        setUploadLoading(false);
+      }
+      const files_copy = [...files];
+      const existIndex = files_copy.findIndex((p) => p.storeId === file?.response?.result);
+      if (existIndex > -1) {
+        files_copy.splice(existIndex, 1);
+        setFiles(files_copy);
+      }
+    },
+    onChange(info) {
+      // if (info.file.status !== 'uploading') {
+      //   console.log(info.file, info.fileList);
+      // }
+      if (info.file.status === 'done') {
+        const uploadResponse = info?.file?.response;
+        if (uploadResponse?.code === 0 && uploadResponse.result) {
+          const upLoadResult = info?.fileList.map((p) => {
+            return {
+              title: p.name,
+              storeId: p.response?.result?.id
+            };
+          });
+          setFiles(upLoadResult);
+          setUploadLoading(false);
+        } else {
+          setUploadLoading(false);
+          message.error(`上传失败，原因:{${uploadResponse.message}}`);
+        }
+        message.success(`${info.file.name} 上传成功`);
+      } else if (info.file.status === 'error') {
+        message.error(`${info.file.name} file upload failed.`);
+      }
+    }
+  };
+  
   const useModal = (): React.ReactNode => {
     return (
       <Modal
@@ -440,7 +510,13 @@ export default () => {
           </Button>
         ]}
       >
-        <Form {...formLayout} form={form} layout="horizontal">
+        <Form {...formLayout} form={form} layout="horizontal"
+          initialValues={
+            {
+              shareVirtualCount: 0, 
+              goodVirtualCount: 0
+            }
+          }>
           <Row>
             <Col span={16}>
               <Form.Item
@@ -452,7 +528,7 @@ export default () => {
                       }
                       if (!/^[a-zA-Z0-9_\u4e00-\u9fa5-]+$/.test(value)) {
                         return Promise.reject(
-                          new Error('由数字、字母、中文、下划线或者中划线组成,长度40字符以内'),
+                          new Error('由数字、字母、中文、下划线或者中划线组成,长度50字符以内'),
                         );
                       }
                       return Promise.resolve();
@@ -468,27 +544,7 @@ export default () => {
             </Col>
           </Row>
           <Row>
-            <Col span={8} offset={2}>
-              <Form.Item
-                name="videoId"
-                label="视频"
-                rules={[
-                  {
-                    required: true,
-                    message: '必填',
-                  },
-                ]}
-              >
-                <UploadForm
-                  listType="picture-card"
-                  className="avatar-uploader"
-                  maxSize={800}
-                  showUploadList={false}
-                  accept=""
-                />
-              </Form.Item>
-            </Col>
-            <Col span={8}>
+            <Col span={16}>
               <Form.Item
                 name="coverImageId"
                 label="封面"
@@ -506,6 +562,26 @@ export default () => {
                   showUploadList={false}
                   accept=".bmp,.gif,.png,.jpeg,.jpg"
                 />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row>
+            <Col span={16}>
+              <Form.Item
+                name="videoId"
+                label="视频"
+                valuePropName="fileList"
+                getValueFromEvent={normFile}
+                rules={[
+                  {
+                    required: true,
+                    message: '必填',
+                  },
+                ]}
+              >
+                <Upload {...props}>
+                  <Button type="primary">上传</Button>
+                </Upload>
               </Form.Item>
             </Col>
           </Row>
@@ -584,14 +660,14 @@ export default () => {
                 name="shareVirtualCount" 
                 label="虚拟分享量"
               >
-                <InputNumber min={0} defaultValue={0} />
+                <InputNumber min={0} />
               </Form.Item>
             </Col>
             <Col span={10}>
               <Form.Item 
                 name="goodVirtualCount"
                 label="虚拟点赞量">
-                <InputNumber min={0} defaultValue={0} />
+                <InputNumber min={0} />
               </Form.Item>
             </Col>
           </Row>
