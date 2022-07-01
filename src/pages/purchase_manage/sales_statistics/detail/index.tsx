@@ -66,20 +66,6 @@ const SolutionDetail: React.FC = () => {
    * 查询默认密码
    */
   useEffect(() => {
-    // getActivityDetails(
-    //   {
-    //     id: history.location.query?.id,
-    //     pageIndex: pageInfo.pageIndex,
-    //     pageSize
-    //   }
-    // ).then((e) => {
-    //   if (e.code !== 0) {
-    //     message.error(e.message);
-    //   } else {
-    //     setSolutionDetail(e.result);
-    //     setLoading(false);
-    //   }
-    // });
     getDiagnosticTasks();
   }, []);
 
@@ -148,7 +134,13 @@ const SolutionDetail: React.FC = () => {
       <>
       <div className='group-tit'>
         活动信息
-        <Button type='primary' icon={<DownloadOutlined />}>导出</Button>
+        <a
+          key="primary3"
+          className='export-btn'
+          href={`/antelope-pay/statistics/activity/download/activity/orders?id=${history.location.query?.id || ''}`}
+        >
+          导出
+        </a>
       </div>
       <div className='description'>
         <Row>

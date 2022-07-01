@@ -320,15 +320,14 @@ export default () => {
           </Button>,
         ]}
         request={async (filter) => {
-          // console.log(filter)
+          console.log(filter, 555)
           let params = {
             ...filter,
             pageIndex: filter.current,
-            startDate: filter.updateTime?[0] : '',
-            endDate: filter.updateTime?[1] : ''
+            startDate: filter.updateTime ? filter.updateTime[0] : '',
+            endDate: filter.updateTime ? filter.updateTime[1] : ''
           };
           const result = await getActivityManageList(params);
-          // pageInfo.current = pagination;
           return Promise.resolve({
             data: result.result,
             success: true,

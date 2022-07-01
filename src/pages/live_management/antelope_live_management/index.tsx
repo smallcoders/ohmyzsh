@@ -1,5 +1,5 @@
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Input, Form, Modal, Select, Row, Col, message, Space, Popconfirm, DatePicker, Image } from 'antd';
+import { Button, Input, Form, Select, Row, Col, message, Space, Popconfirm, DatePicker, Image } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
 import { history } from 'umi';
@@ -11,25 +11,15 @@ import moment from 'moment';
 import SelfTable from '@/components/self_table';
 import AdminAccountDistributor from '@/types/admin-account-distributor.d';
 import {
-  addAdminAccount,
-  removeAdminAccount,
-  resetAdminAccount,
-  updateAdminAccount,
-} from '@/services/admin-account-distributor';
-import {
   queryLiveVideoPage,
   getLiveTypesPage,
   updateLiveStatus,
   removeLive
 } from '@/services/search-record';
-import UploadForm from '@/components/upload_form';
 const sc = scopedClasses('user-config-admin-account-distributor');
 export default () => {
-  const { TextArea } = Input;
-  const [createModalVisible, setModalVisible] = useState<boolean>(false);
   const [dataSource, setDataSource] = useState<AdminAccountDistributor.Content[]>([]);
   const [editingItem, setEditingItem] = useState<AdminAccountDistributor.Content>({});
-  const [addOrUpdateLoading, setAddOrUpdateLoading] = useState<boolean>(false);
   const [searchContent, setSearChContent] = useState<{
     title?: string; // 标题
     publishTime?: string; // 发布时间
@@ -93,45 +83,6 @@ export default () => {
     setEditingItem({});
   };
 
-  const addOrUpdate = async () => {
-    const tooltipMessage = editingItem.id ? '修改' : '添加';
-    form
-      .validateFields()
-      .then(async (value) => {
-        setAddOrUpdateLoading(true);
-        if (value.publishTime) {
-          value.publishTime = moment(value.publishTime).format('YYYY-MM-DDTHH:mm:ss');
-        }
-        const addorUpdateRes = await (editingItem.id
-          ? updateAdminAccount({
-              ...value,
-              id: editingItem.id,
-            })
-          : addAdminAccount({
-              ...value,
-            }));
-        if (addorUpdateRes.code === 0) {
-          setModalVisible(false);
-          console.log(editingItem.id);
-          if (!editingItem.id) {
-            Modal.info({
-              title: '新增管理员成功',
-              content: ` 当前管理员密码初始密码为：ly@${moment().format('YYYYMMDD')}`,
-            });
-          }
-
-          getPages();
-          clearForm();
-        } else {
-          message.error(`${tooltipMessage}失败，原因:{${addorUpdateRes.message}}`);
-        }
-        setAddOrUpdateLoading(false);
-      })
-      .catch(() => {
-        setAddOrUpdateLoading(false);
-      });
-  };
-
   const remove = async (id: string) => {
     try {
       const removeRes = await removeLive(id);
@@ -151,7 +102,6 @@ export default () => {
     const tooltipMessage = status ? '置顶' : '取消置顶';
     const addorUpdateRes = await updateLiveStatus(params);
     if (addorUpdateRes.code === 0) {
-      setModalVisible(false);
       if (!editingItem.id) {
         message.success(`${tooltipMessage}成功！`);
       }
@@ -166,7 +116,6 @@ export default () => {
     let params = {id, lineStatus: status};
     const addorUpdateRes = await updateLiveStatus(params);
     if (addorUpdateRes.code === 0) {
-      setModalVisible(false);
       if (!editingItem.id) {
         message.success(`${status ? '上架' : '下架'}成功！`);
       }
@@ -203,7 +152,7 @@ export default () => {
     },
     {
       title: '封面',
-      dataIndex: 'filePath',
+      dataIndex: 'coverImagePath',
       isEllipsis: true,
       width: 120,
       render: (_: string, _record: any) => (
@@ -256,7 +205,7 @@ export default () => {
       render: (_: any, record: AdminAccountDistributor.Content) => {
         return (
           <Space size="middle">
-            {record.videoStatus != 2 && (
+            {/* {record.videoStatus != 2 && ( */}
               <a
                 href="#"
                 onClick={() => {
@@ -265,7 +214,7 @@ export default () => {
               >
                 编辑
               </a>
-            )}
+            {/* )} */}
             { 
               record.lineStatus ? (
                 <Popconfirm
@@ -388,14 +337,6 @@ export default () => {
         </Form>
       </div>
     );
-  };
-  const handleOk = async () => {
-    addOrUpdate();
-  };
-
-  const handleCancel = () => {
-    clearForm();
-    setModalVisible(false);
   };
 
   return (
