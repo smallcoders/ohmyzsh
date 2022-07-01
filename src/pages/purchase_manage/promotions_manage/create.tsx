@@ -227,8 +227,9 @@ export default () => {
     }
   };
 
-  const getProductPrices = async (id: string, index: number) => {
+  const getProductPrices = async (id: string, index: number, name: string) => {
     setCurrentSetIndex(index); //保存当前修改商品的index
+    setCurrentProductName(name); //保存当前修改商品的名称
     try {
       const res = await getProductPriceList(id);
       if (res.code === 0) {
@@ -256,21 +257,15 @@ export default () => {
     </div>
   );
   const normFile = (e: any) => {
-    console.log('Upload event:', e);
+    const isLt5M = e.file.size / 1024 / 1024 < 5;
     if (Array.isArray(e)) {
       return e;
     }
+    if (!isLt5M) {
+      message.error('视频大小不得超过5M!');
+      return []
+    }
     return e?.fileList;
-    // const isLt2M = e.file.size / 1024 / 1024 < 2;
-    // console.log('Upload event:', e);
-    // if (Array.isArray(e)) {
-    //   return e;
-    // }
-    // if (!isLt2M) {
-    //   message.error('视频大小不得超过800M!');
-    //   return []
-    // }
-    // return e?.fileList;
   };
   const [uploadLoading, setUploadLoading] = useState<boolean>(false);
   const handleChange = (info: UploadChangeParam<UploadFile<any>>) => {
@@ -393,7 +388,12 @@ export default () => {
     setChoosedProducts(arr);
   }
   const remove = (index: number) => {
-    let arr = JSON.parse(JSON.stringify(choosedProducts)).splice(index, 1);
+    let arr = JSON.parse(JSON.stringify(choosedProducts)).filter(
+      (item: any, i: number) => {
+        console.log(i, index);
+        return i != index
+      }
+    );
     setChoosedProducts(arr);
   }
   const chooseColumns: ColumnsType<DataType> = [
@@ -462,7 +462,7 @@ export default () => {
             <a
               href="#"
               onClick={() => {
-                getProductPrices(record.id, index);
+                getProductPrices(record.id, index, record.productName);
               }}
             >
               设置价格
@@ -481,6 +481,7 @@ export default () => {
               }
               icon={<PlusOutlined style={{ display: 'none' }} />}
               okText="确定"
+              placement="topRight"
               cancelText="取消"
               onConfirm={() => {
                 editSort(weightForm.getFieldValue('weight'), index)
@@ -500,6 +501,7 @@ export default () => {
             <Popconfirm
               title="确定删除么？"
               okText="确定"
+              placement="topRight"
               cancelText="取消"
               onConfirm={() => remove(index)}
             >
@@ -585,11 +587,23 @@ export default () => {
   const [priceModalVisible, setPriceModalVisible] = useState<boolean>(false);
   const [priceDataSource, setPriceDataSource] = useState([]);
   const [currentSetIndex, setCurrentSetIndex] = useState<number>(-1);
+  const [currentProductName, setCurrentProductName] = useState<string>('');
   const setPriceOk = async () => {
-    // 校验商品销售价是否全部填了
-    console.log(currentSetIndex, 'currentSetIndex');
+    // 校验商品销售价是否全部填了,且三种价格都要*100
     console.log(priceDataSource, 'priceDataSource');
-    console.log(choosedProducts, 'choosedProducts');
+    let price = [...priceDataSource];
+    for(let i=0; i<price.length;i++) {
+      if(price[i].salePrice == 0 || !price[i].salePrice ) {
+        message.error('商品售价必填！');
+        return false;
+      }
+    }
+    price.map((item: any) => {
+      item.purchasePrice = item.purchasePrice*100;
+      item.salePrice = item.salePrice*100;
+      item.originPrice = item.originPrice ? item.originPrice*100 : 0;
+    })
+    console.log(price, 'price');
     let arr = [...choosedProducts];
     let list = arr.map((item,index)=>
       index == currentSetIndex ? {...item, specs: priceDataSource} : item
@@ -713,10 +727,7 @@ export default () => {
 
   const handleSave = (row: any) => {
     const newData = [...priceDataSource];
-    console.log(row.id, row);
     const index = newData.findIndex((item) => row.id === item.id);
-    console.log(index);
-    // console.log(index, 121212);
     const item = newData[index];
     newData.splice(index, 1, { ...item, ...row });
     console.log(newData, 'handleSave后的数据');
@@ -768,7 +779,7 @@ export default () => {
       >
         <div className={'container-table-body'} style={{marginTop: 10}}>
           <div style={{ marginBottom: 16 }}>
-            商品名称？？？？？？
+            {currentProductName}
           </div>
           <Table
             components={components}
@@ -872,14 +883,14 @@ export default () => {
           {isDetail ? (
             <span>{editingItem?.actNo || '--'}</span>
           ) : (
-            <Input placeholder="请输入" />
+            <Input placeholder="请输入" maxLength={30} />
           )}
         </Form.Item>
         <Form.Item label="活动名称" name="name" rules={[{ required: !isDetail }]}>
           {isDetail ? (
             <span>{editingItem?.name || '--'}</span>
           ) : (
-            <Input placeholder="请输入" />
+            <Input placeholder="请输入" maxLength={8}/>
           )}
         </Form.Item>
         <Form.Item label="活动开始时间" name="time" rules={[{ required: !isDetail }]}>
@@ -904,7 +915,7 @@ export default () => {
           {isDetail ? (
             <span>{editingItem?.actSpreadWord || '--'}</span>
           ) : (
-           <Input placeholder="请输入" />
+           <Input placeholder="请输入" maxLength={30} />
           )}
         </Form.Item>
         <Form.Item

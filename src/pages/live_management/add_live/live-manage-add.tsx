@@ -49,6 +49,8 @@ export default () => {
    * 正在编辑的一行记录
    */
   const [editingItem, setEditingItem] = useState<AppResource.Content>({});
+
+  // 编辑直播中/已结束状态的直播,只能编辑字段“官方收录、拓展功能”
   const [disabledFlag, setDisabledFlag] = useState<boolean>(false);
 
   /**
@@ -632,6 +634,7 @@ export default () => {
                 <Input placeholder="请输入" maxLength={35} disabled={disabledFlag}/>
               )}
             </Form.Item>
+            {/* 直播状态为未开始时，编辑直播不能编辑直播类型 */}
             <Form.Item
               name="liveType"
               label="直播类型"
@@ -646,7 +649,7 @@ export default () => {
               {isDetail ? (
                 <span>{editingItem.liveType ? '推流设备直播' : '手机直播'}</span>
               ) : (
-                <Radio.Group disabled={disabledFlag}>
+                <Radio.Group disabled={disabledFlag || editingItem.videoStatus == 0}>
                   <Radio value={0}>手机直播</Radio>
                   <Radio value={1}>推流设备直播</Radio>
                 </Radio.Group>
