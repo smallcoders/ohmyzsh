@@ -1,5 +1,5 @@
 import DebounceSelect from '@/components/DebounceSelect';
-import { addProduct, queryLabel, queryProduct, queryProvider } from '@/services/commodity';
+import { addProduct, queryLabel, queryProduct, queryProviderAll } from '@/services/commodity';
 import type { ProFormInstance } from '@ant-design/pro-form';
 import ProForm, { ProFormText } from '@ant-design/pro-form';
 import { Button, Form, Select, Space } from 'antd';
@@ -208,10 +208,10 @@ function ProviderSelect(props: { value?: string; onChange?: (val: string) => voi
   const [options, setOptions] = useState<{ label: string; value: string }[]>([]);
 
   const fetchOptions = useCallback(async () => {
-    const res = await queryProvider();
+    const res = await queryProviderAll();
     if (!res.code) {
       setOptions(
-        res.result.map((item) => ({ label: item.providerTypeName, value: item.id.toString() })),
+        res.result.map((item) => ({ label: item.providerName, value: item.id.toString() })),
       );
     }
   }, []);
