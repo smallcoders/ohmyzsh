@@ -33,9 +33,11 @@ export default (props: StepFormProps) => {
   );
 
   const delHandle = useCallback(
-    (record: ParameterData) => {
-      deleteParam({ productId: id, ids: [record.id] });
-      setParams((oldVal) => oldVal.filter((item) => item.id !== record.id));
+    async (record: ParameterData) => {
+      const res = await deleteParam({ productId: id, ids: JSON.stringify([record.id]) });
+      if (!res.code) {
+        setParams((oldVal) => oldVal.filter((item) => item.id !== record.id));
+      }
     },
     [id],
   );
