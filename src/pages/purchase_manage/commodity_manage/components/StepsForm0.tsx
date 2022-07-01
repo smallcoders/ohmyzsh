@@ -146,6 +146,7 @@ function LabelSelect(props: {
 
   const selectChanged = useCallback(
     (values: string[]) => {
+      if (values.length > 3) return;
       if (onChange) {
         onChange(values.join(','));
       }
