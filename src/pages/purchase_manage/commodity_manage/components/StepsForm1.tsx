@@ -34,7 +34,7 @@ export default (props: StepFormProps) => {
 
   const delHandle = useCallback(
     async (record: SpecData) => {
-      const res = await deleteSpecs({ productId: id, ids: JSON.stringify([record.id]) });
+      const res = await deleteSpecs({ productId: id, ids: [record.id] });
       if (!res.code) {
         setSpecs((oldVal) => oldVal.filter((item) => item.id !== record.id));
       }

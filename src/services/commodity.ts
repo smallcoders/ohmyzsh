@@ -143,8 +143,15 @@ export async function queryLabel(data: any) {
   );
 }
 
-export async function queryProvider() {
+export async function queryProviderAll() {
   return request<Common.ResultCode & { result: DataCommodity.Provider[] }>(
-    '/antelope-pay/provider/type/all',
+    '/antelope-pay/provider/search',
+    {
+      method: 'POST',
+      data: {
+        pageIndex: 1,
+        pageSize: 30,
+      },
+    },
   );
 }

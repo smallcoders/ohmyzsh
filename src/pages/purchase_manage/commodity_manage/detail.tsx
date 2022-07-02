@@ -46,7 +46,7 @@ export default () => {
   }, [commodity]);
 
   const specsTitle = useMemo(() => {
-    const titles = commodity?.payProductSpecsPriceList[0].specsTitle
+    const titles = (commodity?.payProductSpecsPriceList[0]?.specsTitle || '')
       .split(',')
       .filter((item) => item.trim());
 
