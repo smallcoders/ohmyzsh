@@ -905,6 +905,9 @@ export default () => {
         breadcrumb: (
           <Breadcrumb>
             <Breadcrumb.Item>
+              <Link to="/purchase-manage/commodity-manage">采购管理 </Link>
+            </Breadcrumb.Item>
+            <Breadcrumb.Item>
               <Link to="/purchase-manage/promotions-manage">活动管理 </Link>
             </Breadcrumb.Item>
             <Breadcrumb.Item>

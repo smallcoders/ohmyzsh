@@ -244,14 +244,16 @@ export default () => {
         breadcrumb: (
           <Breadcrumb>
             <Breadcrumb.Item>
-              <Link to="/live-manage/antelope_live_management">羚羊直播管理 </Link>
+              <Link to="/purchase-manage/commodity-manage">采购管理 </Link>
+            </Breadcrumb.Item>
+            <Breadcrumb.Item>
+              <Link to="/purchase-manage/providers-manage">供应商管理 </Link>
             </Breadcrumb.Item>
             <Breadcrumb.Item>
               {isEditing ? `编辑供应商` : isDetail ? '供应商详情' : '新增供应商'}
             </Breadcrumb.Item>
           </Breadcrumb>
         ),
-
         extra: (
           <div className="operate-btn">
             {!isDetail && (
