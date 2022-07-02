@@ -118,8 +118,8 @@ export default () => {
               <Column title="序号" render={(_, __, i) => i + 1} />
               {specsTitle}
               <Column title="订货编码" dataIndex="productNo" />
-              <Column title="商品采购价格（元）" dataIndex="purchasePrice" />
-              <Column title="商品销售价格（元）" dataIndex="salePrice" />
+              <Column title="商品采购价格（元）" dataIndex="purchasePrice"  render={(_, __) => _/100}/>
+              <Column title="商品销售价格（元）" dataIndex="salePrice"   render={(_, __) => _/100}/>
             </Table>
           </ProCard>
           <ProCard>
