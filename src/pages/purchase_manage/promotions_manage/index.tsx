@@ -1,5 +1,3 @@
-import { pageQuery as commodityPageQuery } from '@/services/commodity';
-import { pageQuery } from '@/services/promotions';
 import { getActivityManageList, changeActState } from '@/services/purchase';
 import type DataCommodity from '@/types/data-commodity';
 import type DataPromotions from '@/types/data-promotions';
@@ -8,21 +6,16 @@ import { PageContainer } from '@ant-design/pro-layout';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import { Button, Image, Popconfirm, message, Space } from 'antd';
-import { useCallback, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { useHistory } from 'umi';
-import type Common from '@/types/common';
 
 export default () => {
   const history = useHistory();
 
   const actionRef = useRef<ActionType>();
+  const [total, setTotal] = useState<number>(0);
 
-  const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
-    pageIndex: 1,
-    pageSize: 20,
-    totalCount: 0,
-    pageTotal: 0,
-  });
+  const [pageIndex, setPageIndex] = useState<any>(1);
 
   // 更改活动状态
   const addOrUpdate = async (params: object) => {
@@ -46,7 +39,7 @@ export default () => {
       title: '序号',
       hideInSearch: true,
       render: (_: any, _record: any, index: number) =>
-        pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
+        10 * (pageIndex - 1) + index + 1,
     },
     {
       title: '活动编码',
@@ -187,7 +180,7 @@ export default () => {
           )}
 
           <Button size="small" type="link" onClick={() => {
-            history.push(`/purchase-manage/promotions-create?id=${record.id}&isDetail=1`);
+            history.push(`/purchase-manage/promotions-detail?id=${record.id}`);
           }}>
             详情
           </Button>
@@ -203,11 +196,6 @@ export default () => {
         hideInSearch: true, 
         renderText: (_, __, index: number) => index + 1,
       },
-      // {
-      //   title: '商品订货编码',
-      //   dataIndex: 'productNo',
-      //   valueType: 'textarea',
-      // },
       {
         title: '商品图',
         dataIndex: 'productPic',
@@ -232,12 +220,12 @@ export default () => {
       },
       {
         title: '商品售价',
-        dataIndex: 'SalePricePart',
+        dataIndex: 'salePricePart',
         valueType: 'textarea',
       },
       {
         title: '商品划线价',
-        dataIndex: 'OriginPricePart'
+        dataIndex: 'originPricePart'
       },
       {
         title: '销售状态',
@@ -252,7 +240,6 @@ export default () => {
           },
         },
       },
-
       {
         title: '权重',
         renderText: () => 1,
@@ -289,7 +276,6 @@ export default () => {
 
   const onExpand = (expanded: any, record: any) => {
     const key = record?.id;
-    // console.log(expanded, record, 111);
     if (tableData[key]?.length) return;
     const loading = { ...loadingObj };
     loading[key] = true;
@@ -300,6 +286,11 @@ export default () => {
   return (
     <PageContainer>
       <ProTable
+        headerTitle={
+          <div>
+            <p>{`活动列表（共${total}个）`}</p>
+          </div>
+        }
         options={false}
         rowKey="id"
         expandable = {{
@@ -319,19 +310,13 @@ export default () => {
             <PlusOutlined /> 新增活动
           </Button>,
         ]}
-        request={async (filter) => {
-          console.log(filter, 555)
-          let params = {
-            ...filter,
-            pageIndex: filter.current,
-            startDate: filter.updateTime ? filter.updateTime[0] : '',
-            endDate: filter.updateTime ? filter.updateTime[1] : ''
-          };
-          const result = await getActivityManageList(params);
-          return Promise.resolve({
-            data: result.result,
-            success: true,
+        request={async (pagination) => {
+          const result = await getActivityManageList({
+            ...pagination,
           });
+          setPageIndex(pagination.current);
+          setTotal(result.total);
+          return result
         }}
         columns={columns}
         pagination={{ size: 'default', showQuickJumper: true, defaultPageSize: 10 }}

@@ -429,12 +429,12 @@ export default () => {
   const [uploadLoading, setUploadLoading] = useState<boolean>(false);
   const [files, setFiles] = useState<CourseManage.File[]>([]);
   const normFile = (e: any) => {
-    const isLt2M = e.file.size / 1024 / 1024 < 2;
+    const isLt800M = e.file.size / 1024 / 1024 < 800;
     console.log('Upload event:', e);
     if (Array.isArray(e)) {
       return e;
     }
-    if (!isLt2M) {
+    if (!isLt800M) {
       message.error('视频大小不得超过800M!');
       return []
     }
@@ -445,7 +445,7 @@ export default () => {
     accept: ".mp4",
     maxCount: 1,
     maxSize: 800,
-    action: '/antelope-manage/common/upload/record',
+    action: '/antelope-manage/common/upload',
     onRemove: (file: UploadFile<any>) => {
       if (file.status === 'uploading' || file.status === 'error') {
         setUploadLoading(false);

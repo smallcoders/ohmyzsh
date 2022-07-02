@@ -204,6 +204,13 @@ export default () => {
           <span>发票列表(共{pageInfo.totalCount || 0}个)</span>
           <Button type='primary' icon={<DownloadOutlined />} 
             onClick={exportPage}>导出</Button>
+          {/* <a
+            key="primary3"
+            className='export-btn'
+            href={`/antelope-pay/provider/download?providerName=${searchContent.providerName || ''}`}
+          >
+            导出
+          </a> */}
         </div>
       </div>
       <div className={sc('container-table-body')}>

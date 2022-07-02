@@ -7,11 +7,18 @@ import { request } from 'umi';
  * 分页查询
  * @param params
  */
- export async function getActivityManageList(data?: { [key: string]: any }) {
-  return request<LogoutVerify.ResultList>('/antelope-pay/mng/activity/pageQuery', {
-    method: 'post',
-    data,
-  });
+export async function getActivityManageList(params: {
+  current?: number;
+  pageSize?: number;
+}) {
+  return request('/antelope-pay/mng/activity/pageQuery', {
+    method: 'POST',
+    data: { ...params, pageIndex: params.current },
+  }).then((e: { code: number; totalCount: any; result: any }) => ({
+    success: e.code === 0,
+    total: e.totalCount,
+    data: e.result,
+  }));
 }
 /**
  * 新增活动查询可上架商品列表

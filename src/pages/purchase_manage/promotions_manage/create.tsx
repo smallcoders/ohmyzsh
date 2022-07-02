@@ -15,9 +15,7 @@ import {
 import moment from 'moment';
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { Link, history, Prompt } from 'umi';
-import { routeName } from '../../../../config/routes';
-
-const { Column } = Table;
+import './detail.less'
 
 interface Pic {
   id: number;
@@ -65,14 +63,17 @@ interface DataType {
 }
 
 export default () => {
-  // 是否是详情页
-  const [isDetail, setIsDetail] = useState<boolean>(false);
   const [editingItem, setEditingItem] = useState<any>({});
-  const isEditing = Boolean(editingItem.id && !isDetail);
+  const isEditing = Boolean(editingItem.id);
+
+  /**
+   * 关闭提醒 主要是 添加或者修改成功后 不需要弹出
+   */
+   const [isClosejumpTooltip, setIsClosejumpTooltip] = useState<boolean>(false);
 
   const prepare = async () => {
     try {
-      const { id, isDetail } = history.location.query as { id: string | undefined, isDetail: string | undefined };
+      const { id } = history.location.query as { id: string | undefined };
       if (id) {
         // 获取详情 塞入表单
         const detailRs = await getActivityDetail(id);
@@ -99,7 +100,7 @@ export default () => {
           setEditingItem({
             ...editItem, 
             time: [moment(editItem.startTime), moment(editItem.endTime)],
-            firstPic: [{uid: editItem.firstPic?.picId,name: 'image.png',  status: 'done',url: editItem.firstPic?.banner}],
+            firstPic: editItem.firstPic ? [{uid: editItem.firstPic?.picId,name: 'image.png',  status: 'done',url: editItem.firstPic?.banner}] : [],
             otherPic: actImgs
           });
           setFiles([
@@ -115,9 +116,7 @@ export default () => {
           message.error(`获取详情失败，原因:{${detailRs.message}}`);
         }
       }
-      if(isDetail == '1') {
-        setIsDetail(true);
-      }
+      setIsClosejumpTooltip(true);
     } catch (error) {
       console.log('error', error);
       message.error('获取初始数据失败');
@@ -175,13 +174,13 @@ export default () => {
     },
     {
       title: '商品销售价',
-      dataIndex: 'typeNames',
+      dataIndex: 'salePricePart',
       isEllipsis: true,
       width: 280,
     },
     {
       title: '商品划线价',
-      dataIndex: 'clickCount',
+      dataIndex: 'originPricePart',
       width: 100
     },
     {
@@ -228,12 +227,20 @@ export default () => {
   };
 
   const getProductPrices = async (id: string, index: number, name: string) => {
+    setIsClosejumpTooltip(false);
     setCurrentSetIndex(index); //保存当前修改商品的index
     setCurrentProductName(name); //保存当前修改商品的名称
     try {
       const res = await getProductPriceList(id);
       if (res.code === 0) {
-        setPriceDataSource(res.result);
+        // 返回的三种价格为分，处理为元
+        let arr = [...res.result];
+        arr.map( (item: any)=> {
+          item.purchasePrice = item.purchasePrice ? item.purchasePrice/100 : 0;
+          item.salePrice = item.salePrice ? item.salePrice/100 : 0;
+          item.originPrice = item.originPrice ? item.originPrice/100 : 0;
+        })
+        setPriceDataSource(arr);
       } else {
         message.error(`请求分页数据失败`);
       }
@@ -319,6 +326,11 @@ export default () => {
     }
 
     if (info.file.status === 'done') {
+      if(info?.fileList.length == 3) {
+        setUploadDisabled(true);
+      }else {
+        setUploadDisabled(false);
+      }
       const uploadResponse = info?.file?.response;
       if (uploadResponse?.code === 0 && uploadResponse.result) {
         const upLoadResult = info?.fileList.map((p) => {
@@ -346,6 +358,11 @@ export default () => {
       files_copy.splice(existIndex, 1);
       console.log(files_copy, '删除图片后的结果');
       setFiles2(files_copy);
+    }
+  };
+  const beforeUpload = () => {
+    if(files2.length == 3) {
+      message.error('活动图最多可上传3张！')
     }
   };
 
@@ -436,13 +453,12 @@ export default () => {
     },
     {
       title: '商品销售价',
-      dataIndex: 'typeNames',
-      // isEllipsis: true,
+      dataIndex: 'salePricePart',
       width: 280,
     },
     {
       title: '商品划线价',
-      dataIndex: 'clickCount',
+      dataIndex: 'originPricePart',
       width: 100
     },
     {
@@ -461,7 +477,7 @@ export default () => {
             <a
               href="#"
               onClick={() => {
-                history.push(`/purchase-manage/commodity-detail?id=${record.id}`);
+                history.push(`/purchase-manage/commodity-detail?id=${record.id || record.productId}`);
               }}
             >
               商品详情
@@ -469,7 +485,7 @@ export default () => {
             <a
               href="#"
               onClick={() => {
-                getProductPrices(record.id, index, record.productName);
+                getProductPrices(record.id || record.productId, index, record.productName);
               }}
             >
               设置价格
@@ -610,11 +626,16 @@ export default () => {
   const [currentProductName, setCurrentProductName] = useState<string>('');
   const setPriceOk = async () => {
     // 校验商品销售价是否全部填了,且三种价格都要*100
+    // 销售价格及划线价不能为负数
     console.log(priceDataSource, 'priceDataSource');
     let price = [...priceDataSource];
     for(let i=0; i<price.length;i++) {
       if(price[i].salePrice == 0 || !price[i].salePrice ) {
-        message.error('商品售价必填！');
+        message.error('商品销售价必填！');
+        return false;
+      }
+      if(price[i].salePrice*1 < 0 || (price[i].originPrice && price[i].originPrice*1<0) ) {
+        message.error('售价不能为负数！');
         return false;
       }
     }
@@ -631,9 +652,11 @@ export default () => {
     console.log(list);
     setChoosedProducts(list)
     setPriceModalVisible(false);
+    setIsClosejumpTooltip(true);
   };
   const cancelSetPrice = () => {
     setPriceModalVisible(false);
+    setIsClosejumpTooltip(true);
   };
   const EditableContext = React.createContext(null);
 
@@ -692,12 +715,6 @@ export default () => {
             margin: 0,
           }}
           name={dataIndex}
-          // rules={[
-          //   {
-          //     required: true,
-          //     message: `${title}必填.`,
-          //   },
-          // ]}
         >
           <Input ref={inputRef} onPressEnter={save} onBlur={save} />
         </Form.Item>
@@ -721,7 +738,7 @@ export default () => {
     {
       title: '规格名',
       dataIndex: 'specsTitle',
-      width: '30%',
+      width: '20%',
     },
     {
       title: '规格值',
@@ -884,45 +901,37 @@ export default () => {
     <PageContainer 
       title={false}
       header={{
-        title: isEditing ? `活动编辑` : isDetail ? '活动详情' : '活动新增',
+        title: isEditing ? `活动编辑` : '活动新增',
         breadcrumb: (
           <Breadcrumb>
             <Breadcrumb.Item>
               <Link to="/purchase-manage/promotions-manage">活动管理 </Link>
             </Breadcrumb.Item>
             <Breadcrumb.Item>
-              {isEditing ? `活动编辑` : isDetail ? '活动详情' : '活动新增'}
+              {isEditing ? `活动编辑` : '活动新增'}
             </Breadcrumb.Item>
           </Breadcrumb>
         ),
       }}
     >
+      <Prompt
+        when={isClosejumpTooltip}
+        message={'离开当前页后，所编辑的数据将不可恢复'}
+      />
       <h1>活动基础信息</h1>
       <Form labelCol={{ span: 4 }}  form={form}>
-        <Form.Item label="活动编码" name="actNo" rules={[{ required: !isDetail }]}>
-          {isDetail ? (
-            <span>{editingItem?.actNo || '--'}</span>
-          ) : (
-            <Input placeholder="请输入" maxLength={30} />
-          )}
+        <Form.Item label="活动编码" name="actNo" rules={[{ required: true }]}>
+          <Input placeholder="请输入" maxLength={30} />
         </Form.Item>
-        <Form.Item label="活动名称" name="name" rules={[{ required: !isDetail }]}>
-          {isDetail ? (
-            <span>{editingItem?.name || '--'}</span>
-          ) : (
-            <Input placeholder="请输入" maxLength={8}/>
-          )}
+        <Form.Item label="活动名称" name="name" rules={[{ required: true }]}>
+          <Input placeholder="请输入" maxLength={8}/>
         </Form.Item>
-        <Form.Item label="活动开始时间" name="time" rules={[{ required: !isDetail }]}>
-          {isDetail ? (
-            <span>{editingItem?.startTime + '~' + editingItem?.endTime || '--'}</span>
-          ) : (
-            <DatePicker.RangePicker
-              // format="YYYY-MM-DD HH:mm:ss"
-              showTime
-              allowClear
-            />
-          )}
+        <Form.Item label="活动开始时间" name="time" rules={[{ required: true }]}>
+          <DatePicker.RangePicker
+            // format="YYYY-MM-DD HH:mm:ss"
+            showTime
+            allowClear
+          />
         </Form.Item>
         <Form.Item label="活动权重" name="sortNo" 
           rules={[{
@@ -940,40 +949,28 @@ export default () => {
             },
           }]}
         >
-          {isDetail ? (
-            <span>{editingItem?.sortNo || '--'}</span>
-          ) : (
-            <Input placeholder="请输入1~100的整数，数字越大排名越靠前" type="number" />
-          )}
+          <Input placeholder="请输入1~100的整数，数字越大排名越靠前" type="number" />
         </Form.Item>
-        <Form.Item label="活动促销词" name="actSpreadWord" rules={[{ required: !isDetail }]}>
-          {isDetail ? (
-            <span>{editingItem?.actSpreadWord || '--'}</span>
-          ) : (
-           <Input placeholder="请输入" maxLength={30} />
-          )}
+        <Form.Item label="活动促销词" name="actSpreadWord" rules={[{ required: true }]}>
+          <Input placeholder="请输入" maxLength={30} />
         </Form.Item>
         <Form.Item
           label="首页采购图"
           name="firstPic"
           valuePropName="fileList"
           getValueFromEvent={normFile}
-          extra={`${!isDetail ? '图片格式仅支持JPG、PNG、JPEG,建议尺寸XXXX*XXXX，大小在5M以下' : ''}`}
-        >
-          {isDetail ? (
-            <Image height={200} width={300} src={editingItem.firstPic?.banner} />
-          ) : (
-            <Upload 
-              maxCount={1} 
-              listType="picture-card"
-              action='/antelope-manage/common/upload/record'
-              onChange={handleChange}
-              onRemove={onRemove}
-              accept=".bmp,.gif,.png,.jpeg,.jpg"
-            >
-              {uploadButton}
-            </Upload>
-          )}
+          extra={`${'图片格式仅支持JPG、PNG、JPEG,建议尺寸XXXX*XXXX，大小在5M以下'}`}
+        > 
+          <Upload 
+            maxCount={1} 
+            listType="picture-card"
+            action='/antelope-manage/common/upload/record'
+            onChange={handleChange}
+            onRemove={onRemove}
+            accept=".bmp,.gif,.png,.jpeg,.jpg"
+          >
+            {uploadButton}
+          </Upload>
         </Form.Item>
 
         <Form.Item
@@ -981,47 +978,33 @@ export default () => {
           name="otherPic"
           valuePropName="fileList"
           getValueFromEvent={normFile}
-          extra={`${!isDetail ? '图片格式仅支持JPG、PNG、JPEG,建议尺寸XXXX*XXXX，大小在5M以下，支持3张图片' : ''}`}
-          rules={[{ required: !isDetail }]}
+          extra={'图片格式仅支持JPG、PNG、JPEG,建议尺寸XXXX*XXXX，大小在5M以下，支持3张图片'}
+          rules={[{ required: true }]}
         >
-          {isDetail ? (
-            <Image.PreviewGroup>
-              {editingItem?.otherPic &&
-                editingItem?.otherPic.map((p: any) => (
-                  <Image key={p?.picId} height={200} width={300} src={p?.banner} />
-                ))}
-            </Image.PreviewGroup>
-          ) : (
-            <Upload 
-              maxCount={3} 
-              listType="picture-card"
-              action='/antelope-manage/common/upload/record'
-              onChange={handleChange2}
-              onRemove={onRemove2}
-              accept=".bmp,.gif,.png,.jpeg,.jpg"
-            >
-              {uploadButton}
-            </Upload>
-          )}
+          <Upload 
+            maxCount={3}
+            listType="picture-card"
+            action='/antelope-manage/common/upload/record'
+            onChange={handleChange2}
+            onRemove={onRemove2}
+            beforeUpload={beforeUpload}
+            accept=".bmp,.gif,.png,.jpeg,.jpg"
+          >
+            {uploadButton}
+          </Upload>
         </Form.Item>
         <Form.Item label="活动说明" name="content">
-          {isDetail ? (
-            <span>{editingItem?.content || '--'}</span>
-          ) : (
-            <Input.TextArea placeholder="请输入" />
-          )}
+          <Input.TextArea placeholder="请输入" />
         </Form.Item>
       </Form>
       <h1>活动商品</h1>
-      {!isDetail && (
-        <Button 
-          type='primary' 
-          onClick={() => {
-            setModalVisible(true);
-          }}>
-          选择商品
-        </Button>
-      )}
+      <Button 
+        type='primary' 
+        onClick={() => {
+          setModalVisible(true);
+        }}>
+        选择商品
+      </Button>
       <div className={'container-table-body'} style={{marginTop: 10}}>
         <SelfTable
           bordered
@@ -1032,15 +1015,13 @@ export default () => {
           pagination={false}
         />
       </div>
-      <Space style={{marginTop: 10}}>
-        {!isDetail && (
-          <>
-            <Button type="primary" loading={addOrUpdateLoading} onClick={() => {addOrUpdate(0)}}>上架</Button>
-            <Button loading={addOrUpdateLoading} onClick={() => {addOrUpdate(2)}}>暂存</Button>
-          </>
-        )}
-        <Button loading={addOrUpdateLoading} onClick={() => {history.push(`/purchase-manage/promotions-manage`);}}>返回</Button>
-      </Space>
+      <div className='operation-footer'>
+        <Space>
+          <Button type="primary" loading={addOrUpdateLoading} onClick={() => {addOrUpdate(0)}}>上架</Button>
+          <Button loading={addOrUpdateLoading} onClick={() => {addOrUpdate(2)}}>暂存</Button>
+          <Button loading={addOrUpdateLoading} onClick={() => {history.push(`/purchase-manage/promotions-manage`);}}>返回</Button>
+        </Space>
+      </div>
       {useModal()}
       {setPriceModal()}
     </PageContainer>
