@@ -430,7 +430,7 @@ export default () => {
   const [files, setFiles] = useState<CourseManage.File[]>([]);
   const normFile = (e: any) => {
     const lastName = e.file.name.split('.');
-    if (lastName != 'mp4') {
+    if (lastName[lastName.length - 1] != 'mp4') {
       message.error(`请上传以mp4后缀名开头的文件`);
       return [];
     }
