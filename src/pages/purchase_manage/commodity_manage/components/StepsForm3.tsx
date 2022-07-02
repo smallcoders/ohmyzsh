@@ -1,19 +1,20 @@
+import { addParam, deleteParam, queryParam } from '@/services/commodity';
+import type DataCommodity from '@/types/data-commodity';
 import { ProFormText, ProFormTextArea } from '@ant-design/pro-form';
 import type { ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { Button, Form, Modal } from 'antd';
-import { useCallback, useState } from 'react';
+import { Button, Form, message, Modal, Space } from 'antd';
+import { useCallback, useEffect, useState } from 'react';
 import type { StepFormProps } from '../create';
 
-export interface ParameterData {
-  id: number;
-  name: string;
-  content: string;
-}
-
+type ParameterData = Omit<
+  DataCommodity.ParamInfo,
+  'productId' | 'state' | 'createTime' | 'updateTime'
+>;
 export default (props: StepFormProps) => {
-  const [data, setData] = useState<ParameterData[]>([{ id: 1, name: '内存', content: 'asdasda' }]);
-  const [editId, setEditId] = useState<number>();
+  const { id, currentChange } = props;
+  const [params, setParams] = useState<ParameterData[]>([]);
+  const [editRecord, setEditRecord] = useState<ParameterData>();
   const [addModalShow, setAddModalShow] = useState(false);
 
   const [form] = Form.useForm<{ name: string; content: string }>();
@@ -25,53 +26,55 @@ export default (props: StepFormProps) => {
   const editHandle = useCallback(
     (record: ParameterData) => {
       form.setFieldsValue({ name: record.name, content: record.content });
-      setEditId(record.id);
+      setEditRecord(record);
       setAddModalShow(true);
     },
     [form],
   );
 
-  const delHandle = useCallback((record: { id: number }) => {
-    setData((_data) => _data.filter((v) => v.id !== record.id));
-  }, []);
+  const delHandle = useCallback(
+    async (record: ParameterData) => {
+      const res = await deleteParam({ productId: id, ids: [record.id] });
+      if (!res.code) {
+        setParams((oldVal) => oldVal.filter((item) => item.id !== record.id));
+      }
+    },
+    [id],
+  );
 
   const modalCandel = useCallback(() => {
     form.resetFields();
     setAddModalShow(false);
-    setEditId(undefined);
+    setEditRecord(undefined);
   }, [form]);
 
-  const modalConfirm = useCallback(() => {
+  const modalConfirm = useCallback(async () => {
     const val = form.getFieldsValue();
-    setData((_data) => {
-      if (editId) {
-        return _data.map((item) =>
-          item.id === editId
-            ? {
-                ...item,
-                name: val.name,
-                content: val.content,
-              }
-            : item,
-        );
-      }
-      return [
-        ..._data,
-        {
-          id: _data.length + 1,
-          name: val.name,
-          content: val.content,
-        },
-      ];
-    });
+    let data: { productId?: number | string; id?: number; name: string; content: string };
+    if (editRecord) {
+      data = { productId: id, id: editRecord.id, ...val };
+    } else {
+      data = { productId: id, ...val };
+    }
+    const res = await addParam(data);
+
+    if (editRecord) {
+      setParams((oldVal) =>
+        oldVal.map((item) => {
+          return item.id === editRecord.id ? { ...data, id: res.result } : item;
+        }),
+      );
+    } else {
+      setParams((oldVal) => [...oldVal, { ...data, id: res.result }]);
+    }
     modalCandel();
-  }, [form, editId, modalCandel]);
+  }, [form, id, editRecord, modalCandel]);
 
   const columns: ProColumns<ParameterData>[] = [
     {
       title: '序号',
       dataIndex: 'id',
-      valueType: 'text',
+      render: (_, __, i) => i + 1,
     },
 
     {
@@ -102,29 +105,43 @@ export default (props: StepFormProps) => {
   ];
 
   const onFinish = useCallback(async () => {
-    props.currentChange(1);
-  }, [props]);
+    if (params.length === 0) {
+      message.error('至少需要一条参数！');
+      return;
+    }
+    currentChange(1);
+  }, [currentChange, params]);
+
+  useEffect(() => {
+    if (id) {
+      queryParam(id).then((res) => {
+        setParams(res.result);
+      });
+    }
+  }, [id]);
   return (
     <div>
       <ProTable
         style={{ marginBottom: 20 }}
-        rowKey="name"
+        rowKey="id"
         options={false}
         search={false}
         pagination={false}
-        dataSource={data}
+        dataSource={params}
         columns={columns}
         toolBarRender={() => [
-          <Button disabled={data.length >= 20} type="primary" key="primary" onClick={addHandle}>
+          <Button disabled={params.length >= 30} type="primary" key="primary" onClick={addHandle}>
             新增参数
           </Button>,
         ]}
       />
       <div className="form-footer">
-        <Button onClick={() => props.currentChange(-1)}>上一步</Button>
-        <Button type="primary" onClick={onFinish}>
-          下一步
-        </Button>
+        <Space>
+          <Button onClick={() => props.currentChange(-1)}>上一步</Button>
+          <Button type="primary" onClick={onFinish}>
+            下一步
+          </Button>
+        </Space>
       </div>
       <Modal
         visible={addModalShow}
@@ -134,12 +151,37 @@ export default (props: StepFormProps) => {
         onCancel={modalCandel}
       >
         <Form form={form} labelCol={{ span: 4 }} onFinish={modalConfirm}>
-          <ProFormText name="name" label="名称" placeholder="请输入" rules={[{ required: true }]} />
+          <ProFormText
+            name="name"
+            label="名称"
+            placeholder="请输入"
+            rules={[
+              { required: true },
+              () => ({
+                validator(_, value) {
+                  if (value.length > 20) {
+                    return Promise.reject(new Error('名称不可超过20个字符'));
+                  }
+                  return Promise.resolve();
+                },
+              }),
+            ]}
+          />
           <ProFormTextArea
             name="content"
             label="内容"
             placeholder="请输入"
-            rules={[{ required: true }]}
+            rules={[
+              { required: true },
+              () => ({
+                validator(_, value) {
+                  if (value.length > 200) {
+                    return Promise.reject(new Error('内容不可超过200个字符'));
+                  }
+                  return Promise.resolve();
+                },
+              }),
+            ]}
           />
         </Form>
       </Modal>

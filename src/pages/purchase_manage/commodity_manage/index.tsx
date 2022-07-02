@@ -5,12 +5,13 @@ import { PageContainer } from '@ant-design/pro-layout';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import { Button } from 'antd';
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
 export default () => {
   const history = useHistory();
   const actionRef = useRef<ActionType>();
+  const [total, setTotal] = useState(0);
   const paginationRef = useRef<{ current?: number; pageSize?: number }>({
     current: 0,
     pageSize: 0,
@@ -27,9 +28,12 @@ export default () => {
     [history],
   );
 
-  const goDetail = useCallback(() => {
-    history.push('/purchase-manage/commodity-detail');
-  }, [history]);
+  const goDetail = useCallback(
+    (record: { id: number }) => {
+      history.push(`/purchase-manage/commodity-detail?id=${record.id}`);
+    },
+    [history],
+  );
 
   const columns: ProColumns<DataCommodity.Commodity>[] = [
     {
@@ -100,7 +104,7 @@ export default () => {
     {
       title: '最新操作时间',
       dataIndex: 'updateTime',
-      valueType: 'textarea',
+      valueType: 'dateTime',
       hideInSearch: true,
     },
     {
@@ -116,7 +120,7 @@ export default () => {
       width: 200,
       render: (_, record) => (
         <>
-          <Button size="small" type="link" onClick={goDetail}>
+          <Button size="small" type="link" onClick={() => goDetail(record)}>
             详情
           </Button>
 
@@ -142,13 +146,21 @@ export default () => {
         }}
         actionRef={actionRef}
         toolBarRender={() => [
+          <div>商品列表（共{total}个）</div>,
           <Button type="primary" key="primary" onClick={goCreate}>
             <PlusOutlined /> 新增商品
           </Button>,
         ]}
         request={async (pagination) => {
-          const result = await pageQuery(pagination);
+          const timer = pagination.updateTime
+            ? {
+                timeStart: pagination.updateTime[0],
+                timeEnd: pagination.updateTime[1],
+              }
+            : {};
+          const result = await pageQuery({ ...pagination, ...timer });
           paginationRef.current = pagination;
+          setTotal(result.totalCount);
           return { total: result.totalCount, success: true, data: result.result };
         }}
         columns={columns}

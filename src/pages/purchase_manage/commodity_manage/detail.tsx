@@ -1,107 +1,130 @@
+import useQuery from '@/hooks/useQuery';
+import { queryProductDetail } from '@/services/commodity';
+import type DataCommodity from '@/types/data-commodity';
 import ProCard from '@ant-design/pro-card';
 import { PageContainer } from '@ant-design/pro-layout';
-import { Anchor, Button, Form, Image, Space, Table } from 'antd';
-import { useEffect, useState } from 'react';
-
+import { Anchor, Button, Form, Image, Space, Table, Tag } from 'antd';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useHistory } from 'umi';
 const { Column } = Table;
 const { Link } = Anchor;
 export default () => {
-  const [targetOffset, setTargetOffset] = useState<number | undefined>(undefined);
-  const baseInfo = {
-    name: '科大讯飞录音笔白色32G内存',
-    type: 'A3421',
-    label: '正品保障',
-    label2: '满200减10',
-    unit: '台',
-    thumbnail:
-      'https://qxbfile.iflytek.com:7000/group1/M00/10/EF/CgAZoWKzv3yANOX7AAFPQaPC-hg291.jpg',
-    thumbnails: [
-      'https://qxbfile.iflytek.com:7000/group1/M00/10/EF/CgAZoWKzv3yANOX7AAFPQaPC-hg291.jpg',
-      'https://qxbfile.iflytek.com:7000/group1/M00/10/C8/CgAZoWKv0SqAEPooAAHq8sJxOJ8648.png',
-      'https://qxbfile.iflytek.com:7000/group1/M00/10/D9/CgAZoWKxMR-AOZ-zAACjGLQu1cI494.jpg',
-    ],
-    supplier: '供应商',
-  };
+  const history = useHistory();
+  const query = useQuery();
+  const [loading, setLoading] = useState(true);
+  const [commodity, setCommodity] = useState<{
+    payProduct: DataCommodity.ProductInfo;
+    payProductSpecsList: DataCommodity.SpecInfo[];
+    payProductSpecsPriceList: DataCommodity.PriceInfo[];
+    payProductParamList: DataCommodity.ParamInfo[];
+  }>();
 
-  const specs = [
-    { name: '内存', value: '8G、16G' },
-    { name: '颜色', value: '白、黑' },
-    { name: '硬盘', value: '256G、512G' },
-  ];
+  const init = useCallback(async () => {
+    const commodityRes = await queryProductDetail(query.id).finally(() => setLoading(false));
+    setLoading(false);
+    if (!commodityRes.code) {
+      setCommodity(commodityRes.result);
+    }
+  }, [query]);
 
-  const price = [
-    { spec1: '8G', spec2: '256G', code: '123', purchasePrice: '100.00', sellingPrice: '200.00' },
-    { spec1: '8G', spec2: '512G', code: '124', purchasePrice: '200.00', sellingPrice: '300.00' },
-    { spec1: '16G', spec2: '256G', code: '125', purchasePrice: '300.00', sellingPrice: '400.00' },
-    { spec1: '16G', spec2: '512G', code: '126', purchasePrice: '400.00', sellingPrice: '500.00' },
-  ];
+  const price = useMemo(() => {
+    return commodity?.payProductSpecsPriceList.map((item) => {
+      const specs = item.specs.split(',').filter((v) => v.trim());
+      const specsData: Record<string, string> = {};
+      specs.forEach((spec, index) => {
+        specsData[`specs${index}`] = spec;
+      });
 
-  const parameters = [
-    { name: '品牌', content: '西门子/SIEMENS' },
-    { name: '颜色', content: '白、黑' },
-    { name: '硬盘', content: '256G、512G' },
-  ];
+      if (specs.length === 0) {
+        specsData.specs0 = '/';
+      }
+      return {
+        ...item,
+        ...specsData,
+      };
+    });
+  }, [commodity]);
 
-  const details = {
-    content: 'asdas',
-    parameter: 'asdas',
-    detail: 'asdas',
-    application: 'asdas',
-  };
+  const specsTitle = useMemo(() => {
+    const titles = (commodity?.payProductSpecsPriceList[0]?.specsTitle || '')
+      .split(',')
+      .filter((item) => item.trim());
 
-  useEffect(() => {
-    setTargetOffset(window.innerHeight / 2);
+    if (titles?.length) {
+      return titles.map((item, index) => {
+        return <Column title={`规格(${item})`} dataIndex={`specs${index}`} key={item} />;
+      });
+    }
+
+    return <Column title="规格(无)" dataIndex="specs0" />;
+  }, [commodity]);
+
+  const renderHtml = useCallback((html) => {
+    return {
+      __html: html,
+    };
   }, []);
 
+  useEffect(() => {
+    init();
+  }, [init]);
+
   return (
-    <PageContainer title={false}>
+    <PageContainer loading={loading} title={false}>
       <ProCard gutter={8} ghost>
         <ProCard direction="column" ghost gutter={[0, 8]}>
           <ProCard>
             <h2 id="anchor-base-info">商品基础信息</h2>
             <Form labelCol={{ span: 4 }}>
-              <Form.Item label="商品名称">{baseInfo.name}</Form.Item>
-              <Form.Item label="商品型号">{baseInfo.type}</Form.Item>
-              <Form.Item label="商品促销标签">{baseInfo.label}</Form.Item>
-              <Form.Item label="服务标签">{baseInfo.label2}</Form.Item>
-              <Form.Item label="商品单位">{baseInfo.unit}</Form.Item>
+              <Form.Item label="商品名称">{commodity?.payProduct.productName}</Form.Item>
+              <Form.Item label="商品型号">{commodity?.payProduct.productModel}</Form.Item>
+              <Form.Item label="商品促销标签">
+                {commodity?.payProduct.saleContent?.map((item) => {
+                  return <Tag key={item.id}>{item.label}</Tag>;
+                })}
+              </Form.Item>
+              <Form.Item label="服务标签">
+                {commodity?.payProduct.serverContent?.map((item) => {
+                  return <Tag key={item.id}>{item.label}</Tag>;
+                })}
+              </Form.Item>
+              <Form.Item label="商品单位">{commodity?.payProduct.productOrg}</Form.Item>
               <Form.Item label="商品封面图">
-                <Image width={100} src={baseInfo.thumbnail} />
+                <Image width={100} src={commodity?.payProduct.productPic} />
               </Form.Item>
               <Form.Item label="商品轮播图">
                 <Image.PreviewGroup>
                   <Space>
-                    {baseInfo.thumbnails.map((url) => {
-                      return <Image width={100} src={url} />;
+                    {commodity?.payProduct.banner?.split(',').map((url) => {
+                      return <Image width={100} src={url} key={url} />;
                     })}
                   </Space>
                 </Image.PreviewGroup>
               </Form.Item>
-              <Form.Item label="供应商">{baseInfo.supplier}</Form.Item>
+              <Form.Item label="供应商">{commodity?.payProduct?.supplierName}</Form.Item>
             </Form>
           </ProCard>
           <ProCard>
             <h2 id="anchor-specs">商品基础信息</h2>
-            <Table dataSource={specs} pagination={false}>
+            <Table rowKey="id" dataSource={commodity?.payProductSpecsList} pagination={false}>
               <Column title="序号" render={(_, __, i) => i + 1} />
-              <Column title="规格名" dataIndex="name" />
-              <Column title="规格值" dataIndex="value" />
+              <Column title="规格名" dataIndex="specsName" />
+              <Column title="规格值" dataIndex="specsValue" />
             </Table>
           </ProCard>
           <ProCard>
             <h2 id="anchor-price">商品价格信息</h2>
             <Table dataSource={price} pagination={false}>
               <Column title="序号" render={(_, __, i) => i + 1} />
-              <Column title="规格（内存" dataIndex="spec1" />
-              <Column title="规格（硬盘）" dataIndex="spec2" />
-              <Column title="订货编码" dataIndex="code" />
-              <Column title="商品采购价格（元）" dataIndex="purchasePrice" />
-              <Column title="商品销售价格（元）" dataIndex="sellingPrice" />
+              {specsTitle}
+              <Column title="订货编码" dataIndex="productNo" />
+              <Column title="商品采购价格（元）" dataIndex="purchasePrice"  render={(_, __) => _/100}/>
+              <Column title="商品销售价格（元）" dataIndex="salePrice"   render={(_, __) => _/100}/>
             </Table>
           </ProCard>
           <ProCard>
             <h2 id="anchor-parameters">商品参数信息</h2>
-            <Table dataSource={parameters} pagination={false}>
+            <Table rowKey="id" dataSource={commodity?.payProductParamList} pagination={false}>
               <Column title="序号" render={(_, __, i) => i + 1} />
               <Column title="名称" dataIndex="name" />
               <Column title="内容" dataIndex="content" />
@@ -110,15 +133,23 @@ export default () => {
           <ProCard>
             <h2 id="anchor-details">商品详情</h2>
             <Form layout="vertical" labelCol={{ span: 4 }}>
-              <Form.Item label="商品介绍">{details.content}</Form.Item>
-              <Form.Item label="商品参数">{details.parameter}</Form.Item>
-              <Form.Item label="商品细节">{details.detail}</Form.Item>
-              <Form.Item label="商品应用">{details.application}</Form.Item>
+              <Form.Item label="商品介绍">
+                <div dangerouslySetInnerHTML={renderHtml(commodity?.payProduct.productContent)} />
+              </Form.Item>
+              <Form.Item label="商品参数">
+                <div dangerouslySetInnerHTML={renderHtml(commodity?.payProduct.productArgs)} />
+              </Form.Item>
+              <Form.Item label="商品细节">
+                <div dangerouslySetInnerHTML={renderHtml(commodity?.payProduct.productDetail)} />
+              </Form.Item>
+              <Form.Item label="商品应用">
+                <div dangerouslySetInnerHTML={renderHtml(commodity?.payProduct.productApp)} />
+              </Form.Item>
             </Form>
           </ProCard>
 
-          <ProCard>
-            <Button>返回</Button>
+          <ProCard layout="center">
+            <Button onClick={() => history.goBack()}>返回</Button>
           </ProCard>
         </ProCard>
         <ProCard colSpan="200px" />

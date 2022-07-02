@@ -63,8 +63,19 @@
   WONDERFUL_VIDEO_MANAGEMENT_INDEX: '/live-management/wonderful-video-management/index', // 精彩视频管理
   WONDERFUL_VIDEO_MANAGEMENT_DETAIL: '/live-management/wonderful-video-management/detail', // 视频详情
 
-  SEARCH_RECORD_MANAGEMENT: '/live-management/search-record-management', //直播类型管理
-  ANTELOPE_LIVE_INTENTION_COLLECT: '/live-management/intention-collect', // 直播意向采集
+  SEARCH_RECORD_MANAGEMENT: '/live-management/search-record-management',//直播类型管理
+  ANTELOPE_LIVE_INTENTION_COLLECT: '/live-management/intention-collect',// 直播意向采集
+
+  BILL_MANAGEMENT: '/purchase-manage/bill-management', // 发票管理
+  SERVICE_TAGS_MANAGE: '/purchase-manage/service-tags-manage', // 服务标签管理
+  SALES_TAGS_MANAGE: '/purchase-manage/sales-tags-manage', // 促销标签管理
+  PROVIDERS_MANAGE: '/purchase-manage/providers-manage', // 服务商管理
+  PROVIDERS_MANAGE_ADD: '/purchase-manage/providers-manage/add-provider', // 新增供应商
+  PROVIDER_TYPES: '/purchase-manage/provider-types', // 供应商类型
+  SALES_STATISTICS: '/purchase-manage/sales-statistics', // 商品数据统计
+  SALES_STATISTICS_DETAIL: '/purchase-manage/sales-statistics/detail', // 活动数据-活动详情
+
+
 };
 
 export default [
@@ -288,7 +299,7 @@ export default [
     routes: [
       {
         path: '/purchase-manage',
-        redirect: '/purchase-manage/data-display',
+        redirect: '/purchase-manage/commodity-manage',
       },
       {
         path: '/purchase-manage/commodity-manage',
@@ -311,6 +322,53 @@ export default [
         path: '/purchase-manage/promotions-manage',
         name: '活动管理',
         component: './purchase_manage/promotions_manage',
+      },
+      {
+        path: '/purchase-manage/order-manage',
+        name: '订单管理',
+        component: './purchase_manage/order_manage',
+      },
+      {
+        path: routeName.BILL_MANAGEMENT,
+        name: '发票管理',
+        component: './purchase_manage/bill_manage',
+      },
+      {
+        path: routeName.SERVICE_TAGS_MANAGE,
+        name: '服务标签管理',
+        component: './purchase_manage/service_tags_manage',
+      },
+      {
+        path: routeName.SALES_TAGS_MANAGE,
+        name: '促销标签管理',
+        component: './purchase_manage/sales_tags_manage',
+      },
+      {
+        path: routeName.PROVIDERS_MANAGE,
+        name: '供应商管理',
+        component: './purchase_manage/providers_manage',
+      },
+      {
+        path: routeName.PROVIDERS_MANAGE_ADD,
+        name: '新增供应商',
+        hideInMenu: true,
+        component: './purchase_manage/add_provider',
+      },
+      {
+        path: routeName.PROVIDER_TYPES,
+        name: '供应商类型',
+        component: './purchase_manage/provider_types',
+      },
+      {
+        path: routeName.SALES_STATISTICS,
+        name: '销售数据统计',
+        component: './purchase_manage/sales_statistics',
+      },
+      {
+        path: routeName.SALES_STATISTICS_DETAIL,
+        name: '活动详情',
+        hideInMenu: true,
+        component: './purchase_manage/sales_statistics/detail',
       },
       {
         path: '/purchase-manage/promotions-create',
@@ -506,28 +564,28 @@ export default [
           },
         ],
       },
-      // {
-      //   path: routeName.ENTERPRISE_ADMIN_VERIFY,
-      //   name: '企业管理员审核',
-      //   hideChildrenInMenu: true,
-      //   routes: [
-      //     {
-      //       path: routeName.ENTERPRISE_ADMIN_VERIFY,
-      //       redirect: routeName.ENTERPRISE_ADMIN_VERIFY_INDEX,
-      //     },
-      //     {
-      //       path: routeName.ENTERPRISE_ADMIN_VERIFY_INDEX,
-      //       name: '企业管理员审核',
-      //       hideInBreadcrumb: true,
-      //       component: './verify_agency/enterprise_admin_verify',
-      //     },
-      //     {
-      //       path: routeName.ENTERPRISE_ADMIN_VERIFY_DETAIL,
-      //       name: '企业管理员审核详情',
-      //       component: './verify_agency/enterprise_admin_verify/components/detail',
-      //     },
-      //   ],
-      // }
+      {
+        path: routeName.ENTERPRISE_ADMIN_VERIFY,
+        name: '企业管理员审核',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.ENTERPRISE_ADMIN_VERIFY,
+            redirect: routeName.ENTERPRISE_ADMIN_VERIFY_INDEX,
+          },
+          {
+            path: routeName.ENTERPRISE_ADMIN_VERIFY_INDEX,
+            name: '企业管理员审核',
+            hideInBreadcrumb: true,
+            component: './verify_agency/enterprise_admin_verify',
+          },
+          {
+            path: routeName.ENTERPRISE_ADMIN_VERIFY_DETAIL,
+            name: '企业管理员审核详情',
+            component: './verify_agency/enterprise_admin_verify/components/detail',
+          },
+        ],
+      }
     ],
   },
   {

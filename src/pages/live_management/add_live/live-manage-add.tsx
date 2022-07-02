@@ -50,6 +50,9 @@ export default () => {
    */
   const [editingItem, setEditingItem] = useState<AppResource.Content>({});
 
+  // 编辑直播中/已结束状态的直播,只能编辑字段“官方收录、拓展功能”
+  const [disabledFlag, setDisabledFlag] = useState<boolean>(false);
+
   /**
    * 详情记录
    */
@@ -178,6 +181,10 @@ export default () => {
             liveFunctions.push('share');
           }
           setEditingItem({...editItem, liveFunctions, extended, time: [moment(editItem.startTime), moment(editItem.endTime)]});
+          // 直播中/已结束状态的直播,只能编辑字段“官方收录、拓展功能”
+          if(editItem.videoStatus == 1 || editItem.videoStatus == 2) {
+            setDisabledFlag(true);
+          }
         } else {
           message.error(`获取详情失败，原因:${detailRs.message}`);
         }
@@ -349,7 +356,7 @@ export default () => {
               {isDetail ? (
                 <span>{editingItem?.title || '--'}</span>
               ) : (
-                <Input placeholder="请输入" maxLength={35} />
+                <Input placeholder="请输入" maxLength={35} disabled={disabledFlag} />
               )}
               
             </Form.Item>
@@ -374,7 +381,7 @@ export default () => {
         <Row>
           <Col span={6} offset={3}>
             <Form.Item
-                name="shareImageId"
+                name="coverImageId"
                 label="直播卡片封面"
                 // extra={`${!isDetail ? '图片建议大小为 800像素 * 800像素。图片大小不超过 300KB。图片内容遵循平台规范后更容易被推荐。' : ''}`}
                 rules={[
@@ -389,6 +396,7 @@ export default () => {
                 ) : (
                   <UploadForm
                   listType="picture-card"
+                  disabled={disabledFlag}
                   className="avatar-uploader"
                   showUploadList={false}
                   maxSize={0.3}
@@ -402,7 +410,7 @@ export default () => {
           </Col>
           <Col span={6}>
             <Form.Item
-                name="backgroundImageId"
+                name="shareImageId"
                 label="分享卡片封面"
                 // extra={`${!isDetail ? '用户在微信对话框内分享的直播间将以分享卡片的形式呈现。建议尺寸：800像素 * 640像素，图片大小不得超过1M' : ''}`}
                 rules={[
@@ -417,6 +425,7 @@ export default () => {
                 ) : (
                   <UploadForm
                   listType="picture-card"
+                  disabled={disabledFlag}
                   className="avatar-uploader"
                   showUploadList={false}
                   tooltip={
@@ -430,7 +439,7 @@ export default () => {
           </Col>
           <Col span={6}>
             <Form.Item
-                name="coverImageId"
+                name="backgroundImageId"
                 label="直播间背景墙"
                 // extra={`${!isDetail ? '直播间背景墙是每个直播间的默认背景。建议尺寸：600像素 * 1300像素，图片大小不得超过 3M。' : ''}`}
                 rules={[
@@ -445,6 +454,7 @@ export default () => {
                 ) : (
                   <UploadForm
                   listType="picture-card"
+                  disabled={disabledFlag}
                   className="avatar-uploader"
                   showUploadList={false}
                   maxSize={3}
@@ -469,29 +479,33 @@ export default () => {
                 },
                 {
                   validator(rule, value) {
-                    const current = (new Date()).getTime();
-                    const start = (new Date(value[0])).getTime();
-                    const end = (new Date(value[1])).getTime();
-                    if(start - current < 600000) {
-                      return Promise.reject('开播时间需要在当前时间的10分钟后')
+                    if(!disabledFlag) {
+                      const current = (new Date()).getTime();
+                      const start = (new Date(value[0])).getTime();
+                      const end = (new Date(value[1])).getTime();
+                      if(start - current < 600000) {
+                        return Promise.reject('开播时间需要在当前时间的10分钟后')
+                      }
+                      if(start - current > 6*30*24*60*60*1000) {
+                        return Promise.reject('开始时间不能在6个月后')
+                      }
+                      if(end - start > 24*60*60*1000) {
+                        return Promise.reject('开播时间和结束时间间隔不得超过24小时')
+                      }
+                      if(end - start < 30*60*1000) {
+                        return Promise.reject('开播时间和结束时间间隔不得短于30分钟')
+                      }
+                      return Promise.resolve();
+                    }else {
+                      return Promise.resolve();
                     }
-                    if(start - current > 6*30*24*60*60*1000) {
-                      return Promise.reject('开始时间不能在6个月后')
-                    }
-                    if(end - start > 24*60*60*1000) {
-                      return Promise.reject('开播时间和结束时间间隔不得超过24小时')
-                    }
-                    if(end - start < 30*60*1000) {
-                      return Promise.reject('开播时间和结束时间间隔不得短于30分钟')
-                    }
-                    return Promise.resolve();
                   },
                 },
               ]}>
               {isDetail ? (
                 <span>开始：{editingItem?.startTime || '--'}<br></br> 结束：{editingItem?.endTime || '--'}</span>
               ) : (
-                <RangePicker 
+                <RangePicker disabled={disabledFlag}
                   allowClear 
                   showTime
                 />
@@ -514,7 +528,7 @@ export default () => {
               {isDetail ? (
                 <span>{editingItem?.speakerName || '--'}</span>
               ) : (
-                <Input placeholder="请输入" maxLength={15} />
+                <Input placeholder="请输入" maxLength={15} disabled={disabledFlag} />
               )}
             </Form.Item>
             <Form.Item
@@ -530,7 +544,7 @@ export default () => {
               {isDetail ? (
                 <span>{editingItem?.anchorWechat || '--'}</span>
               ) : (
-                <Input placeholder="请输入" maxLength={35} />
+                <Input placeholder="请输入" maxLength={35} disabled={disabledFlag} />
               )}
             </Form.Item>
             <Form.Item
@@ -540,7 +554,7 @@ export default () => {
               {isDetail ? (
                 <span>{editingItem?.createrWechat || '--'}</span>
               ) : (
-                <Input placeholder="请输入" maxLength={35} />
+                <Input placeholder="请输入" maxLength={35} disabled={disabledFlag} />
               )}
             </Form.Item>
             <Form.Item
@@ -601,7 +615,7 @@ export default () => {
               {isDetail ? (
                 <span>{editingItem?.typeNames || '--'}</span>
               ) : (
-                <Select placeholder="请选择" mode="multiple">
+                <Select placeholder="请选择" mode="multiple" disabled={disabledFlag}>
                   {appTypes.map((p) => (
                     <Select.Option key={'type' + p.id} value={p.id}>
                       {p.name}
@@ -617,9 +631,10 @@ export default () => {
               {isDetail ? (
                 <span>{editingItem?.subAnchorWechat || '--'}</span>
               ) : (
-                <Input placeholder="请输入" maxLength={35} />
+                <Input placeholder="请输入" maxLength={35} disabled={disabledFlag}/>
               )}
             </Form.Item>
+            {/* 直播状态为未开始时，编辑直播不能编辑直播类型 */}
             <Form.Item
               name="liveType"
               label="直播类型"
@@ -634,7 +649,7 @@ export default () => {
               {isDetail ? (
                 <span>{editingItem.liveType ? '推流设备直播' : '手机直播'}</span>
               ) : (
-                <Radio.Group>
+                <Radio.Group disabled={disabledFlag || editingItem.videoStatus == 0}>
                   <Radio value={0}>手机直播</Radio>
                   <Radio value={1}>推流设备直播</Radio>
                 </Radio.Group>
@@ -648,7 +663,7 @@ export default () => {
                 {isDetail ? (
                   <span>{!editingItem.closeLike && ('点赞')} {!editingItem.closeGoods && ('货架')} {!editingItem.closeComment && ('评论')} {!editingItem.closeShare && ('分享')}</span>
                 ) : (
-                  <Checkbox.Group options={options2} disabled={editingItem.videoStatus == 1}/>
+                  <Checkbox.Group options={options2} disabled={disabledFlag}/>
                 )}
             </Form.Item>
           </Col>

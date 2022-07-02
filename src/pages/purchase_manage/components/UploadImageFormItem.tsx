@@ -2,6 +2,7 @@ import Upload from '@/components/upload_form';
 import { CloseCircleOutlined, LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 import type { UploadProps } from 'antd';
 import { Image, Space } from 'antd';
+import classnames from 'classnames';
 import { useCallback, useMemo, useState } from 'react';
 import './UploadImageFormItem.less';
 
@@ -20,6 +21,23 @@ export default function (
     return uploadProps.maxCount === 1;
   }, [uploadProps]);
 
+  const fileList = useMemo(() => {
+    if (!value || single) {
+      return [];
+    }
+
+    return value
+      .split(',')
+      .filter((item) => item.trim())
+      .map((item) => {
+        return item.trim();
+      });
+  }, [value, single]);
+
+  const disable = useMemo(() => {
+    return !single && uploadProps.maxCount && fileList.length >= uploadProps.maxCount;
+  }, [single, uploadProps, fileList]);
+
   const uploadButton = useMemo(() => {
     if (loading) {
       return <LoadingOutlined />;
@@ -34,32 +52,24 @@ export default function (
     }
 
     return (
-      <div>
+      <div className={classnames({ uploadDisable: disable })}>
         <PlusOutlined />
         <div style={{ marginTop: 8 }}>上传</div>
       </div>
     );
-  }, [value, single, loading]);
-
-  const fileList = useMemo(() => {
-    if (!value || single) {
-      return [];
-    }
-
-    return value.split(',').map((item) => {
-      return item.trim();
-    });
-  }, [value, single]);
+  }, [loading, value, single, disable]);
 
   const onFileChange = useCallback(
     (info) => {
       if (onChange) {
-        const val = [value, info.path].join(',');
-
-        onChange(val);
+        if (value && !single) {
+          onChange([value, info.path].join(','));
+        } else {
+          onChange(info.path);
+        }
       }
     },
-    [onChange, value],
+    [onChange, value, single],
   );
 
   const onRemove = useCallback(
@@ -76,6 +86,7 @@ export default function (
     <Space>
       <Upload
         {...uploadProps}
+        disabled={disable}
         className="upload-image"
         action="/antelope-manage/common/upload/record"
         showUploadList={false}
