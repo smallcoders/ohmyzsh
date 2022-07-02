@@ -19,7 +19,9 @@ import moment from 'moment';
 import SelfTable from '@/components/self_table';
 import type LogoutVerify from '@/types/user-config-logout-verify';
 import { getBillPage, exportBillPage } from '@/services/purchase';
+import { history } from 'umi';
 const sc = scopedClasses('user-config-logout-verify');
+
 
 export default () => {
   const [dataSource, setDataSource] = useState<LogoutVerify.Content[]>([]);
@@ -112,7 +114,9 @@ export default () => {
           <div style={{ textAlign: 'center' }}>
             <Space size={20}>
               {/* 跳转到订单管理-订单详情，且选中「发票信息」页签 */}
-              <Button type="link" onClick={() => {console.log(111)}}>
+              <Button type="link" onClick={() => {
+                history.push(`/purchase-manage/order-manage/detail?id=${record.orderNo}&type=2`)
+              }}>
                 查看详情
               </Button>
             </Space>
