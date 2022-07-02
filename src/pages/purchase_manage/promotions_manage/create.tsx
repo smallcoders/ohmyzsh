@@ -326,11 +326,6 @@ export default () => {
     }
 
     if (info.file.status === 'done') {
-      if(info?.fileList.length == 3) {
-        setUploadDisabled(true);
-      }else {
-        setUploadDisabled(false);
-      }
       const uploadResponse = info?.file?.response;
       if (uploadResponse?.code === 0 && uploadResponse.result) {
         const upLoadResult = info?.fileList.map((p) => {
