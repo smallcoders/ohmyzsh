@@ -3,7 +3,7 @@ import type DataCommodity from '@/types/data-commodity';
 import type { ProColumns } from '@ant-design/pro-table';
 import { EditableProTable } from '@ant-design/pro-table';
 import type { FormInstance } from 'antd';
-import { Button, Form, Input } from 'antd';
+import { Button, Form, Input, Space } from 'antd';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { StepFormProps } from '../create';
 
@@ -112,14 +112,14 @@ export default (props: StepFormProps) => {
           </span>
         ),
         dataIndex: 'purchasePrice',
-        valueType: 'number',
+        valueType: 'inputNumber',
         formItemProps: () => {
           return {
             rules: [
               { required: true, message: '此项为必填项' },
               ({}) => ({
                 validator(_, value) {
-                  if (/^[0-9]*$/.test(value.replace('.', ''))) {
+                  if (/^[0-9]*$/.test(value)) {
                     return Promise.resolve();
                   }
                   return Promise.reject(new Error('此项为数字'));
@@ -143,7 +143,7 @@ export default (props: StepFormProps) => {
               { required: true, message: '此项为必填项' },
               ({}) => ({
                 validator(_, value) {
-                  if (/^[0-9]*$/.test(value.replace('.', ''))) {
+                  if (/^[0-9]*$/.test(value)) {
                     return Promise.resolve();
                   }
                   return Promise.reject(new Error('此项为数字'));
@@ -223,10 +223,12 @@ export default (props: StepFormProps) => {
         </Form.Item>
       </Form>
       <div className="form-footer">
-        <Button onClick={onPre}>上一步</Button>
-        <Button type="primary" loading={loading} onClick={onFinish}>
-          下一步
-        </Button>
+        <Space>
+          <Button onClick={onPre}>上一步</Button>
+          <Button type="primary" loading={loading} onClick={onFinish}>
+            下一步
+          </Button>
+        </Space>
       </div>
     </div>
   );
