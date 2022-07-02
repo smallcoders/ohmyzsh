@@ -9,7 +9,7 @@ export const httpUploadWithDetail = (
   onUploadProgress?: (props: any) => void,
   cancelToken?: any,
 ) => {
-  return request(`/antelope-manage/common/upload`, {
+  return request(`/antelope-manage/common/upload/record`, {
     method: 'post',
     data,
     onUploadProgress,

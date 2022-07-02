@@ -166,7 +166,7 @@ export default (
               name,
               percent: 100,
               status: 'success',
-              url: `/antelope-manage/common/download/${result}`, //res?.result,
+              url: result?.path, //res?.result,
             });
             message.success('文件上传成功');
             return;
