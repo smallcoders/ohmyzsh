@@ -399,9 +399,9 @@ export default () => {
                   disabled={disabledFlag}
                   className="avatar-uploader"
                   showUploadList={false}
-                  maxSizeKb={300}
+                  maxSize={0.3}
                   tooltip={
-                    <span className={'tooltip'}>仅支持JPG、PNG、JPEG,建议比例16*9，大小在300kb以下</span>
+                    <span className={'tooltip'}>仅支持JPG、PNG、JPEG,建议比例16*9，大小在0.3M以下</span>
                   }
                   accept=".bmp,.gif,.png,.jpeg,.jpg"
                 />

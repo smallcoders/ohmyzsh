@@ -18,7 +18,7 @@ import moment from 'moment';
 import SelfTable from '@/components/self_table';
 import { getConsultPage, markContracted, updateRemark } from '@/services/app-resource';
 import type AppResource from '@/types/app-resource';
-import { EditTwoTone } from '@ant-design/icons';
+import { EditTwoTone, PlusOutlined } from '@ant-design/icons';
 const sc = scopedClasses('user-config-logout-verify');
 
 export default () => {
@@ -256,6 +256,13 @@ export default () => {
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>咨询记录列表(共{pageInfo.totalCount || 0}个)</span>
+          <Button
+            key="primary"
+            onClick={() => {
+            }}
+          >
+            <PlusOutlined /> 导出
+          </Button>
         </div>
       </div>
       <div className={sc('container-table-body')}>
