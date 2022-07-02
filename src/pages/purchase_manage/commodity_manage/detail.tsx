@@ -105,7 +105,7 @@ export default () => {
             </Form>
           </ProCard>
           <ProCard>
-            <h2 id="anchor-specs">商品基础信息</h2>
+            <h2 id="anchor-specs">商品规格信息</h2>
             <Table rowKey="id" dataSource={commodity?.payProductSpecsList} pagination={false}>
               <Column title="序号" render={(_, __, i) => i + 1} />
               <Column title="规格名" dataIndex="specsName" />
@@ -157,7 +157,7 @@ export default () => {
       <div style={{ width: 200, position: 'fixed', right: 10, top: 100 }}>
         <Anchor offsetTop={150} showInkInFixed={true} affix={false}>
           <Link href="#anchor-base-info" title="商品基础信息" />
-          <Link href="#anchor-specs" title="商品基础信息" />
+          <Link href="#anchor-specs" title="商品规格信息" />
           <Link href="#anchor-price" title="商品价格信息" />
           <Link href="#anchor-parameters" title="商品参数信息" />
           <Link href="#anchor-details" title="商品详情" />

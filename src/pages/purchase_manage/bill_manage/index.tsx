@@ -19,7 +19,9 @@ import moment from 'moment';
 import SelfTable from '@/components/self_table';
 import type LogoutVerify from '@/types/user-config-logout-verify';
 import { getBillPage, exportBillPage } from '@/services/purchase';
+import { history } from 'umi';
 const sc = scopedClasses('user-config-logout-verify');
+
 
 export default () => {
   const [dataSource, setDataSource] = useState<LogoutVerify.Content[]>([]);
@@ -112,7 +114,9 @@ export default () => {
           <div style={{ textAlign: 'center' }}>
             <Space size={20}>
               {/* 跳转到订单管理-订单详情，且选中「发票信息」页签 */}
-              <Button type="link" onClick={() => {console.log(111)}}>
+              <Button type="link" onClick={() => {
+                history.push(`/purchase-manage/order-manage/detail?id=${record.orderNo}&type=2`)
+              }}>
                 查看详情
               </Button>
             </Space>
@@ -191,10 +195,6 @@ export default () => {
       </div>
     );
   };
-  const exportPage = async () => {
-   const res  = await exportBillPage();
-   console.log(res);
-  }
 
   return (
     <PageContainer className={sc('container')}>
@@ -202,15 +202,14 @@ export default () => {
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>发票列表(共{pageInfo.totalCount || 0}个)</span>
-          <Button type='primary' icon={<DownloadOutlined />} 
-            onClick={exportPage}>导出</Button>
-          {/* <a
+          <a
             key="primary3"
             className='export-btn'
-            href={`/antelope-pay/provider/download?providerName=${searchContent.providerName || ''}`}
+            href={`
+              /antelope-pay/mng/invoice/export?pageIndex=1&pageSize=10000&invoiceForm=${searchContent.invoiceForm||''}&orderNo=${searchContent.orderNo||''}&invoiceType=${searchContent.invoiceType||''}&createTimeStart=${searchContent.time?moment(searchContent.time[0]).format('YYYY-MM-DD HH:mm:ss'):''}&createTimeEnd=${searchContent.time?moment(searchContent.time[1]).format('YYYY-MM-DD HH:mm:ss'):''}`}
           >
             导出
-          </a> */}
+          </a>
         </div>
       </div>
       <div className={sc('container-table-body')}>

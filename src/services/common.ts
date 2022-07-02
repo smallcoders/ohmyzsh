@@ -4,6 +4,19 @@ import type Common from '@/types/common';
 import CourseManage from '@/types/service-config-course-manage';
 import { request } from 'umi';
 
+export const httpUploadWithDetail = (
+  data: FormData,
+  onUploadProgress?: (props: any) => void,
+  cancelToken?: any,
+) => {
+  return request(`/antelope-manage/common/upload/record`, {
+    method: 'post',
+    data,
+    onUploadProgress,
+    cancelToken,
+  });
+};
+
 /**
  * 下载
  */
