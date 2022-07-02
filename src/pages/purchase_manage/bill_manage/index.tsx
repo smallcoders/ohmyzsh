@@ -191,10 +191,6 @@ export default () => {
       </div>
     );
   };
-  const exportPage = async () => {
-   const res  = await exportBillPage();
-   console.log(res);
-  }
 
   return (
     <PageContainer className={sc('container')}>
@@ -202,15 +198,14 @@ export default () => {
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>发票列表(共{pageInfo.totalCount || 0}个)</span>
-          <Button type='primary' icon={<DownloadOutlined />} 
-            onClick={exportPage}>导出</Button>
-          {/* <a
+          <a
             key="primary3"
             className='export-btn'
-            href={`/antelope-pay/provider/download?providerName=${searchContent.providerName || ''}`}
+            href={`
+              /antelope-pay/mng/invoice/export?pageIndex=1&pageSize=10000&invoiceForm=${searchContent.invoiceForm||''}&orderNo=${searchContent.orderNo||''}&invoiceType=${searchContent.invoiceType||''}&createTimeStart=${searchContent.time?moment(searchContent.time[0]).format('YYYY-MM-DD HH:mm:ss'):''}&createTimeEnd=${searchContent.time?moment(searchContent.time[1]).format('YYYY-MM-DD HH:mm:ss'):''}`}
           >
             导出
-          </a> */}
+          </a>
         </div>
       </div>
       <div className={sc('container-table-body')}>
