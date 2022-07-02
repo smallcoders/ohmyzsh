@@ -41,6 +41,10 @@
   ENTERPRISE_ADMIN_VERIFY_INDEX: '/verify-agency/enterprise-admin-verify/index', // 企业管理员审核
   ENTERPRISE_ADMIN_VERIFY_DETAIL: '/verify-agency/enterprise-admin-verify/detail', // 企业管理员审核详情
 
+  PURCHASE_MANAGE: '/purchase-manage/order-manage', // 订单管理
+  PURCHASE_MANAGE_INDEX: '/purchase-manage/order-manage/index', // 订单管理列表
+  PURCHASE_MANAGE_DETAIL: '/purchase-manage/order-manage/detail', // 订单管理详情
+
   AUTHENTICATION_INFO: '/user-config/authentication-info', // 认证信息
   AUTHENTICATION_INFO_INDEX: '/user-config/authentication-info/index', // 认证信息列表
   AUTHENTICATION_INFO_DETAIL: '/user-config/authentication-info/detail', // 认证信息编辑
@@ -48,7 +52,7 @@
   COMMISSIONER_SERVICE: '/user-config/commissioner-service', // 专员服务记录
   ADMIN_ACCOUNT_DISTRIBUTOR: '/user-config/admin-account-distributor', // 管理员账号分配
 
-  LIVE_TYPES_MAINTAIN: '/live-management/live-types-maintain',//直播类型管理
+  LIVE_TYPES_MAINTAIN: '/live-management/live-types-maintain', //直播类型管理
 
   ANTELOPE_LIVE_MANAGEMENT: '/live-management/antelope-live-management', // 羚羊直播管理
   // ANTELOPE_LIVE_MANAGEMENT_INDEX: '/live-management/antelope-live-management/index', // 羚羊直播管理
@@ -59,9 +63,8 @@
   WONDERFUL_VIDEO_MANAGEMENT_INDEX: '/live-management/wonderful-video-management/index', // 精彩视频管理
   WONDERFUL_VIDEO_MANAGEMENT_DETAIL: '/live-management/wonderful-video-management/detail', // 视频详情
 
-  SEARCH_RECORD_MANAGEMENT: '/live-management/search-record-management',//直播类型管理
-  ANTELOPE_LIVE_INTENTION_COLLECT: '/live-management/intention-collect',// 直播意向采集
-
+  SEARCH_RECORD_MANAGEMENT: '/live-management/search-record-management', //直播类型管理
+  ANTELOPE_LIVE_INTENTION_COLLECT: '/live-management/intention-collect', // 直播意向采集
 };
 
 export default [
@@ -322,9 +325,26 @@ export default [
         component: './purchase_manage/promotions_manage/detail',
       },
       {
-        path: '/purchase-manage/order-manage',
+        path: routeName.PURCHASE_MANAGE,
         name: '订单管理',
-        component: './purchase_manage/order_manage',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.PURCHASE_MANAGE,
+            redirect: routeName.PURCHASE_MANAGE_INDEX,
+          },
+          {
+            path: routeName.PURCHASE_MANAGE_INDEX,
+            name: '订单管理',
+            hideInBreadcrumb: true,
+            component: './purchase_manage/order_manage',
+          },
+          {
+            path: routeName.PURCHASE_MANAGE_DETAIL,
+            name: '订单详情',
+            component: './purchase_manage/order_manage/detail',
+          },
+        ],
       },
     ],
   },
@@ -549,7 +569,7 @@ export default [
             name: '直播详情',
             component: './live_management/antelope_live_management/detail',
           },
-        ]
+        ],
       },
       {
         path: routeName.WONDERFUL_VIDEO_MANAGEMENT,
@@ -570,13 +590,13 @@ export default [
             name: '视频详情',
             component: './live_management/wonderful_video_management/detail',
           },
-        ]
+        ],
       },
       {
         path: routeName.SEARCH_RECORD_MANAGEMENT,
         name: '搜索记录管理',
         component: './live_management/search_record_management',
-      },  
+      },
       {
         path: routeName.ANTELOPE_LIVE_INTENTION_COLLECT,
         name: '直播意向采集',
