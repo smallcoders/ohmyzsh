@@ -3,7 +3,7 @@ import type DataCommodity from '@/types/data-commodity';
 import { ProFormText } from '@ant-design/pro-form';
 import type { ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { Button, Form, Modal, Space } from 'antd';
+import { Button, Form, message, Modal, Space } from 'antd';
 import { useCallback, useEffect, useState } from 'react';
 import type { StepFormProps } from '../create';
 
@@ -97,6 +97,10 @@ export default (props: StepFormProps) => {
   ];
 
   const onFinish = useCallback(async () => {
+    if (specs.length === 0) {
+      message.warning('至少添加一行');
+      return;
+    }
     currentChange(1);
   }, [currentChange]);
 
