@@ -6,7 +6,7 @@ import { Button, Form, Select, Space } from 'antd';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import UploadImageFormItem from '../../components/UploadImageFormItem';
 import type { StepFormProps } from '../create';
-
+import UploaImageV2 from '@/components/upload_form/upload-image-v2';
 interface ProductForm {
   productName: string;
   productModel: string;
@@ -137,15 +137,17 @@ export default (
       >
         <UploadImageFormItem listType="picture-card" maxCount={1} />
       </ProForm.Item>
-      <ProForm.Item
+      {/* <ProForm.Item
         name="banner"
         label="商品轮播图"
         extra="图片格式仅支持JPG、PNG、JPEG,建议尺寸XXXX*XXXX，大小在5M以下，最大支持10张图片"
         rules={[{ required: true }]}
       >
-        <UploadImageFormItem listType="picture-card" maxCount={10} />
-      </ProForm.Item>
-
+        <UploaImageV2 multiple={true} maxCount={2}/>
+      </ProForm.Item> */}
+      <Form.Item name="banner" label="商品轮播图">
+        <UploaImageV2 multiple={true} maxCount={2} />
+      </Form.Item>
       <Form.Item name="supplier" label="供应商" rules={[{ required: true }]}>
         <ProviderSelect />
       </Form.Item>
