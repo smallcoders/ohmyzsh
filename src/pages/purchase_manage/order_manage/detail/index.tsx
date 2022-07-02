@@ -18,8 +18,12 @@ export default () => {
   const [type, setType] = useState<number>(1);
 
   const prepare = async () => {
+    const infoType = history.location.query?.type as string;
     const id = history.location.query?.id as string;
 
+    if (infoType) {
+      setType(Number(infoType));
+    }
     if (id) {
       try {
         const res = await getOrderDetail(id);

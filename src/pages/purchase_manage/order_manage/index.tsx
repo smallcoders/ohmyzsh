@@ -8,7 +8,7 @@ import OrderList from './components/order-list';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import OrderManage from '@/types/order/order-manage';
-import { exportOrderList, getOrderPage } from '@/services/order/order-manage';
+import { getOrderPage } from '@/services/order/order-manage';
 import { getUrl } from '@/utils/util';
 const sc = scopedClasses('order-manage');
 
@@ -143,25 +143,6 @@ export default () => {
         </Form>
       </div>
     );
-  };
-
-  const onExport = async () => {
-    try {
-      const res = await exportOrderList({ ...searchContent, pageIndex: 1, pageSize: 10000 });
-
-      const a = document.createElement('a');
-      const href = window.URL.createObjectURL(new Blob([res]));
-      a.href = href;
-      a.download = `订单列表`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(href);
-
-      message.success(`导出列表成功`);
-    } catch (error) {
-      console.log(error);
-    }
   };
 
   return (
