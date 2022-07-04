@@ -226,7 +226,9 @@ export const ButtonManage = ({
                   }}
                   value={sendType}
                 >
-                  <Radio value={0}>全部发货</Radio>
+                  <Radio value={0}>
+                    {(record?.shipNum || 0) > 0 ? '剩余全部发货' : '全部发货'}
+                  </Radio>
                   <Radio value={1}>部分发货</Radio>
                 </Radio.Group>
                 {sendType == 1 && (
@@ -393,7 +395,15 @@ export const OrderItem = ({
           ))}
         </div>
         <div style={{ flex: 1, display: 'flex' }}>
-          <div style={{ flex: 1, display: 'grid', alignItems: 'center', justifyItems: 'center', alignContent: 'center' }}>
+          <div
+            style={{
+              flex: 1,
+              display: 'grid',
+              alignItems: 'center',
+              justifyItems: 'center',
+              alignContent: 'center',
+            }}
+          >
             <span>¥{(record?.totalPrice || 0) / 100}</span>
             <span
               style={{
