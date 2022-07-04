@@ -14,7 +14,7 @@ namespace OrderManage {
     P01: '微信',
     P02: '支付宝',
     P03: '银联',
-    P04: '公对公转账',
+    P04: '对公转账',
   };
 
   export type ResultList = {
