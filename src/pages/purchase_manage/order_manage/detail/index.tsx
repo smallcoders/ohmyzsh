@@ -83,28 +83,46 @@ export default () => {
             <span>当前就订单状态：</span>
             <Space size={10}>
               {OrderManage.StateJson[detail?.state || ''] || '--'}
-              <span
-                style={{
-                  background: '#FFE0E2',
-                  color: '#FF6680',
-                  borderRadius: '2px',
-                  padding: '0 10px',
-                }}
-              >
-                {OrderManage.PayTypeJson[detail?.payMethod || ''] || '--'}
-              </span>
-              <FieldTimeOutlined
-                style={{
-                  color: '#FF6680',
-                }}
-              />
-              <span
-                style={{
-                  color: '#FF6680',
-                }}
-              >
-                {toHourMinute(detail?.expireMin)}后，系统将关闭交易
-              </span>
+              {detail?.state == 1 ||
+                (detail?.state == 25 && (
+                  <>
+                    <span
+                      style={{
+                        background: '#FFE0E2',
+                        color: '#FF6680',
+                        borderRadius: '2px',
+                        padding: '0 10px',
+                      }}
+                    >
+                      {OrderManage.PayTypeJson[detail?.payMethod || ''] || '在线支付'}
+                    </span>
+                    <FieldTimeOutlined
+                      style={{
+                        color: '#FF6680',
+                      }}
+                    />
+                    <span
+                      style={{
+                        color: '#FF6680',
+                      }}
+                    >
+                      {toHourMinute(detail?.expireMin)}后，系统将关闭交易
+                    </span>
+                  </>
+                ))}
+              {detail?.state == 3 && (
+                <>
+                  <div>
+                    <span style={{ color: '#999' }}>已发货数量：</span>
+                    <span style={{ color: '#000' }}>{detail?.shipNum}</span>
+                  </div>
+                  <div>
+                    <span style={{ color: '#999' }}>未发货数量：</span>
+                    <span style={{ color: '#FF6680' }}>{detail?.unShipNum}</span>
+                  </div>
+                </>
+              )}
+              {detail?.state == 6 && <span style={{ color: '#999' }}>（{detail?.remarkMsg}）</span>}
             </Space>
           </div>
           <div className={sc('container-desc')}>
@@ -139,7 +157,7 @@ export default () => {
       <div className={sc('container-info')}>
         <Radio.Group value={type} onChange={(e) => setType(e.target.value)}>
           <Radio.Button value={1}>订单信息</Radio.Button>
-          <Radio.Button value={2}>发票信息</Radio.Button>
+          {detail?.invoiceNo && <Radio.Button value={2}>发票信息</Radio.Button>}
         </Radio.Group>
 
         {type === 1 && (

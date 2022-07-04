@@ -200,7 +200,7 @@ export const ButtonManage = ({
           cancelText="取消"
           onConfirm={() => collection()}
         >
-          <Button type="link">确认收款</Button>
+          <Button type="link">确认收到货款</Button>
         </Popconfirm>
       ),
       8: (
@@ -226,7 +226,9 @@ export const ButtonManage = ({
                   }}
                   value={sendType}
                 >
-                  <Radio value={0}>全部发货</Radio>
+                  <Radio value={0}>
+                    {(record?.shipNum || 0) > 0 ? '剩余全部发货' : '全部发货'}
+                  </Radio>
                   <Radio value={1}>部分发货</Radio>
                 </Radio.Group>
                 {sendType == 1 && (
@@ -306,7 +308,8 @@ export const OrderItem = ({
       {type === 'ORDER' && (
         <div className="order-item-header">
           <div style={{ color: 'rgba(0, 0, 0, 0.45)', fontSize: '12px' }}>
-            订单编号：{record?.orderNo || '--'} {record?.createTime || '--'} | 下单手机号：
+            订单编号：{record?.orderNo || '--'} {dateFormat(record?.createTime) || '--'} |
+            下单手机号：
             {record?.userPhone || '--'}
           </div>
           <div style={{ display: 'flex', gap: 10 }}>
@@ -392,9 +395,26 @@ export const OrderItem = ({
           ))}
         </div>
         <div style={{ flex: 1, display: 'flex' }}>
-          <div style={{ flex: 1, display: 'grid', textAlign: 'center' }}>
+          <div
+            style={{
+              flex: 1,
+              display: 'grid',
+              alignItems: 'center',
+              justifyItems: 'center',
+              alignContent: 'center',
+            }}
+          >
             <span>¥{(record?.totalPrice || 0) / 100}</span>
-            <span>{OrderManage.PayTypeJson[record?.payMethod || ''] || '--'}</span>
+            <span
+              style={{
+                background: '#FFE0E2',
+                color: '#FF6680',
+                borderRadius: '2px',
+                padding: '0 10px',
+              }}
+            >
+              {OrderManage.PayTypeJson[record?.payMethod || ''] || '在线支付'}
+            </span>
           </div>
 
           {type === 'PRODUCT' && (

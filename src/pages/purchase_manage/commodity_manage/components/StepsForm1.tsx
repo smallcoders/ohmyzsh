@@ -96,13 +96,14 @@ export default (props: StepFormProps) => {
     },
   ];
 
-  const onFinish = useCallback(async () => {
+  const onFinish = () => {
+    console.log('specs', specs)
     if (specs.length === 0) {
       message.warning('至少添加一行');
       return;
     }
     currentChange(1);
-  }, [currentChange]);
+  };
 
   useEffect(() => {
     if (id) {
