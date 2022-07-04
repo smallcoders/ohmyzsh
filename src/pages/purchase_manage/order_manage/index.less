@@ -1,6 +1,11 @@
+@import '../../../global.less';
 @prefix: order-manage;
 
 .@{prefix}-container {
+  .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+    color: #fff;
+    background-color: @primary !important;
+  }
   &-table-header {
     padding: 20px;
     background-color: #fff;
