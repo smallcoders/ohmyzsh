@@ -1,10 +1,12 @@
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
-import { Button, DatePicker, Form, Input, Table, Upload, Space, message, Popconfirm, Modal, Breadcrumb, Image, InputNumber } from 'antd';
+import { Button, DatePicker, Form, Input, Table, Upload, Space, message, Popconfirm, Modal, Breadcrumb, Image, InputNumber, Pagination } from 'antd';
+import type { TableRowSelection } from 'antd/lib/table/interface';
 import { RcFile, UploadChangeParam } from 'antd/lib/upload';
 import type { ColumnsType } from 'antd/lib/table';
 import { UploadFile } from 'antd/lib/upload/interface';
 import SelfTable from '@/components/self_table';
+import type { PaginationProps } from 'antd';
 import {
   getActivityProducts,
   createActivity, // 新增活动
@@ -78,7 +80,7 @@ export default () => {
         // 获取详情 塞入表单
         const detailRs = await getActivityDetail(id);
         let editItem = { ...detailRs.result };
-        console.log(editItem, '---editItem')
+        // console.log(editItem, '---editItem')
         if (detailRs.code === 0) {
           let actImgs:any = [];
           // 已选商品数据回显
@@ -100,7 +102,7 @@ export default () => {
           setEditingItem({
             ...editItem, 
             time: [moment(editItem.startTime), moment(editItem.endTime)],
-            firstPic: editItem.firstPic ? [{uid: editItem.firstPic?.picId,name: 'image.png',  status: 'done',url: editItem.firstPic?.banner}] : [],
+            firstPic: editItem.firstPic&&editItem.firstPic.id ? [{uid: editItem.firstPic?.picId,name: 'image.png',  status: 'done',url: editItem.firstPic?.banner}] : [],
             otherPic: actImgs
           });
           setFiles([
@@ -137,21 +139,33 @@ export default () => {
     pageTotal: 0,
   });
   const [dataSource, setDataSource] = useState<any>([]);//可选商品数据
-  
-  const columns = [
+  let showDataSource: DataType[] = [];
+  const getShowDataSource = () => {
+    let arr: any = [];
+    let start = (pageInfo.pageIndex - 1) * pageInfo.pageSize;
+    let end = start + pageInfo.pageSize;
+    // console.log(start,end,'start-end');
+    dataSource.map((item, index) => {
+      if(index>=start && index<end) {
+        arr.push(item)
+      }
+    })
+    console.log(arr);
+    showDataSource = [...arr];
+  };
+  getShowDataSource();
+  const columns: ColumnsType<DataType> = [
     {
       title: '序号',
       dataIndex: 'sort',
       width: 80,
       render: (_: any, _record: any, index: number) =>
         pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
-      // render: (_: any, _record: any, index: number) =>
-      //  index + 1,
     },
     {
       title: '商品名称',
       dataIndex: 'productName',
-      isEllipsis: true,
+      // isEllipsis: true,
       width: 200,
     },
     {
@@ -175,7 +189,7 @@ export default () => {
     {
       title: '商品销售价',
       dataIndex: 'salePricePart',
-      isEllipsis: true,
+      // isEllipsis: true,
       width: 280,
     },
     {
@@ -197,7 +211,7 @@ export default () => {
         return (
           <Space size="middle">
             <a
-              href="#"
+              href="#!"
               onClick={() => {
                 history.push(`/purchase-manage/commodity-detail?id=${record.id}`);
               }}
@@ -209,7 +223,7 @@ export default () => {
       },
     },
   ];
-  const getProducts = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
+  const getProducts = async (pageIndex: number = 1, pageSize = 10000) => {
     try {
       const { result, totalCount, pageTotal, code } = await getActivityProducts({
         pageIndex,
@@ -294,7 +308,7 @@ export default () => {
             banner: p.response?.result?.path
           };
         });
-        console.log(upLoadResult, '上传成功后的结果');
+        // console.log(upLoadResult, '上传成功后的结果');
         setFiles(upLoadResult);
         setUploadLoading(false);
       } else {
@@ -308,10 +322,10 @@ export default () => {
       setUploadLoading(false);
     }
     const files_copy = [...files];
-    const existIndex = files_copy.findIndex((p) => p.storeId === file?.response?.result);
+    const existIndex = files_copy.findIndex((p) => p.picId === file?.response?.result?.id);
     if (existIndex > -1) {
       files_copy.splice(existIndex, 1);
-      console.log(files_copy, '删除图片后的结果');
+      // console.log(files_copy, '删除图片后的结果');
       setFiles(files_copy);
     }
   };
@@ -334,7 +348,7 @@ export default () => {
             banner: p.response?.result?.path
           };
         });
-        console.log(upLoadResult, '上传成功后的结果');
+        // console.log(upLoadResult, '上传成功后的结果');
         setFiles2(upLoadResult);
         setUploadLoading(false);
       } else {
@@ -344,14 +358,15 @@ export default () => {
     }
   };
   const onRemove2 = (file: UploadFile<any>) => {
+    // debugger
     if (file.status === 'uploading' || file.status === 'error') {
       setUploadLoading(false);
     }
     const files_copy = [...files2];
-    const existIndex = files_copy.findIndex((p) => p.storeId === file?.response?.result);
+    const existIndex = files_copy.findIndex((p) => p.picId === file?.response?.result?.id);
     if (existIndex > -1) {
       files_copy.splice(existIndex, 1);
-      console.log(files_copy, '删除图片后的结果');
+      // console.log(files_copy, '删除图片后的结果');
       setFiles2(files_copy);
     }
   };
@@ -409,7 +424,7 @@ export default () => {
   const remove = (index: number) => {
     let arr = JSON.parse(JSON.stringify(choosedProducts)).filter(
       (item: any, i: number) => {
-        console.log(i, index);
+        // console.log(i, index);
         return i != index
       }
     );
@@ -463,20 +478,21 @@ export default () => {
     },
     {
       title: '操作',
-      width: 240,
+      width: 270,
       fixed: 'right',
       dataIndex: 'option',
       render: (_: any, record: any, index: number) => {
         return (
-          <Space size="middle">
-            <a
-              href="#"
+          <Space size="small">
+            <Button
+              type="link"
+              style={{padding: 0}}
               onClick={() => {
                 history.push(`/purchase-manage/commodity-detail?id=${record.id || record.productId}`);
               }}
             >
               商品详情
-            </a>
+            </Button>
             <a
               href="#"
               onClick={() => {
@@ -521,6 +537,7 @@ export default () => {
               <Button
                 key="1"
                 size="small"
+                style={{padding: 0}}
                 type="link"
                 onClick={() => {
                   weightForm.setFieldsValue({weight: record.sort})
@@ -546,17 +563,38 @@ export default () => {
   
   const useModal = (): React.ReactNode => {
     const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
-      console.log('selectedRowKeys changed: ', newSelectedRowKeys);
+      // console.log('selectedRowKeys changed: ', newSelectedRowKeys);
       setSelectedRowKeys(newSelectedRowKeys);
     };
-    const start = () => {
-      Table.SELECTION_ALL;
-    };
   
-    const rowSelection = {
+    const rowSelection: TableRowSelection<DataType> = {
       preserveSelectedRowKeys: true, // 设置翻页保存key
       selectedRowKeys,
       onChange: onSelectChange,
+      selections: [
+        {
+          key: 'id',
+          text: '全选所有',
+          onSelect: () => {
+            let arr: any = [];
+            dataSource.map((item) => {
+              arr.push(JSON.stringify(item))
+            })
+            setSelectedRowKeys(arr);
+          },
+        },
+      ],
+    };
+    const changePage: PaginationProps['onChange'] = page => {
+      setPageInfo({...pageInfo, pageIndex: page});
+      getShowDataSource();
+    };
+    const paginationProps = {
+      showTotal: () => 
+       `共${dataSource.length}条记录 第${pageInfo.pageSize}/${Math.ceil(dataSource.length / pageInfo.pageSize)}页`,
+        current: pageInfo.pageIndex,
+        pageSize: pageInfo.pageSize,
+        total: dataSource.length
     };
     const hasSelected = selectedRowKeys.length > 0;
     return (
@@ -581,9 +619,6 @@ export default () => {
       >
         <div className={'container-table-body'} style={{marginTop: 10}}>
           <div style={{ marginBottom: 16 }}>
-            <Button type="primary" onClick={start} loading={loading}>
-              全选商品
-            </Button>
             <span style={{ marginLeft: 8 }}>
               {hasSelected ? `已选商品：${selectedRowKeys.length}` : ''}
             </span>
@@ -591,10 +626,27 @@ export default () => {
           <Table
             bordered
             scroll={{ x: 1400 }}
+            // rowKey={'id'}
             rowKey={(r: any) => {return JSON.stringify(r)}}
             rowSelection={rowSelection}
             columns={columns}
-            dataSource={dataSource}
+            dataSource={showDataSource}
+            pagination={false}
+          />
+          <Pagination 
+            style={{marginTop: 10}}
+            current={pageInfo.pageIndex} 
+            onChange={changePage} 
+            total={dataSource.length}
+            pageSize={pageInfo.pageSize} 
+          />
+          {/* <Table
+            bordered
+            scroll={{ x: 1400 }}
+            rowKey={(r: any) => {return JSON.stringify(r)}}
+            rowSelection={rowSelection}
+            columns={columns}
+            dataSource={showDataSource}
             pagination={
               pageInfo.totalCount === 0
                 ? false
@@ -607,7 +659,7 @@ export default () => {
                       `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
                   }
             }
-          />
+          /> */}
         </div>
       </Modal>
     );
@@ -622,7 +674,7 @@ export default () => {
   const setPriceOk = async () => {
     // 校验商品销售价是否全部填了,且三种价格都要*100
     // 销售价格及划线价不能为负数
-    console.log(priceDataSource, 'priceDataSource');
+    // console.log(priceDataSource, 'priceDataSource');
     let price = [...priceDataSource];
     for(let i=0; i<price.length;i++) {
       if(price[i].salePrice == 0 || !price[i].salePrice ) {
@@ -634,17 +686,21 @@ export default () => {
         return false;
       }
     }
+    // 获取所选商品的销售价及划线价的价格区间
+
+
+    // 价格处理为分，*100
     price.map((item: any) => {
       item.purchasePrice = item.purchasePrice*100;
       item.salePrice = item.salePrice*100;
       item.originPrice = item.originPrice ? item.originPrice*100 : 0;
     })
-    console.log(price, 'price');
+    // console.log(price, 'price');
     let arr = [...choosedProducts];
     let list = arr.map((item,index)=>
       index == currentSetIndex ? {...item, specs: priceDataSource} : item
     );
-    console.log(list);
+    // console.log(list);
     setChoosedProducts(list)
     setPriceModalVisible(false);
     setIsClosejumpTooltip(true);
@@ -762,7 +818,7 @@ export default () => {
     const index = newData.findIndex((item) => row.id === item.id);
     const item = newData[index];
     newData.splice(index, 1, { ...item, ...row });
-    console.log(newData, 'handleSave后的数据');
+    // console.log(newData, 'handleSave后的数据');
     setPriceDataSource(newData);
   };
 
@@ -839,15 +895,15 @@ export default () => {
       .then(async (value: any) => {
         const tooltipMessage = editingItem.id ? '活动编辑' : '活动新增';
         const hide = message.loading(`正在${tooltipMessage}`);
-        console.log({
-          ...value,
-          startTime: moment(value.time[0]).format('YYYY-MM-DD HH:mm:ss'),
-          endTime: moment(value.time[1]).format('YYYY-MM-DD HH:mm:ss'),
-          firstPic: files,
-          otherPic: files2,
-          sortNo: value.sortNo ? Number(value.sortNo) : null,
-          product: choosedProducts || []
-        });
+        // console.log({
+        //   ...value,
+        //   startTime: moment(value.time[0]).format('YYYY-MM-DD HH:mm:ss'),
+        //   endTime: moment(value.time[1]).format('YYYY-MM-DD HH:mm:ss'),
+        //   firstPic: files,
+        //   otherPic: files2,
+        //   sortNo: value.sortNo ? Number(value.sortNo) : null,
+        //   product: choosedProducts || []
+        // });
         setAddOrUpdateLoading(true);
         // // 编辑
         let addorUpdateRes = {};
@@ -911,6 +967,11 @@ export default () => {
           </Breadcrumb>
         ),
       }}
+      footer={[
+        <Button type="primary" loading={addOrUpdateLoading} onClick={() => {addOrUpdate(0)}}>上架</Button>,
+        <Button loading={addOrUpdateLoading} onClick={() => {addOrUpdate(2)}}>暂存</Button>,
+        <Button loading={addOrUpdateLoading} onClick={() => {history.push(`/purchase-manage/promotions-manage`);}}>返回</Button>
+      ]}
     >
       <Prompt
         when={isClosejumpTooltip}
@@ -936,7 +997,7 @@ export default () => {
             validator(rule, value) {
               let r = /^100$|^(?:\d|[1-9]\d|1[0-4]\d)?$/.test(value);
               if(value) {
-                if(!r){
+                if(!r || value == 0){
                   return Promise.reject('请输入1-100的整数')
                 }else {
                   return Promise.resolve()
@@ -1012,13 +1073,13 @@ export default () => {
           dataSource={choosedProducts}
           pagination={false}
         />
-      </div>
-      <div className='operation-footer'>
-        <Space>
-          <Button type="primary" loading={addOrUpdateLoading} onClick={() => {addOrUpdate(0)}}>上架</Button>
-          <Button loading={addOrUpdateLoading} onClick={() => {addOrUpdate(2)}}>暂存</Button>
-          <Button loading={addOrUpdateLoading} onClick={() => {history.push(`/purchase-manage/promotions-manage`);}}>返回</Button>
-        </Space>
+        {/* <div className='operation-footer'>
+          <Space>
+            <Button type="primary" loading={addOrUpdateLoading} onClick={() => {addOrUpdate(0)}}>上架</Button>
+            <Button loading={addOrUpdateLoading} onClick={() => {addOrUpdate(2)}}>暂存</Button>
+            <Button loading={addOrUpdateLoading} onClick={() => {history.push(`/purchase-manage/promotions-manage`);}}>返回</Button>
+          </Space>
+        </div> */}
       </div>
       {useModal()}
       {setPriceModal()}
