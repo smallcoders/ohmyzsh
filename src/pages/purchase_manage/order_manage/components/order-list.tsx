@@ -306,7 +306,7 @@ export const OrderItem = ({
       {type === 'ORDER' && (
         <div className="order-item-header">
           <div style={{ color: 'rgba(0, 0, 0, 0.45)', fontSize: '12px' }}>
-            订单编号：{record?.orderNo || '--'} {record?.createTime || '--'} | 下单手机号：
+            订单编号：{record?.orderNo || '--'} {dateFormat(record?.createTime) || '--'} | 下单手机号：
             {record?.userPhone || '--'}
           </div>
           <div style={{ display: 'flex', gap: 10 }}>

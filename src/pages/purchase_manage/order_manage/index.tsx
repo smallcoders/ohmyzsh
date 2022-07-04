@@ -1,5 +1,17 @@
 import { UploadOutlined } from '@ant-design/icons';
-import { Button, Input, Form, Select, Row, Col, DatePicker, message, Pagination } from 'antd';
+import {
+  Button,
+  Input,
+  Form,
+  Select,
+  Row,
+  Col,
+  DatePicker,
+  message,
+  Pagination,
+  Radio,
+  RadioChangeEvent,
+} from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import React, { useEffect, useState } from 'react';
 import type Common from '@/types/common';
@@ -32,6 +44,15 @@ export default () => {
     totalCount: 0,
     pageTotal: 0,
   });
+  const [state, setState] = useState<number>(0);
+  const [searchForm] = Form.useForm();
+
+  useEffect(() => {
+    if (state !== 0) {
+      searchForm.resetFields();
+    }
+    setSearChContent({});
+  }, [state]);
 
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     try {
@@ -39,6 +60,7 @@ export default () => {
         pageIndex,
         pageSize,
         ...searchContent,
+        orderState: state === 0 ? undefined : state,
       });
       if (code === 0) {
         setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
@@ -54,9 +76,7 @@ export default () => {
   useEffect(() => {
     getPage();
   }, [searchContent]);
-
   const useSearchNode = (): React.ReactNode => {
-    const [searchForm] = Form.useForm();
     return (
       <div className={sc('container-search')}>
         <Form {...formLayout} form={searchForm}>
@@ -145,9 +165,30 @@ export default () => {
     );
   };
 
+  /**
+   * 切换 app、小程序、pc
+   * @returns React.ReactNode
+   */
+  const selectButton = (): React.ReactNode => {
+    const handleEdgeChange = (e: RadioChangeEvent) => {
+      setState(e.target.value);
+      // getBanners()
+    };
+    return (
+      <Radio.Group value={state} onChange={handleEdgeChange} style={{ marginBottom: 20 }}>
+        <Radio.Button value={0}>全部</Radio.Button>
+        <Radio.Button value={1}>待付款</Radio.Button>
+        <Radio.Button value={3}>待发货</Radio.Button>
+        <Radio.Button value={4}>待收货</Radio.Button>
+        <Radio.Button value={5}>已完成</Radio.Button>
+      </Radio.Group>
+    );
+  };
+
   return (
     <PageContainer className={sc('container')}>
-      {useSearchNode()}
+      {selectButton()}
+      {state === 0 && useSearchNode()}
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>订单列表(共{pageInfo.totalCount || 0}个)</span>
