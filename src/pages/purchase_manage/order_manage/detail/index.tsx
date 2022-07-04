@@ -91,7 +91,7 @@ export default () => {
                   padding: '0 10px',
                 }}
               >
-                {OrderManage.PayTypeJson[detail?.payMethod || ''] || '--'}
+                {OrderManage.PayTypeJson[detail?.payMethod || ''] || '在线支付'}
               </span>
               <FieldTimeOutlined
                 style={{

@@ -403,7 +403,7 @@ export const OrderItem = ({
                 padding: '0 10px',
               }}
             >
-              {OrderManage.PayTypeJson[record?.payMethod || ''] || '--'}
+              {OrderManage.PayTypeJson[record?.payMethod || ''] || '在线支付'}
             </span>
           </div>
 
