@@ -64,10 +64,10 @@ export default (props: StepFormProps) => {
         <Form.Item name="productArgs" label="商品参数" rules={[{ required: true }]}>
           <FormEdit />
         </Form.Item>
-        <Form.Item name="productDetail" label="商品细节" rules={[{ required: true }]}>
+        <Form.Item name="productDetail" label="商品细节">
           <FormEdit />
         </Form.Item>
-        <Form.Item name="productApp" label="商品应用" rules={[{ required: true }]}>
+        <Form.Item name="productApp" label="商品应用">
           <FormEdit />
         </Form.Item>
       </Form>

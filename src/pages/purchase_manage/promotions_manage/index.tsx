@@ -232,11 +232,14 @@ export default () => {
         dataIndex: 'addedState',
         valueType: 'select',
         valueEnum: {
-          1: {
+          0: {
             text: '上架',
           },
-          0: {
+          1: {
             text: '下架',
+          },
+          2: {
+            text: '暂存',
           },
         },
       },

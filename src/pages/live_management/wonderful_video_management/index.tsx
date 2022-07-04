@@ -279,13 +279,16 @@ export default () => {
             <Button
               type="link"
               onClick={() => {
-                record.typeIds = record.typeIds?.split(',').map(Number);//返回的类型为字符串，需转为数组
                 setEditingItem({...record});
                 setFiles([
                   {title: record.videoName+'.mp4', storeId: record.videoId}
                 ]);
                 setModalVisible(true);
-                form.setFieldsValue({...record, videoId: [{uid: record.videoId, name: record.videoName+'.mp4', status: 'done',}]});
+                form.setFieldsValue({
+                  ...record, 
+                  videoId: [{uid: record.videoId, name: record.videoName+'.mp4', status: 'done',}],
+                  typeIds: record.typeIds ? record.typeIds.split(',').map(Number) : []
+                });
               }}
             >
               编辑
@@ -420,11 +423,6 @@ export default () => {
   const handleOk = async (lineStatus: boolean) => {
     addOrUpdate(lineStatus);
   };
-
-  const handleCancel = () => {
-    clearForm();
-    setModalVisible(false);
-  };
   
   const [uploadLoading, setUploadLoading] = useState<boolean>(false);
   const [files, setFiles] = useState<CourseManage.File[]>([]);
@@ -449,7 +447,7 @@ export default () => {
     accept: ".mp4",
     maxCount: 1,
     maxSize: 800,
-    action: '/antelope-manage/common/upload',
+    action: '/antelope-manage/common/upload/record',
     onRemove: (file: UploadFile<any>) => {
       if (file.status === 'uploading' || file.status === 'error') {
         setUploadLoading(false);
@@ -489,7 +487,10 @@ export default () => {
       <Modal
         title={editingItem.id ? '编辑视频' : '新增视频'}
         width="680px"
-        onCancel={handleCancel}
+        onCancel={() => {
+          clearForm();
+          setModalVisible(false);
+        }}
         visible={createModalVisible}
         okButtonProps={{ loading: addOrUpdateLoading }}
         footer={[

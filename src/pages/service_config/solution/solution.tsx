@@ -296,7 +296,7 @@ const SolutionTable: React.FC = () => {
   };
 
   return (
-    <PageContainer>
+    <>
       <ProTable
         headerTitle={`服务列表（共${total}个）`}
         options={false}
@@ -318,7 +318,7 @@ const SolutionTable: React.FC = () => {
         pagination={{ size: 'default', showQuickJumper: true, defaultPageSize: 10 }}
       />
       {getModal()}
-    </PageContainer>
+    </>
   );
 };
 
