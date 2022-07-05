@@ -6,7 +6,7 @@ namespace OrderManage {
     '25': '订单待确认',
     '1': '未支付',
     '3': '已支付',
-    '9': '已发货',
+    '4': '已发货',
     '6': '交易关闭',
     '5': '交易成功',
   };
@@ -31,9 +31,11 @@ namespace OrderManage {
     province?: string; //	收获地址-省/直辖市
     city?: string; //	收获地址-城市
     district?: string; //	收获地址-县/区
+    street?: string; // 街道
     addressDetail?: string; //	收获地址-详细地址
     orderNo?: string; //	订单号
     createTime?: string; //	订单创建时间
+    shipTimeNumList?: any[] // 发货时间
     payTime?: string; //	订单支付时间
 
     shipTime?: string; //	物流发货时间
@@ -52,7 +54,7 @@ namespace OrderManage {
     list?: any; //	子订单列表
 
     mail?: string; //	邮箱
-    invoiceType?: number; //	发票类型 0-
+    invoiceType?: number; //	发票类型 0-普通发票1-专用发票
     invoiceForm?: number; //	发票形式 0-电子发票  1-纸质发票
     orgName?: string; //	企业名称
     orgTaxNo?: string; //	单位税号
@@ -63,6 +65,7 @@ namespace OrderManage {
     invoiceTypeName?: string; //	发票类型名称
     invoiceFormName?: string; //	发票形式名称
     shipAddressDetail?: string; //	收获地址详情，收获地址各字段拼接成
+    invoiceAddress?: any // 收件人信息
     payMethod?: string; //	支付方式
     taxPrice?: number; //	税费价格
     shipPrice?: number; //	运费价格
@@ -75,7 +78,7 @@ namespace OrderManage {
 
     invoiceCreateTime?: string; //申请开票时间
     invoiceCancelTime?: string; //	取消开票时间
-
+    invoiceTitleType?: string; //	抬头类型title
     // //取消订单
     // BUTTON_CANCEL(1),
     // //对公转账
