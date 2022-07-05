@@ -152,7 +152,7 @@ export default (
         name="productPic"
         label="商品封面图"
         extra="图片格式仅支持JPG、PNG、JPEG,建议尺寸XXXX*XXXX，大小在5M以下"
-        rules={[{ required: true }]}
+        rules={[{ required: true, message: '请选择商品封面图' }]}
       >
         <UploadImageFormItem listType="picture-card" maxCount={1} />
       </ProForm.Item>
@@ -166,7 +166,7 @@ export default (
       </ProForm.Item> */}
       <Form.Item name="banner" label="商品轮播图"
         extra="图片格式仅支持JPG、PNG、JPEG,建议尺寸XXXX*XXXX，大小在5M以下，最大支持10张图片"
-        rules={[{ required: true }]}>
+        rules={[{ required: true, message: '请选择商品轮播图' }]}>
         <UploaImageV2 multiple={true} maxCount={10} />
       </Form.Item>
       <Form.Item name="supplier" label="供应商" rules={[{ required: true }]}>
