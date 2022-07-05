@@ -59,8 +59,8 @@ export default () => {
       const { result, totalCount, pageTotal, code } = await getOrderPage({
         pageIndex,
         pageSize,
-        ...searchContent,
         orderState: state === 0 ? undefined : state,
+        ...searchContent,
       });
       if (code === 0) {
         setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
