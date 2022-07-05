@@ -144,13 +144,11 @@ export default () => {
     let arr: any = [];
     let start = (pageInfo.pageIndex - 1) * pageInfo.pageSize;
     let end = start + pageInfo.pageSize;
-    // console.log(start,end,'start-end');
     dataSource.map((item, index) => {
       if(index>=start && index<end) {
         arr.push(item)
       }
     })
-    console.log(arr);
     showDataSource = [...arr];
   };
   getShowDataSource();
@@ -687,8 +685,17 @@ export default () => {
       }
     }
     // 获取所选商品的销售价及划线价的价格区间
-
-
+    const salePriceArr = [];
+    const originPriceArr = [];
+    price.map((item:any) => {
+      salePriceArr.push(item.salePrice*1);
+      originPriceArr.push(item.originPrice*1)
+    })
+    console.log(salePriceArr, originPriceArr);
+    var maxSalePrice = Math.max.apply(null, salePriceArr);
+    var minSalePrice = Math.min.apply(null, salePriceArr);
+    var maxOriginPrice = Math.max.apply(null, originPriceArr);
+    var minOriginPrice = Math.min.apply(null, originPriceArr);
     // 价格处理为分，*100
     price.map((item: any) => {
       item.purchasePrice = item.purchasePrice*100;
@@ -698,7 +705,12 @@ export default () => {
     // console.log(price, 'price');
     let arr = [...choosedProducts];
     let list = arr.map((item,index)=>
-      index == currentSetIndex ? {...item, specs: priceDataSource} : item
+      index == currentSetIndex ? {
+        ...item, 
+        specs: priceDataSource, 
+        salePricePart: minSalePrice.toFixed(2) + '~' + maxSalePrice.toFixed(2),
+        originPricePart: maxOriginPrice != 0 ? (minOriginPrice.toFixed(2) + '~' + maxOriginPrice.toFixed(2)) : null
+      } : item
     );
     // console.log(list);
     setChoosedProducts(list)
@@ -893,6 +905,10 @@ export default () => {
     form
       .validateFields()
       .then(async (value: any) => {
+        if(choosedProducts.length==0) {
+          message.warn('请选择活动商品！');
+          return false;
+        }
         const tooltipMessage = editingItem.id ? '活动编辑' : '活动新增';
         const hide = message.loading(`正在${tooltipMessage}`);
         // console.log({
@@ -1073,13 +1089,6 @@ export default () => {
           dataSource={choosedProducts}
           pagination={false}
         />
-        {/* <div className='operation-footer'>
-          <Space>
-            <Button type="primary" loading={addOrUpdateLoading} onClick={() => {addOrUpdate(0)}}>上架</Button>
-            <Button loading={addOrUpdateLoading} onClick={() => {addOrUpdate(2)}}>暂存</Button>
-            <Button loading={addOrUpdateLoading} onClick={() => {history.push(`/purchase-manage/promotions-manage`);}}>返回</Button>
-          </Space>
-        </div> */}
       </div>
       {useModal()}
       {setPriceModal()}
