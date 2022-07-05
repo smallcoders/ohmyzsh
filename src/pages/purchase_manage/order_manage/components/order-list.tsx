@@ -131,7 +131,7 @@ export const ButtonManage = ({
     try {
       const result = await cancelOrder({
         orderNo: record?.orderNo,
-        msg: closeContent,
+        msg: closeType == 0 ? '退货/退款完成' : closeContent,
       });
       if (result.code === 0) {
         message.success(`${tooltipMessage}成功`);
@@ -308,7 +308,8 @@ export const OrderItem = ({
       {type === 'ORDER' && (
         <div className="order-item-header">
           <div style={{ color: 'rgba(0, 0, 0, 0.45)', fontSize: '12px' }}>
-            订单编号：{record?.orderNo || '--'} {dateFormat(record?.createTime) || '--'} |
+            <span> 订单编号：{record?.orderNo || '--'} </span>
+            <span style={{ marginLeft: 10 }}> {dateFormat(record?.createTime) || '--'} </span>|
             下单手机号：
             {record?.userPhone || '--'}
           </div>
@@ -395,37 +396,41 @@ export const OrderItem = ({
           ))}
         </div>
         <div style={{ flex: 1, display: 'flex' }}>
-          <div
-            style={{
-              flex: 1,
-              display: 'grid',
-              alignItems: 'center',
-              justifyItems: 'center',
-              alignContent: 'center',
-            }}
-          >
-            <span>¥{(record?.totalPrice || 0) / 100}</span>
-            <span
-              style={{
-                background: '#FFE0E2',
-                color: '#FF6680',
-                borderRadius: '2px',
-                padding: '0 10px',
-              }}
-            >
-              {OrderManage.PayTypeJson[record?.payMethod || ''] || '在线支付'}
-            </span>
-          </div>
-
           {type === 'PRODUCT' && (
             <>
-              <div style={{ flex: 1, textAlign: 'center' }}>{record?.totalShipNum}</div>
-              <div style={{ flex: 1, textAlign: 'center' }}>{record?.shipPrice}</div>
+              <div style={{ flex: 1, textAlign: 'center' }}>
+                {(record?.totalShipNum || 0) / 100}
+              </div>
+              <div style={{ flex: 1, textAlign: 'center' }}>￥{(record?.shipPrice || 0) / 100}</div>
+              <div style={{ flex: 1, textAlign: 'center' }}>
+                ￥{(record?.totalPayPrice || 0) / 100}
+              </div>
             </>
           )}
 
           {type === 'ORDER' && (
             <>
+              <div
+                style={{
+                  flex: 1,
+                  display: 'grid',
+                  alignItems: 'center',
+                  justifyItems: 'center',
+                  alignContent: 'center',
+                }}
+              >
+                <span>¥{(record?.totalPrice || 0) / 100}</span>
+                <span
+                  style={{
+                    background: '#FFE0E2',
+                    color: '#FF6680',
+                    borderRadius: '2px',
+                    padding: '0 10px',
+                  }}
+                >
+                  {OrderManage.PayTypeJson[record?.payMethod || ''] || '在线支付'}
+                </span>
+              </div>
               <div style={{ flex: 1, display: 'grid', textAlign: 'center' }}>
                 <span>{OrderManage.StateJson[record?.state || ''] || '--'}</span>
                 {record?.state == 6 && <span style={{ color: '#999' }}>{record?.remarkMsg}</span>}
