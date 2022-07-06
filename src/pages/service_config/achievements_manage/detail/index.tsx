@@ -6,6 +6,7 @@ import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
 import { getCreativeDetail } from '@/services/kc-verify';
 import { getEnumByName } from '@/services/common';
+import SelfTable from '@/components/self_table';
 
 const sc = scopedClasses('user-config-kechuang');
 
@@ -75,9 +76,26 @@ export default () => {
       ]}
     >
       <div className={sc('container')}>
-        <div className={sc('container-title')}>技术成果信息</div>
+        <div className={sc('container-title')}>成果联系信息</div>
         <div className={sc('container-desc')}>
-          <span>技术成果名称：</span>
+          <span>联系人：</span>
+          <span>{detail?.name || '--'}</span>
+        </div>
+        <div className={sc('container-desc')}>
+          <span>联系电话：</span>
+          <span>{detail?.name || '--'}</span>
+        </div>
+        <div className={sc('container-desc')}>
+          <span>企业名称：</span>
+          <span>{detail?.name || '--'}</span>
+        </div>
+        <div className={sc('container-desc')}>
+          <span>所属区域：</span>
+          <span>{detail?.name || '--'}</span>
+        </div>
+        <div className={sc('container-title')}>科技成果信息</div>
+        <div className={sc('container-desc')}>
+          <span>科技成果名称：</span>
           <span>{detail?.name || '--'}</span>
         </div>
         <div className={sc('container-desc')}>
@@ -105,6 +123,10 @@ export default () => {
         <div className={sc('container-desc')}>
           <span>主要应用行业：</span>
           <span>{detail?.types ? detail?.types.join('，') : '--'}</span>
+        </div>
+        <div className={sc('container-desc')}>
+          <span>关键词：</span>
+          <span>{detail?.name || '--'}</span>
         </div>
         <div className={sc('container-desc')}>
           <span>专利编号：</span>
@@ -144,10 +166,10 @@ export default () => {
               })}
           </span>
         </div>
-        <div className={sc('container-desc')}>
+        {/* <div className={sc('container-desc')}>
           <span>是否需要代理：</span>
           <span>{detail?.proxy ? '是' : '否'}</span>
-        </div>
+        </div> */}
 
         <div className={sc('container-title')}>成果联系信息</div>
         <div className={sc('container-desc')}>

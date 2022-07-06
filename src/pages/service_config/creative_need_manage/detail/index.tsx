@@ -41,7 +41,7 @@ export default () => {
       ]}
     >
       <div className={sc('container')}>
-        <div className={sc('container-title')}>科产需求信息</div>
+        <div className={sc('container-title')}>创新需求信息</div>
         <div style={{ marginLeft: 200 }}>
           <Image height={200} width={300} src={detail?.cover} />
         </div>
@@ -58,6 +58,10 @@ export default () => {
           <span>{detail?.industryTypeNames ? detail?.industryTypeNames.join('，') : '--'}</span>
         </div>
         <div className={sc('container-desc')}>
+          <span>关键词：</span>
+          <span>{detail?.typeName || '--'}</span>
+        </div>
+        <div className={sc('container-desc')}>
           <span>需求区域：</span>
           <span>{detail?.areaNames ? detail?.areaNames.join('，') : '--'}</span>
         </div>
@@ -69,8 +73,21 @@ export default () => {
           <span>需求内容：</span>
           <span>{detail?.content || '--'}</span>
         </div>
+        <div className={sc('container-title')}>企业联系信息</div>
         <div className={sc('container-desc')}>
-          <span>企业信息：</span>
+          <span>企业信息展示：</span>
+          <span>{detail?.hide ? '隐藏' : '公开'}</span>
+        </div>
+        <div className={sc('container-desc')}>
+          <span>联系人：</span>
+          <span>{detail?.hide ? '隐藏' : '公开'}</span>
+        </div>
+        <div className={sc('container-desc')}>
+          <span>联系电话：</span>
+          <span>{detail?.hide ? '隐藏' : '公开'}</span>
+        </div>
+        <div className={sc('container-desc')}>
+          <span>需求企业名称：</span>
           <span>{detail?.hide ? '隐藏' : '公开'}</span>
         </div>
       </div>

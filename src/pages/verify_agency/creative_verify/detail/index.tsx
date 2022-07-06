@@ -141,10 +141,10 @@ export default () => {
               })}
           </span>
         </div>
-        <div className={sc('container-desc')}>
+        {/* <div className={sc('container-desc')}>
           <span>是否需要代理：</span>
           <span>{detail?.proxy ? '是' : '否'}</span>
-        </div>
+        </div> */}
 
         <div className={sc('container-title')}>成果联系信息</div>
         <div className={sc('container-desc')}>
