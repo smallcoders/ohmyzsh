@@ -148,6 +148,13 @@ export default () => {
       width: 400,
     },
     {
+      title: '关键词',
+      dataIndex: 'typeNames',
+      isEllipsis: true,
+      render: (_: string[]) => (_ || []).join(','),
+      width: 150,
+    },
+    {
       title: '所属区域',
       dataIndex: 'areaName',
       isEllipsis: true,
