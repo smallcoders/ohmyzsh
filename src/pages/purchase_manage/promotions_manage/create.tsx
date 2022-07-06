@@ -139,19 +139,24 @@ export default () => {
     pageTotal: 0,
   });
   const [dataSource, setDataSource] = useState<any>([]);//可选商品数据
-  let showDataSource: DataType[] = [];
-  const getShowDataSource = () => {
-    let arr: any = [];
-    let start = (pageInfo.pageIndex - 1) * pageInfo.pageSize;
-    let end = start + pageInfo.pageSize;
-    dataSource.map((item, index) => {
-      if(index>=start && index<end) {
-        arr.push(item)
+  const [showDataSource, setShowDataSource] = useState<any>([]);//当前页显示的数据
+  const getProducts = async (pageIndex: number = 1, pageSize = 10000) => {
+    try {
+      const { result, totalCount, pageTotal, code } = await getActivityProducts({
+        pageIndex,
+        pageSize
+      });
+      if (code === 0) {
+        setPageInfo({ totalCount, pageTotal, pageIndex, pageSize: 5 });
+        setDataSource(result);
+        setShowDataSource(result.slice((pageIndex - 1) * pageInfo.pageSize, pageIndex * pageInfo.pageSize))
+      } else {
+        message.error(`请求分页数据失败`);
       }
-    })
-    showDataSource = [...arr];
+    } catch (error) {
+      console.log(error);
+    }
   };
-  getShowDataSource();
   const columns: ColumnsType<DataType> = [
     {
       title: '序号',
@@ -221,22 +226,6 @@ export default () => {
       },
     },
   ];
-  const getProducts = async (pageIndex: number = 1, pageSize = 10000) => {
-    try {
-      const { result, totalCount, pageTotal, code } = await getActivityProducts({
-        pageIndex,
-        pageSize
-      });
-      if (code === 0) {
-        setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
-        setDataSource(result);
-      } else {
-        message.error(`请求分页数据失败`);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   const getProductPrices = async (id: string, index: number, name: string) => {
     setIsClosejumpTooltip(false);
@@ -585,7 +574,16 @@ export default () => {
     };
     const changePage: PaginationProps['onChange'] = page => {
       setPageInfo({...pageInfo, pageIndex: page});
-      getShowDataSource();
+      let arr: any = [];
+      let start = (page - 1) * pageInfo.pageSize;
+      let end = start + pageInfo.pageSize;
+      dataSource.map((item, index) => {
+        if(index>=start && index<end) {
+          arr.push(item)
+        }
+      })
+      console.log(arr, 'arr');
+      setShowDataSource([...arr]);
     };
     const paginationProps = {
       showTotal: () => 
@@ -635,7 +633,7 @@ export default () => {
             style={{marginTop: 10}}
             current={pageInfo.pageIndex} 
             onChange={changePage} 
-            total={dataSource.length}
+            total={pageInfo.totalCount}
             pageSize={pageInfo.pageSize} 
           />
           {/* <Table
