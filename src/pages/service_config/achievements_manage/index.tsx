@@ -173,7 +173,9 @@ export default () => {
       render: (_: any, record: any) => {
         return (
           <Space>
-            <Button type="link" onClick={() => editState(record, { result: true })}>
+            <Button type="link" onClick={() => {
+              setModalVisible(true);
+            }}>
               关键词编辑
             </Button>
             <Popconfirm
@@ -276,7 +278,7 @@ export default () => {
   };
 
 
-  const [modalVisible, setModalVisible] = useState<boolean>(true);
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [editForm] = Form.useForm<{ keywords: any; other: string }>();
   const newKeywords = Form.useWatch('keywords', editForm);
   const handleOk = async () => {
@@ -329,7 +331,7 @@ export default () => {
         ]}
       >
         <Form {...formLayout2} form={editForm}>
-          <Form.Item name="keywords" label="关键词" rules={[{required: true}]}>
+          <Form.Item name="keywords" label="关键词" rules={[{required: true}]} extra="多选（最多三个）">
             <Checkbox.Group>
               <Row>
                 <Col span={6}>
