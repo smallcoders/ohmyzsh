@@ -45,5 +45,10 @@ export default {
       changeOrigin: true,
       pathRewrite: { '^': '' },
     },
+    '/antelope-user/': {
+      target: 'http://10.8.4.222:8090',
+      changeOrigin: true,
+      pathRewrite: { '^': '' },
+    },
   },
 };

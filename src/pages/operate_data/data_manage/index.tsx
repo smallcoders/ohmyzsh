@@ -20,13 +20,12 @@ import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import moment from 'moment';
 import AuthenticationInfo from '@/types/authentication-info.d';
-import { getAuthenticationInfoPage } from '@/services/authentication-info';
+import { getAuthenticationInfoPage } from '@/services/data-manage';
 const sc = scopedClasses('user-config-authentication-info');
 export default () => {
-  const [activeKey, setActiveKey] = useState<AuthenticationInfo.AuthenticationType>(
-    AuthenticationInfo.AuthenticationType.ENTERPRISE,
+  const [activeKey, setActiveKey] = useState<any>(
+    '0'
   );
-  const [titleName, setTitleName] = useState<string>('企业名称');
 
   const [dataSource, setDataSource] = useState<AuthenticationInfo.Content[]>([]);
   const [searchContent, setSearChContent] = useState<AuthenticationInfo.SearchBody>({});
@@ -62,7 +61,7 @@ export default () => {
         pageIndex,
         pageSize,
         ...searchContent,
-        auditType: activeKey,
+        bizType: activeKey,
       });
       if (code === 0) {
         setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
@@ -84,9 +83,8 @@ export default () => {
         pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
-      // title: '企业名称',
-      title: activeKey == 'EXPERT' ? '专家名称' : '企业名称',
-      dataIndex: 'orgName',
+      title: activeKey == '2' ? '专家名称' : '企业名称',
+      dataIndex: 'bizName',
       width: 150,
       isEllipsis: true,
     },
@@ -98,9 +96,9 @@ export default () => {
     },
     {
       title: '认证时间',
-      dataIndex: 'createTime',
+      dataIndex: 'certificationTime',
       isEllipsis: true,
-      render: (_: string) => moment(_).format('YYYY-MM-DD HH:mm:ss'),
+      // render: (_: string) => moment(_).format('YYYY-MM-DD HH:mm:ss'),
       width: 200,
     },
     {
@@ -114,31 +112,7 @@ export default () => {
       dataIndex: 'area',
       isEllipsis: true,
       width: 150,
-    },
-    {
-      title: '操作',
-      width: 200,
-      dataIndex: 'option',
-      fixed: 'right',
-      render: (_: any, record: any) => {
-        return (
-          <div style={{ textAlign: 'center' }}>
-            <Space size={20}>
-              <Button
-                type="link"
-                onClick={() => {
-                  history.push(
-                    `${routeName.AUTHENTICATION_INFO_DETAIL}?id=${record.id}&type=${activeKey}`,
-                  );
-                }}
-              >
-                编辑
-              </Button>
-            </Space>
-          </div>
-        );
-      },
-    },
+    }
   ];
 
   useEffect(() => {
@@ -152,7 +126,7 @@ export default () => {
         <Form {...formLayout} form={searchForm}>
           <Row>
             <Col span={8}>
-              <Form.Item name="orgName" label="认证名称">
+              <Form.Item name="bizName" label="认证名称">
                 <Input placeholder="企业/服务商/专家名称" />
               </Form.Item>
             </Col>
@@ -174,7 +148,7 @@ export default () => {
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="areaCode" label="所属区域">
+              <Form.Item name="area" label="所属区域">
                 <Select placeholder="请选择" allowClear>
                   {areaOptions?.map((item: any) => (
                     <Select.Option key={item?.code} value={Number(item?.code)}>
@@ -188,12 +162,12 @@ export default () => {
               <Button
                 style={{ marginRight: 20 }}
                 type="primary"
-                key="primary"
+                key="primary1"
                 onClick={() => {
                   const search = searchForm.getFieldsValue();
                   if (search.time) {
-                    search.startDate = moment(search.time[0]).format('YYYY-MM-DD HH:mm:ss');
-                    search.endDate = moment(search.time[1]).format('YYYY-MM-DD HH:mm:ss');
+                    search.startTime = moment(search.time[0]).format('YYYY-MM-DD HH:mm:ss');
+                    search.endTime = moment(search.time[1]).format('YYYY-MM-DD HH:mm:ss');
                   }
                   setSearChContent(search);
                 }}
@@ -202,7 +176,7 @@ export default () => {
               </Button>
               <Button
                 type="primary"
-                key="primary"
+                key="primary2"
                 onClick={() => {
                   searchForm.resetFields();
                   setSearChContent({});
@@ -225,15 +199,15 @@ export default () => {
       tabList={[
         {
           tab: '工业企业',
-          key: AuthenticationInfo.AuthenticationType.ENTERPRISE,
+          key: '0',
         },
         {
           tab: '服务商',
-          key: AuthenticationInfo.AuthenticationType.SERVICE_PROVIDER,
+          key: '1',
         },
         {
           tab: '专家',
-          key: AuthenticationInfo.AuthenticationType.EXPERT,
+          key: '2',
         },
       ]}
       tabActiveKey={activeKey}
