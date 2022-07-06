@@ -1032,7 +1032,7 @@ export default () => {
           name="firstPic"
           valuePropName="fileList"
           getValueFromEvent={normFile}
-          extra={`${'图片格式仅支持JPG、PNG、JPEG,建议尺寸XXXX*XXXX，大小在5M以下'}`}
+          extra={`${'图片格式仅支持JPG、PNG、JPEG,建议尺寸690*170px，大小在5M以下'}`}
         > 
           <Upload 
             maxCount={1} 
@@ -1051,7 +1051,7 @@ export default () => {
           name="otherPic"
           valuePropName="fileList"
           getValueFromEvent={normFile}
-          extra={'图片格式仅支持JPG、PNG、JPEG,建议尺寸XXXX*XXXX，大小在5M以下，支持3张图片'}
+          extra={'图片格式仅支持JPG、PNG、JPEG,建议尺寸690*240px，大小在5M以下，支持3张图片'}
           rules={[{ required: true }]}
         >
           <Upload 
