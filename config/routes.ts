@@ -196,6 +196,50 @@ export default [
         ],
       },
       {
+        path: '/service-config/achievements-manage',
+        name: '科技成果管理',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: '/service-config/achievements-manage',
+            redirect: '/service-config/achievements-manage/index',
+          },
+          {
+            path: '/service-config/achievements-manage/index',
+            name: '科技成果管理',
+            hideInBreadcrumb: true,
+            component: './service_config/achievements_manage',
+          },
+          {
+            path: '/service-config/achievements-manage/detail',
+            name: '科技成果详情',
+            component: './service_config/achievements_manage/detail',
+          },
+        ],
+      },
+      {
+        path: '/service-config/creative-need-manage',
+        name: '创新需求管理',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: '/service-config/creative-need-manage',
+            redirect: '/service-config/creative-need-manage/index',
+          },
+          {
+            path: '/service-config/creative-need-manage/index',
+            name: '创新需求管理',
+            hideInBreadcrumb: true,
+            component: './service_config/creative_need_manage/index',
+          },
+          {
+            path: '/service-config/creative-need-manage/detail',
+            name: '创新需求详情',
+            component: './service_config/creative_need_manage/detail',
+          },
+        ],
+      },
+      {
         path: routeName.SOLUTION,
         name: '服务管理',
         hideChildrenInMenu: true,
@@ -282,12 +326,35 @@ export default [
     routes: [
       {
         path: '/operate-data',
-        redirect: '/operate-data/data-display',
+        redirect: '/operate-data/data-manage/index',
       },
+
+      // {
+      //   path: '/operate-data/data-display',
+      //   name: '数据展示',
+      //   component: './operate_data/data_display',
+      // },
       {
-        path: '/operate-data/data-display',
-        name: '数据展示',
-        component: './operate_data/data_display',
+        path: '/operate-data/data-manage',
+        name: '数据管理',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: '/operate-data/data-manage',
+            redirect: '/operate-data/data-manage/index',
+          },
+          {
+            path: '/operate-data/data-manage/index',
+            name: '数据管理',
+            hideInBreadcrumb: true,
+            component: './operate_data/data_manage/index',
+          },
+          {
+            path: '/operate-data/data-manage/detail',
+            name: '认证信息详情',
+            component: './operate_data/data_manage/detail',
+          },
+        ],
       },
     ],
   },

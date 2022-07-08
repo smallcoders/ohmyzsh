@@ -1,12 +1,11 @@
-import { message, Image } from 'antd';
+import { message, Image, Button } from 'antd';
 import { history } from 'umi';
 import React, { useState, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
-import { getCreativeDetail } from '@/services/kc-verify';
+import { getDemandDetail } from '@/services/achievements-manage';
 import { getEnumByName } from '@/services/common';
-import VerifyInfoDetail from '@/components/verify_info_detail/verify-info-detail';
 
 const sc = scopedClasses('user-config-kechuang');
 
@@ -41,11 +40,11 @@ export default () => {
 
     if (id) {
       try {
-        const res = await getCreativeDetail(id);
+        const res = await getDemandDetail(id);
         getDictionary();
         if (res.code === 0) {
           console.log(res);
-          setDetail(res.result);
+          setDetail(res.result?.achievement);
         } else {
           throw new Error(res.message);
         }
@@ -70,11 +69,32 @@ export default () => {
   }, []);
 
   return (
-    <PageContainer loading={loading}>
+    <PageContainer loading={loading}
+      footer={[
+        <Button onClick={() => history.goBack()}>返回</Button>,
+      ]}
+    >
       <div className={sc('container')}>
-        <div className={sc('container-title')}>技术成果信息</div>
+        <div className={sc('container-title')}>成果联系信息</div>
         <div className={sc('container-desc')}>
-          <span>技术成果名称：</span>
+          <span>联系人：</span>
+          <span>{detail?.contactName || '--'}</span>
+        </div>
+        <div className={sc('container-desc')}>
+          <span>联系电话：</span>
+          <span>{detail?.contactPhone || '--'}</span>
+        </div>
+        <div className={sc('container-desc')}>
+          <span>企业名称：</span>
+          <span>{detail?.enterpriseName || '--'}</span>
+        </div>
+        <div className={sc('container-desc')}>
+          <span>所属区域：</span>
+          <span>{detail?.areaName || '--'}</span>
+        </div>
+        <div className={sc('container-title')}>科技成果信息</div>
+        <div className={sc('container-desc')}>
+          <span>科技成果名称：</span>
           <span>{detail?.name || '--'}</span>
         </div>
         <div className={sc('container-desc')}>
@@ -102,6 +122,10 @@ export default () => {
         <div className={sc('container-desc')}>
           <span>主要应用行业：</span>
           <span>{detail?.types ? detail?.types.join('，') : '--'}</span>
+        </div>
+        <div className={sc('container-desc')}>
+          <span>关键词：</span>
+          <span>{detail?.keywordShow ? detail?.keywordShow.join(',') : '--'}</span>
         </div>
         <div className={sc('container-desc')}>
           <span>专利编号：</span>
@@ -145,36 +169,6 @@ export default () => {
           <span>是否需要代理：</span>
           <span>{detail?.proxy ? '是' : '否'}</span>
         </div> */}
-
-        <div className={sc('container-title')}>成果联系信息</div>
-        <div className={sc('container-desc')}>
-          <span>联系人：</span>
-          <span>
-            {detail?.contactName || '--'}
-            {detail?.contactNameHide ? '（匿名）' : ''}
-          </span>
-        </div>
-        <div className={sc('container-desc')}>
-          <span>联系电话：</span>
-          <span>
-            {detail?.contactPhone || '--'}
-            {detail?.contactPhoneHide ? '（隐藏）' : ''}
-          </span>
-        </div>
-        <div className={sc('container-desc')}>
-          <span>企业名称：</span>
-          <span>
-            {detail?.enterpriseName || '--'}
-            {detail?.enterpriseNameHide ? '（隐藏）' : ''}
-          </span>
-        </div>
-        <div className={sc('container-desc')}>
-          <span>所属区域：</span>
-          <span>{detail?.areaName || '--'}</span>
-        </div>
-      </div>
-      <div style={{ background: '#fff', marginTop: 20, paddingTop: 20 }}>
-        <VerifyInfoDetail auditId={detail?.auditId} reset={prepare} />
       </div>
     </PageContainer>
   );

@@ -148,3 +148,15 @@ export async function deleteReportFile(id: string) {
     method: 'delete',
   });
 }
+
+/**
+ * 获取意向报名记录
+ */
+ export async function getIntentionList(data?: { [key: string]: any }) {
+  return request<
+    Common.ResultCode & Common.ResultPage & { result: DiagnosticTasks.OnlineRecord[] }
+  >('/antelope-manage/intention/diagnosis/page', {
+    method: 'post',
+    data,
+  });
+}
