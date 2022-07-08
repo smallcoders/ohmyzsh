@@ -26,6 +26,6 @@ export const dateFormat = (time: string | undefined, format = 'Y-m-d h:i:s') => 
   // 是否补 0
   return format.replace(/\w/g, (o) => {
     const rt = hash[o.toLocaleLowerCase()];
-    return rt > 10 ? rt : `0${rt}`;
+    return rt >= 10 ? rt : `0${rt}`;
   });
 };
