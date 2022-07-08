@@ -235,6 +235,7 @@ export default () => {
         title={editingItem.id ? '修改机构类型' : '新增机构类型'}
         width="400px"
         visible={createModalVisible}
+        maskClosable={false}
         onCancel={() => {
           clearForm();
           setModalVisible(false);

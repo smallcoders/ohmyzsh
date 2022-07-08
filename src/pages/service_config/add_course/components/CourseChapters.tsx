@@ -632,6 +632,7 @@ export default () => {
         title={'上传课件'}
         width="400px"
         visible={modalVisible}
+        maskClosable={false}
         onCancel={() => {
           setModalVisible(false);
           setFiles([]);

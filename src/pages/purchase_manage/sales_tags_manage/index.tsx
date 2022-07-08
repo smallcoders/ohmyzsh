@@ -176,6 +176,7 @@ export default () => {
         title={editingItem.id ? '编辑促销标签' : '新增促销标签'}
         width="600px"
         visible={createModalVisible}
+        maskClosable={false}
         okButtonProps={{ loading: addOrUpdateLoading }}
         onOk={handleOk}
         onCancel={handleCancel}

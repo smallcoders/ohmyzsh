@@ -215,6 +215,7 @@ export default (
       </Upload>
       <Modal
         visible={previewObj.previewVisible}
+        maskClosable={false}
         // title={previewObj.previewTitle}
         footer={null}
         onCancel={() => {

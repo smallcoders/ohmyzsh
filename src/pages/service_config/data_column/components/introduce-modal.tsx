@@ -65,6 +65,7 @@ const IntroduceModal = ({ visible, setVisible, submit, detail, publishLoading })
       title={detail?.title}
       width="60%"
       visible={visible}
+      maskClosable={false}
       onCancel={() => {
         clearForm();
         setVisible(false);

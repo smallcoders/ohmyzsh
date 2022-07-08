@@ -492,6 +492,7 @@ export default () => {
           setModalVisible(false);
         }}
         visible={createModalVisible}
+        maskClosable={false}
         okButtonProps={{ loading: addOrUpdateLoading }}
         footer={[
           <Button key="back" onClick={() => {

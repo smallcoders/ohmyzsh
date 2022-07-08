@@ -272,6 +272,7 @@ export default () => {
         title={editingItem.id ? '修改管理员' : '新增管理员'}
         width="400px"
         visible={createModalVisible}
+        maskClosable={false}
         onCancel={() => {
           clearForm();
           setModalVisible(false);
