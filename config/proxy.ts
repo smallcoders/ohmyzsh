@@ -45,5 +45,15 @@ export default {
       changeOrigin: true,
       pathRewrite: { '^': '' },
     },
+    '/antelope-user/': {
+      target: 'http://172.30.33.222:10086',
+      changeOrigin: true,
+      pathRewrite: { '^': '' },
+    },
+    '/antelope-science/': {
+      target: 'http://172.30.35.217:10086',
+      changeOrigin: true,
+      pathRewrite: { '^': '' },
+    },
   },
 };
