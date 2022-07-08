@@ -12,6 +12,15 @@ export async function getExpertResourcePage(data?: { [key: string]: any }) {
   });
 }
 
+/** 获取咨询记录分页 */
+export async function updateKeyword(data?: { [key: string]: any }) {
+  return request<any>('/antelope-manage/expert/update/keyword', {
+    method: 'put',
+    data,
+  });
+}
+
+
 /**
  * 专家详情
  * @param id

@@ -9,6 +9,8 @@ import {
   Space,
   Popconfirm,
   Radio,
+  Checkbox,
+  Modal
 } from 'antd';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
@@ -16,12 +18,15 @@ import React, { useEffect, useState } from 'react';
 import type Common from '@/types/common';
 import SelfTable from '@/components/self_table';
 import { history } from 'umi';
-import { getExpertResourcePage, showTop } from '@/services/expert_manage/expert-resource';
+import { getExpertResourcePage, showTop, updateKeyword } from '@/services/expert_manage/expert-resource';
 import type ExpertResource from '@/types/expert_manage/expert-resource';
 import { getAreaTree } from '@/services/area';
 import { getDictionay } from '@/services/common';
 import { routeName } from '../../../../../config/routes';
 import { signCommissioner } from '@/services/service-commissioner-verify';
+import { 
+  getKeywords, //关键词枚举 
+} from '@/services/creative-demand';
 import SelfSelect from '@/components/self_select';
 const sc = scopedClasses('user-config-logout-verify');
 
@@ -29,6 +34,7 @@ export default () => {
   const [dataSource, setDataSource] = useState<ExpertResource.Content[]>([]);
   const [searchContent, setSearChContent] = useState<ExpertResource.SearchBody>({});
   const [selectTypes, setSelectTypes] = useState<any>([]);
+  const [keywords, setKeywords] = useState<any[]>([]);// 关键词数据
   const formLayout = {
     labelCol: { span: 6 },
     wrapperCol: { span: 16 },
@@ -59,6 +65,9 @@ export default () => {
       getDictionay('COMMISSIONER_SERVICE_TYPE').then((data) => {
         setServiceType(data.result || []);
       });
+      getKeywords().then(res => {
+        setKeywords(res.result || [])
+      })
     } catch (error) {
       antdMessage.error('数据初始化错误');
     }
@@ -120,6 +129,96 @@ export default () => {
     }
   };
 
+
+  const formLayout2 = {
+    labelCol: { span: 3 },
+    wrapperCol: { span: 20 },
+  };
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [currentId, setCurrentId] = useState<string>('');
+  const [editForm] = Form.useForm<{ keyword: any; keywordOther: string }>();
+  const newKeywords = Form.useWatch('keyword', editForm);
+  const handleOk = async () => {
+    editForm
+      .validateFields()
+      .then(async (value) => {
+        console.log(value)
+        // setLoading(true);
+        const submitRes = await updateKeyword({
+          id: currentId,
+          ...value,
+        });
+        if (submitRes.code === 0) {
+          antdMessage.success(`关键词编辑成功！`);
+          setModalVisible(false);
+          editForm.resetFields();
+          getPage();
+        } else {
+          antdMessage.error(`关键词编辑失败，原因:{${submitRes.message}}`);
+        }
+        // setLoading(false);
+      })
+      .catch(() => {});
+    };
+
+  const handleCancel = () => {
+    setModalVisible(false);
+  };
+  const useModal = (): React.ReactNode => {
+    return (
+      <Modal
+        title={'关键词编辑'}
+        width="780px"
+        visible={modalVisible}
+        // okButtonProps={{ loading: addOrUpdateLoading }}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        footer={[
+          <Button key="back" onClick={handleCancel}>
+            取消
+          </Button>,
+          <Button
+            key="link"
+            type="primary"
+            onClick={handleOk}
+          >
+            确定
+          </Button>,
+        ]}
+      >
+        <Form {...formLayout2} form={editForm}>
+          <Form.Item name="keyword" label="关键词" rules={[{required: true}]} extra="多选（最多三个）">
+            <Checkbox.Group>
+              <Row>
+                {keywords?.map((i) => {
+                  return i.enumName == 'OTHER' ? (
+                    <Col span={6} key={i.enumName}>
+                      <Checkbox value={i.enumName} style={{ lineHeight: '32px' }} disabled={newKeywords&&newKeywords.length==3&&(!newKeywords.includes(i.enumName))}>
+                        {i.name}
+                      </Checkbox>
+                      {newKeywords && (newKeywords.indexOf('OTHER') > -1) && (
+                        <Form.Item name="keywordOther" label="">
+                          <Input placeholder='请输入' maxLength={10}/>
+                        </Form.Item>
+                      )}
+                    </Col>
+                  ) : (
+                    <Col span={6}>
+                      <Checkbox value={i.enumName} style={{ lineHeight: '32px' }} disabled={newKeywords&&newKeywords.length==3&&(!newKeywords.includes(i.enumName))}>
+                        {i.name}
+                      </Checkbox>
+                    </Col>
+                  );
+                })}
+              </Row>
+            </Checkbox.Group>
+          </Form.Item>
+          {/* <span>选中的关键词：{newKeywords} {newKeywords && 'K' in newKeywords}</span> */}
+        </Form>
+      </Modal>
+    );
+  };
+
   const columns = [
     {
       title: '序号',
@@ -168,13 +267,13 @@ export default () => {
     },
     {
       title: '操作',
-      width: 250,
+      width: 350,
       dataIndex: 'option',
       fixed: 'right',
-      render: (_: any, record: ExpertResource.Content) => {
+      render: (_: any, record: any) => {
         return (
           <div style={{ textAlign: 'center' }}>
-            <Space size={5}>
+            <Space size={1}>
               <Button
                 type="link"
                 onClick={() => {
@@ -248,6 +347,13 @@ export default () => {
                   服务专员标记
                 </Button>
               </Popconfirm>
+              <Button type="link" onClick={() => {
+                setModalVisible(true);
+                setCurrentId(record.id)
+                editForm.setFieldsValue({keyword: record.keyword || [], keywordOther: record.keywordOther || ''})
+              }}>
+                关键词编辑
+              </Button>
             </Space>
           </div>
         );
@@ -306,7 +412,7 @@ export default () => {
               <Button
                 style={{ marginRight: 20 }}
                 type="primary"
-                key="primary"
+                key="primary1"
                 onClick={() => {
                   const search = searchForm.getFieldsValue();
                   setSearChContent(search);
@@ -316,7 +422,7 @@ export default () => {
               </Button>
               <Button
                 type="primary"
-                key="primary"
+                key="primary2"
                 onClick={() => {
                   searchForm.resetFields();
                   setSearChContent({});
@@ -360,6 +466,7 @@ export default () => {
           }
         />
       </div>
+      {useModal()}
     </>
   );
 };
