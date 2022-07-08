@@ -157,7 +157,7 @@ export default () => {
     },
     {
       title: '发布时间',
-      dataIndex: 'submitDateTime',
+      dataIndex: 'updateTime',
       width: 200,
       render: (_: string) => moment(_).format('YYYY-MM-DD HH:mm:ss'),
     },
