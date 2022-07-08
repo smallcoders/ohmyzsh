@@ -23,27 +23,35 @@ import moment from 'moment';
 import { routeName } from '@/../config/routes';
 import SelfTable from '@/components/self_table';
 import { history } from 'umi';
-import { getCreativePage } from '@/services/kc-verify';
-import { getDictionaryTree } from '@/services/dictionary';
+import { 
+  getCreativePage,//分页数据
+  getKeywords, //关键词枚举 
+  getCreativeTypes,// 应用行业
+  updateKeyword, // 关键词编辑
+  updateConversion // 完成转化
+} from '@/services/achievements-manage';
 import { handleAudit } from '@/services/audit';
 const sc = scopedClasses('service-config-app-news');
 const stateObj = {
-  AUDITING: '待审核',
-  AUDIT_PASSED: '已通过',
-  AUDIT_REJECTED: '已拒绝',
+  NOT_CONNECT: '未对接',
+  CONNECTING: '对接中',
+  CONVERTED: '已转化'
 };
 export default () => {
   const [dataSource, setDataSource] = useState<News.Content[]>([]);
   const [refuseContent, setRefuseContent] = useState<string>('');
-  const [types, setTypes] = useState<any[]>([]);
+  const [types, setTypes] = useState<any[]>([]);// 应用行业数据
+  const [keywords, setKeywords] = useState<any[]>([]);// 关键词数据
   const [searchContent, setSearChContent] = useState<{
     name?: string; // 标题
-    startDateTime?: string; // 提交开始时间
-    auditState?: number; // 状态： 3:通过 4:拒绝
+    startDate?: string; // 提交开始时间
+    state?: string; // 状态： 3:通过 4:拒绝
     userName?: string; // 用户名
-    endDateTime?: string; // 提交结束时间
+    endDate?: string; // 提交结束时间
     typeId?: number; // 行业类型id 三级类型
   }>({});
+
+  const [currentId, setCurrentId] = useState<string>('');
 
   const formLayout = {
     labelCol: { span: 6 },
@@ -83,8 +91,12 @@ export default () => {
 
   const prepare = async () => {
     try {
-      const res = await getDictionaryTree('CREATIVE_TYPE');
-      setTypes(res);
+      const res = await Promise.all([
+        getKeywords(),
+        getCreativeTypes()
+      ]);
+      setKeywords(res[0].result || [])
+      setTypes(res[1].result || []);
     } catch (error) {
       message.error('获取行业类型失败');
     }
@@ -93,19 +105,14 @@ export default () => {
     prepare();
   }, []);
 
-  const editState = async (record: any, { ...rest }) => {
+  const editState = async (id: string) => {
     try {
-      const tooltipMessage = rest.result ? '审核通过' : '审核拒绝';
-      const updateStateResult = await handleAudit({
-        auditId: record.auditId,
-        ...rest,
-      });
+      const updateStateResult = await updateConversion(id);
       if (updateStateResult.code === 0) {
-        message.success(`${tooltipMessage}成功`);
+        message.success(`完成转化成功`);
         getPage();
-        if (!rest.result) setRefuseContent('');
       } else {
-        message.error(`${tooltipMessage}失败，原因:{${updateStateResult.message}}`);
+        message.error(`完成转化失败，原因:{${updateStateResult.message}}`);
       }
     } catch (error) {
       console.log(error);
@@ -143,8 +150,9 @@ export default () => {
     },
     {
       title: '关键词',
-      dataIndex: 'userName',
+      dataIndex: 'keywordShow',
       isEllipsis: true,
+      render: (_: string[]) => (_ || []).join(',') || '/',
       width: 300,
     },
     {
@@ -155,12 +163,12 @@ export default () => {
     },
     {
       title: '状态',
-      dataIndex: 'auditState',
+      dataIndex: 'state',
       width: 200,
       render: (_: string) => {
         return (
           <div className={`state${_}`}>
-            {Object.prototype.hasOwnProperty.call(stateObj, _) ? stateObj[_] : '--'}
+            {Object.prototype.hasOwnProperty.call(stateObj, _) ? stateObj[_] : '/'}
           </div>
         );
       },
@@ -171,10 +179,12 @@ export default () => {
       fixed: 'right',
       dataIndex: 'option',
       render: (_: any, record: any) => {
-        return (
+        return record.state == 'CONVERTED' ? ('/') : (
           <Space>
             <Button type="link" onClick={() => {
               setModalVisible(true);
+              setCurrentId(record.id)
+              editForm.setFieldsValue({keyword: record.keyword || [], keywordOther: record.keywordOther || ''})
             }}>
               关键词编辑
             </Button>
@@ -185,7 +195,7 @@ export default () => {
               }
               okText="确定"
               cancelText="取消"
-              onConfirm={() => editState(record, { result: false, reason: refuseContent })}
+              onConfirm={() => editState(record.id)}
             >
               <Button type="link">完成转化</Button>
             </Popconfirm>
@@ -211,7 +221,7 @@ export default () => {
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="type" label="应用行业">
+              <Form.Item name="typeId" label="应用行业">
                 <TreeSelect
                   showSearch
                   treeNodeFilterProp="name"
@@ -229,11 +239,11 @@ export default () => {
               </Form.Item>
             </Col> */}
             <Col span={8}>
-              <Form.Item name="auditState" label="状态">
+              <Form.Item name="state" label="状态">
                 <Select placeholder="请选择" allowClear>
-                  <Select.Option value={'AUDITING'}>待审核</Select.Option>
-                  <Select.Option value={'AUDIT_PASSED'}>通过</Select.Option>
-                  <Select.Option value={'AUDIT_REJECTED'}>拒绝</Select.Option>
+                  <Select.Option value={'NOT_CONNECT'}>未对接</Select.Option>
+                  <Select.Option value={'CONNECTING'}>对接中</Select.Option>
+                  <Select.Option value={'CONVERTED'}>已转化</Select.Option>
                 </Select>
               </Form.Item>
             </Col>
@@ -252,8 +262,8 @@ export default () => {
                 onClick={() => {
                   const search = searchForm.getFieldsValue();
                   if (search.time) {
-                    search.startDateTime = moment(search.time[0]).format('YYYY-MM-DDTHH:mm:ss');
-                    search.endDateTime = moment(search.time[1]).format('YYYY-MM-DDTHH:mm:ss');
+                    search.startDate = moment(search.time[0]).format('YYYY-MM-DD HH:mm:ss');
+                    search.endDate = moment(search.time[1]).format('YYYY-MM-DD HH:mm:ss');
                   }
                   setSearChContent(search);
                 }}
@@ -279,27 +289,25 @@ export default () => {
 
 
   const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const [editForm] = Form.useForm<{ keywords: any; other: string }>();
-  const newKeywords = Form.useWatch('keywords', editForm);
+  const [editForm] = Form.useForm<{ keyword: any; keywordOther: string }>();
+  const newKeywords = Form.useWatch('keyword', editForm);
   const handleOk = async () => {
     editForm
       .validateFields()
       .then(async (value) => {
-        console.log(value, 111);
         // setLoading(true);
-        // const tooltipMessage = '提交';
-        // const submitRes = await handleAudit({
-        //   auditId: auditId,
-        //   ...value,
-        // });
-        // if (submitRes.code === 0) {
-        //   message.success(`${tooltipMessage}成功`);
-        //   form.resetFields();
-        //   refresh();
-        //   onBack();
-        // } else {
-        //   message.error(`${tooltipMessage}失败，原因:{${submitRes.message}}`);
-        // }
+        const submitRes = await updateKeyword({
+          id: currentId,
+          ...value,
+        });
+        if (submitRes.code === 0) {
+          message.success(`关键词编辑成功！`);
+          setModalVisible(false);
+          editForm.resetFields();
+          getPage();
+        } else {
+          message.error(`关键词编辑失败，原因:{${submitRes.message}}`);
+        }
         // setLoading(false);
       })
       .catch(() => {});
@@ -331,69 +339,29 @@ export default () => {
         ]}
       >
         <Form {...formLayout2} form={editForm}>
-          <Form.Item name="keywords" label="关键词" rules={[{required: true}]} extra="多选（最多三个）">
+          <Form.Item name="keyword" label="关键词" rules={[{required: true}]} extra="多选（最多三个）">
             <Checkbox.Group>
               <Row>
-                <Col span={6}>
-                  <Checkbox value="A" style={{ lineHeight: '32px' }}>
-                    新一代信息技术
-                  </Checkbox>
-                </Col>
-                <Col span={6}>
-                  <Checkbox value="B" style={{ lineHeight: '32px' }}>
-                    人工智能
-                  </Checkbox>
-                </Col>
-                <Col span={6}>
-                  <Checkbox value="C" style={{ lineHeight: '32px' }}>
-                    新材料
-                  </Checkbox>
-                </Col>
-                <Col span={6}>
-                  <Checkbox value="D" style={{ lineHeight: '32px' }}>
-                    新能源和节能环保
-                  </Checkbox>
-                </Col>
-                <Col span={6}>
-                  <Checkbox value="E" style={{ lineHeight: '32px' }}>
-                    智能汽车
-                  </Checkbox>
-                </Col>
-                <Col span={6}>
-                  <Checkbox value="F" style={{ lineHeight: '32px' }}>
-                    高端装备制造
-                  </Checkbox>
-                </Col>
-                <Col span={6}>
-                  <Checkbox value="G" style={{ lineHeight: '32px' }}>
-                    智能家电
-                  </Checkbox>
-                </Col>
-                <Col span={6}>
-                  <Checkbox value="H" style={{ lineHeight: '32px' }}>
-                    生命健康
-                  </Checkbox>
-                </Col>
-                <Col span={6}>
-                  <Checkbox value="I" style={{ lineHeight: '32px' }}>
-                    绿色食品
-                  </Checkbox>
-                </Col>
-                <Col span={6}>
-                  <Checkbox value="J" style={{ lineHeight: '32px' }}>
-                    数字创意
-                  </Checkbox>
-                </Col>
-                <Col span={6}>
-                  <Checkbox value="K" style={{ lineHeight: '32px' }}>
-                    其他 
-                  </Checkbox>
-                  {newKeywords && (newKeywords.indexOf('K') > -1) && (
-                    <Form.Item name="other" label="">
-                      <Input placeholder='请输入'/>
-                    </Form.Item>
-                  )}
-                </Col>
+                {keywords?.map((i) => {
+                  return i.enumName == 'OTHER' ? (
+                    <Col span={6}>
+                      <Checkbox value={i.enumName} style={{ lineHeight: '32px' }} disabled={newKeywords&&newKeywords.length==3&&(!newKeywords.includes(i.enumName))}>
+                        {i.name}
+                      </Checkbox>
+                      {newKeywords && (newKeywords.indexOf('OTHER') > -1) && (
+                        <Form.Item name="keywordOther" label="">
+                          <Input placeholder='请输入' maxLength={10}/>
+                        </Form.Item>
+                      )}
+                    </Col>
+                  ) : (
+                    <Col span={6}>
+                      <Checkbox value={i.enumName} style={{ lineHeight: '32px' }} disabled={newKeywords&&newKeywords.length==3&&(!newKeywords.includes(i.enumName))}>
+                        {i.name}
+                      </Checkbox>
+                    </Col>
+                  );
+                })}
               </Row>
             </Checkbox.Group>
           </Form.Item>

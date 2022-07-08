@@ -149,7 +149,7 @@ export default () => {
     },
     {
       title: '关键词',
-      dataIndex: 'typeNames',
+      dataIndex: 'keywordShow',
       isEllipsis: true,
       render: (_: string[]) => (_ || []).join(','),
       width: 150,

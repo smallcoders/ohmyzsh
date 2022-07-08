@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
-import { getDemandDetail } from '@/services/kc-verify';
+import { getDemandDetail } from '@/services/creative-demand';
 
 const sc = scopedClasses('user-config-kechuang');
 
@@ -80,15 +80,15 @@ export default () => {
         </div>
         <div className={sc('container-desc')}>
           <span>联系人：</span>
-          <span>{detail?.hide ? '隐藏' : '公开'}</span>
+          <span>{detail?.contactName || '--'}</span>
         </div>
         <div className={sc('container-desc')}>
           <span>联系电话：</span>
-          <span>{detail?.hide ? '隐藏' : '公开'}</span>
+          <span>{detail?.contactPhone || '--'}</span>
         </div>
         <div className={sc('container-desc')}>
           <span>需求企业名称：</span>
-          <span>{detail?.hide ? '隐藏' : '公开'}</span>
+          <span>{detail?.orgName || '--'}</span>
         </div>
       </div>
     </PageContainer>

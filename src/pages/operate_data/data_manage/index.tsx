@@ -10,11 +10,8 @@ import {
   message as antdMessage,
   Row,
   Select,
-  Space,
 } from 'antd';
-import { routeName } from '../../../../config/routes';
 import React, { useEffect, useState } from 'react';
-import { history } from 'umi';
 import { getAreaTree } from '@/services/area';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
@@ -215,7 +212,7 @@ export default () => {
     >
       <div className={sc('container-table-header')}>
         <div className="title">
-          <span>认证账号列表(共{pageInfo.totalCount || 0}个)</span>
+          <span>认证账号列表</span>
         </div>
       </div>
       <div className={sc('container-table-body')}>
@@ -234,7 +231,7 @@ export default () => {
                   current: pageInfo.pageIndex,
                   pageSize: pageInfo.pageSize,
                   showTotal: (total: number) =>
-                    `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
+                    `第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
                 }
           }
         />

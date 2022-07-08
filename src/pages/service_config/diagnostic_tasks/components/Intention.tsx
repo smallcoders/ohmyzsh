@@ -4,7 +4,7 @@ import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
 import type Common from '@/types/common';
 import {
-  getDiagnosisRecords,
+  getIntentionList,
   getXTYSkipUrl,
 } from '@/services/diagnostic-tasks';
 import SelfTable from '@/components/self_table';
@@ -26,7 +26,7 @@ export default () => {
    */
   const getDiagnosticTasks = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     try {
-      const { result, totalCount, pageTotal, code } = await getDiagnosisRecords({
+      const { result, totalCount, pageTotal, code } = await getIntentionList({
         pageIndex,
         pageSize
       });
@@ -60,25 +60,19 @@ export default () => {
     },
     {
       title: '企业名称',
-      dataIndex: 'org',
+      dataIndex: 'orgName',
       isEllipsis: true,
-      render: (org: { id: string; orgName: string }, record: DiagnosticTasks.OnlineRecord) => (
-        <a href="#" onClick={() => open(record?.id)}>
-          {org?.orgName || ''}
-        </a>
-      ),
       width: 200,
     },
     {
       title: '联系人',
-      dataIndex: 'area',
+      dataIndex: 'contactName',
       ellipsis: true,
-      render: (area: any) => area?.name || '/',
       width: 100,
     },
     {
       title: '联系电话',
-      dataIndex: 'score',
+      dataIndex: 'contactPhone',
       width: 200,
     }
   ];
