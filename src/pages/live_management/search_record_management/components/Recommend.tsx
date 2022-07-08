@@ -235,6 +235,7 @@ export default () => {
         title={'上架推荐'}
         width="600px"
         visible={createModalVisible}
+        maskClosable={false}
         onCancel={() => {
           clearForm();
           setModalVisible(false);

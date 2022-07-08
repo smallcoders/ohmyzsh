@@ -71,7 +71,7 @@ export default () => {
   /**
    * 关闭提醒 主要是 添加或者修改成功后 不需要弹出
    */
-   const [isClosejumpTooltip, setIsClosejumpTooltip] = useState<boolean>(false);
+   const [isClosejumpTooltip, setIsClosejumpTooltip] = useState<boolean>(true);
 
   const prepare = async () => {
     try {
@@ -118,7 +118,6 @@ export default () => {
           message.error(`获取详情失败，原因:{${detailRs.message}}`);
         }
       }
-      setIsClosejumpTooltip(true);
     } catch (error) {
       console.log('error', error);
       message.error('获取初始数据失败');
@@ -228,9 +227,9 @@ export default () => {
   ];
 
   const getProductPrices = async (id: string, index: number, name: string) => {
-    setIsClosejumpTooltip(false);
     setCurrentSetIndex(index); //保存当前修改商品的index
     setCurrentProductName(name); //保存当前修改商品的名称
+    setIsClosejumpTooltip(false);
     try {
       const res = await getProductPriceList(id);
       if (res.code === 0) {
@@ -598,6 +597,7 @@ export default () => {
         title={ '选择商品'}
         width="800px"
         visible={modalVisible}
+        maskClosable={false}
         onOk={handleOk}
         onCancel={handleCancel}
         footer={[
@@ -713,11 +713,9 @@ export default () => {
     // console.log(list);
     setChoosedProducts(list)
     setPriceModalVisible(false);
-    setIsClosejumpTooltip(true);
   };
   const cancelSetPrice = () => {
     setPriceModalVisible(false);
-    setIsClosejumpTooltip(true);
   };
   const EditableContext = React.createContext(null);
 
@@ -860,6 +858,7 @@ export default () => {
         title={ '配置商品活动价'}
         width="800px"
         visible={priceModalVisible}
+        maskClosable={false}
         onOk={setPriceOk}
         onCancel={cancelSetPrice}
         footer={[
@@ -948,8 +947,8 @@ export default () => {
           hide();
         }
         if (addorUpdateRes.code === 0) {
+          setIsClosejumpTooltip(false);
           message.success(`${tooltipMessage}成功`);
-          // setIsClosejumpTooltip(false);
           history.push(`/purchase-manage/promotions-manage`);
         } else {
           message.error(`${tooltipMessage}失败，原因:{${addorUpdateRes.message}}`);
@@ -984,7 +983,9 @@ export default () => {
       footer={[
         <Button type="primary" loading={addOrUpdateLoading} onClick={() => {addOrUpdate(0)}}>上架</Button>,
         <Button loading={addOrUpdateLoading} onClick={() => {addOrUpdate(2)}}>暂存</Button>,
-        <Button loading={addOrUpdateLoading} onClick={() => {history.push(`/purchase-manage/promotions-manage`);}}>返回</Button>
+        <Button loading={addOrUpdateLoading} onClick={() => {
+          history.push(`/purchase-manage/promotions-manage`);
+        }}>返回</Button>
       ]}
     >
       <Prompt

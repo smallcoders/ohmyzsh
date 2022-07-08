@@ -253,6 +253,7 @@ export default () => {
         title={editingItem.id ? '编辑类型' : '新增类型'}
         width="400px"
         visible={createModalVisible}
+        maskClosable={false}
         okButtonProps={{ loading: addOrUpdateLoading }}
         onOk={handleOk}
         onCancel={handleCancel}

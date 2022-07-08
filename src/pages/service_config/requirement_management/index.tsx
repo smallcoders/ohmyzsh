@@ -206,6 +206,7 @@ export default () => {
       <Modal
         title="需求类型编辑"
         width="400px"
+        maskClosable={false}
         visible={createModalVisible}
         onCancel={() => {
           clearForm();

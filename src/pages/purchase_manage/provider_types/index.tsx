@@ -197,6 +197,7 @@ export default () => {
         title={editingItem.id ? '编辑供应商类型' : '新增供应商类型'}
         width="600px"
         visible={createModalVisible}
+        maskClosable={false}
         okButtonProps={{ loading: addOrUpdateLoading }}
         onOk={handleOk}
         onCancel={handleCancel}
