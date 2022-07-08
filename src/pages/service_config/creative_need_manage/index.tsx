@@ -35,8 +35,8 @@ const sc = scopedClasses('service-config-app-news');
 const stateObj = {
   NOT_CONNECT: '未对接',
   CONNECTING: '对接中',
-  CONNECT_SUCCESS: '对接成功',
-  CONVERTED: '已转化'
+  CONVERTED: '已转化',
+  RESOLVED: '已解决'
 };
 export default () => {
   const [dataSource, setDataSource] = useState<NeedVerify.Content[]>([]);
@@ -238,7 +238,7 @@ export default () => {
     {
       title: '关键词',
       dataIndex: 'keywordShow',
-      render: (_: string[]) => (_ || []).join(','),
+      render: (_: string[]) => (_ || []).join(',') || '/',
       isEllipsis: true,
       width: 300,
     },
@@ -266,7 +266,7 @@ export default () => {
       dataIndex: 'option',
       fixed: 'right',
       render: (_: any, record: any) => {
-        return (
+        return record.state == 'RESOLVED' ? ('/') : (
           <Space>
             <Button type="link" onClick={() => {
               setModalVisible(true);
@@ -325,8 +325,8 @@ export default () => {
                 <Select placeholder="请选择" allowClear>
                   <Select.Option value={'NOT_CONNECT'}>未对接</Select.Option>
                   <Select.Option value={'CONNECTING'}>对接中</Select.Option>
-                  <Select.Option value={'CONNECT_SUCCESS'}>对接成功</Select.Option>
                   <Select.Option value={'CONVERTED'}>已转化</Select.Option>
+                  <Select.Option value={'RESOLVED'}>已解决</Select.Option>
                 </Select>
               </Form.Item>
             </Col>

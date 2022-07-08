@@ -42,7 +42,7 @@ export async function getCreativeTypes() {
  * 已解决
  */
  export async function updateConversion(id: string) {
-  return request<any>(`/antelope-science/mng/creative/achievement/update/conversion?id=${id}`, {
+  return request<any>(`/antelope-science/mng/creative/demand/update/resolved?id=${id}`, {
     method: 'get'
   });
 }
