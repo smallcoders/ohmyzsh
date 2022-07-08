@@ -322,6 +322,7 @@ export default () => {
         title={'关键词编辑'}
         width="780px"
         visible={modalVisible}
+        maskClosable={false}
         // okButtonProps={{ loading: addOrUpdateLoading }}
         onOk={handleOk}
         onCancel={handleCancel}

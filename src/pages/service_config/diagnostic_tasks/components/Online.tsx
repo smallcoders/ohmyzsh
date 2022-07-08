@@ -364,6 +364,7 @@ export default () => {
         title={'编辑任务'}
         width="600px"
         visible={modalVisible}
+        maskClosable={false}
         onCancel={() => {
           clearForm();
           setModalVisible(false);

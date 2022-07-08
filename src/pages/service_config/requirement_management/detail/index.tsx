@@ -107,7 +107,21 @@ export default () => {
   const [createConnectForm] = Form.useForm();
 
   return (
-    <PageContainer loading={loading}>
+    <PageContainer loading={loading}
+      footer={[
+        isEdit ? 
+        <Button type="primary" onClick={() => {
+          handleAddConnect();
+        }}>
+          提交
+        </Button> : '',
+        <Button onClick={() => {
+          history.push(routeName.REQUIREMENT_MANAGEMENT);
+        }}>
+          返回
+        </Button>
+      ]}
+    >
       <div className={sc('container')}>
         <div className={sc('container-title')}>企业需求信息</div>
         <div className={sc('container-desc')}>
@@ -270,7 +284,7 @@ export default () => {
               )
             })}
           </Timeline>
-          <Space style={{marginLeft: -65, position: 'fixed', bottom: 140, left: '50%'}}>
+          {/* <Space style={{marginLeft: -65, position: 'fixed', bottom: 140, left: '50%'}}>
             <Button type="primary" onClick={() => {
               handleAddConnect();
             }}>
@@ -281,7 +295,7 @@ export default () => {
             }}>
               返回
             </Button>
-          </Space>
+          </Space> */}
         </div>
       </div>
     </PageContainer>

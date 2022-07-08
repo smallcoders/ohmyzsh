@@ -453,6 +453,7 @@ export default () => {
         title={editingItem.id ? '编辑任务' : '新增任务'}
         width="600px"
         visible={createModalVisible}
+        maskClosable={false}
         onCancel={() => {
           clearForm();
           setModalVisible(false);

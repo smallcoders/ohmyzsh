@@ -248,6 +248,7 @@ const SolutionTable: React.FC = () => {
         title="服务类型编辑"
         width="400px"
         visible={createModalVisible}
+        maskClosable={false}
         onCancel={() => {
           clearForm();
           setModalVisible(false);
