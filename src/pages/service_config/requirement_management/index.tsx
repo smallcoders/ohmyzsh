@@ -33,7 +33,7 @@ import {
   demandUpper, //上架
   demandDown //下架
 } from '@/services/office-requirement-verify';
-const sc = scopedClasses('service-config-app-news');
+const sc = scopedClasses('service-config-requirement-manage');
 const stateObj = {//需求状态
   ON_SHELF: '上架',
   FINISHED: '已结束',
@@ -48,11 +48,11 @@ export default () => {
   const [dataSource, setDataSource] = useState<any[]>([]);
   const [searchContent, setSearChContent] = useState<{
     name?: string; // 标题
-    startDateTime?: string; // 提交开始时间
-    auditState?: number; // 状态： 3:通过 4:拒绝
-    userName?: string; // 用户名
-    endDateTime?: string; // 提交结束时间
-    type?: number; // 行业类型id 三级类型
+    publishStartTime?: string; // 发布开始时间
+    operationState?: string; // 需求状态
+    publisherName?: string; // 用户名
+    publishEndTime?: string; // 发布结束时间
+    type?: number; // 需求类型
   }>({});
 
   const formLayout = {
@@ -69,13 +69,11 @@ export default () => {
   };
   const [createModalVisible, setModalVisible] = useState<boolean>(false);
   const [editingItem, setEditingItem] = useState<any>({});
-  const [addOrUpdateLoading, setAddOrUpdateLoading] = useState<boolean>(false);
   const clearForm = () => {
     form.resetFields();
     if (editingItem.photoId || editingItem.id) setEditingItem({});
   };
 
-  const { TreeNode } = TreeSelect;
   const [treeNodeValue, setTreeNodeValue] = useState();
 
   const onChange = (newValue: any) => {
@@ -177,20 +175,16 @@ export default () => {
     form
       .validateFields()
       .then(async (value) => {
-        console.log(value, '...value');
-        setAddOrUpdateLoading(true);
         try {
           const addorUpdateRes = await demandEditType({ ...value, id: editingItem.id });
-          message.loading(`正在编辑`);
           if (addorUpdateRes.code === 0) {
             setModalVisible(false);
-            message.success(`编辑成功`);
+            message.success(`需求类型调整成功`);
             getPage();
             clearForm();
           } else {
-            message.error(`编辑失败，原因:{${addorUpdateRes.message}}`);
+            message.error(`需求类型调整失败，原因:{${addorUpdateRes.message}}`);
           }
-          setAddOrUpdateLoading(false);
         } catch (error) {
           console.log(error);
         }
@@ -230,7 +224,7 @@ export default () => {
                   if(value.length>3){
                     return Promise.reject('最多选3个')
                   }
-                  if(!value||value.length===0){
+                  if(!value || value.length === 0){
                     return Promise.reject('必填')
                   }else {
                     return Promise.resolve()
@@ -263,9 +257,7 @@ export default () => {
         ...searchContent,
       });
       if (code === 0) {
-        // debugger
         setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
-
         setDataSource(result);
       } else {
         message.error(`请求分页数据失败`);
@@ -278,7 +270,7 @@ export default () => {
   const [abutStatusForm] = Form.useForm();
   const columns = [
     {
-      title: '排序',
+      title: '序号',
       dataIndex: 'sort',
       width: 80,
       render: (_: any, _record: any, index: number) =>
@@ -348,7 +340,7 @@ export default () => {
       title: '发布时间',
       dataIndex: 'publishTime',
       width: 200,
-      render: (_: string) => _ ? moment(_).format('YYYY-MM-DD HH:mm:ss') : '--',
+      render: (_: string) => _ ? _ : '--',
     },
     {
       title: '需求状态',
@@ -464,7 +456,6 @@ export default () => {
               okText="确定"
               cancelText="取消"
               onConfirm={() => {
-                console.log(weightForm.getFieldValue('weight'), record, 111);
                 editSort(record.id, weightForm.getFieldValue('weight'))
               }}
             >
@@ -503,7 +494,6 @@ export default () => {
                 </Popconfirm>
               )
             }
-            
           </Space>
         )
       }
@@ -595,7 +585,7 @@ export default () => {
       {useSearchNode()}
       <div className={sc('container-table-header')}>
         <div className="title">
-          <span>消息列表(共{pageInfo.totalCount || 0}个)</span>
+          <span>需求列表(共{pageInfo.totalCount || 0}个)</span>
         </div>
       </div>
       <div className={sc('container-table-body')}>

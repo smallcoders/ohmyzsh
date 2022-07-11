@@ -1,12 +1,12 @@
 import { message, Image, Button } from 'antd';
 import { history } from 'umi';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
 import { getDemandDetail } from '@/services/creative-demand';
 
-const sc = scopedClasses('user-config-kechuang');
+const sc = scopedClasses('service-config-creative-detail');
 
 export default () => {
   const [loading, setLoading] = useState<boolean>(true);

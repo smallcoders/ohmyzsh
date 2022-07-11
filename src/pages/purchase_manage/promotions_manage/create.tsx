@@ -214,7 +214,8 @@ export default () => {
           <Space size="middle">
             <a
               href="#!"
-              onClick={() => {
+              onClick={(e) => {
+                e.preventDefault(); 
                 history.push(`/purchase-manage/commodity-detail?id=${record.id}`);
               }}
             >

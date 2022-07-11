@@ -124,7 +124,8 @@ export default () => {
           <Space size="middle">
             <a
               href="#"
-              onClick={() => {
+              onClick={(e) => {
+                e.preventDefault(); 
                 history.push(`${routeName.PROVIDERS_MANAGE_ADD}?id=${record.id}&isDetail=1`)
               }}
             >
@@ -132,7 +133,8 @@ export default () => {
             </a>
             <a
               href="#"
-              onClick={() => {
+              onClick={(e) => {
+                e.preventDefault(); 
                 history.push(`${routeName.PROVIDERS_MANAGE_ADD}?id=${record.id}`)
               }}
             >
