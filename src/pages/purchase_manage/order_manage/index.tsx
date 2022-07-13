@@ -180,7 +180,7 @@ export default () => {
         <Radio.Button value={1}>待付款</Radio.Button>
         <Radio.Button value={3}>待发货</Radio.Button>
         <Radio.Button value={4}>待收货</Radio.Button>
-        <Radio.Button value={5}>已完成</Radio.Button>
+        <Radio.Button value={26}>已完成</Radio.Button>
       </Radio.Group>
     );
   };

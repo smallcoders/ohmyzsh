@@ -3,20 +3,24 @@
     display: flex;
     color: #000;
     background-color: rgba(0, 0, 0, 0.04);
-    > div {
+
+    >div {
       display: flex;
-      > div {
+
+      >div {
         padding: 10px;
       }
     }
   }
-  &-body {
-  }
+
+  &-body {}
 }
+
 .order-item {
   border-bottom: 1px solid #D9D9D9;
   border-left: 1px solid #D9D9D9;
   border-right: 1px solid #D9D9D9;
+
   &-header {
     display: flex;
     align-items: center;
@@ -24,16 +28,19 @@
     padding: 10px;
     background: #f3f8ff;
   }
+
   &-body {
     display: flex;
     align-items: center;
     position: relative;
   }
+
   .image {
     position: relative;
     width: 104px;
     height: 104px;
-    > img {
+
+    >img {
       position: absolute;
       top: 50%;
       left: 50%;
@@ -41,7 +48,8 @@
       max-height: 100%;
       transform: translate(-50%, -50%);
     }
-    > div {
+
+    >div {
       position: absolute;
       bottom: 0;
       width: 100%;

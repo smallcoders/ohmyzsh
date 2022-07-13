@@ -465,7 +465,7 @@ export const OrderItem = ({
             </>
           )}
         </div>
-        <Tooltip
+        {type === 'ORDER' && (<Tooltip
           color={'#fff'}
           trigger="click"
           title={
@@ -514,7 +514,7 @@ export const OrderItem = ({
             <QuestionCircleOutlined />
             查看交易操作记录
           </div>
-        </Tooltip>
+        </Tooltip>)}
       </div>
     </div>
   );
