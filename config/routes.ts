@@ -14,6 +14,7 @@
   SOLUTION_DETAIL: '/service-config/solution/detail', // 服务方案详情
   NEWS: '/service-config/news', // 新闻
   ORG_TYPE_MANAGE: '/service-config/org-type-manage', // 机构类型管理
+  INDUSTRY_TOPIC: '/service-config/industry-topic', // 机构类型管理
   EXPERT_MANAGE: '/service-config/expert-manage', // 专家管理
   EXPERT_MANAGE_INDEX: '/service-config/expert-manage/index', // 专家管理
   EXPERT_MANAGE_DETAIL: '/service-config/expert-manage/detail', // 专家详情
@@ -316,6 +317,12 @@ export default [
         name: '新闻资讯',
         component: './service_config/news',
       },
+      {
+        path: routeName.INDUSTRY_TOPIC,
+        name: '产业专题',
+        component: './service_config/industry_topic',
+      },
+      
     ],
   },
   {
