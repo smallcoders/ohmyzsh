@@ -57,6 +57,19 @@ export default (
     if (!isLtLimit) {
       message.error(`文件尺寸需小于${SIZE_LIMIT_FILE}M`);
     }
+    if(accept) {
+      try {
+        const lastName = file.name.split('.');
+        const accepts = accept.split(',');
+        if (!accepts.includes('.' + lastName[lastName.length - 1])) {
+          message.error(`请上传以${accept}后缀名开头的文件`);
+          return Upload.LIST_IGNORE;
+        }
+      } catch (error) {
+        message.error('配置错误：' + error);
+        return Upload.LIST_IGNORE;
+      }
+    }
     return isLtLimit;
   };
 

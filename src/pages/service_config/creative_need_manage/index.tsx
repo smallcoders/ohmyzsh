@@ -18,7 +18,6 @@ import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
 import moment from 'moment';
-import { routeName } from '@/../config/routes';
 import SelfTable from '@/components/self_table';
 import { history } from 'umi';
 import { 
@@ -30,8 +29,7 @@ import {
 } from '@/services/creative-demand';
 import Common from '@/types/common';
 import NeedVerify from '@/types/user-config-need-verify';
-// import { getDictionaryTree } from '@/services/dictionary';
-const sc = scopedClasses('service-config-app-news');
+const sc = scopedClasses('service-config-creative-need');
 const stateObj = {
   NOT_CONNECT: '未对接',
   CONNECTING: '对接中',
@@ -40,14 +38,12 @@ const stateObj = {
 };
 export default () => {
   const [dataSource, setDataSource] = useState<NeedVerify.Content[]>([]);
-  const [refuseContent, setRefuseContent] = useState<string>('');
   const [types, setTypes] = useState<any[]>([]);
   const [keywords, setKeywords] = useState<any[]>([]);// 关键词数据
   const [searchContent, setSearChContent] = useState<{
     name?: string; // 标题
     createTimeStart?: string; // 提交开始时间
-    state?: number; // 状态： 3:通过 4:拒绝
-    userName?: string; // 用户名
+    state?: number; // 状态
     createTimeEnd?: string; // 提交结束时间
     typeId?: number; // 行业类型id 三级类型
   }>({});
@@ -70,8 +66,6 @@ export default () => {
     totalCount: 0,
     pageTotal: 0,
   });
-
-  // const [form] = Form.useForm();
 
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     try {
@@ -100,7 +94,7 @@ export default () => {
       setKeywords(res[0].result || [])
       setTypes(res[1].result || []);
     } catch (error) {
-      message.error('获取行业类型失败');
+      message.error('获取数据失败');
     }
   };
   useEffect(() => {
@@ -114,8 +108,6 @@ export default () => {
     editForm
       .validateFields()
       .then(async (value) => {
-        console.log(value)
-        // setLoading(true);
         const submitRes = await updateKeyword({
           id: currentId,
           ...value,
@@ -128,7 +120,6 @@ export default () => {
         } else {
           message.error(`关键词编辑失败，原因:{${submitRes.message}}`);
         }
-        // setLoading(false);
       })
       .catch(() => {});
     };
@@ -143,7 +134,6 @@ export default () => {
         width="780px"
         visible={modalVisible}
         maskClosable={false}
-        // okButtonProps={{ loading: addOrUpdateLoading }}
         onOk={handleOk}
         onCancel={handleCancel}
         footer={[
@@ -196,10 +186,10 @@ export default () => {
     try {
       const updateStateResult = await updateConversion(id);
       if (updateStateResult.code === 0) {
-        message.success(`操作成功`);
+        message.success(`设置成功`);
         getPage();
       } else {
-        message.error(`成功失败，原因:{${updateStateResult.message}}`);
+        message.error(`操作失败，请重试`);
       }
     } catch (error) {
       console.log(error);
@@ -220,7 +210,8 @@ export default () => {
       render: (_: string, _record: any) => (
         <a
           href="#!"
-          onClick={() => {
+          onClick={(e) => {
+            e.preventDefault(); 
             history.push(`/service-config/creative-need-manage/detail?id=${_record.id}`);
           }}
         >
@@ -263,13 +254,13 @@ export default () => {
     },
     {
       title: '操作',
-      width: 220,
+      width: 180,
       dataIndex: 'option',
       fixed: 'right',
       render: (_: any, record: any) => {
-        return record.state == 'RESOLVED' ? ('/') : (
+        return record.state == 'RESOLVED' ? (<div style={{textAlign: 'center'}}>/</div>) : (
           <Space>
-            <Button type="link" onClick={() => {
+            <Button type="link" style={{padding: 0}} onClick={() => {
               setModalVisible(true);
               setCurrentId(record.id)
               editForm.setFieldsValue({keyword: record.keyword || [], keywordOther: record.keywordOther || ''})
@@ -285,7 +276,7 @@ export default () => {
               cancelText="取消"
               onConfirm={() => editState(record.id)}
             >
-              <Button type="link">已解决</Button>
+              <Button type="link" style={{padding: 0}}>已解决</Button>
             </Popconfirm>
           </Space>
         )
