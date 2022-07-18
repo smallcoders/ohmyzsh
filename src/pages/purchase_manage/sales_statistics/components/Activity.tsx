@@ -118,7 +118,8 @@ export default () => {
         return (
           <a
             href="#"
-            onClick={() => {
+            onClick={(e) => {
+              e.preventDefault(); 
               history.push(`${routeName.SALES_STATISTICS_DETAIL}?id=${_record.id}`)
             }}
           >

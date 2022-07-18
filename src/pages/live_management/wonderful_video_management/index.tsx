@@ -186,7 +186,8 @@ export default () => {
       render: (_: string, _record: any) => (
         <a
           href="#!"
-          onClick={() => {
+          onClick={(e) => {
+            e.preventDefault(); 
             history.push(`${routeName.WONDERFUL_VIDEO_MANAGEMENT_DETAIL}?id=${_record.id}`);
           }}
         >

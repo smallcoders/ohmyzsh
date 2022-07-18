@@ -141,7 +141,8 @@ export default () => {
       render: (_: string, _record: any) => (
         <a
           href="#!"
-          onClick={() => {
+          onClick={(e) => {
+            e.preventDefault(); 
             history.push(`${routeName.ANTELOPE_LIVE_MANAGEMENT_ADD}?id=${_record.id}&isDetail=1`);
           }}
         >
@@ -205,16 +206,15 @@ export default () => {
       render: (_: any, record: AdminAccountDistributor.Content) => {
         return (
           <Space size="middle">
-            {/* {record.videoStatus != 2 && ( */}
-              <a
-                href="#"
-                onClick={() => {
-                  history.push(`${routeName.ANTELOPE_LIVE_MANAGEMENT_ADD}?id=${record.id}`);
-                }}
-              >
-                编辑
-              </a>
-            {/* )} */}
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault(); 
+                history.push(`${routeName.ANTELOPE_LIVE_MANAGEMENT_ADD}?id=${record.id}`);
+              }}
+            >
+              编辑
+            </a>
             { 
               record.lineStatus ? (
                 <Popconfirm

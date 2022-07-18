@@ -20,18 +20,16 @@ import React, { useEffect, useState } from 'react';
 import Common from '@/types/common';
 import News from '@/types/service-config-news';
 import moment from 'moment';
-import { routeName } from '@/../config/routes';
 import SelfTable from '@/components/self_table';
 import { history } from 'umi';
 import { 
-  getCreativePage,//分页数据
-  getKeywords, //关键词枚举 
-  getCreativeTypes,// 应用行业
+  getCreativePage, // 分页数据
+  getKeywords, // 关键词枚举 
+  getCreativeTypes, // 应用行业
   updateKeyword, // 关键词编辑
   updateConversion // 完成转化
 } from '@/services/achievements-manage';
-import { handleAudit } from '@/services/audit';
-const sc = scopedClasses('service-config-app-news');
+const sc = scopedClasses('service-config-achievements-manage');
 const stateObj = {
   NOT_CONNECT: '未对接',
   CONNECTING: '对接中',
@@ -39,20 +37,17 @@ const stateObj = {
 };
 export default () => {
   const [dataSource, setDataSource] = useState<News.Content[]>([]);
-  const [refuseContent, setRefuseContent] = useState<string>('');
   const [types, setTypes] = useState<any[]>([]);// 应用行业数据
   const [keywords, setKeywords] = useState<any[]>([]);// 关键词数据
   const [searchContent, setSearChContent] = useState<{
     name?: string; // 标题
     startDate?: string; // 提交开始时间
     state?: string; // 状态： 3:通过 4:拒绝
-    userName?: string; // 用户名
     endDate?: string; // 提交结束时间
     typeId?: number; // 行业类型id 三级类型
   }>({});
-
+  // 点击关键词编辑，记录当前编辑的id
   const [currentId, setCurrentId] = useState<string>('');
-
   const formLayout = {
     labelCol: { span: 6 },
     wrapperCol: { span: 16 },
@@ -68,8 +63,6 @@ export default () => {
     totalCount: 0,
     pageTotal: 0,
   });
-
-  // const [form] = Form.useForm();
 
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     try {
@@ -98,7 +91,7 @@ export default () => {
       setKeywords(res[0].result || [])
       setTypes(res[1].result || []);
     } catch (error) {
-      message.error('获取行业类型失败');
+      message.error('获取类型失败');
     }
   };
   useEffect(() => {
@@ -109,10 +102,10 @@ export default () => {
     try {
       const updateStateResult = await updateConversion(id);
       if (updateStateResult.code === 0) {
-        message.success(`完成转化成功`);
+        message.success(`操作成功`);
         getPage();
       } else {
-        message.error(`完成转化失败，原因:{${updateStateResult.message}}`);
+        message.error(`操作失败，请重试`);
       }
     } catch (error) {
       console.log(error);
@@ -125,7 +118,7 @@ export default () => {
       dataIndex: 'sort',
       width: 80,
       render: (_: any, _record: News.Content, index: number) =>
-        _record.state === 2 ? '' : pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
+        pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
       title: '成果名称',
@@ -133,7 +126,8 @@ export default () => {
       render: (_: string, _record: any) => (
         <a
           href="#!"
-          onClick={() => {
+          onClick={(e) => {
+            e.preventDefault(); 
             history.push(`/service-config/achievements-manage/detail?id=${_record.id}`);
           }}
         >
@@ -175,13 +169,13 @@ export default () => {
     },
     {
       title: '操作',
-      width: 220,
+      width: 180,
       fixed: 'right',
       dataIndex: 'option',
       render: (_: any, record: any) => {
-        return record.state == 'CONVERTED' ? ('/') : (
+        return record.state == 'CONVERTED' ? (<div style={{textAlign: 'center'}}>/</div>) : (
           <Space>
-            <Button type="link" onClick={() => {
+            <Button type="link" style={{padding: 0}} onClick={() => {
               setModalVisible(true);
               setCurrentId(record.id)
               editForm.setFieldsValue({keyword: record.keyword || [], keywordOther: record.keywordOther || ''})
@@ -189,7 +183,6 @@ export default () => {
               关键词编辑
             </Button>
             <Popconfirm
-              icon={null}
               title={
                 '确定已完成转化吗？'
               }
@@ -197,7 +190,7 @@ export default () => {
               cancelText="取消"
               onConfirm={() => editState(record.id)}
             >
-              <Button type="link">完成转化</Button>
+              <Button type="link" style={{padding: 0}}>完成转化</Button>
             </Popconfirm>
           </Space>
         )
@@ -233,11 +226,6 @@ export default () => {
                 />
               </Form.Item>
             </Col>
-            {/* <Col span={8}>
-              <Form.Item name="userName" label="用户名">
-                <Input placeholder="请输入" />
-              </Form.Item>
-            </Col> */}
             <Col span={8}>
               <Form.Item name="state" label="状态">
                 <Select placeholder="请选择" allowClear>
@@ -295,7 +283,6 @@ export default () => {
     editForm
       .validateFields()
       .then(async (value) => {
-        // setLoading(true);
         const submitRes = await updateKeyword({
           id: currentId,
           ...value,
@@ -308,7 +295,6 @@ export default () => {
         } else {
           message.error(`关键词编辑失败，原因:{${submitRes.message}}`);
         }
-        // setLoading(false);
       })
       .catch(() => {});
     };
@@ -323,7 +309,6 @@ export default () => {
         width="780px"
         visible={modalVisible}
         maskClosable={false}
-        // okButtonProps={{ loading: addOrUpdateLoading }}
         onOk={handleOk}
         onCancel={handleCancel}
         footer={[
@@ -344,29 +329,22 @@ export default () => {
             <Checkbox.Group>
               <Row>
                 {keywords?.map((i) => {
-                  return i.enumName == 'OTHER' ? (
+                  return (
                     <Col span={6}>
                       <Checkbox value={i.enumName} style={{ lineHeight: '32px' }} disabled={newKeywords&&newKeywords.length==3&&(!newKeywords.includes(i.enumName))}>
                         {i.name}
                       </Checkbox>
-                      {newKeywords && (newKeywords.indexOf('OTHER') > -1) && (
+                      {i.enumName == 'OTHER' && newKeywords && (newKeywords.indexOf('OTHER') > -1) && (
                         <Form.Item name="keywordOther" label="">
                           <Input placeholder='请输入' maxLength={10}/>
                         </Form.Item>
                       )}
                     </Col>
-                  ) : (
-                    <Col span={6}>
-                      <Checkbox value={i.enumName} style={{ lineHeight: '32px' }} disabled={newKeywords&&newKeywords.length==3&&(!newKeywords.includes(i.enumName))}>
-                        {i.name}
-                      </Checkbox>
-                    </Col>
-                  );
+                  )
                 })}
               </Row>
             </Checkbox.Group>
           </Form.Item>
-          {/* <span>选中的关键词：{newKeywords} {newKeywords && 'K' in newKeywords}</span> */}
         </Form>
       </Modal>
     );
