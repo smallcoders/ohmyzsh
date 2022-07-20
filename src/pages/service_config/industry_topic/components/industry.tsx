@@ -132,6 +132,7 @@ export default (props: { currentTab: any; }) => {
           message.success(`${tooltipMessage}成功`);
           getPages();
           clearSelectInfo();
+          onEdit()
         } else {
           message.error(`${tooltipMessage}失败，原因:{${addorUpdateRes.message}}`);
         }
