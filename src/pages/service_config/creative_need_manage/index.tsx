@@ -27,8 +27,8 @@ import {
   updateKeyword, // 关键词编辑
   updateConversion // 完成转化
 } from '@/services/creative-demand';
-import Common from '@/types/common';
-import NeedVerify from '@/types/user-config-need-verify';
+import type Common from '@/types/common';
+import type NeedVerify from '@/types/user-config-need-verify';
 const sc = scopedClasses('service-config-creative-need');
 const stateObj = {
   NOT_CONNECT: '未对接',
@@ -113,12 +113,12 @@ export default () => {
           ...value,
         });
         if (submitRes.code === 0) {
-          message.success(`关键词编辑成功！`);
+          message.success(`所属行业编辑成功！`);
           setModalVisible(false);
           editForm.resetFields();
           getPage();
         } else {
-          message.error(`关键词编辑失败，原因:{${submitRes.message}}`);
+          message.error(`所属行业编辑失败，原因:{${submitRes.message}}`);
         }
       })
       .catch(() => {});
@@ -130,7 +130,7 @@ export default () => {
   const useModal = (): React.ReactNode => {
     return (
       <Modal
-        title={'关键词编辑'}
+        title={'所属产业编辑'}
         width="780px"
         visible={modalVisible}
         maskClosable={false}
@@ -150,7 +150,7 @@ export default () => {
         ]}
       >
         <Form {...formLayout2} form={editForm}>
-          <Form.Item name="keyword" label="关键词" rules={[{required: true}]} extra="多选（最多三个）">
+          <Form.Item name="keyword" label="所属产业" rules={[{required: true}]} extra="多选（最多三个）">
             <Checkbox.Group>
               <Row>
                 {keywords?.map((i) => {
@@ -228,7 +228,7 @@ export default () => {
       width: 300,
     },
     {
-      title: '关键词',
+      title: '所属产业',
       dataIndex: 'keywordShow',
       render: (_: string[]) => (_ || []).join(',') || '/',
       isEllipsis: true,
@@ -265,7 +265,7 @@ export default () => {
               setCurrentId(record.id)
               editForm.setFieldsValue({keyword: record.keyword || [], keywordOther: record.keywordOther || ''})
             }}>
-              关键词编辑
+              所属产业编辑
             </Button>
             <Popconfirm
               icon={null}

@@ -17,8 +17,8 @@ import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
-import Common from '@/types/common';
-import News from '@/types/service-config-news';
+import type Common from '@/types/common';
+import type News from '@/types/service-config-news';
 import moment from 'moment';
 import SelfTable from '@/components/self_table';
 import { history } from 'umi';
@@ -143,7 +143,7 @@ export default () => {
       width: 300,
     },
     {
-      title: '关键词',
+      title: '所属行业',
       dataIndex: 'keywordShow',
       isEllipsis: true,
       render: (_: string[]) => (_ || []).join(',') || '/',
@@ -180,7 +180,7 @@ export default () => {
               setCurrentId(record.id)
               editForm.setFieldsValue({keyword: record.keyword || [], keywordOther: record.keywordOther || ''})
             }}>
-              关键词编辑
+              所属行业编辑
             </Button>
             <Popconfirm
               title={
@@ -288,12 +288,12 @@ export default () => {
           ...value,
         });
         if (submitRes.code === 0) {
-          message.success(`关键词编辑成功！`);
+          message.success(`所属行业编辑成功！`);
           setModalVisible(false);
           editForm.resetFields();
           getPage();
         } else {
-          message.error(`关键词编辑失败，原因:{${submitRes.message}}`);
+          message.error(`所属行业编辑失败，原因:{${submitRes.message}}`);
         }
       })
       .catch(() => {});
@@ -305,7 +305,7 @@ export default () => {
   const useModal = (): React.ReactNode => {
     return (
       <Modal
-        title={'关键词编辑'}
+        title={'所属行业编辑'}
         width="780px"
         visible={modalVisible}
         maskClosable={false}
@@ -325,21 +325,23 @@ export default () => {
         ]}
       >
         <Form {...formLayout2} form={editForm}>
-          <Form.Item name="keyword" label="关键词" rules={[{required: true}]} extra="多选（最多三个）">
+          <Form.Item name="keyword" label="所属行业" rules={[{required: true}]} extra="多选（最多三个）">
             <Checkbox.Group>
               <Row>
                 {keywords?.map((i) => {
                   return (
-                    <Col span={6}>
-                      <Checkbox value={i.enumName} style={{ lineHeight: '32px' }} disabled={newKeywords&&newKeywords.length==3&&(!newKeywords.includes(i.enumName))}>
-                        {i.name}
-                      </Checkbox>
-                      {i.enumName == 'OTHER' && newKeywords && (newKeywords.indexOf('OTHER') > -1) && (
-                        <Form.Item name="keywordOther" label="">
-                          <Input placeholder='请输入' maxLength={10}/>
-                        </Form.Item>
-                      )}
-                    </Col>
+                    <React.Fragment key={i.name}>
+                      <Col span={6}>
+                        <Checkbox value={i.enumName} style={{ lineHeight: '32px' }} disabled={newKeywords&&newKeywords.length==3&&(!newKeywords.includes(i.enumName))}>
+                          {i.name}
+                        </Checkbox>
+                        {i.enumName == 'OTHER' && newKeywords && (newKeywords.indexOf('OTHER') > -1) && (
+                          <Form.Item name="keywordOther" label="">
+                            <Input placeholder='请输入' maxLength={10}/>
+                          </Form.Item>
+                        )}
+                      </Col>
+                    </React.Fragment>
                   )
                 })}
               </Row>
