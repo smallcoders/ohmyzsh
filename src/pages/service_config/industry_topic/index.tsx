@@ -7,6 +7,7 @@ import React, { useEffect, useState } from 'react';
 import Industry from './components/industry';
 import TabPane from '@ant-design/pro-card/lib/components/TabPane';
 import { getKeywords } from '@/services/achievements-manage';
+import { Prompt } from 'umi';
 const sc = scopedClasses('service-config-app-news');
 
 export default () => {
@@ -34,10 +35,10 @@ export default () => {
         setCurrent(keywords.find(p => p.id == e))
       }}>
         {keywords.map(p =>
-          <TabPane style={{ display: 'none' }} tab={p.name} key={p.id + ''} />
+          <TabPane tab={p.name} key={p.id + ''}><Industry currentTab={p}></Industry></TabPane>
         )}
       </Tabs>
-      <Industry currentTab={current}></Industry>
+
     </PageContainer>
   );
 };

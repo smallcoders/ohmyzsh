@@ -77,5 +77,11 @@ namespace Common {
     fileName?: string; // 文件名
     fileFormat?: string; // 文件格式
   };
+
+  export type CommonEnum ={
+    enumName: string
+    id: number
+    name: string
+  }
 }
 export default Common;

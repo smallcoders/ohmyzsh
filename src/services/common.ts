@@ -4,6 +4,8 @@ import type Common from '@/types/common';
 import CourseManage from '@/types/service-config-course-manage';
 import { request } from 'umi';
 
+type EnumResult = {result: Common.CommonEnum[]} & Common.ResultCode
+
 export const httpUploadWithDetail = (
   data: FormData,
   onUploadProgress?: (props: any) => void,
@@ -33,7 +35,18 @@ export async function downloadFile(fileId: string) {
  * @returns
  */
 export async function getEnumByName(label: string) {
-  return request<CourseManage.ResultList>(`/antelope-manage/common/dictionaryEnum?label=${label}`, {
+  return request<EnumResult>(`/antelope-manage/common/dictionaryEnum?label=${label}`, {
+    method: 'get',
+  });
+}
+
+/**
+ * 枚举字段查询
+ * @param label
+ * @returns
+ */
+ export async function getEnumByNameByScience(label: string) {
+  return request<EnumResult>(`/antelope-science/mng/common/dictionaryEnum?label=${label}`, {
     method: 'get',
   });
 }
