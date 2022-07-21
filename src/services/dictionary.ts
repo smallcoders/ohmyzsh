@@ -7,7 +7,7 @@ import { request } from 'umi';
 export async function getDictionaryTree(
   label: 'DEMAND_SOLUTION' | 'EXPERT' | 'POLICY' | 'MANAGEMENT' | 'CREATIVE_TYPE',
 ) {
-  return request('/iiep-manage/dictionary/getTree', {
+  return request('/antelope-manage/dictionary/getTree', {
     method: 'GET',
     params: { label },
   }).then(({ result }) => result);

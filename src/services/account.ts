@@ -9,7 +9,7 @@ import Account from '@/types/account';
  * @param options
  */
 export async function getCurrentUser() {
-  return request<Account.CurrentUserResult>('/iiep-manage/uap/getCurrentUser', {
+  return request<Account.CurrentUserResult>('/antelope-manage/uap/getCurrentUser', {
     method: 'GET',
   });
 }
@@ -19,7 +19,7 @@ export async function getCurrentUser() {
  * @param params
  */
 export async function addAccount(data: Account.SaveAccountRequest) {
-  return request<Common.ResultCode>('/iiep-manage/account/add', {
+  return request<Common.ResultCode>('/antelope-manage/account/add', {
     method: 'POST',
     data,
   });
@@ -30,7 +30,7 @@ export async function addAccount(data: Account.SaveAccountRequest) {
  * @param data
  */
 export async function updateAccount(data: Account.SaveAccountRequest) {
-  return request<Common.ResultCode>('/iiep-manage/account/update', {
+  return request<Common.ResultCode>('/antelope-manage/account/update', {
     method: 'POST',
     data,
   });
@@ -41,7 +41,7 @@ export async function updateAccount(data: Account.SaveAccountRequest) {
  * @param data
  */
 export async function deleteAccount(id: number) {
-  return request<Common.ResultCode>('/iiep-manage/account/delete', {
+  return request<Common.ResultCode>('/antelope-manage/account/delete', {
     method: 'POST',
     params: { id },
   });
@@ -52,7 +52,7 @@ export async function deleteAccount(id: number) {
  * @param id
  */
 export async function resetPassword(id: number) {
-  return request<Common.ResultCode>('/iiep-manage/account/resetPassword', {
+  return request<Common.ResultCode>('/antelope-manage/account/resetPassword', {
     method: 'POST',
     params: { id },
   });
@@ -63,7 +63,7 @@ export async function resetPassword(id: number) {
  * @param params
  */
 export async function updateMyNameAndPhone(data: { name?: string; phone?: string }) {
-  return request<Common.ResultCode>('/iiep-manage/account/updateMyNameAndPhone', {
+  return request<Common.ResultCode>('/antelope-manage/account/updateMyNameAndPhone', {
     method: 'POST',
     data,
   });
@@ -74,7 +74,7 @@ export async function updateMyNameAndPhone(data: { name?: string; phone?: string
  * @param params
  */
 export async function updateMyPassword(params: { oldPassword?: string; newPassword?: string }) {
-  return request<Common.ResultCode>('/iiep-manage/account/updateMyPassword', {
+  return request<Common.ResultCode>('/antelope-manage/account/updateMyPassword', {
     method: 'POST',
     params,
   });
@@ -91,7 +91,7 @@ export async function pageQuery(params: {
   name?: string;
   phone?: string;
 }) {
-  return request('/iiep-manage/account/pageQuery', {
+  return request('/antelope-manage/account/pageQuery', {
     method: 'POST',
     params: { ...params, pageIndex: params.current },
   }).then((json) => ({
@@ -105,7 +105,7 @@ export async function pageQuery(params: {
  * 获取uap默认密码
  */
 export async function getUapDefaultPwd() {
-  return request('/iiep-manage/uap/getUapDefaultPwd', {
+  return request('/antelope-manage/uap/getUapDefaultPwd', {
     method: 'GET',
   });
 }

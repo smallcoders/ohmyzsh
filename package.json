@@ -19,7 +19,6 @@
     "lint:prettier": "prettier -c --write \"src/**/*\" --end-of-line auto",
     "lint:style": "stylelint --fix \"src/**/*.less\" --syntax less",
     "openapi": "umi openapi",
-    "precommit": "lint-staged",
     "prettier": "prettier -c --write \"src/**/*\"",
     "serve": "umi-serve",
     "start": "cross-env UMI_ENV=dev umi dev",
@@ -53,10 +52,16 @@
     "@ant-design/pro-form": "^1.18.3",
     "@ant-design/pro-layout": "^6.15.3",
     "@ant-design/pro-table": "^2.30.8",
+    "@ckeditor/ckeditor5-build-classic": "^34.2.0",
+    "@ckeditor/ckeditor5-react": "^5.0.2",
+    "@types/ckeditor__ckeditor5-build-classic": "^29.0.1",
     "@umijs/route-utils": "^1.0.36",
+    "array-move": "^4.0.0",
     "classnames": "^2.2.6",
     "crypto-js": "^4.1.1",
     "filemanager-webpack-plugin": "^3.0.0-alpha.1",
+    "glamor": "^2.20.40",
+    "husky": "^8.0.1",
     "lodash": "^4.17.11",
     "moment": "^2.25.3",
     "omit.js": "^2.0.2",
@@ -66,6 +71,7 @@
     "react-dev-inspector": "^1.1.1",
     "react-dom": "^17.0.0",
     "react-helmet-async": "^1.0.4",
+    "react-sortable-hoc": "^2.0.0",
     "umi": "^3.5.0",
     "umi-serve": "^1.9.10"
   },
@@ -96,6 +102,7 @@
     "eslint": "^7.1.0",
     "express": "^4.17.1",
     "gh-pages": "^3.0.0",
+    "javascript-obfuscator": "^4.0.0",
     "jsdom-global": "^3.0.2",
     "lint-staged": "^10.0.0",
     "mockjs": "^1.0.1-beta3",
@@ -103,12 +110,10 @@
     "puppeteer-core": "^8.0.0",
     "stylelint": "^13.0.0",
     "swagger-ui-react": "^3.52.3",
-    "typescript": "^4.2.2"
+    "typescript": "^4.2.2",
+    "webpack-obfuscator": "^3.5.1"
   },
   "engines": {
     "node": ">=10.0.0"
-  },
-  "gitHooks": {
-    "commit-msg": "fabric verify-commit"
   }
 }

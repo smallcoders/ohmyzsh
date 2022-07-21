@@ -1,7 +1,6 @@
-import Common from '@/types/common';
 import { message, Upload } from 'antd';
 import { RcFile, UploadChangeParam, UploadFile, UploadProps } from 'antd/lib/upload/interface';
-import { ReactNode, RefAttributes, useState } from 'react';
+import { ReactNode, RefAttributes, useEffect } from 'react';
 import './upload-form.less';
 
 const UploadForm = (
@@ -10,33 +9,28 @@ const UploadForm = (
       value?: any;
       needName?: boolean;
       maxSize?: number;
+      isSkip?: boolean;
     },
 ) => {
-  const [fileList, setFileList] = useState<Common.CommonFile[]>([]);
-
   const handleChange = (info: UploadChangeParam<UploadFile<any>>) => {
-    if (info.file.status === 'uploading') {
-      return;
-    }
-    if (info.file.status === 'error') {
-      return;
-    }
+    let newFileList = [...info.fileList] as any;
 
-    if (info.file.status === 'done') {
-      const uploadResponse = info?.file?.response;
-      if (uploadResponse?.code === 0 && uploadResponse.result) {
-        let files = [...fileList, { id: uploadResponse.result, fileName: info.file.fileName }];
-        if (props.maxCount === 1) {
-          files = [files[files.length - 1]];
+    // 2. Read from response and show file link
+    newFileList = newFileList?.map((file: any) => {
+      if (file.response) {
+        if (props.isSkip) {
+          file.url = `/antelope-manage/common/download/${file?.response?.result}`;
         }
-        setFileList(files);
-        props.onChange?.(files as any);
-        message.success('上传成功');
-      } else {
-        message.error(`上传失败，原因:{${uploadResponse.message}}`);
+        file.uid = file?.response?.result;
       }
-    }
+      return file;
+    });
+    props.onChange?.([...newFileList] as any);
   };
+
+  useEffect(() => {
+    console.log(props.value);
+  }, [props.value]);
 
   const beforeUpload = (file: RcFile, files: RcFile[]) => {
     if (props.beforeUpload) {
@@ -66,8 +60,8 @@ const UploadForm = (
     return true;
   };
   const onRemove = (file: UploadFile) => {
-    const list = fileList.filter((p) => p.id !== file.uid);
-    setFileList(list);
+    const list = props?.value?.filter((p: any) => p.uid !== file.uid);
+
     props.onChange?.(list as any);
   };
 
@@ -76,15 +70,9 @@ const UploadForm = (
       {props.tooltip}
       <Upload
         {...props}
-        defaultFileList={props?.value?.map((p: any) => {
-          return {
-            uid: p.id,
-            name: p.fileName + '.' + p.fileFormat,
-            status: 'done',
-          } as any;
-        })}
+        fileList={props?.value || []}
         name="file"
-        action="/iiep-manage/common/upload"
+        action="/antelope-manage/common/upload"
         onChange={handleChange}
         beforeUpload={beforeUpload}
         onRemove={onRemove}

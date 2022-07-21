@@ -15,6 +15,7 @@ import {
 } from '@/services/account';
 import type Account from '@/types/account';
 import type Common from '@/types/common';
+import { decryptWithAES } from '@/utils/crypto';
 
 // 是否为管理员
 const isAdmin = (type: string) => type === 'MANAGER_ADMIN';
@@ -32,7 +33,8 @@ const AccountTable: React.FC = () => {
    */
   useEffect(() => {
     getUapDefaultPwd().then((json) => {
-      defaultPwdRef.current = json.result;
+      console.log(json);
+      defaultPwdRef.current = decryptWithAES(json.result);
     });
   }, []);
 

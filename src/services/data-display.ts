@@ -6,14 +6,14 @@ import { request } from 'umi';
  * 城市名称下拉
  */
 export async function getCitys() {
-  return request<Common.ResultCode & { result: string[] }>('/iiep-manage/dataList/cityLabel');
+  return request<Common.ResultCode & { result: string[] }>('/antelope-manage/dataList/cityLabel');
 }
 
 /**
  * 获取宣传统计 列表
  */
 export async function getPublishPage(pageInfo: { pageIndex: number; pageSize: number }) {
-  return request<DataDisplay.PublishResultList>('/iiep-manage/dataList/drumbeating/page', {
+  return request<DataDisplay.PublishResultList>('/antelope-manage/dataList/drumbeating/page', {
     method: 'GET',
     params: { ...(pageInfo || {}) },
   });
@@ -23,7 +23,7 @@ export async function getPublishPage(pageInfo: { pageIndex: number; pageSize: nu
  * 获取热门应用列表 列表
  */
 export async function getHotAppPage(pageInfo: { pageIndex: number; pageSize: number }) {
-  return request<DataDisplay.HotAppResultList>('/iiep-manage/dataList/hotApp/page', {
+  return request<DataDisplay.HotAppResultList>('/antelope-manage/dataList/hotApp/page', {
     method: 'GET',
     params: { ...(pageInfo || {}) },
   });
@@ -33,7 +33,7 @@ export async function getHotAppPage(pageInfo: { pageIndex: number; pageSize: num
  * 获取热门政策 列表
  */
 export async function getPolicyPage(pageInfo: { pageIndex: number; pageSize: number }) {
-  return request<DataDisplay.PolicyResultList>('/iiep-manage/dataList/policyData', {
+  return request<DataDisplay.PolicyResultList>('/antelope-manage/dataList/policyData', {
     method: 'GET',
     params: { ...(pageInfo || {}) },
   });
@@ -44,7 +44,7 @@ export async function getPolicyPage(pageInfo: { pageIndex: number; pageSize: num
  */
 export async function getCityData(options: { cityName: string }) {
   return request<Common.ResultCode & { result: DataDisplay.CityData }>(
-    '/iiep-manage/dataList/cityData',
+    '/antelope-manage/dataList/cityData',
     {
       method: 'GET',
       params: { ...(options || {}) },

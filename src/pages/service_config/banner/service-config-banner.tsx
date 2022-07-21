@@ -169,7 +169,7 @@ const TableList: React.FC = () => {
       render: (photoId: string) => (
         <Image
           className={'banner-img'}
-          src={`/iiep-manage/common/download/${photoId}`}
+          src={`/antelope-manage/common/download/${photoId}`}
           alt="图片损坏"
         />
         // </div>
@@ -241,11 +241,11 @@ const TableList: React.FC = () => {
     };
     return (
       <Radio.Group value={edge} onChange={handleEdgeChange}>
-        <Radio.Button value={Banner.Edge.PC}>PC</Radio.Button>
-        <Radio.Button value={Banner.Edge.APPLET}>小程序</Radio.Button>
-        <Radio.Button disabled value={Banner.Edge.APP}>
-          App
-        </Radio.Button>
+        <Radio.Button value={Banner.Edge.PC}>官网-首页</Radio.Button>
+        <Radio.Button value={Banner.Edge.APPLET}>小程序-首页</Radio.Button>
+        <Radio.Button value={Banner.Edge.APPLET_CREATIVE}>小程序-科产</Radio.Button>
+        <Radio.Button value={Banner.Edge.APP}>APP-首页</Radio.Button>
+        <Radio.Button value={Banner.Edge.APP_CREATIVE}>APP-科产</Radio.Button>
       </Radio.Group>
     );
   };
@@ -256,6 +256,7 @@ const TableList: React.FC = () => {
         title={editingItem.id ? '修改banner' : '新增banner'}
         width="400px"
         visible={createModalVisible}
+        maskClosable={false}
         onCancel={() => {
           clearForm();
           setModalVisible(false);
@@ -295,11 +296,11 @@ const TableList: React.FC = () => {
             ]}
           >
             <Select placeholder="请选择">
-              <Select.Option value={Banner.Edge.PC}>PC</Select.Option>
-              <Select.Option value={Banner.Edge.APPLET}>小程序</Select.Option>
-              <Select.Option disabled value={Banner.Edge.APP}>
-                App
-              </Select.Option>
+              <Select.Option value={Banner.Edge.PC}>官网-首页</Select.Option>
+              <Select.Option value={Banner.Edge.APPLET}>小程序-首页</Select.Option>
+              <Select.Option value={Banner.Edge.APPLET_CREATIVE}>小程序-科产</Select.Option>
+              <Select.Option value={Banner.Edge.APP}>APP-首页</Select.Option>
+              <Select.Option value={Banner.Edge.APP_CREATIVE}>APP-科产</Select.Option>
             </Select>
           </Form.Item>
           <Form.Item name="sort" label="展示顺序">

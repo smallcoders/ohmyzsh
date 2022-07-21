@@ -58,8 +58,8 @@ export default () => {
           {isExist && (
             <Button
               type="primary"
-              href={`/iiep-manage/common/download/${fileId}`}
-              download={`/iiep-manage/common/download/${fileId}`}
+              href={`/antelope-manage/common/download/${fileId}`}
+              download={`/antelope-manage/common/download/${fileId}`}
             >
               下载报告
             </Button>
@@ -71,7 +71,7 @@ export default () => {
         <div className="pdf-preview-container">{/* <PDF src={`${fileId}`} scale={1.2} /> */}</div>
         {/* <Document
           //文件路径,
-          file={`/iiep-manage/common/download/${fileId}`}
+          file={`/antelope-manage/common/download/${fileId}`}
           //加载成功调用 
           onLoadSuccess={(total: any) => {
             console.log(total, total)
@@ -89,7 +89,7 @@ export default () => {
         </Document> */}
         {/* {isExist && ( */}
         {/* <PDF
-          file={`/iiep-manage/common/download/${fileId}`}
+          file={`/antelope-manage/common/download/${fileId}`}
           scale={1}
           onDocumentComplete={(total) => {
             console.log(total, total)

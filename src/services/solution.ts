@@ -16,7 +16,7 @@ export async function pageQuery(params: {
   startPublishTime?: number;
   endPublishTime?: number;
 }) {
-  return request('/iiep-manage/solution/pageQuery', {
+  return request('/antelope-manage/solution/pageQuery', {
     method: 'POST',
     data: { ...params, pageIndex: params.current },
   }).then((e: { code: number; totalCount: any; result: any }) => ({
@@ -31,7 +31,7 @@ export async function pageQuery(params: {
  * @param id
  */
 export async function setTop(id: number) {
-  return request('/iiep-manage/solution/setTop', {
+  return request('/antelope-manage/solution/setTop', {
     method: 'GET',
     params: { id },
   });
@@ -42,7 +42,7 @@ export async function setTop(id: number) {
  * @param id
  */
 export async function unsetTop(id: number) {
-  return request('/iiep-manage/solution/unsetTop', {
+  return request('/antelope-manage/solution/unsetTop', {
     method: 'GET',
     params: { id },
   });
@@ -54,7 +54,7 @@ export async function unsetTop(id: number) {
  */
 export async function getDetail(id: any) {
   return request<Common.ResultCode & { result: SolutionTypes.SolutionDetail }>(
-    '/iiep-manage/solution/getDetail',
+    '/antelope-manage/solution/getDetail',
     {
       method: 'GET',
       params: { id },
@@ -72,7 +72,7 @@ export async function intentionPageQuery(params: {
   solutionId: any;
   orgName?: string;
 }) {
-  return request('/iiep-manage/solution/intentionPageQuery', {
+  return request('/antelope-manage/solution/intentionPageQuery', {
     method: 'POST',
     data: { ...params, pageIndex: params.current },
   }).then((e: { code: number; totalCount: any; result: any }) => ({
@@ -80,4 +80,16 @@ export async function intentionPageQuery(params: {
     total: e.totalCount,
     data: e.result,
   }));
+}
+
+/**
+ * 需求管理-需求类型编辑
+ * @param data
+ * @returns
+ */
+ export async function solutionEditType(data?: Record<string, any>) {
+  return request<any>('/antelope-manage/solution/editType', {
+    method: 'post',
+    data,
+  });
 }

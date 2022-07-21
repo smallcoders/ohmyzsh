@@ -6,7 +6,7 @@ import { request } from 'umi';
 
 /** 获取当前的用户 GET /api/currentUser */
 export async function getNewsPage(data?: { [key: string]: any }) {
-  return request<News.ResultList>('/iiep-manage/newsInformation/page', {
+  return request<News.ResultList>('/antelope-manage/newsInformation/page', {
     method: 'post',
     data,
   });
@@ -16,7 +16,7 @@ export async function getNewsPage(data?: { [key: string]: any }) {
  * 添加或者修改新闻资讯
  */
 export async function addOrUpdateNews(data?: News.Content) {
-  return request<Common.ResultCode>('/iiep-manage/newsInformation/save', {
+  return request<Common.ResultCode>('/antelope-manage/newsInformation/save', {
     method: 'post',
     data,
   });
@@ -26,7 +26,7 @@ export async function addOrUpdateNews(data?: News.Content) {
  * 删除新闻资讯
  * */
 export async function removeNews(id: string) {
-  return request<Common.ResultCode>(`/iiep-manage/newsInformation/${id}`, {
+  return request<Common.ResultCode>(`/antelope-manage/newsInformation/${id}`, {
     method: 'DELETE',
   });
 }
@@ -35,7 +35,7 @@ export async function removeNews(id: string) {
  * 修改状态
  */
 export async function updateState(options?: { [key: string]: any }) {
-  return request<Common.ResultCode>('/iiep-manage/newsInformation/updateState', {
+  return request<Common.ResultCode>('/antelope-manage/newsInformation/updateState', {
     method: 'get',
     params: { ...(options || {}) },
   });

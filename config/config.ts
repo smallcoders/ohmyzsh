@@ -5,6 +5,7 @@ import { join } from 'path';
 import defaultSettings from './defaultSettings';
 import proxy from './proxy';
 import routes from './routes';
+const JavaScriptObfuscator = require('webpack-obfuscator');
 const FileManagerPlugin = require('filemanager-webpack-plugin');
 const getVersion = (argv: string[]) =>
   argv.find((item) => item.includes('--projectVersion='))?.replace('--projectVersion=', '');
@@ -72,6 +73,7 @@ export default defineConfig({
   webpack5: {},
   chainWebpack: (config) => {
     if (process.env.NODE_ENV === 'production') {
+      // 压缩
       config.plugin('FileManagerPlugin').use(FileManagerPlugin, [
         {
           events: {
@@ -79,7 +81,7 @@ export default defineConfig({
               archive: [
                 {
                   source: './dist',
-                  destination: `./zip/iiep-manage-page-${getVersion(process.argv)}.zip`,
+                  destination: `./zip/antelope-manage-page-${getVersion(process.argv)}.zip`,
                 },
               ],
             },

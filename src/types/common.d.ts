@@ -1,4 +1,47 @@
 namespace Common {
+  // 审核状态
+  export enum AuditStatus {
+    /**
+     * 审核中
+     */
+    AUDITING = 'AUDITING',
+    /**
+     * 审核通过
+     */
+    AUDIT_PASSED = 'AUDIT_PASSED',
+    /**
+     * 审核拒绝
+     */
+    AUDIT_REJECTED = 'AUDIT_REJECTED',
+    /**
+     * 审核提交
+     */
+    AUDIT_SUBMIT = 'AUDIT_SUBMIT',
+  }
+
+  export enum OrgType {
+    /**
+     * 企业
+     */
+    ENTERPRISE = 'ENTERPRISE',
+    /**
+     * 高校
+     */
+    COLLEGE = 'COLLEGE',
+    /**
+     * 科研机构
+     */
+    INSTITUTION = 'INSTITUTION',
+    /**
+     * 其他
+     */
+    OTHER = 'OTHER',
+    /**
+     * 医疗卫生
+     */
+    MEDICAL = 'MEDICAL',
+  }
+
   export type ResultCode = {
     /**
      * 状态码
@@ -34,5 +77,11 @@ namespace Common {
     fileName?: string; // 文件名
     fileFormat?: string; // 文件格式
   };
+
+  export type CommonEnum ={
+    enumName: string
+    id: number
+    name: string
+  }
 }
 export default Common;

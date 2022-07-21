@@ -10,18 +10,21 @@ import {
   DatePicker,
   message,
   Space,
+  Checkbox,
   Popconfirm,
 } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import './service-config-news.less';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
-import Common from '@/types/common';
+import type Common from '@/types/common';
 import { getNewsPage, addOrUpdateNews, removeNews, updateState } from '@/services/news';
-import News from '@/types/service-config-news';
+import type News from '@/types/service-config-news';
 import moment from 'moment';
 import UploadForm from '@/components/upload_form';
 import SelfTable from '@/components/self_table';
+import { getEnumByName } from '@/services/common';
+import type { CheckboxValueType } from 'antd/es/checkbox/Group'
 const sc = scopedClasses('service-config-app-news');
 const stateObj = {
   0: '发布中',
@@ -29,6 +32,15 @@ const stateObj = {
   2: '已下架',
 };
 export default () => {
+  const [activeElse, setActiveElse] = useState<any>(false)
+
+  const onChangeKeyWord = (checkedValues: CheckboxValueType[]) => {
+    if (checkedValues.includes('OTHER')) {
+      setActiveElse(true)
+    } else {
+      setActiveElse(false)
+    }
+  }
   const [createModalVisible, setModalVisible] = useState<boolean>(false);
   const [dataSource, setDataSource] = useState<News.Content[]>([]);
   const [editingItem, setEditingItem] = useState<News.Content>({});
@@ -84,7 +96,8 @@ export default () => {
       .then(async (value) => {
         setAddOrUpdateLoading(true);
         if (value.publishTime) {
-          value.publishTime = moment(value.publishTime).format('YYYY-MM-DDTHH:mm:ss');
+          value.publishTime = moment(value.publishTime).format('yyyy-MM-DD HH:mm:ss');
+          // value.publishTime = moment(value.publishTime).format('YYYY-MM-DDTHH:mm:ss');
         }
         const addorUpdateRes = await addOrUpdateNews({
           ...value,
@@ -151,6 +164,13 @@ export default () => {
       width: 300,
     },
     {
+      title: '所属产业',
+      dataIndex: 'industryShow',
+      isEllipsis: true,
+      render: (text: any, record: any) => record.industryShow.join('、'),
+      width: 300,
+    },
+    {
       title: '发布时间',
       dataIndex: 'publishTime',
       width: 200,
@@ -190,7 +210,7 @@ export default () => {
             >
               编辑{' '}
             </a>
-            <a href={record.url} target="_blank">
+            <a href={record.url} target="_blank" rel="noreferrer">
               查看
             </a>
             <Popconfirm
@@ -226,8 +246,23 @@ export default () => {
       },
     },
   ];
+  const [commonEnumList, setCommonEnumList] = useState<any>([])
+
+  const getIndustryList = async () => {
+    try {
+      const res = await getEnumByName('ORG_INDUSTRY')
+      if ( res?.code === 0 ) {
+        setCommonEnumList(res?.result || [])
+      } else {
+        throw new Error()
+      }
+    } catch (error) {
+      console.log('error')
+    }
+  }
 
   useEffect(() => {
+    getIndustryList()
     getNews();
   }, [searchContent]);
 
@@ -302,6 +337,7 @@ export default () => {
         title={editingItem.id ? '修改资讯' : '新增资讯'}
         width="400px"
         visible={createModalVisible}
+        maskClosable={false}
         onCancel={() => {
           clearForm();
           setModalVisible(false);
@@ -331,6 +367,63 @@ export default () => {
             label="资讯标题"
           >
             <Input placeholder="请输入" />
+          </Form.Item>
+          <Form.Item>
+            <Form.Item
+              name="industry"
+              label="所属产业"
+              required
+              rules={[
+                () => ({
+                  validator(_, value) {
+                    if (!value || value.length === 0) {
+                      return Promise.reject(new Error('必选'))
+                    }
+                    if (value && value.length > 3) {
+                      return Promise.reject(new Error('最多选3个所属产业'))
+                    }
+                    return Promise.resolve()
+                  },
+                }),
+              ]}
+            >
+              <Checkbox.Group
+                options={
+                  (commonEnumList|| []).map((p) => {
+                    return {
+                      label: p.name,
+                      value: p.enumName,
+                    }
+                  }) || []
+                }
+                onChange={onChangeKeyWord}
+              />
+            </Form.Item>
+            {activeElse && (
+              <Form.Item
+                name="industryOther"
+                label=" "
+                colon={false}
+                rules={[
+                  () => ({
+                    validator(_, value) {
+                      if (!value || value.length === 0) {
+                        return Promise.reject(new Error('请输入'))
+                      }
+                      return Promise.resolve()
+                    },
+                  }),
+                ]}
+              >
+                <Input
+                  style={{ width: '300px' }}
+                  placeholder="请输入"
+                  autoComplete="off"
+                  allowClear
+                  maxLength={20}
+                />
+              </Form.Item>
+            )}
           </Form.Item>
           <Form.Item
             name="url"

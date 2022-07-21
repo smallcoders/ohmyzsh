@@ -105,12 +105,14 @@ export const request: RequestConfig = {
   //responseInterceptors: [responseInterceptors],
   errorHandler: (error: ResponseError) => {
     const { response, type } = error;
+
     if (response === null && type === 'TypeError') {
       message.error('网络错误');
     } else if (response?.status === 403) {
       history.push(loginPath);
       message.warn('会话已经过期，请重新登录');
     } else {
+      console.log(error, response, type);
       message.error('服务器错误');
     }
     throw error;

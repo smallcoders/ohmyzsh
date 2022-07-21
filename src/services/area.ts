@@ -12,7 +12,7 @@ export async function getAreaTree({
   areaCode?: number;
   endLevel?: 'PROVINCE' | 'CITY' | 'COUNTY';
 }) {
-  return request('/iiep-manage/area/getTree', {
+  return request('/antelope-manage/area/getTree', {
     method: 'GET',
     params: { areaCode, endLevel },
   }).then(({ result }) => result);

@@ -9,7 +9,7 @@ import ProDescriptions from '@ant-design/pro-descriptions';
 import { getDetail, intentionPageQuery } from '@/services/solution';
 import type SolutionTypes from '@/types/solution';
 import scopedClasses from '@/utils/scopedClasses';
-import { renderSolutionType } from '../index';
+import { renderSolutionType } from '../solution';
 import './index.less';
 
 const sc = scopedClasses('service-config-solution');
@@ -71,13 +71,28 @@ const SolutionDetail: React.FC = () => {
       <ProCard gutter={8}>
         <ProCard layout="center" className={sc('detail')}>
           <ProDescriptions column={1} title={solutionDetail?.name}>
-            <ProDescriptions.Item label="服务类型">
+            <ProDescriptions.Item label="方案类型">
               {renderSolutionType(solutionDetail?.types)}
             </ProDescriptions.Item>
-            <ProDescriptions.Item label="服务区域">
+            <ProDescriptions.Item label="方案服务区域">
               {solutionDetail?.areas?.map((e) => e.name).join('、')}
             </ProDescriptions.Item>
-            <ProDescriptions.Item label="服务内容">{solutionDetail?.content}</ProDescriptions.Item>
+            <ProDescriptions.Item label="服务行业">
+              {solutionDetail?.industryName || '--'}
+            </ProDescriptions.Item>
+            <ProDescriptions.Item label="方案内容">{solutionDetail?.content}</ProDescriptions.Item>
+            <ProDescriptions.Item label="相关附件">
+              {solutionDetail?.paths &&
+                solutionDetail?.paths.map((p: any) => {
+                  return (
+                    <>
+                      <a target="_blank" rel="noreferrer" style={{ marginRight: 20 }} href={p.path}>
+                        {p.name}.{p.format}
+                      </a>
+                    </>
+                  );
+                })}
+            </ProDescriptions.Item>
           </ProDescriptions>
         </ProCard>
         <ProCard
@@ -91,24 +106,28 @@ const SolutionDetail: React.FC = () => {
       </ProCard>
 
       <ProCard style={{ marginTop: 8 }} gutter={8}>
-        <ProDescriptions column={1}>
-          <ProDescriptions.Item label="公司名称">
-            {solutionDetail?.provider.name}
+        <ProDescriptions column={1} title={'服务商信息'}>
+          <ProDescriptions.Item label="服务商名称">
+            {solutionDetail?.providerName}
           </ProDescriptions.Item>
-          <ProDescriptions.Item label="公司简介">
-            {solutionDetail?.provider.aboutUs}
+          <ProDescriptions.Item label="服务商所在地">
+            {solutionDetail?.providerAreaCode}
           </ProDescriptions.Item>
-          <ProDescriptions.Item className={sc('detail-attachment')} label="附件下载">
-            {solutionDetail?.attachments?.length
-              ? solutionDetail?.attachments.map((e) => (
-                  <p key={e.id}>
-                    <a
-                      href={`/iiep-manage/common/download/${e.id}`}
-                      download={e.name}
-                    >{`${e.name}.${e.format}`}</a>
-                  </p>
-                ))
-              : '（无）'}
+        </ProDescriptions>
+        <ProDescriptions column={1} title={'联系信息'}>
+          <ProDescriptions.Item label="联系人">
+            {solutionDetail?.name}
+          </ProDescriptions.Item>
+          <ProDescriptions.Item label="联系电话">
+            {solutionDetail?.phone}
+          </ProDescriptions.Item>
+        </ProDescriptions>
+        <ProDescriptions column={1} title={'其他信息'}>
+          <ProDescriptions.Item label="是否参加2022安徽省工业互联网巡回大讲堂供需对接会">
+          <span>{solutionDetail?.joined? '是' : '否'}</span>
+          </ProDescriptions.Item>
+          <ProDescriptions.Item label="意向地">
+            {solutionDetail?.intendAreaName || '--'}
           </ProDescriptions.Item>
         </ProDescriptions>
       </ProCard>

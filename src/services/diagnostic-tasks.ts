@@ -6,7 +6,7 @@ import { request } from 'umi';
 
 /** 获取诊断任务详情 */
 export async function getDiagnosticTasksPage(data?: { [key: string]: any }) {
-  return request<DiagnosticTasks.ResultList>('/iiep-manage/diagnosis/page', {
+  return request<DiagnosticTasks.ResultList>('/antelope-manage/diagnosis/page', {
     method: 'post',
     data,
   });
@@ -16,7 +16,7 @@ export async function getDiagnosticTasksPage(data?: { [key: string]: any }) {
  * 添加诊断任务
  */
 export async function addDiagnosticTasks(data?: DiagnosticTasks.Content) {
-  return request<Common.ResultCode>('/iiep-manage/diagnosis/save', {
+  return request<Common.ResultCode>('/antelope-manage/diagnosis/save', {
     method: 'post',
     data,
   });
@@ -26,7 +26,7 @@ export async function addDiagnosticTasks(data?: DiagnosticTasks.Content) {
  * 修改诊断任务
  */
 export async function updateDiagnosticTasks(data?: DiagnosticTasks.Content) {
-  return request<Common.ResultCode>('/iiep-manage/diagnosis/update', {
+  return request<Common.ResultCode>('/antelope-manage/diagnosis/update', {
     method: 'put',
     data,
   });
@@ -43,7 +43,7 @@ export async function searchOrgInfo(name: string) {
         orgName: string;
       }[];
     }
-  >(`/iiep-manage/common/orgInfo/list?name=${name}`);
+  >(`/antelope-manage/common/orgInfo/list?name=${name}`);
 }
 
 /**
@@ -58,14 +58,14 @@ export async function searchExpert(name: string) {
         expertPhone: string;
       }[];
     }
-  >(`/iiep-manage/common/expert/list?name=${name}`);
+  >(`/antelope-manage/common/expert/list?name=${name}`);
 }
 
 /**
  * 删除诊断任务
  * */
 export async function removeDiagnosisTasks(id: string) {
-  return request<Common.ResultCode>(`/iiep-manage/diagnosis/${id}`, {
+  return request<Common.ResultCode>(`/antelope-manage/diagnosis/${id}`, {
     method: 'DELETE',
   });
 }
@@ -74,7 +74,7 @@ export async function removeDiagnosisTasks(id: string) {
  * 修改状态
  */
 export async function updateState(options?: { [key: string]: any }) {
-  return request<Common.ResultCode>('/iiep-manage/newsInformation/updateState', {
+  return request<Common.ResultCode>('/antelope-manage/newsInformation/updateState', {
     method: 'get',
     params: { ...(options || {}) },
   });
@@ -90,14 +90,16 @@ export async function getDiagnosisRecordById(id: string) {
     Common.ResultCode & {
       result: DiagnosticTasks.DiagnosisTaskDetail;
     }
-  >(`/iiep-manage/diagnosis/detail/${id}`);
+  >(`/antelope-manage/diagnosis/detail/${id}`);
 }
 
 /**
  * 获取诊断机构
  */
 export async function getDiagnosisInstitutions() {
-  return request<Common.ResultCode & { result: [] }>('/iiep-manage/common/diagnosisInstitutions');
+  return request<Common.ResultCode & { result: [] }>(
+    '/antelope-manage/common/diagnosisInstitutions',
+  );
 }
 
 /**
@@ -106,7 +108,7 @@ export async function getDiagnosisInstitutions() {
 export async function getDiagnosisRecords(data?: { [key: string]: any }) {
   return request<
     Common.ResultCode & Common.ResultPage & { result: DiagnosticTasks.OnlineRecord[] }
-  >('/iiep-manage/onlineDiagnosis/pageQuery', {
+  >('/antelope-manage/onlineDiagnosis/pageQuery', {
     method: 'post',
     data,
   });
@@ -122,7 +124,7 @@ export async function getXTYSkipUrl(id: string) {
     Common.ResultCode & {
       result: string;
     }
-  >(`/iiep-manage/onlineDiagnosis/getXTYSkipUrl?id=${id}`);
+  >(`/antelope-manage/onlineDiagnosis/getXTYSkipUrl?id=${id}`);
 }
 
 /**
@@ -130,7 +132,7 @@ export async function getXTYSkipUrl(id: string) {
  */
 export async function addOrUpdateReportFile(data?: { [key: string]: any }) {
   return request<Common.ResultCode & { result: DiagnosticTasks.OnlineRecord[] }>(
-    '/iiep-manage/onlineDiagnosis/appendReportFile',
+    '/antelope-manage/onlineDiagnosis/appendReportFile',
     {
       method: 'post',
       data,
@@ -142,7 +144,19 @@ export async function addOrUpdateReportFile(data?: { [key: string]: any }) {
  * 删除诊断报告，诊断记录还原为诊断中状态
  */
 export async function deleteReportFile(id: string) {
-  return request<Common.ResultCode>(`/iiep-manage/onlineDiagnosis/deleteReportFile?id=${id}`, {
+  return request<Common.ResultCode>(`/antelope-manage/onlineDiagnosis/deleteReportFile?id=${id}`, {
     method: 'delete',
+  });
+}
+
+/**
+ * 获取意向报名记录
+ */
+ export async function getIntentionList(data?: { [key: string]: any }) {
+  return request<
+    Common.ResultCode & Common.ResultPage & { result: DiagnosticTasks.OnlineRecord[] }
+  >('/antelope-manage/intention/diagnosis/page', {
+    method: 'post',
+    data,
   });
 }
