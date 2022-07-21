@@ -229,7 +229,7 @@ export default (props: { currentTab: any; }) => {
 
     return (
       <Modal
-        title={`添加需求-${modalInfo.typeName}（${currentTab.name}）`}
+        title={`添加数据-${modalInfo.typeName}（${currentTab.name}）`}
         width="1200px"
         visible={modalInfo.visible}
         maskClosable={false}

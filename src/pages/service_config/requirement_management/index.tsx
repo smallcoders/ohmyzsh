@@ -316,33 +316,33 @@ export default () => {
       title: '需求时间范围',
       dataIndex: 'startDate',
       isEllipsis: true,
-      render: (_: string, _record: any) => _record.startDate + '至' + _record.endDate,
+      render: (_: string, _record: any) => (_record.startDate|| '--') + '至' + (_record.endDate|| '--'),
       width: 300,
     },
     {
       title: '联系人',
       dataIndex: 'contact',
       isEllipsis: true,
-      width: 300,
+      width: 150,
     },
     {
       title: '联系方式',
       dataIndex: 'phone',
       isEllipsis: true,
-      width: 300,
+      width: 150,
     },
     {
       title: '是否隐藏',
       dataIndex: 'hide',
       isEllipsis: true,
       render: (_: string, _record: any) => _record.hide ? '是':'否',
-      width: 300,
+      width: 100,
     },
     {
       title: '权重',
       dataIndex: 'sort',
       isEllipsis: true,
-      width: 300,
+      width: 100,
     },
     {
       title: '发布时间',
@@ -376,7 +376,7 @@ export default () => {
     },
     {
       title: '操作',
-      width: 400,
+      width: 500,
       fixed: 'right',
       dataIndex: 'option',
       render: (_: any, record: any) => {
@@ -601,7 +601,7 @@ export default () => {
       <div className={sc('container-table-body')}>
         <SelfTable
           bordered
-          scroll={{ x: 1400 }}
+          scroll={{ x: 2880 }}
           columns={columns}
           dataSource={dataSource}
           rowKey={'id'}
