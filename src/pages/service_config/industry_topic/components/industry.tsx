@@ -105,50 +105,50 @@ export default (props: { currentTab: any; }) => {
   }
 
   const addOrUpdate = async () => {
-    const callback = ()=>{
+    const callback = () => {
 
-    const tooltipMessage =  '发布';
-    form
-      .validateFields()
-      .then(async (value) => {
-        setAddOrUpdateLoading(true);
+      const tooltipMessage = '发布';
+      form
+        .validateFields()
+        .then(async (value) => {
+          setAddOrUpdateLoading(true);
 
-        let dataList = [];
-        for (const key in rootRef.current) {
-          if (Object.prototype.hasOwnProperty.call(rootRef.current, key)) {
-            const element = rootRef.current[key];
-            dataList.push({
-              dataType: key,
-              detailIdList: element?.data?.map(p => p.detailId)
-            })
+          let dataList = [];
+          for (const key in rootRef.current) {
+            if (Object.prototype.hasOwnProperty.call(rootRef.current, key)) {
+              const element = rootRef.current[key];
+              dataList.push({
+                dataType: key,
+                detailIdList: element?.data?.map(p => p.detailId)
+              })
+            }
           }
-        }
 
-        const addorUpdateRes = await saveIndustryTopic({
-          industry: currentTab.enumName,
-          dataList,
+          const addorUpdateRes = await saveIndustryTopic({
+            industry: currentTab.enumName,
+            dataList,
+          });
+          if (addorUpdateRes.code === 0) {
+            message.success(`${tooltipMessage}成功`);
+            getPages();
+            clearSelectInfo();
+            onEdit()
+          } else {
+            message.error(`${tooltipMessage}失败，原因:{${addorUpdateRes.message}}`);
+          }
+          setAddOrUpdateLoading(false);
+        })
+        .catch(() => {
+          setAddOrUpdateLoading(false);
         });
-        if (addorUpdateRes.code === 0) {
-          message.success(`${tooltipMessage}成功`);
-          getPages();
-          clearSelectInfo();
-          onEdit()
-        } else {
-          message.error(`${tooltipMessage}失败，原因:{${addorUpdateRes.message}}`);
-        }
-        setAddOrUpdateLoading(false);
-      })
-      .catch(() => {
-        setAddOrUpdateLoading(false);
-      });
     }
 
     Modal.confirm({
       title: '提示',
       content: '确认发布当前产业专题的配置吗？',
       okText: '发布',
-      okButtonProps: {loading: addOrUpdateLoading},
-      onOk: ()=>{
+      okButtonProps: { loading: addOrUpdateLoading },
+      onOk: () => {
         callback();
       }
     })
@@ -189,7 +189,6 @@ export default (props: { currentTab: any; }) => {
   }, [currentTab]);
 
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-  const [loading, setLoading] = useState(false);
 
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
     setSelectedRowKeys(newSelectedRowKeys);
@@ -236,14 +235,21 @@ export default (props: { currentTab: any; }) => {
         maskClosable={false}
         onCancel={clearSelectInfo}
         footer={
-          [
-            <Button onClick={() => {
-              clearSelectInfo()
-            }}>取消</Button>,
-            <Button type='primary' loading={addOrUpdateLoading} onClick={() => {
-              onSelectItems()
-            }}>确定</Button>
-          ]
+          <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+            <div>
+              当前已选：{selectedRowKeys.length}项<Button type='link' onClick={() => {
+                setSelectedRowKeys([])
+              }}>清空</Button>
+            </div>
+            <Space size={20}>
+              <Button onClick={() => {
+                clearSelectInfo()
+              }}>取消</Button>
+              <Button type='primary' loading={addOrUpdateLoading} onClick={() => {
+                onSelectItems()
+              }}>确定</Button>
+            </Space>
+          </div>
         }
       >
         <Form {...formLayout} form={form} layout="horizontal">
@@ -270,12 +276,12 @@ export default (props: { currentTab: any; }) => {
                   rest.endPublishTime = moment(time[1]).format('YYYY-MM-DD HH:mm:ss');
                 }
                 setSearchContent(rest);
-                getOptions({ ...rest, ...pagination, pageIndex: 1 })
+                getOptions({ ...rest, ...pagination, pageIndex: 1, detailIdList: modalInfo.detailIdList ||[] })
               }}>查询</Button>
               <Button onClick={() => {
                 form.resetFields()
                 setSearchContent({});
-                getOptions({ ...pagination, pageIndex: 1 })
+                getOptions({ ...pagination, pageIndex: 1, detailIdList: modalInfo.detailIdList ||[] })
               }}>重置</Button>
             </Space>
             </Col>
@@ -310,7 +316,7 @@ export default (props: { currentTab: any; }) => {
           }}
         />
 
-      </Modal>
+      </Modal >
     );
   };
 
@@ -431,7 +437,7 @@ export default (props: { currentTab: any; }) => {
           },
           {
             label: '手机号',
-            name: 'time',
+            name: 'phone',
             render: () => {
               return <Input placeholder="请输入" maxLength={35} />
             }
@@ -501,7 +507,7 @@ export default (props: { currentTab: any; }) => {
           return <>
             <div style={{ margin: '20px 0' }}>{enumObj[p.dataType]}</div>
             <IndustryTable ref={ref => rootRef.current[p.dataType] = ref}
-              handleSameData={(list)=>handleSameData(p.dataType, list)}
+              handleSameData={(list) => handleSameData(p.dataType, list)}
               autoColumns={getAutoContent(p.dataType)[0]} data={p.dataList}></IndustryTable>
             {editing && <div
               style={
