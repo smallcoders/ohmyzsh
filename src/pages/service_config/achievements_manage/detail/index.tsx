@@ -1,13 +1,13 @@
 import { message, Image, Button } from 'antd';
 import { history } from 'umi';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
 import { getDemandDetail } from '@/services/achievements-manage';
 import { getEnumByName } from '@/services/common';
 
-const sc = scopedClasses('user-config-kechuang');
+const sc = scopedClasses('service-config-achievements-detail');
 
 export default () => {
   const [loading, setLoading] = useState<boolean>(true);
@@ -165,10 +165,6 @@ export default () => {
               })}
           </span>
         </div>
-        {/* <div className={sc('container-desc')}>
-          <span>是否需要代理：</span>
-          <span>{detail?.proxy ? '是' : '否'}</span>
-        </div> */}
       </div>
     </PageContainer>
   );

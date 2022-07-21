@@ -149,12 +149,12 @@ export default () => {
           ...value,
         });
         if (submitRes.code === 0) {
-          antdMessage.success(`关键词编辑成功！`);
+          antdMessage.success(`所属行业编辑成功！`);
           setModalVisible(false);
           editForm.resetFields();
           getPage();
         } else {
-          antdMessage.error(`关键词编辑失败，原因:{${submitRes.message}}`);
+          antdMessage.error(`所属行业编辑失败，原因:{${submitRes.message}}`);
         }
         // setLoading(false);
       })
@@ -167,7 +167,7 @@ export default () => {
   const useModal = (): React.ReactNode => {
     return (
       <Modal
-        title={'关键词编辑'}
+        title={'所属行业编辑'}
         width="780px"
         visible={modalVisible}
         // okButtonProps={{ loading: addOrUpdateLoading }}
@@ -187,7 +187,7 @@ export default () => {
         ]}
       >
         <Form {...formLayout2} form={editForm}>
-          <Form.Item name="keyword" label="关键词" rules={[{required: true}]} extra="多选（最多三个）">
+          <Form.Item name="keyword" label="所属行业" rules={[{required: true}]} extra="多选（最多三个）">
             <Checkbox.Group>
               <Row>
                 {keywords?.map((i) => {
@@ -247,7 +247,7 @@ export default () => {
       width: 400,
     },
     {
-      title: '关键词',
+      title: '所属行业',
       dataIndex: 'keywordShow',
       isEllipsis: true,
       render: (_: string[]) => (_ || []).join(','),
@@ -352,7 +352,7 @@ export default () => {
                 setCurrentId(record.id)
                 editForm.setFieldsValue({keyword: record.keyword || [], keywordOther: record.keywordOther || ''})
               }}>
-                关键词编辑
+                所属行业编辑
               </Button>
             </Space>
           </div>

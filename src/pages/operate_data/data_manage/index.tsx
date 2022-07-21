@@ -18,14 +18,21 @@ import scopedClasses from '@/utils/scopedClasses';
 import moment from 'moment';
 import AuthenticationInfo from '@/types/authentication-info.d';
 import { getAuthenticationInfoPage } from '@/services/data-manage';
-const sc = scopedClasses('user-config-authentication-info');
+const sc = scopedClasses('operate-data-manage');
 export default () => {
   const [activeKey, setActiveKey] = useState<any>(
     '0'
   );
 
   const [dataSource, setDataSource] = useState<AuthenticationInfo.Content[]>([]);
-  const [searchContent, setSearChContent] = useState<AuthenticationInfo.SearchBody>({});
+  const [searchContent, setSearChContent] = useState<{
+    bizName?: string; // 认证名称
+    userName?: string; // 用户名
+    startTime?: string; // 认证开始时间
+    endTime?: string; // 认证结束时间
+    phone?: string; // 手机号
+    area?: number; // 所属区域
+  }>({});
 
   const formLayout = {
     labelCol: { span: 6 },
@@ -44,9 +51,6 @@ export default () => {
       getAreaTree({}).then((data) => {
         setAreaOptions(data?.children || []);
       });
-      // getDictionay('EXPERT_DICT').then((data) => {
-      //   setExpertType(data.result || []);
-      // });
     } catch (error) {
       antdMessage.error('数据初始化错误');
     }
@@ -95,7 +99,6 @@ export default () => {
       title: '认证时间',
       dataIndex: 'certificationTime',
       isEllipsis: true,
-      // render: (_: string) => moment(_).format('YYYY-MM-DD HH:mm:ss'),
       width: 200,
     },
     {

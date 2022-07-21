@@ -81,7 +81,8 @@ export default () => {
         return (
           <a
             href="#!"
-            onClick={() => {
+            onClick={(e) => {
+              e.preventDefault(); 
               history.push(`${routeName.EXPERT_MANAGE_DETAIL}?id=${record?.expertId}`);
             }}
           >

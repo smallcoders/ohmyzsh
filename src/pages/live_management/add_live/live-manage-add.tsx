@@ -255,6 +255,7 @@ export default () => {
           history.push(routeName.ANTELOPE_LIVE_MANAGEMENT);
         } else {
           message.error(`${tooltipMessage}失败，原因:${addorUpdateRes.message}`);
+          setAddOrUpdateLoading(false);
         } 
       })
       .catch((err) => {

@@ -47,6 +47,19 @@ export async function getOfficeRequirementVerifyDetail(id: string) {
 }
 
 /**
+ * 需求管理-所属产业编辑
+ * @param data
+ * @returns
+ */
+ export async function demandIndestrialEditType(data?: { [key: string]: any }) {
+  return request<any>('/antelope-manage/demand/editIndustry', {
+    method: 'post',
+    data,
+  });
+}
+
+
+/**
  * 需求管理-权重编辑
  * @param data
  * @returns

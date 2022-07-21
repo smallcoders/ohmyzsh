@@ -1,8 +1,8 @@
-import { message, Image, Timeline, Form, Button, DatePicker, Input, Space, Row, AutoComplete, } from 'antd';
-import { HddFilled, MinusCircleOutlined, PlusOutlined, DeleteOutlined } from '@ant-design/icons';
+import { message, Image, Timeline, Form, Button, DatePicker, Input, Space } from 'antd';
+import { MinusCircleOutlined, DeleteOutlined } from '@ant-design/icons';
 import { history } from 'umi';
 import moment from 'moment';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
@@ -40,7 +40,6 @@ export default () => {
         const detailAbut = await Promise.all([
           getOfficeRequirementVerifyDetail(id)
         ]);
-        // getDictionary();
         setDetail(detailAbut[0].result);
       } catch (error) {
         message.error('服务器错误');
@@ -78,7 +77,6 @@ export default () => {
         const addorUpdateRes = await addConnectRecord(dataArr);
         if (addorUpdateRes.code === 0) {
           message.success('新增对接记录成功');
-          // getConnectRecord(id)
           connectAdd();
           clearForm();
         } else {
