@@ -87,7 +87,7 @@ export async function intentionPageQuery(params: {
  * @param data
  * @returns
  */
- export async function solutionEditType(data?: { [key: string]: any }) {
+ export async function solutionEditType(data?: Record<string, any>) {
   return request<any>('/antelope-manage/solution/editType', {
     method: 'post',
     data,
