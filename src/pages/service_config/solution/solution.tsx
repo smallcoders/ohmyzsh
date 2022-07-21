@@ -69,6 +69,7 @@ const SolutionTable: React.FC = () => {
     getDictionay('NEW_ENTERPRISE_DICT').then((data) => {
       const options = {};
       data?.result.forEach(({ id, name }) => (options[id] = name));
+      console.log('optionsoptionsoptionsoptions',options)
       setTypeOptions(options);
     });
 

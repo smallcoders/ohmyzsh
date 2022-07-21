@@ -13,14 +13,18 @@ import {
   Modal,
   Checkbox
 } from 'antd';
-import { PageContainer } from '@ant-design/pro-layout';
+import { PageContainer} from '@ant-design/pro-layout';
+import { request } from 'umi';
+import ProTable from '@ant-design/pro-table';
+import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import type Common from '@/types/common';
 import type News from '@/types/service-config-news';
 import moment from 'moment';
 import SelfTable from '@/components/self_table';
+import type SolutionTypes from '@/types/solution';
 import { history } from 'umi';
 import { 
   getCreativePage, // 分页数据
@@ -36,9 +40,14 @@ const stateObj = {
   CONVERTED: '已转化'
 };
 export default () => {
+  const actionRef = useRef<ActionType>();
+  const paginationRef = useRef<any>();
+  const [total, setTotal] = useState<number>(0);
+  const [typeOptions, setTypeOptions] = useState<any>({});
   const [dataSource, setDataSource] = useState<News.Content[]>([]);
   const [types, setTypes] = useState<any[]>([]);// 应用行业数据
   const [keywords, setKeywords] = useState<any[]>([]);// 关键词数据
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [searchContent, setSearChContent] = useState<{
     name?: string; // 标题
     startDate?: string; // 提交开始时间
@@ -64,10 +73,11 @@ export default () => {
     pageTotal: 0,
   });
 
-  const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
+  const getPage = async (pagination: any) => {
+    const { pageIndex = 1, pageSize = pageInfo.pageSize, current } = pagination
     try {
       const { result, totalCount, pageTotal, code } = await getCreativePage({
-        pageIndex,
+        pageIndex: current,
         pageSize,
         ...searchContent,
       });
@@ -81,6 +91,24 @@ export default () => {
       console.log(error);
     }
   };
+  const pageQuery = (params: {
+    current?: number;
+    pageSize?: number;
+    name?: string;
+    typeId?: number;
+    state?: string;
+    startPublishTime?: number;
+    endPublishTime?: number;
+  }) => {
+  return request('/antelope-science/mng/creative/achievement/page', {
+    method: 'POST',
+    data: { ...params, pageIndex: params.current },
+  }).then((e: { code: number; totalCount: any; result: any }) => ({
+    success: e.code === 0,
+    total: e.totalCount,
+    data: e.result,
+  }));
+  }
 
   const prepare = async () => {
     try {
@@ -90,6 +118,10 @@ export default () => {
       ]);
       setKeywords(res[0].result || [])
       setTypes(res[1].result || []);
+      console.log('res[1].result',res[1].result)
+      const options = {};
+      res[1].result.forEach(({id,name})=>(options[id] = name))
+      setTypeOptions(options || {});
     } catch (error) {
       message.error('获取类型失败');
     }
@@ -97,13 +129,16 @@ export default () => {
   useEffect(() => {
     prepare();
   }, []);
-
+  const handleCancel = () => {
+    setModalVisible(false);
+  };
   const editState = async (id: string) => {
     try {
       const updateStateResult = await updateConversion(id);
       if (updateStateResult.code === 0) {
         message.success(`操作成功`);
-        getPage();
+        actionRef.current?.reload();
+        // getPage();
       } else {
         message.error(`操作失败，请重试`);
       }
@@ -112,95 +147,11 @@ export default () => {
     }
   };
 
-  const columns = [
-    {
-      title: '序号',
-      dataIndex: 'sort',
-      width: 80,
-      render: (_: any, _record: News.Content, index: number) =>
-        pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
-    },
-    {
-      title: '成果名称',
-      dataIndex: 'name',
-      render: (_: string, _record: any) => (
-        <a
-          href="#!"
-          onClick={(e) => {
-            e.preventDefault(); 
-            history.push(`/service-config/achievements-manage/detail?id=${_record.id}`);
-          }}
-        >
-          {_}
-        </a>
-      ),
-      width: 300,
-    },
-    {
-      title: '应用行业',
-      dataIndex: 'type',
-      isEllipsis: true,
-      width: 300,
-    },
-    {
-      title: '所属行业',
-      dataIndex: 'keywordShow',
-      isEllipsis: true,
-      render: (_: string[]) => (_ || []).join(',') || '/',
-      width: 300,
-    },
-    {
-      title: '发布时间',
-      dataIndex: 'updateTime',
-      width: 200,
-      render: (_: string) => moment(_).format('YYYY-MM-DD HH:mm:ss'),
-    },
-    {
-      title: '状态',
-      dataIndex: 'state',
-      width: 200,
-      render: (_: string) => {
-        return (
-          <div className={`state${_}`}>
-            {Object.prototype.hasOwnProperty.call(stateObj, _) ? stateObj[_] : '/'}
-          </div>
-        );
-      },
-    },
-    {
-      title: '操作',
-      width: 180,
-      fixed: 'right',
-      dataIndex: 'option',
-      render: (_: any, record: any) => {
-        return record.state == 'CONVERTED' ? (<div style={{textAlign: 'center'}}>/</div>) : (
-          <Space>
-            <Button type="link" style={{padding: 0}} onClick={() => {
-              setModalVisible(true);
-              setCurrentId(record.id)
-              editForm.setFieldsValue({keyword: record.keyword || [], keywordOther: record.keywordOther || ''})
-            }}>
-              所属行业编辑
-            </Button>
-            <Popconfirm
-              title={
-                '确定已完成转化吗？'
-              }
-              okText="确定"
-              cancelText="取消"
-              onConfirm={() => editState(record.id)}
-            >
-              <Button type="link" style={{padding: 0}}>完成转化</Button>
-            </Popconfirm>
-          </Space>
-        )
-      },
-    },
-  ];
 
-  useEffect(() => {
-    getPage();
-  }, [searchContent]);
+
+  // useEffect(() => {
+  //   getPage();
+  // }, [searchContent]);
 
   const useSearchNode = (): React.ReactNode => {
     const [searchForm] = Form.useForm();
@@ -276,7 +227,7 @@ export default () => {
   };
 
 
-  const [modalVisible, setModalVisible] = useState<boolean>(false);
+
   const [editForm] = Form.useForm<{ keyword: any; keywordOther: string }>();
   const newKeywords = Form.useWatch('keyword', editForm);
   const handleOk = async () => {
@@ -288,24 +239,23 @@ export default () => {
           ...value,
         });
         if (submitRes.code === 0) {
-          message.success(`所属行业编辑成功！`);
+          message.success(`所属产业编辑成功！`);
+          actionRef.current?.reload();
           setModalVisible(false);
           editForm.resetFields();
-          getPage();
+          // getPage();
         } else {
-          message.error(`所属行业编辑失败，原因:{${submitRes.message}}`);
+          message.error(`所属产业编辑失败，原因:{${submitRes.message}}`);
         }
       })
       .catch(() => {});
     };
 
-  const handleCancel = () => {
-    setModalVisible(false);
-  };
+
   const useModal = (): React.ReactNode => {
     return (
       <Modal
-        title={'所属行业编辑'}
+        title={'所属产业编辑'}
         width="780px"
         visible={modalVisible}
         maskClosable={false}
@@ -325,7 +275,7 @@ export default () => {
         ]}
       >
         <Form {...formLayout2} form={editForm}>
-          <Form.Item name="keyword" label="所属行业" rules={[{required: true}]} extra="多选（最多三个）">
+          <Form.Item name="keyword" label="所属产业" rules={[{required: true}]} extra="多选（最多三个）">
             <Checkbox.Group>
               <Row>
                 {keywords?.map((i) => {
@@ -352,35 +302,174 @@ export default () => {
     );
   };
 
+  const stateColumn = {
+    'NOT_CONNECT': '未对接',
+    'CONNECTING': '对接中',
+    'CONVERTED': '已转化'
+  }
+
+  const columns:  ProColumns<SolutionTypes.Solution>[] = [
+    {
+      title: '序号',
+      hideInSearch: true,
+      width: 80,
+      renderText: (text: any, record: any, index: number) =>
+        (paginationRef.current.current - 1) * paginationRef.current.pageSize + index + 1,
+    },
+    {
+      title: '成果名称',
+      dataIndex: 'name',
+      render: (_: string, _record: any) => (
+        <a
+          href="#!"
+          onClick={(e) => {
+            e.preventDefault(); 
+            history.push(`/service-config/achievements-manage/detail?id=${_record.id}`);
+          }}
+        >
+          {_}
+        </a>
+      ),
+      width: 300,
+    },
+    {
+      title: '应用行业',
+      dataIndex: 'type',
+      hideInSearch: true, // 用于隐藏筛选
+      width: 200,
+      render: (_: string[]) => (_ || []).join(',') || '/',
+    },
+    {
+      title: '应用行业',
+      dataIndex: 'typeId',
+      hideInTable: true,
+      valueEnum: typeOptions,
+    },
+    {
+      title: '所属产业',
+      dataIndex: 'keywordShow',
+      hideInSearch: true, // 用于隐藏筛选
+      isEllipsis: true,
+      render: (_: string[]) => (_ || []).join(',') || '/',
+      width: 300,
+    },
+    {
+      title: '状态',
+      dataIndex: 'state',
+      hideInTable: true,
+      valueEnum: stateColumn,
+    },
+    {
+      title: '发布时间',
+      dataIndex: 'updateTime',
+      hideInSearch: true, // 用于隐藏筛选
+      width: 200,
+      render: (_: string) => moment(_).format('YYYY-MM-DD HH:mm:ss'),
+    },
+    {
+      title: '发布时间',
+      dataIndex: 'dateTime',
+      hideInTable: true,
+      valueType: 'dateRange',
+    },
+    {
+      title: '状态',
+      dataIndex: 'state',
+      hideInSearch: true, // 用于隐藏筛选
+      width: 200,
+      render: (_: string) => {
+        return (
+          <div className={`state${_}`}>
+            {Object.prototype.hasOwnProperty.call(stateObj, _) ? stateObj[_] : '/'}
+          </div>
+        );
+      },
+    },
+    {
+      title: '操作',
+      width: 180,
+      fixed: 'right',
+      hideInSearch: true, // 用于隐藏筛选
+      dataIndex: 'option',
+      render: (_: any, record: any) => {
+        return record.state == 'CONVERTED' ? (<div style={{textAlign: 'center'}}>/</div>) : (
+          <Space>
+            <Button type="link" style={{padding: 0}} onClick={() => {
+              setCurrentId(record.id)
+              setModalVisible(true);
+              editForm.setFieldsValue({keyword: record.keyword || [], keywordOther: record.keywordOther || ''})
+            }}>
+              所属产业编辑
+            </Button>
+            <Popconfirm
+              title={
+                '确定已完成转化吗？'
+              }
+              okText="确定"
+              cancelText="取消"
+              onConfirm={() => editState(record.id)}
+            >
+              <Button type="link" style={{padding: 0}}>完成转化</Button>
+            </Popconfirm>
+          </Space>
+        )
+      },
+    },
+  ];
   return (
-    <PageContainer className={sc('container')}>
-      {useSearchNode()}
-      <div className={sc('container-table-header')}>
-        <div className="title">
-          <span>科技成果列表(共{pageInfo.totalCount || 0}个)</span>
+    <>
+      {/* <PageContainer className={sc('container')}>
+        {useSearchNode()}
+        <div className={sc('container-table-header')}>
+          <div className="title">
+            <span>科技成果列表(共{pageInfo.totalCount || 0}个)</span>
+          </div>
         </div>
-      </div>
-      <div className={sc('container-table-body')}>
-        <SelfTable
-          bordered
-          scroll={{ x: 1400 }}
+        <div className={sc('container-table-body')}>
+          <SelfTable
+            bordered
+            scroll={{ x: 1400 }}
+            columns={columns}
+            dataSource={dataSource}
+            pagination={
+              pageInfo.totalCount === 0
+                ? false
+                : {
+                    onChange: getPage,
+                    total: pageInfo.totalCount,
+                    current: pageInfo.pageIndex,
+                    pageSize: pageInfo.pageSize,
+                    showTotal: (total: number) =>
+                      `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
+                  }
+            }
+          />
+        </div>
+        {useModal()}
+      </PageContainer> */}
+      <PageContainer>
+        <ProTable 
+          headerTitle={`科技成果列表${total || 0}个）`}
+          options={false}
+          rowKey="id"
+          actionRef={actionRef}
+          search={{
+            span: 8,
+            labelWidth: 100,
+            defaultCollapsed: false,
+            optionRender: (searchConfig, formProps, dom) => [dom[1], dom[0]],
+          }}
+          request={async (pagination) => {
+            const result = await pageQuery(pagination);
+            paginationRef.current = pagination;
+            setTotal(result.total);
+            return result;
+          }}
           columns={columns}
-          dataSource={dataSource}
-          pagination={
-            pageInfo.totalCount === 0
-              ? false
-              : {
-                  onChange: getPage,
-                  total: pageInfo.totalCount,
-                  current: pageInfo.pageIndex,
-                  pageSize: pageInfo.pageSize,
-                  showTotal: (total: number) =>
-                    `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
-                }
-          }
+          pagination={{ size: 'default', showQuickJumper: true, defaultPageSize: 10 }}
         />
-      </div>
-      {useModal()}
-    </PageContainer>
+        {useModal()}
+      </PageContainer>
+    </>
   );
 };
