@@ -55,9 +55,9 @@ export default forwardRef((props: any, ref) => {
         render: (_: any, record: OrgTypeManage.Content) => {
           return (
             <Space size="middle">
-                <a href="#" onClick={()=>{
+                <Button type='link'  onClick={()=>{
                   remove(record.detailId as string)
-                }}>删除</a>
+                }}>删除</Button>
             </Space>
           );
         },
