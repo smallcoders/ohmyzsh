@@ -475,7 +475,7 @@ const columns = [
   },
   {
     title: '操作',
-    width: 400,
+    width: 500,
     fixed: 'right',
     dataIndex: 'option',
     render: (_: any, record: any) => {

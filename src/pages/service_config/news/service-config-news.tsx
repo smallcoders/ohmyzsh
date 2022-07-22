@@ -149,6 +149,26 @@ export default () => {
     }
   };
 
+  const [commonEnumList, setCommonEnumList] = useState<any>([])
+
+  const getIndustryList = async () => {
+    try {
+      const res = await getEnumByName('ORG_INDUSTRY')
+      if ( res?.code === 0 ) {
+        setCommonEnumList(res?.result || [])
+      } else {
+        throw new Error()
+      }
+    } catch (error) {
+      console.log('error')
+    }
+  }
+
+  useEffect(() => {
+    getIndustryList()
+    getNews();
+  }, [searchContent]);
+
   const columns = [
     {
       title: '排序',
@@ -167,7 +187,7 @@ export default () => {
       title: '所属产业',
       dataIndex: 'industryShow',
       isEllipsis: true,
-      render: (text: any, record: any) => record.industryShow.join('、'),
+      render: (text: any, record: any) => record?.industryShow?.join('、') || '--',
       width: 300,
     },
     {
@@ -196,6 +216,7 @@ export default () => {
     {
       title: '操作',
       width: 200,
+      fixed: 'right',
       dataIndex: 'option',
       render: (_: any, record: News.Content) => {
         return (
@@ -246,26 +267,7 @@ export default () => {
       },
     },
   ];
-  const [commonEnumList, setCommonEnumList] = useState<any>([])
-
-  const getIndustryList = async () => {
-    try {
-      const res = await getEnumByName('ORG_INDUSTRY')
-      if ( res?.code === 0 ) {
-        setCommonEnumList(res?.result || [])
-      } else {
-        throw new Error()
-      }
-    } catch (error) {
-      console.log('error')
-    }
-  }
-
-  useEffect(() => {
-    getIndustryList()
-    getNews();
-  }, [searchContent]);
-
+  
   const useSearchNode = (): React.ReactNode => {
     const [searchForm] = Form.useForm();
     return (
@@ -335,7 +337,7 @@ export default () => {
     return (
       <Modal
         title={editingItem.id ? '修改资讯' : '新增资讯'}
-        width="400px"
+        width="780px"
         visible={createModalVisible}
         maskClosable={false}
         onCancel={() => {
@@ -368,10 +370,12 @@ export default () => {
           >
             <Input placeholder="请输入" />
           </Form.Item>
-          <Form.Item>
+          <Form.Item labelCol={{ span: 0 }} wrapperCol={{ span: 24 }}>
             <Form.Item
               name="industry"
               label="所属产业"
+              labelCol={{ span: 6}}
+              wrapperCol={{ span: 16}}
               required
               rules={[
                 () => ({
@@ -404,6 +408,8 @@ export default () => {
                 name="industryOther"
                 label=" "
                 colon={false}
+                labelCol={{ span: 6 }}
+                wrapperCol={{ span: 16 }}
                 rules={[
                   () => ({
                     validator(_, value) {
