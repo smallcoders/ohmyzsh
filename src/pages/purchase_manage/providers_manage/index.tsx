@@ -208,7 +208,7 @@ export default () => {
             <a
               key="primary3"
               className='export-btn'
-              href={`/antelope-pay/provider/download?providerName=${searchContent.providerName || ''}`}
+              href={`/antelope-pay/mng/provider/download?providerName=${searchContent.providerName || ''}`}
             >
               导出
             </a>
