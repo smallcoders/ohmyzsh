@@ -204,7 +204,7 @@ export default () => {
           <a
             key="primary3"
             className='export-btn'
-            href={`/antelope-pay/statistics/activity/download/activity/list?actNo=${searchContent.actNo || ''}`}
+            href={`/antelope-pay/mng/statistics/activity/download/activity/list?actNo=${searchContent.actNo || ''}`}
           >
             导出
           </a>

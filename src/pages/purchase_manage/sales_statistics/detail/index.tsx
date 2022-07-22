@@ -137,7 +137,7 @@ const SolutionDetail: React.FC = () => {
         <a
           key="primary3"
           className='export-btn'
-          href={`/antelope-pay/statistics/activity/download/activity/orders?id=${history.location.query?.id || ''}`}
+          href={`/antelope-pay/mng/statistics/activity/download/activity/orders?id=${history.location.query?.id || ''}`}
         >
           导出
         </a>
