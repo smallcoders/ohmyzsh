@@ -9,7 +9,7 @@ import { arrayMoveImmutable } from 'array-move';
 
 import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
 import type { SortableContainerProps, SortEnd } from 'react-sortable-hoc';
-import OrgTypeManage from '@/types/org-type-manage';
+import type OrgTypeManage from '@/types/org-type-manage';
 import {
   addOrgType,
   getOrgTypeList,
@@ -98,6 +98,7 @@ export default forwardRef((props: any, ref) => {
   const remove = async (id: string) => {
     setDataSource(p => {
       const rest = p.filter(p => p.detailId !== id)
+      console.log('rest',rest)
       handleSameData(rest)
       return rest
     })

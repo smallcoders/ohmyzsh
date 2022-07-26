@@ -219,6 +219,8 @@ export default () => {
       fixed: 'right',
       dataIndex: 'option',
       render: (_: any, record: News.Content) => {
+        console.log('_',_)
+        console.log('record',record)
         return (
           <Space size="middle">
             <a
