@@ -41,15 +41,11 @@ export function cityPropaganda(id: string) {
 
 // 获取某个城市宣传页
 export function getCityPropagandaData(id: string) {
-  const key = 'rpc-tag'
   return request('/antelope-science/mng/cityPropaganda', {
     method: 'get',
     params: {
       id
     },
-    headers: {
-      [key]: 'yangeye3'
-    }
   })
 }
 
@@ -104,13 +100,9 @@ export function getChangePropaganda(data: {
   exchangeDemandIds?: any[]; // 企业需求
 
 }) {
-  const key = 'rpc-tag'
   return request('/antelope-science/mng/cityPropaganda',{
     method: 'post',
     data,
-    headers: {
-      [key]: 'yangeye3'
-    }
   })
 }
 
@@ -129,23 +121,15 @@ export function addExchange(data: {
   state: string; // 状态
   exchangeTime?: string; // 对接时间 
 }) {
-  const key = 'rpc-tag'
   return request('/antelope-science/web/exchange/demand',{
     method: 'post',
     data,
-    headers: {
-      [key]: 'yangeye3'
-    }
   })
 }
 // 删除对接成效
 export function deleteExchange(id: string) {
-  const key = 'rpc-tag'
   return request(`/antelope-science/web/exchange/demand?id=${id}`,{
     method: 'DELETE',
-    headers: {
-      [key]: 'yangeye3'
-    }
   })
 }
 
@@ -163,7 +147,7 @@ export function getCityActivity(params: {
 }) {
   return request('/antelope-science/mng/cityActivity/page',{
     method: 'GET',
-    params: { ...params, pageIndex: params.current}
+    params: { ...params, pageIndex: params.current},
   }).then((e: { code: number; totalCount: any; result: any }) => ({
     success: e.code === 0,
     total: e.totalCount,
