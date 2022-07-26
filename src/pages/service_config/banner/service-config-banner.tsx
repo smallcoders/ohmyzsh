@@ -299,6 +299,7 @@ const TableList: React.FC = () => {
           >
             <Select placeholder="请选择">
               <Select.Option value={Banner.Edge.PC}>官网-首页</Select.Option>
+              <Select.Option value={Banner.Edge.PC_CITY}>官网-地市专题主页</Select.Option>
               <Select.Option value={Banner.Edge.APPLET}>小程序-首页</Select.Option>
               <Select.Option value={Banner.Edge.APPLET_CREATIVE}>小程序-科产</Select.Option>
               <Select.Option value={Banner.Edge.APP}>APP-首页</Select.Option>
