@@ -49,7 +49,7 @@ export default () => {
 
     const hour = day > 0 ? Math.floor((minutes - day * 1440) / 60) : Math.floor(minutes / 60);
 
-    const minute = hour > 0 ? Math.floor(minutes - day * 1440 - hour * 60) : minutes;
+    const minute = (day > 0 || hour > 0) ? Math.floor(minutes - day * 1440 - hour * 60) : minutes;
 
     let time = '';
 
@@ -64,7 +64,7 @@ export default () => {
 
   const toHourMinute = (minutes = 0, payMethod = 'P04') => {
     if (payMethod == 'P04') {
-      return formatMinutes(minutes);
+      return formatMinutes(5760);
     }
     const hour = Math.floor(minutes / 60);
     if (hour > 0) return hour + '小时' + (minutes % 60) + '分钟';
@@ -175,9 +175,9 @@ export default () => {
         <Button
           href={`/antelope-pay/mng/order/detail/export?orderNo=${detail?.orderNo}`}
           icon={<UploadOutlined />}
-          // onClick={() => {
-          //   onExport();
-          // }}
+        // onClick={() => {
+        //   onExport();
+        // }}
         >
           导出
         </Button>
