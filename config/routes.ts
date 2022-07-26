@@ -76,6 +76,9 @@
   SALES_STATISTICS: '/purchase-manage/sales-statistics', // 商品数据统计
   SALES_STATISTICS_DETAIL: '/purchase-manage/sales-statistics/detail', // 活动数据-活动详情
 
+  PROPAGANDA_CONFIG: '/local-propaganda/propaganda-config/index', // 地市宣传页管理
+  ADD_PROPAGANDA_CONFIG: '/local-propaganda/propaganda-config/add-management', // 新增地市宣传页管理
+  MANAGEMENT_ACTIVITIES: '/local-propaganda/management_activities', // 地市活动管理
 
 };
 
@@ -324,6 +327,45 @@ export default [
       },
       
     ],
+  },
+  {
+    path: '/local-propaganda',
+    name: '地市专题管理',
+    icon: 'unordered-list',
+    access: 'LOCAL-PROPAGANDA',
+    routes: [
+      {
+        path: '/local-propaganda',
+        redirect: '/local-propaganda/propaganda-config',
+      },
+      {
+        path: '/local-propaganda/propaganda-config',
+        name: '地市宣传页管理',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: '/local-propaganda/propaganda-config',
+            redirect: routeName.PROPAGANDA_CONFIG
+          },
+          {
+            path: routeName.PROPAGANDA_CONFIG,
+            hideInBreadcrumb: true,
+            name: '地市宣传页管理',
+            component: './local_propaganda/propaganda_config'
+          },
+          {
+            path: routeName.ADD_PROPAGANDA_CONFIG,
+            name: '新增地市宣传页',
+            component: './local_propaganda/add_management',
+          }
+        ]
+      },
+      {
+        path: routeName.MANAGEMENT_ACTIVITIES,
+        name: '地市活动管理',
+        component: './local_propaganda/management_activities'
+      }
+    ]
   },
   {
     path: '/operate-data',

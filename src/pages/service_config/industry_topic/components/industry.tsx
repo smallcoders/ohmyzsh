@@ -9,7 +9,7 @@ import { arrayMoveImmutable } from 'array-move';
 
 import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
 import type { SortableContainerProps, SortEnd } from 'react-sortable-hoc';
-import OrgTypeManage from '@/types/org-type-manage';
+import type OrgTypeManage from '@/types/org-type-manage';
 import IndustryTable from './industry-table';
 import { addIndustryTopic, getIndustryTopicData, saveIndustryTopic } from '@/services/industry-topic';
 import { getEnumByNameByScience } from '@/services/common';
@@ -65,7 +65,7 @@ export default (props: { currentTab: any; }) => {
     try {
       const res = await
         getEnumByNameByScience('INDUSTRY_DATA_TYPE')
-      let enumObj = {};
+      const enumObj = {};
       res?.result?.map(
         p => {
           enumObj[p.enumName] = p.name
@@ -97,6 +97,7 @@ export default (props: { currentTab: any; }) => {
   };
 
   const handleSameData = (type: string, data: any[]) => {
+    console.log('删除',data)
     setDataSource(p => {
       const item = p.find(x => x.dataType === type)
       item.dataList = [...data]
@@ -113,7 +114,7 @@ export default (props: { currentTab: any; }) => {
         .then(async (value) => {
           setAddOrUpdateLoading(true);
 
-          let dataList = [];
+          const dataList = [];
           for (const key in rootRef.current) {
             if (Object.prototype.hasOwnProperty.call(rootRef.current, key)) {
               const element = rootRef.current[key];
@@ -174,6 +175,7 @@ export default (props: { currentTab: any; }) => {
     }
 
     setDataSource(p => {
+      console.log('@@@@@', p)
       const item = p.find(x => x.dataType === modalInfo.type)
       item.dataList = [...item.dataList, ...addDataSource.filter(f => selectedRowKeys?.includes(f.detailId))]
       return p
@@ -191,6 +193,7 @@ export default (props: { currentTab: any; }) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
+    console.log('newSelectedRowKeys',newSelectedRowKeys)
     setSelectedRowKeys(newSelectedRowKeys);
   };
 
@@ -225,7 +228,7 @@ export default (props: { currentTab: any; }) => {
 
   const useModal = (): React.ReactNode => {
 
-    let [columns, searchFormItems] = getAutoContent(modalInfo.type)
+    const [columns, searchFormItems] = getAutoContent(modalInfo.type)
 
     return (
       <Modal
@@ -508,7 +511,7 @@ export default (props: { currentTab: any; }) => {
             <div style={{ margin: '20px 0' }}>{enumObj[p.dataType]}</div>
             <IndustryTable ref={ref => rootRef.current[p.dataType] = ref}
               handleSameData={(list) => handleSameData(p.dataType, list)}
-              autoColumns={getAutoContent(p.dataType)[0]} data={p.dataList}></IndustryTable>
+              autoColumns={getAutoContent(p.dataType)[0]} data={p.dataList} />
             {editing && <div
               style={
                 { cursor: 'pointer' }
