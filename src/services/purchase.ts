@@ -129,7 +129,7 @@ export async function getActivityDetail(id: string) { // 活动详情
  * @param params
  */
 export async function getProviderPage(data?: { [key: string]: any }) {
-  return request<LogoutVerify.ResultList>('/antelope-pay/provider/search', {
+  return request<LogoutVerify.ResultList>('/antelope-pay/mng/provider/search', {
     method: 'post',
     data
   });
@@ -139,7 +139,7 @@ export async function getProviderPage(data?: { [key: string]: any }) {
  * @param params
  */
 export async function exportProvider(providerName: string) {
-  return request<LogoutVerify.ResultList>(`/antelope-pay/provider/download?providerName=${providerName}`, {
+  return request<LogoutVerify.ResultList>(`/antelope-pay/mng/provider/download?providerName=${providerName}`, {
     method: 'get'
   });
 }
@@ -148,7 +148,7 @@ export async function exportProvider(providerName: string) {
  * @param params
  */
 export async function getProviderDetails(options?: { [key: string]: any }) {
-  return request<LogoutVerify.ResultList>('/antelope-pay/provider/details', {
+  return request<LogoutVerify.ResultList>('/antelope-pay/mng/provider/details', {
     method: 'get',
     params: { ...(options || {}) },
   });
@@ -158,7 +158,7 @@ export async function getProviderDetails(options?: { [key: string]: any }) {
  * @param params
  */
  export async function addProvider(data?: { [key: string]: any }) {
-  return request<LogoutVerify.ResultList>('/antelope-pay/provider/add', {
+  return request<LogoutVerify.ResultList>('/antelope-pay/mng/provider/add', {
     method: 'post',
     data
   });
@@ -168,7 +168,7 @@ export async function getProviderDetails(options?: { [key: string]: any }) {
  * @param params
  */
  export async function updateProvider(data?: { [key: string]: any }) {
-  return request<LogoutVerify.ResultList>('/antelope-pay/provider/update', {
+  return request<LogoutVerify.ResultList>('/antelope-pay/mng/provider/update', {
     method: 'post',
     data
   });
@@ -178,7 +178,7 @@ export async function getProviderDetails(options?: { [key: string]: any }) {
  * @param params
  */
 export async function removeProvider(id: string) {
-  return request<Common.ResultCode>(`/antelope-pay/provider/delete?id=${id}`, {
+  return request<Common.ResultCode>(`/antelope-pay/mng/provider/delete?id=${id}`, {
     method: 'DELETE',
   });
 }
@@ -187,7 +187,7 @@ export async function removeProvider(id: string) {
  * @param params
  */
  export async function getAllProviderTypes() {
-  return request<LogoutVerify.ResultList>('/antelope-pay/provider/type/all', {
+  return request<LogoutVerify.ResultList>('/antelope-pay/mng/provider/type/all', {
     method: 'get'
   });
 }
@@ -198,7 +198,7 @@ export async function removeProvider(id: string) {
  * @param params
  */
  export async function getProviderTypesPage(options?: { [key: string]: any }) {
-  return request<LogoutVerify.ResultList>('/antelope-pay/provider/type/search', {
+  return request<LogoutVerify.ResultList>('/antelope-pay/mng/provider/type/search', {
     method: 'get',
     params: { ...(options || {}) },
   });
@@ -208,7 +208,7 @@ export async function removeProvider(id: string) {
  * @param params
  */
  export async function addProviderType(data?: { [key: string]: any }) {
-  return request<LogoutVerify.ResultList>('/antelope-pay/provider/type/add', {
+  return request<LogoutVerify.ResultList>('/antelope-pay/mng/provider/type/add', {
     method: 'post',
     data
   });
@@ -218,7 +218,7 @@ export async function removeProvider(id: string) {
  * @param params
  */
  export async function updateProviderType(data?: { [key: string]: any }) {
-  return request<LogoutVerify.ResultList>('/antelope-pay/provider/type/update', {
+  return request<LogoutVerify.ResultList>('/antelope-pay/mng/provider/type/update', {
     method: 'post',
     data
   });
@@ -228,7 +228,7 @@ export async function removeProvider(id: string) {
  * @param params
  */
 export async function removeProviderType(id: string) {
-  return request<Common.ResultCode>(`/antelope-pay/provider/type/delete?id=${id}`, {
+  return request<Common.ResultCode>(`/antelope-pay/mng/provider/type/delete?id=${id}`, {
     method: 'DELETE',
   });
 }
@@ -239,7 +239,7 @@ export async function removeProviderType(id: string) {
  * @param params
  */
  export async function getActivityList(data?: { [key: string]: any }) {
-  return request<LogoutVerify.ResultList>('/antelope-pay/statistics/activity/list', {
+  return request<LogoutVerify.ResultList>('/antelope-pay/mng/statistics/activity/list', {
     method: 'post',
     data
   });
@@ -250,7 +250,7 @@ export async function removeProviderType(id: string) {
  * @param params
  */
  export async function getActivityDetails(data?: { [key: string]: any }) {
-  return request<LogoutVerify.ResultList>('/antelope-pay/statistics/activity/with/order/detail', {
+  return request<LogoutVerify.ResultList>('/antelope-pay/mng/statistics/activity/with/order/detail', {
     method: 'post',
     data
   });
@@ -260,7 +260,7 @@ export async function removeProviderType(id: string) {
  * @param params
  */
  export async function getProductList(data?: { [key: string]: any }) {
-  return request<LogoutVerify.ResultList>('/antelope-pay/statistics/product/list', {
+  return request<LogoutVerify.ResultList>('/antelope-pay/mng/statistics/product/list', {
     method: 'post',
     data
   });
