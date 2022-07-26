@@ -93,7 +93,6 @@ const TableList: React.FC = () => {
       const res = await getCityPropagandaData(id)
       if (res?.code === 0) {
         setEditDetail(res?.result || {})
-        console.log('编辑信息',res?.result)
         form.setFieldsValue({...res?.result})
         setEnterpriseDataSource(res?.result.enterpriseDemands || [])
         setInnovateDemand(res?.result.creativeDemands || [])
@@ -856,6 +855,7 @@ const TableList: React.FC = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
+    console.log('onSelectChange',newSelectedRowKeys)
     setSelectedRowKeys(newSelectedRowKeys);
   };
 
@@ -920,7 +920,7 @@ const TableList: React.FC = () => {
           <Row>
             {
               searchFormItems?.map(p =>
-                <React.Fragment key={p.name}>
+                <React.Fragment key={p.bizId}>
                   <Col span={10}>
                     <Form.Item
                       name={p.name}
@@ -958,7 +958,7 @@ const TableList: React.FC = () => {
         </Form>
         <Table 
           size='small'
-          scroll={{ y: 500 }}
+          scroll={{ y: 400 }}
           rowKey={'bizId'}
           loading={loading}
           pagination={{
@@ -976,9 +976,6 @@ const TableList: React.FC = () => {
               pageSize: e.pageSize,
               pageIndex: e.current,
             }
-            // setSearchContent({
-            //   ...searchContent, ...page
-            // })
             getOptions({
               ...searchContent, ...page
             })
@@ -992,15 +989,6 @@ const TableList: React.FC = () => {
    * 保存
    */
    const saveEdit = async (id?: string,state?: any) => {
-    //  const search = form.getFieldsValue();
-     // 拿到所有的数据，再进行保存
-     // getSolution getDocking 三个分页的数据可以拿到
-    //  console.log('@form',search)
-     // 四个需求的数据
-    //  console.log('企业需求',enterpriseDataSource)
-    //  console.log('创新需求',innovateDemand)
-    //  console.log('解决方案',solutionDataSource)
-    //  console.log('111')
      form
       .validateFields()
       .then(async (value: any)=>{
@@ -1032,6 +1020,7 @@ const TableList: React.FC = () => {
           })
           if (res?.code === 0) {
             message.success('成功')
+            history.push(routeName.PROPAGANDA_CONFIG);
           } else {
             message.error(`失败，原因:{${res?.message}}`);
           }
@@ -1062,7 +1051,7 @@ const TableList: React.FC = () => {
         ),
         extra: (
           <>
-          <Button type="primary" key="primary" loading={addOrUpdateLoading} onClick={()=> { saveEdit(editDetail.id,'SHOPPED')}}>
+          <Button type="primary" key="primary1" loading={addOrUpdateLoading} onClick={()=> { saveEdit(editDetail.id,'SHOPPED')}}>
             {/* 确定{isEditing ? '修改' : '新增'} */}
             保存并发布
           </Button>
@@ -1087,7 +1076,7 @@ const TableList: React.FC = () => {
               {
                 areaList?.map((item: any) => {
                   return (
-                    <React.Fragment key={item.name}>
+                    <React.Fragment key={item.code}>
                       <Select.Option value={item.code}>{item.name}</Select.Option>
                     </React.Fragment>
                   )

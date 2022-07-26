@@ -38,14 +38,14 @@ const TableList: React.FC = () => {
   }
 
   // 下架
-  const soldOut = async (id: string) => {
+  const soldOut = async (id: string,state: any) => {
     try {
       const res = await cityPropaganda(id)
       if (res.code === 0) {
-        message.success(`下架成功`);
+        message.success(state === 'SHOPPED' ? '下架成功' : '上架成功');
         actionRef.current?.reload(); // 让table// 刷新
       } else {
-        message.error(`下架失败，原因:{${res.message}}`);
+        message.error(`失败，原因:{${res.message}}`);
       }
     } catch (error) {
       console.log(error);
@@ -151,35 +151,38 @@ const TableList: React.FC = () => {
               编辑
             </Button>
             {
-              record?.state === 'UN_SHOP' &&
+              record?.state === 'SHOPPED' &&
             <Popconfirm
               title="确定下架么？"
               okText="下架"
               cancelText="取消"
-              onConfirm={() => soldOut(record?.id.toString())}
+              onConfirm={() => soldOut(record?.id.toString(),record?.state)}
             >
               <a href="#">下架</a>
             </Popconfirm>
             }
             {
-              record?.state === 'SHOPPED' &&
+              (record?.state === 'UN_SHOP' || record?.state === 'PREPARE') &&
               <Popconfirm
                 title="确定上架么？"
                 okText="确定"
                 cancelText="取消"
-                onConfirm={() => soldOut(record?.id.toString())}
+                onConfirm={() => soldOut(record?.id.toString(),record?.state)}
               >
                 <a href="#">上架</a>
               </Popconfirm>
             }
-            <Popconfirm
-              title="确定删除么？"
-              okText="确定"
-              cancelText="取消"
-              onConfirm={() => remove(record.id.toString())}
-            >
-              <a href="#">删除</a>
-            </Popconfirm>
+            {
+              record?.state !== 'SHOPPED' &&
+              <Popconfirm
+                title="确定删除么？"
+                okText="确定"
+                cancelText="取消"
+                onConfirm={() => remove(record.id.toString())}
+              >
+                <a href="#">删除</a>
+              </Popconfirm>
+            }
           </Space>
         )
       }
