@@ -1060,6 +1060,9 @@ const TableList: React.FC = () => {
           >
             <Select>
               {
+                edit && <Select.Option value={editDetail.areaCode}>{editDetail.areaName}</Select.Option>
+              }
+              {
                 areaList?.map((item: any) => {
                   return (
                     <React.Fragment key={item.code}>
@@ -1076,7 +1079,7 @@ const TableList: React.FC = () => {
             name="demandCount"
             rules={[{ required: true, message: '请输入企业需求数' }]}
           >
-            <InputNumber  />
+            <InputNumber  min={1} />
           </Form.Item>
           <Form.Item
             label="服务方案数"
@@ -1084,14 +1087,14 @@ const TableList: React.FC = () => {
             name="solutionCount"
             rules={[{ required: true, message: '请输入服务方案数' }]}
           >
-            <InputNumber  />
+            <InputNumber min={1} />
           </Form.Item>
           <Form.Item
             label="服务报名数"
             labelCol={ {span: 8} }
             name="solutionSignIn"
           >
-            <InputNumber  />
+            <InputNumber min={1} />
           </Form.Item>
           <Form.Item
             label="上传banner"
