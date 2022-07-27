@@ -64,7 +64,7 @@ export default () => {
 
   const toHourMinute = (minutes = 0, payMethod = 'P04') => {
     if (payMethod == 'P04') {
-      return formatMinutes(5760);
+      return formatMinutes(minutes);
     }
     const hour = Math.floor(minutes / 60);
     if (hour > 0) return hour + '小时' + (minutes % 60) + '分钟';
