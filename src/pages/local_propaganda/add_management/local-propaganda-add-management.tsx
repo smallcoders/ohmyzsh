@@ -127,13 +127,11 @@ const TableList: React.FC = () => {
     const { edit, detail } = history.location.query as any;
     if (edit) {
       // 如果是编辑进入，则获取详情
-      console.log('编辑')
       setEditDetail({id: edit})
       setEdit(true)
       _getCityPropagandaData(edit)
     }
     if (detail) {
-      console.log('详情')
       setDetail(true)
       _getCityPropagandaData(detail)
     }
@@ -172,6 +170,7 @@ const TableList: React.FC = () => {
       case '企业需求':
         try {
           res = await getEnterpriseDemandList({
+            areaCode: form.getFieldValue('areaCode'),
             ...pageInfo,
             name,
             ...searchParams,
@@ -201,6 +200,7 @@ const TableList: React.FC = () => {
       case '创新需求':
         try {
           res = await getCreativeDemandList({
+            areaCode: form.getFieldValue('areaCode'),
             ...pageInfo,
             name,
             ...searchParams,
@@ -230,6 +230,7 @@ const TableList: React.FC = () => {
       case '解决方案':
         try {
           res = await getPropagandaDemandList({
+            areaCode: form.getFieldValue('areaCode'),
             ...pageInfo,
             name,
             ...searchParams,
@@ -266,6 +267,11 @@ const TableList: React.FC = () => {
 
   // 选择企业需求btn
   const handleEnterpriseDemand = (type: string) => {
+    // 校验是否选中了城市名称 
+    if (!form.getFieldValue('areaCode')) {
+      message.error('请在基本信息中选择城市名称')
+      return
+    }
     // 重置表单 - 清空modalInfo
     clearSelectInfo()
     // 获取表单数据
