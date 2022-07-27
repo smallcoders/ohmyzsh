@@ -78,6 +78,7 @@
 
   PROPAGANDA_CONFIG: '/local-propaganda/propaganda-config/index', // 地市宣传页管理
   ADD_PROPAGANDA_CONFIG: '/local-propaganda/propaganda-config/add-management', // 新增地市宣传页管理
+  DETAIL_PROPAGANDA_CONFIG: '/local-propaganda/propaganda-config/detail-management', // 新增地市宣传页管理
   MANAGEMENT_ACTIVITIES: '/local-propaganda/management_activities', // 地市活动管理
 
 };
@@ -357,6 +358,11 @@ export default [
             path: routeName.ADD_PROPAGANDA_CONFIG,
             name: '新增地市宣传页',
             component: './local_propaganda/add_management',
+          },
+          {
+            path: routeName.DETAIL_PROPAGANDA_CONFIG,
+            name: '地市宣传页详情',
+            component: './local_propaganda/detail_management',
           }
         ]
       },
