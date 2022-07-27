@@ -135,7 +135,7 @@ const TableList: React.FC = () => {
               size="small"
               type="link"
               onClick={() => {
-                history.push(`${routeName.ADD_PROPAGANDA_CONFIG}?detail=${record?.id}`)
+                history.push(`${routeName.DETAIL_PROPAGANDA_CONFIG}?detail=${record?.id}`)
               }}
             >
               详情
