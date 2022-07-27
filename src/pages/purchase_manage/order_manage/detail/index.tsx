@@ -49,7 +49,7 @@ export default () => {
 
     const hour = day > 0 ? Math.floor((minutes - day * 1440) / 60) : Math.floor(minutes / 60);
 
-    const minute = hour > 0 ? Math.floor(minutes - day * 1440 - hour * 60) : minutes;
+    const minute = (day > 0 || hour > 0) ? Math.floor(minutes - day * 1440 - hour * 60) : minutes;
 
     let time = '';
 
@@ -175,9 +175,9 @@ export default () => {
         <Button
           href={`/antelope-pay/mng/order/detail/export?orderNo=${detail?.orderNo}`}
           icon={<UploadOutlined />}
-          // onClick={() => {
-          //   onExport();
-          // }}
+        // onClick={() => {
+        //   onExport();
+        // }}
         >
           导出
         </Button>
