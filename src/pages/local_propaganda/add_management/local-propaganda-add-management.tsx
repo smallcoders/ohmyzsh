@@ -51,13 +51,9 @@ const TableList: React.FC = () => {
   // 模态的info
   const [modalInfo, setModalInfo] = useState<{
     type: string,
-    // visible: boolean,
-    // typeName: string,
     detailIdList: string[],
   }>({
     type: '',
-    // visible: false,
-    // typeName: '',
     detailIdList: []
   });
   const [loading, setLoading] = useState(true);
@@ -82,7 +78,7 @@ const TableList: React.FC = () => {
   /**
    * 添加或者修改 loading
    */
-   const [addOrUpdateLoading, setAddOrUpdateLoading] = useState<boolean>(false);
+  //  const [addOrUpdateLoading, setAddOrUpdateLoading] = useState<boolean>(false);
 
   /**
    * 是否在编辑
@@ -120,23 +116,19 @@ const TableList: React.FC = () => {
      console.log(error) 
     }
   }
-  const [detail, setDetail] = useState<boolean>(false)
+  /**
+   * 关闭提醒 主要是 添加或者修改成功后 不需要弹出
+   */
   const [edit, setEdit] = useState<boolean>(false)
   useEffect(()=>{
     _getAreaLabel()
-    const { edit, detail } = history.location.query as any;
+    const { edit } = history.location.query as any;
     if (edit) {
       // 如果是编辑进入，则获取详情
       setEditDetail({id: edit})
       setEdit(true)
       _getCityPropagandaData(edit)
     }
-    if (detail) {
-      setDetail(true)
-      _getCityPropagandaData(detail)
-    }
-    // 感觉没必要有详情,和编辑重复了
-
   },[])
 
   // 统一的清除ModalInfo
@@ -532,6 +524,7 @@ const TableList: React.FC = () => {
           }) 
           setModalVisible(false);
           message.success(`${tooltipMessage}成功`);
+          setEdit(false)
           clearForm();
         } else {
           message.error(`${tooltipMessage}失败，原因:{${res.message}}`);
@@ -664,17 +657,7 @@ const TableList: React.FC = () => {
               },
             ]}
           >
-            <Select>
-              {
-                areaList?.map((item: any) => {
-                  return (
-                    <React.Fragment key={item.name}>
-                      <Select.Option value={item.name}>{item.name}</Select.Option>
-                    </React.Fragment>
-                  )
-                })
-              }
-            </Select>
+            <Input placeholder="请输入" maxLength={35} />
           </Form.Item>
           <Form.Item 
             name="publishName" 
@@ -854,7 +837,6 @@ const TableList: React.FC = () => {
         ];
         break;
     }
-
     return [columns, searchFormItems];
   }
 
@@ -943,7 +925,7 @@ const TableList: React.FC = () => {
               marginBottom: 24
             }} >
 
-              <Button type='primary' loading={addOrUpdateLoading} onClick={() => {
+              <Button type='primary' onClick={() => {
                 const search = formModal.getFieldsValue()
                 const {enterpriseName} = search
                 getEnterpriseDemand(modalInfo.type,enterpriseName)
@@ -1043,27 +1025,25 @@ const TableList: React.FC = () => {
     <PageContainer 
       className={sc('container')}
       header={{
-        title: edit ? `编辑地市宣传页` : detail ? '地市宣传页详情' : '新增地市宣传页' ,
+        title: edit ? `编辑地市宣传页` : '新增地市宣传页' ,
         breadcrumb: (
           <Breadcrumb>
             <Breadcrumb.Item>
               <Link to="/local-propaganda/propaganda-config/index">地市宣传页管理</Link>
             </Breadcrumb.Item>
             <Breadcrumb.Item>
-              {edit ? `编辑地市宣传页` : detail ? '地市宣传页详情' : '新增地市宣传页' }
-              {/* {isEditing ? `编辑地市宣传页` : '新增地市宣传页'} */}
+              {edit ? `编辑地市宣传页` : '新增地市宣传页' }
             </Breadcrumb.Item>
           </Breadcrumb>
         ),
         extra: (
           <>
-          <Button type="primary" key="primary1" loading={addOrUpdateLoading} onClick={()=> { saveEdit(editDetail.id,'SHOPPED')}}>
-            {/* 确定{isEditing ? '修改' : '新增'} */}
-            保存并发布
-          </Button>
-          <Button type="primary" key="primary" loading={addOrUpdateLoading} onClick={()=>{saveEdit(editDetail.id)}}>
-            保存
-          </Button>
+            <Button type="primary" key="primary1" onClick={()=> { saveEdit(editDetail.id,'SHOPPED')}}>
+              保存并发布
+            </Button>
+            <Button type="primary" key="primary" onClick={()=>{saveEdit(editDetail.id)}}>
+              保存
+            </Button>
           </>
         )
     }}
