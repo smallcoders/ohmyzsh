@@ -47,6 +47,30 @@ const TableList: React.FC = () => {
   };
   const [form] = Form.useForm();
 
+  const [serviceTypes, setServiceType] = useState<any>([]);
+
+  const _areaLabel = async () => {
+    try {
+      const res = await areaLabel()
+      if (res?.code === 0) {
+        let arr = []
+        arr =res?.result?.map((item: any)=>{
+          return {
+            areaName: item.name,
+            areaCode: item.code.toString()
+          }
+        }) || []
+        setServiceType(arr)
+      }
+    } catch (error) {
+      console.log('获取城市下拉error')
+    }
+  }
+  useEffect(()=>{
+    // 城市名称安徽省16地市
+    // 下拉选项为安徽省16地市，列表中存在的城市活动状态为非已结束，则选项中不存在；如果为已结束或未维护的城市，则选项中存在
+    _areaLabel()
+  },[])
 
   const stateColumn = {
     'UN_START': '未开始',
@@ -159,6 +183,7 @@ const TableList: React.FC = () => {
           setModalVisible(false);
           message.success(`${tooltipMessage}成功`);
           actionRef.current?.reload()
+          _areaLabel()
           clearForm();
         } else {
           message.error(`${tooltipMessage}失败，原因:{${res.message}}`);
@@ -173,30 +198,6 @@ const TableList: React.FC = () => {
     labelCol: { span: 6 },
     wrapperCol: { span: 16 },
   };
-  const [serviceTypes, setServiceType] = useState<any>([]);
-
-  const _areaLabel = async () => {
-    try {
-      const res = await areaLabel()
-      if (res?.code === 0) {
-        let arr = []
-        arr =res?.result?.map((item: any)=>{
-          return {
-            areaName: item.name,
-            areaCode: item.code.toString()
-          }
-        }) || []
-        setServiceType(arr)
-      }
-    } catch (error) {
-      console.log('获取城市下拉error')
-    }
-  }
-  useEffect(()=>{
-    // 城市名称安徽省16地市
-    // 下拉选项为安徽省16地市，列表中存在的城市活动状态为非已结束，则选项中不存在；如果为已结束或未维护的城市，则选项中存在
-    _areaLabel()
-  },[])
 
   const getModal = () => {
     return (
@@ -226,6 +227,9 @@ const TableList: React.FC = () => {
             ]}
           >
             <Select placeholder="请选择">
+              {
+                editingItem.id && <Select.Option value={editingItem?.areaCode}>{editingItem?.areaName}</Select.Option>
+              }
               {
                 serviceTypes?.map((item: any)=>{
                   return (
@@ -294,11 +298,12 @@ const TableList: React.FC = () => {
             key="button" 
             icon={<PlusOutlined /> } 
             type="primary" 
+            disabled={total >= 16}
             onClick={()=>{
               setModalVisible(true)
             }}
           >
-            新增地市宣传页
+            新增地市活动
           </Button>
           ]}
       />
