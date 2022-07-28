@@ -874,27 +874,25 @@ const TableList: React.FC = () => {
 
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
     // 自己添加一个state，保存选中的值
-    console.log('modalInfo.type',modalInfo.type)
-    console.log('newSelectedRowKeys',newSelectedRowKeys)
     setSelectedRowKeys(p => {
       return newSelectedRowKeys
     });
     switch (modalInfo.type) {
       case '企业需求':
-        if (newSelectedRowKeys?.length >= 4) {
-          message.warning('至多选择四项')
+        if (newSelectedRowKeys?.length >= (4 - enterpriseDataSource.length)) {
+          message.warning(`至多选择${4 - enterpriseDataSource.length}项`)
           return
         }
         break;
       case '创新需求':
-        if (newSelectedRowKeys?.length >= 6) {
-          message.warning('至多选择六项')
+        if (newSelectedRowKeys?.length >= (6 - innovateDemand.length)) {
+          message.warning(`至多选择${6 - innovateDemand.length}项`)
           return
         }
         break;
       case '解决方案':
-        if (newSelectedRowKeys?.length >= 4) {
-          message.warning('至多选择四项')
+        if (newSelectedRowKeys?.length >= (4 - solutionDataSource.length)) {
+          message.warning(`至多选择${4 - solutionDataSource.length}项`)
           return
         }
         break;
@@ -916,14 +914,21 @@ const TableList: React.FC = () => {
     }
     switch (modalInfo.type) {
       case '企业需求':
+        if ((enterpriseDataSource.length + selectedRowKeys.length) > 4) {
+          message.warning('企业需求最多选择4项')
+          return
+        }
         setEnterpriseDataSource( p => {
-          console.log('selectedRowKeys',selectedRowKeys)
           const item = addDataSource.filter(f => selectedRowKeys?.includes(f.bizId))
           return p.concat(item)
         })
         setDemandModalState(false)
         break;
       case '创新需求':
+        if ((innovateDemand.length + selectedRowKeys.length) > 6) {
+          message.warning('企业需求最多选择6项')
+          return
+        }
         setInnovateDemand( p => {
           const item = addDataSource.filter(f => selectedRowKeys?.includes(f.bizId))
           return p.concat(item)
@@ -931,6 +936,10 @@ const TableList: React.FC = () => {
         setDemandModalState(false)
         break;
       case '解决方案':
+        if ((solutionDataSource.length + selectedRowKeys.length) > 6) {
+          message.warning('企业需求最多选择6项')
+          return
+        }
         setSolutionDataSource( p => {
           const item = addDataSource.filter(f => selectedRowKeys?.includes(f.bizId))
           return p.concat(item)
@@ -1183,7 +1192,7 @@ const TableList: React.FC = () => {
       <div className={sc('container-enterpriseDemand')}>
         企业需求
         <div className={sc('container-enterpriseDemand-top')}>
-          <Button type="primary" onClick={() => {handleEnterpriseDemand('企业需求')}}>选择需求</Button>
+          <Button disabled={enterpriseDataSource.length >= 4} type="primary" onClick={() => {handleEnterpriseDemand('企业需求')}}>选择需求</Button>
           <span className={sc('container-enterpriseDemand-top-title')}>建议选择4个企业需求</span>
         </div>
         <div className={sc('container-enterpriseDemand-table')}>
@@ -1199,7 +1208,7 @@ const TableList: React.FC = () => {
       <div className={sc('container-innovateDemand')}>
         创新需求
         <div className={sc('container-innovateDemand-top')}>
-          <Button type="primary" onClick={() => {handleEnterpriseDemand('创新需求')}}>选择创新需求</Button>
+          <Button disabled={innovateDemand.length >= 6} type="primary" onClick={() => {handleEnterpriseDemand('创新需求')}}>选择创新需求</Button>
           <span className={sc('container-innovateDemand-top-title')}>建议选择6个创新需求</span>
         </div>
         <div className={sc('container-innovateDemand-table')}>
@@ -1215,7 +1224,7 @@ const TableList: React.FC = () => {
       <div className={sc('container-solution')}>
         解决方案
         <div className={sc('container-solution-top')}>
-          <Button type="primary" onClick={() => {handleEnterpriseDemand('解决方案')}}>选择解决方案</Button>
+          <Button disabled={solutionDataSource.length >= 4} type="primary" onClick={() => {handleEnterpriseDemand('解决方案')}}>选择解决方案</Button>
           <span className={sc('container-solution-top-title')}>建议选择4个解决方案</span>
         </div>
         <div className={sc('container-solution-table')}>
