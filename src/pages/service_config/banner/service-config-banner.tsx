@@ -215,7 +215,7 @@ const TableList: React.FC = () => {
             >
               <a href="#">删除</a>
             </Popconfirm>
-            {record.state !== 3 && (
+            {record.state === 0 && (
               <Popconfirm
                 title="确定下架么？"
                 okText="确定"
