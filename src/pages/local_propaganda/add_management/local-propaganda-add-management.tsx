@@ -170,6 +170,7 @@ const TableList: React.FC = () => {
           if (res?.code === 0) {
             if (enterpriseDataSource.length != 0) {
               let newRes = res?.result || []
+              // 已经有选中的数据，剔除
               res?.result?.forEach((item: any)=>{
                 enterpriseDataSource.forEach((item2: any) => {
                   if (item.bizId === item2.bizId) {
@@ -179,7 +180,7 @@ const TableList: React.FC = () => {
               })
               res.result = newRes
             }
-            setPageInfo({...pageInfo,pageTotal: res?.totalCount,pageIndex: res?.pageIndex})
+            setPageInfo({...pageInfo,pageTotal: res?.totalCount - enterpriseDataSource.length,pageIndex: res?.pageIndex})
             setLoading(false)
           } else {
             throw new Error();
@@ -209,7 +210,7 @@ const TableList: React.FC = () => {
               })
               res.result = newRes
             }
-            setPageInfo({...pageInfo,pageTotal: res?.totalCount,pageIndex: res?.pageIndex})
+            setPageInfo({...pageInfo,pageTotal: res?.totalCount - innovateDemand.length,pageIndex: res?.pageIndex})
             setLoading(false)
           } else {
             throw new Error();
@@ -239,7 +240,7 @@ const TableList: React.FC = () => {
               })
               res.result = newRes
             }
-            setPageInfo({...pageInfo,pageTotal: res?.totalCount,pageIndex: res?.pageIndex})
+            setPageInfo({...pageInfo,pageTotal: res?.totalCount - solutionDataSource.length,pageIndex: res?.pageIndex})
             setLoading(false)
           } else {
             throw new Error();
@@ -253,7 +254,9 @@ const TableList: React.FC = () => {
         break;
     }
     if (res?.code === 0) {
-      setAddDataSource(res?.result || [])
+      setAddDataSource(p => {
+        return p.concat(res?.result || [])
+      })
     }
   }
 
@@ -505,7 +508,7 @@ const TableList: React.FC = () => {
     setEditingItem({});
   };
   const addOrUpdata = () => {
-    const tooltipMessage = editingItem.id ? '修改' : '添加';
+    const tooltipMessage = editingItem.bizId ? '修改' : '添加';
     resultModal
       .validateFields()
       .then(async (value)=>{
@@ -514,14 +517,29 @@ const TableList: React.FC = () => {
         if (exchangeTime) {
           time = moment(exchangeTime.date[0]).format('yyyy-MM-DD HH:mm:ss');
         }
-        const res = editingItem.id 
-          ? await addExchange({ ...value, id: editingItem.id, exchangeTime: time })
+        const res = editingItem.bizId
+          ? await addExchange({ ...value, id: editingItem.bizId, exchangeTime: time })
           : await addExchange({...value,  exchangeTime: time })
         if (res?.code === 0) {
-          setResultDataSource( p => {
-            const item = [{...res?.result,bizId: res?.result.id}]
-            return p.concat(item)
-          }) 
+          if ( editingItem.bizId ) {
+            // 编辑
+            setResultDataSource(p => {
+              const a = p.map((item: any) => {
+                if (item.bizId === editingItem.bizId ) {
+                  return {...res?.result,bizId: res?.result.id}
+                } else {
+                  return item
+                }
+              })
+              return a
+            })
+          } else {
+            // 添加
+            setResultDataSource( p => {
+              const item = [{...res?.result,bizId: res?.result.id}]
+              return p.concat(item)
+            }) 
+          }
           setModalVisible(false);
           message.success(`${tooltipMessage}成功`);
           setEdit(false)
@@ -598,18 +616,19 @@ const TableList: React.FC = () => {
       dataIndex: 'option',
       fixed: 'right',
       render: (_: any, record: any) => {
-        console.log('record',record)
         return (
           <Space>
             <a
               href="#"
               onClick={() => {
+                if (edit) {setEdit(false)}
+                console.log('record',record)
                 setEditingItem(record);
                 setModalVisible(true);
                 resultModal.setFieldsValue({ ...record});
               }}
             >
-              编辑{' '}
+              编辑
             </a>
             <Popconfirm
               title="确定删除么？"
@@ -633,7 +652,7 @@ const TableList: React.FC = () => {
   const getModal = () => {
     return (
       <Modal
-        title={editingItem.id ? '修改地市活动' : '新增地市活动'}
+        title={editingItem.bizId ? '修改地市活动' : '新增地市活动'}
         width="800px"
         visible={modalVisible}
         maskClosable={false}
@@ -841,19 +860,25 @@ const TableList: React.FC = () => {
   }
 
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  // const [selectedKeys, setSelectedKeys] = useState<React.Key[]>([]);
 
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
-    console.log('onSelectChange',newSelectedRowKeys)
-    setSelectedRowKeys(newSelectedRowKeys);
+    // 自己添加一个state，保存选中的值
+    console.log('newSelectedRowKeys',newSelectedRowKeys)
+    setSelectedRowKeys(p => {
+      return newSelectedRowKeys
+    });
   };
 
   const rowSelection = {
     selectedRowKeys,
     onChange: onSelectChange,
+    preserveSelectedRowKeys:true,
   };
 
   // 选中select
   const onSelectItems = () => {
+    // ⭐需要处理，根据自己的变量
     if (selectedRowKeys?.length === 0) {
       message.warning('至少选择一项')
       return
@@ -861,6 +886,7 @@ const TableList: React.FC = () => {
     switch (modalInfo.type) {
       case '企业需求':
         setEnterpriseDataSource( p => {
+          console.log('selectedRowKeys',selectedRowKeys)
           const item = addDataSource.filter(f => selectedRowKeys?.includes(f.bizId))
           return p.concat(item)
         })
@@ -947,7 +973,7 @@ const TableList: React.FC = () => {
         <Table 
           size='small'
           scroll={{ y: 400 }}
-          rowKey={'bizId'}
+          rowKey='bizId'
           loading={loading}
           pagination={{
             current: pageInfo.pageIndex,
@@ -1004,7 +1030,7 @@ const TableList: React.FC = () => {
             enterpriseDemandIds: enterpriseDataSource.map(item =>item.bizId) || [],
             creativeDemandIds: innovateDemand.map(item =>item.bizId) || [],
             solutionIds: solutionDataSource.map(item =>item.bizId) || [],
-            exchangeDemandIds: resultDataSource.map(item => item.id) || [],
+            exchangeDemandIds: resultDataSource.map(item => item.bizId) || [],
           })
           if (res?.code === 0) {
             message.success('成功')
