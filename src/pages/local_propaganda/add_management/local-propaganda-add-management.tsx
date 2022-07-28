@@ -157,6 +157,7 @@ const TableList: React.FC = () => {
 
   // 获取企业分页数据 点击的时候再获取
   const getEnterpriseDemand = async (type: string, name?: string, searchParams?: any) => {
+    console.log('name',name)
     let res 
     switch (type) {
       case '企业需求':
@@ -169,6 +170,7 @@ const TableList: React.FC = () => {
           })
           if (res?.code === 0) {
             if (enterpriseDataSource.length != 0) {
+              console.log('有选中')
               let newRes = res?.result || []
               // 已经有选中的数据，剔除
               res?.result?.forEach((item: any)=>{
@@ -254,9 +256,17 @@ const TableList: React.FC = () => {
         break;
     }
     if (res?.code === 0) {
-      setAddDataSource(p => {
-        return p.concat(res?.result || [])
-      })
+      if (name) {
+        console.log('有name')
+        setAddDataSource(p => {
+          return (res?.result || [])
+        })
+      } else {
+        console.log('无name')
+        setAddDataSource(p => {
+          return p.concat(res?.result || [])
+        })
+      }
     }
   }
 
@@ -864,10 +874,31 @@ const TableList: React.FC = () => {
 
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
     // 自己添加一个state，保存选中的值
+    console.log('modalInfo.type',modalInfo.type)
     console.log('newSelectedRowKeys',newSelectedRowKeys)
     setSelectedRowKeys(p => {
       return newSelectedRowKeys
     });
+    switch (modalInfo.type) {
+      case '企业需求':
+        if (newSelectedRowKeys?.length >= 4) {
+          message.warning('至多选择四项')
+          return
+        }
+        break;
+      case '创新需求':
+        if (newSelectedRowKeys?.length >= 6) {
+          message.warning('至多选择六项')
+          return
+        }
+        break;
+      case '解决方案':
+        if (newSelectedRowKeys?.length >= 4) {
+          message.warning('至多选择四项')
+          return
+        }
+        break;
+    }
   };
 
   const rowSelection = {
@@ -958,6 +989,7 @@ const TableList: React.FC = () => {
               }}>查询</Button>
               <Button onClick={() => {
                 formModal.resetFields()
+                setAddDataSource([])
                 setPageInfo({
                   pageIndex: 1,
                   pageSize: 10,
