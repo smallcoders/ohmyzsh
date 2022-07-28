@@ -428,7 +428,7 @@ export default () => {
                   placeholder="请输入"
                   autoComplete="off"
                   allowClear
-                  maxLength={20}
+                  maxLength={10}
                 />
               </Form.Item>
             )}
