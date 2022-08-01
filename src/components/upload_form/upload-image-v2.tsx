@@ -14,7 +14,7 @@ function getBase64(file) {
   });
 }
 
-const SIZE_LIMIT_FILE = 30;
+const SIZE_LIMIT_FILE = 5;
 
 // const CancelToken = axios.CancelToken;
 

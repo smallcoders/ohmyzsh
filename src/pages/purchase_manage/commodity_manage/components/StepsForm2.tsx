@@ -119,10 +119,11 @@ export default (props: StepFormProps) => {
               { required: true, message: '此项为必填项' },
               ({}) => ({
                 validator(_, value) {
-                  if (/^[0-9]*$/.test(value)) {
+                  // if (/^[0-9]*$/.test(value)) { 
+                  if (/(?:^[1-9]([0-9]+)?(?:\.[0-9]{1,2})?$)|(?:^(?:0)$)|(?:^[0-9]\.[0-9](?:[0-9])?$)/.test(value)) {
                     return Promise.resolve();
                   }
-                  return Promise.reject(new Error('此项为数字'));
+                  return Promise.reject(new Error('此项为数字，最多保留两位小数'));
                 },
               }),
             ],
@@ -143,10 +144,10 @@ export default (props: StepFormProps) => {
               { required: true, message: '此项为必填项' },
               ({}) => ({
                 validator(_, value) {
-                  if (/^[0-9]*$/.test(value)) {
+                  if (/(?:^[1-9]([0-9]+)?(?:\.[0-9]{1,2})?$)|(?:^(?:0)$)|(?:^[0-9]\.[0-9](?:[0-9])?$)/.test(value)) {
                     return Promise.resolve();
                   }
-                  return Promise.reject(new Error('此项为数字'));
+                  return Promise.reject(new Error('此项为数字，最多保留两位小数'));
                 },
               }),
             ],
@@ -218,7 +219,19 @@ export default (props: StepFormProps) => {
       />
 
       <Form form={form} style={{ width: 600 }} onChange={() => setChanged(true)}>
-        <Form.Item label="运费" name="transportFee" rules={[{ required: true }]}>
+        <Form.Item label="运费" name="transportFee" 
+          rules={[
+            { required: true, message: '此项为必填项' },
+            ({}) => ({
+              validator(_, value) {
+                if (/(?:^[1-9]([0-9]+)?(?:\.[0-9]{1,2})?$)|(?:^(?:0)$)|(?:^[0-9]\.[0-9](?:[0-9])?$)/.test(value)) {
+                  return Promise.resolve();
+                }
+                return Promise.reject(new Error('此项为数字，最多保留两位小数'));
+              },
+            }),
+          ]}
+        >
           <Input addonAfter="元" type="number" />
         </Form.Item>
       </Form>
