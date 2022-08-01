@@ -55,7 +55,7 @@ export default (
   const beforeUploadFile = (file: any) => {
     const isLtLimit = file.size / 1024 / 1024 < SIZE_LIMIT_FILE;
     if (!isLtLimit) {
-      message.error(`文件尺寸需小于${SIZE_LIMIT_FILE}M`);
+      message.error(`上传的文件大小不得超过${SIZE_LIMIT_FILE}M`);
     }
     if(accept) {
       try {
