@@ -154,7 +154,7 @@ export default (
         extra="图片格式仅支持JPG、PNG、JPEG,建议尺寸144*144px，大小在5M以下"
         rules={[{ required: true, message: '请选择商品封面图' }]}
       >
-        <UploadImageFormItem accept=".png,.jpeg,.jpg" listType="picture-card" maxCount={1} />
+        <UploadImageFormItem accept=".png,.jpeg,.jpg" listType="picture-card" maxCount={1} maxSize={5} />
       </ProForm.Item>
       {/* <ProForm.Item
         name="banner"
