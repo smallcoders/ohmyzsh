@@ -177,7 +177,7 @@ export default (props: StepFormProps) => {
     const queryDta = {
       priceChildList,
       productId: id,
-      transportFee: form.getFieldValue('transportFee'),
+      transportFee: form.getFieldValue('transportFee')*100,
       specsTitle: prices[0].specsTitle,
     };
     const res = await addSpecsPrice(queryDta).finally(() => setloading(false));
