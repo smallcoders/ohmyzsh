@@ -303,7 +303,7 @@ export default () => {
               </Button>
               <Button
                 type="primary"
-                key="primary"
+                key="primary2"
                 onClick={() => {
                   searchForm.resetFields();
                   setSearChContent({});

@@ -1,10 +1,23 @@
 import { PageContainer } from '@ant-design/pro-layout';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { history } from 'umi';
 import ExpertResource from './components/expert-resource';
 import ConsultRecord from './components/consult-record';
 import ApplyRecord from './components/apply-record';
 export default () => {
   const [activeKey, setActiveKey] = useState<string>('1');
+
+  const { type } = history.location.query as any;
+
+  const prepare = async () => {
+    if (type) {
+      setActiveKey(type);
+    }
+  };
+
+  useEffect(() => {
+    prepare();
+  }, []);
 
   return (
     <PageContainer
