@@ -1,13 +1,35 @@
 @prefix: service-config-digital-app-push-record;
 
+@import '../../../../global.less';
+
 .@{prefix}-container {
-  &-form {
-    padding: 40px 0 20px 0;
+
+  &-search {
+    margin-bottom: 20px;
+    padding: 20px;
     background-color: #fff;
   }
-  .tooltip {
-    color: rgba(0, 0, 0, 0.25);
-    font-weight: 400;
-    font-size: 14px;
+
+  &-table-header {
+    padding: 20px;
+    background-color: #fff;
+    .title {
+      display: flex;
+      justify-content: space-between;
+      > span {
+        color: rgba(0, 0, 0, 0.85);
+        font-weight: 600;
+        font-size: 16px;
+        line-height: 22px;
+      }
+
+      .ant-btn:first-child {
+        margin-right: 10px;
+      }
+    }
   }
+}
+
+.textoverflow2 {
+  .textoverflow(2);
 }

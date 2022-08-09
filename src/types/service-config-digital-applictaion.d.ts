@@ -43,6 +43,25 @@ namespace ApplicationManager {
     title: string;
     chosen: boolean;
   }
+
+  export type PushDetail = {
+    id?: string;
+    orgNames?:number;
+    orgIds?: number[];
+    appNames:? string,
+    appName:? string;
+    isChoose?: boolean;
+    type:? number;
+    createTime?: string;
+    pushTime?: string;
+    startTime?: string;
+    endTime?: string;
+  }
+
+  export type DetailResultList = {
+    result: PushDetail[];
+  } & Common.ResultCode &
+    Common.ResultPage;
 }
 
 export default ApplicationManager;

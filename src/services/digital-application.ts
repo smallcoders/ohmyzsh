@@ -51,4 +51,30 @@ export async function pushApplication(data?: { [key: string]: any }) {
   });
 }
 
+// 推送记录列表
+export async function getPushRecordList(data?: { [key: string]: any }) {
+  return request<ApplicationManager.DetailResultList>('/antelope-other/mng/api/manage/queryBagPage', {
+    method: 'post',
+    data,
+  });
+}
+
+// 应用推送详情
+export async function getPushDetail(params: { bagId: string }) {
+  return request<ApplicationManager.DetailResultList>('/antelope-other/mng/api/manage/getBagAppByBagId', {
+    method: 'get',
+    params,
+  });
+}
+
+// 应用推送列表
+export async function getApplicationPushList(data?: { [key: string]: any }) {
+  return request<ApplicationManager.DetailResultList>('/antelope-other/mng/api/manage/queryChoiceAppPage', {
+    method: 'post',
+    data,
+  });
+}
+
+
+
 
