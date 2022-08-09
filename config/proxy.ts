@@ -55,5 +55,10 @@ export default {
       changeOrigin: true,
       pathRewrite: { '^': '' },
     },
-  },
+    '/antelope-other/': {
+      target: 'http://10.8.7.227:9099/',
+      changeOrigin: true,
+      pathRewrite: { '^/antelope-other': '' },
+    }
+  }
 };
