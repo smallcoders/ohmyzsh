@@ -56,9 +56,9 @@ export default {
       pathRewrite: { '^': '' },
     },
     '/antelope-other/': {
-      target: 'http://10.8.7.227:9099/',
+      target: 'http://172.30.33.222:10086',
       changeOrigin: true,
-      pathRewrite: { '^/antelope-other': '' },
+      pathRewrite: { '^': '' },
     }
   }
 };

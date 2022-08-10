@@ -84,6 +84,7 @@ export default () => {
 
   const [transferModalSelectedData, setTransferModalSelectedData] = useState<ApplicationManager.RecordType[]>([]);
 
+  const [refreshCompanyList, setRefreshCompanyList] = useState<number>(1)
 
   const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
     pageIndex: 1,
@@ -107,7 +108,7 @@ export default () => {
 
   useEffect(() => {
     getCompanyList();
-  }, [transferSearchContent]);
+  }, [transferSearchContent, refreshCompanyList]);
 
    /**
    * 准备数据等
@@ -149,8 +150,7 @@ export default () => {
         const list: Array<ApplicationManager.RecordType> =  result.map((e: any) => {
           return {
             key: e.id.toString(),
-            title: e.orgName,
-            chosen: false
+            title: e.orgName
           }
         })
         const mixinList = uniqBy(list.concat(transferModalSelectedData), 'key')
@@ -163,10 +163,11 @@ export default () => {
     }
   }
 
+  // 推送form
+  const [pushForm] = Form.useForm();
+
   // 推送弹窗
   const useDrawer = (): React.ReactNode => {
-    // 推送form
-    const [pushForm] = Form.useForm();
 
     // 提交推送
     const handlePushSubmit = () => {
@@ -463,9 +464,9 @@ export default () => {
       title: '领用有效时间',
       dataIndex: 'timeRange',
       width: 200,
-      render: (_: any, record: any, _index: number) => record.startTime + ' - ' + record.endTime
+      render: (_: any, row: any) => row.startTime + ' - ' + row.endTime
     },
-    { title: '推送状态', dataIndex: 'status', width: 100, render: (_: any, record: any) => record.pushTime ? '已完成' : '待推送' },
+    { title: '推送状态', dataIndex: 'status', width: 100, render: (_: any, row: any) => row.pushTime ? '已完成' : '待推送' },
     {
       title: '操作',
       width: 150,
@@ -481,15 +482,39 @@ export default () => {
             >
               查看
             </Button>
-            <Button
-              type="link"
-              onClick={() => {
-                setSelectedPushKeys([])
-                setTargetKeys([])
-              }}
-            >
-              编辑
-            </Button>
+            {
+              !row.pushTime ? (
+                <Button
+                  type="link"
+                  onClick={() => {
+                    setSelectedPushKeys((row.app as any).map((e: any) => e.id))
+                    const selectedCompany = (row.org as any).map((e: any) => {
+                      return {
+                        key: e.id.toString(),
+                        title: e.orgName
+                      }
+                    })
+                    setCompanySelectedData(selectedCompany)
+                    setTransferModalSelectedData(selectedCompany)
+                    setTargetKeys(selectedCompany.map((e: any) => e.key))
+                    setPushType(row.type as number)
+                    pushForm.setFieldsValue({
+                      type: row.type,
+                      pushTime: row.type && moment(row.pushTime, 'YYYY-MM-DD HH:mm:ss'),
+                      timeRange: [moment(row.startTime, 'YYYY-MM-DD HH:mm:ss'), moment(row.endTime, 'YYYY-MM-DD HH:mm:ss')],
+                    })
+                    setTransferPageInfo({
+                      ...transferPageInfo,
+                      pageIndex: 1
+                    })
+                    setRefreshCompanyList(refreshCompanyList + 1)
+                    setDrawerVisible(true)
+                  }}
+                >
+                  编辑
+                </Button>
+              ) : null
+            }
           </Space>
         );
       },

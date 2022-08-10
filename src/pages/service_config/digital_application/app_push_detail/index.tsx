@@ -36,7 +36,7 @@ export default () => {
     appName?: string; // 应用名称
   }>({});
 
-  const [pushDetail, setPushDetail] = useState<ApplicationManager.PushDetail[]>([]);
+  const [pushDetail, setPushDetail] = useState<ApplicationManager.PushDetail>({});
 
   const [dataSource, setDataSource] = useState<ApplicationManager.PushDetail[]>([]);
 
@@ -91,26 +91,32 @@ export default () => {
     return (
       <div className={sc('container-base-info')}>
         <div className='title'>基本信息</div>
-        <div className='info'>
-          <div className='row'>
-            <span className='label'>推送时间：</span>
-            <span className='content'>2022-07-31 15:30:00</span>
-            <span className='label pl50'>领用有效时间：</span>
-            <span className='content'>2022-07-31 15:30:00 - 2022-08-31 15:30:00</span>
-          </div>
-          <div className='row'>
-            <span className='label'>推送应用：</span>
-            <Tooltip title="prompt text">
-              <span className='content'>应用名称1、应用名称2、应用名称3、应用名称4、应用名称4、应用名称4、应用名称4、应用名称4、应用名称1、应用名称2、应用名称3、应用名称4、应用名称4、应用名称4、应用名称4、应用名称4、应用名称1、应用名称2、应用名称3、应用名称4、应用名称4、应用名称4、应用名称4、应用名称4、应应用名称1、应用名称</span>
-            </Tooltip>
-          </div>
-          <div className='row'>
-            <span className='label'>推送企业：</span>
-            <Tooltip title="prompt text">
-              <span className='content'>上海XX能源科技有限公司、上海XX能源科技有限公司、上海XX能源科技有限公司、上海XX能源科技有限公司、上海XX能源科技有限公司、上海XX能源科技有限公司、上海XX能源科技有限公司、上海XX能源科技有限公司、上海XX能源科技有限公司、上海XX能源科技有限公司、上海XX能源科技有限公司、上海XX能源科技有限公上海XX能源科技有限公司、上海XX能源科技有限公司、上海XX能源科技有限公司、上海XX能源科技有限公司、上海XX能源科技有限公司、上海XX能源科技有限公司、上海XX能源科技有限公司、上海XX能源科技有限公司、上海XX能源科技有限公司、上海XX能源科技有限公司、上海XX能源科技有限公司、上海XX能源科技有限公</span>
-            </Tooltip>
-          </div>
-        </div>
+        {
+          pushDetail ? (
+            <div className='info'>
+              <div className='row'>
+                <span className='label'>推送时间：</span>
+                <span className='content'>{pushDetail.pushTime}</span>
+                <span className='label pl50'>领用有效时间：</span>
+                <span className='content'>{pushDetail.startTime} - {pushDetail.endTime}</span>
+              </div>
+              <div className='row'>
+                <span className='label'>推送应用：</span>
+                <Tooltip title={pushDetail.appNames}>
+                  <span className='content'>{pushDetail.appNames}</span>
+                </Tooltip>
+              </div>
+              <div className='row'>
+                <span className='label'>推送企业：</span>
+                <Tooltip title={pushDetail.orgNames}>
+                  <span className='content'>{pushDetail.orgNames}</span>
+                </Tooltip>
+              </div>
+            </div>
+          ) : (
+            <div className='info'>信息获取失败</div>
+          )
+        }
       </div>
     )
   }

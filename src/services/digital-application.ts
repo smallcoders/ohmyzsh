@@ -61,7 +61,7 @@ export async function getPushRecordList(data?: { [key: string]: any }) {
 
 // 应用推送详情
 export async function getPushDetail(params: { bagId: string }) {
-  return request<ApplicationManager.DetailResultList>('/antelope-other/mng/api/manage/getBagAppByBagId', {
+  return request<ApplicationManager.DetailResult>('/antelope-other/mng/api/manage/getBagByBagId', {
     method: 'get',
     params,
   });

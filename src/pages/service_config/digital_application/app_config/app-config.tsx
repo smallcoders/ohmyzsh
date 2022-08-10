@@ -35,6 +35,7 @@ import UploadFormFile from '@/components/upload_form/upload-form-file';
 
 import uniqBy from 'lodash/uniqBy'
 import cloneDeep from 'lodash/cloneDeep'
+import debounce from 'lodash/debounce'
 
 import {
   getApplicationList,
@@ -177,8 +178,7 @@ export default () => {
         const list: Array<ApplicationManager.RecordType> =  result.map((e: any) => {
           return {
             key: e.id.toString(),
-            title: e.orgName,
-            chosen: false
+            title: e.orgName
           }
         })
         const mixinList = uniqBy(list.concat(transferModalSelectedData), 'key')
@@ -427,7 +427,7 @@ export default () => {
         setSelectedKeys(resKeys);
       };
   
-      const handleOnSearch = (dir: TransferDirection, value: string) => {
+      const handleOnSearch = debounce((dir: TransferDirection, value: string) => {
         console.log('search:', dir, value);
         if (dir === 'left') {
           setTransferPageInfo({
@@ -438,7 +438,7 @@ export default () => {
             orgName: value
           })
         }
-      }
+      }, 500, { leading: false, trailing: true })
   
       const renderFooter: any = (
         _: TransferListProps<any>,

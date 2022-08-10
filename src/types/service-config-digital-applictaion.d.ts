@@ -41,22 +41,28 @@ namespace ApplicationManager {
   export type RecordType = {
     key: string;
     title: string;
-    chosen: boolean;
   }
 
   export type PushDetail = {
     id?: string;
     orgNames?:number;
     orgIds?: number[];
-    appNames:? string,
-    appName:? string;
+    appNames?: string,
+    appName?: string;
     isChoose?: boolean;
-    type:? number;
+    type?: number;
     createTime?: string;
     pushTime?: string;
     startTime?: string;
     endTime?: string;
+    app?: []
+    org?: []
   }
+
+  export type DetailResult = {
+    result: PushDetail;
+  } & Common.ResultCode &
+    Common.ResultPage;
 
   export type DetailResultList = {
     result: PushDetail[];
