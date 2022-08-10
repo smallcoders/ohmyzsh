@@ -88,28 +88,31 @@ namespace Common {
   export enum SearchItemControlEnum {
     INPUT = 'input',
     SELECT = 'select',
+    TREE_SELECT = 'tree-select',
+    CASCADER = 'cascader',
     DATE_MONTH = 'date-month',
     RANGE_PICKER = 'range-Picker',
   }
 
-  export interface OptionItem {
-    id?: string;
-    code?: string;
-    value?: any;
-    name?: string;
+  export interface FieldNamesObj {
+    label: string;
+    value: string;
+    children?: string;
   }
   export interface SearchItem {
     key: string;
     label: string;
     type: SearchItemControlEnum;
-    optionList?: OptionItem[] | string[];
+    options?: any[];
+    treeData?: any[];
+    fieldNames?: FieldNamesObj;
     initialValue?: any;
     placeholder?: string;
     allowClear?: boolean;
     disabledDate?: (currentDate) => boolean;
     loading?: boolean;
     showSearch?: boolean;
-    onChange?: (v: string) => void;
+    onChange?: (v: string | any[]) => void;
   }
 
   export interface ActionItem {

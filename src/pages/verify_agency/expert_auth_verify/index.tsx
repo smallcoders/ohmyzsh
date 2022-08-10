@@ -7,11 +7,13 @@ import { history, useModel } from 'umi'
 import { routeName } from '@/../config/routes'
 import SelfTable from '@/components/self_table'
 import SearchBar from '@/components/search_bar'
+import { getDictionay } from '@/services/common'
+import { getWholeAreaTree } from '@/services/area'
 import { httpPostExpertAuthVerifyPage } from '@/services/verify/expert-auth-verify'
 import { ExpertAuthVerifySearchInfo } from '@/models/useExpertAuthVerifyModel'
 import './index.less'
 
-const sc = scopedClasses('enterprise-info-verify')
+const sc = scopedClasses('expert-auth-verify')
 interface EXpertInfo {
   id?: string // id
   expertName?: string // 专家名称
@@ -29,23 +31,23 @@ const stateObj = {
 
 export default () => {
   const [form] = Form.useForm()
+  const [expertTypeOptions, setExpertTypeOptions] = useState<any>([])
+  const [areaOptions, setAreaOptions] = useState<any>([])
   const [dataSource, setDataSource] = useState<EXpertInfo[]>([])
   const { pageInfo, setPageInfo, searchInfo, setSearchInfo } = useModel('useExpertAuthVerifyModel')
 
   useEffect(() => {
     form?.setFieldsValue({ ...searchInfo })
-    getExpertTypeOptions()
-    getAreaListOptions()
+    // 获取专家类型下拉
+    getDictionay('EXPERT_DICT').then((data) => {
+      setExpertTypeOptions(data?.result || [])
+    })
+    // 获取区域省+市下拉
+    getWholeAreaTree({}).then((data) => {
+      setAreaOptions(data || []);
+    });
     getExpertAuthVerifyPage(searchInfo, pageInfo.pageSize, pageInfo.pageIndex)
   }, [])
-
-  const getExpertTypeOptions = () => {
-
-  }
-
-  const getAreaListOptions = () => {
-
-  }
 
   const columns = [
     {
@@ -147,18 +149,18 @@ export default () => {
         key: 'expertType',
         label: '专家类型',
         type: Common.SearchItemControlEnum.SELECT,
-        initialValue: '',
+        options: expertTypeOptions,
         allowClear: true,
       },
       {
         key: 'area',
         label: '所属区域',
-        type: Common.SearchItemControlEnum.SELECT,
-        initialValue: '',
+        type: Common.SearchItemControlEnum.CASCADER,
+        treeData: areaOptions,
         allowClear: true,
       },
     ]
-  }, [])
+  }, [expertTypeOptions, areaOptions])
 
   const onSearch = (info: any) => {
     const { expertName, expertType, area } = info || {}

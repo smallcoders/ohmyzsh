@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import Common from '@/types/common.d';
-import { Form, Row, Col, Button, Input, Select, DatePicker } from 'antd'
+import { Form, Row, Col, Button, Input, Select, TreeSelect, Cascader, DatePicker } from 'antd'
 import scopedClasses from '@/utils/scopedClasses'
 import './search-bar.less'
 
@@ -51,7 +51,9 @@ const SearchBar = ({
       key,
       label,
       type,
-      optionList,
+      options,
+      treeData,
+      fieldNames,
       initialValue,
       placeholder,
       allowClear,
@@ -76,24 +78,40 @@ const SearchBar = ({
               allowClear={allowClear}
               showSearch={showSearch}
               loading={loading}
+              options={options}
+              fieldNames={fieldNames || { label: 'name', value: 'id' }}
               onChange={onChange}
               onSearch={onChange}
-            >
-              {optionList?.map((item: Common.OptionItem | string) =>
-                typeof item === 'string' ? (
-                  <Option value={item} key={item}>
-                    {item}
-                  </Option>
-                ) : (
-                  <Option
-                    value={item?.id || item?.code || item?.value}
-                    key={item?.id || item?.code || item?.value}
-                  >
-                    {item?.name || item?.value}
-                  </Option>
-                ),
-              )}
-            </Select>
+            />
+          </Form.Item>
+        )
+      case Common.SearchItemControlEnum.TREE_SELECT:
+        return (
+          <Form.Item name={key} label={label} initialValue={initialValue}>
+            <TreeSelect
+              getPopupContainer={(trigger: any) => trigger as HTMLElement}
+              style={{ width: '100%' }}
+              placeholder={placeholder || "请选择"}
+              allowClear={allowClear}
+              loading={loading}
+              treeData={treeData}
+              fieldNames={fieldNames || { label: 'name', value: 'code', children: 'nodes' }}
+              onChange={onChange}
+            />
+          </Form.Item>
+        )
+      case Common.SearchItemControlEnum.CASCADER:
+        return (
+          <Form.Item name={key} label={label} initialValue={initialValue}>
+            <Cascader
+              getPopupContainer={(trigger) => trigger as HTMLElement}
+              placeholder={placeholder || "请选择"}
+              allowClear={allowClear}
+              loading={loading}
+              options={treeData}
+              fieldNames={fieldNames || { label: 'name', value: 'code', children: 'nodes' }}
+              onChange={onChange}
+            />
           </Form.Item>
         )
       case Common.SearchItemControlEnum.DATE_MONTH:
