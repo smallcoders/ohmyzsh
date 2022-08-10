@@ -34,14 +34,14 @@ export async function handleAuditEnterpriseAdminVerify(data?: { [key: string]: a
     data,
   });
 }
+
 /**
  * 移除接口
  */
-export async function handleDelete(data?:string) {
-  return request<Common.ResultCode>('', {
-    method: 'post',
-    data,
-  });
-}
+// export async function handleDelete() {  
+//   return request<Common.ResultCode>('/antelope-manage/orgManagerRequest', {
+//     method: 'post',
+//   });
+// }
 
 

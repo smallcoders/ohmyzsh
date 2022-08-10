@@ -9,7 +9,7 @@ import { routeName } from '@/../config/routes';
 import SelfTable from '@/components/self_table';
 import { history } from 'umi';
 import type EnterpriseAdminVerify from '@/types/enterprise-admin-verify.d';
-import { getEnterpriseAdminVerifyPage ,handleDelete} from '@/services/enterprise-admin-verify';
+import { getEnterpriseAdminVerifyPage ,getEnterpriseAdminVerifyDetail} from '@/services/enterprise-admin-verify';
 const sc = scopedClasses('service-config-app-news');
 const stateObj = {
   UN_CHECK: '未审核',
@@ -61,18 +61,14 @@ export default () => {
 
 const deletemessage =async(id:string)=>{
   try{
-  const {code} =await handleDelete(
-    
-  //   {
- 
-  // }
-  )
-  if(code === 0) {
-    message.success(`
-    用户组织权限移除成功`);
-  }else {
-    message.error(`用户组织权限移除失败`);
-  }
+    const {code} =await getEnterpriseAdminVerifyDetail(id)
+      
+    if(code === 0) {
+      message.success(`
+      用户组织权限移除成功`);
+    }else {
+      message.error(`用户组织权限移除失败`);
+    }
   }catch (error) {
     console.log(error);
   }
@@ -222,6 +218,9 @@ const deletemessage =async(id:string)=>{
   const handleOk = () => {
     setIsModalVisible(false);
     deletemessage(id)
+    // console.log(id);
+    
+    
   };
 
   const handleCancel = () => {
