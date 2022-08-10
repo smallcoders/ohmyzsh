@@ -1,4 +1,4 @@
-import { Button, Input, Form, Row, Col, message } from 'antd';
+import { Button, Input, Form, Row, Col, message,Modal } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
@@ -9,7 +9,7 @@ import { routeName } from '@/../config/routes';
 import SelfTable from '@/components/self_table';
 import { history } from 'umi';
 import type EnterpriseAdminVerify from '@/types/enterprise-admin-verify.d';
-import { getEnterpriseAdminVerifyPage } from '@/services/enterprise-admin-verify';
+import { getEnterpriseAdminVerifyPage ,handleDelete} from '@/services/enterprise-admin-verify';
 const sc = scopedClasses('service-config-app-news');
 const stateObj = {
   UN_CHECK: '未审核',
@@ -21,6 +21,7 @@ const stateObj = {
 
 export default () => {
   const [dataSource, setDataSource] = useState<EnterpriseAdminVerify.Content[]>([]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
   // const [types, setTypes] = useState<any[]>([]);
   const [searchContent, setSearChContent] = useState<{
     orgName?: string; // 标题
@@ -58,6 +59,21 @@ export default () => {
     }
   };
 
+const deletemessage =async(id:string)=>{
+  try{
+  const {code} =await handleDelete({
+ 
+  })
+  if(code === 0) {
+    message.success(`
+    用户组织权限移除成功`);
+  }else {
+    message.error(`用户组织权限移除失败`);
+  }
+  }catch (error) {
+    console.log(error);
+  }
+}
   // const prepare = async () => {
   //   try {
   //     const res = await getDictionaryTree('CREATIVE_TYPE');
@@ -70,7 +86,7 @@ export default () => {
   //   prepare();
   // }, []);
 
-  const columns = [
+  const columns = [  
     {
       title: '排序',
       dataIndex: 'sort',
@@ -134,14 +150,17 @@ export default () => {
       dataIndex: 'option',
       render: (_: any, record: any) => {
         return (
-          <Button
-            type="link"
-            onClick={() => {
-              history.push(`${routeName.ENTERPRISE_ADMIN_VERIFY_DETAIL}?id=${record.id}`);
-            }}
-          >
-            {record?.state === 'UN_CHECK' ? '审核' : '详情'}
-          </Button>
+          <div>
+            <Button
+              type="link"
+              onClick={() => {
+                history.push(`${routeName.ENTERPRISE_ADMIN_VERIFY_DETAIL}?id=${record.id}`);
+              }}
+            >
+              {record?.state === 'UN_CHECK' ? '审核' : '详情'}
+            </Button> 
+            {record?.state === 'UN_COMMIT' && <Button type="link" onClick={() => showModal(record.id)}>移除权限</Button>} 
+          </div>
         );
       },
     },
@@ -151,6 +170,7 @@ export default () => {
     getPage();
   }, [searchContent]);
 
+  const [id, setId] = useState('')
   const useSearchNode = (): React.ReactNode => {
     const [searchForm] = Form.useForm();
     return (
@@ -191,6 +211,20 @@ export default () => {
     );
   };
 
+  const showModal = (id:any) => {
+    setId(id)
+    setIsModalVisible(true);
+  };
+
+  const handleOk = () => {
+    setIsModalVisible(false);
+    deletemessage(id)
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
+
   return (
     <PageContainer className={sc('container')}>
       {useSearchNode()}
@@ -219,6 +253,9 @@ export default () => {
           }
         />
       </div>
+      <Modal title="移除权限" okText="移除" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
+        <p>确定将该用户移除组织功能使用权限吗？</p>
+      </Modal>
     </PageContainer>
   );
 };

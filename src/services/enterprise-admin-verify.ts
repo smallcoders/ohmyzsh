@@ -34,3 +34,14 @@ export async function handleAuditEnterpriseAdminVerify(data?: { [key: string]: a
     data,
   });
 }
+/**
+ * 移除接口
+ */
+export async function handleDelete(data?:string) {
+  return request<Common.ResultCode>('', {
+    method: 'post',
+    data,
+  });
+}
+
+
