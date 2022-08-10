@@ -314,7 +314,7 @@ export default () => {
               <Button
                 style={{ marginRight: 20 }}
                 type="primary"
-                key="primary"
+                key="search"
                 onClick={() => {
                   const search = searchForm.getFieldsValue();
                   setSearChContent(search);
@@ -324,7 +324,7 @@ export default () => {
               </Button>
               <Button
                 type="primary"
-                key="primary2"
+                key="reset"
                 onClick={() => {
                   searchForm.resetFields();
                   setSearChContent({});
@@ -347,7 +347,7 @@ export default () => {
           <span>直播列表(共{pageInfo.totalCount || 0}个)</span>
           <Button
             type="primary"
-            key="primary3"
+            key="pushRoute"
             onClick={() => {
               history.push(routeName.ANTELOPE_LIVE_MANAGEMENT_ADD);
             }}

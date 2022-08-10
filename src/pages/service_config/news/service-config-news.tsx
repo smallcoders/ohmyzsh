@@ -302,7 +302,7 @@ export default () => {
               <Button
                 style={{ marginRight: 20 }}
                 type="primary"
-                key="primary"
+                key="reset"
                 onClick={() => {
                   const search = searchForm.getFieldsValue();
                   if (search.publishTime) {
@@ -320,7 +320,7 @@ export default () => {
               </Button>
               <Button
                 type="primary"
-                key="primary"
+                key="reset"
                 onClick={() => {
                   searchForm.resetFields();
                   setSearChContent({});
@@ -480,7 +480,7 @@ export default () => {
           <span>资讯列表(共{pageInfo.totalCount || 0}个)</span>
           <Button
             type="primary"
-            key="primary"
+            key="addNew"
             onClick={() => {
               setModalVisible(true);
             }}

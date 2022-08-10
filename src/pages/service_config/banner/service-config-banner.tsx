@@ -326,7 +326,7 @@ const TableList: React.FC = () => {
             {selectButton()}
             <Button
               type="primary"
-              key="primary"
+              key="newAdd"
               loading={addOrUpdateLoading}
               onClick={() => {
                 setModalVisible(true);

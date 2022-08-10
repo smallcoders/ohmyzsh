@@ -307,7 +307,7 @@ export default () => {
         }}
         actionRef={actionRef}
         toolBarRender={() => [
-          <Button type="primary" key="primary" onClick={() => {
+          <Button type="primary" key="addActivity" onClick={() => {
             history.push('/purchase-manage/promotions-create');
           }}>
             <PlusOutlined /> 新增活动

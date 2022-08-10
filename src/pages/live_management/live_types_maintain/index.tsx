@@ -310,7 +310,7 @@ export default () => {
           <span>类型列表(共{pageInfo.totalCount || 0}个)</span>
           <Button
             type="primary"
-            key="primary"
+            key="addStyle"
             onClick={() => {
               setModalVisible(true);
             }}
