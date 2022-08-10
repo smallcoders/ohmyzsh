@@ -185,7 +185,7 @@ const deletemessage =async(id:string)=>{
               <Button
                 style={{ marginRight: 20 }}
                 type="primary"
-                key="primary"
+                key="primarySearch"
                 onClick={() => {
                   const search = searchForm.getFieldsValue();
                   setSearChContent(search);
@@ -195,7 +195,7 @@ const deletemessage =async(id:string)=>{
               </Button>
               <Button
                 type="primary"
-                key="primary"
+                key="primaryReset"
                 onClick={() => {
                   searchForm.resetFields();
                   setSearChContent({});

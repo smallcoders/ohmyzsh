@@ -35,13 +35,7 @@ export async function handleAuditEnterpriseAdminVerify(data?: { [key: string]: a
   });
 }
 
-/**
- * 移除接口
- */
-// export async function handleDelete() {  
-//   return request<Common.ResultCode>('/antelope-manage/orgManagerRequest', {
-//     method: 'post',
-//   });
-// }
+
+
 
 
