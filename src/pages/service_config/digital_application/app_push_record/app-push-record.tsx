@@ -15,6 +15,7 @@ import {
   Modal,
   Pagination,
   Drawer,
+  Spin,
   Transfer,
   Radio,
   Tooltip
@@ -29,7 +30,7 @@ import type { ColumnsType } from 'antd/es/table';
 
 import {
   getPushRecordList,
-  pushApplication,
+  updatePushApplication,
   getOrgList
 } from '@/services/digital-application';
 
@@ -63,6 +64,8 @@ export default () => {
 
   const [dataSource, setDataSource] = useState<ApplicationManager.PushDetail[]>([]);
 
+  const [tableLoading, setTableLoading] = useState<boolean>(false);
+
   const [createDrawerVisible, setDrawerVisible] = useState<boolean>(false);
 
   const [companySelectModalVisible, setCompanySelectModalVisible] = useState<boolean>(false);
@@ -70,6 +73,8 @@ export default () => {
   const [pushSubmitLodaing, setPushSubmitLoading] = useState<boolean>(false);
 
   const [pushType, setPushType] = useState<number>(0);
+
+  const [editingId, setEditingId] = useState<number|string>(0);
 
   // 选中推送的数据
   const [selectedPushKeys, setSelectedPushKeys] = useState<React.Key[]>([]);
@@ -83,8 +88,6 @@ export default () => {
   const [companySelectedData, setCompanySelectedData] = useState<ApplicationManager.RecordType[]>([]);
 
   const [transferModalSelectedData, setTransferModalSelectedData] = useState<ApplicationManager.RecordType[]>([]);
-
-  const [refreshCompanyList, setRefreshCompanyList] = useState<number>(1)
 
   const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
     pageIndex: 1,
@@ -108,14 +111,14 @@ export default () => {
 
   useEffect(() => {
     getCompanyList();
-  }, [transferSearchContent, refreshCompanyList]);
+  }, [transferSearchContent, editingId]);
 
    /**
    * 准备数据等
    */
   const getPushList = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     try {
-
+      setTableLoading(true)
       const searchForm = cloneDeep(searchContent)
       if (Array.isArray(searchForm.timeRange)) {
         searchForm.startTime = moment(searchForm.timeRange[0]).format('YYYY-MM-DD HH:mm:ss')
@@ -128,12 +131,21 @@ export default () => {
         ...searchForm,
       });
       if (code === 0) {
+        const nowDate = new Date()
+        for (let i = 0, l = result.length; i < l; i++) {
+          const item = result[i]
+          if (item.pushTime) {
+            item.isPush = new Date(item.pushTime) < nowDate
+          }
+        }
         setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
         setDataSource(result);
       } else {
         message.error(`请求分页数据失败`);
       }
+      setTableLoading(false)
     } catch (error) {
+      setTableLoading(false)
       console.log(error);
     }
   };
@@ -177,6 +189,7 @@ export default () => {
           console.log(value, '<---value');
           setPushSubmitLoading(true);
           const form = cloneDeep(value)
+          form.id = editingId
           if (form.pushTime) form.pushTime = moment(form.pushTime).format('YYYY-MM-DD HH:mm:ss')
           if (Array.isArray(form.timeRange)) {
             form.startTime = moment(form.timeRange[0]).format('YYYY-MM-DD HH:mm:ss')
@@ -185,11 +198,12 @@ export default () => {
           }
           form.orgIds = companySelectedData.map((e: ApplicationManager.RecordType) => Number(e.key))
           form.apiIds = [...selectedPushKeys]
-          pushApplication(form).then((res) => {
+          updatePushApplication(form).then((res) => {
             if (res.code === 0) {
-              message.success('推送成功')
+              message.success('编辑成功')
               pushForm.resetFields()
               setDrawerVisible(false)
+              getPushList()
             } else {
               message.error(`推送成功失败，原因:{${res.message}}`)
             }
@@ -408,8 +422,8 @@ export default () => {
             </Col>
             <Col>
               <Form.Item name="status" label="推送状态">
-                <Select style={{ width: 120 }} placeholder="全部" allowClear onChange={getPushRecordList}>
-                  <Select.Option value={0}>未完成</Select.Option>
+                <Select style={{ width: 120 }} placeholder="全部" allowClear>
+                  <Select.Option value={0}>待推送</Select.Option>
                   <Select.Option value={1}>已完成</Select.Option>
                 </Select>
               </Form.Item>
@@ -466,7 +480,7 @@ export default () => {
       width: 200,
       render: (_: any, row: any) => row.startTime + ' - ' + row.endTime
     },
-    { title: '推送状态', dataIndex: 'status', width: 100, render: (_: any, row: any) => row.pushTime ? '已完成' : '待推送' },
+    { title: '推送状态', dataIndex: 'status', width: 100, render: (_: any, row: any) => row.isPush ? '已完成' : '待推送' },
     {
       title: '操作',
       width: 150,
@@ -483,7 +497,7 @@ export default () => {
               查看
             </Button>
             {
-              !row.pushTime ? (
+              !row.isPush ? (
                 <Button
                   type="link"
                   onClick={() => {
@@ -498,16 +512,16 @@ export default () => {
                     setTransferModalSelectedData(selectedCompany)
                     setTargetKeys(selectedCompany.map((e: any) => e.key))
                     setPushType(row.type as number)
+                    setEditingId(row.id!)
                     pushForm.setFieldsValue({
                       type: row.type,
-                      pushTime: row.type && moment(row.pushTime, 'YYYY-MM-DD HH:mm:ss'),
+                      pushTime: row.type && row.pushTime && moment(row.pushTime, 'YYYY-MM-DD HH:mm:ss'),
                       timeRange: [moment(row.startTime, 'YYYY-MM-DD HH:mm:ss'), moment(row.endTime, 'YYYY-MM-DD HH:mm:ss')],
                     })
                     setTransferPageInfo({
                       ...transferPageInfo,
                       pageIndex: 1
                     })
-                    setRefreshCompanyList(refreshCompanyList + 1)
                     setDrawerVisible(true)
                   }}
                 >
@@ -532,23 +546,25 @@ export default () => {
         </div>
       </div>
       <div className={sc('container-table-body')}>
-        <SelfTable
-          rowKey={'id'}
-          pagination={
-            pageInfo.totalCount === 0
-              ? false
-              : {
-                  onChange: getPushRecordList,
-                  total: pageInfo.totalCount,
-                  current: pageInfo.pageIndex,
-                  pageSize: pageInfo.pageSize,
-                  showTotal: (total: number) =>
-                    `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
-                }
-          }
-          columns={columns}
-          dataSource={dataSource}
-        />
+        <Spin spinning={tableLoading}>
+          <SelfTable
+            rowKey={'id'}
+            pagination={
+              pageInfo.totalCount === 0
+                ? false
+                : {
+                    onChange: getPushList,
+                    total: pageInfo.totalCount,
+                    current: pageInfo.pageIndex,
+                    pageSize: pageInfo.pageSize,
+                    showTotal: (total: number) =>
+                      `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
+                  }
+            }
+            columns={columns}
+            dataSource={dataSource}
+          />
+        </Spin>
       </div>
       {useDrawer()}
     </div>

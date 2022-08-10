@@ -13,6 +13,7 @@ import {
   Modal,
   Pagination,
   Drawer,
+  Spin,
   Transfer,
   Radio
 } from 'antd';
@@ -68,6 +69,8 @@ export default () => {
 
   const [dataSource, setDataSource] = useState<ApplicationManager.Content[]>([]);
 
+  const [tableLoading, setTableLoading] = useState<boolean>(false);
+
   const [editingItem, setEditingItem] = useState<ApplicationManager.Content>({});
 
   const [pushType, setPushType] = useState<number>(0);
@@ -117,6 +120,7 @@ export default () => {
    */
   const getAppList = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     try {
+      setTableLoading(true)
       const { result, totalCount, pageTotal, code } = await getApplicationList({
         pageIndex,
         pageSize,
@@ -129,7 +133,9 @@ export default () => {
       } else {
         message.error(`请求分页数据失败`);
       }
+      setTableLoading(false)
     } catch (error) {
+      setTableLoading(false)
       console.log(error);
     }
   };
@@ -187,7 +193,7 @@ export default () => {
         message.error(`请求公司列表数据失败`);
       }
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
   }
 
@@ -740,27 +746,30 @@ export default () => {
         </div>
       </div>
       <div className={sc('container-table-body')}>
-        <SelfTable
-          rowSelection={{
-            type: 'checkbox',
-            ...rowSelection,
-          }}
-          rowKey={'id'}
-          pagination={
-            pageInfo.totalCount === 0
-              ? false
-              : {
-                  onChange: getAppList,
-                  total: pageInfo.totalCount,
-                  current: pageInfo.pageIndex,
-                  pageSize: pageInfo.pageSize,
-                  showTotal: (total: number) =>
-                    `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
-                }
-          }
-          columns={columns}
-          dataSource={dataSource}
-        />
+        <Spin spinning={tableLoading}>
+          <SelfTable
+            rowSelection={{
+              type: 'checkbox',
+              ...rowSelection,
+            }}
+            
+            rowKey={'id'}
+            pagination={
+              pageInfo.totalCount === 0
+                ? false
+                : {
+                    onChange: getAppList,
+                    total: pageInfo.totalCount,
+                    current: pageInfo.pageIndex,
+                    pageSize: pageInfo.pageSize,
+                    showTotal: (total: number) =>
+                      `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
+                  }
+            }
+            columns={columns}
+            dataSource={dataSource}
+          />
+        </Spin>
       </div>
       
       {useModal()}
