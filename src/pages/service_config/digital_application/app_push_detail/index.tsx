@@ -10,6 +10,7 @@ import {
   Row,
   Col,
   message,
+  Spin,
   Tooltip
 } from 'antd';
 
@@ -38,6 +39,10 @@ export default () => {
 
   const [pushDetail, setPushDetail] = useState<ApplicationManager.PushDetail>({});
 
+  const [detailLoading, setDetailLoading] = useState<boolean>(false);
+
+  const [tableLoading, setTableLoading] = useState<boolean>(false);
+
   const [dataSource, setDataSource] = useState<ApplicationManager.PushDetail[]>([]);
 
   const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
@@ -60,16 +65,19 @@ export default () => {
   }, [searchContent]);
 
   const getDetailInfo = async (bagId: string) => {
+    setDetailLoading(true)
     const { result, code } = await getPushDetail({ bagId })
     if (code === 0) {
       setPushDetail(result)
     } else {
       message.error(`请求分页数据失败`);
     }
+    setDetailLoading(false)
   }
 
   const getPushList = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     try {
+      setTableLoading(true)
       const { result, totalCount, pageTotal, code } = await getApplicationPushList({
         pageIndex,
         pageSize,
@@ -81,8 +89,10 @@ export default () => {
       } else {
         message.error(`请求分页数据失败`);
       }
+      setTableLoading(false)
     } catch (error) {
       console.log(error);
+      setTableLoading(false)
     }
   };
 
@@ -91,32 +101,34 @@ export default () => {
     return (
       <div className={sc('container-base-info')}>
         <div className='title'>基本信息</div>
-        {
-          pushDetail ? (
-            <div className='info'>
-              <div className='row'>
-                <span className='label'>推送时间：</span>
-                <span className='content'>{pushDetail.pushTime}</span>
-                <span className='label pl50'>领用有效时间：</span>
-                <span className='content'>{pushDetail.startTime} - {pushDetail.endTime}</span>
+        <Spin spinning={detailLoading}>
+          {
+            pushDetail ? (
+              <div className='info'>
+                <div className='row'>
+                  <span className='label'>推送时间：</span>
+                  <span className='content'>{pushDetail.pushTime}</span>
+                  <span className='label pl50'>领用有效时间：</span>
+                  <span className='content'>{pushDetail.startTime} - {pushDetail.endTime}</span>
+                </div>
+                <div className='row'>
+                  <span className='label'>推送应用：</span>
+                  <Tooltip title={pushDetail.appNames}>
+                    <span className='content'>{pushDetail.appNames}</span>
+                  </Tooltip>
+                </div>
+                <div className='row'>
+                  <span className='label'>推送企业：</span>
+                  <Tooltip title={pushDetail.orgNames}>
+                    <span className='content'>{pushDetail.orgNames}</span>
+                  </Tooltip>
+                </div>
               </div>
-              <div className='row'>
-                <span className='label'>推送应用：</span>
-                <Tooltip title={pushDetail.appNames}>
-                  <span className='content'>{pushDetail.appNames}</span>
-                </Tooltip>
-              </div>
-              <div className='row'>
-                <span className='label'>推送企业：</span>
-                <Tooltip title={pushDetail.orgNames}>
-                  <span className='content'>{pushDetail.orgNames}</span>
-                </Tooltip>
-              </div>
-            </div>
-          ) : (
-            <div className='info'>信息获取失败</div>
-          )
-        }
+            ) : (
+              <div className='info'>信息获取失败</div>
+            )
+          }
+        </Spin>
       </div>
     )
   }
@@ -195,23 +207,25 @@ export default () => {
         </div>
       </div>
       <div className={sc('container-table-body')}>
-        <SelfTable
-          rowKey={'id'}
-          pagination={
-            pageInfo.totalCount === 0
-              ? false
-              : {
-                  onChange: getApplicationPushList,
-                  total: pageInfo.totalCount,
-                  current: pageInfo.pageIndex,
-                  pageSize: pageInfo.pageSize,
-                  showTotal: (total: number) =>
-                    `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
-                }
-          }
-          columns={columns}
-          dataSource={dataSource}
-        />
+        <Spin spinning={tableLoading}>
+          <SelfTable
+              rowKey={'id'}
+              pagination={
+                pageInfo.totalCount === 0
+                  ? false
+                  : {
+                      onChange: getApplicationPushList,
+                      total: pageInfo.totalCount,
+                      current: pageInfo.pageIndex,
+                      pageSize: pageInfo.pageSize,
+                      showTotal: (total: number) =>
+                        `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
+                    }
+              }
+              columns={columns}
+              dataSource={dataSource}
+            />
+        </Spin>
       </div>
     </PageContainer>
   );

@@ -51,6 +51,14 @@ export async function pushApplication(data?: { [key: string]: any }) {
   });
 }
 
+// 编辑推送应用
+export async function updatePushApplication(data?: { [key: string]: any }) {
+  return request<ApplicationManager.ResultList>('/antelope-other/mng/api/manage/updateBag', {
+    method: 'post',
+    data,
+  });
+}
+
 // 推送记录列表
 export async function getPushRecordList(data?: { [key: string]: any }) {
   return request<ApplicationManager.DetailResultList>('/antelope-other/mng/api/manage/queryBagPage', {
