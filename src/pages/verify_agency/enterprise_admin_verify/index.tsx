@@ -61,9 +61,12 @@ export default () => {
 
 const deletemessage =async(id:string)=>{
   try{
-  const {code} =await handleDelete({
+  const {code} =await handleDelete(
+    
+  //   {
  
-  })
+  // }
+  )
   if(code === 0) {
     message.success(`
     用户组织权限移除成功`);
