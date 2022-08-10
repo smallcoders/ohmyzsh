@@ -8,19 +8,11 @@ import { history, useModel } from 'umi'
 import { routeName } from '@/../config/routes'
 import SelfTable from '@/components/self_table'
 import SearchBar from '@/components/search_bar'
+import type EnterpriseInfoVerify from '@/types/verify/enterprise-info-verify';
 import { httpPostEnterpriseInfoVerifyPage } from '@/services/verify/enterprise-info-verify'
 import './index.less'
 
 const sc = scopedClasses('enterprise-info-verify')
-interface EnterpriseInfo {
-  id?: string // id
-  orgName?: string // 组织名称
-  accountType?: string // 组织类型  枚举备注: ENTERPRISE :企业 COLLEGE :高校 INSTITUTION :科研机构 OTHER :其他
-  userName?: string // 申请人姓名
-  phone?: string // 手机号
-  state?: string // 状态
-  updateTime?: string // 最新操作时间
-}
 const stateObj = {
   UN_CHECK: '未审核',
   CHECKED: '审核通过',
@@ -29,7 +21,7 @@ const stateObj = {
 
 export default () => {
   const [form] = Form.useForm()
-  const [dataSource, setDataSource] = useState<EnterpriseInfo[]>([])
+  const [dataSource, setDataSource] = useState<EnterpriseInfoVerify.Content[]>([])
   const { pageInfo, setPageInfo, orgName, setOrgName } = useModel('useEnterpriseInfoVerifyModel')
 
   useEffect(() => {
