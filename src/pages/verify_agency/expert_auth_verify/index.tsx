@@ -100,7 +100,7 @@ export default () => {
           <Button
             type="link"
             onClick={() => {
-              history.push(`${routeName.ENTERPRISE_INFO_VERIFY_DETAIL}?id=${record.id}`)
+              history.push(`${routeName.EXPERT_AUTH_VERIFY_DETAIL}?id=${record.id}`)
             }}
           >
             {record?.state === 'UN_CHECK' ? '审核' : '详情'}
