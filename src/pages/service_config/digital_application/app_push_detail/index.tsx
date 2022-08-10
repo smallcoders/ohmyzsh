@@ -46,6 +46,7 @@ export default () => {
   const [dataSource, setDataSource] = useState<ApplicationManager.PushDetail[]>([]);
 
   const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
+    
     pageIndex: 1,
     pageSize: 10,
     totalCount: 0,
@@ -79,6 +80,7 @@ export default () => {
     try {
       setTableLoading(true)
       const { result, totalCount, pageTotal, code } = await getApplicationPushList({
+        bagId: query.id,
         pageIndex,
         pageSize,
         ...searchContent,
@@ -214,7 +216,7 @@ export default () => {
                 pageInfo.totalCount === 0
                   ? false
                   : {
-                      onChange: getApplicationPushList,
+                      onChange: getPushList,
                       total: pageInfo.totalCount,
                       current: pageInfo.pageIndex,
                       pageSize: pageInfo.pageSize,
