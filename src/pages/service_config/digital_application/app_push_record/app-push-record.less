@@ -1,6 +1,15 @@
-@prefix: service-config-achievements-manage;
+@prefix: service-config-digital-app-push-record;
+
+@import '../../../../global.less';
 
 .@{prefix}-container {
+
+  &-search {
+    margin-bottom: 20px;
+    padding: 20px;
+    background-color: #fff;
+  }
+
   &-table-header {
     padding: 20px;
     background-color: #fff;
@@ -13,15 +22,14 @@
         font-size: 16px;
         line-height: 22px;
       }
+
+      .ant-btn:first-child {
+        margin-right: 10px;
+      }
     }
   }
-  &-table-body {
-    padding: 0 20px;
-    background-color: #fff;
-  }
-  &-search {
-    margin-bottom: 20px;
-    padding: 20px 0 0 0;
-    background-color: #fff;
-  }
+}
+
+.textoverflow2 {
+  .textoverflow(2);
 }

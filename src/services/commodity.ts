@@ -145,7 +145,7 @@ export async function queryLabel(data: any) {
 
 export async function queryProviderAll() {
   return request<Common.ResultCode & { result: DataCommodity.Provider[] }>(
-    '/antelope-pay/provider/search',
+    '/antelope-pay/mng/provider/search',
     {
       method: 'POST',
       data: {

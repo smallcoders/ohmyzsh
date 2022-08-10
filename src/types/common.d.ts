@@ -78,10 +78,44 @@ namespace Common {
     fileFormat?: string; // 文件格式
   };
 
-  export type CommonEnum ={
-    enumName: string
-    id: number
-    name: string
+  export type CommonEnum = {
+    enumName: string;
+    id: number;
+    name: string;
+  };
+
+  // 检索条件类型
+  export enum SearchItemControlEnum {
+    INPUT = 'input',
+    SELECT = 'select',
+    DATE_MONTH = 'date-month',
+    RANGE_PICKER = 'range-Picker',
+  }
+
+  export interface OptionItem {
+    id?: string;
+    code?: string;
+    value?: any;
+    name?: string;
+  }
+  export interface SearchItem {
+    key: string;
+    label: string;
+    type: SearchItemControlEnum;
+    optionList?: OptionItem[] | string[];
+    initialValue?: any;
+    placeholder?: string;
+    allowClear?: boolean;
+    disabledDate?: (currentDate) => boolean;
+    loading?: boolean;
+    showSearch?: boolean;
+    onChange?: (v: string) => void;
+  }
+
+  export interface ActionItem {
+    key: string;
+    text: string;
+    type: ButtonType;
   }
 }
 export default Common;

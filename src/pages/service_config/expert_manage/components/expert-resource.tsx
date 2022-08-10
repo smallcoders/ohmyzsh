@@ -267,7 +267,7 @@ export default () => {
     },
     {
       title: '操作',
-      width: 350,
+      width: 400,
       dataIndex: 'option',
       fixed: 'right',
       render: (_: any, record: any) => {
