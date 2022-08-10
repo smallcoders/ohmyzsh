@@ -1,0 +1,123 @@
+@prefix: service-config-digital-app-config;
+
+.@{prefix}-container {
+
+  &-table-header {
+    padding: 20px;
+    background-color: #fff;
+    .title {
+      display: flex;
+      justify-content: space-between;
+      > span {
+        color: rgba(0, 0, 0, 0.85);
+        font-weight: 600;
+        font-size: 16px;
+        line-height: 22px;
+      }
+
+      .ant-btn:first-child {
+        margin-right: 10px;
+      }
+    }
+  }
+
+  &-table-body {
+    .table-row-wrapper {
+      display: flex;
+      align-items: center;
+
+      img {
+        width: 60px;
+        height: 60px;
+        margin-right: 20px;
+      }
+    }
+  }
+
+  
+
+  &-search {
+    margin-bottom: 20px;
+    padding: 20px;
+    background-color: #fff;
+
+    .ant-form-item {
+      margin-bottom: 0;
+
+      .ant-form-item-label {
+        margin-right: 10px;
+      }
+    }
+  }
+
+  .tooltip {
+    color: rgba(0, 0, 0, 0.25);
+    font-weight: 400;
+    font-size: 14px;
+  }
+
+  .app-form {
+    .ant-form-item {
+      margin-bottom: 20px;
+    }
+  }
+}
+
+.company-form-content {
+  .push-company-container {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+
+    .company-list {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      margin-top: 5px;
+      margin-left: 5px;
+      max-height: 300px;
+      overflow-y: auto;
+    
+      .list-item {
+        width: 240px;
+        word-break: break-all;
+      }
+
+      .empty {
+        color: #999;
+      }
+    }
+
+    .edit-button {
+      font-size: 14px;
+    }
+  }
+}
+
+.upload-tip {
+  font-size: 13px;
+  color: #999;
+}
+
+
+.reupload {
+  position: relative;
+  width: 128px;
+  height: 128px;
+  > img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    max-width: 100%;
+    max-height: 100%;
+    transform: translate(-50%, -50%);
+  }
+  > div {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    color: #fff;
+    background: #000;
+    opacity: 0.5;
+  }
+}
