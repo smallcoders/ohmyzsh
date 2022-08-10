@@ -214,7 +214,7 @@ export default () => {
                 pageInfo.totalCount === 0
                   ? false
                   : {
-                      onChange: getApplicationPushList,
+                      onChange: getPushList,
                       total: pageInfo.totalCount,
                       current: pageInfo.pageIndex,
                       pageSize: pageInfo.pageSize,
