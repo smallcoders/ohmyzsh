@@ -1,28 +1,20 @@
 import { useState, useEffect, useMemo } from 'react'
+import { history, useModel } from 'umi'
 import { Form, Button, message } from 'antd'
 import { PageContainer } from '@ant-design/pro-layout'
-import scopedClasses from '@/utils/scopedClasses'
 import Common from '@/types/common.d'
-import { history, useModel } from 'umi'
 import { routeName } from '@/../config/routes'
 import SelfTable from '@/components/self_table'
 import SearchBar from '@/components/search_bar'
 import { getDictionay } from '@/services/common'
 import { getWholeAreaTree } from '@/services/area'
+import type ExpertAuthVerify from '@/types/verify/expert-auth-verity';
 import { httpPostExpertAuthVerifyPage } from '@/services/verify/expert-auth-verify'
 import { ExpertAuthVerifySearchInfo } from '@/models/useExpertAuthVerifyModel'
+import scopedClasses from '@/utils/scopedClasses'
 import './index.less'
 
 const sc = scopedClasses('expert-auth-verify')
-interface EXpertInfo {
-  id?: string // id
-  expertName?: string // 专家名称
-  phone?: string // 联系电话
-  expertType?: string // 专家类型
-  area?: string
-  accountType?: string // 组织类型  枚举备注: ENTERPRISE :企业 COLLEGE :高校 INSTITUTION :科研机构 OTHER :其他
-  state?: string // 状态
-}
 const stateObj = {
   UN_CHECK: '未审核',
   CHECKED: '审核通过',
@@ -33,7 +25,7 @@ export default () => {
   const [form] = Form.useForm()
   const [expertTypeOptions, setExpertTypeOptions] = useState<any>([])
   const [areaOptions, setAreaOptions] = useState<any>([])
-  const [dataSource, setDataSource] = useState<EXpertInfo[]>([])
+  const [dataSource, setDataSource] = useState<ExpertAuthVerify.Content[]>([])
   const { pageInfo, setPageInfo, searchInfo, setSearchInfo } = useModel('useExpertAuthVerifyModel')
 
   useEffect(() => {
@@ -108,7 +100,7 @@ export default () => {
           <Button
             type="link"
             onClick={() => {
-              history.push(`${routeName.ENTERPRISE_INFO_VERIFY_DETAIL}?id=${record.id}`)
+              history.push(`${routeName.EXPERT_AUTH_VERIFY_DETAIL}?id=${record.id}`)
             }}
           >
             {record?.state === 'UN_CHECK' ? '审核' : '详情'}

@@ -749,11 +749,11 @@ export default [
             hideInBreadcrumb: true,
             component: './verify_agency/enterprise_info_verify',
           },
-          // {
-          //   path: routeName.ENTERPRISE_INFO_VERIFY_DETAIL,
-          //   name: '企业信息审核详情',
-          //   component: './verify_agency/enterprise_info_verify/components/detail',
-          // },
+          {
+            path: routeName.ENTERPRISE_INFO_VERIFY_DETAIL,
+            name: '企业信息审核详情',
+            component: './verify_agency/enterprise_info_verify/components/detail',
+          },
         ],
       },
       {
@@ -771,11 +771,11 @@ export default [
             hideInBreadcrumb: true,
             component: './verify_agency/expert_auth_verify',
           },
-          // {
-          //   path: routeName.EXPERT_AUTH_VERIFY_DETAIL,
-          //   name: '专家认证审核详情',
-          //   component: './verify_agency/expert_auth_verify/components/detail',
-          // },
+          {
+            path: routeName.EXPERT_AUTH_VERIFY_DETAIL,
+            name: '专家认证审核详情',
+            component: './verify_agency/expert_auth_verify/components/detail',
+          },
         ],
       },
     ],
