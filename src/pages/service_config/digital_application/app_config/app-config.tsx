@@ -1,4 +1,4 @@
-import { PlusOutlined, SendOutlined, UploadOutlined } from '@ant-design/icons';
+import { PlusOutlined, SendOutlined, UploadOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import {
   Button,
   Input,
@@ -23,6 +23,8 @@ import type { TransferDirection, TransferListProps } from 'antd/es/transfer';
 import moment from 'moment';
 
 import SelfTable from '@/components/self_table';
+
+const { confirm } = Modal;
 
 import type { ColumnsType } from 'antd/es/table';
 
@@ -146,8 +148,10 @@ export default () => {
     appForm
       .validateFields()
       .then(async (value) => {
-        if (value.path) {
+        if (value.path && value.path.length) {
           value.path = value.path[0].uid
+        } else {
+          value.path = ''
         }
         console.log(value, '<---value');
         setAddOrUpdateLoading(true);
@@ -248,10 +252,11 @@ export default () => {
   const useModal = (): React.ReactNode => {
     return (
       <Modal
-        title={editingItem.id ? '修改应用' : '新增机应用'}
+        title={editingItem.id ? (editingItem.isDetail ? '应用详情' : '修改应用') : '新增应用'}
         width="600px"
         visible={createModalVisible}
         maskClosable={false}
+        footer={editingItem.isDetail}
         onCancel={() => {
           clearForm();
           setModalVisible(false);
@@ -268,12 +273,12 @@ export default () => {
                 {editingItem.appName}
               </Form.Item>
               <Form.Item style={{marginBottom: '20px'}} label="应用详情">{editingItem.content}</Form.Item>
-              <Form.Item style={{marginBottom: '20px'}} label="应用icon">
-                <div className={'reupload'}>
+              <Form.Item style={{marginBottom: '20px'}} label="应用图标">
+                <div className='app-icon'>
                   <img src={`/antelope-manage/common/download/${editingItem.logoImageId}`} alt="图片损坏" />
                 </div>
               </Form.Item>
-              <Form.Item label="相关附件">
+              <Form.Item label="操作手册">
                 {
                   editingItem.path && editingItem.path[0]?.uid ? (
                     <Button
@@ -340,7 +345,7 @@ export default () => {
               </Form.Item>
               <Form.Item
                 name="logoImageId"
-                label="应用icon"
+                label="应用图标"
                 style={{marginBottom: '20px'}}
                 rules={[
                   {
@@ -360,15 +365,15 @@ export default () => {
                     listType="picture-card"
                     className="avatar-uploader"
                     showUploadList={false}
-                    maxSize={5}
+                    maxSize={2}
                     tooltip={
-                      <span className="upload-tip"> 产品logo或展示效果图，用作应用卡片应用封面展示，仅支持JPG、PNG、JPEG,建议尺寸 270*180，大小在5M以下</span>
+                      <span className="upload-tip"> 请上传JPG/PNG格式、240*240px以上、1:1 、2MB 以内的无圆角图标</span>
                     }
                     accept=".png,.jpeg,.jpg"
                   />
               </Form.Item>
 
-              <Form.Item name="path" label="相关附件">
+              <Form.Item name="path" label="操作手册">
                 <UploadFormFile isSkip={true} accept=".pdf" showUploadList={true} maxCount={1}>
                   <Button icon={<UploadOutlined />}>上传文件</Button>
                 </UploadFormFile>
@@ -380,11 +385,11 @@ export default () => {
     );
   };
 
+  // 推送form
+  const [pushForm] = Form.useForm();
 
   // 推送弹窗
   const useDrawer = (): React.ReactNode => {
-    // 推送form
-    const [pushForm] = Form.useForm();
 
     // 提交推送
     const handlePushSubmit = () => {
@@ -488,6 +493,24 @@ export default () => {
         >
           <Transfer
             showSearch
+            titles={['', (
+              targetKeys.length ? (
+                <div className='transfer-header-right'>
+                  <div className='title'>
+                    { `已选：${targetKeys.length}家企业` }
+                  </div>
+                  <div className='action'>
+                    <Button
+                        type="link"
+                        size='small'
+                        onClick={() => setTargetKeys([])}
+                      >
+                      清空
+                    </Button>
+                  </div>
+                </div>
+              ) : ''
+            )]}
             dataSource={companyTransferData}
             targetKeys={targetKeys}
             listStyle={{
@@ -506,14 +529,22 @@ export default () => {
       )
     }
 
+    const beforeCloseDrawer = () => {
+      confirm({
+        title: '确认关闭弹窗?',
+        icon: <ExclamationCircleOutlined />,
+        onOk() {
+          pushForm.resetFields()
+          setDrawerVisible(false);
+        }
+      })
+    }
+
     return (
-      <Drawer title="推送应用" width={600} placement="right" onClose={() => {
-        pushForm.resetFields()
-        setDrawerVisible(false);
-      }} visible={createDrawerVisible}
+      <Drawer title="推送应用" width={600} placement="right" onClose={beforeCloseDrawer} visible={createDrawerVisible}
       extra={
         <Space>
-          <Button onClick={() => setDrawerVisible(false)}>取消</Button>
+          <Button onClick={beforeCloseDrawer}>取消</Button>
           <Button onClick={handlePushSubmit} loading={pushSubmitLodaing} type="primary">
             确定
           </Button>
@@ -583,7 +614,20 @@ export default () => {
               rules={[
                 {
                   validator: async (_, value: number) => {
-                    if (value) return Promise.resolve();
+                    if (value) {
+                      const timeRange = pushForm.getFieldValue('timeRange')
+                      if (timeRange && timeRange.length === 2) {
+                        // 若选取了领取有效时间 ，则判定 领用有效结束时间要大于推送时间
+                        const diff: number = moment(value).diff(moment(timeRange[1]))
+                        const res = Number((diff / 1000).toFixed(0))
+                        if (res > 0) {
+                          return Promise.reject(new Error('推送时间应小于最迟领取有效时间'))
+                        } else if (res > -60) {
+                          return Promise.reject(new Error('推送时间与最迟领取有效时间过于接近'))
+                        }
+                      }
+                      return Promise.resolve();
+                    }
                     return Promise.reject(new Error('请选择推送时间'))
                   },
                 },
@@ -593,7 +637,20 @@ export default () => {
               </Form.Item>
             )
           }
-          <Form.Item name="timeRange" label="领用有效时间">
+          <Form.Item
+            name="timeRange"
+            label="领取有效时间"
+            required
+            rules={[
+              {
+                validator: async (_, value: Array<number>) => {
+                  if (value && value.length === 2) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(new Error('请选择领取有效时间'))
+                },
+              },
+            ]}>
             <DatePicker.RangePicker allowClear showTime />
           </Form.Item>
         </Form>
@@ -704,6 +761,7 @@ export default () => {
               disabled={!row.path}
               href={`/antelope-manage/common/download/${row.path}`}
               download={`/antelope-manage/common/download/${row.path}`}
+              onClick={() => message.success(`下载成功，请查阅`) }
             >
               下载手册
             </Button>
@@ -720,7 +778,7 @@ export default () => {
       {useSearchNode()}
       <div className={sc('container-table-header')}>
         <div className="title">
-          <span>可推送应用列表(共{pageInfo.totalCount || 0}个)</span>
+          <span>应用推送列表(共{pageInfo.totalCount || 0}个)</span>
           <div className={'action'}>
             <Button
               type="primary"
@@ -728,6 +786,9 @@ export default () => {
               onClick={() => {
                 setCompanySelectedData([])
                 clearForm()
+                pushForm.setFieldsValue({
+                  type: 0
+                })
                 setDrawerVisible(true)
               }}
             >
@@ -760,6 +821,8 @@ export default () => {
                 : {
                     onChange: getAppList,
                     total: pageInfo.totalCount,
+                    showSizeChanger: true,
+                    showQuickJumper: true,
                     current: pageInfo.pageIndex,
                     pageSize: pageInfo.pageSize,
                     showTotal: (total: number) =>
@@ -770,6 +833,7 @@ export default () => {
             dataSource={dataSource}
           />
         </Spin>
+        <div className='select-app-count'>{selectedPushKeys.length ? `已选${selectedPushKeys.length}个应用` : ''}</div>
       </div>
       
       {useModal()}
