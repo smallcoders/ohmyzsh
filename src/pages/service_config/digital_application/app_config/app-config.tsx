@@ -256,15 +256,22 @@ export default () => {
         width="600px"
         visible={createModalVisible}
         maskClosable={false}
-        footer={editingItem.isDetail}
-        onCancel={() => {
-          clearForm();
-          setModalVisible(false);
-        }}
-        okButtonProps={{ loading: addOrUpdateLoading }}
-        onOk={() => {
-          addOrUpdateApp()
-        }}
+        onCancel={() => setModalVisible(false)}
+        footer={
+          !editingItem.isDetail ? (
+            [
+              <Button key="back" onClick={() => {
+                clearForm();
+                setModalVisible(false);
+              }}>
+                取消
+              </Button>,
+              <Button key="submit" type="primary" loading={addOrUpdateLoading} onClick={addOrUpdateApp}>
+                确定
+              </Button>
+            ]
+          ) : null
+        }
       >
         {
           editingItem.isDetail ? (
@@ -687,24 +694,31 @@ export default () => {
   };
 
   const showEditOrDetail = (row: ApplicationManager.Content, isDetail?: boolean) => {
-    let reportFileId: any = ''
-    getFileInfo(row.path).then((res) => {
-      if (res?.code === 0 && res?.result) {
-        if (res.result[0]) reportFileId = res.result[0]
-      }
-    }).finally(() => {
-      const item: ApplicationManager.Content = { ...row }
-      item.path = reportFileId ? [
-        {
-          uid: reportFileId.id,
-          name: reportFileId.name  + '.' + reportFileId.format,
-          status: 'done',
+    const item: ApplicationManager.Content = { ...row }
+    if (row.path) {
+      let reportFileId: any = ''
+      getFileInfo(row.path).then((res) => {
+        if (res?.code === 0 && res?.result) {
+          if (res.result[0]) reportFileId = res.result[0]
         }
-      ] : undefined
+      }).finally(() => {
+        item.path = reportFileId ? [
+          {
+            uid: reportFileId.id,
+            name: reportFileId.name  + '.' + reportFileId.format,
+            status: 'done',
+          }
+        ] : undefined
+        setEditingItem({ ...item, isDetail: Boolean(isDetail) })
+        setModalVisible(true)
+        appForm.setFieldsValue(item)
+      })
+    } else {
+      item.path = undefined
       setEditingItem({ ...item, isDetail: Boolean(isDetail) })
       setModalVisible(true)
       appForm.setFieldsValue(item)
-    })
+    }
   }
   
   const columns: ColumnsType<ApplicationManager.Content> = [

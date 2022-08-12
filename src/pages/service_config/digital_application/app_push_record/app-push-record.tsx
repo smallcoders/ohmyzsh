@@ -133,13 +133,6 @@ export default () => {
         ...searchForm,
       });
       if (code === 0) {
-        const nowDate = new Date()
-        for (let i = 0, l = result.length; i < l; i++) {
-          const item = result[i]
-          if (item.pushTime) {
-            item.isPush = new Date(item.pushTime) < nowDate
-          }
-        }
         setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
         setDataSource(result);
       } else {
@@ -535,7 +528,7 @@ export default () => {
       width: 200,
       render: (_: any, row: any) => row.startTime + ' - ' + row.endTime
     },
-    { title: '推送状态', dataIndex: 'status', width: 100, render: (_: any, row: any) => row.isPush ? '已完成' : '待推送' },
+    { title: '推送状态', dataIndex: 'status', width: 100, render: (_: any, row: ApplicationManager.PushDetail) => row.status === 1 ? '已完成' : '待推送' },
     {
       title: '操作',
       width: 150,
@@ -552,7 +545,7 @@ export default () => {
               查看
             </Button>
             {
-              !row.isPush ? (
+              row.status === 0 ? (
                 <Button
                   type="link"
                   onClick={() => {
