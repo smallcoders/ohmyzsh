@@ -55,7 +55,7 @@ namespace ApplicationManager {
     pushTime?: string;
     startTime?: string;
     endTime?: string;
-    isPush?: boolean;
+    status?: number;
     app?: []
     org?: []
   }
