@@ -110,7 +110,7 @@ export default () => {
                 <div className='row'>
                   <span className='label'>推送时间：</span>
                   <span className='content'>{pushDetail.pushTime}</span>
-                  <span className='label pl50'>领用有效时间：</span>
+                  <span className='label pl50'>领取有效时间：</span>
                   <span className='content'>{pushDetail.startTime} - {pushDetail.endTime}</span>
                 </div>
                 <div className='row'>
@@ -205,7 +205,7 @@ export default () => {
       {useSearchNode()}
       <div className={sc('container-table-header')}>
         <div className="title">
-          <span>可推送应用列表(共{pageInfo.totalCount || 0}个)</span>
+          <span>应用推送列表(共{pageInfo.totalCount || 0}个)</span>
         </div>
       </div>
       <div className={sc('container-table-body')}>
@@ -219,6 +219,8 @@ export default () => {
                       onChange: getPushList,
                       total: pageInfo.totalCount,
                       current: pageInfo.pageIndex,
+                      showSizeChanger: true,
+                      showQuickJumper: true,
                       pageSize: pageInfo.pageSize,
                       showTotal: (total: number) =>
                         `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
