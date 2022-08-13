@@ -750,6 +750,7 @@ export default () => {
     {
       title: '操作',
       width: 350,
+      fixed: 'right',
       dataIndex: 'option',
       render: (_: any, row: ApplicationManager.Content) => {
         return (
