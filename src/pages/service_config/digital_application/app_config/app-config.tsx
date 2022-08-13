@@ -36,9 +36,7 @@ import ApplicationManager from '@/types/service-config-digital-applictaion';
 import UploadForm from '@/components/upload_form';
 import UploadFormFile from '@/components/upload_form/upload-form-file';
 
-import uniqBy from 'lodash/uniqBy'
-import cloneDeep from 'lodash/cloneDeep'
-import debounce from 'lodash/debounce'
+import _ from 'lodash'
 
 import {
   getApplicationList,
@@ -99,6 +97,8 @@ export default () => {
   const [companySelectedData, setCompanySelectedData] = useState<ApplicationManager.RecordType[]>([]);
 
   const [transferModalSelectedData, setTransferModalSelectedData] = useState<ApplicationManager.RecordType[]>([]);
+
+  const [transferSearchLoading, setTransferSearchLoading] = useState<boolean>(false);
   
   // 应用from
   const [appForm] = Form.useForm();
@@ -178,6 +178,8 @@ export default () => {
 
   const getCompanyList = async (pageIndex: number = 1, pageSize = transferPageInfo.pageSize) => {
     try {
+      console.log('searched ', transferSearchContent.orgName);
+      setTransferSearchLoading(true)
       const { result, totalCount, pageTotal, code } = await getOrgList({
         pageIndex,
         pageSize,
@@ -191,13 +193,15 @@ export default () => {
             title: e.orgName
           }
         })
-        const mixinList = uniqBy(list.concat(transferModalSelectedData), 'key')
+        const mixinList = _.uniqBy(list.concat(transferModalSelectedData), 'key')
         setCompanyTransferData(mixinList)
       } else {
         message.error(`请求公司列表数据失败`);
       }
+      setTransferSearchLoading(false)
     } catch (error) {
       console.log(error)
+      setTransferSearchLoading(false)
     }
   }
 
@@ -405,7 +409,7 @@ export default () => {
         .then(async (value) => {
           console.log(value, '<---value');
           setPushSubmitLoading(true);
-          const form = cloneDeep(value)
+          const form = _.cloneDeep(value)
           if (form.pushTime) form.pushTime = moment(form.pushTime).format('YYYY-MM-DD HH:mm:ss')
           if (Array.isArray(form.timeRange)) {
             form.startTime = moment(form.timeRange[0]).format('YYYY-MM-DD HH:mm:ss')
@@ -445,7 +449,7 @@ export default () => {
         setSelectedKeys(resKeys);
       };
   
-      const handleOnSearch = debounce((dir: TransferDirection, value: string) => {
+      const handleOnSearch = _.debounce((dir: TransferDirection, value: string) => {
         console.log('search:', dir, value);
         if (dir === 'left') {
           setTransferPageInfo({
@@ -456,7 +460,7 @@ export default () => {
             orgName: value
           })
         }
-      }, 500, { leading: false, trailing: true })
+      }, 1000, { leading: false, trailing: true })
   
       const renderFooter: any = (
         _: TransferListProps<any>,
@@ -500,7 +504,9 @@ export default () => {
         >
           <Transfer
             showSearch
-            titles={['', (
+            titles={[(
+              <Spin spinning={transferSearchLoading}></Spin>
+            ), (
               targetKeys.length ? (
                 <div className='transfer-header-right'>
                   <div className='title'>
@@ -549,14 +555,14 @@ export default () => {
 
     return (
       <Drawer title="推送应用" width={600} placement="right" onClose={beforeCloseDrawer} visible={createDrawerVisible}
-      extra={
-        <Space>
-          <Button onClick={beforeCloseDrawer}>取消</Button>
-          <Button onClick={handlePushSubmit} loading={pushSubmitLodaing} type="primary">
-            确定
-          </Button>
-        </Space>
-      }>
+        extra={
+          <Space>
+            <Button onClick={beforeCloseDrawer}>取消</Button>
+            <Button onClick={handlePushSubmit} loading={pushSubmitLodaing} type="primary">
+              确定
+            </Button>
+          </Space>
+        }>
         <Form form={pushForm} layout="horizontal">
           <Form.Item
             label="推送企业"
@@ -744,6 +750,7 @@ export default () => {
     {
       title: '操作',
       width: 350,
+      fixed: 'right',
       dataIndex: 'option',
       render: (_: any, row: ApplicationManager.Content) => {
         return (
