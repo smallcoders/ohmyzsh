@@ -257,17 +257,17 @@ export default () => {
         extra: (
           <div className="operate-btn">
             {!isDetail && (
-              <Button key="primary" loading={addOrUpdateLoading} onClick={() => {history.push(routeName.PROVIDERS_MANAGE)}}>
+              <Button key="cancel" loading={addOrUpdateLoading} onClick={() => {history.push(routeName.PROVIDERS_MANAGE)}}>
                 取消
               </Button>
             )}
             {!isDetail && (
-              <Button type="primary" key="primary3" loading={addOrUpdateLoading} onClick={() => {addOrUpdate()}}>
+              <Button type="primary" key="save" loading={addOrUpdateLoading} onClick={() => {addOrUpdate()}}>
                 保存
               </Button>
             )}
             {isDetail && (
-              <Button key="primary4" loading={addOrUpdateLoading} onClick={() => {history.push(routeName.PROVIDERS_MANAGE)}}>
+              <Button key="back" loading={addOrUpdateLoading} onClick={() => {history.push(routeName.PROVIDERS_MANAGE)}}>
                 返回
               </Button>
             )}

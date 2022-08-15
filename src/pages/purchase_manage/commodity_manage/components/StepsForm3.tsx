@@ -130,7 +130,7 @@ export default (props: StepFormProps) => {
         dataSource={params}
         columns={columns}
         toolBarRender={() => [
-          <Button disabled={params.length >= 30} type="primary" key="primary" onClick={addHandle}>
+          <Button disabled={params.length >= 30} type="primary" key="addParams" onClick={addHandle}>
             新增参数
           </Button>,
         ]}
