@@ -1,58 +1,60 @@
-import { useState, useEffect } from 'react'
-import { Form, Button, message,Modal } from 'antd'
-import { PageContainer } from '@ant-design/pro-layout'
-import scopedClasses from '@/utils/scopedClasses'
-import Common from '@/types/common.d'
-import moment from 'moment'
-import { history, useModel } from 'umi'
-import { routeName } from '@/../config/routes'
-import SelfTable from '@/components/self_table'
-import SearchBar from '@/components/search_bar'
-import {  httpPostEnterpriseInfoVerifyPage } from '@/services/verify/enterprise-info-verify'
-import {deleteEnterpriseAdministratorAudit} from '@/services/enterprise-admin-verify';
-import './index.less'
+import { useState, useEffect } from 'react';
+import { Form, Button, message, Modal } from 'antd';
+import { PageContainer } from '@ant-design/pro-layout';
+import scopedClasses from '@/utils/scopedClasses';
+import Common from '@/types/common.d';
+import moment from 'moment';
+import { history, useModel } from 'umi';
+import { routeName } from '@/../config/routes';
+import SelfTable from '@/components/self_table';
+import SearchBar from '@/components/search_bar';
+import { getEnterpriseAdminVerifyPage } from '@/services/enterprise-admin-verify';
+import { deleteEnterpriseAdministratorAudit } from '@/services/enterprise-admin-verify';
+import './index.less';
 
-import EnterpriseAdminVerify from '@/types/enterprise-admin-verify'
-const sc = scopedClasses('service-config-app-news')
+import EnterpriseAdminVerify from '@/types/enterprise-admin-verify';
+const sc = scopedClasses('service-config-app-news');
 
 const stateObj = {
   UN_CHECK: '未审核',
   CHECKED: '审核通过',
   UN_PASS: '审核拒绝',
-}
+};
 
 export default () => {
-  const [form] = Form.useForm()
+  const [form] = Form.useForm();
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [dataSource, setDataSource] = useState<EnterpriseAdminVerify.Content[]>([])
-  const { pageInfo, setPageInfo, orgName, setOrgName } = useModel('useEnterpriseAdministratorAudit')
+  const [dataSource, setDataSource] = useState<EnterpriseAdminVerify.Content[]>([]);
+  const { pageInfo, setPageInfo, orgName, setOrgName } = useModel(
+    'useEnterpriseAdministratorAudit',
+  );
 
   useEffect(() => {
-    form?.setFieldsValue({ orgName })
-    getEnterpriseInfoVerifyPage(orgName, pageInfo.pageSize, pageInfo.pageIndex)
-  }, [])
+    form?.setFieldsValue({ orgName });
+    getEnterpriseInfoVerifyPage(orgName, pageInfo.pageSize, pageInfo.pageIndex);
+  }, []);
 
-  const deleteMessage =async(id:string)=>{
-    try{
-      const {code} =await deleteEnterpriseAdministratorAudit(id)
-        // console.log(code);
-      if(code === 0) {
+  const deleteMessage = async (id: string) => {
+    try {
+      const { code } = await deleteEnterpriseAdministratorAudit(id);
+      // console.log(code);
+      if (code === 0) {
         message.success(`
         用户组织权限移除成功`);
-      }else {
+      } else {
         message.error(`用户组织权限移除失败`);
       }
-    }catch (error) {
+    } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   const columns = [
     {
       title: '序号',
       dataIndex: 'sort',
       width: 80,
-      render: (_: any, _record:EnterpriseAdminVerify.Content, index: number) =>
+      render: (_: any, _record: EnterpriseAdminVerify.Content, index: number) =>
         pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
@@ -87,7 +89,7 @@ export default () => {
           <div className={`state-${_}`}>
             {Object.prototype.hasOwnProperty.call(stateObj, _) ? stateObj[_] : '--'}
           </div>
-        )
+        );
       },
     },
     {
@@ -101,43 +103,45 @@ export default () => {
       width: 200,
       fixed: 'right',
       dataIndex: 'option',
-      render: (_: any, record:EnterpriseAdminVerify.Content) => {
+      render: (_: any, record: EnterpriseAdminVerify.Content) => {
         return (
-            <div>
-                    <Button
-            type="link"
-            onClick={() => {
-              history.push(`${routeName.ENTERPRISE_ADMIN_VERIFY_DETAIL}?id=${record.id}`);
-            }}
-          >
-            {record?.state === 'UN_CHECK' ? '审核' : '详情'}
-          </Button>
-          {record?.state === 'UN_COMMIT' && <Button type="link" onClick={() => showModal(record.id)}>移除权限</Button>} 
-            </div>
-      
-         
-        )
+          <div>
+            <Button
+              type="link"
+              onClick={() => {
+                history.push(`${routeName.ENTERPRISE_ADMIN_VERIFY_DETAIL}?id=${record.id}`);
+              }}
+            >
+              {record?.state === 'UN_CHECK' ? '审核' : '详情'}
+            </Button>
+            {record?.state === 'UN_COMMIT' && (
+              <Button type="link" onClick={() => showModal(record.id)}>
+                移除权限
+              </Button>
+            )}
+          </div>
+        );
       },
     },
-  ]
+  ];
 
   const getEnterpriseInfoVerifyPage = async (orgName = '', pageSize = 10, pageIndex = 1) => {
     try {
-      const { result, totalCount, pageTotal, code } = await httpPostEnterpriseInfoVerifyPage({
+      const { result, totalCount, pageTotal, code } = await getEnterpriseAdminVerifyPage({
         orgName,
         pageIndex,
         pageSize,
-      })
+      });
       if (code === 0) {
-        setPageInfo({ ...pageInfo, totalCount, pageTotal, pageIndex, pageSize })
-        setDataSource(result)
+        setPageInfo({ ...pageInfo, totalCount, pageTotal, pageIndex, pageSize });
+        setDataSource(result);
       } else {
-        message.error(`请求分页数据失败`)
+        message.error(`请求分页数据失败`);
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
   const searchList = [
     {
@@ -147,32 +151,29 @@ export default () => {
       initialValue: '',
       allowClear: true,
     },
-  ]
+  ];
 
   const onSearch = (info: any) => {
-    const { orgName } = info || {}
-    setPageInfo({ ...pageInfo, pageIndex: 1 })
-    setOrgName(orgName)
-    getEnterpriseInfoVerifyPage(orgName, pageInfo.pageSize)
-  }
-  const [id, setId] = useState('')
-  const showModal = (id:any) => {
-    setId(id)
+    const { orgName } = info || {};
+    setPageInfo({ ...pageInfo, pageIndex: 1 });
+    setOrgName(orgName);
+    getEnterpriseInfoVerifyPage(orgName, pageInfo.pageSize);
+  };
+  const [id, setId] = useState('');
+  const showModal = (id: any) => {
+    setId(id);
     setIsModalVisible(true);
   };
 
   const handleOk = () => {
     setIsModalVisible(false);
-    deleteMessage(id)
+    deleteMessage(id);
     // console.log(id);
-    
-    
   };
 
   const handleCancel = () => {
     setIsModalVisible(false);
   };
-
 
   return (
     <PageContainer className={sc('container')}>
@@ -192,17 +193,26 @@ export default () => {
             total: pageInfo.totalCount,
             current: pageInfo?.pageIndex,
             pageSize: pageInfo?.pageSize,
-            showTotal: (total: number) =>
-              <div className="pagination-text">{`共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`}</div>,
+            showTotal: (total: number) => (
+              <div className="pagination-text">{`共${total}条记录 第${pageInfo.pageIndex}/${
+                pageInfo.pageTotal || 1
+              }页`}</div>
+            ),
           }}
           onChange={(pagination: any) => {
-            getEnterpriseInfoVerifyPage(orgName, pagination.pageSize, pagination.current)
+            getEnterpriseInfoVerifyPage(orgName, pagination.pageSize, pagination.current);
           }}
         />
       </div>
-      <Modal title="移除权限" okText="移除" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
+      <Modal
+        title="移除权限"
+        okText="移除"
+        visible={isModalVisible}
+        onOk={handleOk}
+        onCancel={handleCancel}
+      >
         <p>确定将该用户移除组织功能使用权限吗？</p>
       </Modal>
     </PageContainer>
-  )
-}
+  );
+};
