@@ -94,7 +94,7 @@ export default () => {
     { title: '其他信息', content: basicContent2 },
   ];
 
-  const details =async(id:string)=>{
+  const details =async(id:string)=>{//审核接口
     try{
       const {code, result} =await httpGetEnterpriseInfoVerifyCheck(id)
         

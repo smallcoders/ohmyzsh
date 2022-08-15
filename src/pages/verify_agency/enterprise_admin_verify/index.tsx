@@ -8,8 +8,8 @@ import { history, useModel } from 'umi'
 import { routeName } from '@/../config/routes'
 import SelfTable from '@/components/self_table'
 import SearchBar from '@/components/search_bar'
-import { httpPostEnterpriseInfoVerifyPage } from '@/services/verify/enterprise-info-verify'
-import { getEnterpriseAdminVerifyPage ,getEnterpriseAdminVerifyDetail} from '@/services/enterprise-admin-verify';
+import {  httpPostEnterpriseInfoVerifyPage } from '@/services/verify/enterprise-info-verify'
+import {EnterpriseAdministratorAudit} from '@/services/enterprise-admin-verify';
 import './index.less'
 
 const sc = scopedClasses('service-config-app-news')
@@ -32,7 +32,7 @@ export default () => {
   const [form] = Form.useForm()
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [dataSource, setDataSource] = useState<EnterpriseInfo[]>([])
-  const { pageInfo, setPageInfo, orgName, setOrgName } = useModel('useEnterpriseInfoVerifyModel')
+  const { pageInfo, setPageInfo, orgName, setOrgName } = useModel('useEnterpriseAdministratorAudit')
 
   useEffect(() => {
     form?.setFieldsValue({ orgName })
@@ -41,8 +41,8 @@ export default () => {
 
   const deletemessage =async(id:string)=>{
     try{
-      const {code} =await getEnterpriseAdminVerifyDetail(id)
-        
+      const {code} =await EnterpriseAdministratorAudit(id)
+        // console.log(code);
       if(code === 0) {
         message.success(`
         用户组织权限移除成功`);
@@ -115,7 +115,6 @@ export default () => {
             type="link"
             onClick={() => {
               history.push(`${routeName.ENTERPRISE_ADMIN_VERIFY_DETAIL}?id=${record.id}`);
-              // history.push(`${routeName.ENTERPRISE_INFO_VERIFY_DETAIL}?id=${record.id}`)
             }}
           >
             {record?.state === 'UN_CHECK' ? '审核' : '详情'}
@@ -163,7 +162,7 @@ export default () => {
     setOrgName(orgName)
     getEnterpriseInfoVerifyPage(orgName, pageInfo.pageSize)
   }
-
+  const [id, setId] = useState('')
   const showModal = (id:any) => {
     setId(id)
     setIsModalVisible(true);
@@ -181,7 +180,7 @@ export default () => {
     setIsModalVisible(false);
   };
 
-  const [id, setId] = useState('')
+
   return (
     <PageContainer className={sc('container')}>
       <div className={sc('search-container')}>
