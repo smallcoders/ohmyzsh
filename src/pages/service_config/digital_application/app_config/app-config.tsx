@@ -1,4 +1,4 @@
-import { PlusOutlined, SendOutlined, UploadOutlined } from '@ant-design/icons';
+import { PlusOutlined, SendOutlined, UploadOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import {
   Button,
   Input,
@@ -24,6 +24,8 @@ import moment from 'moment';
 
 import SelfTable from '@/components/self_table';
 
+const { confirm } = Modal;
+
 import type { ColumnsType } from 'antd/es/table';
 
 import './app-config.less';
@@ -34,9 +36,7 @@ import ApplicationManager from '@/types/service-config-digital-applictaion';
 import UploadForm from '@/components/upload_form';
 import UploadFormFile from '@/components/upload_form/upload-form-file';
 
-import uniqBy from 'lodash/uniqBy'
-import cloneDeep from 'lodash/cloneDeep'
-import debounce from 'lodash/debounce'
+import _ from 'lodash'
 
 import {
   getApplicationList,
@@ -97,6 +97,8 @@ export default () => {
   const [companySelectedData, setCompanySelectedData] = useState<ApplicationManager.RecordType[]>([]);
 
   const [transferModalSelectedData, setTransferModalSelectedData] = useState<ApplicationManager.RecordType[]>([]);
+
+  const [transferSearchLoading, setTransferSearchLoading] = useState<boolean>(false);
   
   // 应用from
   const [appForm] = Form.useForm();
@@ -146,8 +148,10 @@ export default () => {
     appForm
       .validateFields()
       .then(async (value) => {
-        if (value.path) {
+        if (value.path && value.path.length) {
           value.path = value.path[0].uid
+        } else {
+          value.path = ''
         }
         console.log(value, '<---value');
         setAddOrUpdateLoading(true);
@@ -174,6 +178,8 @@ export default () => {
 
   const getCompanyList = async (pageIndex: number = 1, pageSize = transferPageInfo.pageSize) => {
     try {
+      console.log('searched ', transferSearchContent.orgName);
+      setTransferSearchLoading(true)
       const { result, totalCount, pageTotal, code } = await getOrgList({
         pageIndex,
         pageSize,
@@ -187,13 +193,15 @@ export default () => {
             title: e.orgName
           }
         })
-        const mixinList = uniqBy(list.concat(transferModalSelectedData), 'key')
+        const mixinList = _.uniqBy(list.concat(transferModalSelectedData), 'key')
         setCompanyTransferData(mixinList)
       } else {
         message.error(`请求公司列表数据失败`);
       }
+      setTransferSearchLoading(false)
     } catch (error) {
       console.log(error)
+      setTransferSearchLoading(false)
     }
   }
 
@@ -248,18 +256,26 @@ export default () => {
   const useModal = (): React.ReactNode => {
     return (
       <Modal
-        title={editingItem.id ? '修改应用' : '新增机应用'}
+        title={editingItem.id ? (editingItem.isDetail ? '应用详情' : '修改应用') : '新增应用'}
         width="600px"
         visible={createModalVisible}
         maskClosable={false}
-        onCancel={() => {
-          clearForm();
-          setModalVisible(false);
-        }}
-        okButtonProps={{ loading: addOrUpdateLoading }}
-        onOk={() => {
-          addOrUpdateApp()
-        }}
+        onCancel={() => setModalVisible(false)}
+        footer={
+          !editingItem.isDetail ? (
+            [
+              <Button key="back" onClick={() => {
+                clearForm();
+                setModalVisible(false);
+              }}>
+                取消
+              </Button>,
+              <Button key="submit" type="primary" loading={addOrUpdateLoading} onClick={addOrUpdateApp}>
+                确定
+              </Button>
+            ]
+          ) : null
+        }
       >
         {
           editingItem.isDetail ? (
@@ -268,12 +284,12 @@ export default () => {
                 {editingItem.appName}
               </Form.Item>
               <Form.Item style={{marginBottom: '20px'}} label="应用详情">{editingItem.content}</Form.Item>
-              <Form.Item style={{marginBottom: '20px'}} label="应用icon">
-                <div className={'reupload'}>
+              <Form.Item style={{marginBottom: '20px'}} label="应用图标">
+                <div className='app-icon'>
                   <img src={`/antelope-manage/common/download/${editingItem.logoImageId}`} alt="图片损坏" />
                 </div>
               </Form.Item>
-              <Form.Item label="相关附件">
+              <Form.Item label="操作手册">
                 {
                   editingItem.path && editingItem.path[0]?.uid ? (
                     <Button
@@ -340,7 +356,7 @@ export default () => {
               </Form.Item>
               <Form.Item
                 name="logoImageId"
-                label="应用icon"
+                label="应用图标"
                 style={{marginBottom: '20px'}}
                 rules={[
                   {
@@ -360,15 +376,15 @@ export default () => {
                     listType="picture-card"
                     className="avatar-uploader"
                     showUploadList={false}
-                    maxSize={5}
+                    maxSize={2}
                     tooltip={
-                      <span className="upload-tip"> 产品logo或展示效果图，用作应用卡片应用封面展示，仅支持JPG、PNG、JPEG,建议尺寸 270*180，大小在5M以下</span>
+                      <span className="upload-tip"> 请上传JPG/PNG格式、240*240px以上、1:1 、2MB 以内的无圆角图标</span>
                     }
                     accept=".png,.jpeg,.jpg"
                   />
               </Form.Item>
 
-              <Form.Item name="path" label="相关附件">
+              <Form.Item name="path" label="操作手册">
                 <UploadFormFile isSkip={true} accept=".pdf" showUploadList={true} maxCount={1}>
                   <Button icon={<UploadOutlined />}>上传文件</Button>
                 </UploadFormFile>
@@ -380,11 +396,11 @@ export default () => {
     );
   };
 
+  // 推送form
+  const [pushForm] = Form.useForm();
 
   // 推送弹窗
   const useDrawer = (): React.ReactNode => {
-    // 推送form
-    const [pushForm] = Form.useForm();
 
     // 提交推送
     const handlePushSubmit = () => {
@@ -393,7 +409,7 @@ export default () => {
         .then(async (value) => {
           console.log(value, '<---value');
           setPushSubmitLoading(true);
-          const form = cloneDeep(value)
+          const form = _.cloneDeep(value)
           if (form.pushTime) form.pushTime = moment(form.pushTime).format('YYYY-MM-DD HH:mm:ss')
           if (Array.isArray(form.timeRange)) {
             form.startTime = moment(form.timeRange[0]).format('YYYY-MM-DD HH:mm:ss')
@@ -433,7 +449,7 @@ export default () => {
         setSelectedKeys(resKeys);
       };
   
-      const handleOnSearch = debounce((dir: TransferDirection, value: string) => {
+      const handleOnSearch = _.debounce((dir: TransferDirection, value: string) => {
         console.log('search:', dir, value);
         if (dir === 'left') {
           setTransferPageInfo({
@@ -444,7 +460,7 @@ export default () => {
             orgName: value
           })
         }
-      }, 500, { leading: false, trailing: true })
+      }, 1000, { leading: false, trailing: true })
   
       const renderFooter: any = (
         _: TransferListProps<any>,
@@ -488,6 +504,26 @@ export default () => {
         >
           <Transfer
             showSearch
+            titles={[(
+              <Spin spinning={transferSearchLoading}></Spin>
+            ), (
+              targetKeys.length ? (
+                <div className='transfer-header-right'>
+                  <div className='title'>
+                    { `已选：${targetKeys.length}家企业` }
+                  </div>
+                  <div className='action'>
+                    <Button
+                        type="link"
+                        size='small'
+                        onClick={() => setTargetKeys([])}
+                      >
+                      清空
+                    </Button>
+                  </div>
+                </div>
+              ) : ''
+            )]}
             dataSource={companyTransferData}
             targetKeys={targetKeys}
             listStyle={{
@@ -506,19 +542,27 @@ export default () => {
       )
     }
 
+    const beforeCloseDrawer = () => {
+      confirm({
+        title: '确认关闭弹窗?',
+        icon: <ExclamationCircleOutlined />,
+        onOk() {
+          pushForm.resetFields()
+          setDrawerVisible(false);
+        }
+      })
+    }
+
     return (
-      <Drawer title="推送应用" width={600} placement="right" onClose={() => {
-        pushForm.resetFields()
-        setDrawerVisible(false);
-      }} visible={createDrawerVisible}
-      extra={
-        <Space>
-          <Button onClick={() => setDrawerVisible(false)}>取消</Button>
-          <Button onClick={handlePushSubmit} loading={pushSubmitLodaing} type="primary">
-            确定
-          </Button>
-        </Space>
-      }>
+      <Drawer title="推送应用" width={600} placement="right" onClose={beforeCloseDrawer} visible={createDrawerVisible}
+        extra={
+          <Space>
+            <Button onClick={beforeCloseDrawer}>取消</Button>
+            <Button onClick={handlePushSubmit} loading={pushSubmitLodaing} type="primary">
+              确定
+            </Button>
+          </Space>
+        }>
         <Form form={pushForm} layout="horizontal">
           <Form.Item
             label="推送企业"
@@ -583,7 +627,20 @@ export default () => {
               rules={[
                 {
                   validator: async (_, value: number) => {
-                    if (value) return Promise.resolve();
+                    if (value) {
+                      const timeRange = pushForm.getFieldValue('timeRange')
+                      if (timeRange && timeRange.length === 2) {
+                        // 若选取了领取有效时间 ，则判定 领用有效结束时间要大于推送时间
+                        const diff: number = moment(value).diff(moment(timeRange[1]))
+                        const res = Number((diff / 1000).toFixed(0))
+                        if (res > 0) {
+                          return Promise.reject(new Error('推送时间应小于最迟领取有效时间'))
+                        } else if (res > -60) {
+                          return Promise.reject(new Error('推送时间与最迟领取有效时间过于接近'))
+                        }
+                      }
+                      return Promise.resolve();
+                    }
                     return Promise.reject(new Error('请选择推送时间'))
                   },
                 },
@@ -593,7 +650,20 @@ export default () => {
               </Form.Item>
             )
           }
-          <Form.Item name="timeRange" label="领用有效时间">
+          <Form.Item
+            name="timeRange"
+            label="领取有效时间"
+            required
+            rules={[
+              {
+                validator: async (_, value: Array<number>) => {
+                  if (value && value.length === 2) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(new Error('请选择领取有效时间'))
+                },
+              },
+            ]}>
             <DatePicker.RangePicker allowClear showTime />
           </Form.Item>
         </Form>
@@ -630,24 +700,31 @@ export default () => {
   };
 
   const showEditOrDetail = (row: ApplicationManager.Content, isDetail?: boolean) => {
-    let reportFileId: any = ''
-    getFileInfo(row.path).then((res) => {
-      if (res?.code === 0 && res?.result) {
-        if (res.result[0]) reportFileId = res.result[0]
-      }
-    }).finally(() => {
-      const item: ApplicationManager.Content = { ...row }
-      item.path = reportFileId ? [
-        {
-          uid: reportFileId.id,
-          name: reportFileId.name  + '.' + reportFileId.format,
-          status: 'done',
+    const item: ApplicationManager.Content = { ...row }
+    if (row.path) {
+      let reportFileId: any = ''
+      getFileInfo(row.path).then((res) => {
+        if (res?.code === 0 && res?.result) {
+          if (res.result[0]) reportFileId = res.result[0]
         }
-      ] : undefined
+      }).finally(() => {
+        item.path = reportFileId ? [
+          {
+            uid: reportFileId.id,
+            name: reportFileId.name  + '.' + reportFileId.format,
+            status: 'done',
+          }
+        ] : undefined
+        setEditingItem({ ...item, isDetail: Boolean(isDetail) })
+        setModalVisible(true)
+        appForm.setFieldsValue(item)
+      })
+    } else {
+      item.path = undefined
       setEditingItem({ ...item, isDetail: Boolean(isDetail) })
       setModalVisible(true)
       appForm.setFieldsValue(item)
-    })
+    }
   }
   
   const columns: ColumnsType<ApplicationManager.Content> = [
@@ -673,6 +750,7 @@ export default () => {
     {
       title: '操作',
       width: 350,
+      fixed: 'right',
       dataIndex: 'option',
       render: (_: any, row: ApplicationManager.Content) => {
         return (
@@ -704,6 +782,7 @@ export default () => {
               disabled={!row.path}
               href={`/antelope-manage/common/download/${row.path}`}
               download={`/antelope-manage/common/download/${row.path}`}
+              onClick={() => message.success(`下载成功，请查阅`) }
             >
               下载手册
             </Button>
@@ -720,7 +799,7 @@ export default () => {
       {useSearchNode()}
       <div className={sc('container-table-header')}>
         <div className="title">
-          <span>可推送应用列表(共{pageInfo.totalCount || 0}个)</span>
+          <span>应用推送列表(共{pageInfo.totalCount || 0}个)</span>
           <div className={'action'}>
             <Button
               type="primary"
@@ -728,6 +807,9 @@ export default () => {
               onClick={() => {
                 setCompanySelectedData([])
                 clearForm()
+                pushForm.setFieldsValue({
+                  type: 0
+                })
                 setDrawerVisible(true)
               }}
             >
@@ -760,6 +842,8 @@ export default () => {
                 : {
                     onChange: getAppList,
                     total: pageInfo.totalCount,
+                    showSizeChanger: true,
+                    showQuickJumper: true,
                     current: pageInfo.pageIndex,
                     pageSize: pageInfo.pageSize,
                     showTotal: (total: number) =>
@@ -770,6 +854,7 @@ export default () => {
             dataSource={dataSource}
           />
         </Spin>
+        <div className='select-app-count'>{selectedPushKeys.length ? `已选${selectedPushKeys.length}个应用` : ''}</div>
       </div>
       
       {useModal()}

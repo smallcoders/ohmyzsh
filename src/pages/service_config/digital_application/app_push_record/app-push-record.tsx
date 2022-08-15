@@ -2,6 +2,7 @@ import './app-push-record.less';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
 
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 import {
   Button,
   Input,
@@ -45,6 +46,7 @@ import uniqBy from 'lodash/uniqBy'
 import ApplicationManager from '@/types/service-config-digital-applictaion';
 import Common from '@/types/common';
 
+const { confirm } = Modal
 
 const sc = scopedClasses('service-config-digital-app-push-record');
 export default () => {
@@ -53,7 +55,7 @@ export default () => {
     orgName?: string // 组织名称
     appName?: string; // 应用名称
     status?: 0|1, // 推送状态 0:未完成，1：已完成
-    timeRange?: Array<any> // 领用有效时间范围
+    timeRange?: Array<any> // 领取有效时间范围
     startTime?: string
     endTime?: string
   }>({});
@@ -131,13 +133,6 @@ export default () => {
         ...searchForm,
       });
       if (code === 0) {
-        const nowDate = new Date()
-        for (let i = 0, l = result.length; i < l; i++) {
-          const item = result[i]
-          if (item.pushTime) {
-            item.isPush = new Date(item.pushTime) < nowDate
-          }
-        }
         setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
         setDataSource(result);
       } else {
@@ -284,6 +279,24 @@ export default () => {
         >
           <Transfer
             showSearch
+            titles={['', (
+              targetKeys.length ? (
+                <div className='transfer-header-right'>
+                  <div className='title'>
+                    { `已选：${targetKeys.length}家企业` }
+                  </div>
+                  <div className='action'>
+                    <Button
+                        type="link"
+                        size='small'
+                        onClick={() => setTargetKeys([])}
+                      >
+                      清空
+                    </Button>
+                  </div>
+                </div>
+              ) : ''
+            )]}
             dataSource={companyTransferData}
             targetKeys={targetKeys}
             listStyle={{
@@ -302,19 +315,27 @@ export default () => {
       )
     }
 
+    const beforeCloseDrawer = () => {
+      confirm({
+        title: '确认关闭弹窗?',
+        icon: <ExclamationCircleOutlined />,
+        onOk() {
+          pushForm.resetFields()
+          setDrawerVisible(false);
+        }
+      })
+    }
+
     return (
-      <Drawer title="推送应用" width={600} placement="right" onClose={() => {
-        pushForm.resetFields()
-        setDrawerVisible(false);
-      }} visible={createDrawerVisible}
-      extra={
-        <Space>
-          <Button onClick={() => setDrawerVisible(false)}>取消</Button>
-          <Button onClick={handlePushSubmit} loading={pushSubmitLodaing} type="primary">
-            确定
-          </Button>
-        </Space>
-      }>
+      <Drawer title="推送应用" width={600} placement="right" onClose={beforeCloseDrawer} visible={createDrawerVisible}
+        extra={
+          <Space>
+            <Button onClick={beforeCloseDrawer}>取消</Button>
+            <Button onClick={handlePushSubmit} loading={pushSubmitLodaing} type="primary">
+              确定
+            </Button>
+          </Space>
+        }>
         <Form form={pushForm} layout="horizontal">
           <Form.Item
             label="推送企业"
@@ -379,7 +400,20 @@ export default () => {
               rules={[
                 {
                   validator: async (_, value: number) => {
-                    if (value) return Promise.resolve();
+                    if (value) {
+                      const timeRange = pushForm.getFieldValue('timeRange')
+                      if (timeRange && timeRange.length === 2) {
+                        // 若选取了领取有效时间 ，则判定 领用有效结束时间要大于推送时间
+                        const diff: number = moment(value).diff(moment(timeRange[1]))
+                        const res = Number((diff / 1000).toFixed(0))
+                        if (res > 0) {
+                          return Promise.reject(new Error('推送时间应小于最迟领取有效时间'))
+                        } else if (res > -60) {
+                          return Promise.reject(new Error('推送时间与最迟领取有效时间过于接近'))
+                        }
+                      }
+                      return Promise.resolve();
+                    }
                     return Promise.reject(new Error('请选择推送时间'))
                   },
                 },
@@ -389,7 +423,20 @@ export default () => {
               </Form.Item>
             )
           }
-          <Form.Item name="timeRange" label="领用有效时间">
+          <Form.Item
+            name="timeRange"
+            label="领取有效时间"
+            required
+            rules={[
+              {
+                validator: async (_, value: Array<number>) => {
+                  if (value && value.length === 2) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(new Error('请选择领取有效时间'))
+                },
+              },
+            ]}>
             <DatePicker.RangePicker allowClear showTime />
           </Form.Item>
         </Form>
@@ -416,7 +463,7 @@ export default () => {
               </Form.Item>
             </Col>
             <Col>
-              <Form.Item name="timeRange" label="领用有效时间">
+              <Form.Item name="timeRange" label="领取有效时间">
               <DatePicker.RangePicker allowClear showTime />
               </Form.Item>
             </Col>
@@ -458,7 +505,8 @@ export default () => {
   const columns: ColumnsType<ApplicationManager.PushDetail> = [
     { title: '序号', dataIndex: 'sort', width: 60, render: (_: any, _record: any, index: number) => index + 1 },
     { title: 'ID', dataIndex: 'id'  },
-    { title: '应用', dataIndex: 'appNames', render: (_: any, row: any) => {
+    { title: '推送时间', dataIndex: 'pushTime'  },
+    { title: '应用名称', dataIndex: 'appNames', render: (_: any, row: any) => {
         return (
           <Tooltip title={row.appNames}>
             <div className='textoverflow2'>{row.appNames}</div>
@@ -475,12 +523,12 @@ export default () => {
       }
     },
     {
-      title: '领用有效时间',
+      title: '领取有效时间',
       dataIndex: 'timeRange',
       width: 200,
       render: (_: any, row: any) => row.startTime + ' - ' + row.endTime
     },
-    { title: '推送状态', dataIndex: 'status', width: 100, render: (_: any, row: any) => row.isPush ? '已完成' : '待推送' },
+    { title: '推送状态', dataIndex: 'status', width: 100, render: (_: any, row: ApplicationManager.PushDetail) => row.status === 1 ? '已完成' : '待推送' },
     {
       title: '操作',
       width: 150,
@@ -497,7 +545,7 @@ export default () => {
               查看
             </Button>
             {
-              !row.isPush ? (
+              row.status === 0 ? (
                 <Button
                   type="link"
                   onClick={() => {
@@ -542,7 +590,7 @@ export default () => {
       {useSearchNode()}
       <div className={sc('container-table-header')}>
         <div className="title">
-          <span>可推送应用列表(共{pageInfo.totalCount || 0}个)</span>
+          <span>推送记录列表(共{pageInfo.totalCount || 0}个)</span>
         </div>
       </div>
       <div className={sc('container-table-body')}>
@@ -555,6 +603,8 @@ export default () => {
                 : {
                     onChange: getPushList,
                     total: pageInfo.totalCount,
+                    showSizeChanger: true,
+                    showQuickJumper: true,
                     current: pageInfo.pageIndex,
                     pageSize: pageInfo.pageSize,
                     showTotal: (total: number) =>

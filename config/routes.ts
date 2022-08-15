@@ -225,8 +225,7 @@ export default [
           },
           {
             path: routeName.DIGITAL_APPLICATION_PUSH_DETAIL,
-            hideInBreadcrumb: true,
-            name: '数字化应用',
+            name: '查看详情',
             component: './service_config/digital_application/app_push_detail',
           }
         ]
