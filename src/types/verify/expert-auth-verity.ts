@@ -7,44 +7,42 @@ namespace ExpertAuthVerify {
     Common.ResultPage;
 
   export type Content = {
-    id?: string; // id
+    auditId?: string; // 审核Id 通过审核Id获取详情
     expertName?: string; // 专家名称
     phone?: string; // 联系电话
-    expertType?: string; // 专家类型
-    area?: string;
-    accountType?: string; // 组织类型  枚举备注: ENTERPRISE :企业 COLLEGE :高校 INSTITUTION :科研机构 OTHER :其他
-    state?: string; // 状态
+    typeNames?: string[]; // 专家类型
+    cityName?: string;
+    orgName?: string;
+    auditState?: string; // 状态
+    operationTime?: string;
   };
 
   export type Detail = {
+    hide: boolean; //专家隐藏状态 true显示 false隐藏
     personalPhotoId: string;
     personalPhoto: string; // 个人照片
     expertName: string; // 专家姓名
     areaName: string; // 区域名称 市
-    expertType: string; // 专家类型 1数字化改造、2网络化改造、3上云用平台、4工控安全、5税收、6金融、7人才、8其他
-    typeName: string; // 类型中文,分割
-    industryList: string; // 产业方向
+    typeList: {
+      id?: string;
+      name?: string;
+    }[]; //类型
+    industryList: string[]; // 所属行业
+    industryNameList: string[]; // 所属行业名称
+    phone: string;
     workUnit: string; // 工作单位
     duty: string; // 职务
     email: string; // 邮箱
-    areaCode: number; // 所属区域
     expertIntroduction: string; // 专家介绍
-    workExperience: string; // 工作经验
-    expertSkills: string; // 专家技能
-    projectExperience: string; // 项目经验
+    workExp: string; // 工作经验
+    expertSkill: string; // 专家技能
+    projectExp: string; // 项目经验
     skilledField: string; // 擅长领域
     fileIds: string; // 相关附件,分割
     fileList: Common.FileInfo[]; // 附件
-    // auditState: UserAuditStateEnum;
+    auditState: number; //认证状态 0尚未填报 1填报中 2审核中 3审核成功 4审核退回
     auditId: string; // 审核Id
-    auditList?: {
-      id?: string; // id
-      auditor?: string; // 审核人
-      reason?: string; // 意见说明
-      stateEnum?: string; // 审核状态
-      // 枚举备注: AUDITING :审核中 AUDIT_PASSED :审核通过 AUDIT_REJECTED :审核拒绝
-      auditTime?: string; // 审核时间
-     }[]; // 审核信息
+    audited: boolean; //是否已审核 false未审核 true已审核
   };
 }
 

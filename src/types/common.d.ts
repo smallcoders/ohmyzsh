@@ -124,9 +124,9 @@ namespace Common {
   // 文件详情
   export interface FileInfo {
     id: string;
-    name?: string;
-    path?: string;
-    format?: string;
+    name: string;
+    path: string;
+    format: string;
     createTime?: string;
   }
 }

@@ -14,9 +14,9 @@ import './index.less'
 
 const sc = scopedClasses('enterprise-info-verify')
 const stateObj = {
-  UN_CHECK: '未审核',
-  CHECKED: '审核通过',
-  UN_PASS: '审核拒绝',
+  AUDITING: '未审核',
+  AUDIT_PASSED: '审核通过',
+  AUDIT_REJECTED: '审核拒绝',
 }
 
 export default () => {
@@ -34,7 +34,7 @@ export default () => {
       title: '序号',
       dataIndex: 'sort',
       width: 80,
-      render: (_: any, _record: any, index: number) =>
+      render: (_: any, _record: EnterpriseInfoVerify.Content, index: number) =>
         pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
@@ -45,13 +45,13 @@ export default () => {
     },
     {
       title: '组织类型',
-      dataIndex: 'accountType',
+      dataIndex: 'orgTypeName',
       isEllipsis: true,
       width: 200,
     },
     {
       title: '申请人姓名',
-      dataIndex: 'userName',
+      dataIndex: 'username',
       width: 200,
     },
     {
@@ -62,19 +62,19 @@ export default () => {
     },
     {
       title: '状态',
-      dataIndex: 'state',
+      dataIndex: 'auditState',
       width: 150,
-      render: (_: string) => {
+      render: (state: string) => {
         return (
-          <div className={`state-${_}`}>
-            {Object.prototype.hasOwnProperty.call(stateObj, _) ? stateObj[_] : '--'}
+          <div className={`state-${state}`}>
+            {Object.prototype.hasOwnProperty.call(stateObj, state) ? stateObj[state] : '--'}
           </div>
         )
       },
     },
     {
       title: '最新操作时间',
-      dataIndex: 'updateTime',
+      dataIndex: 'operationTime',
       width: 200,
       render: (_: string) => (_ ? moment(_).format('YYYY-MM-DD HH:mm:ss') : ''),
     },
@@ -83,15 +83,15 @@ export default () => {
       width: 200,
       fixed: 'right',
       dataIndex: 'option',
-      render: (_: any, record: any) => {
+      render: (_: any, record: EnterpriseInfoVerify.Content) => {
         return (
           <Button
             type="link"
             onClick={() => {
-              history.push(`${routeName.ENTERPRISE_INFO_VERIFY_DETAIL}?id=${record.id}`)
+              history.push(`${routeName.ENTERPRISE_INFO_VERIFY_DETAIL}?id=${record.auditId}`)
             }}
           >
-            {record?.state === 'UN_CHECK' ? '审核' : '详情'}
+            {record?.auditState === 'AUDITING' ? '审核' : '详情'}
           </Button>
         )
       },
@@ -144,6 +144,7 @@ export default () => {
         </div>
         <SelfTable
           bordered
+          rowKey="auditId"
           scroll={{ x: 1200 }}
           columns={columns}
           dataSource={dataSource}

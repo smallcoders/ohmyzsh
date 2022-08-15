@@ -1,13 +1,15 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { history } from 'umi';
 import { Descriptions, Image, Button } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import SelfTable from '@/components/self_table'
+import Common from '@/types/common.d'
 import type ExpertAuthVerify from '@/types/verify/expert-auth-verity';
+import { httpGetExpertAuthVerifyDetail } from '@/services/verify/expert-auth-verify'
 import scopedClasses, { labelStyle, contentStyle } from '@/utils/scopedClasses';
 import './detail.less';
 
-const sc = scopedClasses('user-config-kechuang');
+const sc = scopedClasses('expert-auth-verify-detail');
 export const previewType = ['png', 'jpg', 'jpeg', 'jpeg2000', 'pdf'] // 可预览的格式
 
 export default () => {
@@ -18,19 +20,36 @@ export default () => {
     personalPhoto,
     expertName,
     areaName,
-    typeName,
-    industryList,
+    typeList,
+    industryNameList,
     phone,
     workUnit,
     duty,
     email,
     expertIntroduction,
-    workExperience,
-    expertSkills,
-    projectExperience,
+    workExp,
+    expertSkill,
+    projectExp,
     skilledField,
     fileList = [],
   } = detail || {}
+
+  useEffect(() => {
+    getExpertAuthVerifyDetail(id)
+  }, [])
+
+  const getExpertAuthVerifyDetail = async (id: string) => {
+    try {
+      const { code, result, message } = await httpGetExpertAuthVerifyDetail(id)
+      if (code === 0) {
+        setDetail(result)
+      } else {
+        throw new Error(message)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   const basicContent1 = [
     {
@@ -43,8 +62,8 @@ export default () => {
     },
     { label: '专家姓名', value: expertName },
     { label: '所属区域', value: areaName },
-    { label: '专家类型', value: typeName?.replace(/,/g, '、') || '' },
-    { label: '产业方向', value: industryList?.replace(/,/g, '、') || '' },
+    { label: '专家类型', value: typeList?.map(item => item?.name)?.join('、') || '' },
+    { label: '产业方向', value: industryNameList?.join('、') || '' },
   ]
 
   const basicContent2 = [
@@ -56,9 +75,9 @@ export default () => {
 
   const basicContent3 = [
     { label: '个人简介', value: expertIntroduction },
-    { label: '工作经验', value: workExperience },
-    { label: '专家技能', value: expertSkills },
-    { label: '项目经验', value: projectExperience },
+    { label: '工作经验', value: workExp },
+    { label: '专家技能', value: expertSkill },
+    { label: '项目经验', value: projectExp },
     { label: '擅长领域', value: skilledField },
   ]
 
@@ -71,25 +90,25 @@ export default () => {
   const fileColumns = [
     {
       title: '文件名称',
-      dataKey: 'name',
+      dataIndex: 'name',
       width: '25%',
     },
     {
       title: '文件格式',
-      dataKey: 'format',
+      dataIndex: 'format',
       width: '25%',
     },
     {
       title: '文件上传时间',
-      dataKey: 'createTime',
+      dataIndex: 'createTime',
       width: '25%',
     },
     {
       title: '操作',
-      dataKey: 'action',
+      dataIndex: 'action',
       fixed: 'right',
       width: '25%',
-      render(text: string, record: any) {
+      render(text: string, record: Common.FileInfo) {
         return (
           <div>
             {previewType.includes(record?.format) && (
@@ -106,9 +125,7 @@ export default () => {
             <Button
               type="link"
               style={{ marginLeft: '8px', padding: 0, height: 'auto' }}
-              onClick={() => {
-                handleDownloadFile(record?.id)
-              }}
+              href={`/antelope-manage/common/download/${record?.id}`}
             >
               下载
             </Button>
@@ -118,39 +135,36 @@ export default () => {
     },
   ]
 
-  // 下载附件
-  const handleDownloadFile = (id: string) => {
-    // exportUtil(httpDownloadAttachments, { fileId: id }, '下载失败，请重试')
-  }
-
   return (
     <PageContainer className={sc('container')}>
-      {infoAuthContent?.map((item, index) => {
-        return (
-          <div key={index}>
-            <div className={sc('header')}>{item?.title}</div>
-            <Descriptions column={1} labelStyle={labelStyle} contentStyle={contentStyle}>
-              {item?.content?.map((item, index: number) => {
-                return (
-                  <Descriptions.Item key={item?.label || index} label={item?.label || null}>
-                    {item?.value || '--'}
-                  </Descriptions.Item>
-                )
-              })}
-            </Descriptions>
+      <div className={sc('body')}>
+        {infoAuthContent?.map((item, index) => {
+          return (
+            <div key={index}>
+              <div className={sc('header')}>{item?.title}</div>
+              <Descriptions column={1} labelStyle={labelStyle} contentStyle={contentStyle}>
+                {item?.content?.map((item, index: number) => {
+                  return (
+                    <Descriptions.Item key={item?.label || index} label={item?.label || null}>
+                      {item?.value || '--'}
+                    </Descriptions.Item>
+                  )
+                })}
+              </Descriptions>
+            </div>
+          )
+        })}
+        {fileList?.length > 0 && (
+          <div className={sc('content')} style={{ paddingLeft: 100 }}>
+            <SelfTable
+              rowKey="id"
+              columns={fileColumns}
+              dataSource={fileList || []}
+              pagination={false}
+            />
           </div>
-        )
-      })}
-      {fileList?.length > 0 && (
-        <div className={sc('content')} style={{ paddingLeft: 160 }}>
-          <SelfTable
-            columns={fileColumns}
-            rowKey="id"
-            dataSource={fileList || []}
-            pagination={false}
-          />
-        </div>
-      )}
+        )}
+      </div>
     </PageContainer>
   );
 };

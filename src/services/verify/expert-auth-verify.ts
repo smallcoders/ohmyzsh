@@ -5,7 +5,7 @@ import EnterpriseAdminVerify from '@/types/enterprise-admin-verify.d';
 
 // 分页查询列表
 export async function httpPostExpertAuthVerifyPage(data?: { [key: string]: any }) {
-  return request<EnterpriseAdminVerify.RecordList>('/antelope-manage/orgManagerRequest', {
+  return request<EnterpriseAdminVerify.RecordList>('/antelope-manage/expert/auditPage', {
     method: 'post',
     data,
   });
@@ -14,7 +14,7 @@ export async function httpPostExpertAuthVerifyPage(data?: { [key: string]: any }
 // 审核详情
 export async function httpGetExpertAuthVerifyDetail(id: string) {
   return request<Common.ResultCode & { result: any }>(
-    `/antelope-manage/orgManagerRequest?id=${id}`,
+    `/antelope-manage/expert/auditDetail?auditId=${id}`,
   );
 }
 

@@ -4,7 +4,7 @@ import Common from '@/types/common.d';
 export interface ExpertAuthVerifySearchInfo {
   expertName: string;
   expertType: string;
-  area: string;
+  cityCode: string;
 }
 
 const initialState = {
@@ -17,7 +17,7 @@ const initialState = {
   searchInfo: {
     expertName: '',
     expertType: '',
-    area: '',
+    cityCode: '',
   },
 };
 
@@ -25,11 +25,17 @@ const ExpertAuthVerifyModel = () => {
   const [pageInfo, setPageInfo] = useState<Common.ResultPage>(initialState.pageInfo);
   const [searchInfo, setSearchInfo] = useState<ExpertAuthVerifySearchInfo>(initialState.searchInfo);
 
+  const resetModel = () => {
+    setPageInfo(initialState.pageInfo);
+    setSearchInfo(initialState.searchInfo);
+  };
+
   return {
     pageInfo,
     setPageInfo,
     searchInfo,
     setSearchInfo,
+    resetModel,
   };
 };
 
