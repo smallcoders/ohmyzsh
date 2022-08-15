@@ -595,6 +595,11 @@ export default [
         name: '科产管理员配置',
         component: './user_config/admin_account_distributor',
       },
+      {
+        path: '/user-config/tags-management',
+        name: '账号标签管理',
+        component: './user_config/tags_management',
+      },
     ],
   },
   {
