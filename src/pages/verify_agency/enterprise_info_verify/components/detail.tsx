@@ -57,17 +57,17 @@ export default () => {
         ''
       ),
     },
-    { label: '组织类型', value: patternOrganization, type: 'Select' },
-    { label: '组织名称', value: organizationName, type: 'Input' },
-    { label: '统一社会信用代码', value: SocialCredit, type: 'Input' },
-    { label: '成立时间', value: formedDate, type: 'Input' },
-    { label: '企业规模', value: scale, type: 'Select' },
-    { label: '联系电话', value: phone, type: 'Input' },
-    { label: '注册区域', value: areaName, type: 'Select' },
-    { label: '详细地址', value: detailedAddress, type: 'Input' },
-    { label: '注册资本', value: registeredCapital, type: 'Input' },
-    { label: '组织简介', value: organizeMeetings, type: 'Textarea' },
-    { label: '组织核心能力', value: organizingAbilitys, type: 'Textarea' },
+    { label: '组织类型', value: patternOrganization  },
+    { label: '组织名称', value: organizationName },
+    { label: '统一社会信用代码', value: SocialCredit },
+    { label: '成立时间', value: formedDate},
+    { label: '企业规模', value: scale  },
+    { label: '联系电话', value: phone},
+    { label: '注册区域', value: areaName },
+    { label: '详细地址', value: detailedAddress },
+    { label: '注册资本', value: registeredCapital},
+    { label: '组织简介', value: organizeMeetings },
+    { label: '组织核心能力', value: organizingAbilitys},
   ];
 
   const basicContent2 = [
@@ -80,13 +80,13 @@ export default () => {
       ),
     },
 
-    { label: '单位性质', value: natureOfunit, type: 'Select' },
-    { label: '法人姓名', value: legalPersonName, type: 'Input' },
-    { label: '总资产', value: allProperty, type: 'Input' },
-    { label: '上年营收', value: lastYearMoney, type: 'Input' },
-    { label: '上年利润', value: lastYearProfit, type: 'Input' },
-    { label: '信用等级', value: qualityRating, type: 'Input' },
-    { label: '经营范围', value: businessScope, type: 'Textarea' },
+    { label: '单位性质', value: natureOfunit  },
+    { label: '法人姓名', value: legalPersonName },
+    { label: '总资产', value: allProperty},
+    { label: '上年营收', value: lastYearMoney },
+    { label: '上年利润', value: lastYearProfit },
+    { label: '信用等级', value: qualityRating},
+    { label: '经营范围', value: businessScope },
   ];
 
   const infoAuthContent = [
