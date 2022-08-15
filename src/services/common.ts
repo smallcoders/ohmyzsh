@@ -97,3 +97,17 @@ export async function uploadFile(data) {
     },
   );
 }
+
+/**
+ * 查询附件列表
+ * @param string ids
+ * @returns
+ */
+ export async function getFileInfo(ids: string) {
+  return request<Common.ResultCode & { result: any }>(
+    `/antelope-common/common/file/${ids}`,
+    {
+      method: 'get',
+    },
+  );
+}
