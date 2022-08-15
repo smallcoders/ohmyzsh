@@ -25,3 +25,10 @@ export async function httpPostAuditEnterpriseInfo(data?: { [key: string]: any })
     data,
   });
 }
+
+// 管理员审核
+export async function httpGetEnterpriseInfoVerifyCheck(id: string) {
+  return request<Common.ResultCode & { result: any }>(
+    `/antelope-manage/orgManagerRequest?detailid=${id}`,
+  );
+}
