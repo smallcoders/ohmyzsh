@@ -109,3 +109,43 @@ export async function getUapDefaultPwd() {
     method: 'GET',
   });
 }
+
+/** 获取标签管理分页 */
+export async function getConsultPage(data?: { [key: string]: any }) {
+  return request<Common.ResultCode>('/antelope-pay/mng/userLabelMng/label/getLabelsByCondition', {
+    method: 'post',
+    data,
+  });
+}
+
+/**
+ * 标签管理-用户备注修改
+ */
+ export async function updateRemark(data: any ) {
+  return request<Common.ResultCode>(`/antelope-pay/mng/userLabelMng/label/updateRemark?id=${data.id}&userId=${data.userId}&remarkText=${data.remarkText}`, {
+    method: 'put',
+    data,
+  });
+}
+
+// 获取推荐标签
+export async function httpGetPublishTags() {
+  return request('/antelope-pay/recommend/label/list', {
+    method: 'GET',
+  });
+}
+
+// 标签推荐-更新 httpPostSaveTags
+export async function httpPostSaveTags(data: object) {
+  return request(`antelope-pay/recommend/label/save`, {
+    method: 'post',
+    data
+  })
+}
+
+// 获取标签查询
+export async function httpGetAllTags() {
+  return request('/antelope-pay/recommend/label/all', {
+    method: 'GET',
+  });
+}
