@@ -99,7 +99,7 @@ export default () => {
     { title: '组织基本信息', content: basicContent1 },
     { title: '其他信息', content: basicContent2 },
   ];
-
+  
   return (
     <PageContainer className={sc('container')}>
       <div className={sc('body')}>

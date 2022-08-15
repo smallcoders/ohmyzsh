@@ -35,7 +35,15 @@ export async function handleAuditEnterpriseAdminVerify(data?: { [key: string]: a
   });
 }
 
+/* 企业管理员审核接口 */
+  export async function EnterpriseAdministratorAudit(id:string) {
 
-
+    return request<Common.ResultCode & { result: any }>(
+      `/antelope-manage/orgManagerRequest/remove?id=${id}`,
+      {
+        method: 'delete',
+      }
+    );
+  }
 
 
