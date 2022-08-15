@@ -9,19 +9,12 @@ import { routeName } from '@/../config/routes'
 import SelfTable from '@/components/self_table'
 import SearchBar from '@/components/search_bar'
 import {  httpPostEnterpriseInfoVerifyPage } from '@/services/verify/enterprise-info-verify'
-import {EnterpriseAdministratorAudit} from '@/services/enterprise-admin-verify';
+import {deleteEnterpriseAdministratorAudit} from '@/services/enterprise-admin-verify';
 import './index.less'
 
+import EnterpriseAdminVerify from '@/types/enterprise-admin-verify'
 const sc = scopedClasses('service-config-app-news')
-interface EnterpriseInfo {
-  id?: string // id
-  orgName?: string // 组织名称
-  accountType?: string // 组织类型  枚举备注: ENTERPRISE :企业 COLLEGE :高校 INSTITUTION :科研机构 OTHER :其他
-  userName?: string // 申请人姓名
-  phone?: string // 手机号
-  state?: string // 状态
-  updateTime?: string // 最新操作时间
-}
+
 const stateObj = {
   UN_CHECK: '未审核',
   CHECKED: '审核通过',
@@ -31,7 +24,7 @@ const stateObj = {
 export default () => {
   const [form] = Form.useForm()
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [dataSource, setDataSource] = useState<EnterpriseInfo[]>([])
+  const [dataSource, setDataSource] = useState<EnterpriseAdminVerify.Content[]>([])
   const { pageInfo, setPageInfo, orgName, setOrgName } = useModel('useEnterpriseAdministratorAudit')
 
   useEffect(() => {
@@ -39,9 +32,9 @@ export default () => {
     getEnterpriseInfoVerifyPage(orgName, pageInfo.pageSize, pageInfo.pageIndex)
   }, [])
 
-  const deletemessage =async(id:string)=>{
+  const deleteMessage =async(id:string)=>{
     try{
-      const {code} =await EnterpriseAdministratorAudit(id)
+      const {code} =await deleteEnterpriseAdministratorAudit(id)
         // console.log(code);
       if(code === 0) {
         message.success(`
@@ -59,7 +52,7 @@ export default () => {
       title: '序号',
       dataIndex: 'sort',
       width: 80,
-      render: (_: any, _record: any, index: number) =>
+      render: (_: any, _record:EnterpriseAdminVerify.Content, index: number) =>
         pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
@@ -108,7 +101,7 @@ export default () => {
       width: 200,
       fixed: 'right',
       dataIndex: 'option',
-      render: (_: any, record: any) => {
+      render: (_: any, record:EnterpriseAdminVerify.Content) => {
         return (
             <div>
                     <Button
@@ -170,7 +163,7 @@ export default () => {
 
   const handleOk = () => {
     setIsModalVisible(false);
-    deletemessage(id)
+    deleteMessage(id)
     // console.log(id);
     
     
