@@ -45,25 +45,6 @@ namespace ExpertAuthVerify {
       // 枚举备注: AUDITING :审核中 AUDIT_PASSED :审核通过 AUDIT_REJECTED :审核拒绝
       auditTime?: string; // 审核时间
      }[]; // 审核信息
-     businessLicense: string;//营业执照
-     patternOrganization: string; //组织类型
-     organizationName: string; //组织名称
-     SocialCredit: string; //统一社会信用代码
-     formedDate: string //成立时间
-     scale: number //企业规模
-     phone: string; // 联系电话
-     detailedAddress: string; // 详细地址
-     registeredCapital: string; // 注册资本
-     organizeMeetings: string; // 组织简介
-     organizingAbilitys: string; // 组织核心能力
-     organizationLogo: string //组织logo
-     natureOfunit: string,//单位性质
-     legalPersonName: string,//法人姓名
-     allProperty: number,//总资产
-     lastYearMoney: number,//上年营收
-     lastYearProfit: number,//上年利润
-     qualityRating: string,//信用等级
-     businessScope: string,//经营范围
   };
 }
 
