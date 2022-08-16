@@ -9,7 +9,7 @@ import { routeName } from '@/../config/routes';
 import SelfTable from '@/components/self_table';
 import SearchBar from '@/components/search_bar';
 import { getEnterpriseAdminVerifyPage } from '@/services/enterprise-admin-verify';
-import { deleteEnterpriseAdministratorAudit } from '@/services/enterprise-admin-verify';
+import { deleteEnterpriseAdministratorRights } from '@/services/enterprise-admin-verify';
 import './index.less';
 
 import EnterpriseAdminVerify from '@/types/enterprise-admin-verify';
@@ -36,7 +36,7 @@ export default () => {
 
   const deleteMessage = async (id: string) => {
     try {
-      const { code } = await deleteEnterpriseAdministratorAudit(id);
+      const { code } = await deleteEnterpriseAdministratorRights(id);
       // console.log(code);
       if (code === 0) {
         message.success(`
@@ -106,6 +106,20 @@ export default () => {
       render: (_: any, record: EnterpriseAdminVerify.Content) => {
         return (
           <div>
+                 {record?.state === 'UN_COMMIT' && (
+              <Button type="link" onClick={() => {
+                Modal.confirm({
+                  title: '移除权限',
+                  content: '确定将该用户移除组织功能使用权限吗？',
+                  okText: '确认',
+                  onOk: () =>handleOk(record.id),
+                  cancelText: '取消'
+                });
+              } }  
+              >
+                移除权限
+              </Button>
+            )}
             <Button
               type="link"
               onClick={() => {
@@ -114,11 +128,7 @@ export default () => {
             >
               {record?.state === 'UN_CHECK' ? '审核' : '详情'}
             </Button>
-            {record?.state === 'UN_COMMIT' && (
-              <Button type="link" onClick={() => showModal(record.id)}>
-                移除权限
-              </Button>
-            )}
+       
           </div>
         );
       },
@@ -159,21 +169,14 @@ export default () => {
     setOrgName(orgName);
     getEnterpriseInfoVerifyPage(orgName, pageInfo.pageSize);
   };
-  const [id, setId] = useState('');
-  const showModal = (id: any) => {
-    setId(id);
-    setIsModalVisible(true);
-  };
 
-  const handleOk = () => {
+  const handleOk = (id:string) => {
     setIsModalVisible(false);
     deleteMessage(id);
     // console.log(id);
   };
 
-  const handleCancel = () => {
-    setIsModalVisible(false);
-  };
+
 
   return (
     <PageContainer className={sc('container')}>
@@ -204,15 +207,6 @@ export default () => {
           }}
         />
       </div>
-      <Modal
-        title="移除权限"
-        okText="移除"
-        visible={isModalVisible}
-        onOk={handleOk}
-        onCancel={handleCancel}
-      >
-        <p>确定将该用户移除组织功能使用权限吗？</p>
-      </Modal>
     </PageContainer>
   );
 };

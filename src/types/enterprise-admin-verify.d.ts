@@ -7,7 +7,7 @@ namespace EnterpriseAdminVerify {
     Common.ResultPage;
 
   export type Content = {
-    id?: string // id
+    id: string // id
     orgName?: string // 组织名称
     accountType?: string // 组织类型  枚举备注: ENTERPRISE :企业 COLLEGE :高校 INSTITUTION :科研机构 OTHER :其他
     userName?: string // 申请人姓名
