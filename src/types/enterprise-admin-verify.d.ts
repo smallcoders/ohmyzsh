@@ -1,4 +1,4 @@
-import type Common from '../common';
+import type Common from './common';
 
 namespace EnterpriseAdminVerify {
   export type RecordList = {
