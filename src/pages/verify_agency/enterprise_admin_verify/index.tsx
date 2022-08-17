@@ -13,14 +13,14 @@ import { deleteEnterpriseAdministratorRights } from '@/services/enterprise-admin
 import './index.less';
 
 import EnterpriseAdminVerify from '@/types/enterprise-admin-verify';
-const sc = scopedClasses('Enterprise-Administrator-Audit');
+const sc = scopedClasses('enterprise-administrator-audit');
 
 const stateObj = {
   UN_CHECK: '未审核',
   CHECKED: '审核通过',
   UN_PASS: '审核拒绝',
   UN_COMMIT: '未提交',
-  INVALID: '手动操作失败',
+  INVALID: '未提交已失效',
 };
 
 export default () => {
@@ -39,8 +39,7 @@ export default () => {
     try {
       const { code } = await deleteEnterpriseAdministratorRights(id);
       if (code === 0) {
-        message.success(`
-        用户组织权限移除成功`);
+        message.success(`用户组织权限移除成功`);
       } else {
         message.error(`用户组织权限移除失败`);
       }
