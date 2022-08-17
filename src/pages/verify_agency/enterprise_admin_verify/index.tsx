@@ -25,6 +25,7 @@ const stateObj = {
 
 export default () => {
   const [form] = Form.useForm();
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const [dataSource, setDataSource] = useState<EnterpriseAdminVerify.Content[]>([]);
   const { pageInfo, setPageInfo, orgName, setOrgName } = useModel(
     'useEnterpriseAdministratorAudit',
@@ -172,6 +173,7 @@ export default () => {
   };
 
   const handleOk = (id: string) => {
+    setIsModalVisible(false);
     deleteAuthority(id);
   };
 
