@@ -20,7 +20,7 @@ const stateObj = {
   CHECKED: '审核通过',
   UN_PASS: '审核拒绝',
   UN_COMMIT:'未提交',
-  INVALID:'未提交已失效'
+  INVALID:'手动操作失败',
 };
 
 export default () => {
