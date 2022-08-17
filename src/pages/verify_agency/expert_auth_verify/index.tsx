@@ -146,7 +146,7 @@ export default () => {
         allowClear: true,
       },
       {
-        key: 'area',
+        key: 'cityCode',
         label: '所属区域',
         type: Common.SearchItemControlEnum.CASCADER,
         treeData: areaOptions,
@@ -156,9 +156,9 @@ export default () => {
   }, [expertTypeOptions, areaOptions])
 
   const onSearch = (info: any) => {
-    const { expertName, expertType, area } = info || {}
+    const { expertName, expertType, cityCode } = info || {}
     setPageInfo({ ...pageInfo, pageIndex: 1 })
-    setSearchInfo({ expertName, expertType, area })
+    setSearchInfo({ expertName, expertType, cityCode })
     getExpertAuthVerifyPage(info, pageInfo.pageSize)
   }
 
