@@ -35,7 +35,7 @@ import icon10 from '@/assets/demand_market/10.png'
 import icon11 from '@/assets/demand_market/11.png'
 import selectedIcon from '@/assets/demand_market/selected.png'
 
-const sc = scopedClasses('user-config-logout-verify');
+const sc = scopedClasses('user-config-tags-manage');
 
 export default () => {
   const [dataSource, setDataSource] = useState<AppResource.ConsultRecordContent[]>([]);
@@ -351,7 +351,10 @@ export default () => {
           },
         });
       }else {
-        saveTags(null, 1)
+        // saveTags(null, 1)
+        setBanIndustry(false)
+        setCurModal(step)
+        setModalVisible(false)
       }
     // 跳到第二步，需要判断当前页面有没有选项，有的话需要给出弹框提示
     }else if(step == 2) {
@@ -587,6 +590,7 @@ export default () => {
       <Modal
         title="请选择"
         width={1200}
+        className={sc('demand-detail-modal')}
         visible={editModalVisible}
         footer={
           <>

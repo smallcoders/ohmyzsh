@@ -1,8 +1,5 @@
-@prefix: user-config-logout-verify;
+@prefix: user-config-tags-manage;
 
-.hideModal {
-  display: none;
-}
 
 .@{prefix}-container {
   &-table-header {
@@ -104,12 +101,21 @@
     margin-left: 0;
   }
 }
-.ant-modal-footer {
-  text-align: center;
-}
-.next-step {
-  width: 320px;
-  height: 48px;
-  background: linear-gradient(135deg, #0068FF 0%, #2CABE8 100%);
-  border-radius: 2px;
+.@{prefix}-demand-detail-modal {
+  .ant-modal-body {
+    height: 500px;
+    overflow: auto;
+  }
+  .ant-modal-footer {
+    text-align: center;
+  }
+  .next-step {
+    width: 320px;
+    height: 48px;
+    background: linear-gradient(135deg, #0068FF 0%, #2CABE8 100%);
+    border-radius: 2px;
+  }
+  .hideModal {
+    display: none;
+  }
 }
