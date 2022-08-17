@@ -13,14 +13,14 @@ import { deleteEnterpriseAdministratorRights } from '@/services/enterprise-admin
 import './index.less';
 
 import EnterpriseAdminVerify from '@/types/enterprise-admin-verify';
-const sc = scopedClasses('service-config-app-news');
+const sc = scopedClasses('Enterprise-Administrator-Audit');
 
 const stateObj = {
   UN_CHECK: '未审核',
   CHECKED: '审核通过',
   UN_PASS: '审核拒绝',
-  UN_COMMIT:'未提交',
-  INVALID:'手动操作失败',
+  UN_COMMIT: '未提交',
+  INVALID: '手动操作失败',
 };
 
 export default () => {
@@ -36,7 +36,7 @@ export default () => {
     getEnterpriseInfoVerifyPage(orgName, pageInfo.pageSize, pageInfo.pageIndex);
   }, []);
 
-  const deleteMessage = async (id: string) => {
+  const deleteAuthority = async (id: string) => {
     try {
       const { code } = await deleteEnterpriseAdministratorRights(id);
       if (code === 0) {
@@ -107,16 +107,18 @@ export default () => {
       render: (_: any, record: EnterpriseAdminVerify.Content) => {
         return (
           <div>
-                 {record?.state === 'UN_COMMIT' && (
-              <Button type="link" onClick={() => {
-                Modal.confirm({
-                  title: '移除权限',
-                  content: '确定将该用户移除组织功能使用权限吗？',
-                  okText: '确认',
-                  onOk: () =>handleOk(record.id),
-                  cancelText: '取消'
-                });
-              } }  
+            {record?.state === 'UN_COMMIT' && (
+              <Button
+                type="link"
+                onClick={() => {
+                  Modal.confirm({
+                    title: '移除权限',
+                    content: '确定将该用户移除组织功能使用权限吗？',
+                    okText: '确认',
+                    onOk: () => handleOk(record.id),
+                    cancelText: '取消',
+                  });
+                }}
               >
                 移除权限
               </Button>
@@ -129,7 +131,6 @@ export default () => {
             >
               {record?.state === 'UN_CHECK' ? '审核' : '详情'}
             </Button>
-       
           </div>
         );
       },
@@ -171,13 +172,10 @@ export default () => {
     getEnterpriseInfoVerifyPage(orgName, pageInfo.pageSize);
   };
 
-  const handleOk = (id:string) => {
+  const handleOk = (id: string) => {
     setIsModalVisible(false);
-    deleteMessage(id);
-    // console.log(id);
+    deleteAuthority(id);
   };
-
-
 
   return (
     <PageContainer className={sc('container')}>
