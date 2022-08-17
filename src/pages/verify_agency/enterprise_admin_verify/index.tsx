@@ -19,6 +19,8 @@ const stateObj = {
   UN_CHECK: '未审核',
   CHECKED: '审核通过',
   UN_PASS: '审核拒绝',
+  UN_COMMIT:'未提交',
+  INVALID:'未提交已失效'
 };
 
 export default () => {
@@ -37,7 +39,6 @@ export default () => {
   const deleteMessage = async (id: string) => {
     try {
       const { code } = await deleteEnterpriseAdministratorRights(id);
-      // console.log(code);
       if (code === 0) {
         message.success(`
         用户组织权限移除成功`);
