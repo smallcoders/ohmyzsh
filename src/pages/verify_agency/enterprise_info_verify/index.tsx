@@ -80,7 +80,7 @@ export default () => {
     },
     {
       title: '操作',
-      width: 200,
+      width: 100,
       fixed: 'right',
       dataIndex: 'option',
       render: (_: any, record: EnterpriseInfoVerify.Content) => {

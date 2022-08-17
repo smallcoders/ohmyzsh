@@ -4,6 +4,7 @@ import { Descriptions, Image } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import type EnterpriseInfoVerify from '@/types/verify/enterprise-info-verify';
 import { httpGetEnterpriseInfoVerifyDetail } from '@/services/verify/enterprise-info-verify'
+import VerifyInfoDetail from '@/components/verify_info_detail';
 import scopedClasses, { labelStyle, contentStyle } from '@/utils/scopedClasses';
 import './detail.less';
 
@@ -99,10 +100,10 @@ export default () => {
     { title: '组织基本信息', content: basicContent1 },
     { title: '其他信息', content: basicContent2 },
   ];
-  
+
   return (
     <PageContainer className={sc('container')}>
-      <div className={sc('body')}>
+      <div className={sc('detail-container')}>
         {infoAuthContent?.map((item, index) => {
           return (
             <div key={index}>
@@ -119,6 +120,9 @@ export default () => {
             </div>
           )
         })}
+      </div>
+      <div className={sc('verify-container')}>
+        <VerifyInfoDetail auditId={id} reset={() => { }} />
       </div>
     </PageContainer>
   );
