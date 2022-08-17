@@ -35,7 +35,7 @@ import icon10 from '@/assets/demand_market/10.png'
 import icon11 from '@/assets/demand_market/11.png'
 import selectedIcon from '@/assets/demand_market/selected.png'
 
-const sc = scopedClasses('user-config-logout-verify');
+const sc = scopedClasses('user-config-tags-manage');
 
 export default () => {
   const [dataSource, setDataSource] = useState<AppResource.ConsultRecordContent[]>([]);
@@ -351,7 +351,10 @@ export default () => {
           },
         });
       }else {
-        saveTags(null, 1)
+        // saveTags(null, 1)
+        setBanIndustry(false)
+        setCurModal(step)
+        setModalVisible(false)
       }
     // 跳到第二步，需要判断当前页面有没有选项，有的话需要给出弹框提示
     }else if(step == 2) {
@@ -587,6 +590,7 @@ export default () => {
       <Modal
         title="请选择"
         width={1200}
+        className={sc('demand-detail-modal')}
         visible={editModalVisible}
         footer={
           <>
@@ -611,7 +615,6 @@ export default () => {
               {tagsObj.industryItems.map((el) => {
                 return (
                   <Col span={6} key={el.recCode}>
-                    {/* <li className={sc('container-modal-select-item1')}> */}
                     <li 
                       className={ sc('container-modal-select-item1')} 
                       style={{
@@ -635,7 +638,11 @@ export default () => {
                         }  
                         className='background-img'/>
                       <p>{el.desc}</p>
-                      <div className='mask'></div>
+                      <div className='mask'
+                        style={{
+                          background: industry.indexOf(el.recCode) > -1 ? 'rgba(0,0,0,.2)' : 'rgba(30, 35, 42, 0.6)',
+                        }}
+                      ></div>
                       {
                         industry.indexOf(el.recCode) > -1 && (
                           <img src={selectedIcon} className="selected-icon"/>
