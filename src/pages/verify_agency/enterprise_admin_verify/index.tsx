@@ -13,7 +13,7 @@ import { deleteEnterpriseAdministratorRights } from '@/services/enterprise-admin
 import './index.less';
 
 import EnterpriseAdminVerify from '@/types/enterprise-admin-verify';
-const sc = scopedClasses('Enterprise-Administrator-Audit');
+const sc = scopedClasses('enterprise-administrator-audit');
 
 const stateObj = {
   UN_CHECK: '未审核',
