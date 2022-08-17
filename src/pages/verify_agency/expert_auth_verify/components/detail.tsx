@@ -5,6 +5,7 @@ import { PageContainer } from '@ant-design/pro-layout';
 import SelfTable from '@/components/self_table'
 import Common from '@/types/common.d'
 import type ExpertAuthVerify from '@/types/verify/expert-auth-verity';
+import VerifyInfoDetail from '@/components/verify_info_detail';
 import { httpGetExpertAuthVerifyDetail } from '@/services/verify/expert-auth-verify'
 import scopedClasses, { labelStyle, contentStyle } from '@/utils/scopedClasses';
 import './detail.less';
@@ -137,7 +138,7 @@ export default () => {
 
   return (
     <PageContainer className={sc('container')}>
-      <div className={sc('body')}>
+      <div className={sc('detail-container')}>
         {infoAuthContent?.map((item, index) => {
           return (
             <div key={index}>
@@ -164,6 +165,9 @@ export default () => {
             />
           </div>
         )}
+      </div>
+      <div className={sc('verify-container')}>
+        <VerifyInfoDetail auditId={id} reset={() => { }} />
       </div>
     </PageContainer>
   );
