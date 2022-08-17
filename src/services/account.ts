@@ -137,7 +137,7 @@ export async function httpGetPublishTags() {
 
 // 标签推荐-更新 httpPostSaveTags
 export async function httpPostSaveTags(data: object) {
-  return request(`antelope-pay/recommend/label/save`, {
+  return request(`/antelope-pay/recommend/label/save`, {
     method: 'post',
     data
   })
