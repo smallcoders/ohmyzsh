@@ -35,7 +35,7 @@ export async function handleAuditEnterpriseAdminVerify(data?: { [key: string]: a
   });
 }
 
-/* 企业管理员审核接口 */
+/* 移除权限接口 */
   export async function deleteEnterpriseAdministratorRights(id:string) {
 
     return request<Common.ResultCode & { result: any }>(
