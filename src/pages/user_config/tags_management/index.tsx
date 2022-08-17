@@ -615,7 +615,6 @@ export default () => {
               {tagsObj.industryItems.map((el) => {
                 return (
                   <Col span={6} key={el.recCode}>
-                    {/* <li className={sc('container-modal-select-item1')}> */}
                     <li 
                       className={ sc('container-modal-select-item1')} 
                       style={{
@@ -639,7 +638,11 @@ export default () => {
                         }  
                         className='background-img'/>
                       <p>{el.desc}</p>
-                      <div className='mask'></div>
+                      <div className='mask'
+                        style={{
+                          background: industry.indexOf(el.recCode) > -1 ? 'rgba(0,0,0,.2)' : 'rgba(30, 35, 42, 0.6)',
+                        }}
+                      ></div>
                       {
                         industry.indexOf(el.recCode) > -1 && (
                           <img src={selectedIcon} className="selected-icon"/>
