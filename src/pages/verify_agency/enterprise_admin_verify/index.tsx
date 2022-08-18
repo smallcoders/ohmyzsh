@@ -84,9 +84,8 @@ export default () => {
       title: '状态',
       dataIndex: 'state',
       width: 150,
-      render: (_: string) => {
-        Object.prototype.hasOwnProperty.call(stateObj, _) ? stateObj[_] : '--';
-      },
+      render: (_: string) =>
+        Object.prototype.hasOwnProperty.call(stateObj, _) ? stateObj[_] : '--',
     },
     {
       title: '最新操作时间',
