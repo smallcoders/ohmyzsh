@@ -421,6 +421,7 @@ export default () => {
           pushApplication(form).then((res) => {
             if (res.code === 0) {
               message.success('推送成功')
+              setSelectedPushKeys([])
               pushForm.resetFields()
               setDrawerVisible(false)
             } else {
@@ -679,6 +680,7 @@ export default () => {
   };
 
   const rowSelection = {
+    selectedRowKeys: selectedPushKeys,
     onChange: (selectedRowKeys: React.Key[], selectedRows: ApplicationManager.Content[]) => {
       setSelectedPushKeys(selectedRowKeys)
     }
