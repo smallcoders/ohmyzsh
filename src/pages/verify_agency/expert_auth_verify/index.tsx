@@ -26,7 +26,7 @@ export default () => {
   const [expertTypeOptions, setExpertTypeOptions] = useState<any>([])
   const [areaOptions, setAreaOptions] = useState<any>([])
   const [dataSource, setDataSource] = useState<ExpertAuthVerify.Content[]>([])
-  const { pageInfo, setPageInfo, searchInfo, setSearchInfo } = useModel('useExpertAuthVerifyModel')
+  const { pageInfo, setPageInfo, searchInfo, setSearchInfo, resetModel } = useModel('useExpertAuthVerifyModel')
 
   useEffect(() => {
     form?.setFieldsValue({ ...searchInfo })
@@ -39,6 +39,13 @@ export default () => {
       setAreaOptions(data || []);
     });
     getExpertAuthVerifyPage(searchInfo, pageInfo.pageSize, pageInfo.pageIndex)
+    const unlisten = history.listen((location) => {
+      console.log(location?.pathname)
+      if (!location?.pathname.includes(routeName.EXPERT_AUTH_VERIFY)) {
+        resetModel()
+        unlisten()
+      }
+    });
   }, [])
 
   const columns = [

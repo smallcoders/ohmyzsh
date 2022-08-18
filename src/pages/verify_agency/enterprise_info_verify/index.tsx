@@ -22,11 +22,18 @@ const stateObj = {
 export default () => {
   const [form] = Form.useForm()
   const [dataSource, setDataSource] = useState<EnterpriseInfoVerify.Content[]>([])
-  const { pageInfo, setPageInfo, orgName, setOrgName } = useModel('useEnterpriseInfoVerifyModel')
+  const { pageInfo, setPageInfo, orgName, setOrgName, resetModel } = useModel('useEnterpriseInfoVerifyModel')
 
   useEffect(() => {
     form?.setFieldsValue({ orgName })
     getEnterpriseInfoVerifyPage(orgName, pageInfo.pageSize, pageInfo.pageIndex)
+    const unlisten = history.listen((location) => {
+      console.log(location?.pathname)
+      if (!location?.pathname.includes(routeName.ENTERPRISE_INFO_VERIFY)) {
+        resetModel()
+        unlisten()
+      }
+    });
   }, [])
 
   const columns = [
