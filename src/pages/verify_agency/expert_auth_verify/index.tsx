@@ -40,7 +40,6 @@ export default () => {
     });
     getExpertAuthVerifyPage(searchInfo, pageInfo.pageSize, pageInfo.pageIndex)
     const unlisten = history.listen((location) => {
-      console.log(location?.pathname)
       if (!location?.pathname.includes(routeName.EXPERT_AUTH_VERIFY)) {
         resetModel()
         unlisten()
