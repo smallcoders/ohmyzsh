@@ -40,6 +40,7 @@ export default () => {
       const { code } = await deleteEnterpriseAdministratorRights(id);
       if (code === 0) {
         message.success(`用户组织权限移除成功`);
+        getEnterpriseInfoVerifyPage(orgName, pageInfo.pageSize, pageInfo.pageIndex);
       } else {
         message.error(`用户组织权限移除失败`);
       }
@@ -85,7 +86,7 @@ export default () => {
       width: 150,
       render: (_: string) => {
         return (
-          <div className={`state-${_}`}>
+          <div>
             {Object.prototype.hasOwnProperty.call(stateObj, _) ? stateObj[_] : '--'}
           </div>
         );
@@ -110,10 +111,11 @@ export default () => {
                 type="link"
                 onClick={() => {
                   Modal.confirm({
+
                     title: '移除权限',
                     content: '确定将该用户移除组织功能使用权限吗？',
                     okText: '确认',
-                    onOk: () => handleOk(record.id),
+                    onOk:(id:string)=>{deleteAuthority(id),record.id},
                     cancelText: '取消',
                   });
                 }}
@@ -168,10 +170,6 @@ export default () => {
     setPageInfo({ ...pageInfo, pageIndex: 1 });
     setOrgName(orgName);
     getEnterpriseInfoVerifyPage(orgName, pageInfo.pageSize);
-  };
-
-  const handleOk = (id: string) => {
-    deleteAuthority(id);
   };
 
   return (
