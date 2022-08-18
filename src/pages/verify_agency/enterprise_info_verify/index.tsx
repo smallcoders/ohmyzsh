@@ -22,11 +22,18 @@ const stateObj = {
 export default () => {
   const [form] = Form.useForm()
   const [dataSource, setDataSource] = useState<EnterpriseInfoVerify.Content[]>([])
-  const { pageInfo, setPageInfo, orgName, setOrgName } = useModel('useEnterpriseInfoVerifyModel')
+  const { pageInfo, setPageInfo, orgName, setOrgName, resetModel } = useModel('useEnterpriseInfoVerifyModel')
 
   useEffect(() => {
     form?.setFieldsValue({ orgName })
     getEnterpriseInfoVerifyPage(orgName, pageInfo.pageSize, pageInfo.pageIndex)
+    const unlisten = history.listen((location) => {
+      console.log(location?.pathname)
+      if (!location?.pathname.includes(routeName.ENTERPRISE_INFO_VERIFY)) {
+        resetModel()
+        unlisten()
+      }
+    });
   }, [])
 
   const columns = [
@@ -64,13 +71,7 @@ export default () => {
       title: '状态',
       dataIndex: 'auditState',
       width: 150,
-      render: (state: string) => {
-        return (
-          <div className={`state-${state}`}>
-            {Object.prototype.hasOwnProperty.call(stateObj, state) ? stateObj[state] : '--'}
-          </div>
-        )
-      },
+      render: (state: string) => Object.prototype.hasOwnProperty.call(stateObj, state) ? stateObj[state] : '--',
     },
     {
       title: '最新操作时间',
