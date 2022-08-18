@@ -85,11 +85,7 @@ export default () => {
       dataIndex: 'state',
       width: 150,
       render: (_: string) => {
-        return (
-          <div>
-            {Object.prototype.hasOwnProperty.call(stateObj, _) ? stateObj[_] : '--'}
-          </div>
-        );
+        Object.prototype.hasOwnProperty.call(stateObj, _) ? stateObj[_] : '--';
       },
     },
     {
@@ -111,11 +107,12 @@ export default () => {
                 type="link"
                 onClick={() => {
                   Modal.confirm({
-
                     title: '移除权限',
                     content: '确定将该用户移除组织功能使用权限吗？',
                     okText: '确认',
-                    onOk:()=>{deleteAuthority(record.id)},
+                    onOk: () => {
+                      deleteAuthority(record.id);
+                    },
                     cancelText: '取消',
                   });
                 }}
@@ -182,6 +179,7 @@ export default () => {
           <span>列表(共{pageInfo.totalCount || 0}个)</span>
         </div>
         <SelfTable
+          rowKey="id"
           bordered
           scroll={{ x: 1200 }}
           columns={columns}
