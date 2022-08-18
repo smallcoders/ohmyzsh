@@ -30,8 +30,10 @@ export default () => {
     const unlisten = history.listen((location) => {
       console.log(location?.pathname)
       if (!location?.pathname.includes(routeName.ENTERPRISE_INFO_VERIFY)) {
-        resetModel()
-        unlisten()
+        // resetModel()
+        // unlisten()
+        // console.log(unlisten,history.listen,333);
+        
       }
     });
   }, [])
