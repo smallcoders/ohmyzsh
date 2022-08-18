@@ -38,10 +38,10 @@ export default () => {
     getWholeAreaTree({}).then((data) => {
       setAreaOptions(data || []);
     });
-    getExpertAuthVerifyPage(searchInfo, pageInfo.pageSize, pageInfo.pageIndex)
+    getExpertAuthVerifyPage(searchInfo, pageInfo?.pageSize, pageInfo?.pageIndex)
     const unlisten = history.listen((location) => {
       if (!location?.pathname.includes(routeName.EXPERT_AUTH_VERIFY)) {
-        resetModel()
+        resetModel?.()
         unlisten()
       }
     });
@@ -53,7 +53,7 @@ export default () => {
       dataIndex: 'sort',
       width: 80,
       render: (_: any, _record: ExpertAuthVerify.Content, index: number) =>
-        pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
+        pageInfo?.pageSize * (pageInfo?.pageIndex - 1) + index + 1,
     },
     {
       title: '专家名称',
@@ -159,7 +159,7 @@ export default () => {
     const { expertName, expertType, cityCode } = info || {}
     setPageInfo({ ...pageInfo, pageIndex: 1 })
     setSearchInfo({ expertName, expertType, cityCode })
-    getExpertAuthVerifyPage(info, pageInfo.pageSize)
+    getExpertAuthVerifyPage(info, pageInfo?.pageSize)
   }
 
   return (
@@ -169,7 +169,7 @@ export default () => {
       </div>
       <div className={sc('table-container')}>
         <div className="title">
-          <span>列表(共{pageInfo.totalCount || 0}个)</span>
+          <span>列表(共{pageInfo?.totalCount || 0}个)</span>
         </div>
         <SelfTable
           bordered
@@ -178,11 +178,11 @@ export default () => {
           columns={columns}
           dataSource={dataSource}
           pagination={{
-            total: pageInfo.totalCount,
+            total: pageInfo?.totalCount,
             current: pageInfo?.pageIndex,
             pageSize: pageInfo?.pageSize,
             showTotal: (total: number) =>
-              <div className="pagination-text">{`共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`}</div>,
+              <div className="pagination-text">{`共${total}条记录 第${pageInfo?.pageIndex}/${pageInfo?.pageTotal || 1}页`}</div>,
           }}
           onChange={(pagination: any) => {
             getExpertAuthVerifyPage(searchInfo, pagination.pageSize, pagination.current)

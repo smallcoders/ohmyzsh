@@ -5,7 +5,7 @@ import { request } from 'umi';
 
 /** 获取审核列表 */
 export async function httpGetAuditList(options?: { [key: string]: any }) {
-  return request<Common.ResultCode & { result: any[] }>('/antelope-manage/audit/query/list', {
+  return request<Common.ResultCode & { result: any[] }>('/antelope-manage/audit/query', {
     method: 'GET',
     params: { ...(options || {}) },
   });

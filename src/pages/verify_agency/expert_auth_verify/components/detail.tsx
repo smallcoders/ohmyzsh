@@ -167,7 +167,7 @@ export default () => {
         )}
       </div>
       <div className={sc('verify-container')}>
-        <VerifyInfoDetail auditId={id} reset={() => { }} />
+        <VerifyInfoDetail auditId={id} />
       </div>
     </PageContainer>
   );
