@@ -115,7 +115,7 @@ export default () => {
                     title: '移除权限',
                     content: '确定将该用户移除组织功能使用权限吗？',
                     okText: '确认',
-                    onOk:(id:string)=>{deleteAuthority(id),record.id},
+                    onOk:(id:string)=>{deleteAuthority(record.id)},
                     cancelText: '取消',
                   });
                 }}
