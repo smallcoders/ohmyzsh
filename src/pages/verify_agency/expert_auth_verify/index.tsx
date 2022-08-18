@@ -83,13 +83,7 @@ export default () => {
       title: '状态',
       dataIndex: 'auditState',
       width: 150,
-      render: (state: string) => {
-        return (
-          <div className={`state-${state}`}>
-            {Object.prototype.hasOwnProperty.call(stateObj, state) ? stateObj[state] : '--'}
-          </div>
-        )
-      },
+      render: (state: string) => Object.prototype.hasOwnProperty.call(stateObj, state) ? stateObj[state] : '--',
     },
     {
       title: '操作',
