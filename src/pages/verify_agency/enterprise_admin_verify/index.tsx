@@ -34,7 +34,6 @@ export default () => {
     form?.setFieldsValue({ orgName })
     getEnterpriseInfoVerifyPage(orgName, pageInfo.pageSize, pageInfo.pageIndex)
     const unlisten = history.listen((location) => {
-      // console.log(location?.pathname)
       if (!location?.pathname.includes(routeName.ENTERPRISE_ADMIN_VERIFY)) {
         resetModel()
         unlisten()
