@@ -26,14 +26,21 @@ const stateObj = {
 export default () => {
   const [form] = Form.useForm();
   const [dataSource, setDataSource] = useState<EnterpriseAdminVerify.Content[]>([]);
-  const { pageInfo, setPageInfo, orgName, setOrgName } = useModel(
+  const { pageInfo, setPageInfo, orgName, setOrgName, resetModel} = useModel(
     'useEnterpriseAdministratorAudit',
   );
 
   useEffect(() => {
-    form?.setFieldsValue({ orgName });
-    getEnterpriseInfoVerifyPage(orgName, pageInfo.pageSize, pageInfo.pageIndex);
-  }, []);
+    form?.setFieldsValue({ orgName })
+    getEnterpriseInfoVerifyPage(orgName, pageInfo.pageSize, pageInfo.pageIndex)
+    const unlisten = history.listen((location) => {
+      // console.log(location?.pathname)
+      if (!location?.pathname.includes(routeName.ENTERPRISE_ADMIN_VERIFY)) {
+        resetModel()
+        unlisten()
+      }
+    });
+  }, [])
 
   const deleteAuthority = async (id: string) => {
     try {
