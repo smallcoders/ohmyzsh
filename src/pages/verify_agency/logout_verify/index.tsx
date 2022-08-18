@@ -224,6 +224,7 @@ export default () => {
       </div>
       <div className={sc('container-table-body')}>
         <SelfTable
+        rowKey="id"
           bordered
           scroll={{ x: 1480 }}
           columns={columns}
