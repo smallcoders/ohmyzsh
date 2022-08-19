@@ -34,3 +34,16 @@ export async function handleAuditEnterpriseAdminVerify(data?: { [key: string]: a
     data,
   });
 }
+
+/* 移除权限接口 */
+  export async function deleteEnterpriseAdministratorRights(id:string) {
+
+    return request<Common.ResultCode & { result: any }>(
+      `/antelope-manage/orgManagerRequest/remove?id=${id}`,
+      {
+        method: 'delete',
+      }
+    );
+  }
+
+

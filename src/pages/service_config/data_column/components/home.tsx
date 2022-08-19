@@ -288,7 +288,7 @@ const TableList: React.FC = () => {
       <Button
         style={{ margin: '20px 0' }}
         type="primary"
-        key="primary"
+        key="save"
         loading={publishLoading}
         onClick={publish}
       >

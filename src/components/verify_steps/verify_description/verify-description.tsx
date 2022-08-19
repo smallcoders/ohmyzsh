@@ -40,7 +40,7 @@ export default ({ form }: Props) => {
         </Radio.Group>
       </Form.Item>
 
-      <Form.Item 
+      <Form.Item
         name={'reason'} 
         // rules={[
         //   {
