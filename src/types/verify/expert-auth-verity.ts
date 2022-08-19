@@ -11,6 +11,7 @@ namespace ExpertAuthVerify {
     expertName?: string; // 专家名称
     phone?: string; // 联系电话
     typeNames?: string[]; // 专家类型
+    provinceName?: string;
     cityName?: string;
     orgName?: string;
     auditState?: string; // 状态
