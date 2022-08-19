@@ -78,7 +78,7 @@ export default () => {
       title: '所属区域',
       dataIndex: 'cityName',
       width: 200,
-      render: (cityName: string, record: ExpertAuthVerify.Content) => record?.provinceName + cityName,
+      render: (cityName: string, record: ExpertAuthVerify.Content) => (record?.provinceName || '') + (cityName || ''),
     },
     {
       title: '所属组织',
