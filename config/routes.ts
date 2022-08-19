@@ -40,12 +40,12 @@
   OFFICE_REQUIREMENT_VERIFY_INDEX: '/verify-agency/office-requirement-verify/index', // 企业需求审核
   OFFICE_REQUIREMENT_VERIFY_DETAIL: '/verify-agency/office-requirement-verify/detail', // 企业需求审核详情
 
-  ENTERPRISE_ADMIN_VERIFY: '/verify-agency/enterprise-admin-verify', // 企业管理员审核
-  ENTERPRISE_ADMIN_VERIFY_INDEX: '/verify-agency/enterprise-admin-verify/index', // 企业管理员审核
-  ENTERPRISE_ADMIN_VERIFY_DETAIL: '/verify-agency/enterprise-admin-verify/detail', // 企业管理员审核详情
-  ENTERPRISE_INFO_VERIFY: '/verify-agency/enterprise-info-verify', // 企业信息审核
-  ENTERPRISE_INFO_VERIFY_INDEX: '/verify-agency/enterprise-info-verify/index', // 企业信息审核
-  ENTERPRISE_INFO_VERIFY_DETAIL: '/verify-agency/enterprise-info-verify/detail', // 企业信息审核详情
+  ENTERPRISE_ADMIN_VERIFY: '/verify-agency/enterprise-admin-verify', // 组织管理员审核
+  ENTERPRISE_ADMIN_VERIFY_INDEX: '/verify-agency/enterprise-admin-verify/index', // 组织管理员审核
+  ENTERPRISE_ADMIN_VERIFY_DETAIL: '/verify-agency/enterprise-admin-verify/detail', // 组织管理员审核详情
+  ENTERPRISE_INFO_VERIFY: '/verify-agency/enterprise-info-verify', // 组织信息审核
+  ENTERPRISE_INFO_VERIFY_INDEX: '/verify-agency/enterprise-info-verify/index', // 组织信息审核
+  ENTERPRISE_INFO_VERIFY_DETAIL: '/verify-agency/enterprise-info-verify/detail', // 组织信息审核详情
   EXPERT_AUTH_VERIFY: '/verify-agency/expert-auth-verify', // 专家认证审核
   EXPERT_AUTH_VERIFY_INDEX: '/verify-agency/expert-auth-verify/index', // 专家认证审核
   EXPERT_AUTH_VERIFY_DETAIL: '/verify-agency/expert-auth-verify/detail', // 专家认证审核详情
@@ -718,7 +718,7 @@ export default [
       },
       {
         path: routeName.ENTERPRISE_ADMIN_VERIFY,
-        name: '企业管理员审核',
+        name: '组织管理员审核',
         hideChildrenInMenu: true,
         routes: [
           {
@@ -727,20 +727,20 @@ export default [
           },
           {
             path: routeName.ENTERPRISE_ADMIN_VERIFY_INDEX,
-            name: '企业管理员审核',
+            name: '组织管理员审核',
             hideInBreadcrumb: true,
             component: './verify_agency/enterprise_admin_verify',
           },
           {
             path: routeName.ENTERPRISE_ADMIN_VERIFY_DETAIL,
-            name: '企业管理员审核详情',
+            name: '组织管理员审核详情',
             component: './verify_agency/enterprise_admin_verify/components/detail',
           },
         ],
       },
       {
         path: routeName.ENTERPRISE_INFO_VERIFY,
-        name: '企业信息审核',
+        name: '组织信息审核',
         hideChildrenInMenu: true,
         routes: [
           {
@@ -749,13 +749,13 @@ export default [
           },
           {
             path: routeName.ENTERPRISE_INFO_VERIFY_INDEX,
-            name: '企业信息审核',
+            name: '组织信息审核',
             hideInBreadcrumb: true,
             component: './verify_agency/enterprise_info_verify',
           },
           {
             path: routeName.ENTERPRISE_INFO_VERIFY_DETAIL,
-            name: '企业信息审核详情',
+            name: '组织信息审核详情',
             component: './verify_agency/enterprise_info_verify/components/detail',
           },
         ],
