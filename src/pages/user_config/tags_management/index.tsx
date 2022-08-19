@@ -510,7 +510,7 @@ export default () => {
   // 选择产业标签
   const selectIndustryItem = (e) => {
     console.log(e, e.target.parentElement.dataset);
-    if(e.target.parentElement.dataset) {
+    if(e.target.parentElement.dataset && e.target.parentElement.dataset.id) {
       let arr = [...industry]
       console.log(arr, 'arr');
       let {id} = e.target.parentElement.dataset
@@ -536,7 +536,7 @@ export default () => {
   // 选择行业标签
   const selectprofessionItem = (e) => {
     console.log(e, e.target.dataset);
-    if(e.target.dataset) {
+    if(e.target.dataset && e.target.dataset.id) {
       let arr = [...sectorItems]
       console.log(arr, 'arr');
       let {id} = e.target.dataset
@@ -562,7 +562,7 @@ export default () => {
   // 选择技术领域标签 technology
   const selectTechnologyItem = (e) => {
     console.log(e, e.target.dataset);
-    if(e.target.dataset) {
+    if(e.target.dataset && e.target.dataset.id) {
       let arr = [...technology]
       console.log(arr, 'arr');
       let {id} = e.target.dataset
