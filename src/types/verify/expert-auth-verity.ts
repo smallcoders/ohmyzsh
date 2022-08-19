@@ -22,7 +22,8 @@ namespace ExpertAuthVerify {
     personalPhotoId: string;
     personalPhoto: string; // 个人照片
     expertName: string; // 专家姓名
-    cityName: string; // 区域名称
+    provinceName: string; // 省 区域名称
+    cityName: string; // 市 区域名称
     typeList: {
       id?: string;
       name?: string;

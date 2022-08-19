@@ -20,6 +20,7 @@ export default () => {
   const {
     personalPhoto,
     expertName,
+    provinceName,
     cityName,
     typeList,
     industryNameList,
@@ -62,7 +63,7 @@ export default () => {
       ),
     },
     { label: '专家姓名', value: expertName },
-    { label: '所属区域', value: cityName },
+    { label: '所属区域', value: (provinceName || '') + (cityName || '') },
     { label: '专家类型', value: typeList?.map(item => item?.name)?.join('、') || '' },
     { label: '产业方向', value: industryNameList?.join('、') || '' },
   ]

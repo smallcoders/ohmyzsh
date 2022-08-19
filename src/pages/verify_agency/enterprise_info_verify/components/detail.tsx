@@ -9,6 +9,8 @@ import scopedClasses, { labelStyle, contentStyle } from '@/utils/scopedClasses';
 import './detail.less';
 
 const sc = scopedClasses('enterprise-info-verify-detail');
+const scaleText = { 1: '0~50人', 2: '50~100人', 3: '100~200人', 4: '200~500人', 5: '500人以上' }
+const businessTypeText = { 1: '国营', 2: '民营', 3: '三资', 4: '其他（事业单位、科研院所等）' }
 
 export default () => {
   const id = history.location.query?.id as string;
@@ -20,7 +22,7 @@ export default () => {
     orgName,
     creditCode,
     formedDate,
-    scale,
+    scale = 1,
     phone,
     provinceName, // 所属区域-省名称
     cityName, // 所属区域-市名称
@@ -30,7 +32,7 @@ export default () => {
     aboutUs,
     ability,
     cover,
-    businessType,
+    businessType = 1,
     legalName,
     totalAssets,
     revenueLastYear,
@@ -69,9 +71,9 @@ export default () => {
     { label: '组织名称', value: orgName },
     { label: '统一社会信用代码', value: creditCode },
     { label: '成立时间', value: formedDate },
-    { label: '企业规模', value: scale },
+    { label: '企业规模', value: scaleText[scale] },
     { label: '联系电话', value: phone },
-    { label: '注册区域', value: provinceName + cityName + countyName },
+    { label: '注册区域', value: (provinceName || '') + (cityName || '') + (countyName || '') },
     { label: '详细地址', value: address },
     { label: '注册资本', value: registeredCapital },
     { label: '组织简介', value: aboutUs },
@@ -87,7 +89,7 @@ export default () => {
         ''
       ),
     },
-    { label: '单位性质', value: businessType },
+    { label: '单位性质', value: businessTypeText[businessType] },
     { label: '法人姓名', value: legalName },
     { label: '总资产', value: totalAssets },
     { label: '上年营收', value: revenueLastYear },
@@ -122,7 +124,7 @@ export default () => {
         })}
       </div>
       <div className={sc('verify-container')}>
-        <VerifyInfoDetail auditId={id}/>
+        <VerifyInfoDetail auditId={id} />
       </div>
     </PageContainer>
   );
