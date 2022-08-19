@@ -187,7 +187,7 @@ export default () => {
         ),
 
         extra: (
-          <Button type="primary" key="primary" loading={addOrUpdateLoading} onClick={addOrUpdate}>
+          <Button type="primary" key="sure" loading={addOrUpdateLoading} onClick={addOrUpdate}>
             确定{isEditing ? '修改' : '新增'}
           </Button>
         ),

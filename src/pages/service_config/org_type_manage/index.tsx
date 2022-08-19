@@ -290,7 +290,7 @@ export default () => {
           <span>机构类型列表(共{dataSource?.length || 0}个)</span>
           <Button
             type="primary"
-            key="primary"
+            key="addStyle"
             onClick={() => {
               setModalVisible(true);
             }}

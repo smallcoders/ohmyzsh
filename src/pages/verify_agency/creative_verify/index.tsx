@@ -258,7 +258,7 @@ export default () => {
               <Button
                 style={{ marginRight: 20 }}
                 type="primary"
-                key="primary"
+                key="search"
                 onClick={() => {
                   const search = searchForm.getFieldsValue();
                   if (search.time) {
@@ -272,7 +272,7 @@ export default () => {
               </Button>
               <Button
                 type="primary"
-                key="primary"
+                key="reset"
                 onClick={() => {
                   searchForm.resetFields();
                   setSearChContent({});
