@@ -17,7 +17,7 @@ const initialState = {
   searchInfo: {
     expertName: '',
     expertType: '',
-    cityCode: '',
+    cityCode: [],
   },
 };
 

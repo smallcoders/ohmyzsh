@@ -38,7 +38,7 @@ export default () => {
     getWholeAreaTree({}).then((data) => {
       setAreaOptions(data || []);
     });
-    getExpertAuthVerifyPage(searchInfo, pageInfo?.pageSize, pageInfo?.pageIndex)
+    getExpertAuthVerifyPage({...searchInfo, cityCode: searchInfo?.cityCode[1]}, pageInfo?.pageSize, pageInfo?.pageIndex)
     const unlisten = history.listen((location) => {
       if (!location?.pathname.includes(routeName.EXPERT_AUTH_VERIFY)) {
         resetModel?.()
@@ -159,7 +159,7 @@ export default () => {
     const { expertName, expertType, cityCode } = info || {}
     setPageInfo({ ...pageInfo, pageIndex: 1 })
     setSearchInfo({ expertName, expertType, cityCode })
-    getExpertAuthVerifyPage(info, pageInfo?.pageSize)
+    getExpertAuthVerifyPage({expertName, expertType, cityCode: cityCode[1]}, pageInfo?.pageSize)
   }
 
   return (
@@ -185,7 +185,7 @@ export default () => {
               <div className="pagination-text">{`共${total}条记录 第${pageInfo?.pageIndex}/${pageInfo?.pageTotal || 1}页`}</div>,
           }}
           onChange={(pagination: any) => {
-            getExpertAuthVerifyPage(searchInfo, pagination.pageSize, pagination.current)
+            getExpertAuthVerifyPage({...searchInfo, cityCode: searchInfo?.cityCode[1]}, pagination.pageSize, pagination.current)
           }}
         />
       </div>
