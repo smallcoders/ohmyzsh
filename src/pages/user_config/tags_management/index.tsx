@@ -113,7 +113,7 @@ export default () => {
     }
   }
 
-  const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
+  const getPage = async (pageIndex = pageInfo.pageIndex, pageSize = pageInfo.pageSize) => {
     try {
       const res = await getConsultPage({
         pageIndex,
@@ -351,7 +351,6 @@ export default () => {
           },
         });
       }else {
-        // saveTags(null, 1)
         setBanIndustry(false)
         setCurModal(step)
         setModalVisible(false)
@@ -441,14 +440,15 @@ export default () => {
       }
     }
     console.log(params);
-    params.userId = recordData.userId
+    params.userIdMng = recordData.userId
     try {
       const res = await httpPostSaveTags(params)
       console.log(res)
       if(res.code === 0) {
         setBanIndustry(false)
         setCurModal(to)
-        if(!from) {
+        getPage()
+        if(!from || from == 3) {
           setModalVisible(false)
         }
       }else (
@@ -627,7 +627,7 @@ export default () => {
                         src={
                           el.desc == '新能源汽车和智能网联汽车' ? icon2 : 
                           el.desc == '数字创意' ? icon3 : 
-                          el.desc == '高端装备制造' ? icon4 : 
+                          el.desc == '高端制造设备' ? icon4 : 
                           el.desc == '新能源和节能环保' ? icon5 : 
                           el.desc == '绿色食品' ? icon6 : 
                           el.desc == '生命健康' ? icon7 : 
