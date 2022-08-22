@@ -125,7 +125,7 @@ export default (props: StepFormProps) => {
         dataSource={specs}
         columns={columns}
         toolBarRender={() => [
-          <Button type="primary" key="primary" disabled={specs.length >= 10} onClick={showAdd}>
+          <Button type="primary" key="addRule" disabled={specs.length >= 10} onClick={showAdd}>
             新增规格
           </Button>,
         ]}

@@ -296,22 +296,22 @@ export default () => {
         extra: (
           <div className="operate-btn">
             {!isDetail && (
-              <Button key="primary" loading={addOrUpdateLoading} onClick={() => {history.push(routeName.ANTELOPE_LIVE_MANAGEMENT)}}>
+              <Button key="cancel" loading={addOrUpdateLoading} onClick={() => {history.push(routeName.ANTELOPE_LIVE_MANAGEMENT)}}>
                 取消
               </Button>
             )}
             {!isDetail && !isEditing && (
-              <Button key="primary2" loading={addOrUpdateLoading} onClick={() => {addOrUpdate(true)}}>
+              <Button key="save" loading={addOrUpdateLoading} onClick={() => {addOrUpdate(true)}}>
                 保存并上架
               </Button>
             )}
             {!isDetail && (
-              <Button type="primary" key="primary3" loading={addOrUpdateLoading} onClick={() => {addOrUpdate(false)}}>
+              <Button type="primary" key="save" loading={addOrUpdateLoading} onClick={() => {addOrUpdate(false)}}>
                 保存
               </Button>
             )}
             {isDetail && (
-              <Button key="primary4" loading={addOrUpdateLoading} onClick={() => {
+              <Button key="goback" loading={addOrUpdateLoading} onClick={() => {
                 history.push(routeName.ANTELOPE_LIVE_MANAGEMENT)
               }}>
                 返回

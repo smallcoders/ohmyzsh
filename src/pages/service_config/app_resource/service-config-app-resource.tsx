@@ -307,7 +307,7 @@ export default () => {
               <Button
                 style={{ marginRight: 20 }}
                 type="primary"
-                key="primary"
+                key="search"
                 onClick={() => {
                   const search = searchForm.getFieldsValue();
                   setSearChContent(search);
@@ -317,7 +317,7 @@ export default () => {
               </Button>
               <Button
                 type="primary"
-                key="primary"
+                key="reset"
                 onClick={() => {
                   searchForm.resetFields();
                   setSearChContent({});
@@ -340,7 +340,7 @@ export default () => {
           <span>应用列表(共{pageInfo.totalCount}个)</span>
           <Button
             type="primary"
-            key="primary"
+            key="newAdd"
             onClick={() => {
               history.push(routeName.ADD_APP_RESOURCE);
             }}

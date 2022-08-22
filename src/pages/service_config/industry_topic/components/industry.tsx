@@ -496,7 +496,7 @@ export default (props: { currentTab: any; }) => {
         <div className="title">
           <Button
             type="primary"
-            key="primary"
+            key="edit"
             onClick={() => {
               editing ? addOrUpdate() : onEdit(true)
             }}

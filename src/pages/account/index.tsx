@@ -259,7 +259,7 @@ const AccountTable: React.FC = () => {
           optionRender: (searchConfig, formProps, dom) => [dom[1], dom[0]],
         }}
         toolBarRender={() => [
-          <Button type="primary" key="primary" onClick={() => setCreateModalVisible(true)}>
+          <Button type="primary" key="createAccount" onClick={() => setCreateModalVisible(true)}>
             <PlusOutlined /> 新建账号
           </Button>,
         ]}

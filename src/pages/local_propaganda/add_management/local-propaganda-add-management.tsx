@@ -1105,10 +1105,10 @@ const TableList: React.FC = () => {
         ),
         extra: (
           <>
-            <Button type="primary" key="primary1" onClick={()=> { saveEdit(editDetail.id,'SHOPPED')}}>
+            <Button type="primary" key="saveIssue" onClick={()=> { saveEdit(editDetail.id,'SHOPPED')}}>
               保存并发布
             </Button>
-            <Button type="primary" key="primary" onClick={()=>{saveEdit(editDetail.id)}}>
+            <Button type="primary" key="save" onClick={()=>{saveEdit(editDetail.id)}}>
               保存
             </Button>
           </>
