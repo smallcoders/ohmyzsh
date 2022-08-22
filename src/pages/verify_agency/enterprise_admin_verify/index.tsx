@@ -25,8 +25,9 @@ const stateObj = {
 
 export default () => {
   const [form] = Form.useForm();
+  const [loading, setLoading] = useState<boolean>(false)
   const [dataSource, setDataSource] = useState<EnterpriseAdminVerify.Content[]>([]);
-  const { pageInfo, setPageInfo, orgName, setOrgName, resetModel} = useModel(
+  const { pageInfo, setPageInfo, orgName, setOrgName, resetModel } = useModel(
     'useEnterpriseAdministratorAudit',
   );
 
@@ -141,6 +142,7 @@ export default () => {
 
   const getEnterpriseInfoVerifyPage = async (orgName = '', pageSize = 10, pageIndex = 1) => {
     try {
+      setLoading(true)
       const { result, totalCount, pageTotal, code } = await getEnterpriseAdminVerifyPage({
         orgName,
         pageIndex,
@@ -154,6 +156,8 @@ export default () => {
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false)
     }
   };
 
@@ -188,15 +192,15 @@ export default () => {
           bordered
           scroll={{ x: 1200 }}
           columns={columns}
+          loading={loading}
           dataSource={dataSource}
           pagination={{
             total: pageInfo?.totalCount,
             current: pageInfo?.pageIndex,
             pageSize: pageInfo?.pageSize,
             showTotal: (total: number) => (
-              <div className="pagination-text">{`共${total}条记录 第${pageInfo?.pageIndex}/${
-                pageInfo?.pageTotal || 1
-              }页`}</div>
+              <div className="pagination-text">{`共${total}条记录 第${pageInfo?.pageIndex}/${pageInfo?.pageTotal || 1
+                }页`}</div>
             ),
           }}
           onChange={(pagination: any) => {

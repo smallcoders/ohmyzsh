@@ -25,6 +25,7 @@ export default () => {
   const [form] = Form.useForm()
   const [expertTypeOptions, setExpertTypeOptions] = useState<any>([])
   const [areaOptions, setAreaOptions] = useState<any>([])
+  const [loading, setLoading] = useState<boolean>(false)
   const [dataSource, setDataSource] = useState<ExpertAuthVerify.Content[]>([])
   const { pageInfo, setPageInfo, searchInfo, setSearchInfo, resetModel } = useModel('useExpertAuthVerifyModel')
 
@@ -38,7 +39,7 @@ export default () => {
     getWholeAreaTree({}).then((data) => {
       setAreaOptions(data || []);
     });
-    getExpertAuthVerifyPage({ ...searchInfo, cityCode: searchInfo?.cityCode[1] }, pageInfo?.pageSize, pageInfo?.pageIndex)
+    getExpertAuthVerifyPage({ ...searchInfo, cityCode: searchInfo?.cityCode?.[1] || '' }, pageInfo?.pageSize, pageInfo?.pageIndex)
     const unlisten = history.listen((location) => {
       if (!location?.pathname.includes(routeName.EXPERT_AUTH_VERIFY)) {
         resetModel?.()
@@ -114,6 +115,7 @@ export default () => {
 
   const getExpertAuthVerifyPage = async (searchInfo: ExpertAuthVerifySearchInfo, pageSize = 10, pageIndex = 1) => {
     try {
+      setLoading(true)
       const { result, totalCount, pageTotal, code } = await httpPostExpertAuthVerifyPage({
         ...searchInfo,
         pageIndex,
@@ -127,6 +129,8 @@ export default () => {
       }
     } catch (error) {
       console.log(error)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -160,7 +164,7 @@ export default () => {
     const { expertName, expertType, cityCode } = info || {}
     setPageInfo({ ...pageInfo, pageIndex: 1 })
     setSearchInfo({ expertName, expertType, cityCode })
-    getExpertAuthVerifyPage({ expertName, expertType, cityCode: cityCode[1] }, pageInfo?.pageSize)
+    getExpertAuthVerifyPage({ expertName, expertType, cityCode: cityCode?.[1] || '' }, pageInfo?.pageSize)
   }
 
   return (
@@ -177,6 +181,7 @@ export default () => {
           rowKey="auditId"
           scroll={{ x: 1200 }}
           columns={columns}
+          loading={loading}
           dataSource={dataSource}
           pagination={{
             total: pageInfo?.totalCount,
