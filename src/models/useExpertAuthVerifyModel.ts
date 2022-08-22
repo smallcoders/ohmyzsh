@@ -3,8 +3,8 @@ import Common from '@/types/common.d';
 
 export interface ExpertAuthVerifySearchInfo {
   expertName: string;
-  expertType: string;
-  cityCode: string;
+  expertType: string | null;
+  cityCode: string[] | string;
 }
 
 const initialState = {
@@ -16,7 +16,7 @@ const initialState = {
   },
   searchInfo: {
     expertName: '',
-    expertType: '',
+    expertType: null,
     cityCode: [],
   },
 };

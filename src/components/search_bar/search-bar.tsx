@@ -7,7 +7,6 @@ import './search-bar.less'
 const { RangePicker } = DatePicker
 
 const sc = scopedClasses('work-table-search-bar')
-const { Option } = Select
 const defActionList: Common.ActionItem[] = [
   {
     key: 'search',

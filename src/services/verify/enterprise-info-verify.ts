@@ -1,11 +1,11 @@
 /* 审核待办-企业信息审核 */
 import { request } from 'umi';
 import Common from '@/types/common.d';
-import EnterpriseAdminVerify from '@/types/enterprise-admin-verify.d';
+import EnterpriseInfoVerify from '@/types/verify/enterprise-info-verify';
 
 // 分页查询列表
 export async function httpPostEnterpriseInfoVerifyPage(data?: { [key: string]: any }) {
-  return request<EnterpriseAdminVerify.RecordList>('/antelope-manage/org/audit/page', {
+  return request<EnterpriseInfoVerify.RecordList>('/antelope-manage/org/audit/page', {
     method: 'post',
     data,
   });
