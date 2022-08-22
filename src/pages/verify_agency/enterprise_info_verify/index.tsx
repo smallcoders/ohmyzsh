@@ -21,6 +21,7 @@ const stateObj = {
 
 export default () => {
   const [form] = Form.useForm()
+  const [loading, setLoading] = useState<boolean>(false)
   const [dataSource, setDataSource] = useState<EnterpriseInfoVerify.Content[]>([])
   const { pageInfo, setPageInfo, orgName, setOrgName, resetModel } = useModel('useEnterpriseInfoVerifyModel')
 
@@ -100,6 +101,7 @@ export default () => {
 
   const getEnterpriseInfoVerifyPage = async (orgName = '', pageSize = 10, pageIndex = 1) => {
     try {
+      setLoading(true)
       const { result, totalCount, pageTotal, code } = await httpPostEnterpriseInfoVerifyPage({
         orgName,
         pageIndex,
@@ -113,6 +115,8 @@ export default () => {
       }
     } catch (error) {
       console.log(error)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -147,6 +151,7 @@ export default () => {
           rowKey="auditId"
           scroll={{ x: 1200 }}
           columns={columns}
+          loading={loading}
           dataSource={dataSource}
           pagination={{
             total: pageInfo?.totalCount,
