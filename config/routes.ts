@@ -49,6 +49,10 @@
   EXPERT_AUTH_VERIFY: '/verify-agency/expert-auth-verify', // 专家认证审核
   EXPERT_AUTH_VERIFY_INDEX: '/verify-agency/expert-auth-verify/index', // 专家认证审核
   EXPERT_AUTH_VERIFY_DETAIL: '/verify-agency/expert-auth-verify/detail', // 专家认证审核详情
+  LEAVE_WORD_VERIFY: '/verify-agency/leave_word_verify', // 留言审核
+  LEAVE_WORD_VERIFY_INDEX: '/verify-agency/leave_word_verify/index', // 留言审核
+  LEAVE_WORD_VERIFY_DETAIL: '/verify-agency/leave_word_verify/detail', // 留言审核
+
 
   PURCHASE_MANAGE: '/purchase-manage/order-manage', // 订单管理
   PURCHASE_MANAGE_INDEX: '/purchase-manage/order-manage/index', // 订单管理列表
@@ -779,6 +783,28 @@ export default [
             path: routeName.EXPERT_AUTH_VERIFY_DETAIL,
             name: '专家认证审核详情',
             component: './verify_agency/expert_auth_verify/components/detail',
+          },
+        ],
+      },
+      {
+        path: routeName.LEAVE_WORD_VERIFY,
+        name: '留言审核',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.LEAVE_WORD_VERIFY,
+            redirect: routeName.LEAVE_WORD_VERIFY_INDEX,
+          },
+          {
+            path: routeName.LEAVE_WORD_VERIFY_INDEX,
+            name: '留言审核',
+            hideInBreadcrumb: true,
+            component: './verify_agency/leave_word_verify',
+          },
+          {
+            path: routeName.LEAVE_WORD_VERIFY_DETAIL,
+            name: '留言审核详情',
+            component: './verify_agency/leave_word_verify/components/detail',
           },
         ],
       },
