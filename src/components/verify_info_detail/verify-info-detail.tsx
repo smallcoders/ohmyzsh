@@ -73,7 +73,7 @@ export default (props: {
   }, [auditId]);
 
   const refresh = () => {
-    reset();
+    reset?.();
     hanldeGetAuditDetail();
   };
 
