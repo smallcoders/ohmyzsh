@@ -122,7 +122,7 @@ export async function getConsultPage(data?: { [key: string]: any }) {
  * 标签管理-用户备注修改
  */
  export async function updateRemark(data: any ) {
-  return request<Common.ResultCode>(`/antelope-pay/mng/userLabelMng/label/updateRemark?id=${data.id}&userId=${data.userId}&remarkText=${data.remarkText}`, {
+  return request<Common.ResultCode>(`/antelope-pay/mng/userLabelMng/label/updateRemark?userId=${data.userId}&remarkText=${data.remarkText}`, {
     method: 'put',
     data,
   });

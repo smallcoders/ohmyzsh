@@ -139,7 +139,6 @@ export default () => {
     try {
       const markResult = await updateRemark({
         userId: record.userId.toString(),
-        id: record.id.toString(), 
         remarkText: remark
       });
       if (markResult.code === 0) {
