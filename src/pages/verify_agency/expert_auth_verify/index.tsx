@@ -191,7 +191,7 @@ export default () => {
               <div className="pagination-text">{`共${total}条记录 第${pageInfo?.pageIndex}/${pageInfo?.pageTotal || 1}页`}</div>,
           }}
           onChange={(pagination: any) => {
-            getExpertAuthVerifyPage({ ...searchInfo, cityCode: searchInfo?.cityCode[1] }, pagination.pageSize, pagination.current)
+            getExpertAuthVerifyPage({ ...searchInfo, cityCode: searchInfo?.cityCode?.[1] || '' }, pagination.pageSize, pagination.current)
           }}
         />
       </div>
