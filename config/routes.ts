@@ -356,7 +356,29 @@ export default [
         name: '产业专题',
         component: './service_config/industry_topic',
       },
-      
+      {
+        path: '/service-config/diagnose',
+        name: '企业诊断管理',
+        // component: './service_config/diagnose_manage',
+        hideChildrenInMenu: true,
+        routes: [
+          // {
+          //   path: '/service-config/diagnose',
+          //   redirect: './service_config/diagnose_manage',
+          // },
+          {
+            path: '/service-config/diagnose',
+            // hideInBreadcrumb: true,
+            name: '企业诊断管理',
+            component: './service_config/diagnose_manage',
+          },
+          {
+            path: '/service-config/diagnose/add',
+            name: '新建诊断',
+            component: './service_config/diagnose_manage/add_diagnose',
+          },
+        ],
+      },
     ],
   },
   {

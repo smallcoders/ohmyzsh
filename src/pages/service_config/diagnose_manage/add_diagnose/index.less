@@ -1,0 +1,84 @@
+@prefix: service-config-add-diagnose;
+
+.@{prefix}-container {
+    &-header {
+        padding: 16px 24px;
+        background: #fff;
+    }
+    &-content {
+        margin-top: 8px;
+        
+        &-left {
+            background: #fff;
+            height: 500px;
+            overflow: auto;
+            &-header {
+                padding: 0 8px;
+                display: flex;
+                height: 40px;
+                line-height: 40px;
+                justify-content: space-between;
+                background: #eee;
+                border: 1px solid #ddd;
+                h3 {
+                    font-weight: 400;
+                    color: #333;
+                }
+                button {
+                    padding: 0;
+                    margin-left: 8px;
+                    span:last-child {
+                        margin-left: 2px;
+                    }
+                }
+            }
+            .diagnose-wrapper {
+                height: 460px;
+                overflow: auto;
+                border: 1px solid #ddd;
+                border-top: none;
+                & > div {
+                    padding: 16px;
+                }
+                .padding-style {
+                    padding: 16px;
+                }
+                .active {
+                    padding: 16px;
+                    padding-bottom: 1px;
+                    background: rgba(102, 128, 255, 0.3);
+                }
+            }
+            .tooltip {
+                color: rgba(0, 0, 0, 0.3);
+                font-weight: 400;
+                font-size: 14px;
+            }
+        }
+        &-right {
+            background: #fff;
+            height: 500px;
+            border: 1px solid #ddd;
+            &-header {
+                padding: 0 8px;
+                height: 40px;
+                line-height: 40px;
+                background: #eee;
+                border-bottom: 1px solid #ddd;
+                h3 {
+                    font-weight: 400;
+                    color: #333;
+                }
+            }
+            .diagnose-edit-wrapper {
+                padding: 16px;
+                height: 460px;
+                overflow: auto;
+                .tip {
+                    color: #999;
+                    padding: 8px 0;
+                }
+            }
+        }
+    }
+}
