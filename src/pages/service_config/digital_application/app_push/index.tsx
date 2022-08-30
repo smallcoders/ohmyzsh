@@ -58,6 +58,7 @@ export default () => {
     timeRange?: Array<any> // 领取有效时间范围
     startTime?: string
     endTime?: string
+    pushTime?: string
   }>({});
 
   const [transferSearchContent, setTransferSearchContent] = useState<{
@@ -127,6 +128,7 @@ export default () => {
         searchForm.endTime = moment(searchForm.timeRange[1]).format('YYYY-MM-DD HH:mm:ss')
         delete searchForm.timeRange
       }
+      if (searchForm.pushTime) searchForm.pushTime = moment(searchForm.pushTime).format('YYYY-MM-DD')
       const { result, totalCount, pageTotal, code } = await getPushRecordList({
         pageIndex,
         pageSize,
@@ -452,6 +454,11 @@ export default () => {
       <div className={sc('container-search')}>
         <Form form={searchForm}>
           <Row justify="space-between">
+            <Col>
+              <Form.Item name="pushTime" label="推送时间">
+                <DatePicker allowClear />
+              </Form.Item>
+            </Col>
             <Col>
               <Form.Item name="appName" label="应用名称">
                 <Input placeholder="请输入" />

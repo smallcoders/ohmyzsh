@@ -114,4 +114,29 @@ export async function getApplicationInfo(params: { id: string }) {
   })
 }
 
+// 获取接口配置
+export async function getInterfaceConfig() {
+  return request('/antelope-other/mng/api/manage/getInterfaceConfig', {
+    method: 'post'
+  })
+}
+
+// 新增接口配置
+export async function addInterfaceConfig(data: { id?: number, interfaceDescription?: string, interfaceNorm?: string }) {
+  return request('/antelope-other/mng/api/manage/addInterfaceConfig', {
+    method: 'post',
+    data
+  })
+}
+
+// 更新接口配置
+export async function updateInterfaceConfig(data: { id?: number, interfaceDescription?: string, interfaceNorm?: string }) {
+  return request('/antelope-other/mng/api/manage/updateInterfaceConfig', {
+    method: 'post',
+    data
+  })
+}
+
+
+
 
