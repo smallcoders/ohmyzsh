@@ -12,6 +12,7 @@ import {
 	message,
 	Modal,
 	Steps,
+	Divider,
 	Breadcrumb,
 } from 'antd';
 import {CheckOutlined, EyeOutlined, PlusOutlined, PlusCircleOutlined, MinusCircleOutlined, ArrowUpOutlined, ArrowDownOutlined} from '@ant-design/icons'
@@ -19,7 +20,7 @@ const { Step } = Steps;
 import { Link, history, Prompt } from 'umi';
 import DiagnoseManage from '@/types/service-config-diagnose-manage';
 import './index.less'
-import React, { useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import scopedClasses from '@/utils/scopedClasses';
 const sc = scopedClasses('service-config-add-diagnose');
@@ -35,7 +36,7 @@ export default () => {
 
 	const [addModalVisible, setAddModalVisible] = useState<boolean>(false)
 	const [addLoading, setAddLoading] = useState<boolean>(false)
-	// 问卷题目
+	// 左侧问卷题目
 	const [diagnoseList, setDiagnoseList] = useState<any>([
 		// {
 		// 	name: '', //题目标题
@@ -65,6 +66,11 @@ export default () => {
 		// 	assignedProvince: 1, // 指定省份
 		// }
 	]);
+
+	// 当前总的关联题目题库
+	const [totalAbleRelated, setTotalAbelRelated] = useState<any>([])
+	// 当前可选择的关联题目题库
+	const [ableSelectRelated, setAbleSelectRelated] = useState<any>([])
 
 	// 左侧问卷题目展示
 	const [leftForm] = Form.useForm();
@@ -111,10 +117,6 @@ export default () => {
 			],
 		},
 	];
-	
-	const onChange = (value: string[]) => {
-		console.log(value);
-	};
 
 	// 输入标题
 	const inputTitle = (value: any) => {
@@ -123,7 +125,6 @@ export default () => {
 
 	// 添加题目
 	const addProblem = (type: string) => {
-		// console.log(type, 'type');
 		let arr = type.split('-');
 		let sameObj:any = {
 			name: '题目标题',
@@ -183,25 +184,49 @@ export default () => {
 			}
 		}
 		let lastArr:any = [...diagnoseList]
+		console.log(sameObj, 'sameObj');
 		setCurrentEditObj(sameObj)
 		rightForm.setFieldsValue({ ...sameObj });
 		lastArr.push(sameObj)
-		console.log(lastArr, 'lastArr');
+		// console.log(lastArr, 'lastArr');
 		setCurrentAddIndex(lastArr.length-1)
 		setDiagnoseList(lastArr)
 		setAddModalVisible(false)
 	}
 
-	// 
+	// 表单更新
 	const onValuesChange = (changedValues: any, allValues: any) => {
 		console.log(changedValues,999,allValues);
 		const list = [...diagnoseList]
 		list.splice(currentAddIndex, 1, {
       ...list[currentAddIndex],
       ...changedValues,
+			...allValues
     } as EditType);
-		console.log(list, 'list');
+		// console.log(list, 'list');
 		setDiagnoseList(list)
+	}
+
+	const deal = () => {
+		let arr = [...diagnoseList]
+		console.log(
+			arr.filter((item, index) => (item.type == 'radio' || item.type == 'checkbox') && index<currentAddIndex
+			), 888
+		)
+		return arr.filter((item) => {
+			item.type == 'radio' || item.type == 'checkbox'
+		})
+	}
+	// 
+	useEffect(() => {
+    setTotalAbelRelated(deal())
+  }, [diagnoseList]);
+
+	// 关联题目
+	const relateTo = () => {
+		if(currentAddIndex == 0) {
+			message.error('第1题不能设置题目关联逻辑')
+		}
 	}
 
 	const useModal = (): React.ReactNode => {
@@ -273,143 +298,89 @@ export default () => {
 									<h3>问卷标题</h3>
 									<p>{diagnoseTitle}</p>
 								</div>
-								{/* {
-									diagnoseList && diagnoseList.map((item: any, index: number) => {
-										return (
-											// 单选
-											item.type == 'radio' ? (
-												<div className={currentAddIndex == index ? 'active' : 'padding-style'} onClick={() => {setCurrentAddIndex(index)}}>
-													<h3>{index+1 + '.' + item.name}</h3>
-														<Radio.Group>
-															{item.options.map((option:any, oi: number) => {
-																return (
-																	<Row style={{
-																		marginBottom: 10
-																	}}>
-																		<Radio value={option.label} key={oi}>{option.label}</Radio>
-																	</Row>
-																)
-															})}
-														</Radio.Group>
-												</div>	
-											) :
-											// 多选
-											item.type == 'checkbox' ? (
-												<div className={currentAddIndex == index ? 'active' : 'padding-style'} onClick={() => {setCurrentAddIndex(index)}}>
-													<h3>{index+1 + '.' + item.name+'【多选题】'}</h3>
-													<Checkbox.Group>
-														{item.options.map((option:any, oi: number) => {
-															return (
-																<Row style={{
-																	marginBottom: 10
-																}}>
-																	<Checkbox value={option.label} key={oi}>{option.label}</Checkbox>
-																</Row>
-															)
-														})}
-													</Checkbox.Group>
-												</div>	
-											) :
-											// 单项填空
-											item.type == 'input' ? (	
-												<div className={currentAddIndex == index ? 'active' : 'padding-style'} onClick={() => {setCurrentAddIndex(index)}}>
-													<h3>{index+1 + '.' + item.name}</h3>
-														<Input placeholder="请输入" />
-												</div>
-											) : 
-											// 级联选择
-											item.type == 'cascader' ? (	
-												<div className={currentAddIndex == index ? 'active' : 'padding-style'} onClick={() => {setCurrentAddIndex(index)}}>
-													<h3>{index+1 + '.' + item.name}</h3>
-													<Cascader options={options} changeOnSelect />
-												</div>
-											) : ('')
-										)
-									})
-								} */}
-									<Form
-										layout={'vertical'}
-										form={leftForm}
-									>
-										{
-											diagnoseList && diagnoseList.map((item: any, index: number) => {
-												return (
-													// 单选
-													item.type == 'radio' ? (
-														<div className={currentAddIndex == index ? 'active' : 'padding-style'} onClick={() => {setCurrentAddIndex(index)}}>
-															<Form.Item 
-																label={index+1 + '.' + item.name}
-																key={index}
-																rules={[
-																	{ 
-																		required: item.isRequired,
-																		message: '必填',
-																	}
-																]}
-															>
-																<div className={'tooltip'}>{item.subTitle}</div>
-																<Radio.Group>
-																	{item.options.map((option:any, oi: number) => {
-																		return (
-																			<Row style={{
-																				marginBottom: 10
-																			}}>
-																				<Radio value={option.label} key={oi}>{option.label}</Radio>
-																			</Row>
-																		)
-																	})}
-																</Radio.Group>
-															</Form.Item>
-														</div>	
-													) :
-													// 多选
-													item.type == 'checkbox' ? (
-														<div className={currentAddIndex == index ? 'active' : 'padding-style'} onClick={() => {setCurrentAddIndex(index)}}>
-															<Form.Item 
-																label={index+1 + '.' + item.name + '【多选题】'}
-																key={index}
-																rules={[{ required: item.isRequired }]}
-															>
-																<Checkbox.Group>
-																	{item.options.map((option:any, oi: number) => {
-																		return (
-																			<Row style={{
-																				marginBottom: 10
-																			}}>
-																				<Checkbox value={option.label} key={oi}>{option.label}</Checkbox>
-																			</Row>
-																		)
-																	})}
-																</Checkbox.Group>
-															</Form.Item>
-														</div>	
-													) :
-													// 单项填空
-													item.type == 'input' ? (	
-														<div className={currentAddIndex == index ? 'active' : 'padding-style'} onClick={() => {setCurrentAddIndex(index)}}>
-															<Form.Item 
-																label={index+1 + '.' + item.name}
-																rules={[{ required: item.isRequired }]}
-															>
-																<Input placeholder="请输入" />
-															</Form.Item>
-														</div>
-													) : 
-													// 级联选择
-													item.type == 'cascader' ? (	
-														<div className={currentAddIndex == index ? 'active' : 'padding-style'} onClick={() => {setCurrentAddIndex(index)}}>
-															<Form.Item 
-																label={index+1 + '.' + item.name}
-																rules={[{ required: item.isRequired }]}
-															>
-																<Cascader options={options} changeOnSelect />
-															</Form.Item>
-														</div>
-													) : ('')
-												)
-											})
-										}
-									</Form>
+								<Form
+									layout={'vertical'}
+									form={leftForm}
+								>
+									{
+										diagnoseList && diagnoseList.map((item: any, index: number) => {
+											return (
+												// 单选
+												item.type == 'radio' ? (
+													<div className={currentAddIndex == index ? 'active' : 'padding-style'} onClick={() => {setCurrentAddIndex(index)}}>
+														<Form.Item 
+															label={index+1 + '.' + item.name}
+															key={index}
+															rules={[
+																{ 
+																	required: item.isRequired,
+																	message: '必填',
+																}
+															]}
+														>
+															<div className={'tooltip'}>{item.subTitle}</div>
+															<Radio.Group>
+																{item.options.map((option:any, oi: number) => {
+																	return (
+																		<Row style={{
+																			marginBottom: 10
+																		}}>
+																			<Radio value={option&&option.label?option.label:('选项'+(oi+1))} key={oi}>{option&&option.label?option.label:('选项'+(oi+1))}</Radio>
+																		</Row>
+																	)
+																})}
+															</Radio.Group>
+														</Form.Item>
+													</div>	
+												) :
+												// 多选
+												item.type == 'checkbox' ? (
+													<div className={currentAddIndex == index ? 'active' : 'padding-style'} onClick={() => {setCurrentAddIndex(index)}}>
+														<Form.Item 
+															label={index+1 + '.' + item.name + '【多选题】'}
+															key={index}
+															rules={[{ required: item.isRequired }]}
+														>
+															<Checkbox.Group>
+																{item.options.map((option:any, oi: number) => {
+																	return (
+																		<Row style={{
+																			marginBottom: 10
+																		}}>
+																			<Checkbox value={option&&option.label?option.label:('选项'+(oi+1))} key={oi}>{option&&option.label?option.label:('选项'+(oi+1))}</Checkbox>
+																		</Row>
+																	)
+																})}
+															</Checkbox.Group>
+														</Form.Item>
+													</div>	
+												) :
+												// 单项填空
+												item.type == 'input' ? (	
+													<div className={currentAddIndex == index ? 'active' : 'padding-style'} onClick={() => {setCurrentAddIndex(index)}}>
+														<Form.Item 
+															label={index+1 + '.' + item.name}
+															rules={[{ required: item.isRequired }]}
+														>
+															<Input placeholder="请输入" />
+														</Form.Item>
+													</div>
+												) : 
+												// 级联选择
+												item.type == 'cascader' ? (	
+													<div className={currentAddIndex == index ? 'active' : 'padding-style'} onClick={() => {setCurrentAddIndex(index)}}>
+														<Form.Item 
+															label={index+1 + '.' + item.name}
+															rules={[{ required: item.isRequired }]}
+														>
+															<Cascader options={options} changeOnSelect />
+														</Form.Item>
+													</div>
+												) : ('')
+											)
+										})
+									}
+								</Form>
 							</div>
 						</div>
 					</Col>
@@ -458,12 +429,23 @@ export default () => {
 										<Form.Item label="填写提示" name={'subTitle'}>
 											<Input placeholder='输入填写提示可以作为题目副标题' />
 										</Form.Item>
+										<Row style={{marginBottom: 8}}>
+											<Col span={14}>
+												<div>选项文字</div>
+											</Col>
+											<Col span={6}>
+												<div>允许填空</div>
+											</Col>
+											<Col span={4}>
+												<div>上移下移</div>
+											</Col>
+										</Row>
 										<Form.List name="options">
-											{(fields, { add, remove }) => (
+											{(fields, { add, remove, move }) => (
 												<>
 													{fields.map((field, fieldIndex) => (
 														<Row>
-															<Col span={10}>
+															<Col span={11}>
 																<Form.Item
 																	{...field}
 																	name={[field.name, 'label']}
@@ -475,82 +457,44 @@ export default () => {
 																<PlusCircleOutlined style={{marginLeft: 8}} onClick={() => add()}/>
 																<MinusCircleOutlined style={{marginLeft: 8}} onClick={() => remove(field.name)} />
 															</Col>
-															<Col span={4}>
-																<Form.Item
-																	{...field}
-																	name={[field.name, 'allowInput']}
-																>
-																	<Checkbox.Group>
-																		<Checkbox value={1}></Checkbox>
-																	</Checkbox.Group>
-																</Form.Item>
-															</Col>
 															<Col span={6}>
-																<ArrowUpOutlined style={{marginLeft: 8}} onClick={() => {}}/>
-																<ArrowDownOutlined onClick={() => {}} />
+																<Row>
+																	<Col span={6}>
+																		<Form.Item
+																			{...field}
+																			name={[field.name, 'allowInput']}
+																		>
+																			<Checkbox.Group>
+																				<Checkbox value={1}></Checkbox>
+																			</Checkbox.Group>
+																		</Form.Item>
+																	</Col>
+																	{/* <Col span={1} style={{textAlign: 'center'}}>
+																		<Divider type="vertical" />
+																	</Col> */}
+																	<Col span={14}>
+																		<Form.Item
+																			{...field}
+																			name={[field.name, 'inputIsRequired']}
+																		>
+																			<Checkbox.Group>
+																				<Checkbox value={1}>必填</Checkbox>
+																			</Checkbox.Group>
+																		</Form.Item>
+																	</Col>
+																</Row>
+															</Col>
+															<Col span={4}>
+																<ArrowUpOutlined style={{marginLeft: 8}} onClick={() => move(fieldIndex, fieldIndex-1)}/>
+																<ArrowDownOutlined style={{marginLeft: 8}} onClick={() => move(fieldIndex, fieldIndex+1)} />
 															</Col>
 														</Row>
 													))}
 												</>
 											)}
 										</Form.List>
-										{/* <Row>
-											<Col span={16}>
-												<Form.Item label="选项文字">
-													{currentEditObj.options.map((option:any, oi: number) => {
-														return (
-															<>
-																<Form.Item name={'option'+'-label-'+oi}>
-																	<Input placeholder='请输入' style={{width: 280}}/>
-																</Form.Item>
-																<PlusCircleOutlined style={{marginLeft: 8}} onClick={() => {}}/>
-																<MinusCircleOutlined style={{marginLeft: 8}} />
-															</>
-														)
-													})}
-												</Form.Item>
-											</Col>
-											<Col span={4}>
-												<Form.Item label="允许填空">
-													{currentEditObj.options.map((option:any, oi: number) => {
-														return (
-															<Row>
-																<Col span={8}>
-																	<Form.Item name={'option'+'-allowInput-'+oi}>
-																		<Checkbox.Group>
-																			<Checkbox value={1}></Checkbox>
-																		</Checkbox.Group>
-																	</Form.Item>
-																</Col>
-																<Col span={12}>
-																	<Form.Item  name={'option'+'-inputIsRequired-'+oi}>
-																		<Checkbox.Group>
-																			<Checkbox value={1}>必填</Checkbox>
-																		</Checkbox.Group>
-																	</Form.Item>
-																</Col>
-															</Row>
-														)
-													})}
-												</Form.Item>
-											</Col>
-											<Col span={4}>
-												<Form.Item label="上移下移">
-													{currentEditObj.options.map((option:any, oi: number) => {
-														return (
-															<>
-																<Form.Item>
-																	<PlusCircleOutlined style={{marginLeft: 8}} />
-																	<MinusCircleOutlined style={{marginLeft: 8}} />
-																</Form.Item>
-															</>
-														)
-													})}
-												</Form.Item>
-											</Col>
-										</Row> */}
 										<h3>逻辑设置</h3>
-										<Button type="link">题目关联</Button>
+										<Button type="link" onClick={() => {relateTo()}}>题目关联</Button>
 									</Form>
 								)}
 								{currentEditObj && currentEditObj.type == 'input' && (
