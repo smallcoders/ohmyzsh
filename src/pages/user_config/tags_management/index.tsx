@@ -138,8 +138,7 @@ export default () => {
     const tooltipMessage = '修改';
     try {
       const markResult = await updateRemark({
-        userId: record.userId.toString(),
-        id: record.id.toString(), 
+        userId: record.uidMng,
         remarkText: remark
       });
       if (markResult.code === 0) {
@@ -440,7 +439,7 @@ export default () => {
       }
     }
     console.log(params);
-    params.userIdMng = recordData.userId
+    params.userIdMng = recordData.uidMng
     try {
       const res = await httpPostSaveTags(params)
       console.log(res)
