@@ -2,7 +2,7 @@ import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import { useEffect, useState } from 'react';
 
-import { Button, Tabs, Typography, Space, Spin, message, Modal, Form, Select, Input, Row, Col, Tooltip } from 'antd';
+import { Button, Tabs, Space, Spin, message, Modal, Form, Select, Input, Row, Col, Tooltip } from 'antd';
 import { history } from 'umi';
 
 import { routeName } from '../../../../../config/routes';
@@ -253,12 +253,12 @@ export default () => {
             <img src={row.logoImagePath} alt="图片损坏" />
             <div className='info'>
               <Tooltip title={row.appName}>
-                <span className={sc('ellipsis1')} onClick={() => {
+                <span onClick={() => {
                   history.push(`${routeName.DIGITAL_APPLICATION_DETAIL}?id=${row.id}`)
                 }}>{ row.appName }</span>
               </Tooltip>
               <Tooltip title={row.content} placement="right">
-                <span className={sc('ellipsis1')}>{ row.content }</span>
+                <span>{ row.content }</span>
               </Tooltip>
             </div>
           </div>

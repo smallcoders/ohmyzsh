@@ -23,6 +23,15 @@ namespace ApplicationManager {
     logoImagePath?: string
     updateTime?: string
     typeId?: number
+    typeName?: string
+    type?: number
+    appType?: number
+    exportIp?: string
+    appHomeUrl?: string
+    pcHomeUrl?: string
+    descs?: string
+    worth?: string
+    scene?: string
   };
 
   export type PushBag = {
@@ -84,6 +93,33 @@ namespace ApplicationManager {
     name: string
     [key: string]: any
   }
+
+  // 应用分类
+  export enum TypeEnum {
+    H5 = 0,
+    Web = 1,
+    ALL = 3
+  }
+
+  // 应用开发方式 0:企业自主开发，1:委托服务商开发
+  export enum DevelopmentEnum {
+    Self = 0,
+    Third = 1
+  }
+
+  // 应用类型文字描述
+  export const TypeText: Record<TypeEnum, string> = {
+    [TypeEnum.Web]: 'Web网页',
+    [TypeEnum.H5]: 'H5微应用',
+    [TypeEnum.ALL]: 'Web网页、H5微应用'
+  }
+
+  // 应用开发方式文字描述  0:企业自主开发，1:委托服务商开发
+  export const DevelopmentText: Record<DevelopmentEnum, string> = {
+    [DevelopmentEnum.Self]: '企业自研应用',
+    [DevelopmentEnum.Third]: '委托服务商开发'
+  }
+
 }
 
 export default ApplicationManager;

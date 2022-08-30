@@ -231,7 +231,7 @@ export default [
           },
           {
             path: routeName.DIGITAL_APPLICATION_DETAIL,
-            name: '推送详情',
+            name: '应用详情',
             component: './service_config/digital_application/app_detail',
           }
         ]

@@ -105,3 +105,13 @@ export async function getApplicationTypeList() {
     method: 'get'
   })
 }
+
+// 查询应用详情
+export async function getApplicationInfo(params: { id: string }) {
+  return request('/antelope-other/mng/api/manage/getAppInfo', {
+    method: 'get',
+    params
+  })
+}
+
+
