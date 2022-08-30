@@ -199,10 +199,10 @@ export default () => {
 		console.log(changedValues,999,allValues);
 		const list = [...diagnoseList]
 		list.splice(currentAddIndex, 1, {
-      ...list[currentAddIndex],
-      ...changedValues,
-			...allValues
-    } as EditType);
+			...list[currentAddIndex],
+			...allValues,
+			...changedValues,		
+		} as EditType);
 		// console.log(list, 'list');
 		setDiagnoseList(list)
 	}
