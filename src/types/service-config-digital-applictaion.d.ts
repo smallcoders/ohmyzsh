@@ -15,6 +15,14 @@ namespace ApplicationManager {
     LogoImagePath?: string
     path?: any
     isDetail?: boolean // 是否是查看
+    orgNames?:string;
+    orgId?: string;
+    userName?: string;
+    handleReason?: string
+    createTime?: string
+    logoImagePath?: string
+    updateTime?: string
+    typeId?: number
   };
 
   export type PushBag = {
@@ -69,6 +77,13 @@ namespace ApplicationManager {
     result: PushDetail[];
   } & Common.ResultCode &
     Common.ResultPage;
+
+  // 应用分类
+  export type MarketOption = {
+    id: number
+    name: string
+    [key: string]: any
+  }
 }
 
 export default ApplicationManager;

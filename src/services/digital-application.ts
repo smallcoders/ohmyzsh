@@ -83,6 +83,25 @@ export async function getApplicationPushList(data?: { [key: string]: any }) {
   });
 }
 
+// 应用审核列表
+export async function getApplyInfoPage(data?: { [key: string]: any }) {
+  return request<ApplicationManager.ResultList>('/antelope-other/mng/api/manage/queryApplyInfoPage', {
+    method: 'post',
+    data,
+  });
+}
 
+// 应用审核处理
+export async function handleApply(data?: { [key: string]: any }) {
+  return request('/antelope-other/mng/api/manage/handleApply', {
+    method: 'post',
+    data,
+  });
+}
 
-
+// 应用分类
+export async function getApplicationTypeList() {
+  return request('/antelope-other/app/getTypeList', {
+    method: 'get'
+  })
+}

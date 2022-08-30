@@ -28,7 +28,7 @@ const { confirm } = Modal;
 
 import type { ColumnsType } from 'antd/es/table';
 
-import './app-config.less';
+import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
 import Common from '@/types/common';

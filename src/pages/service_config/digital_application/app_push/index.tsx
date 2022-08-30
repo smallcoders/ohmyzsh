@@ -1,4 +1,4 @@
-import './app-push-record.less';
+import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
 
