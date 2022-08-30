@@ -408,37 +408,36 @@ export default () => {
     console.log(from, to);
     let params = {}
     if(from == 1) {
-      let arr = []
+      let arr:any = []
       industry.map((item) => {
         arr.push({recCode: item})
       })
       params = {
         industryItems: {
-          recLabelSkipReqs: [...arr]
+          recLabelSkipReqs: industry && industry.length>0 ? [...arr] : [{}]
         }
       }
     }else if(from == 2) {
-      let arr = []
+      let arr:any = []
       sectorItems.map((item) => {
         arr.push({recCode: item})
       })
       params = {
         sectorItems: {
-          recLabelSkipReqs: [...arr]
+          recLabelSkipReqs: sectorItems && sectorItems.length>0 ?[...arr] : [{}]
         }
       }
     }else if(from == 3) {
-      let arr = []
+      let arr:any = []
       technology.map((item) => {
         arr.push({recCode: item})
       })
       params = {
         techFieldItems: {
-          recLabelSkipReqs: [...arr]
+          recLabelSkipReqs: technology && technology.length>0 ?[...arr] : [{}]
         }
       }
     }
-    console.log(params);
     params.userIdMng = recordData.uidMng
     try {
       const res = await httpPostSaveTags(params)
