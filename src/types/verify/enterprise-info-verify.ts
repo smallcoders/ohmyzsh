@@ -29,7 +29,7 @@ namespace EnterpriseInfoVerify {
     cityName: string; // 所属区域-市名称
     countyName: string; // 所属区域-县名称
     address: string; // 详细地址
-    registeredCapital: string; // 注册资本
+    registeredCapital: number; // 注册资本
     aboutUs: string; // 组织简介
     ability: string; // 组织核心能力
     cover: string; // 组织logo
