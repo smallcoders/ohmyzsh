@@ -112,7 +112,7 @@ const TableList: React.FC = () => {
   /**
    * column
    */
-   const columns = [
+  const columns = [
     {
       title: '排序',
       dataIndex: 'id',

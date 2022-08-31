@@ -48,6 +48,13 @@
                     padding-bottom: 1px;
                     background: rgba(102, 128, 255, 0.3);
                 }
+                button {
+                    padding: 0;
+                    margin-left: 8px;
+                    span:last-child {
+                        margin-left: 2px;
+                    }
+                }
             }
             .tooltip {
                 color: rgba(0, 0, 0, 0.3);
@@ -78,6 +85,45 @@
                     color: #999;
                     padding: 8px 0;
                 }
+            }
+        }
+    }
+    .step-container-2 {
+        padding: 16px;
+        background: #fff;
+        
+        .table-header {
+            position: relative;
+            margin-bottom: 16px;
+            height: 32px;
+            line-height: 32px;
+            button {
+                position: absolute;
+                right: 0;
+                top: 0;
+            }
+        }
+        .bottom-buttons {
+            margin-top: 16px;
+            text-align: right;
+            button {
+                margin-left: 8px;
+            }
+        }
+    }
+    
+}
+.result-add-wrap {
+    .result-add-form {
+        margin: 16px auto;
+        .header-tip {
+            display: flex;
+            color: #999;
+            font-size: 12px;
+            align-items: center;
+            margin-bottom: 16px;
+            p {
+                margin: 0;
             }
         }
     }
