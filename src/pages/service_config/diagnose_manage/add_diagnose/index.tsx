@@ -39,6 +39,7 @@ import DataColumn from '@/types/data-column';
 import {
   getOrgTypeList,
 } from '@/services/org-type-manage';
+import UploadForm from '@/components/upload_form';
 import DiagnoseManage from '@/types/service-config-diagnose-manage';
 import './index.less'
 import React, { useEffect, useState, useRef } from 'react';
@@ -47,7 +48,61 @@ import scopedClasses from '@/utils/scopedClasses';
 const sc = scopedClasses('service-config-add-diagnose');
 type EditType = DiagnoseManage.Content;
 type DiagnoseResult = DiagnoseManage.Diagnose;
+type Covers = DiagnoseManage.Covers;
 export default () => {
+	/**
+   * 准备数据和路由获取参数等
+   */
+	const prepare = () => {
+		// try {
+		const { id } = history.location.query as { id: string | undefined };
+	
+		if (id) {
+			console.log(id, 'id');
+			// 获取详情 塞入表单
+			// const detailRs = await getVideoDetail(id);
+			// let editItem = { ...detailRs.result };
+			// editItem.typeIds = editItem.typeIds?.split(',').map(Number);//返回的类型为字符串，需转为数组
+			// console.log(editItem, '---editItem')
+			// if (detailRs.code === 0) {
+			//   editItem.isSkip = detailRs.result.url ? 1 : 0;
+			//   setIsSkip(editItem.isSkip);
+			//   // setIsBeginTopAndEditing(Boolean(editItem.isTopApp));
+			//   console.log(editItem, 'res---editItem');
+			//   let extended = [];//扩展功能数据获取
+			//   if(!editItem.closeReplay) {
+			// 	extended.push('replay');
+			//   }
+			//   if(!editItem.closeKf) {
+			// 	extended.push('kf');
+			//   }
+			//   let liveFunctions = [];//直播间功能数据获取
+			//   if(!editItem.closeLike) {
+			// 	liveFunctions.push('like');
+			//   }
+			//   if(!editItem.closeGoods) {
+			// 	liveFunctions.push('goods');
+			//   }
+			//   if(!editItem.closeComment) {
+			// 	liveFunctions.push('comment');
+			//   }
+			//   if(!editItem.closeShare) {
+			// 	liveFunctions.push('share');
+			//   }
+			//   setEditingItem({...editItem, liveFunctions, extended, time: [moment(editItem.startTime), moment(editItem.endTime)]});
+			// } else {
+			//   message.error(`获取详情失败，原因:${detailRs.message}`);
+			// }
+		}
+		// } catch (error) {
+		//   console.log('error', error);
+		//   message.error('获取初始数据失败');
+		// }
+	};
+	
+	useEffect(() => {
+		prepare();
+	}, []);
 
 	// 当前正在编辑的索引，-1表示问卷标题，其他索引为所编辑的题目索引
 	const [currentAddIndex, setCurrentAddIndex] = useState<number>(-1)
@@ -228,7 +283,19 @@ export default () => {
 
 	// 点击下一步
 	const toNext = () => {
+		if(currentStep == 0) {
+			if(diagnoseList && diagnoseList.length > 0) {
+				setCurrentStep(currentStep+1)
+			}else {
+				message.error('您还未添加题目！')
+				return false
+			}
+		}
 		setCurrentStep(currentStep+1)
+	}
+	// 点击上一步toPrev
+	const toPrev = () => {
+		setCurrentStep(currentStep-1)
 	}
 
 	// 点击左侧题目，更新右侧表单
@@ -240,12 +307,36 @@ export default () => {
 	}
 
 	// 删除问卷中的题目
+	//点击「删除」，若当前题目没有关联逻辑，则可直接删除，无需二次确认；若当前题目有关联逻辑，则出现提示，继续删除将自动移除配置的关联逻辑
+	const deleteInfo = (index: number) => {
+		Modal.confirm({
+			title: '提示',
+			content: (
+				<div>
+					<p>当前题目有设置逻辑，删除操作会自动清空关联，确认删除吗？</p>
+				</div>
+			),
+			onOk() {
+				console.log(index, 666);
+			},
+			onCancel() {}
+		});
+	};
 	const deleteDiagnose = (index: number) => {
 		let arr = [...diagnoseList]
-		setCurrentAddIndex(index-1)
-		arr.splice(index, 1)
-		console.log(arr, 'delete')
-		setDiagnoseList(arr)
+		console.log(arr, 'deleteDiagnose');
+		arr.map((item) => {
+			item.relations.map((j: any) => {
+				if(j.dependIndex == index) {
+					deleteInfo(index)
+				}else {
+					setCurrentAddIndex(index-1)
+					arr.splice(index, 1)
+					setDiagnoseList(arr)
+				}
+			})
+		})
+	
 	}
 	const swapItems = (arr:any, index1:number, index2:number) => {
 		arr[index1] = arr.splice(index2, 1, arr[index1])[0]
@@ -293,6 +384,7 @@ export default () => {
 			}
 			return rtn
 		}).filter((item:any, index) => (item.type == 'radio' || item.type == 'checkbox') && index < currentAddIndex)
+		console.log(arr2, 'arr2')
 		return arr2
 	}
 	// 
@@ -318,7 +410,7 @@ export default () => {
 	const useModal = (): React.ReactNode => {
 		return (
 			<Modal
-				title={'题目选择'}
+				title={'题型选择'}
 				width="500px"
 				visible={addModalVisible}
 				maskClosable={false}
@@ -390,12 +482,13 @@ export default () => {
 										<Col span={17}>
 											<Form.Item
 												{...field}
-												name={[field.name, 'label']}
+												name={[field.name, 'dependIndex']}
 												label={'关联题目' + (fieldIndex + 1)}
 											>
 												<Select>
 													{ableSelectRelated && ableSelectRelated.map((item: any) =>
-														<Option value={(item.dependIndex+1)+'.'+item.name} key={(item.dependIndex+1)+item.name}>{item.dependIndex+1}.{item.name}</Option>
+														// <Option value={(item.dependIndex+1)+'.'+item.name} key={(item.dependIndex+1)+item.name}>{item.dependIndex+1}.{item.name}</Option>
+														<Option value={item.dependIndex} key={(item.dependIndex+1)+item.name}>{item.dependIndex+1}.{item.name}</Option>
 													)}
 												</Select>
 											</Form.Item>
@@ -471,8 +564,7 @@ export default () => {
 	// 诊断结果列表
 	const columns = [
     {
-      title: '排序',
-      // dataIndex: 'index',
+      title: '序号',
       width: 80,
 			render: (text: any, record: any, index: number) =>
         index + 1,
@@ -482,26 +574,37 @@ export default () => {
       dataIndex: 'name',
       isEllipsis: true,
       width: 380,
+			render: (text: any, record: any, index: number) =>
+				<Tooltip placement="bottomLeft" title={'点击报告名称，可以预览配置的诊断结果效果'}>
+					<a
+						href="#!"
+						onClick={(e) => {
+							setResultObj(record);
+							setPreviewVisible(true);
+						}}
+					>
+						{text}
+					</a>
+				</Tooltip>
     },
     {
       title: '操作',
-      width: 280,
+      width: 180,
       dataIndex: 'option',
       render: (_: any, record: any, index: number) => {
         return (
-          <Space size="middle">
-            {record.isEdit && (
-              <a
-                href="#"
-                onClick={() => {
-                  // setEditingItem(record);
-                  // setModalVisible(true);
-                  // form.setFieldsValue({ ...record });
-                }}
-              >
-                编辑{' '}
-              </a>
-            )}
+					<Space>
+						<a
+							href="#"
+							onClick={() => {
+								setEditResultIndex(index)
+								setResultObj(record);
+								setAddResultVisible(true);
+								resultForm.setFieldsValue({...record})
+							}}
+						>
+							编辑{' '}
+						</a>
             <Popconfirm
               title={
                 <>
@@ -519,10 +622,13 @@ export default () => {
       },
     },
   ];
+	const [resultObj, setResultObj] = useState<DiagnoseResult>({})
+	const [editResultIndex, setEditResultIndex] = useState<number>(-1)//编辑诊断结果列表的index
+	// const [curResultIndex, setCurResultIndex] = useState<number>(0)
 	// 诊断结果-表单更新
 	const onValuesChange2 = (changedValues: any, allValues: any) => {
 		console.log(changedValues, '诊断结果', allValues);
-		
+		setResultObj({...resultObj, ...allValues})
 	}
 	/**
    * 切换诊断结果3个tab
@@ -547,18 +653,45 @@ export default () => {
 		arr.splice(index, 1)
 		setDataSource(arr)
 	}
+	const info = () => {
+		Modal.info({
+			title: '提示',
+			content: (
+				<div>
+					<p>请检查「诊断报告名称」和「诊断报告概述」是否填写</p>
+				</div>
+			),
+			onOk() {},
+		});
+	};
+	// 添加诊断结果
 	const addReultOk = () => {
 		resultForm
       .validateFields()
       .then(async (value) => {
 				console.log(value);
-				let arr = [...dataSource]
-				arr.push(value)
-				setDataSource(arr)
+				if(!value.name || !value.summary) {
+					info()
+					return false
+				}
+				if(editResultIndex > -1) {// 编辑
+					const list = [...dataSource]
+					list.splice(editResultIndex, 1, {
+						...list[editResultIndex],
+						...resultObj
+					} as DiagnoseResult);
+					setDataSource(list)
+					resultForm.setFieldsValue({})
+				}else {// 新增
+					let arr = [...dataSource]
+					arr.push(resultObj)
+					setDataSource(arr)
+				}
+				setEdge(1)
 				setAddResultVisible(false)
       })
       .catch(() => {
-        
+        info()
       });
 	}
 	const onSearch = (value: string) => {
@@ -568,7 +701,7 @@ export default () => {
 	const useResultAddModal = (): React.ReactNode => {
 		return (
 			<Modal
-				title={'新建诊断结果'}
+				title={editResultIndex>-1 ? '编辑诊断结果' : '新建诊断结果'}
 				width="600px"
 				visible={addReultVisible}
 				maskClosable={false}
@@ -708,11 +841,30 @@ export default () => {
 										</Select>
 										<div>已选服务商：0</div>
 									</Form.Item>
-									<Form.Item label="关联服务商" name={['relatedTechnicalManager', 'name']}>
-										<Input placeholder='请输入技术经理人姓名' />
+									<Form.Item label="关联技术经理人" name={['relatedTechnicalManager', 'name']}>
+										<Input placeholder='请输入技术经理人姓名' maxLength={35} />
 									</Form.Item>
-									<Form.Item name={['relatedTechnicalManager', 'phone']}>
-										<Input placeholder='请输入技术经理人手机号' />
+									<Form.Item 
+										name={['relatedTechnicalManager', 'phone']}
+										rules={[
+											{
+												validator(_, value) {
+													if (!value) {
+														return Promise.resolve();
+													}
+													if (
+														!/^(?:(?:\+|00)86)?1(?:(?:3[\d])|(?:4[5-79])|(?:5[0-35-9])|(?:6[5-7])|(?:7[0-8])|(?:8[\d])|(?:9[189]))\d{8}$/.test(
+															value,
+														)
+													) {
+														return Promise.reject(new Error('输入正确的手机号码'));
+													}
+													return Promise.resolve();
+												},
+											},
+										]}
+									>
+										<Input placeholder='请输入技术经理人手机号' maxLength={11} />
 									</Form.Item>
 								</>
 							)}
@@ -721,6 +873,48 @@ export default () => {
 				</div>
 			</Modal>
 		)
+	}
+	// 结果预览
+	const [previewVisible, setPreviewVisible] = useState<boolean>(false)
+	const previewResultModal = (): React.ReactNode => {
+		return (
+			<Modal
+				title={`「${resultObj.name}」结果预览`}
+				width="800px"
+				visible={previewVisible}
+				maskClosable={false}
+				closable={false}
+				className="preview-modal"
+				footer={[
+          <Button key="submit" type="primary" style={{width: 160}} onClick={() => {setPreviewVisible(false)}}>
+            关闭
+          </Button>
+        ]}
+			>
+				<div className='preview-wrap'>
+					<h3>诊断报告概述</h3>
+					<p>{resultObj&&resultObj.summary || ''}</p>
+					<h3>诊断目标建议</h3>
+					<p>{resultObj&&resultObj.recommendations || ''}</p>
+					<h3>特殊提醒</h3>
+					<p>{resultObj&&resultObj.remind || ''}</p>
+					<h3>推荐服务商</h3>
+					<p></p>
+					<h3>推荐技术经理人</h3>
+					<p>{resultObj&&resultObj.relatedTechnicalManager&&resultObj.relatedTechnicalManager.name || ''} {resultObj&&resultObj.relatedTechnicalManager&&resultObj.relatedTechnicalManager.phone || ''}</p>
+					<h3>诊断结果关联问卷填写逻辑</h3>
+					<p></p>
+				</div>
+			</Modal>
+		)
+	}
+
+	const [coverForm] = Form.useForm()
+	const [covers, setCovers] = useState<Covers>({})
+	// 诊断结果-表单更新
+	const onValuesChange3 = (changedValues: any, allValues: any) => {
+		console.log(changedValues, '诊断封面', allValues);
+		setCovers({...covers, ...allValues})
 	}
 
 	return (
@@ -833,7 +1027,7 @@ export default () => {
 																	<Form.Item
 																		label={index + 1 + '.' + item.name}
 																		key={index}
-																		extra={item.subTitle}
+																		// extra={item.subTitle}
 																		rules={[{ required: item.isRequired }]}
 																	>
 																		<div className={'tooltip'}>{item.subTitle}</div>
@@ -878,6 +1072,15 @@ export default () => {
 										//题目关联弹框完成选择后更新相关变量 
 										onFormFinish={(name, { values, forms }) => {
 											console.log(name, values, 'onFormFinish');
+											let indexRelate = values.currentTitle.split('.')[0]*1 -1
+											console.log(indexRelate, 'indexRelate');
+											const list = [...diagnoseList]
+											list.splice(indexRelate, 1, {
+												...list[indexRelate],
+												...{relations: values.relations}
+											} as EditType);
+											console.log(list, 'list');
+											setDiagnoseList(list)
 											if (name === 'relatedForm') {
 												const relations = rightForm.getFieldValue('relations') || [];
 												rightForm.setFieldsValue({ relations: [...relations, values] });
@@ -1097,7 +1300,10 @@ export default () => {
 							<Button
 								type="primary"
 								key="add"
-								onClick={() => {setAddResultVisible(true)}}
+								onClick={() => {
+									setEditResultIndex(-1)
+									setAddResultVisible(true)
+								}}
 							>
 								<PlusOutlined />新建诊断结果
 							</Button>
@@ -1114,11 +1320,122 @@ export default () => {
 							<Button
 								type="primary"
 								key="next"
+								onClick={() => {toNext()}}
 							>
 								下一步
 							</Button>
 							<Button
 								key="prev"
+								onClick={() => {toPrev()}}
+							>
+								上一步
+							</Button>
+						</div>
+					</div>
+				)}
+				{/* 第三步：诊断封面 */}
+				{currentStep == 2 && (
+					<div className='step-container-3'>
+						<Form 
+							form={coverForm}
+							layout="vertical"
+							onValuesChange={(newEventName, allValues) => { onValuesChange3(newEventName, allValues) }}
+						>
+							<Form.Item
+								name="inIcon"
+								label="诊断页面入口icon"
+								rules={[
+									{
+										required: true,
+										message: '必填',
+									},
+								]}
+							>
+								<UploadForm
+									listType="picture-card"
+									className="avatar-uploader"
+									showUploadList={false}
+									maxSize={5}
+									accept=".png,.jpeg,.jpg"
+									tooltip={<span className={'tooltip'}>图片格式仅支持JPG、PNG、JPEG,且不超过5M</span>}
+								/>
+							</Form.Item>
+							<Form.Item label="是否允许放在平台首页" name={'showInHomePage'} valuePropName="checked">
+								<Switch checkedChildren="是" unCheckedChildren="否" />
+							</Form.Item>
+							<Row>
+								<Col span={6}>
+									<Form.Item
+										name="icon"
+										label="首页默认小icon"
+										rules={[
+											{
+												required: true,
+												message: '必填',
+											},
+										]}
+									>
+										<UploadForm
+											listType="picture-card"
+											className="avatar-uploader"
+											showUploadList={false}
+											maxSize={5}
+											accept=".png,.jpeg,.jpg"
+											tooltip={<span className={'tooltip'}>图片格式仅支持JPG、PNG、JPEG,且不超过5M</span>}
+										/>
+									</Form.Item>
+								</Col>
+								<Col span={6}>
+									<Form.Item
+										name="coverUrl"
+										label="首页3D图"
+										rules={[
+											{
+												required: true,
+												message: '必填',
+											},
+										]}
+									>
+										<UploadForm
+											listType="picture-card"
+											className="avatar-uploader"
+											showUploadList={false}
+											maxSize={5}
+											accept=".png,.jpeg,.jpg"
+											tooltip={<span className={'tooltip'}>图片格式仅支持JPG、PNG、JPEG,且不超过5M</span>}
+										/>
+									</Form.Item>
+								</Col>
+							</Row>
+							<Form.Item name={'diagnoseDescribe'} label="诊断描述" 
+								rules={[
+									{
+										required: true,
+										message: '必填',
+									}
+								]}
+								style={{width: 600}}
+							>
+								<Input.TextArea
+									autoSize={false}
+									placeholder='请输入'
+									maxLength={2000}
+									showCount={false}
+									rows={3}
+								/>
+							</Form.Item>
+						</Form>
+						<div className='bottom-buttons'>
+							<Button
+								type="primary"
+								key="next"
+								onClick={() => {toNext()}}
+							>
+								发布诊断 / 完成迭代
+							</Button>
+							<Button
+								key="prev"
+								onClick={() => {toPrev()}}
 							>
 								上一步
 							</Button>
@@ -1128,6 +1445,7 @@ export default () => {
 			</div>
 			{useModal()}
 			{useResultAddModal()}
+			{previewResultModal()}
 		</PageContainer>
 	)
 }

@@ -104,10 +104,10 @@ const TableList: React.FC = () => {
     getPages();
   }, []);
 
-  const setRowClassName = (record:any) => {
-    console.log(111, record, record.id == '1626229857397111' ? 'rowBackground' : '')
-    return record.id == '1626229857397111' ? 'rowBackground' : ''
-  }
+  // const setRowClassName = (record:any) => {
+  //   console.log(111, record, record.id == '1626229857397111' ? 'rowBackground' : '')
+  //   return record.id == '1626229857397111' ? 'rowBackground' : ''
+  // }
 
   /**
    * column
@@ -154,9 +154,8 @@ const TableList: React.FC = () => {
               <a
                 href="#"
                 onClick={() => {
-                  // setEditingItem(record);
-                  // setModalVisible(true);
-                  form.setFieldsValue({ ...record });
+                  // history.push({pathname: '/service-config/diagnose/add'})
+                  history.push(`/service-config/diagnose/add?id=${record?.id}`)
                 }}
               >
                 迭代{' '}
@@ -196,7 +195,6 @@ const TableList: React.FC = () => {
             key="addStyle"
             onClick={() => {
               history.push('/service-config/diagnose/add')
-              // setModalVisible(true);
             }}
           >
             <PlusOutlined /> 新建诊断

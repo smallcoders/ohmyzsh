@@ -377,6 +377,11 @@ export default [
             name: '新建诊断',
             component: './service_config/diagnose_manage/add_diagnose',
           },
+          {
+            path: '/service-config/diagnose/history',
+            name: '历史版本查看',
+            component: './service_config/diagnose_manage/history_diagnose',
+          },
         ],
       },
     ],
