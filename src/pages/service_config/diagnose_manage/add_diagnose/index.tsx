@@ -318,22 +318,49 @@ export default () => {
 			),
 			onOk() {
 				console.log(index, 666);
+				let arr = [...diagnoseList]
+				let arr2 = arr.splice(index+1)
+				console.log(arr2, '指定索引后的所有数组');
+				let arr3 = [] 
+				arr2.map((item) => {
+					let r = [...item.relations]
+					console.log(r, 'r');
+					if(!r || r == []) {
+						arr3.push(item)
+					}else {
+						r.some((o,oi) => {
+							if(o.dependIndex == index) {
+								r.splice(oi, 1)
+							}
+						})
+						let newR = []
+						r.map((o) => {
+							newR.push(o.dependIndex>index ? {...o, dependIndex: o.dependIndex-1} : o)
+						})
+						arr3.push({...item,relations: newR})
+					}
+				})
+				console.log(arr3, 'arr3');
+				setDiagnoseList(arr3)
+				Modal.destroyAll();
+				// return 
 			},
 			onCancel() {}
 		});
 	};
+	// 删除指定索引，有关联关系的，需要循环对应索引后面的所有题目
+	// 删除关联此题的relations中dependIndex=index的项，其他关联题目则判断关联题索引值的大小，大于此索引的需要dependIndex-1
 	const deleteDiagnose = (index: number) => {
 		let arr = [...diagnoseList]
-		console.log(arr, 'deleteDiagnose');
 		arr.map((item) => {
 			item.relations.map((j: any) => {
-				if(j.dependIndex == index) {
+				// if(j.dependIndex == index) {
 					deleteInfo(index)
-				}else {
-					setCurrentAddIndex(index-1)
-					arr.splice(index, 1)
-					setDiagnoseList(arr)
-				}
+				// }else {
+				// 	setCurrentAddIndex(index-1)
+				// 	arr.splice(index, 1)
+				// 	setDiagnoseList(arr)
+				// }
 			})
 		})
 	
