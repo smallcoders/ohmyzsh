@@ -31,13 +31,9 @@ export default () => {
 
   const [descForm] = Form.useForm()
   const [normForm] = Form.useForm()
-
-  const prepare = () => {
-    getInterfaceInfo()
-  }
-
+  
   useEffect(() => {
-    prepare();
+    getInterfaceInfo()
   }, [])
 
   async function getInterfaceInfo() {

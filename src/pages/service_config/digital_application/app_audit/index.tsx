@@ -16,20 +16,14 @@ import ApplicationManager from '@/types/service-config-digital-applictaion';
 
 import type { ColumnsType } from 'antd/es/table';
 
+import AuditModal from './audit-modal'
+import type { AuditModalType } from './audit-modal'
+
 import {
-  getApplyInfoPage,
-  handleApply,
-  getApplicationTypeList
+  getApplyInfoPage
 } from '@/services/digital-application';
 
 type AuditType = '待审核'|'审核通过'|'审核拒绝'
-
-type AuditModalType = {
-  show: boolean,
-  action?: '审核通过'|'审核拒绝',
-  loading?: boolean,
-  id?: number
-}
 
 export default () => {
   const [activeTab, setActiveTab] = useState<AuditType>('待审核')
@@ -50,17 +44,8 @@ export default () => {
   const [auditSuccessPageInfo, setAuditSuccessPageInfo] = useState<Common.ResultPage>({ pageIndex: 1, pageSize: 10, totalCount: 0, pageTotal: 0 })
   const [auditFailPageInfo, setAuditFailPageInfo] = useState<Common.ResultPage>({ pageIndex: 1, pageSize: 10, totalCount: 0, pageTotal: 0 });
 
-  // 应用分类
-  const [applicationMarketList, setApplicationMarketList] = useState<ApplicationManager.MarketOption[]>([])
-
   // 审核弹窗
   const [showAuditModal, setShowAuditModal] = useState<AuditModalType>({ show: false })
-  // 审核操作
-  const [auditForm] = Form.useForm();
-
-  useEffect(() => {
-    getApplicationMarketOptions()
-  }, [])
 
   useEffect(() => {
     getAuditingList()
@@ -73,13 +58,6 @@ export default () => {
   useEffect(() => {
     getAuditFailList()
   }, [auditFailSearch])
-
-  // 获取应用分类
-  function getApplicationMarketOptions() {
-    getApplicationTypeList().then(({ result }) => {
-      setApplicationMarketList(result || [])
-    })
-  }
 
   // 审核失败列表
   async function getAuditingList(pageIndex: number = 1, pageSize = auditingPageInfo.pageSize) {
@@ -153,95 +131,6 @@ export default () => {
     }
   }
 
-  const createAuditModal = () => {
-    // 只有待审核才有弹窗
-    return (
-      <Modal
-        title={showAuditModal.action === '审核通过' ? '通过申请前请确认当前应用分类' : '拒绝理由'}
-        width="400px"
-        visible={showAuditModal.show}
-        maskClosable={false}
-        onCancel={() => setShowAuditModal({ show: false })}
-        footer={
-          [
-            <Button key="back" onClick={() => {
-              auditForm?.resetFields()
-              setShowAuditModal({ show: false })
-            }}>
-              取消
-            </Button>,
-            <Button key="submit" type="primary" loading={showAuditModal.loading} onClick={() => {
-              auditForm?.validateFields().then(async ({ typeId, handleReason }) => {
-                const params = showAuditModal.action === '审核通过' ? {
-                  handleResult: 1,
-                  id: showAuditModal.id,
-                  typeId,
-                } : {
-                  handleResult: 0,
-                  id: showAuditModal.id,
-                  handleReason
-                }
-                try {
-                  const { code, message: msg } = await handleApply(params)
-                  if (code === 0) {
-                    message.success('处理成功');
-                    setShowAuditModal({ show: false })
-                    getAuditingList()
-                    showAuditModal.action === '审核通过' ? getAuditSuccessList() : getAuditFailList()
-                  } else {
-                    message.error(msg)
-                    setShowAuditModal({ ...showAuditModal, loading: false })
-                  }
-                } catch (error) {
-                  setShowAuditModal({ ...showAuditModal, loading: false })
-                }
-              })
-            }}>
-              { showAuditModal.action === '审核通过' ? '确定并通过审核' : '确定' }
-            </Button>
-          ]
-        }
-      >
-        <Form form={auditForm} layout="horizontal">
-          {
-            showAuditModal.action === '审核通过' ? (
-              <Form.Item
-                style={{marginBottom: '20px'}}
-                name="typeId"
-                label="应用分类"
-                rules={[{ required: true, message: '请确认应用分类' }]}
-                >
-                <Select placeholder="请选择">
-                  {applicationMarketList.map((el: ApplicationManager.MarketOption) => {
-                    return (
-                      <Select.Option key={el.id} value={el.id}>
-                        {el.name}
-                      </Select.Option>
-                    )
-                  })}
-                </Select>
-              </Form.Item>
-            ) : (
-              <Form.Item
-                style={{ marginBottom: '20px' }}
-                rules={[{ required: true, message: '请填写应用审核不通过的原因' }]}
-                name="handleReason"
-                required
-                >
-                  <Input.TextArea
-                    placeholder="请填写应用审核不通过的原因"
-                    autoSize={{ minRows: 3, maxRows: 5 }}
-                    maxLength={50}
-                    showCount
-                  />
-              </Form.Item>
-            )
-          }
-          </Form>
-      </Modal>
-    )
-  }
-
   const getColumns = (type: AuditType): ColumnsType<ApplicationManager.Content> => {
     const columns: ColumnsType<ApplicationManager.Content> = [
       {
@@ -282,15 +171,14 @@ export default () => {
                 <Button
                   type="link"
                   onClick={() => {
-                    setShowAuditModal({ id: row.id, action: '审核通过', show: true, loading: false })
-                    auditForm.setFieldsValue({ typeId: Number(row.typeId) })
+                    setShowAuditModal({ id: row.id, action: '审核通过', show: true, typeId: Number(row.typeId) })
                   }}
                 >
                   通过
                 </Button>
                 <Button
                   type="link"
-                  onClick={() => setShowAuditModal({ id: row.id, action: '审核拒绝', show: true, loading: false })}
+                  onClick={() => setShowAuditModal({ id: row.id, action: '审核拒绝', show: true })}
                 >
                   拒绝
                 </Button>
@@ -408,7 +296,15 @@ export default () => {
               dataSource={auditingList}
             />
           </Spin>
-          {createAuditModal()}
+          <AuditModal modal={showAuditModal} onCloseModal={(action?: string) => {
+            if (action) {
+              getAuditingList()
+              action === '审核通过' ? getAuditSuccessList() : getAuditFailList()
+            }
+            setShowAuditModal({ show: false })
+          }}
+          >
+          </AuditModal>
         </Tabs.TabPane>
         <Tabs.TabPane tab="审核通过" key="审核通过">
           {createSearchForm('审核通过')}

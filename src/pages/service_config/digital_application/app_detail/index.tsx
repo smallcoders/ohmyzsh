@@ -2,14 +2,18 @@ import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import { PageContainer } from '@ant-design/pro-layout';
 import { useEffect, useState } from 'react';
-import { message, Empty, Spin, Row, Col } from 'antd';
+import { message, Empty, Spin, Row, Col, Space, Button } from 'antd';
 
 import useQuery from '@/hooks/useQuery';
 
 import ApplicationManager from '@/types/service-config-digital-applictaion.d';
 
+import AuditModal from '../app_audit/audit-modal'
+import type { AuditModalType } from '../app_audit/audit-modal'
+
 import {
-  getApplicationInfo
+  getApplicationInfo,
+  getOpenInsideToken
 } from '@/services/digital-application';
 
 const sc = scopedClasses('service-config-digital-app-detail');
@@ -22,14 +26,15 @@ export default () => {
 
   const [detailInfo, setDetailInfo] = useState<ApplicationManager.Content>()
 
+  // 审核弹窗
+  const [showAuditModal, setShowAuditModal] = useState<AuditModalType>({ show: false })
+
   async function getApplicationDetail(id: string) {
     try {
       setPageLoading(true)
       const { result, code } = await getApplicationInfo({ id });
       if (code === 0) {
-        if (result.isDelete !== 1) {
-          setDetailInfo(result)
-        }
+        setDetailInfo(result)
       } else {
         message.error(`请求数据失败`);
       }
@@ -40,6 +45,17 @@ export default () => {
     }
   }
 
+  function handleJumpLink(url: string) {
+    getOpenInsideToken().then(({ result, code, message: msg }) => {
+      if (code === 0) {
+        const token = !~url.indexOf('?') ? `?token=${result}` : `&token=${result}`
+        window.open(url + token)
+      } else {
+        message.error(msg)
+      }
+    })
+  }
+
   useEffect(() => {
     if (query.id) getApplicationDetail(query.id)
   }, [query])
@@ -47,12 +63,42 @@ export default () => {
   return (
     <PageContainer
       title="应用详情"
+      extra={
+        // 待审核的状态才有
+        detailInfo?.state === 3 && (
+          <div className='audit-action'>
+            <Space>
+              <Button
+                type="primary"
+                onClick={() => {
+                  setShowAuditModal({ id: detailInfo.id, action: '审核通过', show: true, typeId: Number(detailInfo.typeId) })
+                }}
+              >
+                通过
+              </Button>
+              <Button
+                onClick={() => setShowAuditModal({ id: detailInfo.id, action: '审核拒绝', show: true })}
+              >
+                拒绝
+              </Button>
+            </Space>
+            <AuditModal modal={showAuditModal} onCloseModal={(action?: string) => {
+              if (action) {
+                getApplicationDetail(query.id)
+              }
+              setShowAuditModal({ show: false })
+            }}
+            >
+            </AuditModal>
+          </div>
+        )
+      }
     >
       {
-        !detailInfo ? (
+        (!detailInfo || detailInfo.isDelete) ? (
           <div className={sc('')}>
             {
-              pageLoading ? (<Spin className='loading'></Spin>): (<Empty description="暂无数据，请返回重试！"></Empty>)
+              pageLoading ? (<Spin className='loading'></Spin>): (<Empty description={!detailInfo ? `暂无数据，请返回重试！` : '该应用已删除！'}></Empty>)
             }
           </div>
         ) : (
@@ -85,6 +131,9 @@ export default () => {
                 (detailInfo.appType === ApplicationManager.TypeEnum.H5 || detailInfo.appType === ApplicationManager.TypeEnum.ALL) ? (
                   <div className='info-row'>
                     <span className='name'>移动端（H5）应用地址：</span><span className='content'>{detailInfo.appHomeUrl}</span>
+                    {
+                      detailInfo.appHomeUrl && <Button type='link' onClick={() => handleJumpLink(detailInfo.appHomeUrl!)}>查看</Button>
+                    }
                   </div>
                 ) : null
               }
@@ -92,6 +141,9 @@ export default () => {
                 (detailInfo.appType === ApplicationManager.TypeEnum.Web || detailInfo.appType === ApplicationManager.TypeEnum.ALL) ? (
                   <div className='info-row'>
                     <span className='name'>网页端（Web）应用地址：</span><span className='content'>{detailInfo.pcHomeUrl}</span>
+                    {
+                      detailInfo.pcHomeUrl && <Button type='link' onClick={() => handleJumpLink(detailInfo.pcHomeUrl!)}>查看</Button>
+                    }
                   </div>
                 ) : null
               }

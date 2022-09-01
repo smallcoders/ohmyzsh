@@ -32,6 +32,8 @@ namespace ApplicationManager {
     descs?: string
     worth?: string
     scene?: string
+    state?: number
+    isDelete?: number
   };
 
   export type PushBag = {

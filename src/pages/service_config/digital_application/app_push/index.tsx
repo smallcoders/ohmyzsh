@@ -511,7 +511,6 @@ export default () => {
 
   const columns: ColumnsType<ApplicationManager.PushDetail> = [
     { title: '序号', dataIndex: 'sort', width: 60, render: (_: any, _record: any, index: number) => index + 1 },
-    { title: 'ID', dataIndex: 'id'  },
     { title: '推送时间', dataIndex: 'pushTime'  },
     { title: '应用名称', dataIndex: 'appNames', render: (_: any, row: any) => {
         return (

@@ -742,7 +742,9 @@ export default () => {
           <img src={`/antelope-manage/common/download/${row.logoImageId}`} alt="图片损坏" />
           <div className='info'>
             <Tooltip title={row.appName}>
-              <span>{ row.appName }</span>
+              <span onClick={() => {
+                history.push(`${routeName.DIGITAL_APPLICATION_DETAIL}?id=${row.id}`)
+              }}>{ row.appName }</span>
             </Tooltip>
             <Tooltip title={row.content} placement="right">
               <span>{ row.content }</span>
@@ -760,19 +762,16 @@ export default () => {
           <Space>
             <Button
               type="link"
-              // onClick={() => showEditOrDetail(row, true)}
-              onClick={() => {
-                history.push(`${routeName.DIGITAL_APPLICATION_DETAIL}?id=${row.id}`)
-              }}
+              onClick={() => showEditOrDetail(row, true)}
             >
               查看
             </Button>
-            {/* <Button
+            <Button
               type="link"
               onClick={() => showEditOrDetail(row, false)}
             >
               编辑
-            </Button> */}
+            </Button>
             <Popconfirm
               title="确定删除么？"
               okText="确定"
@@ -783,7 +782,7 @@ export default () => {
                 删除
               </Button>
             </Popconfirm>
-            {/* <Button
+            <Button
               type="link"
               disabled={!row.path}
               href={`/antelope-manage/common/download/${row.path}`}
@@ -791,7 +790,7 @@ export default () => {
               onClick={() => message.success(`下载成功，请查阅`) }
             >
               下载手册
-            </Button> */}
+            </Button>
           </Space>
         );
       },
@@ -821,7 +820,7 @@ export default () => {
             >
               <SendOutlined /> 推送应用
             </Button>
-            {/* <Button
+            <Button
               type="primary"
               onClick={() => {
                 setEditingItem({})
@@ -829,7 +828,7 @@ export default () => {
               }}
             >
               <PlusOutlined /> 新增应用
-            </Button> */}
+            </Button>
           </div>
         </div>
       </div>

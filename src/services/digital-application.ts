@@ -117,7 +117,7 @@ export async function getApplicationInfo(params: { id: string }) {
 // 获取接口配置
 export async function getInterfaceConfig() {
   return request('/antelope-other/mng/api/manage/getInterfaceConfig', {
-    method: 'post'
+    method: 'get'
   })
 }
 
@@ -134,6 +134,13 @@ export async function updateInterfaceConfig(data: { id?: number, interfaceDescri
   return request('/antelope-other/mng/api/manage/updateInterfaceConfig', {
     method: 'post',
     data
+  })
+}
+
+// 【羚羊开放平台】获取token
+export async function getOpenInsideToken() {
+  return request('/antelope-other/token/inside/getToken', {
+    method: 'get'
   })
 }
 
