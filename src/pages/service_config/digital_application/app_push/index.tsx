@@ -1,4 +1,4 @@
-import './app-push-record.less';
+import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
 
@@ -58,6 +58,7 @@ export default () => {
     timeRange?: Array<any> // 领取有效时间范围
     startTime?: string
     endTime?: string
+    pushTime?: string
   }>({});
 
   const [transferSearchContent, setTransferSearchContent] = useState<{
@@ -127,6 +128,7 @@ export default () => {
         searchForm.endTime = moment(searchForm.timeRange[1]).format('YYYY-MM-DD HH:mm:ss')
         delete searchForm.timeRange
       }
+      if (searchForm.pushTime) searchForm.pushTime = moment(searchForm.pushTime).format('YYYY-MM-DD')
       const { result, totalCount, pageTotal, code } = await getPushRecordList({
         pageIndex,
         pageSize,
@@ -453,6 +455,11 @@ export default () => {
         <Form form={searchForm}>
           <Row justify="space-between">
             <Col>
+              <Form.Item name="pushTime" label="推送时间">
+                <DatePicker allowClear />
+              </Form.Item>
+            </Col>
+            <Col>
               <Form.Item name="appName" label="应用名称">
                 <Input placeholder="请输入" />
               </Form.Item>
@@ -504,7 +511,6 @@ export default () => {
 
   const columns: ColumnsType<ApplicationManager.PushDetail> = [
     { title: '序号', dataIndex: 'sort', width: 60, render: (_: any, _record: any, index: number) => index + 1 },
-    { title: 'ID', dataIndex: 'id'  },
     { title: '推送时间', dataIndex: 'pushTime'  },
     { title: '应用名称', dataIndex: 'appNames', render: (_: any, row: any) => {
         return (
