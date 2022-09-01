@@ -143,6 +143,7 @@ export default () => {
             <div className='info'>
               <Tooltip title={row.appName}>
                 <span onClick={() => {
+                  if (row.isDelete) return message.warning('该应用已不存在，无法查看详情')
                   history.push(`${routeName.DIGITAL_APPLICATION_DETAIL}?id=${row.id}`)
                 }}>{ row.appName }</span>
               </Tooltip>
