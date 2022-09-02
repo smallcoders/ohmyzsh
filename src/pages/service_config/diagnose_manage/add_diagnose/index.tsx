@@ -148,7 +148,6 @@ export default () => {
 	const [totalAbleRelated, setTotalAbelRelated] = useState<any>([])
 	// 当前可选择的关联题目题库
 	const [ableSelectRelated, setAbleSelectRelated] = useState<any>([])
-	const [relationList, setRelationList] = useState<any>([])
 
 	const [currentStep, setCurrentStep] = useState<number>(0)
 
@@ -285,7 +284,7 @@ export default () => {
 					}
 				]
 			} else if (type == 'cascader') {//省市区
-				sameObj.assignedProvince = 0
+				sameObj.isAssigned = false
 			} else if (type == 'input') {//单项填空
 				sameObj.validate = 0
 			}
@@ -553,7 +552,7 @@ export default () => {
 		}
 	}
 
-	const deal = () => {
+	const dealAll = () => {
 		let arr = [...diagnoseList]
 		let arr2 = arr.map((item, index) => {
 			const rtn = {...item}
@@ -565,10 +564,35 @@ export default () => {
 		console.log(arr2, 'arr2')
 		return arr2
 	}
+	const dealAble = () => {
+		let arr = dealAll()
+		let dArr = [...diagnoseList]
+		let arr2 = currentAddIndex>-1 && dArr[currentAddIndex].relations
+		// let arr2 = relatedRelations
+		if(!arr2) {
+			console.log(11111)
+		}else {
+			arr2.map((item: any) => {
+				arr.filter(j => j.dependIndex != item.dependIndex)
+			})
+			console.log(arr, 'filter-arr');
+		}
+		return arr
+		
+		// for(let i = 0; i < main.length; ){
+		// 	if(names.includes(main[i].name)){
+		// 	   i++;
+		// 	   continue;
+		// 	};
+		// 	main.splice(i, 1);
+		//  };
+		// return arr
+	}
 	// 
 	useEffect(() => {
-		setTotalAbelRelated([...deal()])
-		setAbleSelectRelated([...deal()])
+		setTotalAbelRelated([...dealAll()])
+		setAbleSelectRelated([...dealAll()])
+		// setAbleSelectRelated([...dealAble()])
 	}, [diagnoseList]);
 
 	const [form] = Form.useForm();
@@ -579,7 +603,7 @@ export default () => {
 			message.error('第1题不能设置题目关联逻辑')
 			return false
 		}
-		if (!ableSelectRelated || ableSelectRelated.length == 0) {
+		if (!totalAbleRelated || totalAbleRelated.length == 0) {
 			message.error('此题前面没有单选题和多选题，无法设置题目关联逻辑')
 			return false
 		}
@@ -641,10 +665,15 @@ export default () => {
 	};
 
 	const ModalForm: React.FC<ModalFormProps> = ({ visible, onCancel }) => {
-		// const [form] = Form.useForm();
 		const relatedRelations = Form.useWatch('relations', form);
-		const reletedArr = relatedRelations
-
+		// let relationsDependIndexArr:any = []
+		// useEffect(() => {
+		// 	relatedRelations.map((i:any) => {
+		// 		relationsDependIndexArr.push(i.dependIndex)
+		// 	})
+		// 	console.log(relationsDependIndexArr, '555')
+		// }, [relatedRelations]);
+		
 		useResetFormOnCloseModal({
 			form,
 			visible,
@@ -653,9 +682,34 @@ export default () => {
 		const onOk = () => {
 			form.submit();
 		};
+		const emptyRelations = () => {
+			form.setFieldsValue({
+				relations: [], 
+				relatedRelation: '',
+				currentTitle: `${currentAddIndex+1}.${diagnoseList[currentAddIndex].name}`
+			})
+		}
 
 		return (
-			<Modal title="题目关联" visible={visible} onOk={onOk} onCancel={onCancel}>
+			<Modal 
+				title="题目关联" 
+				visible={visible} 
+				onOk={onOk} 
+				onCancel={onCancel}
+				footer={[
+					<Button key="empty" type="link" icon={<DeleteOutlined />} style={{float: 'left'}}
+						onClick={() => {emptyRelations()}} 
+					>
+						清空题目关联逻辑
+					</Button>,
+					<Button key="cancel"  onClick={onCancel}>
+						取消
+					</Button>,
+					<Button key="ensure" type="primary" onClick={onOk}>
+						确定
+					</Button>
+				]}
+			>
 				<Form 
 					form={form} 
 					layout="vertical" 
@@ -663,8 +717,7 @@ export default () => {
 					initialValues={{
 						currentTitle: currentAddIndex>-1 && diagnoseList && diagnoseList.length > 0 && (
 							`${currentAddIndex + 1}.${diagnoseList[currentAddIndex].name}`
-						),
-						// relations: diagnoseList[currentAddIndex].relations
+						)
 					}}
 				>
 					<Form.Item label={'当前题目'} name="currentTitle">
@@ -682,11 +735,16 @@ export default () => {
 											<Form.Item
 												{...field}
 												name={[field.name, 'dependIndex']}
-												// label={'关联题目' + (fieldIndex + 1)}
 											>
 												<Select>
 													{ableSelectRelated && ableSelectRelated.map((item: any) =>
-														<Option value={item.dependIndex} key={(item.dependIndex+1)+item.name}>{item.dependIndex+1}.{item.name}{item.type=='radio'?'【单选】':'【多选题】'}</Option>
+														<Option 
+															value={item.dependIndex} 
+															key={(item.dependIndex+1)+item.name}
+															// disabled={relationsDependIndexArr.indexOf(item.dependIndex) > -1}
+														>
+															{item.dependIndex+1}.{item.name}{item.type=='radio'?'【单选】':'【多选题】'}
+														</Option>
 													)}
 												</Select>
 											</Form.Item>
@@ -751,9 +809,6 @@ export default () => {
 												)
 											}) 
 										}
-										{/* <Col span={17}>
-											reletedArr:{JSON.stringify(reletedArr)} {JSON.stringify(reletedArr[fieldIndex])} 
-										</Col> */}
 									</Row>
 									</>
 								))}
@@ -788,30 +843,6 @@ export default () => {
 		setVisible(false);
 	};
 
-	/**
-   * 编辑或返回上一步时获取诊断结果数据
-   */
-	//  const getPages = async () => {
-  //   try {
-  //     const { result, code } = await getOrgTypeList();
-  //     if (code === 0) {
-  //       setDataSource(
-	// 				result
-  //         // result.map((p, index) => {
-  //         //   return { sort: index, ...p };
-  //         // }),
-  //       );
-  //     } else {
-  //       message.error(`请求列表数据失败`);
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-  // 作为生命周期 开始时获取
-  // useEffect(() => {
-  //   getPages();
-  // }, []);
 	const [addReultVisible, setAddResultVisible] = useState<boolean>(false)
 
 	// 诊断结果列表
@@ -1139,10 +1170,10 @@ export default () => {
 				closable={false}
 				className="preview-modal"
 				footer={[
-          <Button key="submit" type="primary" style={{width: 160}} onClick={() => {setPreviewVisible(false)}}>
-            关闭
-          </Button>
-        ]}
+					<Button key="submit" type="primary" style={{width: 160}} onClick={() => {setPreviewVisible(false)}}>
+						关闭
+					</Button>
+				]}
 			>
 				<div className='preview-wrap'>
 					<h3>诊断报告概述</h3>
@@ -1555,18 +1586,22 @@ export default () => {
 														</Form.Item>
 													</Col>
 													<Col span={4}>
-														<Form.Item name="isKey" valuePropName="checked">
-															<Checkbox value={1}>指定省份</Checkbox>
+														<Form.Item name="isAssigned" valuePropName="checked">
+															<Checkbox>指定省份</Checkbox>
 														</Form.Item>
 													</Col>
 													{/* 省份数据单选 */}
-													{/* <Col span={4}>
-														<Form.Item name="isKey">
-															<Select>
-																<Option value={1}>安徽省</Option>
-															</Select>
-														</Form.Item>
-													</Col> */}
+													{
+														diagnoseList[currentAddIndex].isAssigned && (
+															<Col span={4}>
+																<Form.Item name="assignedProvince">
+																	<Select>
+																		<Option value={1}>安徽省</Option>
+																	</Select>
+																</Form.Item>
+															</Col>
+														)
+													}
 												</Row>
 												<Form.Item label="填写提示" name={'subTitle'}>
 													<Input placeholder='输入填写提示可以作为题目副标题' maxLength={35} />
