@@ -14,22 +14,18 @@ export function getCommentPage(data: {
   pageSize?: number;
   pageIndex?: number;
 }) {
-  const key = 'rpc-tag'
   return request('/antelope-manage/comments/page',{
     method: 'post',
     data,
-    headers: {[key]: 'yushen'}
   })
 }
 //查询当前审核的留言
 export function getCommentsCurrent(params: {
   commentId: string
 }) {
-  const key = 'rpc-tag'
   return request('/antelope-manage/comments/current',{
     method: 'get',
     params,
-    headers: {[key]: 'yushen'}
   })
 }
 // 查询详情中的留言列表
@@ -39,10 +35,8 @@ export function getCommentsDetailPage(params: {
   pageSize?: number;
   pageIndex?: number;
 }) {
-  const key = 'rpc-tag'
   return request('/antelope-manage/comments/detail/page',{
     method: 'get',
     params,
-    headers: {[key]: 'yushen'}
   })
 }
