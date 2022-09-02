@@ -54,6 +54,7 @@
   LEAVE_WORD_VERIFY_DETAIL: '/verify-agency/leave_word_verify/detail', // 留言审核
 
 
+
   PURCHASE_MANAGE: '/purchase-manage/order-manage', // 订单管理
   PURCHASE_MANAGE_INDEX: '/purchase-manage/order-manage/index', // 订单管理列表
   PURCHASE_MANAGE_DETAIL: '/purchase-manage/order-manage/detail', // 订单管理详情
@@ -64,6 +65,9 @@
   USER_FEEDBACK: '/user-config/user-feedback', // 用户反馈
   COMMISSIONER_SERVICE: '/user-config/commissioner-service', // 专员服务记录
   ADMIN_ACCOUNT_DISTRIBUTOR: '/user-config/admin-account-distributor', // 管理员账号分配
+  REPORT_RECORD_VERIFY: '/user-config/report_record_verify', // 举报审核
+  REPORT_RECORD_VERIFY_INDEX: '/user-config/report_record_verify/index', // 举报审核
+  REPORT_RECORD_VERIFY_DETAIL: '/user-config/report_record_verify/detail', // 举报详情
 
   LIVE_TYPES_MAINTAIN: '/live-management/live-types-maintain', //直播类型管理
 
@@ -609,6 +613,29 @@ export default [
         path: '/user-config/tags-management',
         name: '账号标签管理',
         component: './user_config/tags_management',
+      },
+      {
+        path: routeName.REPORT_RECORD_VERIFY,
+        name: '举报记录',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.REPORT_RECORD_VERIFY,
+            redirect: routeName.REPORT_RECORD_VERIFY_INDEX,
+          },
+          {
+            path: routeName.REPORT_RECORD_VERIFY_INDEX,
+            name: '举报记录',
+            hideInBreadcrumb: true,
+            component: './user_config/report_record_verify',
+          },
+          {
+            path: routeName.REPORT_RECORD_VERIFY_DETAIL,
+            name: '举报记录详情',
+            // ⭐ 未处理
+            component: './user_config/report_record_verify/components/detail', 
+          },
+        ],
       },
     ],
   },

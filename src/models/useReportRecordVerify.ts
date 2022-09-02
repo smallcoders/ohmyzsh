@@ -9,12 +9,12 @@ const initialState = {
     pageTotal: 0,
   },
   searchInfo: {
-    reportType: null,
-    reportLoginName: '',
+    name: '',
+    content: '',
     startCreateTime: '',
     endCreateTime: '',
-    reportPhone: '',
-    processed: null,
+    tabEnum: null,
+    status: null,
   },
 };
 

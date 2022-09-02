@@ -8,13 +8,15 @@ namespace EnterpriseAdminVerify {
 
   export type Content = {
     id: string // id
+    bizId?: string
     orgName?: string // 组织名称
     accountType?: string // 组织类型  枚举备注: ENTERPRISE :企业 COLLEGE :高校 INSTITUTION :科研机构 OTHER :其他
     userName?: string // 申请人姓名
     phone?: string // 手机号
     state?: string // 状态
     updateTime?: string // 最新操作时间
-    
+    module?: string // 所属模块
+    processed?: boolean
   };
 
   export type Detail = {

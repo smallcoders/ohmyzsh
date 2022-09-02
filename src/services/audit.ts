@@ -5,9 +5,11 @@ import { request } from 'umi';
 
 /** 获取审核列表 */
 export async function httpGetAuditList(options?: { [key: string]: any }) {
+  const key2 = 'rpc-tag'
   return request<Common.ResultCode & { result: any[] }>('/antelope-manage/audit/query', {
     method: 'GET',
     params: { ...(options || {}) },
+    headers: {[key2]: 'yushen'}
   });
 }
 

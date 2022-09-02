@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Form, Button, message, Modal } from 'antd';
+import { Form, Button, message, Modal, Image } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import scopedClasses from '@/utils/scopedClasses';
 import Common from '@/types/common.d';
@@ -7,34 +7,74 @@ import { routeName } from '@/../config/routes';
 import { history, useModel } from 'umi';
 import SelfTable from '@/components/self_table';
 import SearchBar from '@/components/search_bar';
+import moment from 'moment';
+import { getCommentPage } from '@/services/leave-word-verify'
 
 import './index.less'
 import LeaveWordVerify from '@/types/leave-word-verify';
 const sc = scopedClasses('leave-word-audit');
 
 const stateObj = {
-  UN_CHECK: '未审核',
-  CHECKED: '审核通过',
-  UN_PASS: '审核拒绝',
-  UN_COMMIT: '未提交',
-  INVALID: '未提交已失效',
+  AUDITING: '审核中',
+  AUDIT_SUCCESS: '已发布',
+  AUDIT_FAIL: '审核退回',
 };
+const module = {
+  DEMAND: '企业需求',
+  EXPERT : '专家资源留言',
+  CREATIVE_DEMAND: '创新需求',
+}
+const statusTypeValue = [
+  {
+    id: 'AUDITING',
+    name: '审核中',
+  },
+  {
+    id: 'AUDIT_SUCCESS',
+    name: '已发布',
+  },
+  {
+    id: 'AUDIT_FAIL',
+    name: '审核退回',
+  },
+]
+const tabTypeValue = [
+  {
+    id: 'DEMAND',
+    name: '企业需求',
+  },
+  {
+    id: 'EXPERT',
+    name: '专家资源留言',
+  },
+  {
+    id: 'CREATIVE_DEMAND',
+    name: '创新需求',
+  },
+]
+
+export interface SearchInfo {
+  name: string;
+  content: string;
+  startCreateTime: string;
+  endCreateTime: string;
+  tabEnum: string | null;
+  status: boolean | null;
+}
 
 export default () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState<boolean>(false)
   const [dataSource, setDataSource] = useState<LeaveWordVerify.Content[]>([]);
-  const { pageInfo, setPageInfo, orgName, setOrgName, resetModel } = useModel(
-    'useLeaveWordVerify',
+  const { pageInfo, setPageInfo, searchInfo, setSearchInfo, resetModel } = useModel(
+    'useReportRecordVerify',
   );
 
   useEffect(()=>{
     // 初始化searchInfo
-    form?.setFieldsValue({ orgName })
+    form?.setFieldsValue({ ...searchInfo })
     // 获取分页数据
-    getLeaveWordVerifyPage(orgName, pageInfo?.pageSize, pageInfo?.pageIndex)
-    // 
-    console.log('@history', history)
+    getLeaveWordVerifyPage({...searchInfo}, pageInfo?.pageSize, pageInfo?.pageIndex)
   },[])
 
   const columns = [
@@ -47,31 +87,33 @@ export default () => {
     },
     {
       title: '用户名',
-      dataIndex: 'orgName',// ⭐调整
+      dataIndex: 'name',
       isEllipsis: true,
       width: 300,
     },
     {
       title: '留言内容',
-      dataIndex: 'orgName',// ⭐调整
+      dataIndex: 'content',
       isEllipsis: true,
       width: 300,
     },
     {
       title: '留言时间',
-      dataIndex: 'orgName',// ⭐调整
+      dataIndex: 'createTime',
       isEllipsis: true,
       width: 300,
     },
     {
       title: '所属板块',
-      dataIndex: 'orgName',// ⭐调整
+      dataIndex: 'tab',
       isEllipsis: true,
       width: 300,
+      render: (_: string) =>
+        Object.prototype.hasOwnProperty.call(module, _) ? module[_] : '--',
     },
     {
       title: '审核状态',
-      dataIndex: 'state',// ⭐调整
+      dataIndex: 'status',
       width: 150,
       render: (_: string) => 
       Object.prototype.hasOwnProperty.call(stateObj, _) ? stateObj[_] : '--',
@@ -87,10 +129,10 @@ export default () => {
             <Button 
               type="link"
               onClick={() => {
-                history.push(`${routeName.LEAVE_WORD_VERIFY_DETAIL}?id=${_record.id}`);
+                history.push(`${routeName.LEAVE_WORD_VERIFY_DETAIL}?auditId=${_record.auditId}&commentId=${_record.commentId}&tab=${_record.tab}&detailId=${_record.detailId}`);
               }}
             >
-              {_record?.state === 'UN_CHECK' ? '审核' : '详情'} 
+              {_record?.status === 'AUDITING' ? '审核' : '详情'} 
             </Button>
           </div>
         )
@@ -98,18 +140,20 @@ export default () => {
     }
   ]
 
-  const getLeaveWordVerifyPage = async (orgName = '', pageSize = 10, pageIndex = 1) => {
+  const getLeaveWordVerifyPage = async ( searchInfo: SearchInfo, pageSize = 10, pageIndex = 1) => {
     try {
       setLoading(true)
-      // const { result, code, totalCount, pageTotal } = await getLeaveWordVerifyPage({
-      //   pageIndex,
-      //   pageSize,
-      // })
-      // if (code === 0) {
-
-      // } else {
-        // message.error(`请求分页数据失败`);
-      // }
+      const { result, code, totalCount, pageTotal } = await getCommentPage({
+        ...searchInfo,
+        pageIndex,
+        pageSize,
+      })
+      if (code === 0) {
+        setPageInfo({ ...pageInfo, totalCount, pageTotal, pageIndex, pageSize });
+        setDataSource(result);
+      } else {
+        message.error(`请求分页数据失败`);
+      }
     } catch (error) {
       console.log(error);
     } finally {
@@ -119,53 +163,60 @@ export default () => {
 
   const searchList = [
     {
-      key: 'orgName', // ⭐需要调整
+      key: 'name', 
       label: '用户名',
       type: Common.SearchItemControlEnum.INPUT,
       initialValue: '',
       allowClear: true,
     },
     {
-      key: 'orgName', // ⭐需要调整
+      key: 'content', 
       label: '留言内容',
       type: Common.SearchItemControlEnum.INPUT,
       initialValue: '',
       allowClear: true,
     },
     {
-      key: 'orgName', // ⭐需要调整
+      key: 'createTime', 
       label: '留言时间',
-      type: Common.SearchItemControlEnum.INPUT,
-      initialValue: '',
+      type: Common.SearchItemControlEnum.RANGE_PICKER,
       allowClear: true,
     },
     {
-      key: 'orgName', // ⭐需要调整
+      key: 'status', 
       label: '审核状态',
       type: Common.SearchItemControlEnum.SELECT,
-      initialValue: '',
+      options: statusTypeValue,
       allowClear: true,
     },
     {
-      key: 'orgName', // ⭐需要调整
+      key: 'tab', 
       label: '所属板块',
       type: Common.SearchItemControlEnum.SELECT,
-      initialValue: '',
+      options: tabTypeValue,
       allowClear: true,
     },
   ];
 
   const onSearch = (info: any) => {
-    const { orgName } = info || {};
+    const { name, content, createTime, tab, status } = info || {};
     setPageInfo({ ...pageInfo, pageIndex: 1 });
-    setOrgName(orgName);
-    getLeaveWordVerifyPage(orgName, pageInfo?.pageSize);
+    setSearchInfo({name, content, createTime, tab, status});
+    getLeaveWordVerifyPage(
+      {
+        name,
+        content,
+        startCreateTime: createTime ? moment(createTime[0]).format('YYYY-MM-DD HH:mm:ss') : '',
+        endCreateTime: createTime ? moment(createTime[1]).format('YYYY-MM-DD HH:mm:ss') : '',
+        tabEnum: tab,
+        status
+      }, pageInfo?.pageSize);
   };
 
   return (
     <PageContainer className={sc('container')}>
       <div className={sc('search-container')}>
-        <SearchBar form={form} searchList={searchList} onSearch={onSearch} />
+        <SearchBar form={form} searchList={searchList} onSearch={onSearch} showTime />
       </div>
       <div className={sc('table-container')}>
       <SelfTable
@@ -186,7 +237,7 @@ export default () => {
           }}
           onChange={(pagination: any) => {
             // ⭐ 也需要处理
-            getLeaveWordVerifyPage(orgName, pagination.pageSize, pagination.current);
+            getLeaveWordVerifyPage({...searchInfo}, pagination.pageSize, pagination.current);
           }}
         />
       </div>
