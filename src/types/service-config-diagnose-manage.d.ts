@@ -12,14 +12,14 @@ namespace DiagnoseManage {
       // {
         name?: string; //题目标题
         type?: string; //题目类型 单选-radio 多选-checkbox 单行文本-input 多行文本-textarea 级联选择-cascader
-        isRequired?: number; //是否必答 是-1 否-2
-        isKey?: number; //是否为关键题 是-1 否-2
+        isRequired?: boolean; //是否必答 是-true 否-false
+        isKey?: boolean; //是否为关键题
         subTitle?: string; //副标题
         options?: [ // 单选/多选选项
           {
             label?: string; //选项文字
-            allowInput?: number; //允许填空
-            inputIsRequired?: number; //填空是否为必填
+            allowInput?: boolean; //允许填空
+            inputIsRequired?: boolean; //填空是否为必填
           }
         ];
         related?: {//关联题目
