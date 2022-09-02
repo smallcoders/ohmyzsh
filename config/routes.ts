@@ -9,6 +9,7 @@
   APP_MANAGE: '/service-config/app-manage/index', // 应用管理
   DIGITAL_APPLICATION: '/service-config/digital-application/index', // 数字化应用
   DIGITAL_APPLICATION_PUSH_DETAIL: '/service-config/digital-application/push-detail', // 数字化推送详情
+  DIGITAL_APPLICATION_DETAIL: '/service-config/digital-application/detail', // 应用详情
   DATA_ANALYSIS: '/service-config/app-manage/data-analysis', // 综合采购数据分析
   ADD_APP_RESOURCE: '/service-config/app-manage/add-resource', // 新增应用资源
   SOLUTION: '/service-config/solution', // 服务方案
@@ -233,8 +234,13 @@ export default [
           },
           {
             path: routeName.DIGITAL_APPLICATION_PUSH_DETAIL,
-            name: '查看详情',
-            component: './service_config/digital_application/app_push_detail',
+            name: '推送详情',
+            component: './service_config/digital_application/app_push/app_push_detail',
+          },
+          {
+            path: routeName.DIGITAL_APPLICATION_DETAIL,
+            name: '应用详情',
+            component: './service_config/digital_application/app_detail',
           }
         ]
       },

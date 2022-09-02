@@ -83,6 +83,67 @@ export async function getApplicationPushList(data?: { [key: string]: any }) {
   });
 }
 
+// 应用审核列表
+export async function getApplyInfoPage(data?: { [key: string]: any }) {
+  return request<ApplicationManager.ResultList>('/antelope-other/mng/api/manage/queryApplyInfoPage', {
+    method: 'post',
+    data,
+  });
+}
+
+// 应用审核处理
+export async function handleApply(data?: { [key: string]: any }) {
+  return request('/antelope-other/mng/api/manage/handleApply', {
+    method: 'post',
+    data,
+  });
+}
+
+// 应用分类
+export async function getApplicationTypeList() {
+  return request('/antelope-other/app/getTypeList', {
+    method: 'get'
+  })
+}
+
+// 查询应用详情
+export async function getApplicationInfo(params: { id: string }) {
+  return request('/antelope-other/mng/api/manage/getAppInfo', {
+    method: 'get',
+    params
+  })
+}
+
+// 获取接口配置
+export async function getInterfaceConfig() {
+  return request('/antelope-other/mng/api/manage/getInterfaceConfig', {
+    method: 'get'
+  })
+}
+
+// 新增接口配置
+export async function addInterfaceConfig(data: { id?: number, interfaceDescription?: string, interfaceNorm?: string }) {
+  return request('/antelope-other/mng/api/manage/addInterfaceConfig', {
+    method: 'post',
+    data
+  })
+}
+
+// 更新接口配置
+export async function updateInterfaceConfig(data: { id?: number, interfaceDescription?: string, interfaceNorm?: string }) {
+  return request('/antelope-other/mng/api/manage/updateInterfaceConfig', {
+    method: 'post',
+    data
+  })
+}
+
+// 【羚羊开放平台】获取token
+export async function getOpenInsideToken() {
+  return request('/antelope-other/token/inside/getToken', {
+    method: 'get'
+  })
+}
+
 
 
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { 
+import {
   Button,
   Form,
   message,
@@ -18,7 +18,7 @@ import {
 import UploadForm from '@/components/upload_form';
 import { PageContainer } from '@ant-design/pro-layout';
 import moment from 'moment';
-import { 
+import {
   getCityPropagandaData,
   getEnterpriseDemandList,
   getCreativeDemandList,
@@ -47,7 +47,7 @@ const TableList: React.FC = () => {
   const [formModal] = Form.useForm();
   const [resultModal] = Form.useForm();
   // 城市活动可用城市label
-  const [areaList,setAreaList] = useState<any>([])
+  const [areaList, setAreaList] = useState<any>([])
   // 模态的info
   const [modalInfo, setModalInfo] = useState<{
     type: string,
@@ -64,8 +64,8 @@ const TableList: React.FC = () => {
   const [resultDataSource, setResultDataSource] = useState<any[]>([])
   // 需求模态的table数据
   const [addDataSource, setAddDataSource] = useState<any[]>([]);
-  const [searchContent, setSearchContent] = useState<any>({});  
-  
+  const [searchContent, setSearchContent] = useState<any>({});
+
   // 编辑的详情
   const [editDetail, setEditDetail] = useState<any>({})
 
@@ -89,7 +89,7 @@ const TableList: React.FC = () => {
       const res = await getCityPropagandaData(id)
       if (res?.code === 0) {
         setEditDetail(res?.result || {})
-        form.setFieldsValue({...res?.result})
+        form.setFieldsValue({ ...res?.result })
         setEnterpriseDataSource(res?.result.enterpriseDemands || [])
         setInnovateDemand(res?.result.creativeDemands || [])
         setSolutionDataSource(res?.result.solutions || [])
@@ -113,29 +113,29 @@ const TableList: React.FC = () => {
         throw new Error();
       }
     } catch (error) {
-     console.log(error) 
+      console.log(error)
     }
   }
   /**
    * 关闭提醒 主要是 添加或者修改成功后 不需要弹出
    */
   const [edit, setEdit] = useState<boolean>(false)
-  useEffect(()=>{
+  useEffect(() => {
     _getAreaLabel()
     const { edit } = history.location.query as any;
     if (edit) {
       // 如果是编辑进入，则获取详情
-      setEditDetail({id: edit})
+      setEditDetail({ id: edit })
       setEdit(true)
       _getCityPropagandaData(edit)
     }
-  },[])
+  }, [])
 
   // 统一的清除ModalInfo
   // motail的onCancel,  以及确定的结尾，
   const clearSelectInfo = () => {
     setLoading(true)
-    formModal.resetFields() 
+    formModal.resetFields()
     setPageInfo({
       pageIndex: 1,
       pageSize: 10,
@@ -157,8 +157,8 @@ const TableList: React.FC = () => {
 
   // 获取企业分页数据 点击的时候再获取
   const getEnterpriseDemand = async (type: string, name?: string, searchParams?: any) => {
-    console.log('name',name)
-    let res 
+    console.log('name', name)
+    let res
     switch (type) {
       case '企业需求':
         try {
@@ -173,7 +173,7 @@ const TableList: React.FC = () => {
               console.log('有选中')
               let newRes = res?.result || []
               // 已经有选中的数据，剔除
-              res?.result?.forEach((item: any)=>{
+              res?.result?.forEach((item: any) => {
                 enterpriseDataSource.forEach((item2: any) => {
                   if (item.bizId === item2.bizId) {
                     newRes = newRes.filter(p => p.bizId != item.bizId)
@@ -182,7 +182,7 @@ const TableList: React.FC = () => {
               })
               res.result = newRes
             }
-            setPageInfo({...pageInfo,pageTotal: res?.totalCount - enterpriseDataSource.length,pageIndex: res?.pageIndex})
+            setPageInfo({ ...pageInfo, pageTotal: res?.totalCount - enterpriseDataSource.length, pageIndex: res?.pageIndex })
             setLoading(false)
           } else {
             throw new Error();
@@ -203,7 +203,7 @@ const TableList: React.FC = () => {
           if (res?.code === 0) {
             if (innovateDemand.length != 0) {
               let newRes = res?.result || []
-              res?.result?.forEach((item: any)=>{
+              res?.result?.forEach((item: any) => {
                 innovateDemand.forEach((item2: any) => {
                   if (item.bizId === item2.bizId) {
                     newRes = newRes.filter(p => p.bizId != item.bizId)
@@ -212,7 +212,7 @@ const TableList: React.FC = () => {
               })
               res.result = newRes
             }
-            setPageInfo({...pageInfo,pageTotal: res?.totalCount - innovateDemand.length,pageIndex: res?.pageIndex})
+            setPageInfo({ ...pageInfo, pageTotal: res?.totalCount - innovateDemand.length, pageIndex: res?.pageIndex })
             setLoading(false)
           } else {
             throw new Error();
@@ -233,7 +233,7 @@ const TableList: React.FC = () => {
           if (res?.code === 0) {
             if (solutionDataSource.length != 0) {
               let newRes = res?.result || []
-              res?.result?.forEach((item: any)=>{
+              res?.result?.forEach((item: any) => {
                 solutionDataSource.forEach((item2: any) => {
                   if (item.bizId === item2.bizId) {
                     newRes = newRes.filter(p => p.bizId != item.bizId)
@@ -242,7 +242,7 @@ const TableList: React.FC = () => {
               })
               res.result = newRes
             }
-            setPageInfo({...pageInfo,pageTotal: res?.totalCount - solutionDataSource.length,pageIndex: res?.pageIndex})
+            setPageInfo({ ...pageInfo, pageTotal: res?.totalCount - solutionDataSource.length, pageIndex: res?.pageIndex })
             setLoading(false)
           } else {
             throw new Error();
@@ -521,22 +521,22 @@ const TableList: React.FC = () => {
     const tooltipMessage = editingItem.bizId ? '修改' : '添加';
     resultModal
       .validateFields()
-      .then(async (value)=>{
-        const {exchangeTime} = value
+      .then(async (value) => {
+        const { exchangeTime } = value
         let time = ''
         if (exchangeTime) {
           time = moment(exchangeTime.date[0]).format('yyyy-MM-DD HH:mm:ss');
         }
         const res = editingItem.bizId
           ? await addExchange({ ...value, id: editingItem.bizId, exchangeTime: time })
-          : await addExchange({...value,  exchangeTime: time })
+          : await addExchange({ ...value, exchangeTime: time })
         if (res?.code === 0) {
-          if ( editingItem.bizId ) {
+          if (editingItem.bizId) {
             // 编辑
             setResultDataSource(p => {
               const a = p.map((item: any) => {
-                if (item.bizId === editingItem.bizId ) {
-                  return {...res?.result,bizId: res?.result.id}
+                if (item.bizId === editingItem.bizId) {
+                  return { ...res?.result, bizId: res?.result.id }
                 } else {
                   return item
                 }
@@ -545,10 +545,10 @@ const TableList: React.FC = () => {
             })
           } else {
             // 添加
-            setResultDataSource( p => {
-              const item = [{...res?.result,bizId: res?.result.id}]
+            setResultDataSource(p => {
+              const item = [{ ...res?.result, bizId: res?.result.id }]
               return p.concat(item)
-            }) 
+            })
           }
           setModalVisible(false);
           message.success(`${tooltipMessage}成功`);
@@ -558,7 +558,7 @@ const TableList: React.FC = () => {
           message.error(`${tooltipMessage}失败，原因:{${res.message}}`);
         }
       })
-      .catch(()=>{
+      .catch(() => {
         console.log('失败')
       })
   }
@@ -607,7 +607,7 @@ const TableList: React.FC = () => {
       title: '对接状态',
       dataIndex: 'state',
       width: 200,
-      render: (_: any, record: any)=>{
+      render: (_: any, record: any) => {
         return (
           <div className={`state${_}`}>
             {Object.prototype.hasOwnProperty.call(stateColumn, _) ? stateColumn[_] : '--'}
@@ -631,11 +631,11 @@ const TableList: React.FC = () => {
             <a
               href="#"
               onClick={() => {
-                if (edit) {setEdit(false)}
-                console.log('record',record)
+                if (edit) { setEdit(false) }
+                console.log('record', record)
                 setEditingItem(record);
                 setModalVisible(true);
-                resultModal.setFieldsValue({ ...record});
+                resultModal.setFieldsValue({ ...record });
               }}
             >
               编辑
@@ -675,8 +675,8 @@ const TableList: React.FC = () => {
         }}
       >
         <Form {...formLayout} form={resultModal} layout="horizontal">
-          <Form.Item 
-            name="name" 
+          <Form.Item
+            name="name"
             label="项目名称"
             required
             rules={[
@@ -688,8 +688,8 @@ const TableList: React.FC = () => {
           >
             <Input placeholder="请输入" maxLength={35} />
           </Form.Item>
-          <Form.Item 
-            name="publishName" 
+          <Form.Item
+            name="publishName"
             label="发布人/发布单位"
             required
             rules={[
@@ -701,9 +701,9 @@ const TableList: React.FC = () => {
           >
             <Input placeholder="请输入" maxLength={35} />
           </Form.Item>
-          <Form.Item 
-            name="subscribeName" 
-            label="对接方" 
+          <Form.Item
+            name="subscribeName"
+            label="对接方"
             required
             rules={[
               {
@@ -759,7 +759,7 @@ const TableList: React.FC = () => {
 
   // 这是模态的查询和重置，模态的列表， 翻页
   const getOptions = (searchParams: any) => {
-    getEnterpriseDemand(modalInfo.type,'',searchParams)
+    getEnterpriseDemand(modalInfo.type, '', searchParams)
   }
 
   const getAutoContent = (type: string) => {
@@ -902,7 +902,7 @@ const TableList: React.FC = () => {
   const rowSelection = {
     selectedRowKeys,
     onChange: onSelectChange,
-    preserveSelectedRowKeys:true,
+    preserveSelectedRowKeys: true,
   };
 
   // 选中select
@@ -918,7 +918,7 @@ const TableList: React.FC = () => {
           message.warning('企业需求最多选择4项')
           return
         }
-        setEnterpriseDataSource( p => {
+        setEnterpriseDataSource(p => {
           const item = addDataSource.filter(f => selectedRowKeys?.includes(f.bizId))
           return p.concat(item)
         })
@@ -929,7 +929,7 @@ const TableList: React.FC = () => {
           message.warning('企业需求最多选择6项')
           return
         }
-        setInnovateDemand( p => {
+        setInnovateDemand(p => {
           const item = addDataSource.filter(f => selectedRowKeys?.includes(f.bizId))
           return p.concat(item)
         })
@@ -940,13 +940,13 @@ const TableList: React.FC = () => {
           message.warning('企业需求最多选择6项')
           return
         }
-        setSolutionDataSource( p => {
+        setSolutionDataSource(p => {
           const item = addDataSource.filter(f => selectedRowKeys?.includes(f.bizId))
           return p.concat(item)
         })
         setDemandModalState(false)
         break;
-    
+
       default:
         break;
     }
@@ -970,7 +970,7 @@ const TableList: React.FC = () => {
           onSelectItems()
         }}
       >
-        <Form labelCol={{span: 9}} form={formModal} layout="horizontal">
+        <Form labelCol={{ span: 9 }} form={formModal} layout="horizontal">
           <Row>
             {
               searchFormItems?.map(p =>
@@ -993,8 +993,8 @@ const TableList: React.FC = () => {
 
               <Button type='primary' onClick={() => {
                 const search = formModal.getFieldsValue()
-                const {enterpriseName} = search
-                getEnterpriseDemand(modalInfo.type,enterpriseName)
+                const { enterpriseName } = search
+                getEnterpriseDemand(modalInfo.type, enterpriseName)
               }}>查询</Button>
               <Button onClick={() => {
                 formModal.resetFields()
@@ -1011,7 +1011,7 @@ const TableList: React.FC = () => {
             </Col>
           </Row>
         </Form>
-        <Table 
+        <Table
           size='small'
           scroll={{ y: 400 }}
           rowKey='bizId'
@@ -1035,7 +1035,7 @@ const TableList: React.FC = () => {
               ...searchContent, ...page
             })
           }}
-         />
+        />
       </Modal>
     )
   }
@@ -1043,12 +1043,12 @@ const TableList: React.FC = () => {
   /**
    * 保存
    */
-   const saveEdit = async (id?: string,state?: any) => {
-     form
+  const saveEdit = async (id?: string, state?: any) => {
+    form
       .validateFields()
-      .then(async (value: any)=>{
+      .then(async (value: any) => {
         try {
-          console.log('enterpriseDataSource', enterpriseDataSource.map((item)=>item.bizId))
+          console.log('enterpriseDataSource', enterpriseDataSource.map((item) => item.bizId))
           if (enterpriseDataSource.length === 0) {
             message.error(`请选择企业需求`);
             return
@@ -1068,9 +1068,9 @@ const TableList: React.FC = () => {
             state,
             areaCode: value.areaCode.toString(),
             cityBannerId: value.cityBannerId * 1,
-            enterpriseDemandIds: enterpriseDataSource.map(item =>item.bizId) || [],
-            creativeDemandIds: innovateDemand.map(item =>item.bizId) || [],
-            solutionIds: solutionDataSource.map(item =>item.bizId) || [],
+            enterpriseDemandIds: enterpriseDataSource.map(item => item.bizId) || [],
+            creativeDemandIds: innovateDemand.map(item => item.bizId) || [],
+            solutionIds: solutionDataSource.map(item => item.bizId) || [],
             exchangeDemandIds: resultDataSource.map(item => item.bizId) || [],
           })
           if (res?.code === 0) {
@@ -1083,44 +1083,44 @@ const TableList: React.FC = () => {
           console.log(error)
         }
       })
-      .catch(()=>{
+      .catch(() => {
         console.log('校验失败')
       })
   }
 
   return (
-    <PageContainer 
+    <PageContainer
       className={sc('container')}
       header={{
-        title: edit ? `编辑地市宣传页` : '新增地市宣传页' ,
+        title: edit ? `编辑地市宣传页` : '新增地市宣传页',
         breadcrumb: (
           <Breadcrumb>
             <Breadcrumb.Item>
               <Link to="/local-propaganda/propaganda-config/index">地市宣传页管理</Link>
             </Breadcrumb.Item>
             <Breadcrumb.Item>
-              {edit ? `编辑地市宣传页` : '新增地市宣传页' }
+              {edit ? `编辑地市宣传页` : '新增地市宣传页'}
             </Breadcrumb.Item>
           </Breadcrumb>
         ),
         extra: (
           <>
-            <Button type="primary" key="saveIssue" onClick={()=> { saveEdit(editDetail.id,'SHOPPED')}}>
+            <Button type="primary" key="saveIssue" onClick={() => { saveEdit(editDetail.id, 'SHOPPED') }}>
               保存并发布
             </Button>
-            <Button type="primary" key="save" onClick={()=>{saveEdit(editDetail.id)}}>
+            <Button type="primary" key="save" onClick={() => { saveEdit(editDetail.id) }}>
               保存
             </Button>
           </>
         )
-    }}
+      }}
     >
       <div className={sc('container-basic')}>
         基本信息
         <Form className={sc('container-basic-form')} form={form}>
           <Form.Item
-            labelCol={ {span: 8} }
-            wrapperCol= { {span: 10} }
+            labelCol={{ span: 8 }}
+            wrapperCol={{ span: 10 }}
             label="城市名称"
             name="areaCode"
             rules={[{ required: true, message: '请输入城市名称' }]}
@@ -1142,30 +1142,32 @@ const TableList: React.FC = () => {
           </Form.Item>
           <Form.Item
             label="企业需求数"
-            labelCol={ {span: 8} }
+            labelCol={{ span: 8 }}
             name="demandCount"
             rules={[{ required: true, message: '请输入企业需求数' }]}
+            initialValue={0}
           >
-            <InputNumber  min={1} />
+            <InputNumber min={0} disabled />
           </Form.Item>
           <Form.Item
             label="服务方案数"
-            labelCol={ {span: 8} }
+            labelCol={{ span: 8 }}
             name="solutionCount"
+            initialValue={0}
             rules={[{ required: true, message: '请输入服务方案数' }]}
           >
-            <InputNumber min={1} />
+            <InputNumber min={0} disabled />
           </Form.Item>
           <Form.Item
             label="服务报名数"
-            labelCol={ {span: 8} }
+            labelCol={{ span: 8 }}
             name="solutionSignIn"
           >
             <InputNumber min={1} />
           </Form.Item>
           <Form.Item
             label="上传banner"
-            labelCol={ {span: 8} }
+            labelCol={{ span: 8 }}
             name="cityBannerId"
             rules={[
               {
@@ -1192,65 +1194,65 @@ const TableList: React.FC = () => {
       <div className={sc('container-enterpriseDemand')}>
         企业需求
         <div className={sc('container-enterpriseDemand-top')}>
-          <Button disabled={enterpriseDataSource.length >= 4} type="primary" onClick={() => {handleEnterpriseDemand('企业需求')}}>选择需求</Button>
+          <Button disabled={enterpriseDataSource.length >= 4} type="primary" onClick={() => { handleEnterpriseDemand('企业需求') }}>选择需求</Button>
           <span className={sc('container-enterpriseDemand-top-title')}>建议选择4个企业需求</span>
         </div>
         <div className={sc('container-enterpriseDemand-table')}>
-          <SelfTable 
+          <SelfTable
             bordered
             scroll={{ x: 1400 }}
             columns={columns}
             dataSource={enterpriseDataSource}
             pagination={false}
-            />
+          />
         </div>
       </div>
       <div className={sc('container-innovateDemand')}>
         创新需求
         <div className={sc('container-innovateDemand-top')}>
-          <Button disabled={innovateDemand.length >= 6} type="primary" onClick={() => {handleEnterpriseDemand('创新需求')}}>选择创新需求</Button>
+          <Button disabled={innovateDemand.length >= 6} type="primary" onClick={() => { handleEnterpriseDemand('创新需求') }}>选择创新需求</Button>
           <span className={sc('container-innovateDemand-top-title')}>建议选择6个创新需求</span>
         </div>
         <div className={sc('container-innovateDemand-table')}>
-          <SelfTable 
+          <SelfTable
             bordered
             scroll={{ x: 1400 }}
             columns={innovateColumns}
             dataSource={innovateDemand}
             pagination={false}
-            />
+          />
         </div>
       </div>
       <div className={sc('container-solution')}>
         解决方案
         <div className={sc('container-solution-top')}>
-          <Button disabled={solutionDataSource.length >= 4} type="primary" onClick={() => {handleEnterpriseDemand('解决方案')}}>选择解决方案</Button>
+          <Button disabled={solutionDataSource.length >= 4} type="primary" onClick={() => { handleEnterpriseDemand('解决方案') }}>选择解决方案</Button>
           <span className={sc('container-solution-top-title')}>建议选择4个解决方案</span>
         </div>
         <div className={sc('container-solution-table')}>
-          <SelfTable 
+          <SelfTable
             bordered
             scroll={{ x: 1400 }}
             columns={solutionColumns}
             dataSource={solutionDataSource}
             pagination={false}
-            />
+          />
         </div>
       </div>
       <div className={sc('container-docking')}>
         对接成效
         <div className={sc('container-docking-top')}>
-          <Button type="primary" onClick={() => {setModalVisible(true)}}>新增项目</Button>
+          <Button type="primary" onClick={() => { setModalVisible(true) }}>新增项目</Button>
           <span className={sc('container-docking-top-title')}>非必填</span>
         </div>
         <div className={sc('container-docking-table')}>
-          <SelfTable 
+          <SelfTable
             bordered
             scroll={{ x: 1400 }}
             columns={dockingColumns}
             dataSource={resultDataSource}
             pagination={false}
-            />
+          />
         </div>
       </div>
       {getModal()}
