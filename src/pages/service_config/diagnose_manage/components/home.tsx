@@ -13,12 +13,10 @@ import DataColumn from '@/types/data-column';
 import OrgTypeManage from '@/types/org-type-manage';
 import { Link, history, Prompt } from 'umi';
 import {
-  addOrgType,
   getOrgTypeList,
-  removeOrgType,
   sortOrgType,
-  updateOrgType,
-} from '@/services/org-type-manage';
+  removeOrgType
+} from '@/services/diagnose-manage';
 import { arrayMoveImmutable } from 'array-move';
 import moment from 'moment';
 
@@ -42,10 +40,10 @@ const TableList: React.FC = () => {
   /**
    * 正在发布中
    */
-  const sort = async (ids: string[]) => {
+  const sort = async (list: string[]) => {
     try {
       const tooltipMessage = '排序';
-      const updateStateResult = await sortOrgType(ids);
+      const updateStateResult = await sortOrgType(list);
       if (updateStateResult.code === 0) {
         message.success(`${tooltipMessage}成功`);
         getPages();
@@ -61,7 +59,7 @@ const TableList: React.FC = () => {
       const newData = arrayMoveImmutable(dataSource.slice(), oldIndex, newIndex).filter(
         (el) => !!el,
       );
-      sort(newData.map((p) => p.id));
+      sort(newData.map((p:any, index: number) => p.questionnaireNo));
     }
   };
   const DraggableContainer = (props: SortableContainerProps) => (
@@ -84,7 +82,7 @@ const TableList: React.FC = () => {
    */
   const getPages = async () => {
     try {
-      const { result, code } = await getOrgTypeList();
+      const { result, code } = await getOrgTypeList({state: 1, pageIndex: 1, pageSize: 1000});
       if (code === 0) {
         setDataSource(
           result.map((p, index) => {
@@ -108,6 +106,15 @@ const TableList: React.FC = () => {
   //   console.log(111, record, record.id == '1626229857397111' ? 'rowBackground' : '')
   //   return record.id == '1626229857397111' ? 'rowBackground' : ''
   // }
+  const remove = async (record: any) => {
+    let deleteRes = await removeOrgType({firstQuestionnaireNo: record.firstQuestionnaireNo, status: 0})
+    if(deleteRes && deleteRes.code == 0) {
+      message.success('下架成功！')
+      getPages()
+    }else {
+      message.error(`下架失败，原因:{${deleteRes.message}}`);
+    }
+  }
 
   /**
    * column
@@ -134,33 +141,31 @@ const TableList: React.FC = () => {
     },
     {
       title: '是否允许放在首页',
-      dataIndex: 'description',
+      dataIndex: 'homePage',
       isEllipsis: true,
       width: 300,
+      render: (_: string) => _ ? '是' : '否',
     },
     {
       title: '当前版本号',
-      dataIndex: 'creatorName',
+      dataIndex: 'latestVersion',
       width: 200,
     },
     {
       title: '操作',
       width: 280,
       dataIndex: 'option',
-      render: (_: any, record: OrgTypeManage.Content) => {
+      render: (_: any, record: any) => {
         return (
           <Space size="middle">
-            {record.isEdit && (
-              <a
-                href="#"
-                onClick={() => {
-                  // history.push({pathname: '/service-config/diagnose/add'})
-                  history.push(`/service-config/diagnose/add?id=${record?.id}`)
-                }}
-              >
-                迭代{' '}
-              </a>
-            )}
+            <a
+              href="#"
+              onClick={() => {
+                history.push(`/service-config/diagnose/add?id=${record?.id}&version=${record?.latestVersion}&firstQuestionnaireNo=${record?.firstQuestionnaireNo}`)
+              }}
+            >
+              迭代{' '}
+            </a>
             <Popconfirm
               title={
                 <>
@@ -170,14 +175,16 @@ const TableList: React.FC = () => {
               }
               okText="下架"
               cancelText="取消"
-              // onConfirm={() => remove(record.id as string)}
+              onConfirm={() => remove(record)}
             >
               <a href="#">下架</a>
             </Popconfirm>
             <Select defaultValue="查看历史版本" style={{ width: 120 }} bordered={false}>
-              <Option value="v1.0">v1.0</Option>
-              <Option value="v2.0">v2.0</Option>
-              <Option value="v3.0">v3.0</Option>
+              {record.allVersion && record.allVersion.map(item => {
+                return (
+                  <Option value={item}>{item}</Option>
+                )
+              })}
             </Select>
           </Space>
         );

@@ -4,7 +4,7 @@ const { Option } = Select;
 import '../service-config-diagnose-manage.less';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
-import { getDataColumnIntroduce, updateDataColumnIntroduce } from '@/services/data-column';
+import { getOrgTypeList } from '@/services/diagnose-manage';
 import DataColumn from '@/types/data-column';
 import IntroduceModal from './introduce-modal';
 
@@ -32,7 +32,8 @@ const Introduce: React.FC = () => {
    */
   const getDataColumns = async () => {
     try {
-      const { result, code } = await getDataColumnIntroduce();
+      let {result, code} = await getOrgTypeList({state: 0,pageIndex: 1, pageSize: 20});
+      // console.log(res)
       if (code === 0) {
         setData(result);
       } else {
@@ -60,19 +61,19 @@ const Introduce: React.FC = () => {
     },
     {
       title: '诊断名称',
-      dataIndex: 'title',
+      dataIndex: 'name',
       editable: true,
       width: 150,
     },
     {
       title: '下架时间',
-      dataIndex: 'actualNumber',
+      dataIndex: 'stopTime',
       editable: true,
       width: 150,
     },
     {
       title: '最新版本号',
-      dataIndex: 'manage',
+      dataIndex: 'latestVersion',
       editable: true,
       width: 150,
       render: (flag: boolean) => (flag ? '是' : '否'),
@@ -81,12 +82,14 @@ const Introduce: React.FC = () => {
       title: '操作',
       dataIndex: 'option',
       width: 140,
-      render: (_: any, record: DataColumn.IntroduceContent) => {
+      render: (_: any, record: any) => {
         return (
           <Select defaultValue="查看历史版本" style={{ width: 120 }} bordered={false}>
-            <Option value="v1.0">v1.0</Option>
-            <Option value="v2.0">v2.0</Option>
-            <Option value="v3.0">v3.0</Option>
+            {record.allVersion && record.allVersion.map(item => {
+                return (
+                  <Option value={item}>{item}</Option>
+                )
+              })}
           </Select>
         );
       },
