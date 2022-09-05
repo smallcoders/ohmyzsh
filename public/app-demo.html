@@ -1,0 +1,148 @@
+
+<!DOCTYPE html>
+<html>
+  
+<head>
+    <title>跳转中</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=0">
+    <script>window.onerror = function(e) { console.error(e) && window.alert('发生错误' + e) } </script>
+    <style>
+      html, body {
+        height: 100%;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        background: #fff;
+        box-sizing: border-box;
+      }
+
+      .wrapper {
+        display: flex;
+        height: 100%;
+        width: 100%;
+      }
+
+      .wrapper .center {
+        margin: auto;
+        text-align: center;
+      }
+
+      .wrapper .center p {
+        font-size: 15px;
+        margin-top: 5px;
+        margin-bottom: 0;
+        color: #666;
+      }
+
+      #button {
+        margin-top: 20px;
+      }
+      
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+      
+      <div class="center">
+        <h3 id="appKey">appKey：缺失</h3>
+        <h3 id="appSecret">appSecret：缺失</h3>
+        <h3 id="token">token：缺失</h3>
+        <p>获取的用户信息：<span id="info">空</span></p>
+        <button id="button">刷新</bu>
+      </div>
+    </div>
+
+    <script>
+
+      docReady(function() {
+        const query = $getParam()
+        const appKey = query.appKey
+        const appSecret = query.appSecret
+        const token = query.token
+        
+        if (appKey) document.querySelector('#appKey').innerText = 'appKey：' + appKey
+        if (appSecret) document.querySelector('#appSecret').innerText = 'appSecret：' + appSecret
+        if (token) document.querySelector('#token').innerText = 'token：' + token
+
+        if (appKey && appSecret && token) {
+          getUserInfo({ appKey, appSecret, token })
+        }
+
+        document.querySelector('#button').addEventListener('click', function() {
+          window.location.reload()
+        })
+      })
+    
+      
+      function getUserInfo(data) {
+        $post('/antelope-other/open/v1/user/getUserInfo', data).then(function(res) {
+          const userInfo = res.result
+          document.querySelector('#info').innerText = JSON.stringify(userInfo)
+        }).catch(function(error) {
+          window.alert(error)
+        })
+      }
+    
+      /**
+       * post 请求
+       * @url { String } 接口地址
+       * @data { Object } 接口参数
+       * @returns Promise<response, errorMessage>
+       */
+       function $post(url, data = {}) {
+        return new Promise((resolve, reject) => {
+          const request = new XMLHttpRequest()
+          request.open('POST', url)
+          request.setRequestHeader('Content-Type', 'application/json')
+          request.send(JSON.stringify(data))
+          request.onload = function(response) {
+            response.status === 200 ? resolve(response.data) : reject(response.data.message)
+          }
+          request.onerror = function(e) {
+            reject('请求失败！')
+          }
+        })
+      }
+    
+      /**
+       * 获取 url 中的参数
+       * @param { String } url 可选参数，需要处理的 url 不传默认当前 href
+       * @returns Object 返回 query 对象
+       */
+      function $getParam(url = window.location.href) {
+        url = url.split('#')[0]
+        // url获取，变量声明
+        let arrURL = []
+        let arrParms = {}
+        let key = {}
+        let val = {}
+        let getURL = {}
+    
+        if (url.split('?').length > 1) {
+          let sa = url.split('?')
+          arrURL = sa[sa.length - 1].split('&')
+        }
+        // 取值，存入对象
+        for (let i = 0; i < arrURL.length; i++) {
+          arrParms = arrURL[i].split('=')
+          key = arrParms[0]
+          val = arrParms[1]
+          getURL[key] = decodeURIComponent(val)
+        }
+        return getURL
+      }
+    
+      // Dom Completed!
+      function docReady(fn) {
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+          fn()
+        } else {
+          document.addEventListener('DOMContentLoaded', fn);
+        }
+      }
+      
+    </script>
+</body>
+</html>
