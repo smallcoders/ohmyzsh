@@ -60,14 +60,22 @@
         const query = $getParam()
         const appKey = query.appKey
         const appSecret = query.appSecret
-        const token = query.token
         
         if (appKey) document.querySelector('#appKey').innerText = 'appKey：' + appKey
         if (appSecret) document.querySelector('#appSecret').innerText = 'appSecret：' + appSecret
-        if (token) document.querySelector('#token').innerText = 'token：' + token
-
-        if (appKey && appSecret && token) {
-          getUserInfo({ appKey, appSecret, token })
+        
+        if (appKey && appSecret) {
+          $request('/antelope-other/token/inside/getToken', {}).then(({ code, result }) => {
+            if (code === 0) {
+              getUserInfo({
+                appKey,
+                appSecret,
+                token: result
+              })
+            } else {
+              window.alert('获取 token 失败')
+            }
+          })
         }
 
         document.querySelector('#button').addEventListener('click', function() {
@@ -77,28 +85,34 @@
     
       
       function getUserInfo(data) {
-        $post('/antelope-other/open/v1/user/getUserInfo', data).then(function(res) {
+        $request('/antelope-other/open/v1/user/getUserInfo', data, 'POST').then(function(res) {
           const userInfo = res.result
           document.querySelector('#info').innerText = JSON.stringify(userInfo)
         }).catch(function(error) {
-          window.alert(error)
+          window.alert(error.message)
         })
       }
-    
+
       /**
-       * post 请求
+       * 请求
        * @url { String } 接口地址
        * @data { Object } 接口参数
+       * method: 'Get' or 'POST'
        * @returns Promise<response, errorMessage>
        */
-       function $post(url, data = {}) {
-        return new Promise((resolve, reject) => {
+       function $request(url, data = {}, method = 'Get') {
+        return new Promise(function(resolve, reject) {
           const request = new XMLHttpRequest()
-          request.open('POST', url)
+          request.open(method, url)
           request.setRequestHeader('Content-Type', 'application/json')
           request.send(JSON.stringify(data))
-          request.onload = function(response) {
-            response.status === 200 ? resolve(response.data) : reject(response.data.message)
+          request.onload = function() {
+            const res = JSON.parse(request.response || "{}")
+            if (res && res.code === 0) {
+              resolve(res)
+            } else {
+              reject('请求失败！')
+            }
           }
           request.onerror = function(e) {
             reject('请求失败！')
