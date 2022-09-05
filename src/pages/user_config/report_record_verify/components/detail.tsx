@@ -110,7 +110,6 @@ const EnterpriseDemandComment = (props: {
     if (id) {
       try {
         const res = await getOfficeRequirementVerifyDetail(detailId ? detailId :id);
-        // const res = await getOfficeRequirementVerifyDetail('1637587997474001');
         if (res.code === 0) {
           setDetail(res.result);
         } else {
@@ -234,11 +233,8 @@ const Achievement = (props: {
   };
 
   const prepare = async () => {
-    const id = history.location.query?.id as string;
-
     if (id) {
       try {
-        // const res = await getAchievementDetail('1661879082000001');
         const res = await getAchievementDetail(id);
         getDictionary();
         if (res.code === 0) {
@@ -346,7 +342,6 @@ const InnovateDemand = (props: {
   const prepare = async () => {
     if (id) {
       try {
-        // const res = await getDemandDetail('1662023545000001');
         const res = await getDemandDetail(id);
         if (res.code === 0) {
           setDetail(res.result);
@@ -428,7 +423,6 @@ const Solution = (props: {
   const prepare = async () => {
     if (id) {
       try {
-        // const res = await getProgrammeVerifyDetail('1637113902630001'); 
         const res = await getProgrammeVerifyDetail(id); 
         if (res.code === 0) {
           setDetail(res.result);
@@ -526,7 +520,6 @@ const ExpertComment = (props: {
   const prepare = async () => {
     if (id) {
       try {
-        // const res = await getExpertDetail('1626232510256100');
         const res = await getExpertDetail(id);
         if (res.code === 0) {
           console.log(res);
@@ -673,7 +666,6 @@ const ReportingInfo = (props: {
   ]
 
   const onFinish = async (values: any) => {
-    console.log('form',values)
     try {
       const res = await getReportProcessed({
         id: Number(reportInfo.id),
@@ -693,7 +685,6 @@ const ReportingInfo = (props: {
   }
 
   const onChange = (e: RadioChangeEvent) => {
-    console.log(e.target.value)
     setValue(e.target.value)
   }
 
@@ -806,7 +797,6 @@ export default () => {
   const bizId = history.location.query?.bizId as string;
   const module = history.location.query?.type as string;
 
-  const [detail, setDetail] = useState<any>({})
   const [loading, setLoading] = useState<boolean>(false)
 
   // 根据所属模块 ⭐ 需要一个字段返回是什么板块 孟哥加一个参数判断类别
@@ -829,7 +819,6 @@ export default () => {
   },[id])
 
   return (
-    // <PageContainer>
       <PageContainer loading={loading}>
       <div className={sc('container')}>
         <div className={sc('container-left')}>
