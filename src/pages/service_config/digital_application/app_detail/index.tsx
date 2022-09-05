@@ -119,7 +119,7 @@ export default () => {
                 <span className='name'>应用分类：</span><span className='content'>{detailInfo.typeName}</span>
               </div>
               <div className='info-row'>
-                <span className='name'>应用方式：</span><span className='content'>{ApplicationManager.TypeText[detailInfo.type!]}</span>
+                <span className='name'>应用方式：</span><span className='content'>{ApplicationManager.DevelopmentText[detailInfo.type!]}</span>
               </div>
             </div>
             <div className='container'>
