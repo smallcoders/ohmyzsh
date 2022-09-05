@@ -50,6 +50,7 @@ export default (props: {
   }, [])
 
   useEffect(() => {
+    setLoading(false)
     if (showAuditModal.typeId) auditForm.setFieldsValue({ typeId: showAuditModal.typeId })
   }, [showAuditModal])
 
