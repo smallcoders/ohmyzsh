@@ -22,7 +22,7 @@ namespace DiagnoseManage {
             inputIsRequired?: boolean; //填空是否为必填
           }
         ];
-        related?: {//关联题目
+        // related?: {//关联题目
           relations?: [
             {
               dependIndex?: number; //依赖的题目索引值
@@ -31,7 +31,7 @@ namespace DiagnoseManage {
             }
           ];
           relatedRelation?: string; //关联关系 and-且 or-或
-        };
+        // };
         validate?: number; // 填空题内容校验：不校验-0/手机号-1/金融数据-2）
         maxLength?: number; // 填空最大字数
         assignedProvince?: number; // 指定省份
@@ -45,7 +45,7 @@ namespace DiagnoseManage {
     recommendations?: string; //诊断目标建议
     remind?: string; //特殊提醒
     defaultDiagnoseResult?: boolean; //默认诊断结果
-    related?: {//关联题目
+    // related?: {//关联题目
       relations?: [
         {
           dependIndex?: number; //依赖的题目索引值
@@ -54,7 +54,7 @@ namespace DiagnoseManage {
         }
       ];
       relatedRelation?: string; //关联关系 and-且 or-或
-    };
+    // };
     relatedServers?: string[]; //关联服务商
     relatedTechnicalManager?: {//关联技术经理人
       name?: string;//姓名
