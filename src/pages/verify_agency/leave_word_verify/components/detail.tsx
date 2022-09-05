@@ -11,7 +11,8 @@ import { getExpertDetail } from '@/services/expert_manage/expert-resource';
 import type ExpertResource from '@/types/expert_manage/expert-resource';
 import ProDescriptions from '@ant-design/pro-descriptions';
 import { getOfficeRequirementVerifyDetail } from '@/services/office-requirement-verify';
-import { getCommentsDetailPage } from '@/services/leave-word-verify';
+import { getCommentsDetailPage, getCommentsCurrent } from '@/services/leave-word-verify';
+import { getDemandDetail } from '@/services/creative-demand'
 
 import './index.less';
 const { Title, Paragraph } = Typography;
@@ -28,6 +29,7 @@ export default () => {
     totalCount: 0,
     pageTotal: 0,
   });
+  const [currentData, setCurrentData] = useState<any>({})
 
   const [form] = Form.useForm();
   const [loading, setLoading] = useState<boolean>(true);
@@ -51,7 +53,23 @@ export default () => {
       setLoading(false);
     }
   };
+  // 查询当前审核的留言
+  const _getCommentsCurrent = async () => {
+    try {
+      const res = await getCommentsCurrent({
+        commentId: commentId
+      })
+      if (res?.code === 0) {
+        setCurrentData(res?.result)
+      } else {
+        throw new Error("");
+      }
+    } catch (error) {
+      console.log('获取当前审核留言失败')
+    }
+  }
   const prepare = () => {
+    _getCommentsCurrent()
     // 根据详情判断是需求还是，专家资源. 所属板块
     if (tab === 'DEMAND') {
       prepareDemandModal();
@@ -236,11 +254,92 @@ export default () => {
       </div>
     );
   };
+  const InnovateDemand = (props: {
+    id: string
+    setLoading: (loading: boolean) => void 
+  }) => {
+    const {id, setLoading} = props || {}
+    const [detail, setDetail] = useState<any>({});
+  
+    const prepare = async () => {
+      if (id) {
+        try {
+          // const res = await getDemandDetail('1662023545000001');
+          const res = await getDemandDetail(id);
+          if (res.code === 0) {
+            setDetail(res.result);
+          } else {
+            throw new Error(res.message);
+          }
+        } catch (error) {
+          message.error('服务器错误');
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+  
+    useEffect(() => {
+      prepare();
+    }, [id]);
+  
+    return (
+      <div className={sc('innovateDemand')}>
+        <div className={sc('innovateDemand-container')}>
+          <div className={sc('container-title')}>创新需求信息</div>
+          <div style={{ marginLeft: 200 }}>
+            <Image height={200} width={300} src={detail?.cover} />
+          </div>
+          <div className={sc('container-desc')}>
+            <span>需求名称：</span>
+            <span>{detail?.name || '--'}</span>
+          </div>
+          <div className={sc('container-desc')}>
+            <span>需求类型：</span>
+            <span>{detail?.typeName || '--'}</span>
+          </div>
+          <div className={sc('container-desc')}>
+            <span>行业类别：</span>
+            <span>{detail?.industryTypeNames ? detail?.industryTypeNames.join('，') : '--'}</span>
+          </div>
+          <div className={sc('container-desc')}>
+            <span>关键词：</span>
+            <span>{detail?.typeName || '--'}</span>
+          </div>
+          <div className={sc('container-desc')}>
+            <span>需求区域：</span>
+            <span>{detail?.areaNames ? detail?.areaNames.join('，') : '--'}</span>
+          </div>
+          <div className={sc('container-desc')}>
+            <span>需求时间范围：</span>
+            <span>{detail?.startDate ? `${detail?.startDate}~${detail?.endDate}` : '--'}</span>
+          </div>
+          <div className={sc('container-desc')}>
+            <span>需求内容：</span>
+            <span>{detail?.content || '--'}</span>
+          </div>
+          <div className={sc('container-title')}>基本信息</div>
+          <div className={sc('container-desc')}>
+            <span>联系人：</span>
+            <span>{detail?.contactName || '--'}</span>
+          </div>
+          <div className={sc('container-desc')}>
+            <span>联系电话：</span>
+            <span>{detail?.contactPhone || '--'}</span>
+          </div>
+          <div className={sc('container-desc')}>
+            <span>需求企业名称：</span>
+            <span>{detail?.orgName || '--'}</span>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   const detailDom = {
     DEMAND: <DemandModal id={detailId} setLoading={setLoading} detail={detail} />,
     EXPERT: <ExpertDetail id={detailId} setLoading={setLoading} detail={detail} />,
-    CREATIVE_DEMAND: <div>1</div>,
+    CREATIVE_DEMAND: <InnovateDemand id={detailId} setLoading={setLoading} />,
   }[tab];
 
   const [dataSource, setDataSource] = useState<any>([]);
@@ -271,7 +370,8 @@ export default () => {
   }, [tab]);
 
   return (
-    <PageContainer loading={loading}>
+    <PageContainer>
+    {/* <PageContainer loading={loading}> */}
       <div className={sc('container')}>
         {detailDom}
         {/* 留言列表 */}
@@ -325,6 +425,33 @@ export default () => {
         </div>
       </div>
       <div style={{ background: '#fff', margin: '20px 0', paddingTop: 20 }}>
+        <div className='expert-message'>
+          <div className='expert-message-title'>当前审核留言</div>
+          <div className='expert-message-content'>
+            <div className='expert-message-content-left'>
+              <img src={currentData?.photoUrl} className='expert-message-content-left-img' />
+            </div>
+            <div className='expert-message-content-right'>
+              <div className='expert-message-content-right-header'>
+                <span className='expert-message-content-right-header-name'>
+                  {currentData?.name}
+                </span>
+                {
+                  currentData?.isAnonymity && <span className='expert-message-content-right-header-label'>匿名</span>
+                }
+                <span className='expert-message-content-right-header-time'>
+                  {currentData?.createTime}
+                </span>
+              </div>
+              <div className='expert-message-content-right-content'>
+                {currentData?.content}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className='expert-message'>
+          <div className='expert-message-title'>审核</div>
+        </div>
         <VerifyInfoDetail auditId={auditId} reset={prepare} />
       </div>
     </PageContainer>

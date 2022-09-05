@@ -344,7 +344,6 @@ const InnovateDemand = (props: {
   const [detail, setDetail] = useState<any>({});
 
   const prepare = async () => {
-    const id = history.location.query?.id as string;
     if (id) {
       try {
         // const res = await getDemandDetail('1662023545000001');
@@ -427,7 +426,6 @@ const Solution = (props: {
   const [detail, setDetail] = useState<any>({});
 
   const prepare = async () => {
-    const id = history.location.query?.id as string;
     if (id) {
       try {
         // const res = await getProgrammeVerifyDetail('1637113902630001'); 
@@ -813,12 +811,12 @@ export default () => {
 
   // 根据所属模块 ⭐ 需要一个字段返回是什么板块 孟哥加一个参数判断类别
   const object = {
-    'DEMAND': <EnterpriseDemand id={id} setLoading={setLoading} ></EnterpriseDemand>,
-    'CREATIVE_ACHIEVEMENT': <Achievement id={id} setLoading={setLoading}></Achievement>,
-    'CREATIVE_DEMAND': <InnovateDemand id={id} setLoading={setLoading}></InnovateDemand>,
-    'SOLUTION': <Solution id={id} setLoading={setLoading}></Solution>,
+    'DEMAND': <EnterpriseDemand id={bizId} setLoading={setLoading} ></EnterpriseDemand>,
+    'CREATIVE_ACHIEVEMENT': <Achievement id={bizId} setLoading={setLoading}></Achievement>,
+    'CREATIVE_DEMAND': <InnovateDemand id={bizId} setLoading={setLoading}></InnovateDemand>,
+    'SOLUTION': <Solution id={bizId} setLoading={setLoading}></Solution>,
     'DEMAND_COMMENT': <EnterpriseDemandComment id={bizId} setLoading={setLoading} type='DEMAND_COMMENT' ></EnterpriseDemandComment>,
-    'EXPERT_COMMENT': <ExpertComment id={id} setLoading={setLoading} ></ExpertComment>,
+    'EXPERT_COMMENT': <ExpertComment id={bizId} setLoading={setLoading} ></ExpertComment>,
   }[module]
 
   const prepare = () => {
