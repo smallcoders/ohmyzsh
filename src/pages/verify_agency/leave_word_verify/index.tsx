@@ -15,13 +15,13 @@ import LeaveWordVerify from '@/types/leave-word-verify';
 const sc = scopedClasses('leave-word-audit');
 
 const stateObj = {
-  AUDITING: '审核中',
-  AUDIT_SUCCESS: '已发布',
-  AUDIT_FAIL: '审核退回',
+  AUDITING: '待审核',
+  AUDIT_SUCCESS: '已通过',
+  AUDIT_FAIL: '已拒绝',
 };
 const module = {
   DEMAND: '企业需求',
-  EXPERT : '专家资源留言',
+  EXPERT : '专家资源',
   CREATIVE_DEMAND: '创新需求',
 }
 const statusTypeValue = [
