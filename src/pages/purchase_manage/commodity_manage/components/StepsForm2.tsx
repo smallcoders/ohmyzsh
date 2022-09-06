@@ -2,7 +2,7 @@ import { addSpecsPrice, goToSpecsPrice } from '@/services/commodity';
 import type DataCommodity from '@/types/data-commodity';
 import type { ProColumns } from '@ant-design/pro-table';
 import { EditableProTable } from '@ant-design/pro-table';
-import type { FormInstance } from 'antd';
+import { FormInstance, message } from 'antd';
 import { Button, Form, Input, Space } from 'antd';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { StepFormProps } from '../create';
@@ -180,12 +180,19 @@ export default (props: StepFormProps) => {
       transportFee: form.getFieldValue('transportFee')*100,
       specsTitle: prices[0].specsTitle,
     };
-    const res = await addSpecsPrice(queryDta).finally(() => setloading(false));
-
-    setloading(false);
-    if (!res.code) {
+    const res = await addSpecsPrice(queryDta)
+      // .finally(() => setloading(false));
+    if(res.code === 0) {
+      setloading(false);
+    }else {
+      setloading(false);
       currentChange(1);
+      message.warning(`${res.message}`)
     }
+    // setloading(false);
+    // if (!res.code) {
+    //   currentChange(1);
+    // }
   }, [form, id, prices, currentChange]);
 
   const onPre = useCallback(async () => {
