@@ -392,7 +392,7 @@ export default () => {
 				{currentStep == 2 && (
 					<div className='step-container-3'>
 						<h3>诊断页面入口icon</h3>
-						<img src={`/antelope-manage/common/download/${covers.inIcon}`} alt="图片损坏" style={{width: 160}} />
+						<img src={covers.inIcon} alt="图片损坏" style={{width: 160}} />
 						{covers.showInHomePage && (
 							<>
 								<Row>
