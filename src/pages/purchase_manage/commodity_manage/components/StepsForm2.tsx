@@ -46,7 +46,7 @@ export default (props: StepFormProps) => {
 
     setEditableKeys(data.map((item) => item.id));
     setPrices(data);
-    form.setFieldsValue({ transportFee: res.result[0].transportFee || 0 });
+    form.setFieldsValue({ transportFee: res.result[0].transportFee/100 || 0 });
 
     let specCol: ProColumns<TableDataRow, any>[] = res.result[0].specsTitle
       .split(',')
