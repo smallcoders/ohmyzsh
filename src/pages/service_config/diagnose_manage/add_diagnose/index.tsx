@@ -323,7 +323,7 @@ export default () => {
 				let res = await addOrgType(params)
 				if(res.code == 0) {
 					message.success(`${editId ? '迭代' : '发布'}成功`);
-					history.push(`/service-config/diagnose/add`)
+					history.push(`/service-config/diagnose`)
 				}else {
 					message.error(`${editId ? '迭代' : '发布'}失败，原因:{${res.message}}`);
 				}
