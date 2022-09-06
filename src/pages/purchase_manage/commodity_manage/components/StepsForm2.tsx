@@ -186,13 +186,12 @@ export default (props: StepFormProps) => {
       setloading(false);
     }else {
       setloading(false);
-      currentChange(1);
       message.warning(`${res.message}`)
     }
     // setloading(false);
-    // if (!res.code) {
-    //   currentChange(1);
-    // }
+    if (!res.code) {
+      currentChange(1);
+    }
   }, [form, id, prices, currentChange]);
 
   const onPre = useCallback(async () => {
