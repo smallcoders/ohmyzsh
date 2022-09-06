@@ -166,7 +166,7 @@ export default () => {
             <div style={{ display: interfaceDescription.editing ? 'none' : 'block' }}>
               <Row gutter={24} style={{marginBottom: '30px'}}>
                 <Col className='row-label'>应用接口说明：</Col>
-                <Col flex={1} dangerouslySetInnerHTML={{ __html: configInfo.interfaceDescription || '/' }}></Col>
+                <Col flex={1} className="ck-content" dangerouslySetInnerHTML={{ __html: configInfo.interfaceDescription || '/' }}></Col>
               </Row>
             </div>
           </Tabs.TabPane>
@@ -223,7 +223,7 @@ export default () => {
             <div style={{ display: interfaceNorm.editing ? 'none' : 'block' }}>
               <Row gutter={24} style={{marginBottom: '30px'}}>
                 <Col className='row-label'>API接口规范：</Col>
-                <Col flex={1} dangerouslySetInnerHTML={{ __html: configInfo.interfaceNorm || '/' }}></Col>
+                <Col flex={1} className="ck-content" dangerouslySetInnerHTML={{ __html: configInfo.interfaceNorm || '/' }}></Col>
               </Row>
             </div>
           </Tabs.TabPane>
