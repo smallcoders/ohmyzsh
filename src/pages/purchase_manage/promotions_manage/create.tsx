@@ -481,7 +481,7 @@ export default () => {
               商品详情
             </Button>
             <a
-              href="#"
+              href="#!"
               onClick={() => {
                 getProductPrices(record.id || record.productId, index, record.productName);
               }}
@@ -1069,7 +1069,7 @@ export default () => {
           </Upload>
         </Form.Item>
         <Form.Item label="活动说明" name="content">
-          <Input.TextArea placeholder="请输入" />
+          <Input.TextArea placeholder="请输入" maxLength={200} showCount/>
         </Form.Item>
       </Form>
       <h1>活动商品</h1>
