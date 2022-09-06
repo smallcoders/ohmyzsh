@@ -75,7 +75,7 @@ export default () => {
     { label: '联系电话', value: phone },
     { label: '注册区域', value: (provinceName || '') + (cityName || '') + (countyName || '') },
     { label: '详细地址', value: address },
-    { label: '注册资本', value: registeredCapital },
+    { label: '注册资本', value: registeredCapital || registeredCapital === 0 ? registeredCapital + '万元' : '--' },
     { label: '组织简介', value: aboutUs },
     { label: '组织核心能力', value: ability },
   ];
@@ -91,9 +91,9 @@ export default () => {
     },
     { label: '单位性质', value: businessTypeText[businessType] },
     { label: '法人姓名', value: legalName },
-    { label: '总资产', value: totalAssets },
-    { label: '上年营收', value: revenueLastYear },
-    { label: '上年利润', value: profitLastYear },
+    { label: '总资产', value: totalAssets || totalAssets === 0 ? totalAssets + '万元' : '--'},
+    { label: '上年营收', value: revenueLastYear || revenueLastYear === 0 ? revenueLastYear + '万元' : '--'},
+    { label: '上年利润', value: profitLastYear || profitLastYear === 0 ? profitLastYear + '万元' : '--'},
     { label: '信用等级', value: creditRating },
     { label: '经营范围', value: businessScope },
   ];

@@ -7,7 +7,7 @@ import {
   Col,
   Space,
   message,
-  Typography,
+  Tooltip,
   DatePicker,
   Popconfirm,
   Modal,
@@ -28,7 +28,11 @@ const { confirm } = Modal;
 
 import type { ColumnsType } from 'antd/es/table';
 
-import './app-config.less';
+import { history } from 'umi';
+
+import { routeName } from '../../../../../config/routes';
+
+import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
 import Common from '@/types/common';
@@ -734,25 +738,25 @@ export default () => {
       title: '应用',
       dataIndex: 'title',
       render: (_: any, row: ApplicationManager.Content) => (
-        <div className="table-row-wrapper">
+        <div className="table-app-row">
           <img src={`/antelope-manage/common/download/${row.logoImageId}`} alt="图片损坏" />
-          <Typography
-        >
-          <Typography.Title level={5}>{row.appName}</Typography.Title>
-          <Typography.Text
-            style={{ maxWidth: '800px' }}
-            ellipsis={{ tooltip: row.content }}
-          >
-            {row.content}
-          </Typography.Text>
-        </Typography>
+          <div className='info'>
+            <Tooltip title={row.appName}>
+              <span onClick={() => {
+                if (row.isDelete) return message.warning('该应用已不存在，无法查看详情')
+                history.push(`${routeName.DIGITAL_APPLICATION_DETAIL}?id=${row.id}`)
+              }}>{ row.appName }</span>
+            </Tooltip>
+            <Tooltip title={row.content} placement="right">
+              <span>{ row.content }</span>
+            </Tooltip>
+          </div>
         </div>
       ),
     },
     {
       title: '操作',
-      width: 350,
-      fixed: 'right',
+      width: 130,
       dataIndex: 'option',
       render: (_: any, row: ApplicationManager.Content) => {
         return (
@@ -817,7 +821,7 @@ export default () => {
             >
               <SendOutlined /> 推送应用
             </Button>
-            <Button
+            {/* <Button
               type="primary"
               onClick={() => {
                 setEditingItem({})
@@ -825,7 +829,7 @@ export default () => {
               }}
             >
               <PlusOutlined /> 新增应用
-            </Button>
+            </Button> */}
           </div>
         </div>
       </div>
