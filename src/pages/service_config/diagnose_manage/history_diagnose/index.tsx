@@ -3,22 +3,18 @@ import {
 	Input,
 	Form,
 	Select,
-	InputNumber,
 	Row,
 	Col,
 	Radio,
+	RadioChangeEvent,
 	Checkbox,
 	Cascader,
 	message,
 	Modal,
 	Steps,
 	Tooltip,
-	Divider,
 	Table,
-	Space,
 	Breadcrumb,
-	Popconfirm,
-	Switch
 } from 'antd';
 const { Option } = Select;
 import {
@@ -35,10 +31,16 @@ import {
 const { Step } = Steps;
 import { Link, history, Prompt } from 'umi';
 import type { FormInstance } from 'antd/es/form';
+import QuestionnaireTopicList from '../components/questionnaire-topic-list'
 import DataColumn from '@/types/data-column';
 import {
 	getOrgTypeList,
 } from '@/services/org-type-manage';
+import { listAllAreaCode } from '@/services/common';
+import {
+	addOrgType,
+	diagnoseDetail,
+} from '@/services/diagnose-manage';
 import UploadForm from '@/components/upload_form';
 import DiagnoseManage from '@/types/service-config-diagnose-manage';
 import './index.less'
@@ -49,50 +51,42 @@ const sc = scopedClasses('service-config-add-diagnose');
 type DiagnoseResult = DiagnoseManage.Diagnose;
 type Covers = DiagnoseManage.Covers;
 export default () => {
+	const [provinceList, setProvinceList] = useState<any>([])
 	const [diagnoseTitle, setDiagnoseTitle] = useState<string>('')
-	// 左侧问卷题目
-	const [diagnoseList, setDiagnoseList] = useState<any>([
-		// {
-		// 	name: '', //题目标题
-		// 	type: '', //题目类型 单选-radio 多选-checkbox 单行文本-input 多行文本-textarea 级联选择-cascader
-		// 	isRequired: 1, //是否必答 是-1 否-2
-		// 	isKey: 1, //是否为关键题 是-1 否-2
-		// 	subTitle: '', //副标题
-		// 	options: [ // 单选/多选选项
-		// 		{
-		// 			label: '', //选项文字
-		// 			allowInput: 1, //允许填空
-		// 			inputIsRequired: 1, //填空是否为必填
-		// 		}
-		// 	],
-		// 	related: {//关联题目
-		// 		relations: [
-		// 			{
-		// 				dependIndex: 1, //依赖的题目索引值
-		// 				dependValue: [], //依赖的选项数据集
-		// 				conditionType: '', //依赖的类型 one-其中一个 all-全部选项
-		// 			}
-		// 		],
-		// 		relatedRelation: '', //关联关系 and-且 or-或
-		// 	},
-		// 	validate: 1, // 填空题内容校验：不校验-0/手机号-1/金融数据-2）
-		// 	maxLength: 1, // 填空最大字数
-		// 	assignedProvince: 1, // 指定省份
-		// }
-	]);
-
-	// 诊断结果变量
+	const [diagnoseList, setDiagnoseList] = useState<any>([]);
 	const [dataSource, setDataSource] = useState<any>([]);
-
-	// 左侧问卷题目展示
 	const [leftForm] = Form.useForm();
-
+	/**
+   * 准备数据和路由获取参数等
+   */
+	const prepare = async () => {
+		try {
+			const { firstQuestionnaireNo,version } = history.location.query as { firstQuestionnaireNo: string | undefined, version: string | undefined };
+			// 获取详情 塞入表单
+			const detailRs = await diagnoseDetail({
+				firstQuestionnaireNo,
+				version
+			});
+			const {covers, diagnose, questionnaireObject} = detailRs.result
+			setCovers(covers)
+			setDataSource(diagnose)
+			setDiagnoseTitle(questionnaireObject.title || '')
+			setDiagnoseList(questionnaireObject.problems)
+			let areaRes = await listAllAreaCode()
+			setProvinceList(areaRes && areaRes.result || [] )
+		} catch (error) {
+		  console.log('error', error);
+		  message.error('获取初始数据失败');
+		}
+	};
+	useEffect(() => {
+		prepare();
+	}, []);
 	interface Option {
 		value: string;
 		label: string;
 		children?: Option[];
 	}
-
 	const options: Option[] = [
 		{
 			value: 'zhejiang',
@@ -210,6 +204,42 @@ export default () => {
 	}
 	const [covers, setCovers] = useState<Covers>({})
 
+	// 问卷预览
+	const [edgeFront, setEdgeFront] = useState<number>(1)
+	const selectFrontButton = (): React.ReactNode => {
+		const handleEdgeChange = (e: RadioChangeEvent) => {
+			setEdgeFront(e.target.value);
+		};
+		return (
+			<Radio.Group value={edgeFront} onChange={handleEdgeChange}>
+				<Radio.Button value={1}>web端预览</Radio.Button>
+				<Radio.Button value={2}>移动端预览</Radio.Button>
+			</Radio.Group>
+		);
+	};
+	const [previewQuestionsVisible, setPreviewQuestionsVisible] = useState<boolean>(false)
+	const [questionsForm] = Form.useForm()
+	const previewQuestionsModal = (): React.ReactNode => {
+		return (
+			<Modal
+				title={`问卷预览`}
+				width="1000px"
+				visible={previewQuestionsVisible}
+				maskClosable={false}
+				onCancel={() => {setPreviewQuestionsVisible(false)}}
+				className="questions-modal"
+				footer={null}
+			>
+				<div className='preview-wrap'>
+					{selectFrontButton()}
+					<div className={edgeFront==1? 'web-preview':'h5-preview'}>
+						<QuestionnaireTopicList topicTitle={diagnoseTitle||'111'} topicList={diagnoseList} form={questionsForm} />
+					</div>
+				</div>
+			</Modal>
+		)
+	}
+
 	return (
 		<PageContainer
 			className={sc('container')}
@@ -237,7 +267,7 @@ export default () => {
 								<div className={sc('container-content-left-header')}>
 									<h3>问卷大纲</h3>
 									<div>
-										<Button icon={<EyeOutlined />} type="link">预览</Button>
+										<Button icon={<EyeOutlined />} type="link" onClick={() => {setPreviewQuestionsVisible(true)}}>预览</Button>
 									</div>
 								</div>
 								<div className={'diagnose-wrapper'}>
@@ -362,25 +392,31 @@ export default () => {
 				{currentStep == 2 && (
 					<div className='step-container-3'>
 						<h3>诊断页面入口icon</h3>
-						<img src={covers.inIcon || ''} />
-						<Row>
-							<Col span={6}>
-								<h3>首页默认小icon</h3>
-								<img src={covers.icon || ''} />
-							</Col>
-							<Col span={6}>
-								<h3>首页3D图</h3>
-								<img src={covers.coverUrl || ''} />
-							</Col>
-						</Row>
-						<h3>诊断描述</h3>
-						<ul>
-							<li>{covers.diagnoseDescribe || ''}</li>
-						</ul>
+						<img src={`/antelope-manage/common/download/${covers.inIcon}`} alt="图片损坏" style={{width: 160}} />
+						{covers.showInHomePage && (
+							<>
+								<Row>
+									<Col span={6}>
+										<h3>首页默认小icon</h3>
+										<img src={covers.icon || ''} />
+									</Col>
+									<Col span={6}>
+										<h3>首页3D图</h3>
+										<img src={covers.coverUrl || ''} />
+									</Col>
+								</Row>
+								<h3>诊断描述</h3>
+								<ul>
+									<li>{covers.diagnoseDescribe || ''}</li>
+								</ul>
+							</>
+						)}
+						
 					</div>
 				)}
 			</div>
 			{previewResultModal()}
+			{previewQuestionsModal()}
 		</PageContainer>
 	)
 }

@@ -1315,7 +1315,7 @@ export default () => {
 	const [covers, setCovers] = useState<Covers>({})
 	// 诊断结果-表单更新
 	const onValuesChange3 = (changedValues: any, allValues: any) => {
-		console.log(changedValues, '诊断封面', allValues);
+		// console.log(changedValues, '诊断封面', allValues);
 		setCovers({...covers, ...allValues})
 	}
 
@@ -1333,7 +1333,6 @@ export default () => {
 		);
 	};
 	const [previewQuestionsVisible, setPreviewQuestionsVisible] = useState<boolean>(false)
-	// const [questionnaireList, setQuestionnaireList] = useState<object[]>([])
 	const [questionsForm] = Form.useForm()
 	const previewQuestionsModal = (): React.ReactNode => {
 		return (

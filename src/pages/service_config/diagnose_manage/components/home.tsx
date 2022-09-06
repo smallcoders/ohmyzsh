@@ -116,6 +116,12 @@ const TableList: React.FC = () => {
     }
   }
 
+  const toVersion = async (value: any, record: any) => {
+    console.log(record, 'record');
+    console.log(value, 'value');
+    history.push((`/service-config/diagnose/history?version=${value}&firstQuestionnaireNo=${record?.firstQuestionnaireNo}`))
+  }
+
   /**
    * column
    */
@@ -179,7 +185,11 @@ const TableList: React.FC = () => {
             >
               <a href="#">下架</a>
             </Popconfirm>
-            <Select defaultValue="查看历史版本" style={{ width: 120 }} bordered={false}>
+            <Select 
+              defaultValue="查看历史版本" style={{ width: 120 }} bordered={false} 
+              onChange={(e) => toVersion(e, record)}
+              // onChange={() => {toVersion(record)}}
+            >
               {record.allVersion && record.allVersion.map(item => {
                 return (
                   <Option value={item}>{item}</Option>
