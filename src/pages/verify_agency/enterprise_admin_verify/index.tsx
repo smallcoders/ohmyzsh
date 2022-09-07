@@ -8,6 +8,7 @@ import { history, useModel } from 'umi';
 import { routeName } from '@/../config/routes';
 import SelfTable from '@/components/self_table';
 import SearchBar from '@/components/search_bar';
+// 未处理
 import { getEnterpriseAdminVerifyPage } from '@/services/enterprise-admin-verify';
 import { deleteEnterpriseAdministratorRights } from '@/services/enterprise-admin-verify';
 import './index.less';
