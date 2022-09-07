@@ -1,6 +1,6 @@
 import type Common from './common';
 
-namespace EnterpriseAdminVerify {
+namespace LeaveWordVerify {
   export type RecordList = {
     result: Content[];
   } & Common.ResultCode &
@@ -8,18 +8,20 @@ namespace EnterpriseAdminVerify {
 
   export type Content = {
     id: string // id
-    bizId?: string
-    orgName?: string // 组织名称
-    accountType?: string // 组织类型  枚举备注: ENTERPRISE :企业 COLLEGE :高校 INSTITUTION :科研机构 OTHER :其他
-    userName?: string // 申请人姓名
-    phone?: string // 手机号
+    auditId?: string
+    commentId?: string
+    userName?: string // 用户名称
+    content?: string // 留言内容 
+    time?: string // 时间
+    regions?: string // 所属板块
     state?: string // 状态
-    updateTime?: string // 最新操作时间
-    module?: string // 所属模块
-    processed?: boolean
+    status?: string
+    tab?: string
+    detailId?: string
   };
 
   export type Detail = {
+    auditId?: string;
     userName?: string; // 申请人姓名
     phone?: string; // 手机号
     orgTypeId?: string; // 组织类型id
@@ -42,4 +44,4 @@ namespace EnterpriseAdminVerify {
   };
 }
 
-export default EnterpriseAdminVerify;
+export default LeaveWordVerify

@@ -26,6 +26,7 @@ interface SearchBarProps {
   searchList?: Common.SearchItem[]
   actionList?: Common.ActionItem[]
   onSearch?: ((info: any) => void) | null
+  showTime?: boolean
 }
 
 const SearchBar = ({
@@ -35,6 +36,7 @@ const SearchBar = ({
   searchList = [],
   actionList = defActionList,
   onSearch = null,
+  showTime = false,
 }: SearchBarProps) => {
 
   const searchListPro = useMemo(() => {
@@ -122,7 +124,7 @@ const SearchBar = ({
       case Common.SearchItemControlEnum.RANGE_PICKER:
         return (
           <Form.Item name={key} label={label} initialValue={initialValue}>
-            <RangePicker style={{ width: '100%' }} disabledDate={disabledDate} />
+            <RangePicker showTime={showTime}  style={{ width: '100%' }} disabledDate={disabledDate} />
           </Form.Item>
         )
       default:
