@@ -40,7 +40,7 @@ export async function diagnoseDetail(data?: { [key: string]: any }) {
  * 下架
  * */
 export async function removeOrgType(data?: { [key: string]: any }) {
-  return request<Common.ResultCode>(`/antelope-diagnose/mng/diagnose`, {
+  return request<Common.ResultCode>(`/antelope-diagnose/mng/diagnose/change/status`, {
     method: 'post',
     data,
   });

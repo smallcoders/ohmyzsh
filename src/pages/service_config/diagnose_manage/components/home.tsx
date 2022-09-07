@@ -188,7 +188,6 @@ const TableList: React.FC = () => {
             <Select 
               defaultValue="查看历史版本" style={{ width: 120 }} bordered={false} 
               onChange={(e) => toVersion(e, record)}
-              // onChange={() => {toVersion(record)}}
             >
               {record.allVersion && record.allVersion.map(item => {
                 return (

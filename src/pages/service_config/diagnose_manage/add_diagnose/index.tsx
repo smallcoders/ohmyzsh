@@ -73,7 +73,8 @@ export default () => {
 					version
 				});
 				const {covers, diagnose, questionnaireObject} = detailRs.result
-				setCovers(covers)
+				setCovers({...covers, coverUrl: covers.coverUrlId, icon: covers.iconId || '', inIcon: covers.inIconId || ''})
+				coverForm.setFieldsValue({...covers, coverUrl: covers.coverUrlId, icon: covers.iconId || '', inIcon: covers.inIconId || ''})
 				setDataSource(diagnose)
 				setDiagnoseTitle(questionnaireObject.title || '')
 				rightForm.setFieldsValue({ title: questionnaireObject.title });
@@ -102,8 +103,6 @@ export default () => {
 	const [addModalVisible, setAddModalVisible] = useState<boolean>(false)
 	// 左侧问卷题目
 	const [diagnoseList, setDiagnoseList] = useState<any>([]);
-	// 当前总的关联题目题库
-	const [totalAbleRelated, setTotalAbelRelated] = useState<any>([])
 	// 当前可选择的关联题目题库
 	const [ableSelectRelated, setAbleSelectRelated] = useState<any>([])
 	// 当前可选择的关联关键题目题库
@@ -122,13 +121,26 @@ export default () => {
 	// 右侧表单填写
 	const [rightForm] = Form.useForm<EditType>();
 	const optionsWatch = Form.useWatch('options', rightForm)
+	const isRepeatBasic = (arr: any) => {
+		let nary = arr.sort()
+		let flag = false
+		for(let i=0; i<arr.length;i++) {
+			if(nary[i] == nary[i+1] && nary[i+1] != '') {
+				flag = true
+			}
+		}
+		return flag
+	}
 	const optionsIsRepeat = () => {
 		if(!optionsWatch || optionsWatch.length < 1) {
 			return false
 		}
-		let labels = optionsWatch.map(item => item&&item['label'] ? item['label'] : null)
+		let labels = optionsWatch.map(item => item&&item['label'] ? item['label'] : '')
+		if(isRepeatBasic(labels)) {
+			return true
+		}
 		let labelSet = new Set(labels)
-		if(labelSet.size == labels.length) {
+		if(labelSet.size == labels.length || labels.indexOf('')>-1) {
 			return false
 		}else {
 			return true
@@ -212,6 +224,10 @@ export default () => {
 	// 点击下一步
 	const toNext = () => {
 		if(currentStep == 0) {
+			if(!diagnoseTitle) {
+				message.error('您还未填写问卷标题！')
+				return false
+			}
 			if(diagnoseList && diagnoseList.length > 0) {
 				setCurrentStep(currentStep+1)
 			}else {
@@ -223,12 +239,12 @@ export default () => {
 			let defaultFlag = false
 			if(dataSource && dataSource.length>0) {
 				dataSource.map((item) => {
-					if(!item.defaultDiagnoseResult) {
+					if(item.defaultDiagnoseResult) {
 						defaultFlag = true
 					}
 				})
 			}
-			if(defaultFlag || dataSource.length<1) {
+			if(!defaultFlag || dataSource.length<1) {
 				Modal.confirm({
 					title: '提示',
 					content: (
@@ -308,17 +324,21 @@ export default () => {
 		console.log(diagnoseList,diagnoseTitle,111);
 		console.log(dataSource,222);
 		console.log(covers,333);
+		const { firstQuestionnaireNo } = history.location.query as { firstQuestionnaireNo: string | undefined };
 		coverForm
 			.validateFields()
 			.then(async (value) => {
 				console.log(value);
-				let params = {
+				let params:any = {
 					questionnaireObject: {
 						title: diagnoseTitle,
 						problems: diagnoseList
 					},
 					diagnose: dataSource,
 					covers: covers
+				}
+				if(firstQuestionnaireNo) {
+					params.firstQuestionnaireNo = firstQuestionnaireNo
 				}
 				let res = await addOrgType(params)
 				if(res.code == 0) {
@@ -337,7 +357,6 @@ export default () => {
 	// 点击左侧题目，更新右侧表单
 	const clickLeftProblem = (index: number) => {
 		setCurrentAddIndex(index)
-		console.log({...diagnoseList[index]})
 		setCurrentEditObj({...diagnoseList[index]})
 		rightForm.setFieldsValue({...diagnoseList[index]});
 		if(index>-1) {
@@ -364,13 +383,10 @@ export default () => {
 					</div>
 				),
 				onOk() {
-					// console.log(index, 666);
 					let arr2 = arr.splice(index+1)
-					// console.log(arr2, '指定索引后的所有数组');
 					let arr3:any = [] 
 					arr2.map((item) => {
 						let r = [...item.relations]
-						// console.log(r, 'r');
 						if(!r || r == []) {
 							arr3.push(item)
 						}else {
@@ -386,7 +402,6 @@ export default () => {
 							arr3.push({...item,relations: newR})
 						}
 					})
-					// console.log(arr3, 'arr3');
 					setDiagnoseList(arr3)
 					Modal.destroyAll();
 				},
@@ -560,70 +575,55 @@ export default () => {
 			setDiagnoseTitle(changedValues.title)
 		}else {
 			const list = [...diagnoseList]
-			list.splice(currentAddIndex, 1, {
-				...list[currentAddIndex],
-				...changedValues,
-				...allValues,
-			} as EditType);
-			// console.log(list, 'list');
+			if(changedValues.validate == 1 || changedValues.validate == 2) {
+				list.splice(currentAddIndex, 1, {
+					...list[currentAddIndex],
+					...changedValues,
+					...allValues,
+					type: 'input',
+				} as EditType);
+			}else {
+				list.splice(currentAddIndex, 1, {
+					...list[currentAddIndex],
+					...changedValues,
+					...allValues,
+				} as EditType);
+			}
+			console.log(list, 'list');
 			setDiagnoseList(list)
 		}
 	}
 
 	const dealAll = () => {
 		let arr = [...diagnoseList]
+		console.log(arr, 'arr');
 		let arr2 = arr.map((item, index) => {
 			const rtn = {...item}
 			if((item.type == 'radio' || item.type == 'checkbox') && index < currentAddIndex) {
 				rtn.dependIndex = index
 			}
+			console.log(index, currentAddIndex, rtn);
 			return rtn
 		}).filter((item:any, index) => (item.type == 'radio' || item.type == 'checkbox') && index < currentAddIndex)
-		console.log(arr2, 'arr2')
+		console.log(arr2, 'arr2');
 		return arr2
 	}
 	const dealAllKeys = () => {
 		let arr = [...diagnoseList]
 		let arr2 = arr.map((item, index) => {
 			const rtn = {...item}
-			// if((item.type == 'radio' || item.type == 'checkbox') && index < currentAddIndex) {
-				rtn.dependIndex = index
-			// }
+			rtn.dependIndex = index
 			return rtn
 		}).filter((item:any, index) => item.isKey)
-		console.log(arr2, 'keys')
+		console.log(arr2, '关键题题库');
 		return arr2
 	}
-	const dealAble = () => {
-		let arr = dealAll()
-		let dArr = [...diagnoseList]
-		let arr2 = currentAddIndex>-1 && dArr[currentAddIndex].relations
-		// let arr2 = relatedRelations
-		if(!arr2) {
-			console.log(11111)
-		}else {
-			arr2.map((item: any) => {
-				arr.filter(j => j.dependIndex != item.dependIndex)
-			})
-			console.log(arr, 'filter-arr');
-		}
-		return arr
-		
-		// for(let i = 0; i < main.length; ){
-		// 	if(names.includes(main[i].name)){
-		// 	   i++;
-		// 	   continue;
-		// 	};
-		// 	main.splice(i, 1);
-		//  };
-		// return arr
-	}
-	// 
 	useEffect(() => {
-		setTotalAbelRelated([...dealAll()])
 		setAbleSelectRelated([...dealAll()])
+	}, [diagnoseList, currentAddIndex]);
+
+	useEffect(() => {
 		setAbleSelectKey([...dealAllKeys()])
-		// setAbleSelectRelated([...dealAble()])
 	}, [diagnoseList]);
 
 	const [form] = Form.useForm();
@@ -634,7 +634,7 @@ export default () => {
 			message.error('第1题不能设置题目关联逻辑')
 			return false
 		}
-		if (!totalAbleRelated || totalAbleRelated.length == 0) {
+		if (!ableSelectRelated || ableSelectRelated.length == 0) {
 			message.error('此题前面没有单选题和多选题，无法设置题目关联逻辑')
 			return false
 		}
@@ -696,14 +696,6 @@ export default () => {
 
 	const ModalForm: React.FC<ModalFormProps> = ({ visible, onCancel }) => {
 		const relatedRelations = Form.useWatch('relations', form);
-		// let relationsDependIndexArr:any = []
-		// useEffect(() => {
-		// 	relatedRelations.map((i:any) => {
-		// 		relationsDependIndexArr.push(i.dependIndex)
-		// 	})
-		// 	console.log(relationsDependIndexArr, '555')
-		// }, [relatedRelations]);
-		
 		useResetFormOnCloseModal({
 			form,
 			visible,
@@ -761,7 +753,6 @@ export default () => {
 										<h3>{'关联题目' + (fieldIndex + 1)}</h3>
 										<Row style={{marginBottom: 24}}>
 											<Col span={17}>
-												
 												<Form.Item
 													{...field}
 													name={[field.name, 'dependIndex']}
@@ -771,7 +762,6 @@ export default () => {
 															<Option 
 																value={item.dependIndex} 
 																key={(item.dependIndex+1)+item.name}
-																// disabled={relationsDependIndexArr.indexOf(item.dependIndex) > -1}
 															>
 																{item.dependIndex+1}.{item.name}{item.type=='radio'?'【单选】':'【多选题】'}
 															</Option>
@@ -819,19 +809,21 @@ export default () => {
 																)}
 																{diagnoseList[relatedRelations[fieldIndex].dependIndex].type == 'checkbox' && (
 																	<>
-																		<Form.Item
-																			{...field}
-																			name={[field.name, 'conditionType']}
-																			label={`当「关联题目${fieldIndex + 1}」选择下方选项：`}
-																			style={{width: 160, display: 'inline-block'}}
-																		>
-																			<Select>
-																				<Option value='one' key='one'>其中一个</Option>
-																				<Option value='all' key='all'>全部选项</Option>
-																			</Select>
-																			时，「当前题目」才出现
-																		</Form.Item>
-																		
+																	<Form.Item
+																		{...field}
+																		name={[field.name, 'conditionType']}
+																		label={`当「关联题目${fieldIndex + 1}」选择下方选项：`}
+																		style={{width: 160, display: 'inline-block'}}
+																	>
+																		<Select>
+																			<Option value='one' key='one'>其中一个</Option>
+																			<Option value='all' key='all'>全部选项</Option>
+																		</Select>
+																		{/* */}
+																	</Form.Item>
+																	<p>
+																		时，「当前题目」才出现 
+																	</p>
 																	</>
 																)}
 															</Col>
@@ -843,7 +835,14 @@ export default () => {
 									</div>
 								))}
 								<Form.Item>
-									<Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
+									<Button type="dashed" onClick={() => {
+										console.log(relatedRelations.length, ableSelectRelated.length);
+										if(relatedRelations.length<ableSelectRelated.length) {
+											add()
+										}else {
+											info('已超过可关联题目数量')
+										}
+									}} block icon={<PlusOutlined />}>
 										添加关联题目
 									</Button>
 								</Form.Item>
@@ -872,9 +871,6 @@ export default () => {
 	const hideUserModal = () => {
 		setVisible(false);
 	};
-
-	const [addReultVisible, setAddResultVisible] = useState<boolean>(false)
-
 	// 诊断结果列表
 	const columns = [
     {
@@ -949,10 +945,9 @@ export default () => {
    */
 	const [edge, setEdge] = useState<number>(1)
 	const [resultForm] = Form.useForm()
-	const resultRelations = Form.useWatch('relations', resultForm);
 	const selectButton = (): React.ReactNode => {
 		const handleEdgeChange = (e) => {
-		setEdge(e.target.value);
+			setEdge(e.target.value);
 		};
 		return (
 		<Radio.Group value={edge} onChange={handleEdgeChange}>
@@ -967,12 +962,12 @@ export default () => {
 		arr.splice(index, 1)
 		setDataSource(arr)
 	}
-	const info = () => {
+	const info = (tipText: string) => {
 		Modal.info({
 			title: '提示',
 			content: (
 				<div>
-					<p>请检查「诊断报告名称」和「诊断报告概述」是否填写</p>
+					<p>{tipText}</p>
 				</div>
 			),
 			onOk() {},
@@ -983,9 +978,13 @@ export default () => {
 		resultForm
       .validateFields()
       .then(async (value) => {
-				console.log(resultObj);
+				console.log(resultObj, selectedOrgList);
+				let serverIds:any = []
+				selectedOrgList && selectedOrgList.map((item: any) => {
+					serverIds.push(item.id)
+				})
 				if(!resultObj.name || !resultObj.summary) {
-					info()
+					info('请检查「诊断报告名称」和「诊断报告概述」是否填写')
 					return false
 				}
 				if(editResultIndex > -1) {// 编辑
@@ -993,19 +992,19 @@ export default () => {
 					list.splice(editResultIndex, 1, {
 						...list[editResultIndex],
 						...resultObj,
-						relatedServers: selectedOrgList
+						relatedServers: serverIds
 					} as DiagnoseResult);
 					setDataSource(list)
 				}else {// 新增
 					let arr = [...dataSource]
-					arr.push({...resultObj, relatedServers: selectedOrgList})
+					arr.push({...resultObj, relatedServers: serverIds})
 					setDataSource(arr)
 				}
 				setEdge(1)
 				setAddResultVisible(false)
       })
       .catch(() => {
-        info()
+        info('请检查「诊断报告名称」和「诊断报告概述」是否填写')
       });
 	}
 	// 获取服务商
@@ -1027,12 +1026,14 @@ export default () => {
 	const onServerChange = (value: string) => {
 		console.log('change', value);
 		let arr = [...selectedOrgList]
-		arr.push(value)
+		arr.push({label: value.split('-')[1], id: value.split('-')[0]})
+		console.log(arr);
 		setSelectedOrgList(arr)
 	}
-	
+	const [addReultVisible, setAddResultVisible] = useState<boolean>(false)
 	// 新建/编辑诊断结果弹框
 	const useResultAddModal = (): React.ReactNode => {
+		const resultRelations = Form.useWatch('relations', resultForm);
 		return (
 			<Modal
 				title={editResultIndex>-1 ? '编辑诊断结果' : '新建诊断结果'}
@@ -1109,6 +1110,109 @@ export default () => {
 														<>
 															{fields.map((field, fieldIndex) => (
 																<div key={fieldIndex}>
+																	<h3>{'关联题目' + (fieldIndex + 1)}</h3>
+																	<Row style={{marginBottom: 24}}>
+																		<Col span={17}>
+																			<Form.Item
+																				{...field}
+																				name={[field.name, 'dependIndex']}
+																			>
+																				<Select>
+																					{ableSelectKey && ableSelectKey.map((item: any) =>
+																						<Option 
+																							value={item.dependIndex} 
+																							key={(item.dependIndex+1)+item.name}
+																						>
+																							{item.dependIndex+1}.{item.name}{item.type=='radio'?'【单选】':'【多选题】'}
+																						</Option>
+																					)}
+																				</Select>
+																			</Form.Item>
+																		</Col>
+
+																		<Col span={3}>
+																			<MinusCircleOutlined style={{ marginLeft: 8 }} onClick={() => remove(field.name)} />
+																		</Col>
+																		{
+																			resultRelations && resultRelations.length > 0
+																			&& resultRelations.map((item:any, io: number) => {
+																				return item && (io == fieldIndex) && (
+																					(
+																						<Col span={17} key={io}>
+																							<Form.Item
+																								{...field}
+																								name={[field.name, 'dependValue']}
+																								label={`当「关联题目${fieldIndex + 1}」选择下方选项：`}
+																								style={{margin: 0}}
+																							>
+																								<Checkbox.Group>
+																									{
+																										diagnoseList[resultRelations[fieldIndex].dependIndex].options.map((o: any) =>
+																											<Checkbox value={o.label} key={o.label}>{o.label}</Checkbox>
+																										)
+																									}
+																								</Checkbox.Group>
+																							</Form.Item>
+																						</Col>
+																					)
+																				)
+																			}) 
+																		}
+																		{
+																			resultRelations && resultRelations.length > 0
+																			&& resultRelations.map((item:any, io: number) => {
+																				return item && (io == fieldIndex) && (
+																					(
+																						<Col span={17} key={io}>
+																							{diagnoseList[resultRelations[fieldIndex].dependIndex].type == 'radio' && (
+																								'中任意一个时，「当前题目」才出现'
+																							)}
+																							{diagnoseList[resultRelations[fieldIndex].dependIndex].type == 'checkbox' && (
+																								<>
+																								<Form.Item
+																									{...field}
+																									name={[field.name, 'conditionType']}
+																									label={`当「关联题目${fieldIndex + 1}」选择下方选项：`}
+																									style={{width: 160, display: 'inline-block'}}
+																								>
+																									<Select>
+																										<Option value='one' key='one'>其中一个</Option>
+																										<Option value='all' key='all'>全部选项</Option>
+																									</Select>
+																									{/* */}
+																								</Form.Item>
+																								<p>
+																									时，「当前题目」才出现 
+																								</p>
+																								</>
+																							)}
+																						</Col>
+																					)
+																				)
+																			}) 
+																		}
+																	</Row>
+																</div>
+															))}
+															<Form.Item>
+																<Button type="dashed" onClick={() => {
+																	if(fields.length<ableSelectKey.length) {
+																		add()
+																	}else {
+																		info('已超过可关联题目数量')
+																	}
+																}} block icon={<PlusOutlined />}>
+																	添加关联题目
+																</Button>
+															</Form.Item>
+														</>
+													)}
+												</Form.List>
+												{/* <Form.List name="relations">
+													{(fields, { add, remove }) => (
+														<>
+															{fields.map((field, fieldIndex) => (
+																<div key={fieldIndex}>
 																<h3>{'关联关键题目' + (fieldIndex + 1)}</h3>
 																<Row style={{marginBottom: 24}}>
 																	<Col span={17}>
@@ -1122,7 +1226,6 @@ export default () => {
 																					<Option 
 																						value={item.dependIndex} 
 																						key={(item.dependIndex+1)+item.name}
-																						// disabled={relationsDependIndexArr.indexOf(item.dependIndex) > -1}
 																					>
 																						{item.dependIndex+1}.{item.name}{item.type=='radio'?'【单选】':'【多选题】'}
 																					</Option>
@@ -1163,30 +1266,29 @@ export default () => {
 																		resultRelations && resultRelations.length > 0
 																		&& resultRelations.map((item:any, io: number) => {
 																			return item && (io == fieldIndex) && (
-																				(
-																					<Col span={17} key={fieldIndex}>
-																						{diagnoseList[resultRelations[fieldIndex].dependIndex].type == 'radio' && (
-																							'中任意一个时，「当前题目」才出现'
-																						)}
-																						{diagnoseList[resultRelations[fieldIndex].dependIndex].type == 'checkbox' && (
-																							<>
-																								<Form.Item
-																									{...field}
-																									name={[field.name, 'conditionType']}
-																									label={`当「关联关键题目${fieldIndex + 1}」选择下方选项：`}
-																									style={{width: 160, display: 'inline-block'}}
-																								>
-																									<Select>
-																										<Option value='one' key='one'>其中一个</Option>
-																										<Option value='all' key='all'>全部选项</Option>
-																									</Select>
-																									时，「当前题目」才出现
-																								</Form.Item>
-																								
-																							</>
-																						)}
-																					</Col>
-																				)
+																				<Col span={17} key={io}>
+																					{diagnoseList[resultRelations[fieldIndex].dependIndex].type == 'radio' && (
+																						'中任意一个时，「当前题目」才出现'
+																					)}
+																					{diagnoseList[resultRelations[fieldIndex].dependIndex].type == 'checkbox' && (
+																						<>
+																						<Form.Item
+																							{...field}
+																							name={[field.name, 'conditionType']}
+																							label={`当「关联题目${fieldIndex + 1}」选择下方选项：`}
+																							style={{width: 160, display: 'inline-block'}}
+																						>
+																							<Select>
+																								<Option value='one' key='one'>其中一个</Option>
+																								<Option value='all' key='all'>全部选项</Option>
+																							</Select>
+																						</Form.Item>
+																						<p>
+																							时，「当前题目」才出现 
+																						</p>
+																						</>
+																					)}
+																				</Col>
 																			)
 																		}) 
 																	}
@@ -1194,19 +1296,31 @@ export default () => {
 																</div>
 															))}
 															<Form.Item>
-																<Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
+																<Button type="dashed" 
+																 	onClick={() => {
+																		if(fields.length<ableSelectKey.length) {
+																			add()
+																		}else {
+																			info('已超过可关联关键题目数量')
+																		}
+																	}}
+																 	block icon={<PlusOutlined />}>
 																	添加关联题目
 																</Button>
 															</Form.Item>
 														</>
 													)}
-												</Form.List>
-												<Form.Item label="多题关联时，题目之间的关联关系为" name='relatedRelation'>
-													<Radio.Group>
-														<Radio value={'and'}>为“且”的关系</Radio>
-														<Radio value={'or'}>为“或”的关系</Radio>
-													</Radio.Group>
-												</Form.Item>
+												</Form.List> */}
+												{
+													resultRelations && resultRelations.length>1 && (
+														<Form.Item label="多题关联时，题目之间的关联关系为" name='relatedRelation'>
+															<Radio.Group>
+																<Radio value={'and'}>为“且”的关系</Radio>
+																<Radio value={'or'}>为“或”的关系</Radio>
+															</Radio.Group>
+														</Form.Item>
+													)
+												}
 											</>
 										)
 									}
@@ -1225,7 +1339,7 @@ export default () => {
 										>
 											{orgList && orgList.map(item => {
 												return (
-													<Option value={item.orgName}>{item.orgName}</Option>
+													<Option value={item.id+'-'+item.orgName}>{item.orgName}</Option>
 												)
 											})}
 										</Select>
@@ -1233,15 +1347,11 @@ export default () => {
 										<div className='selected-servers-wrap'>
 											{selectedOrgList&&selectedOrgList.map(item => {
 												return (
-													<p>{item}</p>
+													<p>{item.label}</p>
 												)
 											})}
 										</div>
 									</div>
-									
-									{/* <Form.Item label="关联服务商" name={'relatedServers'}>
-										<div>已选服务商：0</div>
-									</Form.Item> */}
 									<h3 style={{fontSize: '14px'}}>关联技术经理人</h3>
 									<Form.Item name={['relatedTechnicalManager', 'name']}>
 										<Input placeholder='请输入技术经理人姓名' maxLength={35} />
@@ -1301,11 +1411,31 @@ export default () => {
 					<h3>特殊提醒</h3>
 					<p>{resultObj&&resultObj.remind || ''}</p>
 					<h3>推荐服务商</h3>
-					<p></p>
+					<p>{resultObj&&resultObj.relatedServers&&resultObj.relatedServers.join(',') || ''}</p>
 					<h3>推荐技术经理人</h3>
 					<p>{resultObj&&resultObj.relatedTechnicalManager&&resultObj.relatedTechnicalManager.name || ''} {resultObj&&resultObj.relatedTechnicalManager&&resultObj.relatedTechnicalManager.phone || ''}</p>
 					<h3>诊断结果关联问卷填写逻辑</h3>
-					<p></p>
+					{resultObj && resultObj.defaultDiagnoseResult && (
+						<p>当前诊断结果为默认诊断结果</p>
+					)}
+					{/* {
+						resultObj && resultObj.relations && resultObj.relations.length == 1 
+						&& diagnoseList[(resultObj?.relations[0]?.dependIndex)].type == 'radio' 
+						&& resultObj.relations[0].dependValue?.length==1
+						&& (
+						<p>当题目「{resultObj.relations[0].dependIndex+1}.{diagnoseList[(resultObj.relations[0].dependIndex)].name}」选择「{resultObj.relations[0].dependValue.join(',')}」时，出现此诊断结果；</p>
+					)}
+					{
+						resultObj && resultObj.relations && resultObj.relations.length == 1 
+						&& diagnoseList[(resultObj?.relations[0]?.dependIndex)].type == 'radio' 
+						&& resultObj.relations[0].dependValue?.length>1
+						&& (
+						<p>当题目「{resultObj.relations[0].dependIndex+1}.{diagnoseList[(resultObj.relations[0].dependIndex)].name}」选择{
+							resultObj.relations[0].dependValue?.map((item) => { return (
+								<span>「{item}」</span>
+							)})
+						}中任意一个时，出现此诊断结果</p>
+					)} */}
 				</div>
 			</Modal>
 		)
@@ -1315,7 +1445,6 @@ export default () => {
 	const [covers, setCovers] = useState<Covers>({})
 	// 诊断结果-表单更新
 	const onValuesChange3 = (changedValues: any, allValues: any) => {
-		// console.log(changedValues, '诊断封面', allValues);
 		setCovers({...covers, ...allValues})
 	}
 
@@ -1349,6 +1478,12 @@ export default () => {
 					{selectFrontButton()}
 					<div className={edgeFront==1? 'web-preview':'h5-preview'}>
 						<QuestionnaireTopicList topicTitle={diagnoseTitle||'111'} topicList={diagnoseList} form={questionsForm} />
+						<div style={{textAlign: 'center',marginTop: 48}}>
+							<Button type="primary" style={{width: 160}}
+								onClick={() => {message.warning('此问卷为预览状态，不能提交')}}
+							>提交</Button>
+							<p style={{marginTop: 8,color: '#999'}}>此为预览页面，将不会参与问卷作答统计</p>
+						</div>
 					</div>
 				</div>
 			</Modal>
@@ -1417,12 +1552,7 @@ export default () => {
 																	<Form.Item
 																		label={index + 1 + '.' + item.name}
 																		key={index}
-																		rules={[
-																			{
-																				required: item.required,
-																				message: '必填',
-																			}
-																		]}
+																		required={item.required}
 																	>
 																		<div className={'tooltip'}>{item.subTitle}</div>
 																		<Radio.Group>
@@ -1445,7 +1575,7 @@ export default () => {
 																	<Form.Item
 																		label={index + 1 + '.' + item.name + '【多选题】'}
 																		key={index}
-																		rules={[{ required: item.required }]}
+																		required={item.required}
 																	>
 																		<div className={'tooltip'}>{item.subTitle}</div>
 																		<Checkbox.Group>
@@ -1468,7 +1598,7 @@ export default () => {
 																	<Form.Item
 																		label={index + 1 + '.' + item.name}
 																		key={index}
-																		rules={[{ required: item.required }]}
+																		required={item.required}
 																	>
 																		<div className={'tooltip'}>{item.subTitle}</div>
 																		<Input placeholder="请输入" />
@@ -1481,7 +1611,7 @@ export default () => {
 																	<Form.Item
 																		label={index + 1 + '.' + item.name}
 																		key={index}
-																		rules={[{ required: item.required }]}
+																		required={item.required}
 																	>
 																		<div className={'tooltip'}>{item.subTitle}</div>
 																		<Input.TextArea placeholder="请输入" />
@@ -1494,7 +1624,7 @@ export default () => {
 																	<Form.Item
 																		label={index + 1 + '.' + item.name}
 																		key={index}
-																		rules={[{ required: item.required }]}
+																		required={item.required}
 																	>
 																		<div className={'tooltip'}>{item.subTitle}</div>
 																		<Cascader options={[]} changeOnSelect />
@@ -1525,7 +1655,7 @@ export default () => {
 										//题目关联弹框完成选择后更新相关变量 
 										onFormFinish={(name, { values, forms }) => {
 											let indexRelate = values.currentTitle.split('.')[0]*1 -1
-											// console.log(indexRelate, 'indexRelate');
+											console.log(values, 'relatedForm-values');
 											const list = [...diagnoseList]
 											list.splice(indexRelate, 1, {
 												...list[indexRelate],
@@ -1661,14 +1791,12 @@ export default () => {
 												<h3>逻辑设置</h3>
 												<Tooltip placement="bottomLeft" title={'当前面题目选中某些选项时才出现此题'}>
 													<Button type="link" onClick={() => { relateTo() }}>
-														{diagnoseList[currentAddIndex].relations&&diagnoseList[currentAddIndex].relations.length>0 ? '编辑题目关联' : '题目关联'}
-														{/* {JSON.stringify(diagnoseList)}
-														{currentAddIndex} */}
+														{diagnoseList&&diagnoseList[currentAddIndex]&&diagnoseList[currentAddIndex].relations&&diagnoseList[currentAddIndex].relations.length>0 ? '编辑题目关联' : '题目关联'}
 													</Button>
 												</Tooltip>
 											</Form>
 										)}
-										{currentEditObj && currentEditObj.type == 'input' && (
+										{currentEditObj && (currentEditObj.type == 'input' || currentEditObj.type == 'textarea') && (
 											<Form
 												layout={'vertical'}
 												form={rightForm}
@@ -1694,7 +1822,7 @@ export default () => {
 														<Radio value={2}>金融数据</Radio>
 													</Radio.Group>
 												</Form.Item>
-												{diagnoseList[currentAddIndex].validate == 0 && (
+												{diagnoseList&&diagnoseList[currentAddIndex]&&diagnoseList[currentAddIndex].validate == 0 && (
 													<Form.Item label="输入框属性">
 														<Input.Group compact>
 															<Form.Item
@@ -1719,7 +1847,7 @@ export default () => {
 												<h3>逻辑设置</h3>
 												<Tooltip placement="bottomLeft" title={'当前面题目选中某些选项时才出现此题'}>
 													<Button type="link" onClick={() => { relateTo() }}>
-														{diagnoseList[currentAddIndex].relations&&diagnoseList[currentAddIndex].relations.length>0 ? '编辑题目关联' : '题目关联'}
+														{diagnoseList&&diagnoseList[currentAddIndex]&&diagnoseList[currentAddIndex].relations&&diagnoseList[currentAddIndex].relations.length>0 ? '编辑题目关联' : '题目关联'}
 													</Button>
 												</Tooltip>
 											</Form>
@@ -1746,7 +1874,7 @@ export default () => {
 													</Col>
 													{/* 省份数据单选 */}
 													{
-														diagnoseList[currentAddIndex].isAssigned && (
+														diagnoseList&&diagnoseList[currentAddIndex]&&diagnoseList[currentAddIndex].isAssigned && (
 															<Col span={4}>
 																<Form.Item name="assignedProvince">
 																	<Select>
