@@ -63,9 +63,6 @@ const EditableCell: React.FC<EditableCellProps> = ({
     </td>
   );
 };
-// type EditableTableProps = Parameters<typeof Table>[0];
-
-// type ColumnTypes = Exclude<EditableTableProps['columns'], undefined>;
 
 const TableList: React.FC = () => {
   const [form] = Form.useForm();

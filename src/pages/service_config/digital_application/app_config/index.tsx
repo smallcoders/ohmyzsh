@@ -821,7 +821,7 @@ export default () => {
             >
               <SendOutlined /> 推送应用
             </Button>
-            <Button
+            {/* <Button
               type="primary"
               onClick={() => {
                 setEditingItem({})
@@ -829,7 +829,7 @@ export default () => {
               }}
             >
               <PlusOutlined /> 新增应用
-            </Button>
+            </Button> */}
           </div>
         </div>
       </div>
