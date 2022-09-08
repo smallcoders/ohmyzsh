@@ -7,6 +7,7 @@ import React, { useEffect, useState } from 'react';
 import { getOrgTypeList } from '@/services/diagnose-manage';
 import DataColumn from '@/types/data-column';
 import IntroduceModal from './introduce-modal';
+import { history } from 'umi';
 
 const sc = scopedClasses('service-config-diagnose-manage');
 
@@ -49,6 +50,10 @@ const Introduce: React.FC = () => {
     getDataColumns();
   }, []);
 
+  // 查看历史版本
+  const toVersion = async (value: any, record: any) => {
+    history.push((`/service-config/diagnose/history?version=${value}&firstQuestionnaireNo=${record?.firstQuestionnaireNo}`))
+  }
   /**
    * column
    */
@@ -84,7 +89,9 @@ const Introduce: React.FC = () => {
       width: 140,
       render: (_: any, record: any) => {
         return (
-          <Select defaultValue="查看历史版本" style={{ width: 120 }} bordered={false}>
+          <Select defaultValue="查看历史版本" style={{ width: 120 }} bordered={false}
+            onChange={(e) => toVersion(e, record)}
+          >
             {record.allVersion && record.allVersion.map(item => {
                 return (
                   <Option value={item}>{item}</Option>
