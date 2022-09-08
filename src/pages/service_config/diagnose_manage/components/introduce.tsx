@@ -1,41 +1,31 @@
 /* eslint-disable */
-import { Button, Input, Table, Form, InputNumber, Typography, message, Select } from 'antd';
+import { Table, message, Select } from 'antd';
 const { Option } = Select;
 import '../service-config-diagnose-manage.less';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
+import Common from '@/types/common';
 import { getOrgTypeList } from '@/services/diagnose-manage';
-import DataColumn from '@/types/data-column';
-import IntroduceModal from './introduce-modal';
 import { history } from 'umi';
 
 const sc = scopedClasses('service-config-diagnose-manage');
 
 const Introduce: React.FC = () => {
-  /**
-   * table 的源数据
-   */
-  const [data, setData] = useState<DataColumn.IntroduceContent[]>([]);
-
-  /**
-   * 正在编辑的key
-   */
-  const [editingItem, setEditingItem] = useState<any>();
-
-  /**
-   * 正在发布中
-   */
-  const [publishLoading, setPublishLoading] = useState<boolean>(false);
-
-  const [visible, setVisible] = useState<boolean>(false);
+  const [data, setData] = useState<any>([]);
+  const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
+    pageIndex: 1,
+    pageSize: 20,
+    totalCount: 0,
+    pageTotal: 0,
+  });
   /**
    * 获取数据栏
    */
-  const getDataColumns = async () => {
+  const getDataColumns = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     try {
-      let {result, code} = await getOrgTypeList({state: 0,pageIndex: 1, pageSize: 20});
-      // console.log(res)
+      let {result, code, totalCount, pageTotal} = await getOrgTypeList({state: 0,pageIndex,pageSize});
       if (code === 0) {
+        setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
         setData(result);
       } else {
         message.error(`请求分页数据失败`);
@@ -44,10 +34,8 @@ const Introduce: React.FC = () => {
       console.log(error);
     }
   };
-
-  // 作为生命周期 开始时获取
   useEffect(() => {
-    getDataColumns();
+    getDataColumns()
   }, []);
 
   // 查看历史版本
@@ -62,7 +50,8 @@ const Introduce: React.FC = () => {
       title: '序号',
       dataIndex: 'sort',
       width: 80,
-      render: (item: any, _: any, index: number) => index + 1,
+      render: (_: any, _record: any, index: number) =>
+        pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
       title: '诊断名称',
@@ -111,20 +100,25 @@ const Introduce: React.FC = () => {
         </div>
       </div>
       <div className={sc('container-table-body')}>
-        <Table scroll={{ x: 1080 }} pagination={false} columns={columns} bordered dataSource={data} />
+        <Table scroll={{ x: 1080 }} 
+          pagination={
+            pageInfo.totalCount === 0
+              ? false
+              : {
+                  onChange: getDataColumns,
+                  total: pageInfo.totalCount,
+                  current: pageInfo.pageIndex,
+                  pageSize: pageInfo.pageSize,
+                  showTotal: (total) =>
+                    `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
+                }
+          }
+          columns={columns} 
+          bordered 
+          dataSource={data} 
+        />
       </div>
     </div>
-    // <div style={{ marginTop: 20, padding: 20, background: '#fff' }}>
-    //   <Table scroll={{ x: 1080 }} pagination={false} columns={columns} bordered dataSource={data} />
-    //   {visible && (
-    //     <IntroduceModal
-    //       visible={visible}
-    //       setVisible={setVisible}
-    //       detail={editingItem}
-    //       publishLoading={publishLoading}
-    //     />
-    //   )}
-    // </div>
   );
 };
 
