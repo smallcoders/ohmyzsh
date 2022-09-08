@@ -7,8 +7,8 @@ import { request } from 'umi';
 export function getCommentPage(data: {
   name?: string // 用户名
   content?: string // 内容
-  startCreateTime?: string // yyyy-MM-dd HH:mm:ss
-  endCreateTime?: string // 
+  startDateTime?: string // yyyy-MM-dd HH:mm:ss
+  endDateTime?: string // 
   status?: string // 审核状态 枚举
   tabEnum?: string // 所属板块
   pageSize?: number;
@@ -35,8 +35,12 @@ export function getCommentsDetailPage(params: {
   pageSize?: number;
   pageIndex?: number;
 }) {
+  const key = 'rpc-tag'
   return request('/antelope-manage/comments/detail/page',{
     method: 'get',
     params,
+    headers: {
+      [key]: 'yushen'
+    }
   })
 }

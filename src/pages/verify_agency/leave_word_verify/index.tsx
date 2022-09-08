@@ -56,8 +56,8 @@ const tabTypeValue = [
 export interface SearchInfo {
   name: string;
   content: string;
-  startCreateTime: string;
-  endCreateTime: string;
+  startDateTime: string;
+  endDateTime: string;
   tabEnum: string | null;
   status: boolean | null;
 }
@@ -206,8 +206,8 @@ export default () => {
       {
         name,
         content,
-        startCreateTime: createTime ? moment(createTime[0]).format('YYYY-MM-DD HH:mm:ss') : '',
-        endCreateTime: createTime ? moment(createTime[1]).format('YYYY-MM-DD HH:mm:ss') : '',
+        startDateTime: createTime ? moment(createTime[0]).format('YYYY-MM-DD HH:mm:ss') : '',
+        endDateTime: createTime ? moment(createTime[1]).format('YYYY-MM-DD HH:mm:ss') : '',
         tabEnum: tab,
         status
       }, pageInfo?.pageSize);

@@ -773,7 +773,7 @@ export default () => {
             >
               编辑
             </Button>
-            <Popconfirm
+            {/* <Popconfirm
               title="确定删除么？"
               okText="确定"
               cancelText="取消"
@@ -782,7 +782,7 @@ export default () => {
               <Button type="link">
                 删除
               </Button>
-            </Popconfirm>
+            </Popconfirm> */}
             <Button
               type="link"
               disabled={!row.path}
