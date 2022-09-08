@@ -203,17 +203,17 @@ export default () => {
 					{
 						resultObj && resultObj.relations 
 						&& resultObj.relations.length == 1 
-						&& diagnoseList[Number(resultObj.relations[0].dependIndex)].type == 'radio' 
+						&& diagnoseList[Number(resultObj.relations[0]?.dependIndex)]?.type == 'radio' 
 						&& resultObj.relations[0].dependValue?.length==1
 						&& (
-						<p>当题目<strong>{Number(resultObj.relations[0].dependIndex)+1}.{diagnoseList[Number(resultObj.relations[0].dependIndex)].name}</strong>选择「{resultObj.relations[0].dependValue.join(',')}」时，出现此诊断结果；</p>
+						<p>当题目<strong>{Number(resultObj.relations[0]?.dependIndex)+1}.{diagnoseList[Number(resultObj.relations[0]?.dependIndex)].name}</strong>选择「{resultObj.relations[0].dependValue.join(',')}」时，出现此诊断结果；</p>
 					)}
 					{
 						resultObj && resultObj.relations && resultObj.relations.length == 1 
-						&& diagnoseList[Number(resultObj?.relations[0]?.dependIndex)].type == 'radio' 
+						&& diagnoseList[Number(resultObj?.relations[0]?.dependIndex)]?.type == 'radio' 
 						&& resultObj.relations[0].dependValue?.length>1
 						&& (
-						<p>当题目<strong>{Number(resultObj.relations[0].dependIndex)+1}.{diagnoseList[Number(resultObj.relations[0].dependIndex)].name}</strong>选择{
+						<p>当题目<strong>{Number(resultObj.relations[0]?.dependIndex)+1}.{diagnoseList[Number(resultObj.relations[0]?.dependIndex)].name}</strong>选择{
 							resultObj.relations[0].dependValue?.map((item) => { return (
 								<span>「{item}」</span>
 							)})
@@ -221,9 +221,9 @@ export default () => {
 					)}
 					{
 						resultObj && resultObj.relations && resultObj.relations.length == 1 
-						&& diagnoseList[Number(resultObj?.relations[0]?.dependIndex)].type == 'checkbox' 
+						&& diagnoseList[Number(resultObj?.relations[0]?.dependIndex)]?.type == 'checkbox' 
 						&& (
-						<p>当题目<strong>{Number(resultObj.relations[0].dependIndex)+1}.{diagnoseList[Number(resultObj.relations[0].dependIndex)].name}</strong>选择{
+						<p>当题目<strong>{Number(resultObj.relations[0]?.dependIndex)+1}.{diagnoseList[Number(resultObj.relations[0]?.dependIndex)].name}</strong>选择{
 							resultObj.relations[0].dependValue?.map((item) => { return (
 								<span>「{item}」</span>
 							)})
@@ -235,11 +235,11 @@ export default () => {
 						<p>
 							{
 								resultObj.relations.map(((item: any, index: number) => {
-									return (
-										diagnoseList[Number(item.dependIndex)].type == 'radio' && item.dependValue?.length == 1 ? (
+									return item && (
+										diagnoseList[Number(item.dependIndex)]?.type == 'radio' && item.dependValue?.length == 1 ? (
 											<span>当题目<strong>${Number(item.dependIndex)+1}.${diagnoseList[item.dependIndex].name}</strong>选择「${item.dependValue.join(',')}时，</span>
 										) :
-										diagnoseList[Number(item.dependIndex)].type == 'radio' && item.dependValue?.length > 1 ? (
+										diagnoseList[Number(item.dependIndex)]?.type == 'radio' && item.dependValue?.length > 1 ? (
 											<span>{index>0 && resultObj.relatedRelation && resultObj.relatedRelation == 'and' ? '并且' : index>0 ? '或者' : ''}当题目<strong>{Number(item.dependIndex)+1}.{diagnoseList[Number(item.dependIndex)].name}</strong>选择{
 												item.dependValue?.map((id: any) => { return (
 													<span>「{id}」</span>
@@ -292,11 +292,14 @@ export default () => {
 			>
 				<div className='preview-wrap'>
 					{selectFrontButton()}
-					<div style={{textAlign: 'center',marginTop: 48}}>
-						<Button type="primary" style={{width: 160}}
-							onClick={() => {message.warning('此问卷为预览状态，不能提交')}}
-						>提交</Button>
-						<p style={{marginTop: 8,color: '#999'}}>此为预览页面，将不会参与问卷作答统计</p>
+					<div className={edgeFront==1? 'web-preview':'h5-preview'}>
+						<QuestionnaireTopicList topicTitle={diagnoseTitle||'111'} topicList={diagnoseList} form={questionsForm} />
+						<div style={{textAlign: 'center',marginTop: 48}}>
+							<Button type="primary" style={{width: 160}}
+								onClick={() => {message.warning('此问卷为预览状态，不能提交')}}
+							>提交</Button>
+							<p style={{marginTop: 8,color: '#999'}}>此为预览页面，将不会参与问卷作答统计</p>
+						</div>
 					</div>
 				</div>
 			</Modal>
