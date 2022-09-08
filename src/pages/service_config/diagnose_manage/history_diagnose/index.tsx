@@ -193,11 +193,71 @@ export default () => {
 					<h3>特殊提醒</h3>
 					<p>{resultObj && resultObj.remind || ''}</p>
 					<h3>推荐服务商</h3>
-					<p></p>
+					<p>{resultObj&&resultObj.relatedServers&&resultObj.relatedServers.join(',') || ''}</p>
 					<h3>推荐技术经理人</h3>
 					<p>{resultObj && resultObj.relatedTechnicalManager && resultObj.relatedTechnicalManager.name || ''} {resultObj && resultObj.relatedTechnicalManager && resultObj.relatedTechnicalManager.phone || ''}</p>
 					<h3>诊断结果关联问卷填写逻辑</h3>
-					<p></p>
+					{resultObj && resultObj.defaultDiagnoseResult && (
+						<p>当前诊断结果为默认诊断结果</p>
+					)}
+					{
+						resultObj && resultObj.relations 
+						&& resultObj.relations.length == 1 
+						&& diagnoseList[Number(resultObj.relations[0].dependIndex)].type == 'radio' 
+						&& resultObj.relations[0].dependValue?.length==1
+						&& (
+						<p>当题目<strong>{Number(resultObj.relations[0].dependIndex)+1}.{diagnoseList[Number(resultObj.relations[0].dependIndex)].name}</strong>选择「{resultObj.relations[0].dependValue.join(',')}」时，出现此诊断结果；</p>
+					)}
+					{
+						resultObj && resultObj.relations && resultObj.relations.length == 1 
+						&& diagnoseList[Number(resultObj?.relations[0]?.dependIndex)].type == 'radio' 
+						&& resultObj.relations[0].dependValue?.length>1
+						&& (
+						<p>当题目<strong>{Number(resultObj.relations[0].dependIndex)+1}.{diagnoseList[Number(resultObj.relations[0].dependIndex)].name}</strong>选择{
+							resultObj.relations[0].dependValue?.map((item) => { return (
+								<span>「{item}」</span>
+							)})
+						}中任意一个时，出现此诊断结果</p>
+					)}
+					{
+						resultObj && resultObj.relations && resultObj.relations.length == 1 
+						&& diagnoseList[Number(resultObj?.relations[0]?.dependIndex)].type == 'checkbox' 
+						&& (
+						<p>当题目<strong>{Number(resultObj.relations[0].dependIndex)+1}.{diagnoseList[Number(resultObj.relations[0].dependIndex)].name}</strong>选择{
+							resultObj.relations[0].dependValue?.map((item) => { return (
+								<span>「{item}」</span>
+							)})
+						}中{resultObj.relations[0].conditionType && resultObj.relations[0].conditionType == 'all' ? '全部选项' : '任意一个'}时，出现此诊断结果</p>
+					)}
+					{
+						resultObj && resultObj.relations && resultObj.relations.length > 1 
+						&& (
+						<p>
+							{
+								resultObj.relations.map(((item: any, index: number) => {
+									return (
+										diagnoseList[Number(item.dependIndex)].type == 'radio' && item.dependValue?.length == 1 ? (
+											<span>当题目<strong>${Number(item.dependIndex)+1}.${diagnoseList[item.dependIndex].name}</strong>选择「${item.dependValue.join(',')}时，</span>
+										) :
+										diagnoseList[Number(item.dependIndex)].type == 'radio' && item.dependValue?.length > 1 ? (
+											<span>{index>0 && resultObj.relatedRelation && resultObj.relatedRelation == 'and' ? '并且' : index>0 ? '或者' : ''}当题目<strong>{Number(item.dependIndex)+1}.{diagnoseList[Number(item.dependIndex)].name}</strong>选择{
+												item.dependValue?.map((id: any) => { return (
+													<span>「{id}」</span>
+												)})
+											}中<strong>任意一个</strong>时，{index==(resultObj.relations.length-1)&&'出现此诊断结果'}</span>
+										) :
+										(
+											<span>{index>0 && resultObj.relatedRelation && resultObj.relatedRelation == 'and' ? '并且' : index>0 ? '或者' : ''}当题目<strong>{Number(item.dependIndex)+1}.{diagnoseList[Number(item.dependIndex)].name}</strong>选择{
+												item.dependValue?.map((id: any) => { return (
+													<span>「{id}」</span>
+												)})
+											}中<strong>{item.conditionType && item.conditionType == 'all' ? '全部选项' : '任意一个'}</strong>时，{index==(resultObj.relations.length-1)&&'出现此诊断结果'}</span>
+										)
+									)
+								}))
+							}
+						</p>
+					)}
 				</div>
 			</Modal>
 		)
@@ -232,8 +292,11 @@ export default () => {
 			>
 				<div className='preview-wrap'>
 					{selectFrontButton()}
-					<div className={edgeFront==1? 'web-preview':'h5-preview'}>
-						<QuestionnaireTopicList topicTitle={diagnoseTitle||'111'} topicList={diagnoseList} form={questionsForm} />
+					<div style={{textAlign: 'center',marginTop: 48}}>
+						<Button type="primary" style={{width: 160}}
+							onClick={() => {message.warning('此问卷为预览状态，不能提交')}}
+						>提交</Button>
+						<p style={{marginTop: 8,color: '#999'}}>此为预览页面，将不会参与问卷作答统计</p>
 					</div>
 				</div>
 			</Modal>
@@ -347,6 +410,19 @@ export default () => {
 																				<Input placeholder="请输入" />
 																			</Form.Item>
 																		</div>
+																	):
+																	// 单项填空
+																	item.type == 'textarea' ? (
+																		<div>
+																			<Form.Item
+																				label={index + 1 + '.' + item.name}
+																				key={index}
+																				required={item.required}
+																			>
+																				<div className={'tooltip'}>{item.subTitle}</div>
+																				<Input.TextArea placeholder="请输入" />
+																			</Form.Item>
+																		</div>
 																	) :
 																		// 级联选择
 																		item.type == 'cascader' ? (
@@ -396,18 +472,23 @@ export default () => {
 						{covers.showInHomePage && (
 							<>
 								<Row>
-									<Col span={6}>
+									<Col span={5}>
 										<h3>首页默认小icon</h3>
-										<img src={covers.icon || ''} />
+										<img src={covers.icon || ''} style={{width: 140}} />
 									</Col>
 									<Col span={6}>
 										<h3>首页3D图</h3>
-										<img src={covers.coverUrl || ''} />
+										<img src={covers.coverUrl || ''} style={{width: 140}} />
 									</Col>
 								</Row>
 								<h3>诊断描述</h3>
 								<ul>
-									<li>{covers.diagnoseDescribe || ''}</li>
+									{covers.diagnoseDescribe && covers.diagnoseDescribe.split('\n').map((item) => {
+										return (
+											<li>{item}</li>
+										)
+									})}
+									
 								</ul>
 							</>
 						)}
