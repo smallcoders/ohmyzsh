@@ -20,8 +20,8 @@ const stateObj = {
   UN_CHECK: '未审核',
   CHECKED: '审核通过',
   UN_PASS: '审核拒绝',
-  UN_COMMIT: '未提交',
-  INVALID: '未提交已失效',
+  UN_COMMIT: '未审核',
+  INVALID: '未审核已失效',
 };
 
 export default () => {
@@ -31,24 +31,29 @@ export default () => {
   const { pageInfo, setPageInfo, orgName, setOrgName, resetModel } = useModel(
     'useEnterpriseAdministratorAudit',
   );
+  const [searchContent, setSearChContent] = useState<{
+    orgName?: string; // 组织名称
+    createTimeStart?: string; // 提交开始时间
+    createTimeEnd?: string; // 提交结束时间
+  }>({});
 
   useEffect(() => {
-    form?.setFieldsValue({ orgName })
-    getEnterpriseInfoVerifyPage(orgName, pageInfo?.pageSize, pageInfo?.pageIndex)
+    // form?.setFieldsValue({ orgName })
+    getEnterpriseInfoVerifyPage(pageInfo?.pageSize, pageInfo?.pageIndex)
     const unlisten = history.listen((location) => {
       if (!location?.pathname.includes(routeName.ENTERPRISE_ADMIN_VERIFY)) {
         resetModel?.()
         unlisten()
       }
     });
-  }, [])
+  }, [searchContent])
 
   const deleteAuthority = async (id: string) => {
     try {
       const { code } = await deleteEnterpriseAdministratorRights(id);
       if (code === 0) {
         message.success(`用户组织权限移除成功`);
-        getEnterpriseInfoVerifyPage(orgName, pageInfo?.pageSize, pageInfo?.pageIndex);
+        getEnterpriseInfoVerifyPage(pageInfo?.pageSize, pageInfo?.pageIndex);
       } else {
         message.error(`用户组织权限移除失败`);
       }
@@ -109,7 +114,7 @@ export default () => {
       render: (_: any, record: EnterpriseAdminVerify.Content) => {
         return (
           <div>
-            {record?.state === 'UN_COMMIT' && (
+            {/* {record?.state === 'UN_COMMIT' && (
               <Button
                 type="link"
                 onClick={() => {
@@ -126,7 +131,7 @@ export default () => {
               >
                 移除权限
               </Button>
-            )}
+            )} */}
             <Button
               type="link"
               onClick={() => {
@@ -141,13 +146,13 @@ export default () => {
     },
   ];
 
-  const getEnterpriseInfoVerifyPage = async (orgName = '', pageSize = 10, pageIndex = 1) => {
+  const getEnterpriseInfoVerifyPage = async (pageSize = 10, pageIndex = 1) => {
     try {
       setLoading(true)
       const { result, totalCount, pageTotal, code } = await getEnterpriseAdminVerifyPage({
-        orgName,
         pageIndex,
         pageSize,
+        ...searchContent,
       });
       if (code === 0) {
         setPageInfo({ ...pageInfo, totalCount, pageTotal, pageIndex, pageSize });
@@ -170,13 +175,26 @@ export default () => {
       initialValue: '',
       allowClear: true,
     },
+    {
+      key: 'time',
+      label: '提交日期',
+      type: Common.SearchItemControlEnum.RANGE_PICKER,
+      allowClear: true,
+    },
   ];
 
   const onSearch = (info: any) => {
-    const { orgName } = info || {};
+    // console.log(info)
+    const { time, ...rest } = info;
+    if (time) {
+      rest.createTimeStart = moment(time[0]).format('YYYY-MM-DD');
+      rest.createTimeEnd = moment(time[1]).format('YYYY-MM-DD');
+    }
+    console.log(rest)
+    setSearChContent(rest);
     setPageInfo({ ...pageInfo, pageIndex: 1 });
     setOrgName(orgName);
-    getEnterpriseInfoVerifyPage(orgName, pageInfo?.pageSize);
+    // getEnterpriseInfoVerifyPage(pageInfo?.pageSize, pageInfo?.pageIndex);
   };
 
   return (
@@ -205,7 +223,7 @@ export default () => {
             ),
           }}
           onChange={(pagination: any) => {
-            getEnterpriseInfoVerifyPage(orgName, pagination.pageSize, pagination.current);
+            getEnterpriseInfoVerifyPage(pagination.pageSize, pagination.current);
           }}
         />
       </div>
