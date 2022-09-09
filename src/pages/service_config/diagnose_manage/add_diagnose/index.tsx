@@ -810,7 +810,7 @@ export default () => {
 													>
 														{ableSelectRelated && ableSelectRelated.map((item: any) =>
 															<Option 
-																value={item.dependIndex} 
+																value={item.dependIndex.toString()} 
 																key={(item.dependIndex+1)+item.name}
 															>
 																{item.dependIndex+1}.{item.name}{item.type=='radio'?'【单选】':'【多选题】'}
@@ -1193,7 +1193,7 @@ export default () => {
 																				<Select onChange={changeResult}>
 																					{ableSelectKey && ableSelectKey.map((item: any) =>
 																						<Option 
-																							value={item.dependIndex} 
+																							value={item.dependIndex.toString()} 
 																							key={(item.dependIndex+1)+item.name}
 																						>
 																							{item.dependIndex+1}.{item.name}{item.type=='radio'?'【单选】':'【多选题】'}
