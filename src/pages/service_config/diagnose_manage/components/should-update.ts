@@ -4,7 +4,8 @@ export default (param) => {
   relations.forEach((relation) => {
     const { dependValue, dependIndex, conditionType } = relation
     const dependTopicInfo = topicList[dependIndex]
-    const fieldValue = formInstance.getFieldValue([dependTopicInfo.id])
+    const fieldsVlaue = formInstance.getFieldsValue()
+      const fieldValue = fieldsVlaue[dependTopicInfo.id]
     if (dependTopicInfo.type == 'radio') {
       conditions.push(dependValue.includes(fieldValue))
     } else if (dependTopicInfo.type == 'checkbox') {
