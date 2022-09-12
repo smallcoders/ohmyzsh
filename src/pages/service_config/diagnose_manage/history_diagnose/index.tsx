@@ -293,7 +293,7 @@ export default () => {
 				<div className='preview-wrap'>
 					{selectFrontButton()}
 					<div className={edgeFront==1? 'web-preview':'h5-preview'}>
-						<QuestionnaireTopicList topicTitle={diagnoseTitle||'111'} topicList={diagnoseList} form={questionsForm} />
+						<QuestionnaireTopicList topicTitle={diagnoseTitle||'暂未设置问卷标题'} topicList={diagnoseList} form={questionsForm} />
 						<div style={{textAlign: 'center',marginTop: 48}}>
 							<Button type="primary" style={{width: 160}}
 								onClick={() => {message.warning('此问卷为预览状态，不能提交')}}

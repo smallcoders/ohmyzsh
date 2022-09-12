@@ -25,7 +25,7 @@ export default observer(
 
     const dealOption = () => {
       if(assignedProvince) {
-        let arr = provinceList.filter(item => item.code == assignedProvince)[0]['nodes']
+        let arr = provinceList.filter(item => item.code == assignedProvince)[0]?.nodes || []
         return arr
       }else {
         return provinceList
