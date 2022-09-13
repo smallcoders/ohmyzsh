@@ -115,6 +115,7 @@ export default () => {
 	const [currentStep, setCurrentStep] = useState<number>(0)
 	// 诊断结果变量
 	const [dataSource, setDataSource] = useState<any>([]);
+	const diagnoseRef = useRef(null);
 
 	interface ModalFormProps {
 		visible: boolean;
@@ -223,8 +224,15 @@ export default () => {
 		lastArr.push(sameObj)
 		setCurrentAddIndex(lastArr.length - 1)
 		setDiagnoseList(lastArr)
+		console.log(diagnoseRef);
+		
+		// diagnoseRef.current.scrollIntoView({ behavior: "smooth" });
 		setAddModalVisible(false)
 	}
+	useEffect(() => {
+		const current = diagnoseRef.current;
+		current.scrollTop = current.scrollHeight
+	},[diagnoseList])
 
 	// 点击下一步
 	const toNext = () => {
@@ -1588,7 +1596,7 @@ export default () => {
 										}}>添加题目</Button>
 									</div>
 								</div>
-								<div className={'diagnose-wrapper'}>
+								<div className={'diagnose-wrapper'} ref={diagnoseRef}>
 									<div className={currentAddIndex == -1 ? 'active' : ''} onClick={() => { clickLeftProblem(-1) }}>
 										<h3>问卷标题</h3>
 										<p>{diagnoseTitle}</p>
