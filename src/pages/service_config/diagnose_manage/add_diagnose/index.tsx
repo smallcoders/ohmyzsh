@@ -1825,7 +1825,7 @@ export default () => {
 																			{
 																				diagnoseList && diagnoseList[currentAddIndex] 
 																				&& diagnoseList[currentAddIndex].options 
-																				&& optionsWatch && optionsWatch[fieldIndex].allowInput
+																				&& optionsWatch && optionsWatch[fieldIndex] && optionsWatch[fieldIndex].allowInput
 																				&& (
 																					<Col span={14}>
 																						<Form.Item
