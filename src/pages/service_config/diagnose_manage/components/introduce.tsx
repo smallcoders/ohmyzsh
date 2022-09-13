@@ -70,7 +70,6 @@ const Introduce: React.FC = () => {
       dataIndex: 'latestVersion',
       editable: true,
       width: 150,
-      render: (flag: boolean) => (flag ? '是' : '否'),
     },
     {
       title: '操作',
