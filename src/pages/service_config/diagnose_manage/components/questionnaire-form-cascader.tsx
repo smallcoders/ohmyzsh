@@ -25,7 +25,7 @@ export default observer(
 
     const dealOption = () => {
       if(assignedProvince) {
-        let arr = provinceList.filter(item => item.code == assignedProvince)
+        let arr = provinceList.filter(item => item.code == assignedProvince)[0]?.nodes || []
         return arr
       }else {
         return provinceList
@@ -51,6 +51,7 @@ export default observer(
             onChange={(e) => {
               onChange && onChange(topicInfo, e, index)
             }}
+            getPopupContainer={(triggerNode) => triggerNode}
             placeholder="请选择"
           />
         </Form.Item>
