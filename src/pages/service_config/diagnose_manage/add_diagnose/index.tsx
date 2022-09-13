@@ -976,6 +976,19 @@ export default () => {
 							href="#"
 							onClick={() => {
 								setEditResultIndex(index)
+								setResultObj({});
+								resultForm.setFieldsValue({
+									name: '',
+									summary: '',
+									recommendations: '',
+									remind: '',
+									relations: [],
+									relatedServers: [],
+									relatedTechnicalManager: {
+										name: '',
+										phone: ''
+									}
+								})
 								setResultObj(record);
 								setAddResultVisible(true);
 								resultForm.setFieldsValue({...record})
@@ -1016,6 +1029,8 @@ export default () => {
 	const selectButton = (): React.ReactNode => {
 		const handleEdgeChange = (e) => {
 			setEdge(e.target.value);
+			console.log(resultObj, '切换tab');
+			resultForm.setFieldsValue(resultObj)
 		};
 		return (
 		<Radio.Group value={edge} onChange={handleEdgeChange}>
@@ -1122,7 +1137,7 @@ export default () => {
 				dependIndex: value,
 				conditionType: 'one'
 			});
-			// console.log(list, 'list');
+			console.log(list, 'list');
 			resultForm.setFieldsValue({
 				...resultObj,
 				relations: [...list], 
@@ -1672,10 +1687,10 @@ export default () => {
 																</div>
 															) : ('')
 														}
-														<div style={{textAlign: 'right', display: currentAddIndex == index ? 'block' : 'none', marginTop: -16}}>
-															<Button type='link' icon={<DeleteOutlined />} onClick={() => {deleteInfo(currentAddIndex)}}>删除</Button>
-															<Button type='link' icon={<ArrowUpOutlined />} onClick={() => {upData(currentAddIndex)}}>上移</Button>
-															<Button type='link' icon={<ArrowDownOutlined />} onClick={() => {downData(currentAddIndex)}}>下移</Button>
+														<div style={{textAlign: 'right', display: currentAddIndex == index ? 'block' : 'none', marginTop: -16}} className="operation-buttons">
+															<Button type='link' icon={<DeleteOutlined />} onClick={() => {deleteInfo(index)}}>删除</Button>
+															<Button type='link' icon={<ArrowUpOutlined />} onClick={() => {upData(index)}}>上移</Button>
+															<Button type='link' icon={<ArrowDownOutlined />} onClick={() => {downData(index)}}>下移</Button>
 														</div>
 													</div>	
 												)
@@ -1964,7 +1979,13 @@ export default () => {
 										summary: '',
 										recommendations: '',
 										remind: '',
-										relations: []
+										relations: [
+											// {
+											// 	dependIndex: '',
+											// 	conditionType: 'one',
+											// 	dependValue: []
+											// }
+										]
 									})
 									setResultObj({})
 									setAddResultVisible(true)
