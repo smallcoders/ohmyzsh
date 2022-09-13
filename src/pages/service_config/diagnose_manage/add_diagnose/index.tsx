@@ -1739,7 +1739,7 @@ export default () => {
 												onValuesChange={(newEventName, allValues) => { onValuesChange(newEventName, allValues) }}
 											>
 												<Form.Item label="问卷标题" name='title' style={{marginBottom: 8}}>
-													<Input placeholder='请输入' />
+													<Input placeholder='请输入' maxLength={10} />
 												</Form.Item>
 												<p className='tip'>提示：问卷标题将作为诊断标题使用</p>
 											</Form>
