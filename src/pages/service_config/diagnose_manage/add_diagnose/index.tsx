@@ -369,7 +369,7 @@ export default () => {
 		if(index>-1) {
 			form.setFieldsValue({
 				relations: diagnoseList[index].relations || [], 
-				relatedRelation: diagnoseList[index].relatedRelation || 'one',
+				relatedRelation: diagnoseList[index].relatedRelation || 'or',
 				currentTitle: `${index+1}.${diagnoseList[index].name}`
 			})
 		}
@@ -627,7 +627,7 @@ export default () => {
 			if((item.type == 'radio' || item.type == 'checkbox') && index < currentAddIndex) {
 				rtn.dependIndex = index
 			}
-			console.log(index, currentAddIndex, rtn);
+			// console.log(index, currentAddIndex, rtn);
 			return rtn
 		}).filter((item:any, index) => (item.type == 'radio' || item.type == 'checkbox') && index < currentAddIndex)
 		console.log(arr2, 'arr2');
@@ -666,12 +666,18 @@ export default () => {
 		if(diagnoseList[currentAddIndex].relations && diagnoseList[currentAddIndex].relations.length>0) {
 			form.setFieldsValue({
 				relations: diagnoseList[currentAddIndex].relations, 
-				relatedRelation: diagnoseList[currentAddIndex].relatedRelation || 'one',
+				relatedRelation: diagnoseList[currentAddIndex].relatedRelation || 'or',
 				currentTitle: `${currentAddIndex+1}.${diagnoseList[currentAddIndex].name}`
 			})
 		}else {
 			form.setFieldsValue({
-				relations: [], 
+				relations: [
+					{	
+						dependIndex: '', 
+						conditionType: 'one',
+						dependValue: []
+					}
+				], 
 				relatedRelation: 'one',
 				currentTitle: `${currentAddIndex+1}.${diagnoseList[currentAddIndex].name}`
 			})
@@ -742,15 +748,28 @@ export default () => {
 				currentTitle: `${currentAddIndex+1}.${diagnoseList[currentAddIndex].name}`
 			})
 		}
-		const changeRelated = (value: any) => {
+		const changeRelated = (value: any, fieldIndex: number) => {
 			let sameSelect:any = []
+			console.log(value, fieldIndex, relatedRelations, '888');
 			relatedRelations && relatedRelations.map((item: any) => {
 				if(item && item.dependIndex == value) {
 					sameSelect.push(item)
 				}
 			})
+			const list = relatedRelations.filter(item => item)
+			list.splice(fieldIndex, 1, {
+				...list[fieldIndex],
+				dependIndex: value,
+				conditionType: 'one'
+			});
+			console.log(list, 'list');
+			form.setFieldsValue({
+				relations: [...list], 
+				relatedRelation: diagnoseList[value].relatedRelation || 'or',
+				currentTitle: `${currentAddIndex+1}.${diagnoseList[currentAddIndex].name}`
+			})
 			if(sameSelect.length > 0) {
-				info('关键题目不能重复')
+				info('关联题目不能重复')
 				form.setFieldsValue({
 					relations: relatedRelations.slice(0, -1), 
 					relatedRelation: '',
@@ -806,7 +825,7 @@ export default () => {
 													getValueFromEvent={e => e}
 												>
 													<Select 
-														onChange={changeRelated}
+														onChange={(e) => {changeRelated(e, fieldIndex)}}
 													>
 														{ableSelectRelated && ableSelectRelated.map((item: any) =>
 															<Option 
@@ -837,7 +856,7 @@ export default () => {
 																>
 																	<Checkbox.Group>
 																		{
-																			diagnoseList[relatedRelations[fieldIndex].dependIndex].options.map((o: any) =>
+																			relatedRelations[fieldIndex]?.dependIndex && diagnoseList[relatedRelations[fieldIndex].dependIndex].options.map((o: any) =>
 																				<Checkbox value={o.label} key={o.label}>{o.label}</Checkbox>
 																			)
 																		}
@@ -854,15 +873,14 @@ export default () => {
 													return item && (io == fieldIndex) && (
 														(
 															<Col span={17} key={io}>
-																{diagnoseList[relatedRelations[fieldIndex].dependIndex].type == 'radio' && (
+																{relatedRelations[fieldIndex].dependIndex && diagnoseList[relatedRelations[fieldIndex].dependIndex].type == 'radio' && (
 																	'中任意一个时，「当前题目」才出现'
 																)}
-																{diagnoseList[relatedRelations[fieldIndex].dependIndex].type == 'checkbox' && (
+																{relatedRelations[fieldIndex].dependIndex && diagnoseList[relatedRelations[fieldIndex].dependIndex].type == 'checkbox' && (
 																	<>
 																	<Form.Item
 																		{...field}
 																		name={[field.name, 'conditionType']}
-																		label={`当「关联题目${fieldIndex + 1}」选择下方选项：`}
 																		style={{width: 160, display: 'inline-block'}}
 																	>
 																		<Select>
@@ -958,6 +976,19 @@ export default () => {
 							href="#"
 							onClick={() => {
 								setEditResultIndex(index)
+								setResultObj({});
+								resultForm.setFieldsValue({
+									name: '',
+									summary: '',
+									recommendations: '',
+									remind: '',
+									relations: [],
+									relatedServers: [],
+									relatedTechnicalManager: {
+										name: '',
+										phone: ''
+									}
+								})
 								setResultObj(record);
 								setAddResultVisible(true);
 								resultForm.setFieldsValue({...record})
@@ -998,6 +1029,8 @@ export default () => {
 	const selectButton = (): React.ReactNode => {
 		const handleEdgeChange = (e) => {
 			setEdge(e.target.value);
+			console.log(resultObj, '切换tab');
+			resultForm.setFieldsValue(resultObj)
 		};
 		return (
 		<Radio.Group value={edge} onChange={handleEdgeChange}>
@@ -1090,15 +1123,28 @@ export default () => {
 	// 新建/编辑诊断结果弹框
 	const useResultAddModal = (): React.ReactNode => {
 		const resultRelations = Form.useWatch('relations', resultForm);
-		const changeResult = (value: any) => {
+		const changeResult = (value: any, fieldIndex: number) => {
 			let sameSelect:any = []
+			// console.log(value, fieldIndex, resultRelations, '888');
 			resultRelations && resultRelations.map((item: any) => {
 				if(item && item.dependIndex == value) {
 					sameSelect.push(item)
 				}
 			})
+			const list = resultRelations.filter(item => item)
+			list.splice(fieldIndex, 1, {
+				...list[fieldIndex],
+				dependIndex: value,
+				conditionType: 'one'
+			});
+			console.log(list, 'list');
+			resultForm.setFieldsValue({
+				...resultObj,
+				relations: [...list], 
+				relatedRelation: diagnoseList[value].relatedRelation || 'or',
+			})
 			if(sameSelect.length > 0) {
-				info('关键题目不能重复')
+				info('关联题目不能重复')
 				resultForm.setFieldsValue({
 					...resultObj,
 					relations: resultRelations.slice(0, -1), 
@@ -1190,7 +1236,7 @@ export default () => {
 																				{...field}
 																				name={[field.name, 'dependIndex']}
 																			>
-																				<Select onChange={changeResult}>
+																				<Select onChange={(e) => changeResult(e, fieldIndex)}>
 																					{ableSelectKey && ableSelectKey.map((item: any) =>
 																						<Option 
 																							value={item.dependIndex.toString()} 
@@ -1238,14 +1284,14 @@ export default () => {
 																					(
 																						<Col span={17} key={io}>
 																							{diagnoseList[resultRelations[fieldIndex].dependIndex].type == 'radio' && (
-																								'中任意一个时，「当前题目」才出现'
+																								'中任意一个时，「当前诊断报告」才出现'
 																							)}
 																							{diagnoseList[resultRelations[fieldIndex].dependIndex].type == 'checkbox' && (
 																								<>
 																								<Form.Item
 																									{...field}
 																									name={[field.name, 'conditionType']}
-																									label={`当「关联题目${fieldIndex + 1}」选择下方选项：`}
+																									// label={`当「关联题目${fieldIndex + 1}」选择下方选项：`}
 																									style={{width: 160, display: 'inline-block'}}
 																								>
 																									<Select>
@@ -1255,7 +1301,7 @@ export default () => {
 																									{/* */}
 																								</Form.Item>
 																								<p>
-																									时，「当前题目」才出现 
+																									时，「当前诊断报告」才出现 
 																								</p>
 																								</>
 																							)}
@@ -1487,7 +1533,7 @@ export default () => {
 				<div className='preview-wrap'>
 					{selectFrontButton()}
 					<div className={edgeFront==1? 'web-preview':'h5-preview'}>
-						<QuestionnaireTopicList topicTitle={diagnoseTitle||'111'} topicList={diagnoseList} form={questionsForm} />
+						<QuestionnaireTopicList topicTitle={diagnoseTitle||'暂未设置问卷标题'} topicList={diagnoseList} form={questionsForm} />
 						<div style={{textAlign: 'center',marginTop: 48}}>
 							<Button type="primary" style={{width: 160}}
 								onClick={() => {message.warning('此问卷为预览状态，不能提交')}}
@@ -1641,10 +1687,10 @@ export default () => {
 																</div>
 															) : ('')
 														}
-														<div style={{textAlign: 'right', display: currentAddIndex == index ? 'block' : 'none', marginTop: -16}}>
-															<Button type='link' icon={<DeleteOutlined />} onClick={() => {deleteInfo(currentAddIndex)}}>删除</Button>
-															<Button type='link' icon={<ArrowUpOutlined />} onClick={() => {upData(currentAddIndex)}}>上移</Button>
-															<Button type='link' icon={<ArrowDownOutlined />} onClick={() => {downData(currentAddIndex)}}>下移</Button>
+														<div style={{textAlign: 'right', display: currentAddIndex == index ? 'block' : 'none', marginTop: -16}} className="operation-buttons">
+															<Button type='link' icon={<DeleteOutlined />} onClick={() => {deleteInfo(index)}}>删除</Button>
+															<Button type='link' icon={<ArrowUpOutlined />} onClick={() => {upData(index)}}>上移</Button>
+															<Button type='link' icon={<ArrowDownOutlined />} onClick={() => {downData(index)}}>下移</Button>
 														</div>
 													</div>	
 												)
@@ -1670,7 +1716,7 @@ export default () => {
 												...list[indexRelate],
 												...{relations: values.relations, relatedRelation: values.relatedRelation}
 											} as EditType);
-											// console.log(list, 'list');
+											console.log(list, '关联题目后的diagnoselist');
 											setDiagnoseList(list)
 											if (name === 'relatedForm') {
 												form.setFieldsValue({});
@@ -1717,7 +1763,7 @@ export default () => {
 												<Row style={{ marginBottom: 8 }}>
 													<Col span={14}>
 														<div className='options-tit'>选项文字</div>
-														{
+														{/* {
 															currentEditObj && (currentEditObj.type == 'radio') && (
 																<div className='options-tip'>
 																	{optionsWatch&&optionsWatch.length<2?'请至少保留2个选项':''}</div>
@@ -1727,7 +1773,7 @@ export default () => {
 															currentEditObj && (currentEditObj.type == 'checkbox') && (
 																<div className='options-tip'>{optionsWatch&&optionsWatch.length<3?'请至少保留3个选项':''}</div>
 															)
-														}
+														} */}
 														{
 															<div className='options-tip'>{optionsWatch&&optionsIsRepeat()?'选项重复，请修改':''}</div>
 														}
@@ -1755,7 +1801,13 @@ export default () => {
 																	<Col span={3}>
 																		<PlusCircleOutlined style={{ marginLeft: 8 }} onClick={() => add()} />
 																		<MinusCircleOutlined style={{ marginLeft: 8 }} onClick={() => {
-																			remove(field.name)
+																			if(currentEditObj.type == 'radio' && fields.length == 2) {
+																				message.warning('请至少保留2个选项')
+																			}else if(currentEditObj.type == 'checkbox' && fields.length == 3) {
+																				message.warning('请至少保留3个选项')
+																			}else {
+																				remove(field.name)
+																			}
 																		}} />
 																	</Col>
 																	<Col span={6}>
@@ -1773,7 +1825,7 @@ export default () => {
 																			{
 																				diagnoseList && diagnoseList[currentAddIndex] 
 																				&& diagnoseList[currentAddIndex].options 
-																				// && diagnoseList[currentAddIndex].options[fieldIndex].allowInput 
+																				&& optionsWatch && optionsWatch[fieldIndex].allowInput
 																				&& (
 																					<Col span={14}>
 																						<Form.Item
@@ -1926,8 +1978,16 @@ export default () => {
 										name: '',
 										summary: '',
 										recommendations: '',
-										remind: ''
+										remind: '',
+										relations: [
+											// {
+											// 	dependIndex: '',
+											// 	conditionType: 'one',
+											// 	dependValue: []
+											// }
+										]
 									})
+									setResultObj({})
 									setAddResultVisible(true)
 								}}
 							>
