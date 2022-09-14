@@ -36,6 +36,7 @@ import { Link, history } from 'umi';
 import type { FormInstance } from 'antd/es/form';
 import {
   getOrgList,
+  editOrgList,
 } from '@/services/digital-application';
 import { listAllAreaCode } from '@/services/common';
 import {
@@ -648,7 +649,6 @@ export default () => {
 			rtn.dependIndex = index
 			return rtn
 		}).filter((item:any, index) => item.isKey)
-		console.log(arr2, '关键题题库');
 		return arr2
 	}
 	useEffect(() => {
@@ -691,12 +691,6 @@ export default () => {
 			})
 		}
 		showUserModal()
-	}
-
-	// 切换单行文本/多行文本
-	const changeInputType = (value: any) => {
-		// console.log(value);
-		// rightForm.setFieldsValue({...diagnoseList[currentAddIndex], maxLength: value == 'textarea' ? 200 : 50});
 	}
 
 	// 添加题目弹框，选择题型
@@ -947,6 +941,22 @@ export default () => {
 	const hideUserModal = () => {
 		setVisible(false);
 	};
+	const previewResult = async (record: any, index: number) => {
+		setResultObj(record);
+		if(record.relatedServers && record.relatedServers.length>0) {
+			let res = await editOrgList({ids: record.relatedServers})
+			console.log(res);
+			let serverArr:any = []
+			if(res.code == 0&&res.result&&res.result.length>0) {
+				res.result.map((item) => {
+					serverArr.push(item.orgName)
+				})
+				setResultObj({...record, relatedServers: serverArr})
+			}
+		}
+		setPreviewVisible(true);
+	}
+	
 	// 诊断结果列表
 	const columns = [
     {
@@ -965,8 +975,7 @@ export default () => {
 					<a
 						href="#!"
 						onClick={(e) => {
-							setResultObj(record);
-							setPreviewVisible(true);
+							previewResult(record, index)
 						}}
 					>
 						{text}
@@ -983,23 +992,7 @@ export default () => {
 						<a
 							href="#"
 							onClick={() => {
-								setEditResultIndex(index)
-								setResultObj({});
-								resultForm.setFieldsValue({
-									name: '',
-									summary: '',
-									recommendations: '',
-									remind: '',
-									relations: [],
-									relatedServers: [],
-									relatedTechnicalManager: {
-										name: '',
-										phone: ''
-									}
-								})
-								setResultObj(record);
-								setAddResultVisible(true);
-								resultForm.setFieldsValue({...record})
+								editResultList(record, index)
 							}}
 						>
 							编辑{' '}
@@ -1027,6 +1020,36 @@ export default () => {
 	const onValuesChange2 = (changedValues: any, allValues: any) => {
 		console.log(changedValues, '诊断结果', allValues);
 		setResultObj({...resultObj, ...allValues})
+	}
+	// 诊断结果编辑
+	const editResultList = async (record: any, index: number) => {
+		setEditResultIndex(index)
+		setResultObj({});
+		console.log(record, 'record');
+		if(record.relatedServers && record.relatedServers.length>0) {
+			let serversRes = await editOrgList({ids: record.relatedServers})
+			if(serversRes&&serversRes.code == 0&&serversRes.result&&serversRes.result.length>0) {
+				setSelectedOrgList(serversRes.result)
+			}else {
+				setSelectedOrgList([])
+			}
+		}else {
+			setSelectedOrgList([])
+		}
+		resultForm.setFieldsValue({
+			name: record.name || '',
+			summary: record.summary || '',
+			recommendations: record.recommendations || '',
+			remind: record.remind || '',
+			relations: record.relations || [],
+			relatedServers: record.relatedServers || [],
+			relatedTechnicalManager: {
+				name: record.relatedTechnicalManager && record.relatedTechnicalManager.name || '',
+				phone: record.relatedTechnicalManager && record.relatedTechnicalManager.phone || ''
+			}
+		})
+		setResultObj(record);
+		setAddResultVisible(true);
 	}
 	/**
    * 切换诊断结果3个tab
@@ -1107,7 +1130,6 @@ export default () => {
 	const [orgList, setOrgList] = useState<any>([])
 	const [selectedOrgList, setSelectedOrgList] = useState<any>([])
 	const onSearch = async (value: string) => {
-		console.log('search:', value);
 		const { result, code } = await getOrgList({
 			pageIndex: 1,
 			pageSize: 100,
@@ -1120,10 +1142,8 @@ export default () => {
 		}
 	};
 	const onServerChange = (value: string) => {
-		console.log('change', value);
 		let arr = [...selectedOrgList]
-		arr.push({label: value.split('-')[1], id: value.split('-')[0]})
-		console.log(arr);
+		arr.push({orgName: value.split('-')[1], id: value.split('-')[0]})
 		setSelectedOrgList(arr)
 	}
 	const [addReultVisible, setAddResultVisible] = useState<boolean>(false)
@@ -1371,7 +1391,7 @@ export default () => {
 										<div className='selected-servers-wrap'>
 											{selectedOrgList&&selectedOrgList.map(item => {
 												return (
-													<p>{item.label}</p>
+													<p>{item.orgName}</p>
 												)
 											})}
 										</div>
@@ -1898,7 +1918,7 @@ export default () => {
 																name={'type'}
 																noStyle
 															>
-																<Select onChange={changeInputType}>
+																<Select>
 																	<Option value="input">单行文本</Option>
 																	<Option value="textarea">多行文本</Option>
 																</Select>
@@ -1987,13 +2007,7 @@ export default () => {
 										summary: '',
 										recommendations: '',
 										remind: '',
-										relations: [
-											// {
-											// 	dependIndex: '',
-											// 	conditionType: 'one',
-											// 	dependValue: []
-											// }
-										],
+										relations: [],
 										relatedServers: [],
 										relatedTechnicalManager: {
 											name: '',
