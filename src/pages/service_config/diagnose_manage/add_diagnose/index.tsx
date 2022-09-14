@@ -1993,8 +1993,14 @@ export default () => {
 											// 	conditionType: 'one',
 											// 	dependValue: []
 											// }
-										]
+										],
+										relatedServers: [],
+										relatedTechnicalManager: {
+											name: '',
+											phone: ''
+										}
 									})
+									setSelectedOrgList([])
 									setResultObj({})
 									setAddResultVisible(true)
 								}}
