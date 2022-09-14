@@ -17,6 +17,11 @@ import { getDemandDetail } from '@/services/creative-demand'
 import './index.less';
 const { Title, Paragraph } = Typography;
 const sc = scopedClasses('leave-word-audit-detail');
+const stateObj = {
+  AUDITING: '待审核',
+  AUDIT_SUCCESS: '已通过',
+  AUDIT_FAIL: '已拒绝',
+};
 
 export default () => {
   const auditId = history.location.query?.auditId as string;
@@ -33,15 +38,30 @@ export default () => {
 
   const [form] = Form.useForm();
   const [loading, setLoading] = useState<boolean>(true);
-  // 企业
-  const [detail, setDetail] = useState<LeaveWordVerify.Detail>({});
 
   const [searchInfo, setSearchInfo] = useState<any>({});
 
   // 获取企业详情
-  const prepareDemandModal = async () => {
+  // 查询当前审核的留言
+  const _getCommentsCurrent = async (id: any) => {
     try {
-      const res = await getOfficeRequirementVerifyDetail(detailId);
+      const res = await getCommentsCurrent({
+        commentId: id
+      })
+      if (res?.code === 0) {
+        setCurrentData(res?.result)
+      } else {
+        throw new Error("");
+      }
+    } catch (error) {
+      console.log('获取当前审核留言失败')
+    }
+  }
+  // 企业
+  const [detail, setDetail] = useState<any>({});
+  const prepareDemandModal = async (id: any) => {
+    try {
+      const res = await getOfficeRequirementVerifyDetail(id);
       if (res.code === 0) {
         setDetail(res.result);
       } else {
@@ -53,32 +73,57 @@ export default () => {
       setLoading(false);
     }
   };
-  // 查询当前审核的留言
-  const _getCommentsCurrent = async () => {
-    try {
-      const res = await getCommentsCurrent({
-        commentId: commentId
-      })
-      if (res?.code === 0) {
-        setCurrentData(res?.result)
-      } else {
-        throw new Error("");
+  // 专家
+  const [expertDetail, setExpertDetail] = useState<ExpertResource.Detail>({});
+  // 专家
+  const prepareExpertDetail = async (id: any) => {
+    if (id) {
+      try {
+        const res = await getExpertDetail(id);
+        if (res.code === 0) {
+          console.log(res);
+          setExpertDetail(res.result);
+        } else {
+          throw new Error(res.message);
+        }
+      } catch (error) {
+        message.error('服务器错误');
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.log('获取当前审核留言失败')
     }
-  }
-  const prepare = () => {
-    _getCommentsCurrent()
+  };
+  // 创新需求
+  const [innovaDetail, setInnovateDetail] = useState<any>({});
+  
+  const prepareInnovateDemand = async (id: any) => {
+    if (id) {
+      try {
+        const res = await getDemandDetail(id);
+        if (res.code === 0) {
+          setInnovateDetail(res.result);
+        } else {
+          throw new Error(res.message);
+        }
+      } catch (error) {
+        message.error('服务器错误');
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+  const prepare = (id: any) => {
     // 根据详情判断是需求还是，专家资源. 所属板块
     if (tab === 'DEMAND') {
-      prepareDemandModal();
+      prepareDemandModal(id);
       return;
     }
     if (tab === 'EXPERT') {
+      prepareExpertDetail(id)
       return;
     }
     if (tab === 'CREATIVE_DEMAND') {
+      prepareInnovateDemand(id)
       return;
     }
   };
@@ -86,9 +131,10 @@ export default () => {
   const DemandModal = (props: {
     id: string;
     setLoading: (loading: boolean) => void;
-    detail: any;
+    detail: any
   }) => {
-    const { detail } = props;
+    const {id , detail} = props;
+
     return (
       <div className={sc('container-left')}>
         <div className={sc('container-left-title')}>{detail?.name || '--'}</div>
@@ -117,11 +163,10 @@ export default () => {
   const ExpertDetail = (props: {
     id: string;
     setLoading: (loading: boolean) => void;
-    detail: any;
+    expertDetail: any
   }) => {
-    const { id, setLoading } = props;
+    const { id, setLoading, expertDetail } = props;
     // 专家
-    const [expertDetail, setExpertDetail] = useState<ExpertResource.Detail>({});
     // 根据expertDetail 结构
     const {
       expertName,
@@ -149,28 +194,6 @@ export default () => {
       typeNames,
       diagnosisRecordList,
     } = expertDetail || {};
-
-    const prepare = async () => {
-      if (id) {
-        try {
-          const res = await getExpertDetail(id);
-          if (res.code === 0) {
-            console.log(res);
-            setExpertDetail(res.result);
-          } else {
-            throw new Error(res.message);
-          }
-        } catch (error) {
-          message.error('服务器错误');
-        } finally {
-          setLoading(false);
-        }
-      }
-    };
-
-    useEffect(() => {
-      prepare();
-    }, [id]);
 
     const expertBasicInfoFirstPart = [
       { label: '职务', value: duty },
@@ -257,89 +280,67 @@ export default () => {
   const InnovateDemand = (props: {
     id: string
     setLoading: (loading: boolean) => void 
+    innovaDetail: any
   }) => {
-    const {id, setLoading} = props || {}
-    const [detail, setDetail] = useState<any>({});
-  
-    const prepare = async () => {
-      if (id) {
-        try {
-          // const res = await getDemandDetail('1662023545000001');
-          const res = await getDemandDetail(id);
-          if (res.code === 0) {
-            setDetail(res.result);
-          } else {
-            throw new Error(res.message);
-          }
-        } catch (error) {
-          message.error('服务器错误');
-        } finally {
-          setLoading(false);
-        }
-      }
-    };
-  
-    useEffect(() => {
-      prepare();
-    }, [id]);
+    const {id, setLoading,innovaDetail } = props || {}
   
     return (
       <div className={sc('innovateDemand')}>
         <div className={sc('innovateDemand-container')}>
           <div className={sc('container-title')}>创新需求信息</div>
           <div style={{ marginLeft: 200 }}>
-            <Image height={200} width={300} src={detail?.cover} />
+            <Image height={200} width={300} src={innovaDetail?.cover} />
           </div>
           <div className={sc('container-desc')}>
             <span>需求名称：</span>
-            <span>{detail?.name || '--'}</span>
+            <span>{innovaDetail?.name || '--'}</span>
           </div>
           <div className={sc('container-desc')}>
             <span>需求类型：</span>
-            <span>{detail?.typeName || '--'}</span>
+            <span>{innovaDetail?.typeName || '--'}</span>
           </div>
           <div className={sc('container-desc')}>
             <span>行业类别：</span>
-            <span>{detail?.industryTypeNames ? detail?.industryTypeNames.join('，') : '--'}</span>
+            <span>{innovaDetail?.industryTypeNames ? innovaDetail?.industryTypeNames.join('，') : '--'}</span>
           </div>
           <div className={sc('container-desc')}>
             <span>关键词：</span>
-            <span>{detail?.typeName || '--'}</span>
+            <span>{innovaDetail?.typeName || '--'}</span>
           </div>
           <div className={sc('container-desc')}>
             <span>需求区域：</span>
-            <span>{detail?.areaNames ? detail?.areaNames.join('，') : '--'}</span>
+            <span>{innovaDetail?.areaNames ? innovaDetail?.areaNames.join('，') : '--'}</span>
           </div>
           <div className={sc('container-desc')}>
             <span>需求时间范围：</span>
-            <span>{detail?.startDate ? `${detail?.startDate}~${detail?.endDate}` : '--'}</span>
+            <span>{innovaDetail?.startDate ? `${innovaDetail?.startDate}~${innovaDetail?.endDate}` : '--'}</span>
           </div>
           <div className={sc('container-desc')}>
             <span>需求内容：</span>
-            <span>{detail?.content || '--'}</span>
+            <span>{innovaDetail?.content || '--'}</span>
           </div>
           <div className={sc('container-title')}>基本信息</div>
           <div className={sc('container-desc')}>
             <span>联系人：</span>
-            <span>{detail?.contactName || '--'}</span>
+            <span>{innovaDetail?.contactName || '--'}</span>
           </div>
           <div className={sc('container-desc')}>
             <span>联系电话：</span>
-            <span>{detail?.contactPhone || '--'}</span>
+            <span>{innovaDetail?.contactPhone || '--'}</span>
           </div>
           <div className={sc('container-desc')}>
             <span>需求企业名称：</span>
-            <span>{detail?.orgName || '--'}</span>
+            <span>{innovaDetail?.orgName || '--'}</span>
           </div>
         </div>
       </div>
     )
-  }
+  };
 
   const detailDom = {
     DEMAND: <DemandModal id={detailId} setLoading={setLoading} detail={detail} />,
-    EXPERT: <ExpertDetail id={detailId} setLoading={setLoading} detail={detail} />,
-    CREATIVE_DEMAND: <InnovateDemand id={detailId} setLoading={setLoading} />,
+    EXPERT: <ExpertDetail id={detailId} setLoading={setLoading} expertDetail={expertDetail} />,
+    CREATIVE_DEMAND: <InnovateDemand id={detailId} setLoading={setLoading} innovaDetail={innovaDetail} />,
   }[tab];
 
   const [dataSource, setDataSource] = useState<any>([]);
@@ -364,10 +365,19 @@ export default () => {
     }
   };
 
+  // VerifyInfoDetail 
+  const [verifyId, setVerifyId] = useState<string>('')
   useEffect(() => {
-    prepare();
+    setVerifyId(auditId)
+    _getCommentsCurrent(commentId)
+    prepare(detailId);
     onChange();
   }, [tab]);
+
+  const handleItemComment = (item: any) => {
+    setVerifyId(item.auditId)
+    _getCommentsCurrent(item.commentId)
+  }
 
   return (
     <PageContainer>
@@ -380,11 +390,11 @@ export default () => {
           <div className={sc('container-right-content')}>
             {/* 循环体 */}
             {dataSource?.map((item: any) => {
-              const { commentId, type, fromUserName, photoUrl, content, createTime, isAnonymity } =
+              const { commentId, type, status, fromUserName, photoUrl, content, createTime, isAnonymity } =
                 item || {};
               return (
                 <React.Fragment key={commentId}>
-                  <div className={sc('container-right-content-box')}>
+                  <div className={sc('container-right-content-box')} onClick={()=>handleItemComment(item)}>
                     <div className={sc('container-right-content-box-left')}>
                       <img src={photoUrl} style={{ width: '30px', height: '30px' }} />
                     </div>
@@ -394,8 +404,12 @@ export default () => {
                         <span>{createTime}</span>
                       </div>
                       <div className={sc('container-right-content-box-right-label')}>
-                        <span className={sc('container-right-content-box-right-label-states')}>
-                          待审核
+                        <span 
+                          className={
+                            sc('container-right-content-box-right-label-states')
+                          }
+                          >
+                          {stateObj[status]}
                         </span>
                         {isAnonymity && (
                           <span className={sc('container-right-content-box-right-label-anonymity')}>
@@ -452,7 +466,7 @@ export default () => {
         <div className='expert-message'>
           <div className='expert-message-title'>审核</div>
         </div>
-        <VerifyInfoDetail auditId={auditId} reset={prepare} />
+        <VerifyInfoDetail auditId={verifyId} reset={()=>{prepare(detailId)}} />
       </div>
     </PageContainer>
   );
