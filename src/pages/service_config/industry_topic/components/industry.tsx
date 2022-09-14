@@ -1,5 +1,17 @@
 import { MenuOutlined, PlusOutlined } from '@ant-design/icons';
-import { Button, Input, Form, Modal, message, Space, Popconfirm, Table, DatePicker, Col, Row } from 'antd';
+import {
+  Button,
+  Input,
+  Form,
+  Modal,
+  message,
+  Space,
+  Popconfirm,
+  Table,
+  DatePicker,
+  Col,
+  Row,
+} from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import '../index.less';
 import scopedClasses from '@/utils/scopedClasses';
@@ -11,7 +23,11 @@ import { SortableContainer, SortableElement, SortableHandle } from 'react-sortab
 import type { SortableContainerProps, SortEnd } from 'react-sortable-hoc';
 import type OrgTypeManage from '@/types/org-type-manage';
 import IndustryTable from './industry-table';
-import { addIndustryTopic, getIndustryTopicData, saveIndustryTopic } from '@/services/industry-topic';
+import {
+  addIndustryTopic,
+  getIndustryTopicData,
+  saveIndustryTopic,
+} from '@/services/industry-topic';
 import { getEnumByNameByScience } from '@/services/common';
 import { Prompt } from 'umi';
 const sc = scopedClasses('service-config-app-news');
@@ -25,19 +41,18 @@ const SortableBody = SortableContainer((props: React.HTMLAttributes<HTMLTableSec
   <tbody {...props} />
 ));
 
-export default (props: { currentTab: any; }) => {
-
-  const { currentTab } = props
+export default (props: { currentTab: any }) => {
+  const { currentTab } = props;
   const [modalInfo, setModalInfo] = useState<{
-    type: string,
-    visible: boolean,
-    typeName: string,
-    detailIdList: string[],
+    type: string;
+    visible: boolean;
+    typeName: string;
+    detailIdList: string[];
   }>({
     type: '',
     visible: false,
     typeName: '',
-    detailIdList: []
+    detailIdList: [],
   });
   const [dataSource, setDataSource] = useState<any[]>([]);
   const [addDataSource, setAddDataSource] = useState<any[]>([]);
@@ -59,20 +74,19 @@ export default (props: { currentTab: any; }) => {
   };
 
   const [form] = Form.useForm();
-  const rootRef = useRef({})
+  const rootRef = useRef({});
 
   const prepare = async () => {
     try {
-      const res = await
-        getEnumByNameByScience('INDUSTRY_DATA_TYPE')
+      const res = await getEnumByNameByScience('INDUSTRY_DATA_TYPE');
       const enumObj = {};
-      res?.result?.map(
-        p => {
-          enumObj[p.enumName] = p.name
-        }
-      )
-      setEnumObj(enumObj)
+      res?.result?.map((p) => {
+        enumObj[p.enumName] = p.name;
+      });
 
+      //mock
+      enumObj.SHUZIHUA = '数字化应用';
+      setEnumObj(enumObj);
     } catch (error) {
       message.error('获取行业类型失败');
     }
@@ -85,9 +99,11 @@ export default (props: { currentTab: any; }) => {
     try {
       const { result, code } = await getIndustryTopicData(currentTab.enumName);
       if (code === 0) {
-        setDataSource(
-          result
-        );
+        result.unshift({
+          dataType: 'SHUZIHUA',
+          dataList: [],
+        });
+        setDataSource(result);
       } else {
         message.error(`请求列表数据失败`);
       }
@@ -97,17 +113,16 @@ export default (props: { currentTab: any; }) => {
   };
 
   const handleSameData = (type: string, data: any[]) => {
-    console.log('删除',data)
-    setDataSource(p => {
-      const item = p.find(x => x.dataType === type)
-      item.dataList = [...data]
-      return p
-    })
-  }
+    console.log('删除', data);
+    setDataSource((p) => {
+      const item = p.find((x) => x.dataType === type);
+      item.dataList = [...data];
+      return p;
+    });
+  };
 
   const addOrUpdate = async () => {
     const callback = () => {
-
       const tooltipMessage = '发布';
       form
         .validateFields()
@@ -120,8 +135,8 @@ export default (props: { currentTab: any; }) => {
               const element = rootRef.current[key];
               dataList.push({
                 dataType: key,
-                detailIdList: element?.data?.map(p => p.detailId)
-              })
+                detailIdList: element?.data?.map((p) => p.detailId),
+              });
             }
           }
 
@@ -133,7 +148,7 @@ export default (props: { currentTab: any; }) => {
             message.success(`${tooltipMessage}成功`);
             getPages();
             clearSelectInfo();
-            onEdit()
+            onEdit();
           } else {
             message.error(`${tooltipMessage}失败，原因:{${addorUpdateRes.message}}`);
           }
@@ -142,7 +157,7 @@ export default (props: { currentTab: any; }) => {
         .catch(() => {
           setAddOrUpdateLoading(false);
         });
-    }
+    };
 
     Modal.confirm({
       title: '提示',
@@ -151,38 +166,40 @@ export default (props: { currentTab: any; }) => {
       okButtonProps: { loading: addOrUpdateLoading },
       onOk: () => {
         callback();
-      }
-    })
+      },
+    });
   };
 
   const clearSelectInfo = () => {
     form.resetFields();
-    setSelectedRowKeys([])
-    setAddDataSource([])
+    setSelectedRowKeys([]);
+    setAddDataSource([]);
     setModalInfo({
       visible: false,
       type: '',
       typeName: '',
-      detailIdList: []
-    })
-  }
+      detailIdList: [],
+    });
+  };
 
   const onSelectItems = () => {
-
     if (selectedRowKeys?.length === 0) {
-      message.warning('至少选择一项')
-      return
+      message.warning('至少选择一项');
+      return;
     }
 
-    setDataSource(p => {
-      console.log('@@@@@', p)
-      const item = p.find(x => x.dataType === modalInfo.type)
-      item.dataList = [...item.dataList, ...addDataSource.filter(f => selectedRowKeys?.includes(f.detailId))]
-      return p
-    })
+    setDataSource((p) => {
+      console.log('@@@@@', p);
+      const item = p.find((x) => x.dataType === modalInfo.type);
+      item.dataList = [
+        ...item.dataList,
+        ...addDataSource.filter((f) => selectedRowKeys?.includes(f.detailId)),
+      ];
+      return p;
+    });
 
-    clearSelectInfo()
-  }
+    clearSelectInfo();
+  };
 
   useEffect(() => {
     if (currentTab?.enumName) {
@@ -193,7 +210,7 @@ export default (props: { currentTab: any; }) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
-    console.log('newSelectedRowKeys',newSelectedRowKeys)
+    console.log('newSelectedRowKeys', newSelectedRowKeys);
     setSelectedRowKeys(newSelectedRowKeys);
   };
 
@@ -210,25 +227,22 @@ export default (props: { currentTab: any; }) => {
         ...searchParams,
       });
       if (code === 0) {
-        setAddDataSource(
-          result
-        );
+        setAddDataSource(result);
         setPagination({
-          pageSize: searchParams.pageSize, pageIndex: searchParams.pageIndex, total: totalCount
-        })
+          pageSize: searchParams.pageSize,
+          pageIndex: searchParams.pageIndex,
+          total: totalCount,
+        });
       } else {
         message.error(`请求列表数据失败`);
       }
     } catch (error) {
       console.log(error);
     }
-  }
-
-
+  };
 
   const useModal = (): React.ReactNode => {
-
-    const [columns, searchFormItems] = getAutoContent(modalInfo.type)
+    const [columns, searchFormItems] = getAutoContent(modalInfo.type);
 
     return (
       <Modal
@@ -238,68 +252,103 @@ export default (props: { currentTab: any; }) => {
         maskClosable={false}
         onCancel={clearSelectInfo}
         footer={
-          <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between'}}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div>
-              当前已选：{selectedRowKeys.length}项<Button type='link' onClick={() => {
-                setSelectedRowKeys([])
-              }}>清空</Button>
+              当前已选：{selectedRowKeys.length}项
+              <Button
+                type="link"
+                onClick={() => {
+                  setSelectedRowKeys([]);
+                }}
+              >
+                清空
+              </Button>
             </div>
             <Space size={20}>
-              <Button onClick={() => {
-                clearSelectInfo()
-              }}>取消</Button>
-              <Button type='primary' loading={addOrUpdateLoading} onClick={() => {
-                onSelectItems()
-              }}>确定</Button>
+              <Button
+                onClick={() => {
+                  clearSelectInfo();
+                }}
+              >
+                取消
+              </Button>
+              <Button
+                type="primary"
+                loading={addOrUpdateLoading}
+                onClick={() => {
+                  onSelectItems();
+                }}
+              >
+                确定
+              </Button>
             </Space>
           </div>
         }
       >
         <Form {...formLayout} form={form} layout="horizontal">
           <Row>
-            {
-              searchFormItems?.map(p =>
-                <Col span={10}>
-                  <Form.Item
-                    name={p.name}
-                    label={p.label}
-                  >
-                    {p.render()}
-                  </Form.Item></Col>)
-            }
-            <Col span={4}><Space size={20} style={{
-              marginBottom: 24
-            }} >
-
-              <Button type='primary' loading={addOrUpdateLoading} onClick={() => {
-                const search = form.getFieldsValue()
-                const { time, ...rest } = search;
-                if (time) {
-                  rest.startPublishTime = moment(time[0]).format('YYYY-MM-DD HH:mm:ss');
-                  rest.endPublishTime = moment(time[1]).format('YYYY-MM-DD HH:mm:ss');
-                }
-                setSearchContent(rest);
-                getOptions({ ...rest, ...pagination, pageIndex: 1, detailIdList: modalInfo.detailIdList ||[] })
-              }}>查询</Button>
-              <Button onClick={() => {
-                form.resetFields()
-                setSearchContent({});
-                getOptions({ ...pagination, pageIndex: 1, detailIdList: modalInfo.detailIdList ||[] })
-              }}>重置</Button>
-            </Space>
+            {searchFormItems?.map((p) => (
+              <Col span={10}>
+                <Form.Item name={p.name} label={p.label}>
+                  {p.render()}
+                </Form.Item>
+              </Col>
+            ))}
+            <Col span={4}>
+              <Space
+                size={20}
+                style={{
+                  marginBottom: 24,
+                }}
+              >
+                <Button
+                  type="primary"
+                  loading={addOrUpdateLoading}
+                  onClick={() => {
+                    const search = form.getFieldsValue();
+                    const { time, ...rest } = search;
+                    if (time) {
+                      rest.startPublishTime = moment(time[0]).format('YYYY-MM-DD HH:mm:ss');
+                      rest.endPublishTime = moment(time[1]).format('YYYY-MM-DD HH:mm:ss');
+                    }
+                    setSearchContent(rest);
+                    getOptions({
+                      ...rest,
+                      ...pagination,
+                      pageIndex: 1,
+                      detailIdList: modalInfo.detailIdList || [],
+                    });
+                  }}
+                >
+                  查询
+                </Button>
+                <Button
+                  onClick={() => {
+                    form.resetFields();
+                    setSearchContent({});
+                    getOptions({
+                      ...pagination,
+                      pageIndex: 1,
+                      detailIdList: modalInfo.detailIdList || [],
+                    });
+                  }}
+                >
+                  重置
+                </Button>
+              </Space>
             </Col>
           </Row>
         </Form>
 
         <Table
-          size='small'
+          size="small"
           scroll={{ y: 500 }}
           rowKey={'detailId'}
           pagination={{
             current: pagination.pageIndex,
             pageSize: pagination.pageSize,
             total: pagination.total,
-            showQuickJumper: true
+            showQuickJumper: true,
           }}
           rowSelection={rowSelection}
           columns={columns}
@@ -309,17 +358,18 @@ export default (props: { currentTab: any; }) => {
               ...pagination,
               pageSize: e.pageSize,
               pageIndex: e.current,
-            }
+            };
             setSearchContent({
-              ...searchContent, ...page
-            })
+              ...searchContent,
+              ...page,
+            });
             getOptions({
-              ...searchContent, ...page
-            })
+              ...searchContent,
+              ...page,
+            });
           }}
         />
-
-      </Modal >
+      </Modal>
     );
   };
 
@@ -327,6 +377,38 @@ export default (props: { currentTab: any; }) => {
     let columns;
     let searchFormItems;
     switch (type) {
+      case 'SHUZIHUA':
+        columns = [
+          {
+            title: '应用logo',
+            dataIndex: 'logo',
+          },
+          {
+            title: '数字化应用名称',
+            dataIndex: 'name',
+          },
+          {
+            title: '应用类型',
+            dataIndex: 'type',
+          },
+        ];
+        searchFormItems = [
+          {
+            label: '数字化应用名称',
+            name: 'name',
+            render: () => {
+              return <Input placeholder="请输入" maxLength={35} />;
+            },
+          },
+          {
+            label: '时间区间',
+            name: 'time',
+            render: () => {
+              return <DatePicker.RangePicker allowClear showTime />;
+            },
+          },
+        ];
+        break;
       case 'DEMAND':
         columns = [
           {
@@ -347,15 +429,15 @@ export default (props: { currentTab: any; }) => {
             label: '企业需求名称',
             name: 'name',
             render: () => {
-              return <Input placeholder="请输入" maxLength={35} />
-            }
+              return <Input placeholder="请输入" maxLength={35} />;
+            },
           },
           {
             label: '时间区间',
             name: 'time',
             render: () => {
-              return <DatePicker.RangePicker allowClear showTime />
-            }
+              return <DatePicker.RangePicker allowClear showTime />;
+            },
           },
         ];
         break;
@@ -379,15 +461,15 @@ export default (props: { currentTab: any; }) => {
             label: '创新需求名称',
             name: 'name',
             render: () => {
-              return <Input placeholder="请输入" maxLength={35} />
-            }
+              return <Input placeholder="请输入" maxLength={35} />;
+            },
           },
           {
             label: '时间区间',
             name: 'time',
             render: () => {
-              return <DatePicker.RangePicker allowClear showTime />
-            }
+              return <DatePicker.RangePicker allowClear showTime />;
+            },
           },
         ];
         break;
@@ -407,15 +489,15 @@ export default (props: { currentTab: any; }) => {
             label: '科技成果名称',
             name: 'name',
             render: () => {
-              return <Input placeholder="请输入" maxLength={35} />
-            }
+              return <Input placeholder="请输入" maxLength={35} />;
+            },
           },
           {
             label: '时间区间',
             name: 'time',
             render: () => {
-              return <DatePicker.RangePicker allowClear showTime />
-            }
+              return <DatePicker.RangePicker allowClear showTime />;
+            },
           },
         ];
         break;
@@ -435,15 +517,15 @@ export default (props: { currentTab: any; }) => {
             label: '专家姓名',
             name: 'name',
             render: () => {
-              return <Input placeholder="请输入" maxLength={35} />
-            }
+              return <Input placeholder="请输入" maxLength={35} />;
+            },
           },
           {
             label: '手机号',
             name: 'phone',
             render: () => {
-              return <Input placeholder="请输入" maxLength={35} />
-            }
+              return <Input placeholder="请输入" maxLength={35} />;
+            },
           },
         ];
         break;
@@ -463,32 +545,32 @@ export default (props: { currentTab: any; }) => {
             label: '新闻标题',
             name: 'name',
             render: () => {
-              return <Input placeholder="请输入" maxLength={35} />
-            }
+              return <Input placeholder="请输入" maxLength={35} />;
+            },
           },
           {
             label: '时间区间',
             name: 'time',
             render: () => {
-              return <DatePicker.RangePicker allowClear showTime />
-            }
+              return <DatePicker.RangePicker allowClear showTime />;
+            },
           },
         ];
         break;
     }
 
     return [columns, searchFormItems];
-  }
+  };
 
   const onEdit = (editing = false) => {
     for (const key in rootRef.current) {
       if (Object.prototype.hasOwnProperty.call(rootRef.current, key)) {
         const element = rootRef.current[key];
-        editing ? element.onEdit() : element.cancelEdit()
+        editing ? element.onEdit() : element.cancelEdit();
       }
     }
-    setEditing(editing)
-  }
+    setEditing(editing);
+  };
 
   return (
     <>
@@ -498,7 +580,7 @@ export default (props: { currentTab: any; }) => {
             type="primary"
             key="edit"
             onClick={() => {
-              editing ? addOrUpdate() : onEdit(true)
+              editing ? addOrUpdate() : onEdit(true);
             }}
           >
             {editing ? '保存并发布' : '编辑'}
@@ -507,38 +589,40 @@ export default (props: { currentTab: any; }) => {
       </div>
       <div className={sc('container-table-body')}>
         {dataSource.map((p, index) => {
-          return <>
-            <div style={{ margin: '20px 0' }}>{enumObj[p.dataType]}</div>
-            <IndustryTable ref={ref => rootRef.current[p.dataType] = ref}
-              handleSameData={(list) => handleSameData(p.dataType, list)}
-              autoColumns={getAutoContent(p.dataType)[0]} data={p.dataList} />
-            {editing && <div
-              style={
-                { cursor: 'pointer' }
-              }
-              onClick={() => {
-                const detailIdList = p?.dataList?.map(d => d.detailId)
-                setModalInfo({
-                  type: p.dataType,
-                  visible: true,
-                  typeName: enumObj[p.dataType],
-                  detailIdList
-                })
-                setSearchContent({})
-                getOptions({ detailIdList, dataType: p.dataType, ...pagination, pageIndex: 1 })
-              }}
-              className={sc('add-button')}
-            >
-              + 添加数据
-            </div>}
-          </>
+          return (
+            <>
+              <div style={{ margin: '20px 0' }}>{enumObj[p.dataType]}</div>
+              <IndustryTable
+                ref={(ref) => (rootRef.current[p.dataType] = ref)}
+                handleSameData={(list) => handleSameData(p.dataType, list)}
+                autoColumns={getAutoContent(p.dataType)[0]}
+                data={p.dataList}
+              />
+              {editing && (
+                <div
+                  style={{ cursor: 'pointer' }}
+                  onClick={() => {
+                    const detailIdList = p?.dataList?.map((d) => d.detailId);
+                    setModalInfo({
+                      type: p.dataType,
+                      visible: true,
+                      typeName: enumObj[p.dataType],
+                      detailIdList,
+                    });
+                    setSearchContent({});
+                    getOptions({ detailIdList, dataType: p.dataType, ...pagination, pageIndex: 1 });
+                  }}
+                  className={sc('add-button')}
+                >
+                  + 添加数据
+                </div>
+              )}
+            </>
+          );
         })}
       </div>
       {useModal()}
-      <Prompt
-        when={editing}
-        message={'离开此页面，将不会保存当前编辑的内容，确认离开吗？'}
-      />
+      <Prompt when={editing} message={'离开此页面，将不会保存当前编辑的内容，确认离开吗？'} />
     </>
   );
 };
