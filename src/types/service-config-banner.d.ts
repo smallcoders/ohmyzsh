@@ -3,6 +3,7 @@ import type Common from './common';
 namespace Banner {
   export enum Edge {
     PC = 0, // 官网-首页
+    FINANCIAL_SERVICE = 6, // 官网-金融
     APPLET = 1, // 小程序-首页
     APP = 2, // APP-首页
     APPLET_CREATIVE = 3, // 小程序-科产

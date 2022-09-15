@@ -1,6 +1,5 @@
 import { PlusOutlined } from '@ant-design/icons';
-import type {
-  RadioChangeEvent} from 'antd';
+import type { RadioChangeEvent } from 'antd';
 import {
   Button,
   message,
@@ -243,6 +242,7 @@ const TableList: React.FC = () => {
     return (
       <Radio.Group value={edge} onChange={handleEdgeChange}>
         <Radio.Button value={Banner.Edge.PC}>官网-首页</Radio.Button>
+        <Radio.Button value={Banner.Edge.FINANCIAL_SERVICE}>官网-金融</Radio.Button>
         <Radio.Button value={Banner.Edge.PC_CITY}>官网-地市专题主页</Radio.Button>
         <Radio.Button value={Banner.Edge.APPLET}>小程序-首页</Radio.Button>
         <Radio.Button value={Banner.Edge.APPLET_CREATIVE}>小程序-科产</Radio.Button>
@@ -257,7 +257,7 @@ const TableList: React.FC = () => {
       <Modal
         title={editingItem.id ? '修改banner' : '新增banner'}
         width="400px"
-        visible={createModalVisible}
+        open={createModalVisible}
         maskClosable={false}
         onCancel={() => {
           clearForm();
@@ -299,6 +299,7 @@ const TableList: React.FC = () => {
           >
             <Select placeholder="请选择">
               <Select.Option value={Banner.Edge.PC}>官网-首页</Select.Option>
+              <Select.Option value={Banner.Edge.FINANCIAL_SERVICE}>官网-金融</Select.Option>
               <Select.Option value={Banner.Edge.PC_CITY}>官网-地市专题主页</Select.Option>
               <Select.Option value={Banner.Edge.APPLET}>小程序-首页</Select.Option>
               <Select.Option value={Banner.Edge.APPLET_CREATIVE}>小程序-科产</Select.Option>
@@ -339,6 +340,7 @@ const TableList: React.FC = () => {
             bordered
             columns={columns}
             dataSource={dataSource}
+            rowKey={'id'}
             pagination={
               pageInfo.totalCount === 0
                 ? false

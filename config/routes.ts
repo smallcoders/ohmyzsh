@@ -54,8 +54,6 @@
   LEAVE_WORD_VERIFY_INDEX: '/verify-agency/leave_word_verify/index', // 留言审核
   LEAVE_WORD_VERIFY_DETAIL: '/verify-agency/leave_word_verify/detail', // 留言审核
 
-
-
   PURCHASE_MANAGE: '/purchase-manage/order-manage', // 订单管理
   PURCHASE_MANAGE_INDEX: '/purchase-manage/order-manage/index', // 订单管理列表
   PURCHASE_MANAGE_DETAIL: '/purchase-manage/order-manage/detail', // 订单管理详情
@@ -81,8 +79,8 @@
   WONDERFUL_VIDEO_MANAGEMENT_INDEX: '/live-management/wonderful-video-management/index', // 精彩视频管理
   WONDERFUL_VIDEO_MANAGEMENT_DETAIL: '/live-management/wonderful-video-management/detail', // 视频详情
 
-  SEARCH_RECORD_MANAGEMENT: '/live-management/search-record-management',//直播类型管理
-  ANTELOPE_LIVE_INTENTION_COLLECT: '/live-management/intention-collect',// 直播意向采集
+  SEARCH_RECORD_MANAGEMENT: '/live-management/search-record-management', //直播类型管理
+  ANTELOPE_LIVE_INTENTION_COLLECT: '/live-management/intention-collect', // 直播意向采集
 
   BILL_MANAGEMENT: '/purchase-manage/bill-management', // 发票管理
   SERVICE_TAGS_MANAGE: '/purchase-manage/service-tags-manage', // 服务标签管理
@@ -98,6 +96,10 @@
   DETAIL_PROPAGANDA_CONFIG: '/local-propaganda/propaganda-config/detail-management', // 新增地市宣传页管理
   MANAGEMENT_ACTIVITIES: '/local-propaganda/management_activities', // 地市活动管理
 
+  //金融服务管理
+  BANKING_SERVICE: '/service-config/banking_service_manage',
+  BANKING_SERVICE_INDEX: '/service-config/banking_service_manage/index',
+  BANKING_SERVICE_DETAIL: '/service-config/banking_service_manage/detail',
 };
 
 export default [
@@ -126,6 +128,28 @@ export default [
     icon: 'unordered-list',
     access: 'SERVICE_CONFIG',
     routes: [
+      {
+        path: routeName.BANKING_SERVICE,
+        name: '金融服务管理',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.BANKING_SERVICE,
+            redirect: routeName.BANKING_SERVICE_INDEX,
+          },
+          {
+            path: routeName.BANKING_SERVICE_INDEX,
+            name: '金融服务管理',
+            hideInBreadcrumb: true,
+            component: './service_config/banking_service_manage/index',
+          },
+          {
+            path: routeName.BANKING_SERVICE_DETAIL,
+            name: '需求详情',
+            component: './service_config/banking_service_manage/detail/detail',
+          },
+        ],
+      },
       {
         path: '/service-config',
         redirect: '/service-config/banner',
@@ -241,8 +265,8 @@ export default [
             path: routeName.DIGITAL_APPLICATION_DETAIL,
             name: '应用详情',
             component: './service_config/digital_application/app_detail',
-          }
-        ]
+          },
+        ],
       },
       {
         path: '/service-config/achievements-manage',
@@ -417,13 +441,13 @@ export default [
         routes: [
           {
             path: '/local-propaganda/propaganda-config',
-            redirect: routeName.PROPAGANDA_CONFIG
+            redirect: routeName.PROPAGANDA_CONFIG,
           },
           {
             path: routeName.PROPAGANDA_CONFIG,
             hideInBreadcrumb: true,
             name: '地市宣传页管理',
-            component: './local_propaganda/propaganda_config'
+            component: './local_propaganda/propaganda_config',
           },
           {
             path: routeName.ADD_PROPAGANDA_CONFIG,
@@ -434,15 +458,15 @@ export default [
             path: routeName.DETAIL_PROPAGANDA_CONFIG,
             name: '地市宣传页详情',
             component: './local_propaganda/detail_management',
-          }
-        ]
+          },
+        ],
       },
       {
         path: routeName.MANAGEMENT_ACTIVITIES,
         name: '地市活动管理',
-        component: './local_propaganda/management_activities'
-      }
-    ]
+        component: './local_propaganda/management_activities',
+      },
+    ],
   },
   {
     path: '/operate-data',
@@ -666,7 +690,7 @@ export default [
             path: routeName.REPORT_RECORD_VERIFY_DETAIL,
             name: '举报记录详情',
             // ⭐ 未处理
-            component: './user_config/report_record_verify/components/detail', 
+            component: './user_config/report_record_verify/components/detail',
           },
         ],
       },
