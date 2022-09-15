@@ -39,8 +39,11 @@ import {
 import { listAllAreaCode } from '@/services/common';
 import {
 	addOrgType,
-	diagnoseDetail,
+	diagnoseDetail
 } from '@/services/diagnose-manage';
+import {
+	editOrgList,
+  } from '@/services/digital-application';
 import UploadForm from '@/components/upload_form';
 import DiagnoseManage from '@/types/service-config-diagnose-manage';
 import './index.less'
@@ -139,6 +142,22 @@ export default () => {
 			 </Radio.Group>
 		 );
 	 };
+	
+	const previewResult = async (record: any, index: number) => {
+		setResultObj(record);
+		if(record.relatedServers && record.relatedServers.length>0) {
+			let res = await editOrgList({ids: record.relatedServers})
+			console.log(res);
+			let serverArr:any = []
+			if(res.code == 0&&res.result&&res.result.length>0) {
+				res.result.map((item) => {
+					serverArr.push(item.orgName)
+				})
+				setResultObj({...record, relatedServers: serverArr})
+			}
+		}
+		setPreviewVisible(true);
+	}
 
 	// 诊断结果列表
 	const columns = [
@@ -158,8 +177,7 @@ export default () => {
 					<a
 						href="#!"
 						onClick={(e) => {
-							setResultObj(record);
-							setPreviewVisible(true);
+							previewResult(record, index)
 						}}
 					>
 						{text}
