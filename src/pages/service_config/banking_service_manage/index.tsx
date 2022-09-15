@@ -21,7 +21,7 @@ import SelfTable from '@/components/self_table';
 import type LogoutVerify from '@/types/user-config-logout-verify';
 import { confirmUserDelete, getLogoutPage } from '@/services/logout-verify';
 import { routeName } from '@/../config/routes';
-
+import { getBankingServicePage } from '@/services/banking-service';
 const sc = scopedClasses('user-config-logout-verify');
 const updateOptions = [
   {
@@ -213,6 +213,10 @@ export default () => {
   };
   useEffect(() => {
     getPage();
+    getBankingServicePage({
+      pageSize: 10,
+      pageIndex: 1,
+    });
   }, [searchContent]);
 
   const useSearchNode = (): React.ReactNode => {
