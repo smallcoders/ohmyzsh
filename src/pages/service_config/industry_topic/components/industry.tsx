@@ -11,6 +11,7 @@ import {
   DatePicker,
   Col,
   Row,
+  Image,
 } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import '../index.less';
@@ -28,6 +29,7 @@ import {
   getIndustryTopicData,
   saveIndustryTopic,
 } from '@/services/industry-topic';
+import { getApplicationList } from '@/services/digital-application';
 import { getEnumByNameByScience } from '@/services/common';
 import { Prompt } from 'umi';
 const sc = scopedClasses('service-config-app-news');
@@ -84,8 +86,6 @@ export default (props: { currentTab: any }) => {
         enumObj[p.enumName] = p.name;
       });
 
-      //mock
-      enumObj.SHUZIHUA = '数字化应用';
       setEnumObj(enumObj);
     } catch (error) {
       message.error('获取行业类型失败');
@@ -99,10 +99,6 @@ export default (props: { currentTab: any }) => {
     try {
       const { result, code } = await getIndustryTopicData(currentTab.enumName);
       if (code === 0) {
-        result.unshift({
-          dataType: 'SHUZIHUA',
-          dataList: [],
-        });
         setDataSource(result);
       } else {
         message.error(`请求列表数据失败`);
@@ -221,13 +217,35 @@ export default (props: { currentTab: any }) => {
 
   const getOptions = async (searchParams: any) => {
     try {
-      const { result, code, totalCount } = await addIndustryTopic({
+      const { pageIndex, pageSize, dataType: datatype } = searchParams;
+      const dataType = datatype || modalInfo.type;
+
+      let getOptionsFun = new Function();
+      const params = {
         industry: currentTab.enumName,
-        dataType: searchParams.dataType || modalInfo.type,
+        dataType,
         ...searchParams,
-      });
+      };
+      if (dataType === 'APP_INFO') {
+        getOptionsFun = getApplicationList;
+      } else {
+        getOptionsFun = addIndustryTopic;
+      }
+
+      const { result, code, totalCount } = await getOptionsFun(params);
       if (code === 0) {
-        setAddDataSource(result);
+        const fromatResult =
+          (dataType === 'APP_INFO' &&
+            result.map((item: any) => {
+              // 数字化应用接口 数据字段初始化
+              item.detailId = item.id;
+              item.clickRate = 0;
+              item.name = item.appName;
+              item.logoImageUrl = item.logoImagePath;
+              return item;
+            })) ||
+          result;
+        setAddDataSource(fromatResult);
         setPagination({
           pageSize: searchParams.pageSize,
           pageIndex: searchParams.pageIndex,
@@ -242,8 +260,11 @@ export default (props: { currentTab: any }) => {
   };
 
   const useModal = (): React.ReactNode => {
-    const [columns, searchFormItems] = getAutoContent(modalInfo.type);
-
+    const [columns, searchFormItems, appinfoAddColumns] = getAutoContent(modalInfo.type);
+    let addbaseCoulmns = columns;
+    if (modalInfo.type === 'APP_INFO') {
+      addbaseCoulmns = appinfoAddColumns;
+    }
     return (
       <Modal
         title={`添加数据-${modalInfo.typeName}（${currentTab.name}）`}
@@ -288,7 +309,7 @@ export default (props: { currentTab: any }) => {
         <Form {...formLayout} form={form} layout="horizontal">
           <Row>
             {searchFormItems?.map((p) => (
-              <Col span={10}>
+              <Col span={10} key={p.name}>
                 <Form.Item name={p.name} label={p.label}>
                   {p.render()}
                 </Form.Item>
@@ -351,7 +372,7 @@ export default (props: { currentTab: any }) => {
             showQuickJumper: true,
           }}
           rowSelection={rowSelection}
-          columns={columns}
+          columns={addbaseCoulmns}
           dataSource={addDataSource}
           onChange={(e) => {
             const page = {
@@ -376,12 +397,16 @@ export default (props: { currentTab: any }) => {
   const getAutoContent = (type: string) => {
     let columns;
     let searchFormItems;
+    let appinfoAddColumns;
     switch (type) {
-      case 'SHUZIHUA':
+      case 'APP_INFO':
         columns = [
           {
             title: '应用logo',
-            dataIndex: 'logo',
+            dataIndex: 'logoImageUrl',
+            render: (logoImageUrl: string) => (
+              <Image style={{ height: '40px' }} src={logoImageUrl} alt="图片损坏" />
+            ),
           },
           {
             title: '数字化应用名称',
@@ -389,13 +414,13 @@ export default (props: { currentTab: any }) => {
           },
           {
             title: '应用类型',
-            dataIndex: 'type',
+            dataIndex: 'typeName',
           },
         ];
         searchFormItems = [
           {
             label: '数字化应用名称',
-            name: 'name',
+            name: 'appName',
             render: () => {
               return <Input placeholder="请输入" maxLength={35} />;
             },
@@ -406,6 +431,23 @@ export default (props: { currentTab: any }) => {
             render: () => {
               return <DatePicker.RangePicker allowClear showTime />;
             },
+          },
+        ];
+        appinfoAddColumns = [
+          {
+            title: '应用logo',
+            dataIndex: 'logoImagePath',
+            render: (logoImagePath: string) => (
+              <Image style={{ height: '40px' }} src={logoImagePath} alt="图片损坏" />
+            ),
+          },
+          {
+            title: '数字化应用名称',
+            dataIndex: 'appName',
+          },
+          {
+            title: '应用类型',
+            dataIndex: 'typeName',
           },
         ];
         break;
@@ -559,7 +601,7 @@ export default (props: { currentTab: any }) => {
         break;
     }
 
-    return [columns, searchFormItems];
+    return [columns, searchFormItems, appinfoAddColumns];
   };
 
   const onEdit = (editing = false) => {
@@ -610,7 +652,12 @@ export default (props: { currentTab: any }) => {
                       detailIdList,
                     });
                     setSearchContent({});
-                    getOptions({ detailIdList, dataType: p.dataType, ...pagination, pageIndex: 1 });
+                    getOptions({
+                      detailIdList,
+                      dataType: p.dataType,
+                      ...pagination,
+                      pageIndex: 1,
+                    });
                   }}
                   className={sc('add-button')}
                 >
