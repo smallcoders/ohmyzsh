@@ -28,6 +28,7 @@ import {
   addIndustryTopic,
   getIndustryTopicData,
   saveIndustryTopic,
+  addIndustryTopicForAppInfo,
 } from '@/services/industry-topic';
 import { getApplicationList } from '@/services/digital-application';
 import { getEnumByNameByScience } from '@/services/common';
@@ -227,25 +228,14 @@ export default (props: { currentTab: any }) => {
         ...searchParams,
       };
       if (dataType === 'APP_INFO') {
-        getOptionsFun = getApplicationList;
+        getOptionsFun = addIndustryTopicForAppInfo;
       } else {
         getOptionsFun = addIndustryTopic;
       }
 
       const { result, code, totalCount } = await getOptionsFun(params);
       if (code === 0) {
-        const fromatResult =
-          (dataType === 'APP_INFO' &&
-            result.map((item: any) => {
-              // 数字化应用接口 数据字段初始化
-              item.detailId = item.id;
-              item.clickRate = 0;
-              item.name = item.appName;
-              item.logoImageUrl = item.logoImagePath;
-              return item;
-            })) ||
-          result;
-        setAddDataSource(fromatResult);
+        setAddDataSource(result);
         setPagination({
           pageSize: searchParams.pageSize,
           pageIndex: searchParams.pageIndex,
@@ -260,11 +250,8 @@ export default (props: { currentTab: any }) => {
   };
 
   const useModal = (): React.ReactNode => {
-    const [columns, searchFormItems, appinfoAddColumns] = getAutoContent(modalInfo.type);
-    let addbaseCoulmns = columns;
-    if (modalInfo.type === 'APP_INFO') {
-      addbaseCoulmns = appinfoAddColumns;
-    }
+    const [columns, searchFormItems] = getAutoContent(modalInfo.type);
+
     return (
       <Modal
         title={`添加数据-${modalInfo.typeName}（${currentTab.name}）`}
@@ -372,7 +359,7 @@ export default (props: { currentTab: any }) => {
             showQuickJumper: true,
           }}
           rowSelection={rowSelection}
-          columns={addbaseCoulmns}
+          columns={columns}
           dataSource={addDataSource}
           onChange={(e) => {
             const page = {
@@ -397,7 +384,6 @@ export default (props: { currentTab: any }) => {
   const getAutoContent = (type: string) => {
     let columns;
     let searchFormItems;
-    let appinfoAddColumns;
     switch (type) {
       case 'APP_INFO':
         columns = [
@@ -431,23 +417,6 @@ export default (props: { currentTab: any }) => {
             render: () => {
               return <DatePicker.RangePicker allowClear showTime />;
             },
-          },
-        ];
-        appinfoAddColumns = [
-          {
-            title: '应用logo',
-            dataIndex: 'logoImagePath',
-            render: (logoImagePath: string) => (
-              <Image style={{ height: '40px' }} src={logoImagePath} alt="图片损坏" />
-            ),
-          },
-          {
-            title: '数字化应用名称',
-            dataIndex: 'appName',
-          },
-          {
-            title: '应用类型',
-            dataIndex: 'typeName',
           },
         ];
         break;
@@ -601,7 +570,7 @@ export default (props: { currentTab: any }) => {
         break;
     }
 
-    return [columns, searchFormItems, appinfoAddColumns];
+    return [columns, searchFormItems];
   };
 
   const onEdit = (editing = false) => {
