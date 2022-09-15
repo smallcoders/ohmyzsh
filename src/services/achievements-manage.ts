@@ -31,7 +31,7 @@ export async function getCreativeTypes() {
 /**
  * 关键词编辑
  */
- export async function updateKeyword(data?: { [key: string]: any }) {
+export async function updateKeyword(data?: { [key: string]: any }) {
   return request<any>('/antelope-science/mng/creative/achievement/update/keyword', {
     method: 'put',
     data,
@@ -41,9 +41,9 @@ export async function getCreativeTypes() {
 /**
  * 完成转化
  */
- export async function updateConversion(id: string) {
+export async function updateConversion(id: string) {
   return request<any>(`/antelope-science/mng/creative/achievement/update/conversion?id=${id}`, {
-    method: 'get'
+    method: 'get',
   });
 }
 
@@ -66,3 +66,22 @@ export async function getDemandPage(data?: { [key: string]: any }) {
   });
 }
 
+// 用户列表查询
+export async function getUserListBySearch(keyword: string, limit = 10) {
+  return request<any>(`/antelope-manage/user/listBySearch?keyword=${keyword}&limit=${limit}`);
+}
+
+/**
+ * 科产成果批量上传
+ * @param data
+ * @returns
+ */
+export async function postAchievementUpload(data?: {
+  fileId: string; // 文件Id
+  userId: string; // 用户Id
+}) {
+  return request<any>('/antelope-science/mng/creative/achievement/import', {
+    method: 'post',
+    data,
+  });
+}

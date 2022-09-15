@@ -264,6 +264,11 @@ export default [
             name: '科技成果详情',
             component: './service_config/achievements_manage/detail',
           },
+          {
+            path: '/service-config/achievements-manage/multi-upload',
+            name: '批量导入科技成果',
+            component: './service_config/achievements_manage/multi_upload',
+          },
         ],
       },
       {
