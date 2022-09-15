@@ -19,6 +19,14 @@ export async function getOrgList(data: { pageIndex: number, pageSize: number, or
   });
 }
 
+/** 回显机构列表 */
+export async function editOrgList(data: { ids?: any }) {
+  return request<ApplicationManager.CompanyResultList>('/antelope-user/mng/dataManage/queryOrgList', {
+    method: 'post',
+    data
+  });
+}
+
 // 创建应用
 export async function addApplication(data?: { [key: string]: any }) {
   return request<ApplicationManager.ResultList>('/antelope-other/mng/api/manage/addApp', {
