@@ -152,7 +152,7 @@ export default () => {
               <Button
                 style={{ marginRight: 20 }}
                 type="primary"
-                key="primary"
+                key="search"
                 onClick={() => {
                   const search = searchForm.getFieldsValue();
                   const { date, ...rest } = search;
@@ -191,7 +191,7 @@ export default () => {
           <a
             key="primary3"
             className='export-btn'
-            href={`/antelope-pay/statistics/product/download?productNo=${searchContent.productNo || ''}`}
+            href={`/antelope-pay/mng/statistics/product/download?productNo=${searchContent.productNo || ''}`}
           >
             导出
           </a>

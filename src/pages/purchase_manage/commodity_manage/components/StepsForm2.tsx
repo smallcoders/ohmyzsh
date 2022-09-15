@@ -2,7 +2,7 @@ import { addSpecsPrice, goToSpecsPrice } from '@/services/commodity';
 import type DataCommodity from '@/types/data-commodity';
 import type { ProColumns } from '@ant-design/pro-table';
 import { EditableProTable } from '@ant-design/pro-table';
-import type { FormInstance } from 'antd';
+import { FormInstance, message } from 'antd';
 import { Button, Form, Input, Space } from 'antd';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { StepFormProps } from '../create';
@@ -46,7 +46,7 @@ export default (props: StepFormProps) => {
 
     setEditableKeys(data.map((item) => item.id));
     setPrices(data);
-    form.setFieldsValue({ transportFee: res.result[0].transportFee || 0 });
+    form.setFieldsValue({ transportFee: res.result[0].transportFee/100 || 0 });
 
     let specCol: ProColumns<TableDataRow, any>[] = res.result[0].specsTitle
       .split(',')
@@ -119,10 +119,11 @@ export default (props: StepFormProps) => {
               { required: true, message: '此项为必填项' },
               ({}) => ({
                 validator(_, value) {
-                  if (/^[0-9]*$/.test(value)) {
+                  // if (/^[0-9]*$/.test(value)) { 
+                  if (/(?:^[1-9]([0-9]+)?(?:\.[0-9]{1,2})?$)|(?:^(?:0)$)|(?:^[0-9]\.[0-9](?:[0-9])?$)/.test(value)) {
                     return Promise.resolve();
                   }
-                  return Promise.reject(new Error('此项为数字'));
+                  return Promise.reject(new Error('此项为数字，最多保留两位小数'));
                 },
               }),
             ],
@@ -143,10 +144,10 @@ export default (props: StepFormProps) => {
               { required: true, message: '此项为必填项' },
               ({}) => ({
                 validator(_, value) {
-                  if (/^[0-9]*$/.test(value)) {
+                  if (/(?:^[1-9]([0-9]+)?(?:\.[0-9]{1,2})?$)|(?:^(?:0)$)|(?:^[0-9]\.[0-9](?:[0-9])?$)/.test(value)) {
                     return Promise.resolve();
                   }
-                  return Promise.reject(new Error('此项为数字'));
+                  return Promise.reject(new Error('此项为数字，最多保留两位小数'));
                 },
               }),
             ],
@@ -176,12 +177,18 @@ export default (props: StepFormProps) => {
     const queryDta = {
       priceChildList,
       productId: id,
-      transportFee: form.getFieldValue('transportFee'),
+      transportFee: form.getFieldValue('transportFee')*100,
       specsTitle: prices[0].specsTitle,
     };
-    const res = await addSpecsPrice(queryDta).finally(() => setloading(false));
-
-    setloading(false);
+    const res = await addSpecsPrice(queryDta)
+      // .finally(() => setloading(false));
+    if(res.code === 0) {
+      setloading(false);
+    }else {
+      setloading(false);
+      message.warning(`${res.message}`)
+    }
+    // setloading(false);
     if (!res.code) {
       currentChange(1);
     }
@@ -218,7 +225,19 @@ export default (props: StepFormProps) => {
       />
 
       <Form form={form} style={{ width: 600 }} onChange={() => setChanged(true)}>
-        <Form.Item label="运费" name="transportFee" rules={[{ required: true }]}>
+        <Form.Item label="运费" name="transportFee" 
+          rules={[
+            { required: true, message: '此项为必填项' },
+            ({}) => ({
+              validator(_, value) {
+                if (/(?:^[1-9]([0-9]+)?(?:\.[0-9]{1,2})?$)|(?:^(?:0)$)|(?:^[0-9]\.[0-9](?:[0-9])?$)/.test(value)) {
+                  return Promise.resolve();
+                }
+                return Promise.reject(new Error('此项为数字，最多保留两位小数'));
+              },
+            }),
+          ]}
+        >
           <Input addonAfter="元" type="number" />
         </Form.Item>
       </Form>

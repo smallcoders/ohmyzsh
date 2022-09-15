@@ -15,7 +15,7 @@ export const VerifyListText = {
 
 export default (props: {
   auditId: string;
-  reset: () => void;
+  reset?: () => void;
   before?: (state: Common.AuditStatus) => React.ReactNode;
 }) => {
   const { auditId = '', reset } = props || {};
@@ -73,7 +73,7 @@ export default (props: {
   }, [auditId]);
 
   const refresh = () => {
-    reset();
+    reset?.();
     hanldeGetAuditDetail();
   };
 

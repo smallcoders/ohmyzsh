@@ -1,12 +1,11 @@
 // @ts-ignore
 /* eslint-disable */
 import Common from '@/types/common.d';
-import Banner from '@/types/service-config-banner';
 import { request } from 'umi';
 
-/** 获取banner 列表 */
+/** 获取审核列表 */
 export async function httpGetAuditList(options?: { [key: string]: any }) {
-  return request<Common.ResultCode & { result: any[] }>('/antelope-manage/audit/query/list', {
+  return request<Common.ResultCode & { result: any[] }>('/antelope-manage/audit/query', {
     method: 'GET',
     params: { ...(options || {}) },
   });

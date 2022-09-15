@@ -40,6 +40,11 @@ export default {
       changeOrigin: true,
       pathRewrite: { '^': '' },
     },
+    '/antelope-diagnose/': {
+      target: 'http://172.30.35.217:9103',
+      changeOrigin: true,
+      pathRewrite: { '^/antelope-diagnose': '' },
+    },
     '/antelope-common/': {
       target: 'http://172.30.33.222:10086',
       changeOrigin: true,
@@ -55,5 +60,10 @@ export default {
       changeOrigin: true,
       pathRewrite: { '^': '' },
     },
-  },
+    '/antelope-other/': {
+      target: 'http://172.30.33.222:10086',
+      changeOrigin: true,
+      pathRewrite: { '^': '' },
+    }
+  }
 };

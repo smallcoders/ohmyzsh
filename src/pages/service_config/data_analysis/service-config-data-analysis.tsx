@@ -178,7 +178,7 @@ export default () => {
               <Button
                 style={{ marginRight: 20 }}
                 type="primary"
-                key="primary"
+                key="reset"
                 onClick={() => {
                   const search = searchForm.getFieldsValue();
                   if (search.operateTime) {
@@ -196,7 +196,7 @@ export default () => {
               </Button>
               <Button
                 type="primary"
-                key="primary"
+                key="reset"
                 onClick={() => {
                   const { appId, type } = history.location.query as RouterParams;
                   if (appId && type) {

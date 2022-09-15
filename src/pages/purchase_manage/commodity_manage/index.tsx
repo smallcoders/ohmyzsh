@@ -147,7 +147,7 @@ export default () => {
         actionRef={actionRef}
         toolBarRender={() => [
           <div>商品列表（共{total}个）</div>,
-          <Button type="primary" key="primary" onClick={goCreate}>
+          <Button type="primary" key="addStore" onClick={goCreate}>
             <PlusOutlined /> 新增商品
           </Button>,
         ]}

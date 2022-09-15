@@ -7,6 +7,9 @@
   ADD_COURSE: '/service-config/course-manage/add', // 新增或编辑课程
   APP_RESOURCE: '/service-config/app-resource/index', // 应用资源
   APP_MANAGE: '/service-config/app-manage/index', // 应用管理
+  DIGITAL_APPLICATION: '/service-config/digital-application/index', // 数字化应用
+  DIGITAL_APPLICATION_PUSH_DETAIL: '/service-config/digital-application/push-detail', // 数字化推送详情
+  DIGITAL_APPLICATION_DETAIL: '/service-config/digital-application/detail', // 应用详情
   DATA_ANALYSIS: '/service-config/app-manage/data-analysis', // 综合采购数据分析
   ADD_APP_RESOURCE: '/service-config/app-manage/add-resource', // 新增应用资源
   SOLUTION: '/service-config/solution', // 服务方案
@@ -38,9 +41,20 @@
   OFFICE_REQUIREMENT_VERIFY_INDEX: '/verify-agency/office-requirement-verify/index', // 企业需求审核
   OFFICE_REQUIREMENT_VERIFY_DETAIL: '/verify-agency/office-requirement-verify/detail', // 企业需求审核详情
 
-  ENTERPRISE_ADMIN_VERIFY: '/verify-agency/enterprise-admin-verify', // 企业管理员审核
-  ENTERPRISE_ADMIN_VERIFY_INDEX: '/verify-agency/enterprise-admin-verify/index', // 企业管理员审核
-  ENTERPRISE_ADMIN_VERIFY_DETAIL: '/verify-agency/enterprise-admin-verify/detail', // 企业管理员审核详情
+  ENTERPRISE_ADMIN_VERIFY: '/verify-agency/enterprise-admin-verify', // 组织管理员审核
+  ENTERPRISE_ADMIN_VERIFY_INDEX: '/verify-agency/enterprise-admin-verify/index', // 组织管理员审核
+  ENTERPRISE_ADMIN_VERIFY_DETAIL: '/verify-agency/enterprise-admin-verify/detail', // 组织管理员审核详情
+  ENTERPRISE_INFO_VERIFY: '/verify-agency/enterprise-info-verify', // 组织信息审核
+  ENTERPRISE_INFO_VERIFY_INDEX: '/verify-agency/enterprise-info-verify/index', // 组织信息审核
+  ENTERPRISE_INFO_VERIFY_DETAIL: '/verify-agency/enterprise-info-verify/detail', // 组织信息审核详情
+  EXPERT_AUTH_VERIFY: '/verify-agency/expert-auth-verify', // 专家认证审核
+  EXPERT_AUTH_VERIFY_INDEX: '/verify-agency/expert-auth-verify/index', // 专家认证审核
+  EXPERT_AUTH_VERIFY_DETAIL: '/verify-agency/expert-auth-verify/detail', // 专家认证审核详情
+  LEAVE_WORD_VERIFY: '/verify-agency/leave_word_verify', // 留言审核
+  LEAVE_WORD_VERIFY_INDEX: '/verify-agency/leave_word_verify/index', // 留言审核
+  LEAVE_WORD_VERIFY_DETAIL: '/verify-agency/leave_word_verify/detail', // 留言审核
+
+
 
   PURCHASE_MANAGE: '/purchase-manage/order-manage', // 订单管理
   PURCHASE_MANAGE_INDEX: '/purchase-manage/order-manage/index', // 订单管理列表
@@ -52,6 +66,9 @@
   USER_FEEDBACK: '/user-config/user-feedback', // 用户反馈
   COMMISSIONER_SERVICE: '/user-config/commissioner-service', // 专员服务记录
   ADMIN_ACCOUNT_DISTRIBUTOR: '/user-config/admin-account-distributor', // 管理员账号分配
+  REPORT_RECORD_VERIFY: '/user-config/report_record_verify', // 举报审核
+  REPORT_RECORD_VERIFY_INDEX: '/user-config/report_record_verify/index', // 举报审核
+  REPORT_RECORD_VERIFY_DETAIL: '/user-config/report_record_verify/detail', // 举报详情
 
   LIVE_TYPES_MAINTAIN: '/live-management/live-types-maintain', //直播类型管理
 
@@ -76,6 +93,10 @@
   SALES_STATISTICS: '/purchase-manage/sales-statistics', // 商品数据统计
   SALES_STATISTICS_DETAIL: '/purchase-manage/sales-statistics/detail', // 活动数据-活动详情
 
+  PROPAGANDA_CONFIG: '/local-propaganda/propaganda-config/index', // 地市宣传页管理
+  ADD_PROPAGANDA_CONFIG: '/local-propaganda/propaganda-config/add-management', // 新增地市宣传页管理
+  DETAIL_PROPAGANDA_CONFIG: '/local-propaganda/propaganda-config/detail-management', // 新增地市宣传页管理
+  MANAGEMENT_ACTIVITIES: '/local-propaganda/management_activities', // 地市活动管理
 
 };
 
@@ -195,6 +216,33 @@ export default [
             component: './service_config/add_resource',
           },
         ],
+      },
+      {
+        path: '/service-config/digital-application',
+        name: '数字化应用',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: '/service-config/digital-application',
+            redirect: routeName.DIGITAL_APPLICATION,
+          },
+          {
+            path: routeName.DIGITAL_APPLICATION,
+            hideInBreadcrumb: true,
+            name: '数字化应用',
+            component: './service_config/digital_application',
+          },
+          {
+            path: routeName.DIGITAL_APPLICATION_PUSH_DETAIL,
+            name: '推送详情',
+            component: './service_config/digital_application/app_push/app_push_detail',
+          },
+          {
+            path: routeName.DIGITAL_APPLICATION_DETAIL,
+            name: '应用详情',
+            component: './service_config/digital_application/app_detail',
+          }
+        ]
       },
       {
         path: '/service-config/achievements-manage',
@@ -322,8 +370,79 @@ export default [
         name: '产业专题',
         component: './service_config/industry_topic',
       },
-      
+      {
+        path: '/service-config/diagnose',
+        name: '企业诊断管理',
+        // component: './service_config/diagnose_manage',
+        hideChildrenInMenu: true,
+        routes: [
+          // {
+          //   path: '/service-config/diagnose',
+          //   redirect: './service_config/diagnose_manage',
+          // },
+          {
+            path: '/service-config/diagnose',
+            // hideInBreadcrumb: true,
+            name: '企业诊断管理',
+            component: './service_config/diagnose_manage',
+          },
+          {
+            path: '/service-config/diagnose/add',
+            name: '新建诊断',
+            component: './service_config/diagnose_manage/add_diagnose',
+          },
+          {
+            path: '/service-config/diagnose/history',
+            name: '历史版本查看',
+            component: './service_config/diagnose_manage/history_diagnose',
+          },
+        ],
+      },
     ],
+  },
+  {
+    path: '/local-propaganda',
+    name: '地市专题管理',
+    icon: 'unordered-list',
+    access: 'LOCAL-PROPAGANDA',
+    routes: [
+      {
+        path: '/local-propaganda',
+        redirect: '/local-propaganda/propaganda-config',
+      },
+      {
+        path: '/local-propaganda/propaganda-config',
+        name: '地市宣传页管理',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: '/local-propaganda/propaganda-config',
+            redirect: routeName.PROPAGANDA_CONFIG
+          },
+          {
+            path: routeName.PROPAGANDA_CONFIG,
+            hideInBreadcrumb: true,
+            name: '地市宣传页管理',
+            component: './local_propaganda/propaganda_config'
+          },
+          {
+            path: routeName.ADD_PROPAGANDA_CONFIG,
+            name: '新增地市宣传页',
+            component: './local_propaganda/add_management',
+          },
+          {
+            path: routeName.DETAIL_PROPAGANDA_CONFIG,
+            name: '地市宣传页详情',
+            component: './local_propaganda/detail_management',
+          }
+        ]
+      },
+      {
+        path: routeName.MANAGEMENT_ACTIVITIES,
+        name: '地市活动管理',
+        component: './local_propaganda/management_activities'
+      }
+    ]
   },
   {
     path: '/operate-data',
@@ -523,6 +642,34 @@ export default [
         name: '科产管理员配置',
         component: './user_config/admin_account_distributor',
       },
+      {
+        path: '/user-config/tags-management',
+        name: '账号标签管理',
+        component: './user_config/tags_management',
+      },
+      {
+        path: routeName.REPORT_RECORD_VERIFY,
+        name: '举报记录',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.REPORT_RECORD_VERIFY,
+            redirect: routeName.REPORT_RECORD_VERIFY_INDEX,
+          },
+          {
+            path: routeName.REPORT_RECORD_VERIFY_INDEX,
+            name: '举报记录',
+            hideInBreadcrumb: true,
+            component: './user_config/report_record_verify',
+          },
+          {
+            path: routeName.REPORT_RECORD_VERIFY_DETAIL,
+            name: '举报记录详情',
+            // ⭐ 未处理
+            component: './user_config/report_record_verify/components/detail', 
+          },
+        ],
+      },
     ],
   },
   {
@@ -635,7 +782,7 @@ export default [
       },
       {
         path: routeName.ENTERPRISE_ADMIN_VERIFY,
-        name: '企业管理员审核',
+        name: '组织管理员审核',
         hideChildrenInMenu: true,
         routes: [
           {
@@ -644,17 +791,83 @@ export default [
           },
           {
             path: routeName.ENTERPRISE_ADMIN_VERIFY_INDEX,
-            name: '企业管理员审核',
+            name: '组织管理员审核',
             hideInBreadcrumb: true,
             component: './verify_agency/enterprise_admin_verify',
           },
           {
             path: routeName.ENTERPRISE_ADMIN_VERIFY_DETAIL,
-            name: '企业管理员审核详情',
+            name: '组织管理员审核详情',
             component: './verify_agency/enterprise_admin_verify/components/detail',
           },
         ],
-      }
+      },
+      {
+        path: routeName.ENTERPRISE_INFO_VERIFY,
+        name: '组织信息审核',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.ENTERPRISE_INFO_VERIFY,
+            redirect: routeName.ENTERPRISE_INFO_VERIFY_INDEX,
+          },
+          {
+            path: routeName.ENTERPRISE_INFO_VERIFY_INDEX,
+            name: '组织信息审核',
+            hideInBreadcrumb: true,
+            component: './verify_agency/enterprise_info_verify',
+          },
+          {
+            path: routeName.ENTERPRISE_INFO_VERIFY_DETAIL,
+            name: '组织信息审核详情',
+            component: './verify_agency/enterprise_info_verify/components/detail',
+          },
+        ],
+      },
+      {
+        path: routeName.EXPERT_AUTH_VERIFY,
+        name: '专家认证审核',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.EXPERT_AUTH_VERIFY,
+            redirect: routeName.EXPERT_AUTH_VERIFY_INDEX,
+          },
+          {
+            path: routeName.EXPERT_AUTH_VERIFY_INDEX,
+            name: '专家认证审核',
+            hideInBreadcrumb: true,
+            component: './verify_agency/expert_auth_verify',
+          },
+          {
+            path: routeName.EXPERT_AUTH_VERIFY_DETAIL,
+            name: '专家认证审核详情',
+            component: './verify_agency/expert_auth_verify/components/detail',
+          },
+        ],
+      },
+      {
+        path: routeName.LEAVE_WORD_VERIFY,
+        name: '留言审核',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.LEAVE_WORD_VERIFY,
+            redirect: routeName.LEAVE_WORD_VERIFY_INDEX,
+          },
+          {
+            path: routeName.LEAVE_WORD_VERIFY_INDEX,
+            name: '留言审核',
+            hideInBreadcrumb: true,
+            component: './verify_agency/leave_word_verify',
+          },
+          {
+            path: routeName.LEAVE_WORD_VERIFY_DETAIL,
+            name: '留言审核详情',
+            component: './verify_agency/leave_word_verify/components/detail',
+          },
+        ],
+      },
     ],
   },
   {

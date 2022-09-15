@@ -1,0 +1,272 @@
+@prefix: leave-word-audit-detail;
+.@{prefix}-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-column-gap: 20px; // 列
+  &-left {
+    padding: 20px;
+    background: #fff;
+    min-height: 630px;
+    &-title {
+      font-weight: bolder;
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+    &-img {
+      width: 200px;
+      height: 200px;
+    }
+    &-desc {
+      margin-top: 10px;
+      display: grid;
+      grid-template-columns: 100px 1fr;
+      line-height: 30px;
+      &-label {
+        font-size: 16px;
+        font-weight: 600;
+      }
+    }
+  }
+  &-right {
+    padding: 20px;
+    background: #fff;
+    &-title {
+      font-weight: bolder;
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+    &-content {
+      height: 94%;
+      position: relative;
+      &-box {
+        cursor: pointer;
+        display: grid;
+        grid-template-columns: 30px 1fr;
+        &-left {
+
+        }
+        &-right {
+          margin-left: 10px;
+          &-header {
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+          }
+          &-label {
+            margin-top: 10px;
+            &-states {
+              margin-left: 10px;
+              display: inline-block;
+              text-align: center;
+              width: 50px;
+              background-color: #fef3f1;
+              color: #f57b60
+            }
+            &-anonymity {
+              margin-left: 10px;
+              display: inline-block;
+              text-align: center;
+              width: 50px;
+              background-color: #fef3f1;
+              color: #f57b60
+            }
+          }
+          &-content {
+            margin-top: 10px;
+          }
+        }
+      }
+      &-pagination {
+        position: absolute;
+        bottom: 0px;
+      }
+    }
+  }
+  .@{prefix}-innovateDemand {
+    min-height: 630px;
+    padding: 20px;
+    background: #fff;
+    .@{prefix}-container-title {
+      font-weight: 600;
+      font-size: 18px;
+    }
+    .@{prefix}-container-desc {
+      display: flex;
+      line-height: 30px;
+      > :first-child {
+        flex: 1;
+        text-align: right;
+      }
+      > :last-child {
+        flex: 5;
+        font-weight: 600;
+        font-size: 16px;
+      }
+    }
+  }
+  .expert-detail-card {
+    min-height: 630px;
+    padding: 20px;
+    background: #fff;
+    &-header {
+      display: flex;
+      margin-bottom: 20px;
+      padding: 35px;
+      background: #fff;
+      .basic-info {
+        flex: 1;
+        margin-left: 30px;
+        .expert-name {
+          margin-bottom: 0;
+          font-weight: bold;
+          font-size: 30px;
+          line-height: 42px;
+          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .first-part {
+          margin-bottom: 20px;
+          line-height: 26px;
+          &-item {
+            display: flex;
+            > label {
+              &::after {
+                position: relative;
+                top: -0.5px;
+                margin: 0 8px 0 2px;
+                content: ':';
+              }
+            }
+          }
+          .ant-divider-vertical {
+            margin: 0 10px;
+            border-left-color: #979797;
+          }
+        }
+        .second-part {
+          line-height: 26px;
+          .ant-descriptions-row {
+            .ant-descriptions-item {
+              padding-bottom: 20px;
+            }
+            &:last-of-type {
+              .ant-descriptions-item {
+                padding-bottom: 0;
+              }
+            }
+          }
+        }
+      }
+    }
+    &-body {
+      background-color: #fff;
+      .expert-skill-info {
+        padding: 50px;
+        &-item {
+          &:not(:last-of-type) {
+            margin-bottom: 50px;
+          }
+          .title {
+            position: relative;
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 20px;
+            line-height: 28px;
+            &::before {
+              position: absolute;
+              top: 50%;
+              left: -10px;
+              width: 4px;
+              height: 16px;
+              background-image: linear-gradient(133deg, #6f747b 0%, #5c5f66 100%);
+              border-radius: 5px;
+              transform: translate(-100%, calc(-50% + 1px));
+              content: '';
+            }
+          }
+          .content {
+            margin-bottom: 0;
+            color: #333;
+          }
+        }
+      }
+      &-footer {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 79px;
+        border-top: 1px solid #d9d9d9;
+        .consult-btn {
+          display: flex;
+          align-items: center;
+          height: auto;
+          font-size: 20px;
+          svg {
+            width: 32px;
+            height: 32px;
+            margin-right: 5px;
+            transform: translateY(3px);
+            transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+            fill: #6680ff;
+          }
+          &:hover,
+          &:focus {
+            svg {
+              fill: #8fa5ff;
+            }
+          }
+          &:active {
+            svg {
+              fill: #4c5fd9;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+.expert-message {
+  padding-left: 100px;
+  .expert-message-title {
+    font-weight: 700;
+    font-size: 20px;
+    padding-bottom: 15px;
+  }
+  .expert-message-content {
+    display: flex;
+    .expert-message-content-left {
+      .expert-message-content-left-img {
+        width: 32px;
+        height: 32px;
+      }
+    }
+    .expert-message-content-right {
+      margin-left: 10px;
+      .expert-message-content-right-header {
+        font-weight: 700;
+        font-size: 16px;
+        .expert-message-content-right-header-name {
+          color: rgba(0, 0, 0, 0.65);
+          font-weight: 400;
+          font-size: 16px;
+          line-height: 24px;
+        }
+        .expert-message-content-right-header-label {
+          margin-left: 10px;
+          display: inline-block;
+          text-align: center;
+          width: 50px;
+          background-color: #fef3f1;
+          color: #f57b60;
+        }
+        .expert-message-content-right-header-time {
+          margin-left: 10px;
+          color: rgba(0, 0, 0, 0.45);
+          font-weight: 400;
+          font-size: 14px;
+          line-height: 32px;
+        }
+      }
+    }
+  }
+}

@@ -15,17 +15,17 @@ const scopedClasses =
     return [prefixClassName, name].filter(Boolean).join('-');
   };
 
-// export const labelStyle = {
-//   width: '183px',
-//   justifyContent: 'flex-end',
-//   fontSize: '16px',
-//   color: 'rgba(0, 0, 0, 0.65)',
-// }
+export const labelStyle = {
+  width: '183px',
+  justifyContent: 'flex-end',
+  fontSize: '16px',
+  color: 'rgba(0, 0, 0, 0.65)',
+}
 
-// export const contentStyle = {
-//   fontSize: '16px',
-//   color: 'rgba(0,0,0,0.85)',
-// }
+export const contentStyle = {
+  fontSize: '16px',
+  color: 'rgba(0,0,0,0.85)',
+}
 
 // export const companyLabelStyle = {
 //   width: '150px',

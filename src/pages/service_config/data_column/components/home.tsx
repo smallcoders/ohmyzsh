@@ -63,9 +63,6 @@ const EditableCell: React.FC<EditableCellProps> = ({
     </td>
   );
 };
-// type EditableTableProps = Parameters<typeof Table>[0];
-
-// type ColumnTypes = Exclude<EditableTableProps['columns'], undefined>;
 
 const TableList: React.FC = () => {
   const [form] = Form.useForm();
@@ -288,7 +285,7 @@ const TableList: React.FC = () => {
       <Button
         style={{ margin: '20px 0' }}
         type="primary"
-        key="primary"
+        key="save"
         loading={publishLoading}
         onClick={publish}
       >

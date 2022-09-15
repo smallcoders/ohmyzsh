@@ -17,3 +17,17 @@ export async function getAreaTree({
     params: { areaCode, endLevel },
   }).then(({ result }) => result);
 }
+
+// 全国性的区域树查询
+export async function getWholeAreaTree({
+  parentCode = '', // 父级code
+  endLevel = 'TOWN', // PROVINCE :省、自治区、直辖市、特别行政区 TOWN :市 COUNTY :县、市辖区 STREET :乡镇、街道
+}: {
+  parentCode?: string;
+  endLevel?: 'PROVINCE' | 'TOWN' | 'COUNTY' | 'STREET';
+}) {
+  return request('/antelope-common/common/district/districtTree', {
+    method: 'GET',
+    params: { parentCode, endLevel },
+  }).then(({ result }) => result);
+}

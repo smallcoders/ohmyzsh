@@ -1,12 +1,13 @@
-import Common from './common';
+import type Common from './common';
 
 namespace Banner {
   export enum Edge {
     PC = 0, // 官网-首页
     APPLET = 1, // 小程序-首页
-    APPLET_CREATIVE = 3, // 小程序-科产
     APP = 2, // APP-首页
+    APPLET_CREATIVE = 3, // 小程序-科产
     APP_CREATIVE = 4, // APP-科产
+    PC_CITY = 5, // 官网-地市专题首页
   }
 
   export interface ResultList extends Common.ResultCode, Common.ResultPage {

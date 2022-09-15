@@ -66,13 +66,13 @@ export default () => {
       hideInSearch: true,
       // valueType: 'textarea',
       // order: 4,
-      render: (_: string, _record: any) => _record.product ?  _record.product.length : 0
+      renderText: (_: string, _record: any) => _record.product ?  _record.product.length : 0
     },
     {
       title: '活动时间',
       dataIndex: 'time',
       hideInSearch: true,
-      render: (_: string, _record: any) => _record?.startTime + '~' + _record?.endTime
+      renderText: (_: string, _record: any) => _record?.startTime + '~' + _record?.endTime
     },
     {
       title: '上架状态',
@@ -307,7 +307,7 @@ export default () => {
         }}
         actionRef={actionRef}
         toolBarRender={() => [
-          <Button type="primary" key="primary" onClick={() => {
+          <Button type="primary" key="addActivity" onClick={() => {
             history.push('/purchase-manage/promotions-create');
           }}>
             <PlusOutlined /> 新增活动

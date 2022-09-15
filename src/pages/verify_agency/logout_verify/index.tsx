@@ -185,7 +185,7 @@ export default () => {
               <Button
                 style={{ marginRight: 20 }}
                 type="primary"
-                key="primary"
+                key="search"
                 onClick={() => {
                   const search = searchForm.getFieldsValue();
                   if (search.time) {
@@ -199,7 +199,7 @@ export default () => {
               </Button>
               <Button
                 type="primary"
-                key="primary"
+                key="reset"
                 onClick={() => {
                   searchForm.resetFields();
                   setSearChContent({});
@@ -224,6 +224,7 @@ export default () => {
       </div>
       <div className={sc('container-table-body')}>
         <SelfTable
+        rowKey="id"
           bordered
           scroll={{ x: 1480 }}
           columns={columns}

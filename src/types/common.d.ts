@@ -78,10 +78,56 @@ namespace Common {
     fileFormat?: string; // 文件格式
   };
 
-  export type CommonEnum ={
-    enumName: string
-    id: number
-    name: string
+  export type CommonEnum = {
+    enumName: string;
+    id: number;
+    name: string;
+  };
+
+  // 检索条件类型
+  export enum SearchItemControlEnum {
+    INPUT = 'input',
+    SELECT = 'select',
+    TREE_SELECT = 'tree-select',
+    CASCADER = 'cascader',
+    DATE_MONTH = 'date-month',
+    RANGE_PICKER = 'range-Picker',
+  }
+
+  export interface FieldNamesObj {
+    label: string;
+    value: string;
+    children?: string;
+  }
+  export interface SearchItem {
+    key: string;
+    label: string;
+    type: SearchItemControlEnum;
+    options?: any[];
+    treeData?: any[];
+    fieldNames?: FieldNamesObj;
+    initialValue?: any;
+    placeholder?: string;
+    allowClear?: boolean;
+    disabledDate?: (currentDate) => boolean;
+    loading?: boolean;
+    showSearch?: boolean;
+    onChange?: (v: string | any[]) => void;
+  }
+
+  export interface ActionItem {
+    key: string;
+    text: string;
+    type: ButtonType;
+  }
+
+  // 文件详情
+  export interface FileInfo {
+    id: string;
+    name: string;
+    path: string;
+    format: string;
+    createTime?: string;
   }
 }
 export default Common;

@@ -12,7 +12,7 @@ body,
 
 .ant-layout {
   min-height: 100vh;
-  background-color: rgb(250, 250, 250);
+  background-color: rgb(245, 245, 245);
 }
 .ant-layout-footer {
   background: #fafafa;
@@ -90,4 +90,12 @@ ol {
     overflow: visible !important;
     white-space: normal !important;
   }
+}
+
+.textoverflow(@line: 1) {
+  display: -webkit-box;
+  -webkit-line-clamp: @line;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

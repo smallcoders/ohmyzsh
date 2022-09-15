@@ -1,10 +1,11 @@
 import { PlusOutlined } from '@ant-design/icons';
+import type {
+  RadioChangeEvent} from 'antd';
 import {
   Button,
   message,
   Input,
   Radio,
-  RadioChangeEvent,
   Table,
   Form,
   Modal,
@@ -26,7 +27,7 @@ import {
   updateState,
 } from '@/services/banner';
 import Banner from '@/types/service-config-banner.d';
-import Common from '@/types/common';
+import type Common from '@/types/common';
 import UploadForm from '@/components/upload_form';
 const sc = scopedClasses('service-config-banner');
 
@@ -214,7 +215,7 @@ const TableList: React.FC = () => {
             >
               <a href="#">删除</a>
             </Popconfirm>
-            {record.state !== 2 && (
+            {record.state === 0 && (
               <Popconfirm
                 title="确定下架么？"
                 okText="确定"
@@ -242,6 +243,7 @@ const TableList: React.FC = () => {
     return (
       <Radio.Group value={edge} onChange={handleEdgeChange}>
         <Radio.Button value={Banner.Edge.PC}>官网-首页</Radio.Button>
+        <Radio.Button value={Banner.Edge.PC_CITY}>官网-地市专题主页</Radio.Button>
         <Radio.Button value={Banner.Edge.APPLET}>小程序-首页</Radio.Button>
         <Radio.Button value={Banner.Edge.APPLET_CREATIVE}>小程序-科产</Radio.Button>
         <Radio.Button value={Banner.Edge.APP}>APP-首页</Radio.Button>
@@ -297,6 +299,7 @@ const TableList: React.FC = () => {
           >
             <Select placeholder="请选择">
               <Select.Option value={Banner.Edge.PC}>官网-首页</Select.Option>
+              <Select.Option value={Banner.Edge.PC_CITY}>官网-地市专题主页</Select.Option>
               <Select.Option value={Banner.Edge.APPLET}>小程序-首页</Select.Option>
               <Select.Option value={Banner.Edge.APPLET_CREATIVE}>小程序-科产</Select.Option>
               <Select.Option value={Banner.Edge.APP}>APP-首页</Select.Option>
@@ -323,7 +326,7 @@ const TableList: React.FC = () => {
             {selectButton()}
             <Button
               type="primary"
-              key="primary"
+              key="newAdd"
               loading={addOrUpdateLoading}
               onClick={() => {
                 setModalVisible(true);
