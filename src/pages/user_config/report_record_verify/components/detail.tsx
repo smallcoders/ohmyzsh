@@ -44,6 +44,12 @@ const reportTypeText = {
   OTHER: '其他',
 };
 
+const processSchemeText = {
+  NOT_HANDLED: '举报不实，不予处理 ',
+  OFF_SHELF: '下架内容',
+  DISABLE_ACCOUNT: '禁用发布者账号'
+}
+
 const EnterpriseDemand = (props: {
   id: string
   setLoading: (loading: boolean) => void 
@@ -657,7 +663,7 @@ const ReportingInfo = (props: {
     },
     {
       label: '举报详细描述：',
-      value: reportInfo.content
+      value: reportInfo.content || '--'
     },
     {
       label: '举报人：',
@@ -742,7 +748,7 @@ const ReportingInfo = (props: {
           >
           {
             reportInfo.processed 
-            ? <div>{reportInfo.processScheme}</div> 
+            ? <div>{processSchemeText[reportInfo.processScheme]}</div> 
             :             
             <Radio.Group onChange={onChange} value={value}>
               <Space direction="vertical">
@@ -764,10 +770,10 @@ const ReportingInfo = (props: {
             reportInfo.processed && (
               <>
                 <Form.Item label="处理人" name="text" >
-                顾满月
+                  {reportInfo?.handlerName || '--'}
                 </Form.Item>
                 <Form.Item label="处理时间" name="text" >
-                2022-12-21  21:09:12
+                  {reportInfo?.updateTime}
                 </Form.Item>
               </>
             )
