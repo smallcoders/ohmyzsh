@@ -12,40 +12,76 @@ import {
 import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { useHistory } from 'react-router-dom';
 import type Common from '@/types/common';
+import type BankingSerivce from '@/types/banking-service';
+
 import moment from 'moment';
 import SelfTable from '@/components/self_table';
 import type LogoutVerify from '@/types/user-config-logout-verify';
-import { confirmUserDelete, getLogoutPage } from '@/services/logout-verify';
+
 import { routeName } from '@/../config/routes';
-import { getBankingServicePage } from '@/services/banking-service';
+import {
+  getBankingServicePage,
+  getProductList,
+  updateVerityStatus,
+} from '@/services/banking-service';
 const sc = scopedClasses('user-config-logout-verify');
-const updateOptions = [
+
+const verityStatusOptions: { label: string; value: number; disabled: boolean }[] = [
+  {
+    label: '待平台处理',
+    value: 1,
+    disabled: false,
+  },
   {
     label: '需求已确认',
-    value: 1,
+    value: 2,
+    disabled: false,
   },
   {
     label: '匹配金融机构产品服务中',
-    value: 2,
-  },
-  {
-    label: '已提供金融解决方案',
     value: 3,
+    disabled: false,
   },
   {
     label: '已提供金融解决方案',
     value: 4,
+    disabled: false,
+  },
+  {
+    label: '已提供金融解决方案',
+    value: 5,
+    disabled: false,
   },
 ];
+const serialize = function (obj: any): string {
+  const str = [];
+  for (const p in obj)
+    if (obj.hasOwnProperty(p) && obj[p]) {
+      str.push(encodeURIComponent(p) + '=' + encodeURIComponent(obj[p]));
+    }
+  return str.join('&');
+};
+
+const downloadLink = (url: string): void => {
+  const link = document.createElement('a');
+  link.style.display = 'none';
+  link.href = url;
+
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
 export default () => {
-  const [dataSource, setDataSource] = useState<LogoutVerify.Content[]>([]);
-  // const [types, setTypes] = useState<any[]>([]);
-  const [searchContent, setSearChContent] = useState<LogoutVerify.SearchContent>({});
+  const [dataSource, setDataSource] = useState<BankingSerivce.Content[]>([]);
+  const [searchContent, setSearChContent] = useState<BankingSerivce.SearchContent>({});
+  const [selectRow, setSelectRow] = useState<BankingSerivce.Content>({});
+  const [updateSelStatus, setUpdateSelStatus] = useState<number | undefined>();
   const history = useHistory();
+  const [searchForm] = Form.useForm();
   const formLayout = {
     labelCol: { span: 6 },
     wrapperCol: { span: 16 },
@@ -57,14 +93,28 @@ export default () => {
     totalCount: 0,
     pageTotal: 0,
   });
+
+  const [productOptions, setProductOptions] = useState<any[]>([]);
+
   /**
    * 新建窗口的弹窗
    *  */
   const [updateModalVisible, setModalVisible] = useState<boolean>(false);
-
+  const getProductOptions = async () => {
+    try {
+      const { result, code, message } = await getProductList();
+      if (code === 0) {
+        setProductOptions(result);
+      } else {
+        throw new Error(message);
+      }
+    } catch (error) {
+      antdMessage.error(`请求失败，原因:{${error}}`);
+    }
+  };
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     try {
-      const { result, totalCount, pageTotal, code, message } = await getLogoutPage({
+      const { result, totalCount, pageTotal, code, message } = await getBankingServicePage({
         pageIndex,
         pageSize,
         ...searchContent,
@@ -80,33 +130,6 @@ export default () => {
     }
   };
 
-  const pass = async (record: any) => {
-    const tooltipMessage = '审核通过';
-    try {
-      const updateStateResult = await confirmUserDelete(record.id);
-      if (updateStateResult.code === 0) {
-        antdMessage.success(`${tooltipMessage}成功`);
-        getPage();
-      } else {
-        throw new Error(updateStateResult.message);
-      }
-    } catch (error) {
-      antdMessage.error(`${tooltipMessage}失败，原因:{${error}}`);
-    }
-  };
-  const goEdit = useCallback(
-    (record: { id: number }) => {
-      history.push(`/purchase-manage/commodity-create?id=${record.id}`);
-    },
-    [history],
-  );
-
-  const goDetail = useCallback(
-    (record: { id: number }) => {
-      history.push(`/service-config/banking_service_manage/detail?id=${record.id}`);
-    },
-    [history],
-  );
   const columns = [
     {
       title: '序号',
@@ -117,50 +140,49 @@ export default () => {
     },
     {
       title: '申请人姓名',
-      dataIndex: 'auditType',
+      dataIndex: 'name',
       width: 200,
     },
     {
       title: '申请金额（万元）',
-      dataIndex: 'userName',
+      dataIndex: 'amount',
       isEllipsis: true,
       width: 200,
     },
     {
       title: '拟融资期限',
-      dataIndex: 'certificateName',
+      dataIndex: 'termContent',
       isEllipsis: true,
-      render: (_: string) => _ || '/',
       width: 200,
     },
     {
       title: '申请金融产品',
-      dataIndex: 'phone',
+      dataIndex: 'productName',
       isEllipsis: true,
       width: 200,
     },
     {
       title: '联系电话',
-      dataIndex: 'accountType',
+      dataIndex: 'phone',
       isEllipsis: true,
       width: 200,
     },
     {
       title: '组织名称',
-      dataIndex: 'accountType',
+      dataIndex: 'orgName',
       isEllipsis: true,
       width: 200,
     },
     {
       title: '状态',
-      dataIndex: 'accountType',
+      dataIndex: 'verityStatusContent',
       isEllipsis: true,
       width: 200,
     },
 
     {
       title: '申请时间',
-      dataIndex: 'submitTime',
+      dataIndex: 'createTime',
       width: 200,
       render: (_: string) => moment(_).format('YYYY-MM-DD HH:mm:ss'),
     },
@@ -174,20 +196,66 @@ export default () => {
           <Button
             size="small"
             type="link"
-            onClick={() => history.push(`${routeName.BANKING_SERVICE_DETAIL}?id=${record.id}`)}
+            onClick={() => {
+              localStorage.setItem('banking_detail', JSON.stringify(record));
+              history.push(`${routeName.BANKING_SERVICE_DETAIL}`);
+            }}
           >
             详情
           </Button>
-
-          <Button size="small" type="link" onClick={() => setModalVisible(true)}>
-            更新处理状态
-          </Button>
+          {record.verityStatus !== 4 && record.verityStatus !== 5 && (
+            <Button
+              size="small"
+              type="link"
+              onClick={() => {
+                setSelectRow(record);
+                setModalVisible(true);
+              }}
+            >
+              更新处理状态
+            </Button>
+          )}
         </>
       ),
     },
   ];
-  const updateStatus = () => {};
+  const getUpdateOptions = () => {
+    const { verityStatus = null } = selectRow;
+    return verityStatusOptions.map((item) => {
+      item.disabled = true;
+      if (verityStatus === 1 && item.value === 2) {
+        item.disabled = false;
+      }
+      if (verityStatus === 2 && item.value === 3) {
+        item.disabled = false;
+      }
+      if (verityStatus === 3 && (item.value === 4 || item.value === 5)) {
+        item.disabled = false;
+      }
+      return item;
+    });
+  };
+  const updateStatus = async () => {
+    const { id } = selectRow;
+    try {
+      const { message, code } = await updateVerityStatus({
+        id,
+        verityStatus: updateSelStatus,
+      });
+      if (code === 0) {
+        antdMessage.success('更新成功');
+        setModalVisible(false);
+        setUpdateSelStatus(undefined);
+        getPage();
+      } else {
+        throw new Error(message);
+      }
+    } catch (error) {
+      antdMessage.error(`请求失败，原因:{${error}}`);
+    }
+  };
   const getUpdateModal = () => {
+    const updateOptions = getUpdateOptions();
     return (
       <Modal
         title={'更新处理状态'}
@@ -201,41 +269,67 @@ export default () => {
           await updateStatus();
         }}
       >
-        <Select placeholder="请选择" style={{ width: '100%' }}>
-          {updateOptions.map((item) => (
-            <Select.Option key={item.value} value={item.value}>
-              {item.label}
-            </Select.Option>
-          ))}
+        <Select
+          placeholder="请选择"
+          style={{ width: '100%' }}
+          onChange={(val) => {
+            setUpdateSelStatus(val);
+          }}
+        >
+          {updateOptions.map((item) => {
+            return (
+              <Select.Option key={item.value} value={item.value} disabled={item.disabled}>
+                {item.label}
+              </Select.Option>
+            );
+          })}
         </Select>
       </Modal>
     );
   };
+
+  const getSearchQuery = (): {
+    orgName?: string;
+    productId?: number;
+    verityStatus?: number;
+    dateStart?: string;
+    dateEnd?: string;
+  } => {
+    const search = searchForm.getFieldsValue();
+    if (search.time) {
+      search.dateStart = moment(search.time[0]).format('YYYY-MM-DDTHH:mm:ss');
+      search.dateEnd = moment(search.time[1]).format('YYYY-MM-DDTHH:mm:ss');
+    }
+    delete search.time;
+    return search;
+  };
+  const getExportUrl = (): string => {
+    const search = getSearchQuery();
+    return `/antelope-finance/demand/mng/exportDemandList?${serialize(search)}`;
+  };
+  useEffect(() => {
+    getProductOptions();
+  }, []);
   useEffect(() => {
     getPage();
-    getBankingServicePage({
-      pageSize: 10,
-      pageIndex: 1,
-    });
   }, [searchContent]);
 
   const useSearchNode = (): React.ReactNode => {
-    const [searchForm] = Form.useForm();
     return (
       <div className={sc('container-search')}>
         <Form {...formLayout} form={searchForm}>
           <Row>
             <Col span={8}>
-              <Form.Item name="userName" label="组织名称">
+              <Form.Item name="orgName" label="组织名称">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="certificateName" label="产品名称">
+              <Form.Item name="productId" label="产品名称">
                 <Select placeholder="请选择" allowClear>
-                  <Select.Option value={'ENTERPRISE'}>工业企业</Select.Option>
-                  <Select.Option value={'SERVICE_PROVIDER'}>服务商</Select.Option>
-                  <Select.Option value={'EXPERT'}>专家</Select.Option>
+                  {productOptions.map((item) => (
+                    <Select.Option value={item.productId}>{item.productName}</Select.Option>
+                  ))}
                 </Select>
               </Form.Item>
             </Col>
@@ -247,11 +341,11 @@ export default () => {
           </Row>
           <Row>
             <Col span={8}>
-              <Form.Item name="accountType" label="状态">
+              <Form.Item name="verityStatus" label="状态">
                 <Select placeholder="请选择" allowClear>
-                  <Select.Option value={'ENTERPRISE'}>1</Select.Option>
-                  <Select.Option value={'SERVICE_PROVIDER'}>2</Select.Option>
-                  <Select.Option value={'EXPERT'}>3</Select.Option>
+                  {verityStatusOptions.map((item) => (
+                    <Select.Option value={item.value}>{item.label}</Select.Option>
+                  ))}
                 </Select>
               </Form.Item>
             </Col>
@@ -262,11 +356,7 @@ export default () => {
                 type="primary"
                 key="search"
                 onClick={() => {
-                  const search = searchForm.getFieldsValue();
-                  if (search.time) {
-                    search.submitStartTime = moment(search.time[0]).format('YYYY-MM-DDTHH:mm:ss');
-                    search.submitEndTime = moment(search.time[1]).format('YYYY-MM-DDTHH:mm:ss');
-                  }
+                  const search = getSearchQuery();
                   setSearChContent(search);
                 }}
               >
@@ -295,7 +385,12 @@ export default () => {
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>消息列表(共{pageInfo.totalCount || 0}个)</span>
-          <Button type="primary" href={`/antelope-pay/mng/order/detail/export?orderNo=1`}>
+          <Button
+            type="primary"
+            onClick={() => {
+              downloadLink(getExportUrl());
+            }}
+          >
             导出
           </Button>
         </div>

@@ -11,44 +11,37 @@ export async function getBankingServicePage(data?: { [key: string]: any }) {
     data,
   });
 }
-
 /**
- * 添加
- */
-export async function addBanner(data?: BankingService.Content) {
-  return request<Common.ResultCode>('/antelope-manage/banner', {
-    method: 'post',
-    data,
-  });
-}
-
-/**
- * 修改
- */
-export async function updateBanner(data?: BankingService.Content) {
-  return request<Common.ResultCode>('/antelope-manage/banner', {
-    method: 'put',
-    data,
-  });
-}
-
-/**
- * 删除
- * */
-export async function removeBanner(id: string) {
-  return request<Common.ResultCode>(`/antelope-manage/banner/${id}`, {
-    method: 'DELETE',
-  });
-}
-
-/**
- * 修改状态
- * @param options
+ * 获取产品列表
+ * @param data
  * @returns
  */
-export async function updateState(data: { id: string; state: number }) {
-  return request<Common.ResultCode>('/antelope-manage/banner/state', {
-    method: 'put',
+export async function getProductList(data?: { [key: string]: any }) {
+  return request<BankingService.ProductList>('/antelope-finance/demand/queryProductList', {
+    method: 'get',
+    params: { ...(data || {}) },
+  });
+}
+/**
+ * 运营平台获取审核状态列表
+ * @param data
+ * @returns
+ */
+export async function getDemandRecordList(data?: { [key: string]: any }) {
+  return request<BankingService.StatusResultList>('/antelope-finance/demand/mng/demandRecordList', {
+    method: 'get',
+    params: { ...(data || {}) },
+  });
+}
+/**
+ * 更新状态
+ */
+export async function updateVerityStatus(data?: {
+  id: string | undefined;
+  verityStatus: number | undefined;
+}) {
+  return request<Common.ResultCode>('/antelope-finance/demand/mng/verityStatus', {
+    method: 'post',
     data,
   });
 }
