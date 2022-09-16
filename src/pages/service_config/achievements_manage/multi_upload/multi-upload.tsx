@@ -1,10 +1,9 @@
 import { history } from 'umi';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Button, Form, Select, message, Upload } from 'antd';
-import type { UploadProps, UploadFile } from 'antd';
+import type { UploadProps } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
-import { downloadFile } from '@/services/common';
 import { getUserListBySearch, postAchievementUpload } from '@/services/achievements-manage';
 import IconSuccess from '@/assets/system/icon-success.png'
 import IconFail from '@/assets/system/icon-error.png'
@@ -20,11 +19,9 @@ interface UserOption {
 }
 
 export default () => {
-  const [searchLoading, setSearchLoading] = useState<boolean>(false) // 系统用户检索loading
   const [uploadLoading, setUploadLoading] = useState<boolean>(false) // 导入loading
   const [showResult, setShowResult] = useState<boolean>(false) // 是否显示导入结果
   const [userOptions, setUserOptions] = useState<UserOption[]>([]) // 系统用户选项列表
-  const [fileList, setFileList] = useState<UploadFile[]>([]); // 已上传待导入的文件列表
   const [userId, setUserId] = useState<string>('') // 已选中的系统用户Id
   const [fileId, setFileId] = useState<string>('') // 已上传待导入的文件Id
   const [successNum, setSuccessNum] = useState<number>(0) // 导入成功的数据条数
@@ -38,17 +35,14 @@ export default () => {
   // 系统用户检索
   const handleUserSearch = async (keyword = '') => {
     try {
-      setSearchLoading(true)
       const res = await getUserListBySearch(keyword)
       if (res?.code === 0) {
-        setUserOptions(res?.result.map((item: UserOption) => ({ id: item?.id, name: item?.name + ' ' + item?.phone })))
+        setUserOptions(res?.result?.map((item: UserOption) => ({ id: item?.id, name: item?.name + ' ' + item?.phone })))
       } else {
-        message.error(`检索失败:{${res.message}}`);
+        message.error(`检索失败 {${res?.message}}`);
       }
     } catch (error) {
       console.log(error)
-    } finally {
-      setSearchLoading(false)
     }
   }
 
@@ -64,12 +58,12 @@ export default () => {
     }
     try {
       setUploadLoading(true)
-      const res = await postAchievementUpload({ userId, fileId })
+      const res = await postAchievementUpload(userId, fileId)
       if (res?.code === 0) {
-        setShowResult(true)
         setSuccessNum(res?.result?.successNum || 0)
         setFailNum(res?.result?.failNum || 0)
         setFailDataFileId(res?.result?.fileId || '')
+        setShowResult(true)
       } else {
         message.error(`批量导入失败:{${res.message}}`);
       }
@@ -78,11 +72,6 @@ export default () => {
     } finally {
       setUploadLoading(false)
     }
-  }
-
-  // 下载导入失败数据
-  const handleDownloadFailData = () => {
-    failDataFileId && downloadFile(failDataFileId)
   }
 
   const goBack = () => {
@@ -94,18 +83,16 @@ export default () => {
     name: 'file',
     multiple: false,
     action: '/antelope-manage/common/upload',
-    fileList,
-    onChange: info => {
+    onChange(info) {
       const { status, name, response } = info?.file || {};
       if (status === 'done') {
         setFileId(response?.result)
-        setFileList(info?.fileList)
         message.success(`${name} 上传成功`);
       } else if (status === 'error') {
         message.error(`${name} 上传失败`);
       }
     },
-    beforeUpload: file => {
+    beforeUpload(file) {
       if (file.type !== 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
         message.error('只支持上传xlsx文件');
         return false;
@@ -140,7 +127,6 @@ export default () => {
                 fieldNames={{ label: 'name', value: 'id' }}
                 placeholder="请选择"
                 options={userOptions}
-                loading={searchLoading}
                 onSearch={handleUserSearch}
                 onSelect={(v: string) => { setUserId(v) }}
                 showSearch
@@ -174,9 +160,9 @@ export default () => {
             <img src={IconFail} alt="success" />
             导入失败{failNum}条成果
           </div>
-          {failNum > 0 && <p className={sc('result-download-text')}>
+          {failDataFileId && <p className={sc('result-download-text')}>
             请
-            <Button type="link" onClick={handleDownloadFailData}>
+            <Button type="link" style={{ padding: 0, fontSize: 18 }} href={`/antelope-manage/common/download/${failDataFileId}`}>
               下载导入失败科技成果列表
             </Button>
             ，修改后重新导入
