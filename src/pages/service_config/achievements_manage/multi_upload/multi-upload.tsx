@@ -1,5 +1,6 @@
 import { history } from 'umi';
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
+import debounce from 'lodash/debounce';
 import { Button, Form, Select, message, Upload } from 'antd';
 import type { UploadProps } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
@@ -33,7 +34,7 @@ export default () => {
   }, [])
 
   // 系统用户检索
-  const handleUserSearch = async (keyword = '') => {
+  const handleUserSearch = debounce(async (keyword = '') => {
     try {
       const res = await getUserListBySearch(keyword)
       if (res?.code === 0) {
@@ -44,7 +45,7 @@ export default () => {
     } catch (error) {
       console.log(error)
     }
-  }
+  }, 500)
 
   // 导入
   const handleConfirmUpload = async () => {
@@ -81,7 +82,9 @@ export default () => {
   // 上传组件配置
   const props: UploadProps = {
     name: 'file',
-    multiple: false,
+    multiple: true,
+    maxCount: 1,
+    accept: '.xlsx,.xls',
     action: '/antelope-manage/common/upload',
     onChange(info) {
       const { status, name, response } = info?.file || {};
@@ -92,11 +95,7 @@ export default () => {
         message.error(`${name} 上传失败`);
       }
     },
-    beforeUpload(file) {
-      if (file.type !== 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
-        message.error('只支持上传xlsx文件');
-        return false;
-      }
+    beforeUpload: file => {
       if (file.size > 1024 * 1024 * 10) {
         message.error('文件大小不能超过10M');
         return false;
@@ -129,6 +128,7 @@ export default () => {
                 options={userOptions}
                 onSearch={handleUserSearch}
                 onSelect={(v: string) => { setUserId(v) }}
+                filterOption={false}
                 showSearch
                 allowClear
               />
@@ -162,7 +162,7 @@ export default () => {
           </div>
           {failDataFileId && <p className={sc('result-download-text')}>
             请
-            <Button type="link" style={{ padding: 0, fontSize: 18 }} href={`/antelope-manage/common/download/${failDataFileId}`}>
+            <Button type="link" style={{ padding: 0 }} href={`/antelope-manage/common/download/${failDataFileId}`}>
               下载导入失败科技成果列表
             </Button>
             ，修改后重新导入
