@@ -288,7 +288,7 @@ export default () => {
   return (
     <PageContainer>
       <ProTable
-        headerTitle={<Button onClick={handleMultiUpload}>批量导入</Button>}
+        headerTitle={<Button type="primary" ghost onClick={handleMultiUpload}>批量导入</Button>}
         options={false}
         rowKey="id"
         actionRef={actionRef}
