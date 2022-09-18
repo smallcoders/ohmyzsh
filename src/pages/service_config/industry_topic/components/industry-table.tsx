@@ -29,25 +29,21 @@ const SortableBody = SortableContainer((props: React.HTMLAttributes<HTMLTableSec
 ));
 
 export default forwardRef((props: any, ref) => {
-
-  const { data, autoColumns, handleSameData } = props
+  const { data, autoColumns, handleSameData } = props;
 
   const [dataSource, setDataSource] = useState<OrgTypeManage.Content[]>([]);
-  const [columns, setColumns] = useState<any[]>(
-    []
-  );
-
+  const [columns, setColumns] = useState<any[]>([]);
 
   const onEdit = () => {
-    setColumns(p => {
-      const column = [...p]
+    setColumns((p) => {
+      const column = [...p];
       column.unshift({
         title: '排序',
         dataIndex: 'detailId',
         width: 80,
         className: 'drag-visible',
         render: () => <DragHandle />,
-      })
+      });
       column.push({
         title: '移除',
         width: 200,
@@ -55,26 +51,30 @@ export default forwardRef((props: any, ref) => {
         render: (_: any, record: OrgTypeManage.Content) => {
           return (
             <Space size="middle">
-                <Button type='link'  onClick={()=>{
-                  remove(record.detailId as string)
-                }}>删除</Button>
+              <Button
+                type="link"
+                onClick={() => {
+                  remove(record.detailId as string);
+                }}
+              >
+                删除
+              </Button>
             </Space>
           );
         },
-      })
-      return column
-    })
-  }
+      });
+      return column;
+    });
+  };
 
   const cancelEdit = () => {
-    setColumns(p => {
-      const column = [...p]
-      column.shift()
-      column.pop()
-      return column
-    })
-  }
-
+    setColumns((p) => {
+      const column = [...p];
+      column.shift();
+      column.pop();
+      return column;
+    });
+  };
 
   useImperativeHandle(ref, () => ({
     data: dataSource,
@@ -83,29 +83,30 @@ export default forwardRef((props: any, ref) => {
   }));
 
   useEffect(() => {
-    setDataSource(data || [])
-  }, [data])
-
+    setDataSource(data || []);
+  }, [data]);
 
   useEffect(() => {
-    setColumns([...autoColumns || [], {
-      title: '点击量',
-      dataIndex: 'clickRate',
-    }])
-  }, [])
-
+    setColumns([
+      ...(autoColumns || []),
+      {
+        title: '点击量',
+        dataIndex: 'clickRate',
+      },
+    ]);
+  }, []);
 
   const remove = async (id: string) => {
-    setDataSource(p => {
-      const rest = p.filter(p => p.detailId !== id)
-      console.log('rest',rest)
-      handleSameData(rest)
-      return rest
-    })
+    setDataSource((p) => {
+      const rest = p.filter((p) => p.detailId !== id);
+      console.log('rest', rest);
+      handleSameData(rest);
+      return rest;
+    });
   };
 
   const onSortEnd = ({ oldIndex, newIndex }: SortEnd) => {
-    console.log('oldIndex, newIndex ', oldIndex, newIndex )
+    console.log('oldIndex, newIndex ', oldIndex, newIndex);
     if (oldIndex !== newIndex) {
       const newData = arrayMoveImmutable(dataSource.slice(), oldIndex, newIndex).filter(
         (el: any) => !!el,
@@ -129,7 +130,6 @@ export default forwardRef((props: any, ref) => {
     return <SortableItem index={index} {...restProps} />;
   };
 
-
   return (
     <Table
       pagination={false}
@@ -144,4 +144,4 @@ export default forwardRef((props: any, ref) => {
       }}
     />
   );
-})
+});
