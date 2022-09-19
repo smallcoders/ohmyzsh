@@ -6,7 +6,11 @@ import { useHistory } from 'umi';
 import VerifyStepsDetail from '@/components/verify_steps';
 import CommonTitle from '@/components/verify_steps/common_title';
 
-import { getDemandRecordList, updateVerityStatus } from '@/services/banking-service';
+import {
+  getDemandRecordList,
+  updateVerityStatus,
+  getDetailAddress,
+} from '@/services/banking-service';
 
 const { Link } = Anchor;
 
@@ -32,7 +36,7 @@ const verityStatusOptions: { label: string; value: number; disabled: boolean }[]
     disabled: false,
   },
   {
-    label: '已提供金融解决方案',
+    label: '暂无适宜的金融解决方案',
     value: 5,
     disabled: false,
   },
@@ -99,6 +103,28 @@ export default () => {
     } catch (error) {
       setLoading(false);
       antdMessage.error(`获取审核状态列表失败，原因:{${error}}`);
+    }
+  };
+  const hanldeGetAddress = async () => {
+    try {
+      const { countyCode } = detail;
+      const { code, message, result } = await getDetailAddress({ code: countyCode });
+
+      if (code === 0) {
+        // 更新详情的 状态
+
+        const updateDetail = {
+          ...detail,
+          address: result,
+        };
+        localStorage.setItem('banking_detail', JSON.stringify(updateDetail));
+        setDetail(updateDetail);
+      } else {
+        antdMessage.error(`获取地址失败，原因:{${message}}`);
+      }
+    } catch (error) {
+      setLoading(false);
+      antdMessage.error(`获取地址失败，原因:{${error}}`);
     }
   };
   const getUpdateOptions = () => {
@@ -169,6 +195,7 @@ export default () => {
   };
   useEffect(() => {
     hanldeGetDemandRecord();
+    hanldeGetAddress();
   }, []);
 
   return (
@@ -181,7 +208,7 @@ export default () => {
               <Form.Item label="金融需求编号">{detail?.id}</Form.Item>
               <Form.Item label="需求提交日期">{detail?.createTime}</Form.Item>
               <Form.Item label="需求登记产品信息">{detail?.productName}</Form.Item>
-              <Form.Item label="拟融资金额">{detail?.amount}</Form.Item>
+              <Form.Item label="拟融资金额">{(detail?.amount / 100).toFixed(2)}元</Form.Item>
               <Form.Item label="融资期限">{detail?.termContent}</Form.Item>
               <Form.Item label="融资用途">/</Form.Item>
               <Form.Item label="资金需求紧迫度">/</Form.Item>
@@ -195,7 +222,7 @@ export default () => {
               <Form.Item label="联系电话">{detail?.phone}</Form.Item>
               <Form.Item label="组织名称">{detail?.orgName}</Form.Item>
               <Form.Item label="统一社会信用代码">{detail?.creditCode}</Form.Item>
-              <Form.Item label="企业所在地">{detail?.countyCode}</Form.Item>
+              <Form.Item label="企业所在地">{detail?.address}</Form.Item>
             </Form>
           </ProCard>
 
@@ -205,13 +232,16 @@ export default () => {
           </ProCard>
 
           <ProCard layout="center">
-            <Button
-              type="primary"
-              style={{ marginRight: '10px' }}
-              onClick={() => setModalVisible(true)}
-            >
-              更新处理状态
-            </Button>
+            {detail?.verityStatus !== 4 && detail?.verityStatus !== 5 && (
+              <Button
+                type="primary"
+                style={{ marginRight: '10px' }}
+                onClick={() => setModalVisible(true)}
+              >
+                更新处理状态
+              </Button>
+            )}
+
             <Button onClick={() => history.goBack()}>返回</Button>
           </ProCard>
         </ProCard>
@@ -219,8 +249,8 @@ export default () => {
       </ProCard>
       <div style={{ width: 200, position: 'fixed', right: 10, top: 100 }}>
         <Anchor offsetTop={150} showInkInFixed={true} affix={false}>
-          <Link href="#anchor-base-info" title="商品基础信息" />
-          <Link href="#anchor-specs" title="商品规格信息" />
+          <Link href="#anchor-base-info" title="金融需求信息" />
+          <Link href="#anchor-specs" title="需求企业信息" />
           <Link href="#anchor-details" title="平台响应信息" />
         </Anchor>
       </div>
