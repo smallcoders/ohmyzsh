@@ -97,9 +97,9 @@
   MANAGEMENT_ACTIVITIES: '/local-propaganda/management_activities', // 地市活动管理
 
   //金融服务管理
-  BANKING_SERVICE: '/service-config/banking_service_manage',
-  BANKING_SERVICE_INDEX: '/service-config/banking_service_manage/index',
-  BANKING_SERVICE_DETAIL: '/service-config/banking_service_manage/detail',
+  BANKING_SERVICE: '/banking/banking_service_manage',
+  BANKING_SERVICE_INDEX: '/banking/banking_service_manage/index',
+  BANKING_SERVICE_DETAIL: '/banking/banking_service_manage/detail',
 };
 
 export default [
@@ -128,28 +128,6 @@ export default [
     icon: 'unordered-list',
     access: 'SERVICE_CONFIG',
     routes: [
-      {
-        path: routeName.BANKING_SERVICE,
-        name: '金融服务管理',
-        hideChildrenInMenu: true,
-        routes: [
-          {
-            path: routeName.BANKING_SERVICE,
-            redirect: routeName.BANKING_SERVICE_INDEX,
-          },
-          {
-            path: routeName.BANKING_SERVICE_INDEX,
-            name: '金融服务管理',
-            hideInBreadcrumb: true,
-            component: './service_config/banking_service_manage/index',
-          },
-          {
-            path: routeName.BANKING_SERVICE_DETAIL,
-            name: '需求详情',
-            component: './service_config/banking_service_manage/detail/detail',
-          },
-        ],
-      },
       {
         path: '/service-config',
         redirect: '/service-config/banner',
@@ -990,6 +968,40 @@ export default [
       },
     ],
   },
+  {
+    path: '/banking',
+    name: '数字金融运营',
+    icon: 'setting',
+    access: 'BANKING',
+    routes: [
+      {
+        path: '/banking',
+        redirect: routeName.BANKING_SERVICE,
+      },
+      {
+        path: routeName.BANKING_SERVICE,
+        name: '金融服务管理',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.BANKING_SERVICE,
+            redirect: routeName.BANKING_SERVICE_INDEX,
+          },
+          {
+            path: routeName.BANKING_SERVICE_INDEX,
+            name: '金融服务管理',
+            component: './service_config/banking_service_manage/index',
+          },
+          {
+            path: routeName.BANKING_SERVICE_DETAIL,
+            name: '需求详情',
+            component: './service_config/banking_service_manage/detail/detail',
+          },
+        ],
+      },
+    ],
+  },
+
   {
     path: '/',
     redirect: '/service-config/banner',

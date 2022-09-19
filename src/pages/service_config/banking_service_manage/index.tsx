@@ -52,7 +52,7 @@ const verityStatusOptions: { label: string; value: number; disabled: boolean }[]
     disabled: false,
   },
   {
-    label: '已提供金融解决方案',
+    label: '暂无适宜的金融解决方案',
     value: 5,
     disabled: false,
   },
@@ -144,10 +144,11 @@ export default () => {
       width: 200,
     },
     {
-      title: '申请金额（万元）',
+      title: '申请金额（元）',
       dataIndex: 'amount',
       isEllipsis: true,
       width: 200,
+      render: (_: number) => (_ / 100).toFixed(2),
     },
     {
       title: '拟融资期限',
@@ -237,6 +238,10 @@ export default () => {
   };
   const updateStatus = async () => {
     const { id } = selectRow;
+    if (!updateSelStatus) {
+      antdMessage.warn(`请选择`);
+      return;
+    }
     try {
       const { message, code } = await updateVerityStatus({
         id,
@@ -272,6 +277,7 @@ export default () => {
         <Select
           placeholder="请选择"
           style={{ width: '100%' }}
+          value={updateSelStatus}
           onChange={(val) => {
             setUpdateSelStatus(val);
           }}
@@ -384,7 +390,7 @@ export default () => {
       {useSearchNode()}
       <div className={sc('container-table-header')}>
         <div className="title">
-          <span>消息列表(共{pageInfo.totalCount || 0}个)</span>
+          <span>金融服务列表(共{pageInfo.totalCount || 0}个)</span>
           <Button
             type="primary"
             onClick={() => {

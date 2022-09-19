@@ -36,12 +36,27 @@ export async function getDemandRecordList(data?: { [key: string]: any }) {
 /**
  * 更新状态
  */
-export async function updateVerityStatus(data?: {
+export async function updateVerityStatus(data: {
   id: string | undefined;
   verityStatus: number | undefined;
 }) {
   return request<Common.ResultCode>('/antelope-finance/demand/mng/verityStatus', {
     method: 'post',
     data,
+  });
+}
+/**
+ * 运营平台获取省市
+ * @param data
+ * @returns
+ */
+export async function getDetailAddress(data: { code: string }) {
+  return request<
+    Common.ResultCode & {
+      result: any;
+    }
+  >('/antelope-common/common/district/queryAllAddress', {
+    method: 'get',
+    params: { ...(data || {}) },
   });
 }
