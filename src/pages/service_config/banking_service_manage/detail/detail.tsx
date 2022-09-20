@@ -53,6 +53,7 @@ export default () => {
 
   const [list, setList] = useState<any>([]);
   const [detail, setDetail] = useState<any>(detaildata);
+  const [address, setAddress] = useState<string>('');
   const [updateSelStatus, setUpdateSelStatus] = useState<number | undefined>();
   /**
    * 新建窗口的弹窗
@@ -112,13 +113,7 @@ export default () => {
 
       if (code === 0) {
         // 更新详情的 状态
-
-        const updateDetail = {
-          ...detail,
-          address: result,
-        };
-        localStorage.setItem('banking_detail', JSON.stringify(updateDetail));
-        setDetail(updateDetail);
+        setAddress(result);
       } else {
         antdMessage.error(`获取地址失败，原因:{${message}}`);
       }
@@ -207,7 +202,9 @@ export default () => {
             <Form labelCol={{ span: 4 }}>
               <Form.Item label="金融需求编号">{detail?.id}</Form.Item>
               <Form.Item label="需求提交日期">{detail?.createTime}</Form.Item>
-              <Form.Item label="需求登记产品信息">{detail?.productName}</Form.Item>
+              <Form.Item label="需求登记产品信息">
+                {detail?.bank}-{detail?.productName}
+              </Form.Item>
               <Form.Item label="拟融资金额">{(detail?.amount / 100).toFixed(2)}元</Form.Item>
               <Form.Item label="融资期限">{detail?.termContent}</Form.Item>
               <Form.Item label="融资用途">/</Form.Item>
@@ -222,7 +219,7 @@ export default () => {
               <Form.Item label="联系电话">{detail?.phone}</Form.Item>
               <Form.Item label="组织名称">{detail?.orgName}</Form.Item>
               <Form.Item label="统一社会信用代码">{detail?.creditCode}</Form.Item>
-              <Form.Item label="企业所在地">{detail?.address}</Form.Item>
+              <Form.Item label="企业所在地">{address}</Form.Item>
             </Form>
           </ProCard>
 
