@@ -9,6 +9,9 @@ export async function getBannerPage(options?: { [key: string]: any }) {
   return request<Banner.ResultList>('/antelope-manage/banner', {
     method: 'GET',
     params: { ...(options || {}) },
+    // headers: {
+    //   'rpc-tag': 'jbxu5',
+    // },
   });
 }
 
