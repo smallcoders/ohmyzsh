@@ -454,7 +454,7 @@ export default [
   {
     path: '/banking',
     name: '金融服务管理',
-    icon: 'bank',
+    icon: 'dollar',
     access: 'BANKING',
     routes: [
       {
