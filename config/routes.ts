@@ -984,7 +984,6 @@ export default [
           },
           {
             path: routeName.BANKING_SERVICE_INDEX,
-            name: '金融服务管理',
             component: './service_config/banking_service_manage/index',
           },
           {
