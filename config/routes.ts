@@ -472,6 +472,8 @@ export default [
           },
           {
             path: routeName.BANKING_SERVICE_INDEX,
+            hideInBreadcrumb: true,
+            name: '金融需求管理',
             component: './service_config/banking_service_manage/index',
           },
           {
