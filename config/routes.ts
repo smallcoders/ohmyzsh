@@ -452,6 +452,38 @@ export default [
     ],
   },
   {
+    path: '/banking',
+    name: '金融服务管理',
+    icon: 'bank',
+    access: 'BANKING',
+    routes: [
+      {
+        path: '/banking',
+        redirect: routeName.BANKING_SERVICE,
+      },
+      {
+        path: routeName.BANKING_SERVICE,
+        name: '金融需求管理',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.BANKING_SERVICE,
+            redirect: routeName.BANKING_SERVICE_INDEX,
+          },
+          {
+            path: routeName.BANKING_SERVICE_INDEX,
+            component: './service_config/banking_service_manage/index',
+          },
+          {
+            path: routeName.BANKING_SERVICE_DETAIL,
+            name: '需求详情',
+            component: './service_config/banking_service_manage/detail/detail',
+          },
+        ],
+      },
+    ],
+  },
+  {
     path: '/operate-data',
     name: '运营数据',
     icon: 'desktop',
@@ -965,38 +997,6 @@ export default [
         path: routeName.ACCOUNT,
         name: '账号管理',
         component: './account',
-      },
-    ],
-  },
-  {
-    path: '/banking',
-    name: '数字金融运营',
-    icon: 'setting',
-    access: 'BANKING',
-    routes: [
-      {
-        path: '/banking',
-        redirect: routeName.BANKING_SERVICE,
-      },
-      {
-        path: routeName.BANKING_SERVICE,
-        name: '金融服务管理',
-        hideChildrenInMenu: true,
-        routes: [
-          {
-            path: routeName.BANKING_SERVICE,
-            redirect: routeName.BANKING_SERVICE_INDEX,
-          },
-          {
-            path: routeName.BANKING_SERVICE_INDEX,
-            component: './service_config/banking_service_manage/index',
-          },
-          {
-            path: routeName.BANKING_SERVICE_DETAIL,
-            name: '需求详情',
-            component: './service_config/banking_service_manage/detail/detail',
-          },
-        ],
       },
     ],
   },
