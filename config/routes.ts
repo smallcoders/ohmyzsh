@@ -123,6 +123,12 @@ export default [
     ],
   },
   {
+    path: '/home',
+    name: '首页',
+    icon: 'home',
+    component: './home'
+  },  
+  {
     path: '/service-config',
     name: '服务配置',
     icon: 'unordered-list',
@@ -1005,7 +1011,7 @@ export default [
 
   {
     path: '/',
-    redirect: '/service-config/banner',
+    redirect: '/home',
   },
   {
     component: './404',
