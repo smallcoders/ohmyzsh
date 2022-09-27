@@ -100,6 +100,10 @@
   BANKING_SERVICE: '/banking/banking_service_manage',
   BANKING_SERVICE_INDEX: '/banking/banking_service_manage/index',
   BANKING_SERVICE_DETAIL: '/banking/banking_service_manage/detail',
+
+  // 推荐管理
+  RECOMMENDED_HOT_WORDS: '/recommended/hot_words',
+  RECOMMENDED_HOT_WORDS_INDEX: '/recommended/hot_words/index',
 };
 
 export default [
@@ -474,12 +478,12 @@ export default [
             path: routeName.BANKING_SERVICE_INDEX,
             hideInBreadcrumb: true,
             name: '金融需求管理',
-            component: './service_config/banking_service_manage/index',
+            component: './banking/banking_service_manage/index',
           },
           {
             path: routeName.BANKING_SERVICE_DETAIL,
             name: '需求详情',
-            component: './service_config/banking_service_manage/detail/detail',
+            component: './banking/banking_service_manage/detail/detail',
           },
         ],
       },
@@ -1002,7 +1006,35 @@ export default [
       },
     ],
   },
-
+  // {
+  //   path: '/recommended',
+  //   name: '推荐管理',
+  //   icon: 'setting',
+  //   access: 'BANKING',
+  //   routes: [
+  //     {
+  //       path: '/recommended',
+  //       redirect: routeName.RECOMMENDED_HOT_WORDS,
+  //     },
+  //     {
+  //       path: routeName.RECOMMENDED_HOT_WORDS,
+  //       name: '推荐管理',
+  //       hideChildrenInMenu: true,
+  //       routes: [
+  //         {
+  //           path: routeName.RECOMMENDED_HOT_WORDS,
+  //           redirect: routeName.RECOMMENDED_HOT_WORDS_INDEX,
+  //         },
+  //         {
+  //           path: routeName.RECOMMENDED_HOT_WORDS_INDEX,
+  //           hideInBreadcrumb: true,
+  //           name: '推荐管理',
+  //           component: './recommended_manage/hot_words/index',
+  //         },
+  //       ],
+  //     },
+  //   ],
+  // },
   {
     path: '/',
     redirect: '/service-config/banner',
