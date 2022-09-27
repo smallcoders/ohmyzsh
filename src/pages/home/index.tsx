@@ -1,5 +1,5 @@
 import type { RadioChangeEvent } from 'antd';
-import { Col, Row, Radio, DatePicker, Input } from 'antd';
+import { Col, Row, Radio, DatePicker, Input, message } from 'antd';
 import { ArrowUpOutlined, PlusOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import type { Moment } from 'moment';
@@ -7,6 +7,7 @@ import scopedClasses from '@/utils/scopedClasses';
 import React, { useState, useEffect } from 'react';
 import * as echarts from "echarts";
 import './index.less'
+import {getAddedDataYesterday, getStatistics} from '@/services/home'
 
 const sc = scopedClasses('home-page');
 const { RangePicker } = DatePicker;
@@ -26,10 +27,22 @@ const pageOptions = [
     { label: '解决方案列表', value: '7' },
     { label: '科产首页', value: '8' }
 ];
+const statisticsType = {
+    'USER': '用户注册数量',
+    'ENTERPRISE': '企业认证数量',
+    'EXPERT': '专家数量',
+    'ENTERPRISE_DEMAND': '企业需求数量',
+    'CREATIVE_DEMAND': '创新需求数量',
+    'CREATIVE_ACHIEVEMENT': '科技成果数量',
+    'APP': '应用数量',
+    'SOLUTION': '解决方案数量'
+}
 
 type RangeValue = [Moment | null, Moment | null] | null;
 
 export default () => {
+    const [addedDataYesterday, setAddedDataYesterday] = useState<any>({})
+    const [statistics, setStatistics] = useState<any>([])
     const [quicklyDate, setQuicklyDate] = useState('1');
     const [dates, setDates] = useState<RangeValue>(null);
     const [hackValue, setHackValue] = useState<RangeValue>(null);
@@ -105,9 +118,27 @@ export default () => {
         })
     }
 
+    const prepare = async () => {
+        try {
+            const res = await Promise.all([
+                getAddedDataYesterday(),
+                getStatistics()
+            ])
+            setAddedDataYesterday(res[0].result || {})
+            setStatistics(res[1].result || {})
+            console.log('@@@',res[0].result)
+            console.log('@@@',res[1].result) // 数组
+        } catch (error) {
+            console.log(error)
+            message.error('服务器错误');
+        }
+    }
     useEffect(() => {
+        prepare()
         chartShow();
-    });
+    },[]);
+
+    const {diagnosisIntentionCount, appConsultationCount, solutionIntentionCount, expertConsultationCount, liveIntentionCount} = addedDataYesterday || {}
 
     return (
         <>
@@ -119,7 +150,7 @@ export default () => {
                             href={`/service-config/diagnostic-tasks/index?type=3`}
                         >
                             <p>诊断意向报名</p>
-                            <ArrowUpOutlined  style={{ color: 'red' }}/><strong>5</strong>
+                            <ArrowUpOutlined  style={{ color: 'red' }}/><strong>{diagnosisIntentionCount || 0}</strong>
                         </a>
                     </Col>
                     <Col span={4}>
@@ -127,7 +158,7 @@ export default () => {
                             href={'/service-config/app-manage/index?type=2'}
                         >
                             <p>应用咨询记录</p>
-                            <ArrowUpOutlined  style={{ color: 'red' }}/><strong>5</strong>
+                            <ArrowUpOutlined  style={{ color: 'red' }}/><strong>{appConsultationCount || 0}</strong>
                         </a>
                     </Col>
                     <Col span={4}>
@@ -135,7 +166,7 @@ export default () => {
                             href={'/service-config/solution/index?type=2'}
                         >
                             <p>服务意向消息</p>
-                            <ArrowUpOutlined  style={{ color: 'red' }}/><strong>5</strong>
+                            <ArrowUpOutlined  style={{ color: 'red' }}/><strong>{solutionIntentionCount || 0}</strong>
                         </a>
                     </Col>
                     <Col span={4}>
@@ -143,7 +174,7 @@ export default () => {
                             href={'/service-config/expert-manage/index?type=2'}
                         >
                             <p>专家咨询记录</p>
-                            <ArrowUpOutlined  style={{ color: 'red' }}/><strong>5</strong>
+                            <ArrowUpOutlined  style={{ color: 'red' }}/><strong>{expertConsultationCount || 0}</strong>
                         </a>
                     </Col>
                     <Col span={4}>
@@ -151,7 +182,7 @@ export default () => {
                             href={'/live-management/intention-collect'}
                         >
                             <p>直播意向管理</p>
-                            <ArrowUpOutlined  style={{ color: 'red' }}/><strong>5</strong>
+                            <ArrowUpOutlined  style={{ color: 'red' }}/><strong>{liveIntentionCount || 0}</strong>
                         </a>
                     </Col>
                 </Row>
@@ -159,59 +190,22 @@ export default () => {
             <div className={sc('container')}>
                 <h3>平台关键数据统计</h3>
                 <Row gutter={40}>
-                    <Col span={4} offset={2}>
-                        <div className={sc('container-statistic-item')}>
-                            <p>用户数量</p>
-                            <strong>20040915</strong>
-                            <p>日 <span><PlusOutlined/>35</span></p>
-                            <p>周 <span><PlusOutlined/>109</span></p>
-                            <p>月 <span><PlusOutlined/>309</span></p>
-                        </div>
-                    </Col>
-                    <Col span={4}>
-                        <div className={sc('container-statistic-item')}>
-                            <a href='/service-config/expert-manage/index'>
-                                <p>专家数量</p>
-                                <strong>10987</strong>
-                            </a>
-                            <p>日 <span><PlusOutlined/>35</span></p>
-                            <p>周 <span><PlusOutlined/>109</span></p>
-                            <p>月 <span><PlusOutlined/>309</span></p>
-                        </div>
-                    </Col>
-                    <Col span={4}>
-                        <div className={sc('container-statistic-item')}>
-                            <a href='/service-config/requirement-management/index'>
-                                <p>企业需求数量</p>
-                                <strong>897</strong>
-                            </a>
-                            <p>日 <span><PlusOutlined/>35</span></p>
-                            <p>周 <span><PlusOutlined/>109</span></p>
-                            <p>月 <span><PlusOutlined/>309</span></p>
-                        </div>
-                    </Col>
-                    <Col span={4}>
-                        <div className={sc('container-statistic-item')}>
-                            <a href='/service-config/creative-need-manage/index'>
-                                <p>创新需求数量</p>
-                                <strong>1080</strong>
-                            </a>
-                            <p>日 <span><PlusOutlined/>35</span></p>
-                            <p>周 <span><PlusOutlined/>109</span></p>
-                            <p>月 <span><PlusOutlined/>309</span></p>
-                        </div>
-                    </Col>
-                    <Col span={4}>
-                        <div className={sc('container-statistic-item')}>
-                            <a href='/service-config/achievements-manage/index'>
-                                <p>科技成果数量</p>
-                                <strong>1680</strong>
-                            </a>
-                            <p>日 <span><PlusOutlined/>35</span></p>
-                            <p>周 <span><PlusOutlined/>109</span></p>
-                            <p>月 <span><PlusOutlined/>309</span></p>
-                        </div>
-                    </Col>
+                    {
+                        statistics?.map((item: any)=>{
+                            const {type, todayCount, yesterdayChangeCount, weekChangeCount, monthChangeCount} = item || {}
+                            return (
+                                <Col span={4}>
+                                    <div className={sc('container-statistic-item')}>
+                                        <p>{statisticsType[type]}</p>
+                                        <strong>{todayCount}</strong>
+                                        <p>日 <span><PlusOutlined/>{yesterdayChangeCount}</span></p>
+                                        <p>周 <span><PlusOutlined/>{weekChangeCount}</span></p>
+                                        <p>月 <span><PlusOutlined/>{monthChangeCount}</span></p>
+                                    </div>
+                                </Col>
+                            )
+                        })
+                    }
                 </Row>
             </div>
             <div className={sc('container')}>

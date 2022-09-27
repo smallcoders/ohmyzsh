@@ -1,4 +1,4 @@
-import { Button, message, Form, Modal, TreeSelect, Input } from 'antd';
+import { Button, message, Form, Modal, TreeSelect, Input,InputNumber } from 'antd';
 import React, { useState, useRef, useEffect } from 'react';
 import { history } from 'umi';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
@@ -11,6 +11,8 @@ import { getAreaTree } from '@/services/area';
 import type SolutionTypes from '@/types/solution';
 import type { ProSchemaValueEnumObj } from '@ant-design/pro-utils';
 import { routeName } from '@/../config/routes';
+import { UploadOutlined } from '@ant-design/icons';
+import { getUrl } from '@/utils/util';
 
 /**
  * 渲染服务类型
@@ -34,6 +36,8 @@ const SolutionTable: React.FC = () => {
   const [typeOptions, setTypeOptions] = useState<any>({});
   const [areaOptions, setAreaOptions] = useState<ProSchemaValueEnumObj>({});
   const [total, setTotal] = useState<number>(0);
+  const [weightVisible, setWeightVistble] = useState(false);
+  const [currentId, setCurrentId] = useState<Number>(0);
 
   /**
    * 新建窗口的弹窗
@@ -129,6 +133,54 @@ const SolutionTable: React.FC = () => {
       actionRef.current?.reload();
     }
   };
+
+  const [weightForm] = Form.useForm();
+  const handleWeightOk = async () => {
+    try {
+      weightForm
+      .validateFields()
+      .then(async (value)=>{
+        console.log('value',value)
+        console.log('ID：',currentId)
+        // const res = await 等接口
+        // if (res?.code === 0) {
+          // message.success(`权重设置成功！`);
+          // setWeightVistble(false);
+          // weightForm.resetFields();
+        // } else {
+        //   message.error(`权重设置失败，原因:{${res?.message}}`);
+        // }
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const weightModal = (): React.ReactNode => {
+    return (
+      <Modal
+        title="请输入权重"
+        width="780px"
+        visible={weightVisible}
+        onOk={handleWeightOk}
+        onCancel={()=>{
+          setWeightVistble(false)
+        }}
+      >
+        <Form form={weightForm}>
+          <Form.Item name="keyword" rules={[{required: true,message: '必填',}]}>
+            <InputNumber 
+              style={{ width: '100%' }} 
+              placeholder='请输入权重'                 
+              min={1}
+              step={0.01}
+              max={100}
+            />
+          </Form.Item>
+        </Form>
+      </Modal>
+    )
+  }  
 
   const columns: ProColumns<SolutionTypes.Solution>[] = [
     {
@@ -239,6 +291,12 @@ const SolutionTable: React.FC = () => {
         >
           {record.isTop ? '取消置顶' : '置顶'}
         </Button>,
+        <Button type="link" onClick={() => {
+          setWeightVistble(true);
+          setCurrentId(record.id)
+              // 重置 keyword: record.keyword  这里需要把权重选上
+          weightForm.setFieldsValue({keyword: 0 || [],})
+        }}>权重</Button>
       ],
     },
   ];
@@ -301,6 +359,23 @@ const SolutionTable: React.FC = () => {
     <>
       <ProTable
         headerTitle={`服务列表（共${total}个）`}
+        toolBarRender={
+          ()=>[
+            <Button
+              href={getUrl('/antelope-pay/mng/order/exportOrderList', {
+                // ...searchContent,
+                pageIndex: 1,
+                pageSize: 10000,
+              })}
+              icon={<UploadOutlined />}
+              // onClick={() => {
+              //   onExport();
+              // }}
+            >
+              导出
+            </Button>
+          ]
+        }
         options={false}
         rowKey="id"
         actionRef={actionRef}
@@ -320,6 +395,7 @@ const SolutionTable: React.FC = () => {
         pagination={{ size: 'default', showQuickJumper: true, defaultPageSize: 10 }}
       />
       {getModal()}
+      {weightModal()}
     </>
   );
 };

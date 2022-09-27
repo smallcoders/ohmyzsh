@@ -24,6 +24,8 @@ import {
   markConsultRecordContracted,
   updateConsultRecordRemark,
 } from '@/services/expert_manage/consult-record';
+import { UploadOutlined } from '@ant-design/icons';
+import { getUrl } from '@/utils/util';
 const sc = scopedClasses('user-config-logout-verify');
 
 export default () => {
@@ -282,6 +284,19 @@ export default () => {
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>咨询记录列表(共{pageInfo.totalCount || 0}个)</span>
+          <Button
+              href={getUrl('/antelope-pay/mng/order/exportOrderList', {
+                // ...searchContent,
+                pageIndex: 1,
+                pageSize: 10000,
+              })}
+              icon={<UploadOutlined />}
+              // onClick={() => {
+              //   onExport();
+              // }}
+            >
+              导出
+            </Button>
         </div>
       </div>
       <div className={sc('container-table-body')}>

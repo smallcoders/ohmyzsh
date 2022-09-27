@@ -168,11 +168,6 @@ export default () => {
       dataIndex: 'orgName',
     },
     {
-      title: '尖刀应用',
-      dataIndex: 'isTopApp',
-      render: (_: number) => (_ === 0 ? '否' : '是'),
-    },
-    {
       title: '状态',
       dataIndex: 'releaseStatus',
       render: (_: number) => {
@@ -277,25 +272,17 @@ export default () => {
       <div className={sc('container-search')}>
         <Form {...formLayout} form={searchForm}>
           <Row>
-            <Col span={5}>
+            <Col span={7}>
               <Form.Item name="name" label="应用名称">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
-            <Col span={5}>
+            <Col span={7}>
               <Form.Item name="orgName" label="所属厂商">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
-            <Col span={5}>
-              <Form.Item name="isTopApp" label="尖刀应用">
-                <Select placeholder="请选择">
-                  <Select.Option value={0}>否</Select.Option>
-                  <Select.Option value={1}>是</Select.Option>
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={5}>
+            <Col span={7}>
               <Form.Item name="releaseStatus" label="当前状态">
                 <Select placeholder="请选择">
                   <Select.Option value={0}>已下架</Select.Option>
@@ -303,7 +290,7 @@ export default () => {
                 </Select>
               </Form.Item>
             </Col>
-            <Col span={4}>
+            <Col span={3}>
               <Button
                 style={{ marginRight: 20 }}
                 type="primary"

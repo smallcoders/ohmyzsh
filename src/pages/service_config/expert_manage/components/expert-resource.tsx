@@ -10,7 +10,8 @@ import {
   Popconfirm,
   Radio,
   Checkbox,
-  Modal
+  Modal,
+  InputNumber
 } from 'antd';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
@@ -27,6 +28,8 @@ import { signCommissioner } from '@/services/service-commissioner-verify';
 import { 
   getKeywords, //关键词枚举 
 } from '@/services/creative-demand';
+import { UploadOutlined } from '@ant-design/icons';
+import { getUrl } from '@/utils/util';
 import SelfSelect from '@/components/self_select';
 const sc = scopedClasses('user-config-logout-verify');
 
@@ -35,6 +38,8 @@ export default () => {
   const [searchContent, setSearChContent] = useState<ExpertResource.SearchBody>({});
   const [selectTypes, setSelectTypes] = useState<any>([]);
   const [keywords, setKeywords] = useState<any[]>([]);// 关键词数据
+  const [weightVisible, setWeightVistble] = useState(false);
+  const [currentId, setCurrentId] = useState<Number>(0);
   const formLayout = {
     labelCol: { span: 6 },
     wrapperCol: { span: 16 },
@@ -135,7 +140,6 @@ export default () => {
     wrapperCol: { span: 20 },
   };
   const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const [currentId, setCurrentId] = useState<string>('');
   const [editForm] = Form.useForm<{ keyword: any; keywordOther: string }>();
   const newKeywords = Form.useWatch('keyword', editForm);
   const handleOk = async () => {
@@ -219,6 +223,54 @@ export default () => {
     );
   };
 
+  const [weightForm] = Form.useForm();
+  const handleWeightOk = async () => {
+    try {
+      weightForm
+      .validateFields()
+      .then(async (value)=>{
+        console.log('value',value)
+        console.log('ID：',currentId)
+        // const res = await 等接口
+        // if (res?.code === 0) {
+          // message.success(`权重设置成功！`);
+          // setWeightVistble(false);
+          // weightForm.resetFields();
+        // } else {
+        //   message.error(`权重设置失败，原因:{${res?.message}}`);
+        // }
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const weightModal = (): React.ReactNode => {
+    return (
+      <Modal
+        title="请输入权重"
+        width="780px"
+        visible={weightVisible}
+        onOk={handleWeightOk}
+        onCancel={()=>{
+          setWeightVistble(false)
+        }}
+      >
+        <Form form={weightForm}>
+          <Form.Item name="keyword" rules={[{required: true,message: '必填',}]}>
+            <InputNumber 
+              style={{ width: '100%' }} 
+              placeholder='请输入权重'                 
+              min={1}
+              step={0.01}
+              max={100}
+            />
+          </Form.Item>
+        </Form>
+      </Modal>
+    )
+  }  
+
   const columns = [
     {
       title: '序号',
@@ -282,6 +334,12 @@ export default () => {
               >
                 详情
               </Button>
+              <Button type="link" onClick={() => {
+                setWeightVistble(true);
+                setCurrentId(record.id)
+                    // 重置 keyword: record.keyword  这里需要把权重选上
+                weightForm.setFieldsValue({keyword: 0 || [],})
+              }}>权重</Button>
               <Button
                 type="link"
                 onClick={() => {
@@ -443,6 +501,19 @@ export default () => {
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>专家列表(共{pageInfo.totalCount || 0}个)</span>
+          <Button
+              href={getUrl('/antelope-pay/mng/order/exportOrderList', {
+                // ...searchContent,
+                pageIndex: 1,
+                pageSize: 10000,
+              })}
+              icon={<UploadOutlined />}
+              // onClick={() => {
+              //   onExport();
+              // }}
+            >
+              导出
+            </Button>
         </div>
       </div>
       <div className={sc('container-table-body')}>
@@ -467,6 +538,7 @@ export default () => {
         />
       </div>
       {useModal()}
+      {weightModal()}
     </>
   );
 };

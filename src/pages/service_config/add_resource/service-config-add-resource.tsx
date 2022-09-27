@@ -249,14 +249,15 @@ export default () => {
             >
               <Input placeholder="请输入" maxLength={35} />
             </Form.Item>
-            <Form.Item name="priority" label="应用顺序">
+            <Form.Item name="priority" label="应用权重">
+              {/* 字段未处理 */}
               <InputNumber
                 style={{ width: '100%' }}
-                placeholder="请输入"
-                step={1}
+                placeholder="数字越大排名越靠前"
                 min={1}
-                max={99999999}
-                precision={0}
+                step={0.01}
+                max={100}
+                // max={99999999}
               />
             </Form.Item>
             <Form.Item
@@ -301,7 +302,7 @@ export default () => {
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item
+            {/* <Form.Item
               name="isTopApp"
               label="设为尖刀应用"
               initialValue={1}
@@ -327,8 +328,8 @@ export default () => {
                 <Radio value={1}>是</Radio>
                 <Radio value={0}>否</Radio>
               </Radio.Group>
-            </Form.Item>
-            {isTop ? (
+            </Form.Item> */}
+            {/* {isTop ? (
               <>
                 {!isBeginTopAndEditing && (
                   <Form.Item
@@ -414,7 +415,7 @@ export default () => {
               </>
             ) : (
               ''
-            )}
+            )} */}
             <Form.Item
               name="isSupportTry"
               label="支持试用"

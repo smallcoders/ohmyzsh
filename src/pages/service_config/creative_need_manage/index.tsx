@@ -11,8 +11,10 @@ import {
   Popconfirm,
   TreeSelect,
   Modal,
-  Checkbox
+  Checkbox,
+  InputNumber,
 } from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
@@ -29,6 +31,8 @@ import {
 } from '@/services/creative-demand';
 import type Common from '@/types/common';
 import type NeedVerify from '@/types/user-config-need-verify';
+import { getUrl } from '@/utils/util';
+import { getAreaTree } from '@/services/area';
 const sc = scopedClasses('service-config-creative-need');
 const stateObj = {
   NOT_CONNECT: '未对接',
@@ -37,6 +41,7 @@ const stateObj = {
   RESOLVED: '已解决'
 };
 export default () => {
+  const [loading, setLoading] = useState<boolean>(false);
   const [dataSource, setDataSource] = useState<NeedVerify.Content[]>([]);
   const [types, setTypes] = useState<any[]>([]);
   const [keywords, setKeywords] = useState<any[]>([]);// 关键词数据
@@ -46,7 +51,10 @@ export default () => {
     state?: number; // 状态
     createTimeEnd?: string; // 提交结束时间
     typeId?: number; // 行业类型id 三级类型
+
   }>({});
+
+  const [weightVisible, setWeightVistble] = useState(false);
 
   const [currentId, setCurrentId] = useState<string>('');
 
@@ -67,7 +75,10 @@ export default () => {
     pageTotal: 0,
   });
 
+  const [areaOptions, setAreaOptions] = useState<any>([]);
+
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
+    setLoading(true)
     try {
       const { result, totalCount, pageTotal, code } = await getCreativePage({
         pageIndex,
@@ -77,11 +88,14 @@ export default () => {
       if (code === 0) {
         setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
         setDataSource(result);
+        setLoading(false)
       } else {
         message.error(`请求分页数据失败`);
+        setLoading(false)
       }
     } catch (error) {
       console.log(error);
+      setLoading(false)
     }
   };
 
@@ -89,10 +103,12 @@ export default () => {
     try {
       const res = await Promise.all([
         getKeywords(),
-        getCreativeTypes()
+        getCreativeTypes(),
+        getAreaTree({}),
       ]);
       setKeywords(res[0].result || [])
       setTypes(res[1].result || []);
+      setAreaOptions(res[2].children || []);
     } catch (error) {
       message.error('获取数据失败');
     }
@@ -235,6 +251,12 @@ export default () => {
       width: 300,
     },
     {
+      title: '需求区域',
+      dataIndex: 'areaCode',
+      isEllipsis: true,
+      width: 150,
+    },
+    {
       title: '提交时间',
       dataIndex: 'updateTime',
       width: 200,
@@ -259,7 +281,7 @@ export default () => {
       fixed: 'right',
       render: (_: any, record: any) => {
         return record.state == 'RESOLVED' ? (<div style={{textAlign: 'center'}}>/</div>) : (
-          <Space>
+          <Space wrap>
             <Button type="link" style={{padding: 0}} onClick={() => {
               setModalVisible(true);
               setCurrentId(record.id)
@@ -278,6 +300,12 @@ export default () => {
             >
               <Button type="link" style={{padding: 0}}>已解决</Button>
             </Popconfirm>
+            <Button type="link" onClick={() => {
+              setWeightVistble(true);
+              setCurrentId(record.id)
+              // 重置 keyword: record.keyword  这里需要把权重选上
+              weightForm.setFieldsValue({keyword: record.keyword || []})
+            }}>权重</Button>
           </Space>
         )
       },
@@ -313,6 +341,19 @@ export default () => {
               </Form.Item>
             </Col>
             <Col span={8}>
+            <Form.Item name="areaCode" label="所属区域">
+                <Select placeholder="请选择" allowClear>
+                  {areaOptions?.map((item: any) => (
+                    <Select.Option key={item?.code} value={Number(item?.code)}>
+                      {item?.name}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row>
+          <Col span={8}>
               <Form.Item name="state" label="状态">
                 <Select placeholder="请选择" allowClear>
                   <Select.Option value={'NOT_CONNECT'}>未对接</Select.Option>
@@ -322,14 +363,12 @@ export default () => {
                 </Select>
               </Form.Item>
             </Col>
-          </Row>
-          <Row>
             <Col span={8}>
               <Form.Item name="time" label="提交时间">
                 <DatePicker.RangePicker allowClear showTime />
               </Form.Item>
             </Col>
-            <Col offset={12} span={4}>
+            <Col offset={4} span={4}>
               <Button
                 style={{ marginRight: 20 }}
                 type="primary"
@@ -362,16 +401,84 @@ export default () => {
     );
   };
 
+  const [weightForm] = Form.useForm();
+  const handleWeightOk = async () => {
+    try {
+      weightForm
+      .validateFields()
+      .then(async (value)=>{
+        console.log('value',value)
+        console.log('ID：',currentId)
+        // const res = await 等接口
+        // if (res?.code === 0) {
+          // message.success(`权重设置成功！`);
+          // setWeightVistble(false);
+          // weightForm.resetFields();
+        // } else {
+        //   message.error(`权重设置失败，原因:{${res?.message}}`);
+        // }
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const weightModal = (): React.ReactNode => {
+    return (
+      <Modal
+        title="请输入权重"
+        width="780px"
+        visible={weightVisible}
+        onOk={handleWeightOk}
+        onCancel={()=>{
+          setWeightVistble(false)
+        }}
+      >
+        <Form form={weightForm}>
+          <Form.Item name="keyword" rules={[{required: true,message: '必填',}]}>
+            <InputNumber 
+                style={{ width: '100%' }} 
+                placeholder='请输入权重'                 
+                min={1}
+                step={0.01}
+                max={100}
+              />
+          </Form.Item>
+        </Form>
+      </Modal>
+    )
+  }  
+
   return (
     <PageContainer className={sc('container')}>
       {useSearchNode()}
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>创新需求列表(共{pageInfo.totalCount || 0}个)</span>
+          {/* <a
+           key="primary"
+           className='export-btn'
+           href={`
+           /antelope-pay/mng/invoice/export?pageIndex=1&pageSize=10000&invoiceForm=${searchContent.invoiceForm||''}&orderNo=${searchContent.orderNo||''}&invoiceType=${searchContent.invoiceType||''}&createTimeStart=${searchContent.time?moment(searchContent.time[0]).format('YYYY-MM-DD HH:mm:ss'):''}&createTimeEnd=${searchContent.time?moment(searchContent.time[1]).format('YYYY-MM-DD HH:mm:ss'):''}`}
+          >导出数据</a> */}
+          <Button
+            href={getUrl('/antelope-pay/mng/order/exportOrderList', {
+              ...searchContent,
+              pageIndex: 1,
+              pageSize: 10000,
+            })}
+            icon={<UploadOutlined />}
+            // onClick={() => {
+            //   onExport();
+            // }}
+          >
+            导出
+          </Button>
         </div>
       </div>
       <div className={sc('container-table-body')}>
         <SelfTable
+          loading={loading}
           bordered
           scroll={{ x: 1400 }}
           columns={columns}
@@ -391,6 +498,7 @@ export default () => {
         />
       </div>
       {useModal()}
+      {weightModal()}
     </PageContainer>
   );
 };
