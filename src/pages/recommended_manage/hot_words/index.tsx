@@ -1,4 +1,4 @@
-import { Button, Input, Form, Row, Col, message as antdMessage } from 'antd';
+import { Button, Input, Form, Row, Col, Select, message as antdMessage } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 
 import scopedClasses from '@/utils/scopedClasses';
@@ -12,7 +12,13 @@ import './index.less';
 import { getBankingServicePage } from '@/services/hot-words';
 const WordCloud = require('wordcloud');
 const sc = scopedClasses('recommended-hot-words');
-import bg from '@/assets/demand_market/1.png';
+
+const TypeOptions: { label: string; value: number }[] = [
+  {
+    label: '企业需求',
+    value: 1,
+  },
+];
 export default () => {
   const [dataSource, setDataSource] = useState<HotWords.Content[]>([]);
   const [searchContent, setSearChContent] = useState<HotWords.SearchContent>({});
@@ -50,23 +56,14 @@ export default () => {
 
   const columns = [
     {
-      title: '序号',
-      dataIndex: 'sort',
-      width: 80,
-      render: (_: any, _record: HotWords.Content, index: number) =>
-        pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
-    },
-    {
       title: '词汇',
       dataIndex: 'name',
-      width: 200,
     },
 
     {
       title: '出现次数',
       dataIndex: 'termContent',
       isEllipsis: true,
-      width: 200,
     },
   ];
 
@@ -116,25 +113,27 @@ export default () => {
         <Form {...formLayout} form={searchForm}>
           <Row gutter={12}>
             <Col span={8}>
-              <Form.Item name="orgName" noStyle>
+              <Form.Item name="orgName" label="关键词">
                 <Input placeholder="请输入词汇" />
               </Form.Item>
             </Col>
+
             <Col span={8}>
-              <Form.Item noStyle>
-                <Input.Group>
+              <Form.Item label="频次范围">
+                <Input.Group compact>
                   <Form.Item name="orgName" noStyle>
                     <Input
-                      style={{
-                        width: '48%',
-                      }}
                       placeholder="频次范围"
+                      style={{
+                        width: '40%',
+                      }}
                     />
                   </Form.Item>
                   <Form.Item noStyle>
                     <span
                       style={{
-                        width: '2%',
+                        width: '20px',
+                        textAlign: 'center',
                       }}
                     >
                       ~
@@ -143,16 +142,29 @@ export default () => {
 
                   <Form.Item name="orgName" noStyle>
                     <Input
-                      style={{
-                        width: '48%',
-                      }}
                       placeholder="频次范围"
+                      style={{
+                        width: '40%',
+                      }}
                     />
                   </Form.Item>
                 </Input.Group>
               </Form.Item>
             </Col>
-            <Col span={8} style={{ textAlign: 'right' }}>
+            <Col span={8}>
+              <Form.Item label="频次范围" name="type">
+                <Select placeholder="请选择" style={{ width: '100%' }}>
+                  {TypeOptions.map((item) => {
+                    return (
+                      <Select.Option key={item.value} value={item.value}>
+                        {item.label}
+                      </Select.Option>
+                    );
+                  })}
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={24} style={{ textAlign: 'right' }}>
               <Button
                 style={{ marginRight: 20 }}
                 type="primary"
@@ -192,7 +204,7 @@ export default () => {
 
       <div className={sc('container-table-body')}>
         <SelfTable
-          style={{ flex: 1 }}
+          style={{ flex: 1, marginRight: '10px' }}
           rowKey="id"
           bordered
           columns={columns}
@@ -210,7 +222,7 @@ export default () => {
                 }
           }
         />
-        <canvas id="canvas" width="400px" height="300px" style={{ height: '300px' }} />
+        <canvas id="canvas" width="500px" height="400px" style={{ height: '400px' }} />
         {/* <div
           style={{
             height: '300px',

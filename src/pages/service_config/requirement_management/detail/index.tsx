@@ -12,15 +12,23 @@ import {
   addConnectRecord,
   getConnectRecord,
   deleteConnectRecord, // 对接记录列表
+  recommendedResult,
 } from '@/services/office-requirement-verify';
-const { Column } = Table;
+import SelfTable from '@/components/self_table';
+import type Common from '@/types/common';
 const sc = scopedClasses('user-config-kechuang');
 
 export default () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [detail, setDetail] = useState<any>({});
   const [timeLineData, setTimeLineData] = useState<any>([]);
-
+  const [recommendedList, setRecommendedList] = useState<any>([]);
+  const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
+    pageIndex: 1,
+    pageSize: 10,
+    totalCount: 0,
+    pageTotal: 0,
+  });
   // 判断是否从节点维护点击来的
   const isEdit = history.location.query?.isEdit ? true : false;
 
@@ -47,9 +55,88 @@ export default () => {
     }
   };
 
+  const getRecommendedResult = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
+    try {
+      const id = history.location.query?.id as string;
+      const {
+        result,
+        totalCount,
+        pageTotal,
+        code,
+        message: msg,
+      } = await recommendedResult({
+        pageIndex,
+        pageSize,
+        demandId: id,
+      });
+      if (code === 0) {
+        setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
+        setRecommendedList(result);
+      } else {
+        throw new Error(msg);
+      }
+    } catch (error) {
+      message.error(`请求失败，原因:{${error}}`);
+    }
+  };
+  const typeEnum: Record<string, string> = {
+    '1': '科技成果',
+    '2': '专家服务',
+    '3': '解决方案',
+    '4': '需求信息',
+    '5': '数字化应用',
+  };
+  const recommendColumns = [
+    {
+      title: 'ID',
+      dataIndex: 'reqDemandId',
+      width: 120,
+    },
+    {
+      title: '结果顺位',
+      dataIndex: 'recIndex',
+      width: 100,
+    },
+    {
+      title: '名称',
+      dataIndex: 'recName',
+      width: 180,
+    },
+    {
+      title: '简介',
+      dataIndex: 'recContent',
+    },
+    {
+      title: '类型',
+      dataIndex: 'recType',
+      render: (_: string | number) => <span>{typeEnum[_]}</span>,
+      width: 180,
+    },
+    {
+      title: '推荐时间',
+      dataIndex: 'recTime',
+      width: 200,
+    },
+    {
+      title: '是否为兜底数据',
+      dataIndex: 'revealState',
+      width: 140,
+    },
+    {
+      title: '相关性评价',
+      dataIndex: 'recScore',
+      width: 120,
+    },
+    // {
+    //   title: '操作记录',
+    //   dataIndex: 'opTime',
+    //   width: 100,
+    // },
+  ];
   useEffect(() => {
     prepare();
     connectAdd();
+    getRecommendedResult();
   }, []);
 
   const clearForm = () => {
@@ -309,15 +396,28 @@ export default () => {
           </Space> */}
         </div>
       </div>
-      <div className={sc('container')}>
+      <div className={sc('container')} style={{ marginTop: 20 }}>
         <div className={sc('container-title')}>推荐位管理</div>
-        <Table rowKey="id" dataSource={[]} pagination={false}>
-          <Column title="结果位顺序" render={(_, __, i) => i + 1} />
-          <Column title="名称" dataIndex="name" />
-          <Column title="简介" dataIndex="desc" />
-          <Column title="相关性评价" dataIndex="recomend" />
-          <Column title="操作记录" dataIndex="recode" />
-        </Table>
+
+        <SelfTable
+          scroll={{ x: 1600 }}
+          rowKey="id"
+          bordered
+          columns={recommendColumns}
+          dataSource={recommendedList}
+          pagination={
+            pageInfo.totalCount === 0
+              ? false
+              : {
+                  onChange: getRecommendedResult,
+                  total: pageInfo.totalCount,
+                  current: pageInfo.pageIndex,
+                  pageSize: pageInfo.pageSize,
+                  showTotal: (total: number) =>
+                    `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
+                }
+          }
+        />
       </div>
     </PageContainer>
   );

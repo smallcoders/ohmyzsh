@@ -1006,35 +1006,35 @@ export default [
       },
     ],
   },
-  {
-    path: '/recommended',
-    name: '推荐管理',
-    icon: 'dollar',
-    access: 'BANKING',
-    routes: [
-      {
-        path: '/recommended',
-        redirect: routeName.RECOMMENDED_HOT_WORDS,
-      },
-      {
-        path: routeName.RECOMMENDED_HOT_WORDS,
-        name: '推荐管理',
-        hideChildrenInMenu: true,
-        routes: [
-          {
-            path: routeName.RECOMMENDED_HOT_WORDS,
-            redirect: routeName.RECOMMENDED_HOT_WORDS_INDEX,
-          },
-          {
-            path: routeName.RECOMMENDED_HOT_WORDS_INDEX,
-            hideInBreadcrumb: true,
-            name: '推荐管理',
-            component: './recommended_manage/hot_words/index',
-          },
-        ],
-      },
-    ],
-  },
+  // {
+  //   path: '/recommended',
+  //   name: '推荐管理',
+  //   icon: 'setting',
+  //   access: 'BANKING',
+  //   routes: [
+  //     {
+  //       path: '/recommended',
+  //       redirect: routeName.RECOMMENDED_HOT_WORDS,
+  //     },
+  //     {
+  //       path: routeName.RECOMMENDED_HOT_WORDS,
+  //       name: '推荐管理',
+  //       hideChildrenInMenu: true,
+  //       routes: [
+  //         {
+  //           path: routeName.RECOMMENDED_HOT_WORDS,
+  //           redirect: routeName.RECOMMENDED_HOT_WORDS_INDEX,
+  //         },
+  //         {
+  //           path: routeName.RECOMMENDED_HOT_WORDS_INDEX,
+  //           hideInBreadcrumb: true,
+  //           name: '推荐管理',
+  //           component: './recommended_manage/hot_words/index',
+  //         },
+  //       ],
+  //     },
+  //   ],
+  // },
   {
     path: '/',
     redirect: '/service-config/banner',

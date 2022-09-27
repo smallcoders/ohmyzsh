@@ -45,4 +45,4 @@ namespace HotWords {
     dateEnd?: string; // 申请日期结束
   };
 }
-export default BankingService;
+export default HotWords;
