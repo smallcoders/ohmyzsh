@@ -120,11 +120,13 @@ export default () => {
     {
       title: '是否为兜底数据',
       dataIndex: 'revealState',
+      render: (_: string | number) => <span>{_ ? '是' : '否'}</span>,
       width: 140,
     },
     {
       title: '相关性评价',
       dataIndex: 'recScore',
+      render: (_: string | number) => <span>{_ || '-'}</span>,
       width: 120,
     },
     // {
