@@ -316,8 +316,8 @@ export default () => {
                         <Timeline.Item color="gray" key={0}>
                           <Button onClick={() => add()}>新增对接记录</Button>
                         </Timeline.Item>
-                        {fields.map((field) => (
-                          <Timeline.Item color="gray" key={1}>
+                        {fields.map((field, i) => (
+                          <Timeline.Item color="gray" key={i}>
                             <Space key={field.key} align="baseline">
                               <Form.Item
                                 noStyle
@@ -403,7 +403,7 @@ export default () => {
 
         <SelfTable
           scroll={{ x: 1600 }}
-          rowKey="id"
+          rowKey={(item: Record<string, any>, i: number) => i}
           bordered
           columns={recommendColumns}
           dataSource={recommendedList}
