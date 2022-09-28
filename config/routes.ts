@@ -61,6 +61,12 @@
   AUTHENTICATION_INFO: '/user-config/authentication-info', // 认证信息
   AUTHENTICATION_INFO_INDEX: '/user-config/authentication-info/index', // 认证信息列表
   AUTHENTICATION_INFO_DETAIL: '/user-config/authentication-info/detail', // 认证信息编辑
+
+  USER_INFO: '/user-config/user-info', // 用户信息
+  USER_INFO_INDEX: '/user-config/user-info/index', // 用户列表
+  USER_INFO_DETAIL: '/user-config/user-info/detail', // 用户详情
+
+  LOGOUT_RECORD: '/user-config/logout-record', // 注销记录
   USER_FEEDBACK: '/user-config/user-feedback', // 用户反馈
   COMMISSIONER_SERVICE: '/user-config/commissioner-service', // 专员服务记录
   ADMIN_ACCOUNT_DISTRIBUTOR: '/user-config/admin-account-distributor', // 管理员账号分配
@@ -670,6 +676,33 @@ export default [
             component: './user_config/authentication_info/detail',
           },
         ],
+      },
+      {
+        path: routeName.USER_INFO,
+        name: '用户信息',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.USER_INFO,
+            redirect: routeName.USER_INFO_INDEX,
+          },
+          {
+            path: routeName.USER_INFO_INDEX,
+            name: '用户信息',
+            hideInBreadcrumb: true,
+            component: './user_config/user_info',
+          },
+          {
+            path: routeName.USER_INFO_DETAIL,
+            name: '用户详情',
+            component: './user_config/user_info/detail',
+          },
+        ],
+      },
+      {
+        path: routeName.LOGOUT_RECORD,
+        name: '注销记录',
+        component: './user_config/logout_record',
       },
       {
         path: routeName.USER_FEEDBACK,
