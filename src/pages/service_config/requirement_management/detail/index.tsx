@@ -103,9 +103,9 @@ export default () => {
   };
   const recommendColumns = [
     {
-      title: 'ID',
-      dataIndex: 'reqDemandId',
-      width: 120,
+      title: '推荐时间',
+      dataIndex: 'recTime',
+      width: 200,
     },
     {
       title: '结果顺位',
@@ -147,11 +147,7 @@ export default () => {
       render: (_: string | number) => <span>{typeEnum[_].label}</span>,
       width: 180,
     },
-    {
-      title: '推荐时间',
-      dataIndex: 'recTime',
-      width: 200,
-    },
+
     {
       title: '是否为兜底数据',
       dataIndex: 'revealState',
@@ -437,7 +433,7 @@ export default () => {
         <div className={sc('container-title')}>推荐位管理</div>
 
         <SelfTable
-          scroll={{ x: 1600 }}
+          scroll={{ x: 1400 }}
           rowKey={(item: Record<string, any>, i: number) => i}
           bordered
           columns={recommendColumns}
