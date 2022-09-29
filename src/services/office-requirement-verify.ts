@@ -27,7 +27,7 @@ export async function getOfficeRequirementVerifyDetail(id: string) {
  * @param data
  * @returns
  */
- export async function getRequirementManagementList(data?: { [key: string]: any }) {
+export async function getRequirementManagementList(data?: { [key: string]: any }) {
   return request<any>('/antelope-manage/demand/pageManage', {
     method: 'post',
     data,
@@ -39,7 +39,7 @@ export async function getOfficeRequirementVerifyDetail(id: string) {
  * @param data
  * @returns
  */
- export async function demandEditType(data?: { [key: string]: any }) {
+export async function demandEditType(data?: { [key: string]: any }) {
   return request<any>('/antelope-manage/demand/editType', {
     method: 'post',
     data,
@@ -51,20 +51,19 @@ export async function getOfficeRequirementVerifyDetail(id: string) {
  * @param data
  * @returns
  */
- export async function demandIndestrialEditType(data?: { [key: string]: any }) {
+export async function demandIndestrialEditType(data?: { [key: string]: any }) {
   return request<any>('/antelope-manage/demand/editIndustry', {
     method: 'post',
     data,
   });
 }
 
-
 /**
  * 需求管理-权重编辑
  * @param data
  * @returns
  */
- export async function demandEditSort(data?: { [key: string]: any }) {
+export async function demandEditSort(data?: { [key: string]: any }) {
   return request<any>('/antelope-manage/demand/editSort', {
     method: 'post',
     data,
@@ -76,7 +75,7 @@ export async function getOfficeRequirementVerifyDetail(id: string) {
  * @param data
  * @returns
  */
- export async function demandEditConnectState(data?: { [key: string]: any }) {
+export async function demandEditConnectState(data?: { [key: string]: any }) {
   return request<any>('/antelope-manage/demand/editConnectState', {
     method: 'post',
     data,
@@ -88,7 +87,7 @@ export async function getOfficeRequirementVerifyDetail(id: string) {
  * @param data
  * @returns
  */
- export async function demandUpper(data?: { [key: string]: any }) {
+export async function demandUpper(data?: { [key: string]: any }) {
   return request<any>('/antelope-manage/demand/upper', {
     method: 'post',
     data,
@@ -100,7 +99,7 @@ export async function getOfficeRequirementVerifyDetail(id: string) {
  * @param data
  * @returns
  */
- export async function demandDown(data?: { [key: string]: any }) {
+export async function demandDown(data?: { [key: string]: any }) {
   return request<any>('/antelope-manage/demand/down', {
     method: 'post',
     data,
@@ -112,7 +111,7 @@ export async function getOfficeRequirementVerifyDetail(id: string) {
  * @param data
  * @returns
  */
- export async function getConnectRecord(id: string) {
+export async function getConnectRecord(id: string) {
   return request<any>(`/antelope-manage/demand/connectRecord/?demandId=${id}`, {
     method: 'get',
   });
@@ -123,7 +122,7 @@ export async function getOfficeRequirementVerifyDetail(id: string) {
  * @param data
  * @returns
  */
- export async function addConnectRecord(data?: { [key: string]: any }) {
+export async function addConnectRecord(data?: { [key: string]: any }) {
   return request<any>('/antelope-manage/demand/connectRecord', {
     method: 'post',
     data,
@@ -135,11 +134,25 @@ export async function getOfficeRequirementVerifyDetail(id: string) {
  * @param data
  * @returns
  */
- export async function deleteConnectRecord(id: string) {
+export async function deleteConnectRecord(id: string) {
   return request<Common.ResultCode>(`/antelope-manage/demand/connectRecord?demandConnectId=${id}`, {
-    method: 'DELETE'
+    method: 'DELETE',
   });
 }
 
-
-
+/**
+ * 需求详情 推荐管理
+ * @param data
+ * @returns
+ */
+export async function recommendedResult(data: { [key: string]: any }) {
+  return request<
+    Common.ResultCode &
+      Common.ResultPage & {
+        result: { [key: string]: any }[];
+      }
+  >(`/antelope-recommend/mng/rec/record`, {
+    method: 'POST',
+    data,
+  });
+}
