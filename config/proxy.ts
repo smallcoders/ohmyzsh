@@ -38,9 +38,11 @@ export default {
       pathRewrite: { '^': '' },
     },
     '/antelope-pay/': {
-      target: 'http://172.30.33.222:10086',
+      // target: 'http://172.30.33.222:10086',
+      target: 'http://10.8.7.227:8089',
       changeOrigin: true,
-      pathRewrite: { '^': '' },
+      // pathRewrite: { '^': '' },
+      pathRewrite: { '^/antelope-pay': '' },
     },
     '/antelope-diagnose/': {
       target: 'http://172.30.35.217:9103',

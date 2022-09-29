@@ -22,6 +22,7 @@ import { routeName } from '@/../config/routes';
 import SelfTable from '@/components/self_table';
 import { history } from 'umi';
 import { getDemandPage } from '@/services/kc-verify';
+import { getGoodsVerifyPage } from '@/services/goods-verify';
 import { getDictionaryTree } from '@/services/dictionary';
 import type Common from '@/types/common';
 import type NeedVerify from '@/types/user-config-need-verify';
@@ -29,27 +30,28 @@ import { handleAudit } from '@/services/audit';
 // import { getDictionaryTree } from '@/services/dictionary';
 const sc = scopedClasses('verify_agency_goods_verify');
 const stateObj = {
-  AUDITING: '审核中',
-  AUDIT_PASSED: '已通过',
-  AUDIT_REJECTED: '已拒绝',
+  0: '待审核',
+  1: '未通过',
+  2: '已通过',
 };
 
 const GoodsMessage = (props: { _: any; row: any }) => (
   <div className={sc('container-goods-message')}>
-    <Image className={'goods-img'} src={props?.row.logoImagePath} alt="图片损坏" />
+    <Image className={'goods-img'} src={props?.row.productPic} alt="图片损坏" />
     <div className="info">
-      <Tooltip title={props?.row.appName}>
+      <Tooltip title={props?.row.productName}>
         <span
           onClick={() => {
-            if (props?.row.isDelete) return message.warning('该应用已不存在，无法查看详情');
-            history.push(`${routeName.DIGITAL_APPLICATION_DETAIL}?id=${props?.row.id}`);
+            history.push(
+              `${routeName.GOODS_VERIFY_DETAIL}?productId=${props?.row.productId}&id=${props?.row.id}`,
+            );
           }}
         >
-          {props?.row.appName}
+          {props?.row.productName}
         </span>
       </Tooltip>
-      <Tooltip title={row.content} placement="right">
-        <span>{row.content}</span>
+      <Tooltip title={props?.row.productDesc} placement="right">
+        <span>{props?.row.productDesc}</span>
       </Tooltip>
     </div>
   </div>
@@ -59,12 +61,12 @@ export default () => {
   const [refuseContent, setRefuseContent] = useState<string>('');
   const [types, setTypes] = useState<any[]>([]);
   const [searchContent, setSearChContent] = useState<{
-    name?: string; // 标题
-    startDateTime?: string; // 提交开始时间
-    auditState?: number; // 状态： 3:通过 4:拒绝
-    userName?: string; // 用户名
-    endDateTime?: string; // 提交结束时间
-    typeId?: number; // 行业类型id 三级类型
+    productName?: string;
+    startTime?: string;
+    auditState?: number;
+    userName?: string;
+    endTime?: string;
+    handleResult?: number;
   }>({});
 
   const formLayout = {
@@ -79,11 +81,9 @@ export default () => {
     pageTotal: 0,
   });
 
-  // const [form] = Form.useForm();
-
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     try {
-      const { result, totalCount, pageTotal, code } = await getDemandPage({
+      const { result, totalCount, pageTotal, code } = await getGoodsVerifyPage({
         pageIndex,
         pageSize,
         ...searchContent,
@@ -133,19 +133,20 @@ export default () => {
   const columns = [
     {
       title: '商品',
-      dataIndex: 'name',
+      dataIndex: 'productName',
       render: (_: string, _record: any) => <GoodsMessage _={_} row={_record} />,
       width: 300,
     },
     {
       title: '商品类目',
-      dataIndex: 'type',
+      dataIndex: 'productSource',
       isEllipsis: true,
+      render: (_: number) => <span>{_ === 1 ? '应用管理库' : '其他'}</span>,
       width: 300,
     },
     {
       title: '申请组织',
-      dataIndex: 'userName',
+      dataIndex: 'orgName',
       isEllipsis: true,
       width: 300,
     },
@@ -157,13 +158,13 @@ export default () => {
     },
     {
       title: '申请时间',
-      dataIndex: 'submitDateTime',
+      dataIndex: 'applyTime',
       width: 200,
       render: (_: string) => moment(_).format('YYYY-MM-DD HH:mm:ss'),
     },
     {
       title: '审核状态',
-      dataIndex: 'auditState',
+      dataIndex: 'status',
       width: 200,
       render: (_: string) => {
         return (
@@ -186,7 +187,7 @@ export default () => {
               history.push(`${routeName.GOODS_VERIFY_DETAIL}?id=${record.auditId}`);
             }}
           >
-            {record?.auditState === 'AUDITING' ? '审核' : '详情'}
+            {record?.status === 0 ? '详情' : '审核'}
           </Button>
         );
       },
@@ -204,12 +205,12 @@ export default () => {
         <Form {...formLayout} form={searchForm}>
           <Row>
             <Col span={8}>
-              <Form.Item name="name" label="商品名称">
+              <Form.Item name="productName" label="商品名称">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="name" label="申请组织">
+              <Form.Item name="userName" label="申请人">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
@@ -221,20 +222,18 @@ export default () => {
           </Row>
           <Row>
             <Col span={8}>
-              <Form.Item name="auditState" label="账户对接">
+              <Form.Item name="productSource" label="商品来源">
                 <Select placeholder="请选择" allowClear>
-                  <Select.Option value={'AUDITING'}>待审核</Select.Option>
-                  <Select.Option value={'AUDIT_PASSED'}>通过</Select.Option>
-                  <Select.Option value={'AUDIT_REJECTED'}>拒绝</Select.Option>
+                  <Select.Option value={1}>应用管理库</Select.Option>
+                  <Select.Option value={2}>其他商品</Select.Option>
                 </Select>
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="auditState" label="审核状态">
+              <Form.Item name="handleResult" label="审核状态">
                 <Select placeholder="请选择" allowClear>
-                  <Select.Option value={'AUDITING'}>待审核</Select.Option>
-                  <Select.Option value={'AUDIT_PASSED'}>通过</Select.Option>
-                  <Select.Option value={'AUDIT_REJECTED'}>拒绝</Select.Option>
+                  <Select.Option value={0}>拒绝</Select.Option>
+                  <Select.Option value={1}>通过</Select.Option>
                 </Select>
               </Form.Item>
             </Col>
@@ -246,8 +245,8 @@ export default () => {
                 onClick={() => {
                   const search = searchForm.getFieldsValue();
                   if (search.time) {
-                    search.startDateTime = moment(search.time[0]).format('YYYY-MM-DDTHH:mm:ss');
-                    search.endDateTime = moment(search.time[1]).format('YYYY-MM-DDTHH:mm:ss');
+                    search.startTime = moment(search.time[0]).format('YYYY-MM-DDTHH:mm:ss');
+                    search.endTime = moment(search.time[1]).format('YYYY-MM-DDTHH:mm:ss');
                   }
                   setSearChContent(search);
                 }}

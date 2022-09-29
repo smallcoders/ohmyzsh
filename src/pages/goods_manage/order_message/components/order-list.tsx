@@ -49,8 +49,8 @@ export default ({
         </div>
       </div>
       <div className="order-list-page-body">
-        {dataSource?.map((item) => (
-          <OrderItem type={type} record={item} callback={callback}></OrderItem>
+        {dataSource?.map((item, i) => (
+          <OrderItem key={i} type={type} record={item} callback={callback} />
         ))}
       </div>
     </div>
@@ -353,6 +353,7 @@ export const OrderItem = ({
         >
           {record?.list?.map((p, index) => (
             <div
+              key={index}
               style={{
                 flex: 1,
                 display: 'flex',
@@ -381,8 +382,8 @@ export const OrderItem = ({
                   >
                     {p.productName}
                   </span>
-                  {p?.specVoList?.map((spec) => (
-                    <div>
+                  {p?.specVoList?.map((spec, i: number) => (
+                    <div key={i}>
                       <span style={{ color: 'rgba(0, 0, 0, 0.45)' }}>{spec.spec}</span>
                       <span>{spec.specValue}</span>
                     </div>
@@ -457,64 +458,69 @@ export const OrderItem = ({
               <div
                 style={{ flex: 1, display: 'grid', textAlign: 'center', alignContent: 'center' }}
               >
-                {record?.mngButtonList?.map((b) => {
-                  return <ButtonManage type={b as any} record={record} callback={callback} />;
+                {record?.mngButtonList?.map((b, index) => {
+                  return (
+                    <ButtonManage key={index} type={b as any} record={record} callback={callback} />
+                  );
                 })}
                 {/* <span>交易关闭</span> */}
               </div>
             </>
           )}
         </div>
-        {type === 'ORDER' && (<Tooltip
-          color={'#fff'}
-          trigger="click"
-          title={
-            <div style={{ padding: 10, color: '#000' }}>
-              {operations?.length === 0 ? (
-                <Empty />
-              ) : (
-                <div>
-                  {operations.map((p, index) => (
-                    <div
-                      style={{
-                        display: 'flex',
-                        gap: 20,
-                        borderTop: index === 0 ? 'none' : '1px solid #ccc',
-                      }}
-                    >
-                      <div style={{ color: '#6680FF', alignSelf: 'center' }}>
-                        {p.operateMsg}
-                        {p.operateType == 2 && `（${p.shipNum}）`}
+        {type === 'ORDER' && (
+          <Tooltip
+            color={'#fff'}
+            trigger="click"
+            title={
+              <div style={{ padding: 10, color: '#000' }}>
+                {operations?.length === 0 ? (
+                  <Empty />
+                ) : (
+                  <div>
+                    {operations.map((p, index) => (
+                      <div
+                        key={index}
+                        style={{
+                          display: 'flex',
+                          gap: 20,
+                          borderTop: index === 0 ? 'none' : '1px solid #ccc',
+                        }}
+                      >
+                        <div style={{ color: '#6680FF', alignSelf: 'center' }}>
+                          {p.operateMsg}
+                          {p.operateType == 2 && `（${p.shipNum}）`}
+                        </div>
+                        <div style={{ display: 'grid', justifyItems: 'center' }}>
+                          <span>{p.operateUserName}</span>
+                          <span>{dateFormat(p.createTime)}</span>
+                        </div>
                       </div>
-                      <div style={{ display: 'grid', justifyItems: 'center' }}>
-                        <span>{p.operateUserName}</span>
-                        <span>{dateFormat(p.createTime)}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          }
-        >
-          <div
-            style={{
-              position: 'absolute',
-              right: 10,
-              bottom: 10,
-              color: 'rgba(0, 0, 0, 0.65)',
-              fontSize: '12px',
-              display: 'flex',
-              gap: '5px',
-              alignItems: 'center',
-              cursor: 'pointer',
-            }}
-            onClick={() => getOperate()}
+                    ))}
+                  </div>
+                )}
+              </div>
+            }
           >
-            <QuestionCircleOutlined />
-            查看交易操作记录
-          </div>
-        </Tooltip>)}
+            <div
+              style={{
+                position: 'absolute',
+                right: 10,
+                bottom: 10,
+                color: 'rgba(0, 0, 0, 0.65)',
+                fontSize: '12px',
+                display: 'flex',
+                gap: '5px',
+                alignItems: 'center',
+                cursor: 'pointer',
+              }}
+              onClick={() => getOperate()}
+            >
+              <QuestionCircleOutlined />
+              查看交易操作记录
+            </div>
+          </Tooltip>
+        )}
       </div>
     </div>
   );
