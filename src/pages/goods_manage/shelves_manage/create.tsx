@@ -18,7 +18,7 @@ import {
 } from 'antd';
 import type { TableRowSelection } from 'antd/lib/table/interface';
 import type { UploadChangeParam } from 'antd/lib/upload';
-import { RcFile } from 'antd/lib/upload';
+
 import type { ColumnsType } from 'antd/lib/table';
 import type { UploadFile } from 'antd/lib/upload/interface';
 import SelfTable from '@/components/self_table';
@@ -34,43 +34,7 @@ import moment from 'moment';
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { Link, history, Prompt } from 'umi';
 import './detail.less';
-
-interface Pic {
-  id: number;
-  picId: string;
-  banner: string;
-}
-
-enum AddedState {
-  OnShelf = 0, // 上架
-  DownShelf = 1, // 下架
-  Temporary = 2, // 暂存
-}
-
-interface Spec {
-  specsId?: string;
-  salePrice?: number; // 活动售价
-  markPrice?: number; // 划线价
-}
-
-interface Product {
-  productId: number;
-  specs: number;
-}
-interface CreateActData {
-  id?: number;
-  actNo?: string; // 活动编码
-  name?: string; // 活动名称
-  startTime?: string; // YYYY_MM_DD HH:mm:ss
-  endTime?: string;
-  sortNo?: number; // 排序权重
-  firstPic?: Pic; // 首页图
-  otherPic?: Pic[]; // 活动图
-  content?: string; // 活动介绍
-  actSpreadWord?: string; // 促销词
-  addedState?: AddedState;
-  product?: AddedState;
-}
+const RangePicker: any = DatePicker.RangePicker;
 
 interface DataType {
   key: React.Key;
@@ -129,12 +93,7 @@ export default () => {
                 : [],
             otherPic: actImgs,
           });
-          setFiles([
-            {
-              picId: editItem.firstPic?.picId,
-              banner: editItem.firstPic?.banner,
-            },
-          ]);
+
           if (editItem.otherPic) {
             setFiles2(editItem.otherPic);
           }
@@ -148,11 +107,6 @@ export default () => {
     }
   };
 
-  // 额外的副作用 用来解决表单的设置
-  useEffect(() => {
-    form.setFieldsValue({ ...editingItem });
-  }, [editingItem]);
-
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
   const [pageInfo, setPageInfo] = useState<any>({
@@ -163,6 +117,11 @@ export default () => {
   });
   const [dataSource, setDataSource] = useState<any>([]); //可选商品数据
   const [showDataSource, setShowDataSource] = useState<any>([]); //当前页显示的数据
+  // 额外的副作用 用来解决表单的设置
+  useEffect(() => {
+    form.setFieldsValue({ ...editingItem });
+  }, [editingItem]);
+
   const getProducts = async (pageIndex: number = 1, pageSize = 10000) => {
     try {
       const { result, totalCount, pageTotal, code } = await getActivityProducts({
@@ -199,7 +158,7 @@ export default () => {
     {
       title: '商品图',
       dataIndex: 'productPic',
-      render: (_: string, _record: any) => <Image width={100} src={_} />,
+      render: (_: string) => <Image width={100} src={_} />,
       width: 120,
     },
     {
@@ -280,7 +239,6 @@ export default () => {
     prepare();
   }, []);
 
-  const [files, setFiles] = useState<any>([]); // 首页图
   const [files2, setFiles2] = useState<any>([]); // 活动图
   const uploadButton = (
     <div>
@@ -299,57 +257,8 @@ export default () => {
     }
     return e?.fileList;
   };
-  const [uploadLoading, setUploadLoading] = useState<boolean>(false);
-  const handleChange = (info: UploadChangeParam<UploadFile<any>>) => {
-    if (info.file.status === 'uploading') {
-      setUploadLoading(true);
-      return;
-    }
-    if (info.file.status === 'error') {
-      setUploadLoading(false);
-      return;
-    }
 
-    if (info.file.status === 'done') {
-      const uploadResponse = info?.file?.response;
-      if (uploadResponse?.code === 0 && uploadResponse.result) {
-        const upLoadResult = info?.fileList.map((p) => {
-          return {
-            picId: p.response?.result?.id,
-            banner: p.response?.result?.path,
-          };
-        });
-        // console.log(upLoadResult, '上传成功后的结果');
-        setFiles(upLoadResult);
-        setUploadLoading(false);
-      } else {
-        setUploadLoading(false);
-        message.error(`上传失败，原因:{${uploadResponse.message}}`);
-      }
-    }
-  };
-  const onRemove = (file: UploadFile<any>) => {
-    if (file.status === 'uploading' || file.status === 'error') {
-      setUploadLoading(false);
-    }
-    const files_copy = [...files];
-    const existIndex = files_copy.findIndex((p) => p.picId === file?.response?.result?.id);
-    if (existIndex > -1) {
-      files_copy.splice(existIndex, 1);
-      // console.log(files_copy, '删除图片后的结果');
-      setFiles(files_copy);
-    }
-  };
   const handleChange2 = (info: UploadChangeParam<UploadFile<any>>) => {
-    if (info.file.status === 'uploading') {
-      setUploadLoading(true);
-      return;
-    }
-    if (info.file.status === 'error') {
-      setUploadLoading(false);
-      return;
-    }
-
     if (info.file.status === 'done') {
       const uploadResponse = info?.file?.response;
       if (uploadResponse?.code === 0 && uploadResponse.result) {
@@ -361,18 +270,14 @@ export default () => {
         });
         // console.log(upLoadResult, '上传成功后的结果');
         setFiles2(upLoadResult);
-        setUploadLoading(false);
       } else {
-        setUploadLoading(false);
         message.error(`上传失败，原因:{${uploadResponse.message}}`);
       }
     }
   };
   const onRemove2 = (file: UploadFile<any>) => {
     // debugger
-    if (file.status === 'uploading' || file.status === 'error') {
-      setUploadLoading(false);
-    }
+
     const files_copy = [...files2];
     const existIndex = files_copy.findIndex((p) => p.picId === file?.response?.result?.id);
     if (existIndex > -1) {
@@ -401,7 +306,7 @@ export default () => {
     const list = choosedProducts.concat(arr);
     const res: any = [];
     list.forEach((item: any) => {
-      const flag = res.some((e) => {
+      const flag = res.some((e: any) => {
         if (item.id === e.id) {
           return true;
         }
@@ -455,7 +360,7 @@ export default () => {
     {
       title: '商品图',
       dataIndex: 'productPic',
-      render: (_: string, _record: any) => <Image width={100} src={_} />,
+      render: (_: string) => <Image width={100} src={_} />,
       width: 120,
     },
     {
@@ -590,7 +495,7 @@ export default () => {
           text: '全选所有',
           onSelect: () => {
             const arr: any = [];
-            dataSource.map((item) => {
+            dataSource.map((item: any) => {
               arr.push(JSON.stringify(item));
             });
             setSelectedRowKeys(arr);
@@ -603,7 +508,7 @@ export default () => {
       const arr: any = [];
       const start = (page - 1) * pageInfo.pageSize;
       const end = start + pageInfo.pageSize;
-      dataSource.map((item, index) => {
+      dataSource.map((item: any, index: number) => {
         if (index >= start && index < end) {
           arr.push(item);
         }
@@ -611,15 +516,7 @@ export default () => {
       console.log(arr, 'arr');
       setShowDataSource([...arr]);
     };
-    const paginationProps = {
-      showTotal: () =>
-        `共${dataSource.length}条记录 第${pageInfo.pageSize}/${Math.ceil(
-          dataSource.length / pageInfo.pageSize,
-        )}页`,
-      current: pageInfo.pageIndex,
-      pageSize: pageInfo.pageSize,
-      total: dataSource.length,
-    };
+
     const hasSelected = selectedRowKeys.length > 0;
     return (
       <Modal
@@ -691,7 +588,7 @@ export default () => {
 
   //  --------------------设置价格弹框开始------------------
   const [priceModalVisible, setPriceModalVisible] = useState<boolean>(false);
-  const [priceDataSource, setPriceDataSource] = useState([]);
+  const [priceDataSource, setPriceDataSource] = useState<Record<string, any>[]>([]);
   const [currentSetIndex, setCurrentSetIndex] = useState<number>(-1);
   const [currentProductName, setCurrentProductName] = useState<string>('');
   const setPriceOk = async () => {
@@ -710,8 +607,8 @@ export default () => {
       }
     }
     // 获取所选商品的销售价及划线价的价格区间
-    const salePriceArr = [];
-    const originPriceArr = [];
+    const salePriceArr: any = [];
+    const originPriceArr: any = [];
     price.map((item: any) => {
       salePriceArr.push(item.salePrice * 1);
       originPriceArr.push(item.originPrice * 1);
@@ -751,11 +648,11 @@ export default () => {
   };
   const EditableContext = React.createContext(null);
 
-  const EditableRow = ({ index, ...props }) => {
-    const [form] = Form.useForm();
+  const EditableRow = ({ index, ...props }: any) => {
+    const [editableForm] = Form.useForm();
     return (
       <Form form={form} component={false}>
-        <EditableContext.Provider value={form}>
+        <EditableContext.Provider value={editableForm}>
           <tr {...props} />
         </EditableContext.Provider>
       </Form>
@@ -770,13 +667,13 @@ export default () => {
     record,
     handleSave,
     ...restProps
-  }) => {
+  }: any) => {
     const [editing, setEditing] = useState(false);
-    const inputRef = useRef(null);
-    const form = useContext(EditableContext);
+    const inputRef = useRef<HTMLInputElement>(null);
+    const editableCellForm = useContext<any>(EditableContext);
     useEffect(() => {
       if (editing) {
-        inputRef.current.focus();
+        inputRef.current?.focus();
       }
     }, [editing]);
 
@@ -789,7 +686,7 @@ export default () => {
 
     const save = async () => {
       try {
-        const values = await form.validateFields();
+        const values = await editableCellForm.validateFields();
         toggleEdit();
         handleSave({ ...record, ...values });
       } catch (errInfo) {
@@ -843,19 +740,19 @@ export default () => {
       title: '商品销售价（元）',
       dataIndex: 'salePrice',
       editable: true,
-      render: (_: number, record: any) => _ || 0,
+      render: (_: number) => _ || 0,
     },
     {
       title: '商品划线价（元）',
       dataIndex: 'originPrice',
       editable: true,
-      render: (_: number, record: any) => _ || 0,
+      render: (_: number) => _ || 0,
     },
   ];
 
   const handleSave = (row: any) => {
     const newData = [...priceDataSource];
-    const index = newData.findIndex((item) => row.id === item.id);
+    const index = newData.findIndex((item: any) => row.id === item.id);
     const item = newData[index];
     newData.splice(index, 1, { ...item, ...row });
     // console.log(newData, 'handleSave后的数据');
@@ -874,7 +771,7 @@ export default () => {
     }
     return {
       ...col,
-      onCell: (record) => ({
+      onCell: (record: Record<string, string>) => ({
         record,
         editable: col.editable,
         dataIndex: col.dataIndex,
@@ -934,29 +831,21 @@ export default () => {
         }
         const tooltipMessage = editingItem.id ? '活动编辑' : '活动新增';
         const hide = message.loading(`正在${tooltipMessage}`);
-        // console.log({
-        //   ...value,
-        //   startTime: moment(value.time[0]).format('YYYY-MM-DD HH:mm:ss'),
-        //   endTime: moment(value.time[1]).format('YYYY-MM-DD HH:mm:ss'),
-        //   firstPic: files,
-        //   otherPic: files2,
-        //   sortNo: value.sortNo ? Number(value.sortNo) : null,
-        //   product: choosedProducts || []
-        // });
+
         setAddOrUpdateLoading(true);
         // // 编辑
-        let addorUpdateRes = {};
+        let addorUpdateRes: { code?: number; message?: string; result?: any } = {};
         if (editingItem.id) {
           addorUpdateRes = await updateActivity({
             ...value,
             startTime: moment(value.time[0]).format('YYYY-MM-DD HH:mm:ss'),
             endTime: moment(value.time[1]).format('YYYY-MM-DD HH:mm:ss'),
-            firstPic: files,
             otherPic: files2,
             sortNo: value.sortNo ? Number(value.sortNo) : null,
             addedState: addedState,
             product: choosedProducts || [],
             id: editingItem.id,
+            type: 1, //活动类型   0-采购活动 1:数字化应用活动
           });
           hide();
         } else {
@@ -964,18 +853,18 @@ export default () => {
             ...value,
             startTime: moment(value.time[0]).format('YYYY-MM-DD HH:mm:ss'),
             endTime: moment(value.time[1]).format('YYYY-MM-DD HH:mm:ss'),
-            firstPic: files,
             otherPic: files2,
             sortNo: value.sortNo ? Number(value.sortNo) : null,
             addedState: addedState,
             product: choosedProducts || [],
+            type: 1, //活动类型   0-采购活动 1:数字化应用活动
           });
           hide();
         }
         if (addorUpdateRes.code === 0) {
           setIsClosejumpTooltip(false);
           message.success(`${tooltipMessage}成功`);
-          history.push(`/purchase-manage/promotions-manage`);
+          history.goBack();
         } else {
           message.error(`${tooltipMessage}失败，原因:{${addorUpdateRes.message}}`);
         }
@@ -1036,20 +925,13 @@ export default () => {
       <h1>活动基础信息</h1>
       <Form labelCol={{ span: 4 }} form={form}>
         <Form.Item label="活动编码" name="actNo" rules={[{ required: true }]}>
-          <Input placeholder="请输入" maxLength={30} />
+          <Input style={{ width: '300px' }} placeholder="请输入" maxLength={30} />
         </Form.Item>
         <Form.Item label="活动名称" name="name" rules={[{ required: true }]}>
-          <Input placeholder="请输入" maxLength={8} />
+          <Input style={{ width: '300px' }} placeholder="请输入" maxLength={8} />
         </Form.Item>
-        <Form.Item label="活动开始时间" name="time" rules={[{ required: true }]}>
-          <DatePicker.RangePicker
-            // format="YYYY-MM-DD HH:mm:ss"
-            showTime
-            allowClear
-          />
-        </Form.Item>
-        <Form.Item label="活动结束时间" name="timeEnd" rules={[{ required: true }]}>
-          <DatePicker.RangePicker
+        <Form.Item label="活动时间" name="time" rules={[{ required: true }]}>
+          <RangePicker
             // format="YYYY-MM-DD HH:mm:ss"
             showTime
             allowClear
@@ -1075,10 +957,14 @@ export default () => {
             },
           ]}
         >
-          <Input placeholder="请输入1~100的整数，数字越大排名越靠前" type="number" />
+          <Input
+            style={{ width: '300px' }}
+            placeholder="请输入1~100的整数，数字越大排名越靠前"
+            type="number"
+          />
         </Form.Item>
         <Form.Item label="活动促销词" name="actSpreadWord" rules={[{ required: true }]}>
-          <Input placeholder="请输入" maxLength={30} />
+          <Input style={{ width: '300px' }} placeholder="请输入" maxLength={30} />
         </Form.Item>
 
         <Form.Item
@@ -1102,7 +988,12 @@ export default () => {
           </Upload>
         </Form.Item>
         <Form.Item label="活动说明" name="content">
-          <Input.TextArea placeholder="请输入" maxLength={200} showCount />
+          <Input.TextArea
+            style={{ width: '500px' }}
+            placeholder="请输入"
+            maxLength={200}
+            showCount
+          />
         </Form.Item>
       </Form>
       <h1>活动商品</h1>

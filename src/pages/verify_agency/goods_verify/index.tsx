@@ -58,16 +58,8 @@ const GoodsMessage = (props: { _: any; row: any }) => (
 );
 export default () => {
   const [dataSource, setDataSource] = useState<NeedVerify.Content[]>([]);
-  const [refuseContent, setRefuseContent] = useState<string>('');
-  const [types, setTypes] = useState<any[]>([]);
-  const [searchContent, setSearChContent] = useState<{
-    productName?: string;
-    startTime?: string;
-    auditState?: number;
-    userName?: string;
-    endTime?: string;
-    handleResult?: number;
-  }>({});
+
+  const [searchForm] = Form.useForm();
 
   const formLayout = {
     labelCol: { span: 6 },
@@ -82,48 +74,31 @@ export default () => {
   });
 
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
+    const search = searchForm.getFieldsValue();
+    if (search.time) {
+      search.startTime = moment(search.time[0]).format('YYYY-MM-DDTHH:mm:ss');
+      search.endTime = moment(search.time[1]).format('YYYY-MM-DDTHH:mm:ss');
+    }
     try {
-      const { result, totalCount, pageTotal, code } = await getGoodsVerifyPage({
+      const params = {
         pageIndex,
         pageSize,
-        ...searchContent,
-      });
+        ...search,
+      };
+      console.log(params);
+      if (params.handleResult === -1) {
+        // 未处理
+        delete params.handleResult;
+        params.isHandle = 0;
+      } else if ([0, 1].some((item) => item === params.handleResult)) {
+        params.isHandle = 1;
+      }
+      const { result, totalCount, pageTotal, code } = await getGoodsVerifyPage(params);
       if (code === 0) {
         setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
         setDataSource(result);
       } else {
         message.error(`请求分页数据失败`);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const prepare = async () => {
-    try {
-      const res = await getDictionaryTree('CREATIVE_TYPE');
-      setTypes(res);
-    } catch (error) {
-      message.error('获取行业类型失败');
-    }
-  };
-  useEffect(() => {
-    prepare();
-  }, []);
-
-  const editState = async (record: any, { ...rest }) => {
-    try {
-      const tooltipMessage = rest.result ? '审核通过' : '审核拒绝';
-      const updateStateResult = await handleAudit({
-        auditId: record.auditId,
-        ...rest,
-      });
-      if (updateStateResult.code === 0) {
-        message.success(`${tooltipMessage}成功`);
-        getPage();
-        if (!rest.result) setRefuseContent('');
-      } else {
-        message.error(`${tooltipMessage}失败，原因:{${updateStateResult.message}}`);
       }
     } catch (error) {
       console.log(error);
@@ -138,7 +113,7 @@ export default () => {
       width: 300,
     },
     {
-      title: '商品类目',
+      title: '商品来源',
       dataIndex: 'productSource',
       isEllipsis: true,
       render: (_: number) => <span>{_ === 1 ? '应用管理库' : '其他'}</span>,
@@ -184,10 +159,12 @@ export default () => {
           <Button
             type="link"
             onClick={() => {
-              history.push(`${routeName.GOODS_VERIFY_DETAIL}?id=${record.auditId}`);
+              history.push(
+                `${routeName.GOODS_VERIFY_DETAIL}?productId=${record.productId}&id=${record.id}`,
+              );
             }}
           >
-            {record?.status === 0 ? '详情' : '审核'}
+            {record?.status === 0 ? '审核' : '详情'}
           </Button>
         );
       },
@@ -196,10 +173,9 @@ export default () => {
 
   useEffect(() => {
     getPage();
-  }, [searchContent]);
+  }, []);
 
   const useSearchNode = (): React.ReactNode => {
-    const [searchForm] = Form.useForm();
     return (
       <div className={sc('container-search')}>
         <Form {...formLayout} form={searchForm}>
@@ -225,13 +201,14 @@ export default () => {
               <Form.Item name="productSource" label="商品来源">
                 <Select placeholder="请选择" allowClear>
                   <Select.Option value={1}>应用管理库</Select.Option>
-                  <Select.Option value={2}>其他商品</Select.Option>
+                  <Select.Option value={2}>其他</Select.Option>
                 </Select>
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="handleResult" label="审核状态">
+              <Form.Item name="handleResult" label="审核状态" initialValue={-1}>
                 <Select placeholder="请选择" allowClear>
+                  <Select.Option value={-1}>待审核</Select.Option>
                   <Select.Option value={0}>拒绝</Select.Option>
                   <Select.Option value={1}>通过</Select.Option>
                 </Select>
@@ -243,12 +220,7 @@ export default () => {
                 type="primary"
                 key="search"
                 onClick={() => {
-                  const search = searchForm.getFieldsValue();
-                  if (search.time) {
-                    search.startTime = moment(search.time[0]).format('YYYY-MM-DDTHH:mm:ss');
-                    search.endTime = moment(search.time[1]).format('YYYY-MM-DDTHH:mm:ss');
-                  }
-                  setSearChContent(search);
+                  getPage();
                 }}
               >
                 查询
@@ -258,7 +230,7 @@ export default () => {
                 key="reset"
                 onClick={() => {
                   searchForm.resetFields();
-                  setSearChContent({});
+                  getPage();
                 }}
               >
                 重置

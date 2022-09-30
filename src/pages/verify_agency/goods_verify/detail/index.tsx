@@ -10,15 +10,18 @@ import VerifyStepsDetail from '@/components/verify_steps';
 import VerifyDescription from '@/components/verify_steps/verify_description/verify-description';
 import CommonTitle from '@/components/verify_steps/common_title';
 import { getDetail, updateVerityStatus } from '@/services/goods-verify';
-
+import { getApplicationTypeList } from '@/services/digital-application';
 const { Link } = Anchor;
 const { Column } = Table;
+const { Option } = Select;
 const sc = scopedClasses('user-config-kechuang');
 
 export default () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [detail, setDetail] = useState<any>({});
   const [list, setList] = useState<any>([]);
+  const [applicationTypeList, setApplicationTypeList] = useState<any>([]);
+  const [appTypeId, setAppTypeId] = useState<string | number>('');
 
   const [form] = Form.useForm();
   const prepare = async () => {
@@ -28,29 +31,23 @@ export default () => {
         const { code, result, message } = await getDetail({ productId });
         if (code === 0) {
           setDetail(result);
-          // setList(
-          //   result.map(
-          //     (item: {
-          //       userName: string;
-          //       createTime: string | undefined;
-          //       verityStatusContent: string | undefined;
-          //       verityStatus: number | undefined;
-          //     }) => {
-          //       return {
-          //         title: (
-          //           <CommonTitle
-          //             title={item.userName}
-          //             detail={item.verityStatusContent}
-          //             time={item.createTime}
-          //             special={false}
-          //           />
-          //         ),
-          //         description: null,
-          //         state: item.verityStatus,
-          //       };
-          //     },
-          //   ),
-          // );
+          setAppTypeId(result?.payProduct?.appTypeId);
+          setList([
+            {
+              title: (
+                <CommonTitle
+                  title={result?.payProductApply?.handleUserName}
+                  detail={result?.payProductApply?.handleResult === 1 ? '同意' : '拒绝'}
+                  time={result?.payProductApply?.applyTime}
+                  reason={result?.payProductApply?.handleReason}
+                  special={true}
+                  color={'red'}
+                />
+              ),
+              description: null,
+              state: null,
+            },
+          ]);
         } else {
           throw new Error(message);
         }
@@ -61,20 +58,32 @@ export default () => {
       }
     }
   };
+  const handleGetApplicationTypeList = () => {
+    getApplicationTypeList().then(({ result }) => {
+      setApplicationTypeList(result || []);
+    });
+  };
   const onSave = async () => {
     const id = history.location.query?.id as string;
     form
       .validateFields()
-      .then(async (value) => {
+      .then(async ({ reason, result }) => {
         setLoading(true);
         const tooltipMessage = '提交';
-        const submitRes = await updateVerityStatus({
+        const params = {
           id,
-          ...value,
-        });
+          handleResult: result ? 1 : 0,
+          handleReason: reason,
+          // 修改商品类型
+          productId: detail?.payProduct?.id,
+          appId: detail?.payProduct?.appId,
+          appTypeId: appTypeId,
+        };
+        const submitRes = await updateVerityStatus(params);
         if (submitRes.code === 0) {
           AntdMessage.success(`${tooltipMessage}成功`);
           form.resetFields();
+          history.goBack();
         } else {
           AntdMessage.error(`${tooltipMessage}失败，原因:{${submitRes.message}}`);
         }
@@ -85,6 +94,7 @@ export default () => {
 
   useEffect(() => {
     prepare();
+    handleGetApplicationTypeList();
   }, []);
   return (
     <PageContainer loading={loading} title={false}>
@@ -97,27 +107,62 @@ export default () => {
                 {detail?.payProduct?.productSource === 1 ? '应用管理库' : '其他'}
               </Form.Item>
               {detail?.payProduct?.productSource === 1 && [
-                <Form.Item key="productApp" label="数字化应用">
-                  {detail?.payProduct?.productApp}
+                <Form.Item key="appName" label="数字化应用">
+                  {detail?.payProduct?.appName}
                 </Form.Item>,
-                <Form.Item key="productApp1" label="商品服务端">
-                  <div>
-                    <span>App端：</span>
-                    <span>https://antelopetest.iflysec.com/antelope-other/ </span>
-                    <a href="">查看</a>
-                  </div>
+                <Form.Item key="appType" label="商品服务端">
+                  {detail?.payProduct?.appType === 1 ? (
+                    <div>
+                      <span>H5应用：</span>
+                      <span>{detail?.payProduct?.appHomeUrl || '--'} </span>
+                      <a href="">查看</a>
+                    </div>
+                  ) : detail?.payProduct?.appType === 2 ? (
+                    <div>
+                      <span>WEB应用:</span>
+                      <span>{detail?.payProduct?.pcHomeUrl || '--'} </span>
+                      <a href="">查看</a>
+                    </div>
+                  ) : detail?.payProduct?.appType === 3 ? (
+                    [
+                      <div key="h5">
+                        <span>H5应用：</span>
+                        <span>{detail?.payProduct?.appHomeUrl || '--'} </span>
+                        <a href="">查看</a>
+                      </div>,
+                      <div key="pc">
+                        <span>WEB应用:</span>
+                        <span>{detail?.payProduct?.pcHomeUrl || '--'} </span>
+                        <a href="">查看</a>
+                      </div>,
+                    ]
+                  ) : (
+                    '/'
+                  )}
                 </Form.Item>,
               ]}
 
               <Form.Item label="商品类型">
-                <Select placeholder="请选择" allowClear style={{ width: '200px' }}>
-                  <Select.Option value={1}>1</Select.Option>
-                  <Select.Option value={2}>2</Select.Option>
+                <Select
+                  placeholder="请选择"
+                  value={appTypeId}
+                  onChange={(val) => {
+                    setAppTypeId(val);
+                  }}
+                  allowClear
+                  disabled={detail?.payProductApply?.isHandle === 1}
+                  style={{ width: '200px' }}
+                >
+                  {applicationTypeList.map((item: any) => (
+                    <Option key={item.id} value={item.id}>
+                      {item.name}
+                    </Option>
+                  ))}
                 </Select>
               </Form.Item>
               <Form.Item label="商品名称">{detail?.payProduct?.productName}</Form.Item>
               <Form.Item label="商品型号">{detail?.payProduct?.productModel}</Form.Item>
-              <Form.Item label="商品简介">{detail?.payProduct?.productContent}</Form.Item>
+              <Form.Item label="商品简介">{detail?.payProduct?.productDesc}</Form.Item>
               <Form.Item label="商品封面图">
                 <Image width={100} src={detail?.payProduct?.productPic} alt="图片损坏" />
               </Form.Item>
@@ -180,7 +225,7 @@ export default () => {
               <Form.Item label="商品介绍">
                 <div
                   dangerouslySetInnerHTML={{
-                    __html: detail?.payProduct?.productDesc || '/',
+                    __html: detail?.payProduct?.productContent || '/',
                   }}
                 />
               </Form.Item>
@@ -200,16 +245,15 @@ export default () => {
               </Form.Item>
             </Form>
           </ProCard>
-
-          {/* <ProCard>
-            <h2 id="anchor-details">平台响应信息</h2>
-            <VerifyStepsDetail list={list} />
-          </ProCard> */}
           <ProCard>
-            <h2 id="anchor-details">平台响应信息</h2>
-            <VerifyStepsDetail list={list} />
-            <VerifyDescription form={form} />
-            {detail?.verityStatus !== 4 && detail?.verityStatus !== 5 && (
+            <h2 id="anchor-details">审核</h2>
+            {detail?.payProductApply?.isHandle === 1 ? (
+              <VerifyStepsDetail list={list} />
+            ) : (
+              <VerifyDescription form={form} mustFillIn />
+            )}
+
+            {detail?.payProductApply?.isHandle === 0 && (
               <Button type="primary" style={{ marginRight: '10px' }} onClick={onSave}>
                 提交
               </Button>

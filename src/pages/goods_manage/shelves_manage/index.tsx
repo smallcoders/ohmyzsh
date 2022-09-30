@@ -137,6 +137,7 @@ export default () => {
       title: '操作',
       hideInSearch: true,
       width: 200,
+      fixed: 'right',
       render: (_, record) => (
         <Space>
           {record.actState === 0 && ( // 未开始的可提前开始
@@ -301,6 +302,7 @@ export default () => {
             <p>{`活动列表（共${total}个）`}</p>
           </div>
         }
+        scroll={{ x: 1400 }}
         options={false}
         rowKey="id"
         expandable={{
@@ -327,7 +329,9 @@ export default () => {
         request={async (pagination) => {
           const result = await getActivityManageList({
             ...pagination,
+            type: 1,
           });
+
           setPageIndex(pagination.current);
           setTotal(result.total);
           return result;

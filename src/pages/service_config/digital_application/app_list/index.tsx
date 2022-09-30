@@ -14,7 +14,7 @@ const sc = scopedClasses('service-config-digital-app-audit');
 
 import type ApplicationManager from '@/types/service-config-digital-applictaion';
 
-import { getApplyInfoPage } from '@/services/digital-application';
+import { getApplicationList } from '@/services/digital-application';
 
 export default () => {
   // 列表
@@ -39,11 +39,9 @@ export default () => {
   async function getPageList(pageIndex: number = 1, pageSize = pageInfo.pageSize) {
     try {
       setLoading(true);
-      const { result, totalCount, pageTotal, code } = await getApplyInfoPage({
+      const { result, totalCount, pageTotal, code } = await getApplicationList({
         pageIndex,
         pageSize,
-        handleResult: 0,
-        isHandle: 0,
       });
       if (code === 0) {
         setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
@@ -107,7 +105,7 @@ export default () => {
     <div className={sc('container')}>
       <div className={sc('container-table-header')}>
         <div className="title">
-          <span>需求列表(共{pageInfo.totalCount || 0}个)</span>
+          <span>应用列表(共{pageInfo.totalCount || 0}个)</span>
         </div>
       </div>
       <div className={sc('container-table-body')}>
