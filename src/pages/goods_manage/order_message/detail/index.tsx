@@ -49,7 +49,7 @@ export default () => {
 
     const hour = day > 0 ? Math.floor((minutes - day * 1440) / 60) : Math.floor(minutes / 60);
 
-    const minute = (day > 0 || hour > 0) ? Math.floor(minutes - day * 1440 - hour * 60) : minutes;
+    const minute = day > 0 || hour > 0 ? Math.floor(minutes - day * 1440 - hour * 60) : minutes;
 
     let time = '';
 
@@ -87,15 +87,11 @@ export default () => {
         breadcrumb: (
           <Breadcrumb>
             <Breadcrumb.Item>
-              <Link to="/purchase-manage/commodity-manage">采购管理 </Link>
+              <Link to="/goods-manage">商品管理 </Link>
             </Breadcrumb.Item>
 
             <Breadcrumb.Item>
-              {infoType ? (
-                <Link to={routeName.BILL_MANAGEMENT}>发票管理 </Link>
-              ) : (
-                <Link to={routeName.PURCHASE_MANAGE}>订单管理 </Link>
-              )}
+              <Link to={routeName.ORDER_MESSAGE_INDEX}>订单信息 </Link>
             </Breadcrumb.Item>
 
             <Breadcrumb.Item>订单详情</Breadcrumb.Item>
@@ -160,27 +156,23 @@ export default () => {
                 <span>交易关闭原因：</span>
                 <span>{detail?.remarkMsg || '无'}</span>
               </>
-            ) : (
-              <>
-                <span>交易操作：</span>
-                <Space size={10}>
-                  {detail?.mngButtonList?.map((b) => {
-                    return <ButtonManage type={b as any} record={detail} callback={prepare} />;
-                  })}
-                </Space>
-              </>
-            )}
+            ) : // <>
+            //   <span>交易操作：</span>
+            //   <Space size={10}>
+            //     {detail?.mngButtonList?.map((b) => {
+            //       return <ButtonManage type={b as any} record={detail} callback={prepare} />;
+            //     })}
+            //   </Space>
+            // </>
+            null}
           </div>
         </div>
-        <Button
+        {/* <Button
           href={`/antelope-pay/mng/order/detail/export?orderNo=${detail?.orderNo}`}
           icon={<UploadOutlined />}
-        // onClick={() => {
-        //   onExport();
-        // }}
         >
           导出
-        </Button>
+        </Button> */}
       </div>
 
       <div className={sc('container-info')}>

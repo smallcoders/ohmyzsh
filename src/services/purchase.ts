@@ -35,6 +35,20 @@ export async function getActivityProducts(options?: Record<string, any>) {
   });
 }
 /**
+ * 新增活动查询可上架商品列表 （数字化）
+ * @param params
+ */
+export async function getActivityAppProducts(options?: Record<string, any>) {
+  return request<LogoutVerify.ResultList>('/antelope-pay/mng/activity/queryProductApp', {
+    method: 'post',
+    data: { ...(options || {}) },
+    headers: {
+      'rpc-tag': 'jbxu5',
+    },
+  });
+}
+
+/**
  * 设置价格时查看对应商品规格信息
  * @param params
  */

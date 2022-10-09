@@ -43,7 +43,7 @@ export default ({
           {type === 'ORDER' && (
             <>
               <div style={{ flex: 1, textAlign: 'center' }}>订单状态</div>
-              <div style={{ flex: 1, textAlign: 'center' }}>交易操作</div>
+              {/* <div style={{ flex: 1, textAlign: 'center' }}>交易操作</div> */}
             </>
           )}
         </div>
@@ -313,7 +313,7 @@ export const OrderItem = ({
             下单手机号：
             {record?.userPhone || '--'}
           </div>
-          <div style={{ display: 'flex', gap: 10 }}>
+          {/* <div style={{ display: 'flex', gap: 10 }}>
             <span>{record.mngRemark}</span>
             <Popconfirm
               icon={null}
@@ -337,9 +337,9 @@ export const OrderItem = ({
                   setRemark(record.mngRemark || '');
                 }}
               />
-              <a href="javascript:void(0)">备注</a>
+              <a>备注</a>
             </Popconfirm>
-          </div>
+          </div> */}
         </div>
       )}
       <div className="order-item-body">
@@ -449,13 +449,13 @@ export const OrderItem = ({
                 )}
                 <a
                   onClick={() => {
-                    history.push(`${routeName.PURCHASE_MANAGE_DETAIL}?id=${record.orderNo}`);
+                    history.push(`${routeName.ORDER_MESSAGE_DETAIL}?id=${record.orderNo}`);
                   }}
                 >
                   订单详情
                 </a>
               </div>
-              <div
+              {/* <div
                 style={{ flex: 1, display: 'grid', textAlign: 'center', alignContent: 'center' }}
               >
                 {record?.mngButtonList?.map((b, index) => {
@@ -463,12 +463,12 @@ export const OrderItem = ({
                     <ButtonManage key={index} type={b as any} record={record} callback={callback} />
                   );
                 })}
-                {/* <span>交易关闭</span> */}
-              </div>
+               
+              </div> */}
             </>
           )}
         </div>
-        {type === 'ORDER' && (
+        {/* {type === 'ORDER' && (
           <Tooltip
             color={'#fff'}
             trigger="click"
@@ -520,7 +520,7 @@ export const OrderItem = ({
               查看交易操作记录
             </div>
           </Tooltip>
-        )}
+        )} */}
       </div>
     </div>
   );

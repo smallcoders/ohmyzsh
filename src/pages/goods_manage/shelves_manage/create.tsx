@@ -24,7 +24,7 @@ import type { UploadFile } from 'antd/lib/upload/interface';
 import SelfTable from '@/components/self_table';
 import type { PaginationProps } from 'antd';
 import {
-  getActivityProducts,
+  getActivityAppProducts,
   createActivity, // 新增活动
   updateActivity, // 编辑活动
   getActivityDetail, // 活动详情
@@ -33,6 +33,7 @@ import {
 import moment from 'moment';
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { Link, history, Prompt } from 'umi';
+import { routeName } from '../../../../config/routes';
 import './detail.less';
 const RangePicker: any = DatePicker.RangePicker;
 
@@ -122,9 +123,9 @@ export default () => {
     form.setFieldsValue({ ...editingItem });
   }, [editingItem]);
 
-  const getProducts = async (pageIndex: number = 1, pageSize = 10000) => {
+  const getProducts = async (pageIndex: number = 1, pageSize = 10) => {
     try {
-      const { result, totalCount, pageTotal, code } = await getActivityProducts({
+      const { result, totalCount, pageTotal, code } = await getActivityAppProducts({
         pageIndex,
         pageSize,
       });
@@ -168,7 +169,7 @@ export default () => {
     },
     {
       title: '商品采购价',
-      dataIndex: 'purchasePricePart',
+      dataIndex: 'originPricePart',
       width: 80,
     },
     {
@@ -370,7 +371,7 @@ export default () => {
     },
     {
       title: '商品采购价',
-      dataIndex: 'purchasePricePart',
+      dataIndex: 'originPricePart',
       width: 80,
     },
     {
@@ -522,7 +523,7 @@ export default () => {
       <Modal
         title={'选择商品'}
         width="800px"
-        visible={modalVisible}
+        open={modalVisible}
         maskClosable={false}
         onOk={handleOk}
         onCancel={handleCancel}
@@ -651,7 +652,7 @@ export default () => {
   const EditableRow = ({ index, ...props }: any) => {
     const [editableForm] = Form.useForm();
     return (
-      <Form form={form} component={false}>
+      <Form form={editableForm} component={false}>
         <EditableContext.Provider value={editableForm}>
           <tr {...props} />
         </EditableContext.Provider>
@@ -786,7 +787,7 @@ export default () => {
       <Modal
         title={'配置商品活动价'}
         width="800px"
-        visible={priceModalVisible}
+        open={priceModalVisible}
         maskClosable={false}
         onOk={setPriceOk}
         onCancel={cancelSetPrice}
@@ -864,14 +865,16 @@ export default () => {
         if (addorUpdateRes.code === 0) {
           setIsClosejumpTooltip(false);
           message.success(`${tooltipMessage}成功`);
-          history.goBack();
+          if (addedState === 0) {
+            history.goBack(); // 上架返回上一页， 暂存 停留当前页
+          }
         } else {
           message.error(`${tooltipMessage}失败，原因:{${addorUpdateRes.message}}`);
         }
         setAddOrUpdateLoading(false);
       })
       .catch((err) => {
-        // message.error('服务器错误，请稍后重试');
+        message.error('缺少必填项');
         console.log(err);
       });
   };
@@ -884,26 +887,26 @@ export default () => {
         breadcrumb: (
           <Breadcrumb>
             <Breadcrumb.Item>
-              <Link to="/purchase-manage/commodity-manage">采购管理 </Link>
-            </Breadcrumb.Item>
-            <Breadcrumb.Item>
-              <Link to="/purchase-manage/promotions-manage">活动管理 </Link>
+              <Link to={routeName.SHELVES_MANAGE_INDEX}>活动管理 </Link>
             </Breadcrumb.Item>
             <Breadcrumb.Item>{isEditing ? `活动编辑` : '活动新增'}</Breadcrumb.Item>
           </Breadcrumb>
         ),
       }}
       footer={[
-        <Button
-          type="primary"
-          loading={addOrUpdateLoading}
-          onClick={() => {
-            addOrUpdate(0);
-          }}
+        <Popconfirm
+          key="update"
+          title="上架后，活动以及商品将展示在前台，确定上架"
+          okText="上架"
+          cancelText="取消"
+          onConfirm={() => addOrUpdate(0)}
         >
-          上架
-        </Button>,
+          <Button type="primary" loading={addOrUpdateLoading}>
+            上架
+          </Button>
+        </Popconfirm>,
         <Button
+          key="add"
           loading={addOrUpdateLoading}
           onClick={() => {
             addOrUpdate(2);
@@ -912,9 +915,10 @@ export default () => {
           暂存
         </Button>,
         <Button
+          key="back"
           loading={addOrUpdateLoading}
           onClick={() => {
-            history.push(`/purchase-manage/promotions-manage`);
+            history.goBack();
           }}
         >
           返回

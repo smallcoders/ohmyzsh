@@ -21,7 +21,7 @@ export default () => {
   // 更改活动状态
   const addOrUpdate = async (params: object) => {
     try {
-      const removeRes = await changeActState({ ...params });
+      const removeRes = await changeActState({ ...params, type: 1 });
       if (removeRes.code === 0) {
         message.success(`操作成功`);
         if (actionRef.current) {
@@ -178,7 +178,7 @@ export default () => {
                 size="small"
                 type="link"
                 onClick={() => {
-                  history.push(`${routeName.SHELVES_MANAGE_DETAIL}?id=${record.id}`);
+                  history.push(`${routeName.SHELVES_MANAGE_CREATE}?id=${record.id}`);
                 }}
               >
                 编辑
@@ -199,6 +199,32 @@ export default () => {
     },
   ];
 
+  const [loadingObj, setLoadingObj] = useState<any>({});
+
+  const [tableData, setTableData] = useState<any>([]);
+
+  const queryExpandedData = async (record: any, key: any) => {
+    try {
+      const table = { ...tableData };
+      const loading = { ...loadingObj };
+      const data: any = record.product || [];
+      table[key] = data;
+      loading[key] = false;
+      setTableData(table);
+      setLoadingObj(loading);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const onExpand = (expanded: any, record: any) => {
+    const key = record?.id;
+    if (tableData[key]?.length) return;
+    const loading = { ...loadingObj };
+    loading[key] = true;
+    setLoadingObj(loading);
+    queryExpandedData(record, key);
+  };
   const expandedRowRender = (record: any) => {
     const _columns: ProColumns<DataCommodity.Commodity>[] = [
       {
@@ -209,7 +235,7 @@ export default () => {
       {
         title: '商品图',
         dataIndex: 'productPic',
-        render: (_: string, _record: any) => <Image width={100} src={_} />,
+        render: (_: any) => <Image width={100} src={_} />,
       },
       {
         title: '商品名称',
@@ -267,33 +293,6 @@ export default () => {
       />
     );
   };
-  const [loadingObj, setLoadingObj] = useState<any>({});
-
-  const [tableData, setTableData] = useState<any>([]);
-
-  const queryExpandedData = async (record: any, key: any) => {
-    try {
-      const table = { ...tableData };
-      const loading = { ...loadingObj };
-      const data: any = record.product || [];
-      table[key] = data;
-      loading[key] = false;
-      setTableData(table);
-      setLoadingObj(loading);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const onExpand = (expanded: any, record: any) => {
-    const key = record?.id;
-    if (tableData[key]?.length) return;
-    const loading = { ...loadingObj };
-    loading[key] = true;
-    setLoadingObj(loading);
-    queryExpandedData(record, key);
-  };
-
   return (
     <PageContainer>
       <ProTable

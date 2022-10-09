@@ -1,4 +1,5 @@
 import { UploadOutlined } from '@ant-design/icons';
+import type { RadioChangeEvent } from 'antd';
 import {
   Button,
   Input,
@@ -10,7 +11,8 @@ import {
   message,
   Pagination,
   Radio,
-  RadioChangeEvent,
+  Empty,
+  Spin,
 } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import React, { useEffect, useState } from 'react';
@@ -26,7 +28,7 @@ const sc = scopedClasses('order-manage');
 
 export default () => {
   const [dataSource, setDataSource] = useState<OrderManage.Content[]>([]);
-  // const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const [searchContent, setSearChContent] = useState<{
     title?: string; // 标题
     publishTime?: string; // 发布时间
@@ -55,11 +57,13 @@ export default () => {
   }, [state]);
 
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
+    setLoading(true);
     try {
       const { result, totalCount, pageTotal, code } = await getOrderPage({
         pageIndex,
         pageSize,
         orderState: state === 0 ? undefined : state,
+        type: 1, //订单类型   0-采购订单 1:数字化应用订单
         ...searchContent,
       });
       if (code === 0) {
@@ -68,8 +72,10 @@ export default () => {
       } else {
         message.error(`请求分页数据失败`);
       }
+      setLoading(false);
     } catch (error) {
-      console.log(error);
+      setLoading(false);
+      message.error(error);
     }
   };
 
@@ -192,29 +198,32 @@ export default () => {
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>订单列表(共{pageInfo.totalCount || 0}个)</span>
-          <Button
+          {/* <Button
             href={getUrl('/antelope-pay/mng/order/exportOrderList', {
               ...searchContent,
               pageIndex: 1,
               pageSize: 10000,
             })}
             icon={<UploadOutlined />}
-            // onClick={() => {
-            //   onExport();
-            // }}
+      
           >
             导出
-          </Button>
+          </Button> */}
         </div>
       </div>
-      <div className={sc('container-table-body')}>
-        <OrderList
-          dataSource={dataSource}
-          type={'ORDER'}
-          callback={() => {
-            getPage();
-          }}
-        />
+      <Spin wrapperClassName={sc('container-table-body')} spinning={loading}>
+        {dataSource.length === 0 ? (
+          <Empty />
+        ) : (
+          <OrderList
+            dataSource={dataSource}
+            type={'ORDER'}
+            callback={() => {
+              getPage();
+            }}
+          />
+        )}
+
         <div
           style={{
             padding: 20,
@@ -236,7 +245,7 @@ export default () => {
             onShowSizeChange={getPage}
           />
         </div>
-      </div>
+      </Spin>
     </PageContainer>
   );
 };
