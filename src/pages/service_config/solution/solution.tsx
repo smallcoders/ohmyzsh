@@ -4,15 +4,14 @@ import { history } from 'umi';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import { getDictionayTree } from '@/services/common';
 import ProTable from '@ant-design/pro-table';
-import { PageContainer } from '@ant-design/pro-layout';
-import { pageQuery, setTop, unsetTop, solutionEditType } from '@/services/solution';
+import { pageQuery, solutionEditType, getSolutionSort } from '@/services/solution';
 import { getDictionay } from '@/services/common';
 import { getAreaTree } from '@/services/area';
 import type SolutionTypes from '@/types/solution';
 import type { ProSchemaValueEnumObj } from '@ant-design/pro-utils';
 import { routeName } from '@/../config/routes';
 import { UploadOutlined } from '@ant-design/icons';
-import { getUrl } from '@/utils/util';
+import { solutionExport } from '@/services/export';
 
 /**
  * 渲染服务类型
@@ -73,7 +72,6 @@ const SolutionTable: React.FC = () => {
     getDictionay('NEW_ENTERPRISE_DICT').then((data) => {
       const options = {};
       data?.result.forEach(({ id, name }) => (options[id] = name));
-      console.log('optionsoptionsoptionsoptions',options)
       setTypeOptions(options);
     });
 
@@ -125,14 +123,14 @@ const SolutionTable: React.FC = () => {
    * @param isTop
    * @param id
    */
-  const handleSetTop = async (isTop: boolean, id: number) => {
-    const result = isTop ? await unsetTop(id) : await setTop(id);
-    if (result.code !== 0) {
-      message.error(result.message);
-    } else {
-      actionRef.current?.reload();
-    }
-  };
+  // const handleSetTop = async (isTop: boolean, id: number) => {
+  //   const result = isTop ? await unsetTop(id) : await setTop(id);
+  //   if (result.code !== 0) {
+  //     message.error(result.message);
+  //   } else {
+  //     actionRef.current?.reload();
+  //   }
+  // };
 
   const [weightForm] = Form.useForm();
   const handleWeightOk = async () => {
@@ -140,16 +138,18 @@ const SolutionTable: React.FC = () => {
       weightForm
       .validateFields()
       .then(async (value)=>{
-        console.log('value',value)
-        console.log('ID：',currentId)
-        // const res = await 等接口
-        // if (res?.code === 0) {
-          // message.success(`权重设置成功！`);
-          // setWeightVistble(false);
-          // weightForm.resetFields();
-        // } else {
-        //   message.error(`权重设置失败，原因:{${res?.message}}`);
-        // }
+        const res = await getSolutionSort({
+          id: String(currentId),
+          sort: value.sort
+        })
+        if (res?.code === 0) {
+          message.success(`权重设置成功！`);
+          setWeightVistble(false);
+          weightForm.resetFields();
+          actionRef.current?.reload();
+        } else {
+          message.error(`权重设置失败，原因:{${res?.message}}`);
+        }
       })
     } catch (error) {
       console.log(error)
@@ -168,13 +168,12 @@ const SolutionTable: React.FC = () => {
         }}
       >
         <Form form={weightForm}>
-          <Form.Item name="keyword" rules={[{required: true,message: '必填',}]}>
+          <Form.Item name="sort" rules={[{required: true,message: '必填',}]}>
             <InputNumber 
               style={{ width: '100%' }} 
-              placeholder='请输入权重'                 
+              placeholder='数字越大排名越靠前'                 
               min={1}
-              step={0.01}
-              max={100}
+              step={0.001}
             />
           </Form.Item>
         </Form>
@@ -185,9 +184,8 @@ const SolutionTable: React.FC = () => {
   const columns: ProColumns<SolutionTypes.Solution>[] = [
     {
       title: '序号',
+      dataIndex: 'sort',
       hideInSearch: true,
-      renderText: (text: any, record: any, index: number) =>
-        (paginationRef.current.current - 1) * paginationRef.current.pageSize + index + 1,
     },
     {
       title: '服务名称',
@@ -283,19 +281,11 @@ const SolutionTable: React.FC = () => {
         >
           详情
         </Button>,
-        <Button
-          key="2"
-          size="small"
-          type="link"
-          onClick={() => handleSetTop(record.isTop, record.id)}
-        >
-          {record.isTop ? '取消置顶' : '置顶'}
-        </Button>,
         <Button type="link" onClick={() => {
           setWeightVistble(true);
           setCurrentId(record.id)
               // 重置 keyword: record.keyword  这里需要把权重选上
-          weightForm.setFieldsValue({keyword: 0 || [],})
+          weightForm.setFieldsValue({sort: record.sort || [],})
         }}>权重</Button>
       ],
     },
@@ -355,6 +345,18 @@ const SolutionTable: React.FC = () => {
     );
   };
 
+  const [searchInfo, setSearchInfo] = useState<any>({})
+  const exportList = () => {
+    const { name, typeId, providerName, areaCode, publishTimeSpan } = searchInfo;
+    solutionExport({
+      name,
+      typeId,
+      providerName,
+      areaCode,
+      startPublishTime: publishTimeSpan ? publishTimeSpan[0] : undefined,
+      endPublishTime: publishTimeSpan ? publishTimeSpan[1] : undefined,
+    })
+  }
   return (
     <>
       <ProTable
@@ -362,15 +364,8 @@ const SolutionTable: React.FC = () => {
         toolBarRender={
           ()=>[
             <Button
-              href={getUrl('/antelope-pay/mng/order/exportOrderList', {
-                // ...searchContent,
-                pageIndex: 1,
-                pageSize: 10000,
-              })}
               icon={<UploadOutlined />}
-              // onClick={() => {
-              //   onExport();
-              // }}
+              onClick={exportList}
             >
               导出
             </Button>
@@ -386,6 +381,8 @@ const SolutionTable: React.FC = () => {
           optionRender: (searchConfig, formProps, dom) => [dom[1], dom[0]],
         }}
         request={async (pagination) => {
+          // 保存seatchInfo
+          setSearchInfo(pagination)
           const result = await pageQuery(pagination);
           paginationRef.current = pagination;
           setTotal(result.total);

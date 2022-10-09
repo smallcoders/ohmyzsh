@@ -19,7 +19,7 @@ import React, { useEffect, useState } from 'react';
 import type Common from '@/types/common';
 import SelfTable from '@/components/self_table';
 import { history } from 'umi';
-import { getExpertResourcePage, showTop, updateKeyword } from '@/services/expert_manage/expert-resource';
+import { getExpertResourcePage, updateKeyword, getExportSort } from '@/services/expert_manage/expert-resource';
 import type ExpertResource from '@/types/expert_manage/expert-resource';
 import { getAreaTree } from '@/services/area';
 import { getDictionay } from '@/services/common';
@@ -29,7 +29,7 @@ import {
   getKeywords, //关键词枚举 
 } from '@/services/creative-demand';
 import { UploadOutlined } from '@ant-design/icons';
-import { getUrl } from '@/utils/util';
+import { expertExport } from '@/services/export';
 import SelfSelect from '@/components/self_select';
 const sc = scopedClasses('user-config-logout-verify');
 
@@ -96,21 +96,6 @@ export default () => {
     }
   };
 
-  // 置顶
-  const top = async (record: any) => {
-    const tooltipMessage = '置顶';
-    try {
-      const markResult = await showTop(record.id);
-      if (markResult.code === 0) {
-        antdMessage.success(`${tooltipMessage}成功`);
-        getPage();
-      } else {
-        throw new Error(markResult.message);
-      }
-    } catch (error) {
-      antdMessage.error(`${tooltipMessage}失败，原因:{${error}}`);
-    }
-  };
   const [signForm] = Form.useForm();
 
   // 标记
@@ -229,16 +214,20 @@ export default () => {
       weightForm
       .validateFields()
       .then(async (value)=>{
-        console.log('value',value)
-        console.log('ID：',currentId)
-        // const res = await 等接口
-        // if (res?.code === 0) {
-          // message.success(`权重设置成功！`);
-          // setWeightVistble(false);
-          // weightForm.resetFields();
-        // } else {
-        //   message.error(`权重设置失败，原因:{${res?.message}}`);
-        // }
+        const res = await getExportSort({
+          id: String(currentId),
+          sort: value.sort
+        })
+        if (res?.code === 0) {
+          antdMessage.success(`权重设置成功！`);
+          setWeightVistble(false);
+          weightForm.resetFields();
+          // 重新获取列表
+          const search = searchForm.getFieldsValue();
+          setSearChContent(search);
+        } else {
+          antdMessage.error(`权重设置失败，原因:{${res?.message}}`);
+        }
       })
     } catch (error) {
       console.log(error)
@@ -257,13 +246,12 @@ export default () => {
         }}
       >
         <Form form={weightForm}>
-          <Form.Item name="keyword" rules={[{required: true,message: '必填',}]}>
+          <Form.Item name="sort" rules={[{required: true,message: '必填',}]}>
             <InputNumber 
               style={{ width: '100%' }} 
               placeholder='请输入权重'                 
               min={1}
-              step={0.01}
-              max={100}
+              step={0.001}
             />
           </Form.Item>
         </Form>
@@ -276,8 +264,6 @@ export default () => {
       title: '序号',
       dataIndex: 'sort',
       width: 80,
-      render: (_: any, _record: ExpertResource.Content, index: number) =>
-        pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
       title: '专家姓名',
@@ -338,16 +324,8 @@ export default () => {
                 setWeightVistble(true);
                 setCurrentId(record.id)
                     // 重置 keyword: record.keyword  这里需要把权重选上
-                weightForm.setFieldsValue({keyword: 0 || [],})
+                weightForm.setFieldsValue({sort: record.sort || [],})
               }}>权重</Button>
-              <Button
-                type="link"
-                onClick={() => {
-                  top(record);
-                }}
-              >
-                置顶
-              </Button>
               <Popconfirm
                 icon={<span style={{ fontSize: 18 }}>服务专员标记</span>}
                 title={
@@ -423,8 +401,8 @@ export default () => {
     getPage();
   }, [searchContent]);
 
+  const [searchForm] = Form.useForm();
   const useSearchNode = (): React.ReactNode => {
-    const [searchForm] = Form.useForm();
     return (
       <div className={sc('container-search')}>
         <Form {...formLayout} form={searchForm}>
@@ -495,6 +473,16 @@ export default () => {
     );
   };
 
+  const exportList = () => {
+    console.log('专家资源', searchContent)
+    const { expertName, expertType, areaCode, commissioner } = searchContent;
+    expertExport({
+      expertName,
+      expertType,
+      areaCode,
+      commissioner,
+    })
+  }
   return (
     <>
       {useSearchNode()}
@@ -502,18 +490,11 @@ export default () => {
         <div className="title">
           <span>专家列表(共{pageInfo.totalCount || 0}个)</span>
           <Button
-              href={getUrl('/antelope-pay/mng/order/exportOrderList', {
-                // ...searchContent,
-                pageIndex: 1,
-                pageSize: 10000,
-              })}
-              icon={<UploadOutlined />}
-              // onClick={() => {
-              //   onExport();
-              // }}
-            >
-              导出
-            </Button>
+            icon={<UploadOutlined />}
+            onClick={exportList}
+          >
+            导出
+          </Button>
         </div>
       </div>
       <div className={sc('container-table-body')}>

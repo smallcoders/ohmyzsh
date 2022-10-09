@@ -20,6 +20,7 @@ import type AchievementsTypes from '@/types/service-config-achievements-manage';
 import { history } from 'umi';
 import { getUrl } from '@/utils/util';
 import scopedClasses from '@/utils/scopedClasses';
+import { creativeAchievementExport } from '@/services/export';
 const sc = scopedClasses('service-config-achievements-manage');
 import {
   getKeywords, // 关键词枚举 
@@ -290,6 +291,17 @@ export default () => {
     history.push(`/service-config/achievements-manage/multi-upload`);
   }
 
+  const [searchInfo, setSearchInfo] = useState<any>({})
+  const exportList = () => {
+    const { name, typeId, state, dateTime } = searchInfo;
+    creativeAchievementExport({
+      name,
+      typeId,
+      state,
+      startDate: dateTime ? dateTime[0] : undefined,
+      endDate: dateTime ? dateTime[1] : undefined,
+    })
+  }
   return (
     <PageContainer>
       <div className={sc('container')}>
@@ -302,15 +314,8 @@ export default () => {
           }}>
             <Button type="primary" ghost onClick={handleMultiUpload}>批量导入</Button>
             <Button
-              href={getUrl('/antelope-pay/mng/order/exportOrderList', {
-                // ...searchContent,
-                pageIndex: 1,
-                pageSize: 10000,
-              })}
               icon={<UploadOutlined />}
-              // onClick={() => {
-              //   onExport();
-              // }}
+              onClick={exportList}
             >
               导出
             </Button>
@@ -326,6 +331,8 @@ export default () => {
             optionRender: (searchConfig, formProps, dom) => [dom[1], dom[0]],
           }}
           request={async (pagination) => {
+            // 保存seatchInfo
+            setSearchInfo(pagination)
             const result = await pageQuery(pagination);
             paginationRef.current = pagination;
             setTotal(result.total);

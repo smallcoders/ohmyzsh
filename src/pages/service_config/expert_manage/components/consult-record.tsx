@@ -25,7 +25,7 @@ import {
   updateConsultRecordRemark,
 } from '@/services/expert_manage/consult-record';
 import { UploadOutlined } from '@ant-design/icons';
-import { getUrl } from '@/utils/util';
+import { expertConsultationExport } from '@/services/export';
 const sc = scopedClasses('user-config-logout-verify');
 
 export default () => {
@@ -278,6 +278,18 @@ export default () => {
     );
   };
 
+  const exportList = () => {
+    console.log('咨询记录', searchContent)
+    const { orgName, expertName, startCreateTime, endCreateTime, contacted } = searchContent;
+    expertConsultationExport({
+      orgName,
+      expertName,
+      startCreateTime,
+      endCreateTime,
+      contacted,
+    })
+  }
+
   return (
     <>
       {useSearchNode()}
@@ -285,18 +297,11 @@ export default () => {
         <div className="title">
           <span>咨询记录列表(共{pageInfo.totalCount || 0}个)</span>
           <Button
-              href={getUrl('/antelope-pay/mng/order/exportOrderList', {
-                // ...searchContent,
-                pageIndex: 1,
-                pageSize: 10000,
-              })}
-              icon={<UploadOutlined />}
-              // onClick={() => {
-              //   onExport();
-              // }}
-            >
-              导出
-            </Button>
+            icon={<UploadOutlined />}
+            onClick={exportList}
+          >
+            导出
+          </Button>
         </div>
       </div>
       <div className={sc('container-table-body')}>

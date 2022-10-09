@@ -25,7 +25,7 @@ import {
   updateIntendMessageRemark,
 } from '@/services/intend-message';
 import { UploadOutlined } from '@ant-design/icons';
-import { getUrl } from '@/utils/util';
+import { intendMessageExport } from '@/services/export';
 const sc = scopedClasses('user-config-logout-verify');
 
 export default () => {
@@ -277,6 +277,18 @@ export default () => {
     );
   };
 
+  const exportList = () => {
+    console.log('searchInfo', searchContent)
+    const { enterprise, solution, handlerState, intendEndTime, intendStartTime } = searchContent;
+    intendMessageExport({
+      enterprise,
+      solution,
+      handlerState,
+      intendEndTime,
+      intendStartTime,
+    })
+  }
+
   return (
     <>
       {useSearchNode()}
@@ -284,18 +296,11 @@ export default () => {
         <div className="title">
           <span>意向消息列表(共{pageInfo.totalCount || 0}个)</span>
           <Button
-              href={getUrl('/antelope-pay/mng/order/exportOrderList', {
-                // ...searchContent,
-                pageIndex: 1,
-                pageSize: 10000,
-              })}
-              icon={<UploadOutlined />}
-              // onClick={() => {
-              //   onExport();
-              // }}
-            >
-              导出
-            </Button>
+            icon={<UploadOutlined />}
+            onClick={exportList}
+          >
+            导出
+          </Button>
         </div>
       </div>
       <div className={sc('container-table-body')}>

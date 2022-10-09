@@ -54,4 +54,15 @@ export async function getDemandDetail(id: string) {
   return request<any>(`/antelope-science/mng/creative/demand/detail?id=${id}`);
 }
 
+// 设置排序权重
+export function updateSort(params:{
+  id?: string,
+  sort?: string,
+}) {
+  return request<any>('/antelope-science/mng/creative/demand/update/sort',{
+    method: 'get',
+    params,
+  })
+}
+
 

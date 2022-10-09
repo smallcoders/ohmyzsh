@@ -22,36 +22,37 @@ import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 import SelfTable from '@/components/self_table';
 import { history } from 'umi';
-import { 
-  getCreativePage,//分页数据
-  getKeywords, //关键词枚举 
-  getCreativeTypes,// 应用行业
+import {
+  getCreativePage, //分页数据
+  getKeywords, //关键词枚举
+  getCreativeTypes, // 应用行业
   updateKeyword, // 关键词编辑
-  updateConversion // 完成转化
+  updateConversion, // 完成转化
+  updateSort,
 } from '@/services/creative-demand';
 import type Common from '@/types/common';
 import type NeedVerify from '@/types/user-config-need-verify';
-import { getUrl } from '@/utils/util';
+import { creativeDemandExport } from '@/services/export';
 import { getAreaTree } from '@/services/area';
 const sc = scopedClasses('service-config-creative-need');
 const stateObj = {
   NOT_CONNECT: '未对接',
   CONNECTING: '对接中',
   CONVERTED: '已转化',
-  RESOLVED: '已解决'
+  RESOLVED: '已解决',
 };
 export default () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [dataSource, setDataSource] = useState<NeedVerify.Content[]>([]);
   const [types, setTypes] = useState<any[]>([]);
-  const [keywords, setKeywords] = useState<any[]>([]);// 关键词数据
+  const [keywords, setKeywords] = useState<any[]>([]); // 关键词数据
   const [searchContent, setSearChContent] = useState<{
     name?: string; // 标题
     createTimeStart?: string; // 提交开始时间
-    state?: number; // 状态
+    state?: string; // 状态
     createTimeEnd?: string; // 提交结束时间
     typeId?: number; // 行业类型id 三级类型
-
+    industryTypeId?: string // 所属行业
   }>({});
 
   const [weightVisible, setWeightVistble] = useState(false);
@@ -78,7 +79,7 @@ export default () => {
   const [areaOptions, setAreaOptions] = useState<any>([]);
 
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
-    setLoading(true)
+    setLoading(true);
     try {
       const { result, totalCount, pageTotal, code } = await getCreativePage({
         pageIndex,
@@ -88,25 +89,21 @@ export default () => {
       if (code === 0) {
         setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
         setDataSource(result);
-        setLoading(false)
+        setLoading(false);
       } else {
         message.error(`请求分页数据失败`);
-        setLoading(false)
+        setLoading(false);
       }
     } catch (error) {
       console.log(error);
-      setLoading(false)
+      setLoading(false);
     }
   };
 
   const prepare = async () => {
     try {
-      const res = await Promise.all([
-        getKeywords(),
-        getCreativeTypes(),
-        getAreaTree({}),
-      ]);
-      setKeywords(res[0].result || [])
+      const res = await Promise.all([getKeywords(), getCreativeTypes(), getAreaTree({})]);
+      setKeywords(res[0].result || []);
       setTypes(res[1].result || []);
       setAreaOptions(res[2].children || []);
     } catch (error) {
@@ -138,7 +135,7 @@ export default () => {
         }
       })
       .catch(() => {});
-    };
+  };
 
   const handleCancel = () => {
     setModalVisible(false);
@@ -156,34 +153,51 @@ export default () => {
           <Button key="back" onClick={handleCancel}>
             取消
           </Button>,
-          <Button
-            key="link"
-            type="primary"
-            onClick={handleOk}
-          >
+          <Button key="link" type="primary" onClick={handleOk}>
             确定
           </Button>,
         ]}
       >
         <Form {...formLayout2} form={editForm}>
-          <Form.Item name="keyword" label="所属产业" rules={[{required: true}]} extra="多选（最多三个）">
+          <Form.Item
+            name="keyword"
+            label="所属产业"
+            rules={[{ required: true }]}
+            extra="多选（最多三个）"
+          >
             <Checkbox.Group>
               <Row>
                 {keywords?.map((i) => {
                   return i.enumName == 'OTHER' ? (
                     <Col span={6}>
-                      <Checkbox value={i.enumName} style={{ lineHeight: '32px' }} disabled={newKeywords&&newKeywords.length==3&&(!newKeywords.includes(i.enumName))}>
+                      <Checkbox
+                        value={i.enumName}
+                        style={{ lineHeight: '32px' }}
+                        disabled={
+                          newKeywords &&
+                          newKeywords.length == 3 &&
+                          !newKeywords.includes(i.enumName)
+                        }
+                      >
                         {i.name}
                       </Checkbox>
-                      {newKeywords && (newKeywords.indexOf('OTHER') > -1) && (
+                      {newKeywords && newKeywords.indexOf('OTHER') > -1 && (
                         <Form.Item name="keywordOther" label="">
-                          <Input placeholder='请输入' maxLength={10}/>
+                          <Input placeholder="请输入" maxLength={10} />
                         </Form.Item>
                       )}
                     </Col>
                   ) : (
                     <Col span={6}>
-                      <Checkbox value={i.enumName} style={{ lineHeight: '32px' }} disabled={newKeywords&&newKeywords.length==3&&(!newKeywords.includes(i.enumName))}>
+                      <Checkbox
+                        value={i.enumName}
+                        style={{ lineHeight: '32px' }}
+                        disabled={
+                          newKeywords &&
+                          newKeywords.length == 3 &&
+                          !newKeywords.includes(i.enumName)
+                        }
+                      >
                         {i.name}
                       </Checkbox>
                     </Col>
@@ -217,8 +231,6 @@ export default () => {
       title: '序号',
       dataIndex: 'sort',
       width: 80,
-      render: (_: any, _record: NeedVerify.Content, index: number) =>
-        pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
       title: '需求名称',
@@ -227,7 +239,7 @@ export default () => {
         <a
           href="#!"
           onClick={(e) => {
-            e.preventDefault(); 
+            e.preventDefault();
             history.push(`/service-config/creative-need-manage/detail?id=${_record.id}`);
           }}
         >
@@ -280,34 +292,58 @@ export default () => {
       dataIndex: 'option',
       fixed: 'right',
       render: (_: any, record: any) => {
-        return record.state == 'RESOLVED' ? (<div style={{textAlign: 'center'}}>/</div>) : (
+        return record.state == 'RESOLVED' ? (
+          <div style={{ textAlign: 'center' }}>
+            <Button
+              type="link"
+              onClick={() => {
+                setWeightVistble(true);
+                setCurrentId(record.id);
+                weightForm.setFieldsValue({ sort: record.sort || [] });
+              }}
+            >
+              权重
+            </Button>
+          </div>
+        ) : (
           <Space wrap>
-            <Button type="link" style={{padding: 0}} onClick={() => {
-              setModalVisible(true);
-              setCurrentId(record.id)
-              editForm.setFieldsValue({keyword: record.keyword || [], keywordOther: record.keywordOther || ''})
-            }}>
+            <Button
+              type="link"
+              style={{ padding: 0 }}
+              onClick={() => {
+                setModalVisible(true);
+                setCurrentId(record.id);
+                editForm.setFieldsValue({
+                  keyword: record.keyword || [],
+                  keywordOther: record.keywordOther || '',
+                });
+              }}
+            >
               所属产业编辑
             </Button>
             <Popconfirm
               icon={null}
-              title={
-                '确定该需求已解决？'
-              }
+              title={'确定该需求已解决？'}
               okText="确定"
               cancelText="取消"
               onConfirm={() => editState(record.id)}
             >
-              <Button type="link" style={{padding: 0}}>已解决</Button>
+              <Button type="link" style={{ padding: 0 }}>
+                已解决
+              </Button>
             </Popconfirm>
-            <Button type="link" onClick={() => {
-              setWeightVistble(true);
-              setCurrentId(record.id)
-              // 重置 keyword: record.keyword  这里需要把权重选上
-              weightForm.setFieldsValue({keyword: record.keyword || []})
-            }}>权重</Button>
+            <Button
+              type="link"
+              onClick={() => {
+                setWeightVistble(true);
+                setCurrentId(record.id);
+                weightForm.setFieldsValue({ sort: record.sort || [] });
+              }}
+            >
+              权重
+            </Button>
           </Space>
-        )
+        );
       },
     },
   ];
@@ -316,8 +352,8 @@ export default () => {
     getPage();
   }, [searchContent]);
 
+  const [searchForm] = Form.useForm();
   const useSearchNode = (): React.ReactNode => {
-    const [searchForm] = Form.useForm();
     return (
       <div className={sc('container-search')}>
         <Form {...formLayout} form={searchForm}>
@@ -341,7 +377,7 @@ export default () => {
               </Form.Item>
             </Col>
             <Col span={8}>
-            <Form.Item name="areaCode" label="所属区域">
+              <Form.Item name="areaCode" label="所属区域">
                 <Select placeholder="请选择" allowClear>
                   {areaOptions?.map((item: any) => (
                     <Select.Option key={item?.code} value={Number(item?.code)}>
@@ -353,7 +389,7 @@ export default () => {
             </Col>
           </Row>
           <Row>
-          <Col span={8}>
+            <Col span={8}>
               <Form.Item name="state" label="状态">
                 <Select placeholder="请选择" allowClear>
                   <Select.Option value={'NOT_CONNECT'}>未对接</Select.Option>
@@ -404,24 +440,26 @@ export default () => {
   const [weightForm] = Form.useForm();
   const handleWeightOk = async () => {
     try {
-      weightForm
-      .validateFields()
-      .then(async (value)=>{
-        console.log('value',value)
-        console.log('ID：',currentId)
-        // const res = await 等接口
-        // if (res?.code === 0) {
-          // message.success(`权重设置成功！`);
-          // setWeightVistble(false);
-          // weightForm.resetFields();
-        // } else {
-        //   message.error(`权重设置失败，原因:{${res?.message}}`);
-        // }
-      })
+      weightForm.validateFields().then(async (value) => {
+        const res = await updateSort({
+          id: currentId,
+          sort: value.sort
+        })
+        if (res?.code === 0) {
+          message.success(`权重设置成功！`);
+          setWeightVistble(false);
+          weightForm.resetFields();
+          // 重新获取数据
+          const search = searchForm.getFieldsValue();
+          setSearChContent(search);
+        } else {
+          message.error(`权重设置失败，原因:{${res?.message}}`);
+        }
+      });
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
   const weightModal = (): React.ReactNode => {
     return (
@@ -430,48 +468,42 @@ export default () => {
         width="780px"
         visible={weightVisible}
         onOk={handleWeightOk}
-        onCancel={()=>{
-          setWeightVistble(false)
+        onCancel={() => {
+          setWeightVistble(false);
         }}
       >
         <Form form={weightForm}>
-          <Form.Item name="keyword" rules={[{required: true,message: '必填',}]}>
-            <InputNumber 
-                style={{ width: '100%' }} 
-                placeholder='请输入权重'                 
-                min={1}
-                step={0.01}
-                max={100}
-              />
+          <Form.Item name="sort" rules={[{ required: true, message: '必填' }]}>
+            <InputNumber
+              style={{ width: '100%' }}
+              placeholder="数字越大排名越靠前"
+              min={1}
+              step={0.001}
+            />
           </Form.Item>
         </Form>
       </Modal>
-    )
-  }  
+    );
+  };
 
+  // 导出列表
+  const exportList = () => {
+    const { name, createTimeStart, state, createTimeEnd, industryTypeId } = searchContent;
+    creativeDemandExport({
+      name,
+      createTimeStart,
+      state,
+      createTimeEnd,
+      industryTypeId,
+    })
+  };
   return (
     <PageContainer className={sc('container')}>
       {useSearchNode()}
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>创新需求列表(共{pageInfo.totalCount || 0}个)</span>
-          {/* <a
-           key="primary"
-           className='export-btn'
-           href={`
-           /antelope-pay/mng/invoice/export?pageIndex=1&pageSize=10000&invoiceForm=${searchContent.invoiceForm||''}&orderNo=${searchContent.orderNo||''}&invoiceType=${searchContent.invoiceType||''}&createTimeStart=${searchContent.time?moment(searchContent.time[0]).format('YYYY-MM-DD HH:mm:ss'):''}&createTimeEnd=${searchContent.time?moment(searchContent.time[1]).format('YYYY-MM-DD HH:mm:ss'):''}`}
-          >导出数据</a> */}
-          <Button
-            href={getUrl('/antelope-pay/mng/order/exportOrderList', {
-              ...searchContent,
-              pageIndex: 1,
-              pageSize: 10000,
-            })}
-            icon={<UploadOutlined />}
-            // onClick={() => {
-            //   onExport();
-            // }}
-          >
+          <Button icon={<UploadOutlined />} onClick={exportList}>
             导出
           </Button>
         </div>

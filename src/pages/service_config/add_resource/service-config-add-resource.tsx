@@ -84,9 +84,8 @@ export default () => {
    */
   const prepare = async () => {
     try {
-      const prepareResultArray = await Promise.all([getAppTypes(), getTopApps()]);
+      const prepareResultArray = await Promise.all([getAppTypes()]);
       setAppTypes(prepareResultArray[0].result);
-      setTopApps(prepareResultArray[1].result);
 
       const { id } = history.location.query as { id: string | undefined };
 
@@ -194,7 +193,8 @@ export default () => {
       }}
     >
       <Prompt
-        when={isClosejumpTooltip && topApps.length > 0}
+        when={isClosejumpTooltip}
+        // when={isClosejumpTooltip && topApps.length > 0}
         message={'离开当前页后，所编辑的数据将不可恢复'}
       />
       <Form className={sc('container-form')} {...formLayout} form={form}>
@@ -249,7 +249,7 @@ export default () => {
             >
               <Input placeholder="请输入" maxLength={35} />
             </Form.Item>
-            <Form.Item name="priority" label="应用权重">
+            <Form.Item name="sort" label="应用权重">
               {/* 字段未处理 */}
               <InputNumber
                 style={{ width: '100%' }}
@@ -257,7 +257,6 @@ export default () => {
                 min={1}
                 step={0.01}
                 max={100}
-                // max={99999999}
               />
             </Form.Item>
             <Form.Item

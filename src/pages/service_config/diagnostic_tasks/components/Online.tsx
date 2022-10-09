@@ -28,6 +28,7 @@ import SelfTable from '@/components/self_table';
 import type DiagnosticTasks from '@/types/service-config-diagnostic-tasks';
 import UploadFormFile from '@/components/upload_form/upload-form-file';
 import { getAreaTree } from '@/services/area';
+import { onlineDiagnosisExport } from '@/services/export';
 const sc = scopedClasses('service-config-diagnostic-tasks');
 export default () => {
   const [dataSource, setDataSource] = useState<DiagnosticTasks.OnlineRecord[]>([]);
@@ -427,12 +428,29 @@ export default () => {
     );
   };
 
+  const exportList = () => {
+    console.log('线上诊断', searchContent)
+    const { status, orgName, areaCode, startTime, endTime } = searchContent;
+    onlineDiagnosisExport({
+      status,
+      orgName,
+      areaCode,
+      startTime,
+      endTime,
+    })
+  }
   return (
     <>
       {useSearchNode()}
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>诊断记录列表(共{pageInfo.totalCount || 0}个)</span>
+          <Button
+            icon={<UploadOutlined />}
+            onClick={exportList}
+          >
+            导出
+          </Button>
         </div>
       </div>
       <div className={sc('container-table-body')}>
