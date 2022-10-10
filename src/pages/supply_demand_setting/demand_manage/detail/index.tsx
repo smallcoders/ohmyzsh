@@ -121,7 +121,7 @@ export default () => {
       ]}
     >
       <div style={{ display: 'flex', gap: 20 }}>
-        <div style={{flex: 1}}>
+        <div style={{ flex: 1, padding: 20, background: '#fff' }}>
           <span style={{ fontWeight: 'bold', marginBottom: 20 }}>原始需求信息</span>
           <div className={sc('container')}>
             <div className={sc('container-title')}>企业需求信息</div>
@@ -200,7 +200,7 @@ export default () => {
             </div>
           </div>
         </div>
-        <div style={{flex: 1}}>
+        <div style={{ flex: 1, padding: 20, background: '#fff' }}>
           <span style={{ fontWeight: 'bold', marginBottom: 20 }}>供需对接情况</span>
           <div className={sc('container')}>
             <div className={sc('container-title')}>需求细化</div>

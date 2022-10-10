@@ -31,7 +31,7 @@ export async function getCreativeTypes() {
 /**
  * 关键词编辑
  */
- export async function updateKeyword(data?: { [key: string]: any }) {
+export async function updateKeyword(data?: { [key: string]: any }) {
   return request<any>('/antelope-science/mng/creative/demand/update/keyword', {
     method: 'put',
     data,
@@ -41,7 +41,7 @@ export async function getCreativeTypes() {
 /**
  * 已解决
  */
- export async function updateConversion(id: string) {
+export async function updateConversion(id: string) {
   return request<any>(`/antelope-science/mng/creative/demand/update/resolved?id=${id}`, {
     method: 'get'
   });
@@ -54,4 +54,125 @@ export async function getDemandDetail(id: string) {
   return request<any>(`/antelope-science/mng/creative/demand/detail?id=${id}`);
 }
 
+/**
+ * 认领需求
+ * @param id 
+ * @returns 
+ */
+export async function claimDemand(id: string) {
+  return request<any>(`/antelope-science/mng/demand/claim?demandId=${id}`);
+}
 
+/**
+ * 取消认领需求
+ * @param id 
+ * @returns 
+ */
+export async function cancelClaimDemand(id: string) {
+  return request<any>(`/antelope-science/mng/demand/claim/cancel?demandId=${id}`);
+}
+
+/**
+ * 分发需求
+ * @param id 
+ * @param groupId 
+ * @returns 
+ */
+export async function distributeDemand(id: string, groupId: string) {
+  return request<any>(`/antelope-science/mng/demand/follow/distribute?demandId=${id}&groupId=${groupId}`);
+}
+
+/**
+ * 取消分发需求
+ * @param id 
+ * @param groupId 
+ * @returns 
+ */
+export async function cancelDistributeDemand(id: string, groupId: string) {
+  return request<any>(`/antelope-science/mng/demand/follow/distribute/cancel?demandId=${id}`);
+}
+
+/**
+ * 指派服务商
+ * @param id 
+ * @param orgId 
+ * @param orgName 
+ * @returns 
+ */
+export async function appoint(id: string, orgId: string, orgName: string) {
+  return request<any>(`/antelope-science/mng/demand/follow/appoint?demandId=${id}&orgId=${orgId}&orgName=${orgName}`);
+}
+
+/**
+ * 撤销指派服务商
+ * @param id 
+ * @param orgId 
+ * @param orgName 
+ * @returns 
+ */
+export async function cancelAppoint(id: string, orgId: string, orgName: string) {
+  return request<any>(`/antelope-science/mng/demand/follow/appoint/cancel?demandId=${id}`);
+}
+
+/**
+ * 反馈内容提交
+ * @param data
+ * demandId	integer		需求id	
+ * content	string		内容描述	
+ * fileIds	string		附件ids，以英文逗号分隔
+ * @returns
+ */
+export async function postFeedback(data?: { [key: string]: any }) {
+  return request<any>('/antelope-science/mng/demand/follow/feedback', {
+    method: 'post',
+    data,
+  });
+}
+
+/**
+ * 数字化应用组细分
+ * @param data 
+ * @returns 
+ */
+export async function specifyApp(data?: { [key: string]: any }) {
+  return request<any>('/antelope-science/mng/demand/mine/specify/app', {
+    method: 'post',
+    data,
+  });
+}
+
+/**
+ * 工品采购组细分
+ * @param data 
+ * @returns 
+ */
+ export async function specifyPurchase(data?: { [key: string]: any }) {
+  return request<any>('/antelope-science/mng/demand/mine/specify/purchase', {
+    method: 'post',
+    data,
+  });
+}
+
+/**
+ * 科产业务组细分
+ * @param data 
+ * @returns 
+ */
+ export async function specifyScience(data?: { [key: string]: any }) {
+  return request<any>('/antelope-science/mng/demand/mine/specify/science', {
+    method: 'post',
+    data,
+  });
+}
+
+/**
+ * 工品采购组细分
+ * @param data 
+ * @returns 
+ */
+ export async function specifyFinance(data?: { [key: string]: any }) {
+  return request<any>('/antelope-science/mng/demand/mine/specify/finance', {
+    method: 'post',
+    data,
+  });
+}

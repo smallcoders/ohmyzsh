@@ -28,6 +28,9 @@ import {
   getKeywords, //关键词枚举 
 } from '@/services/creative-demand';
 import SelfSelect from '@/components/self_select';
+import RefineModal from './refine';
+import AssignModal from './assign';
+import FeedBackModal from './feedback';
 const sc = scopedClasses('user-config-logout-verify');
 
 export default () => {
@@ -134,7 +137,9 @@ export default () => {
     labelCol: { span: 3 },
     wrapperCol: { span: 20 },
   };
-  const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [refineVisible, setRefineVisible] = useState<boolean>(false);
+  const [assignVisible, setAssignVisible] = useState<boolean>(false);
+  const [feedbackVisible, setFeedbackVisible] = useState<boolean>(false);
   const [currentId, setCurrentId] = useState<string>('');
   const [editForm] = Form.useForm<{ keyword: any; keywordOther: string }>();
   const newKeywords = Form.useWatch('keyword', editForm);
@@ -165,57 +170,11 @@ export default () => {
     setModalVisible(false);
   };
   const useModal = (): React.ReactNode => {
-    return (
-      <Modal
-        title={'所属行业编辑'}
-        width="780px"
-        visible={modalVisible}
-        // okButtonProps={{ loading: addOrUpdateLoading }}
-        onOk={handleOk}
-        onCancel={handleCancel}
-        footer={[
-          <Button key="back" onClick={handleCancel}>
-            取消
-          </Button>,
-          <Button
-            key="link"
-            type="primary"
-            onClick={handleOk}
-          >
-            确定
-          </Button>,
-        ]}
-      >
-        <Form {...formLayout2} form={editForm}>
-          <Form.Item name="keyword" label="所属行业" rules={[{ required: true }]} extra="多选（最多三个）">
-            <Checkbox.Group>
-              <Row>
-                {keywords?.map((i) => {
-                  return i.enumName == 'OTHER' ? (
-                    <Col span={6} key={i.enumName}>
-                      <Checkbox value={i.enumName} style={{ lineHeight: '32px' }} disabled={newKeywords && newKeywords.length == 3 && (!newKeywords.includes(i.enumName))}>
-                        {i.name}
-                      </Checkbox>
-                      {newKeywords && (newKeywords.indexOf('OTHER') > -1) && (
-                        <Form.Item name="keywordOther" label="">
-                          <Input placeholder='请输入' maxLength={10} />
-                        </Form.Item>
-                      )}
-                    </Col>
-                  ) : (
-                    <Col span={6}>
-                      <Checkbox value={i.enumName} style={{ lineHeight: '32px' }} disabled={newKeywords && newKeywords.length == 3 && (!newKeywords.includes(i.enumName))}>
-                        {i.name}
-                      </Checkbox>
-                    </Col>
-                  );
-                })}
-              </Row>
-            </Checkbox.Group>
-          </Form.Item>
-          {/* <span>选中的关键词：{newKeywords} {newKeywords && 'K' in newKeywords}</span> */}
-        </Form>
-      </Modal>
+    return (<>
+      <RefineModal visible={refineVisible} setVisible={setRefineVisible} />
+      <AssignModal visible={assignVisible} setVisible={setAssignVisible} />
+      <FeedBackModal visible={feedbackVisible} setVisible={setFeedbackVisible} />
+    </>
     );
   };
 
@@ -244,7 +203,7 @@ export default () => {
       dataIndex: 'typeNames',
       isEllipsis: true,
       render: (_: string[]) => (_ || []).join(','),
-      width: 400,
+      width: 200,
     },
     {
       title: '联系电话',
@@ -277,10 +236,42 @@ export default () => {
               <Button
                 type="link"
                 onClick={() => {
-                  history.push(`${routeName.EXPERT_MANAGE_DETAIL}?id=${record.id}`);
+                  setRefineVisible(true)
                 }}
               >
-                详情
+                编辑细化内容
+              </Button>
+              <Button
+                type="link"
+                onClick={() => {
+                  setRefineVisible(true)
+                }}
+              >
+                需求细化
+              </Button>
+              <Button
+                type="link"
+                onClick={() => {
+                  setFeedbackVisible(true)
+                }}
+              >
+                需求反馈
+              </Button>
+              <Button
+                type="link"
+                onClick={() => {
+                  setFeedbackVisible(true)
+                }}
+              >
+                编辑反馈
+              </Button>
+              <Button
+                type="link"
+                onClick={() => {
+                  setAssignVisible(true)
+                }}
+              >
+                指派
               </Button>
               <Button
                 type="link"
@@ -288,71 +279,7 @@ export default () => {
                   top(record);
                 }}
               >
-                置顶
-              </Button>
-              <Popconfirm
-                icon={<span style={{ fontSize: 18 }}>服务专员标记</span>}
-                title={
-                  <Form layout="vertical" style={{ padding: 10, width: 400 }}>
-                    <Form.Item label="服务专员">
-                      <Radio.Group
-                        value={isCommissioner}
-                        onChange={(e) => {
-                          setIsCommissioner(e.target.value);
-                        }}
-                      >
-                        <Radio value={true}>是</Radio>
-                        <Radio value={false}>否</Radio>
-                      </Radio.Group>
-                    </Form.Item>
-                    {isCommissioner && (
-                      <Form.Item label="请选择服务类型">
-                        <SelfSelect
-                          dictionary={serviceTypes}
-                          fieldNames={{
-                            label: 'name',
-                            value: 'id',
-                          }}
-                          value={selectTypes}
-                          onChange={(values) => {
-                            setSelectTypes(values);
-                          }}
-                        />
-                      </Form.Item>
-                    )}
-                  </Form>
-                }
-                okButtonProps={{
-                  disabled: isCommissioner && selectTypes?.length === 0,
-                }}
-                okText="确定"
-                cancelText="取消"
-                onConfirm={() => sign(record)}
-                onCancel={() => {
-                  // signForm.resetFields();
-                }}
-              >
-                <Button
-                  type="link"
-                  onClick={() => {
-                    setIsCommissioner(!!record.commissioner);
-                    setSelectTypes(record.serviceTypeIds || []);
-                    // signForm.setFieldsValue({
-                    //   ids: record.serviceTypeIds || [],
-                    //   commissioner: record.commissioner,
-                    // });
-                  }}
-                >
-                  {' '}
-                  服务专员标记
-                </Button>
-              </Popconfirm>
-              <Button type="link" onClick={() => {
-                setModalVisible(true);
-                setCurrentId(record.id)
-                editForm.setFieldsValue({ keyword: record.keyword || [], keywordOther: record.keywordOther || '' })
-              }}>
-                所属行业编辑
+                撤回指派
               </Button>
             </Space>
           </div>
@@ -370,20 +297,21 @@ export default () => {
     return (
       <div className={sc('container-search')}>
         <Form {...formLayout} form={searchForm}>
-          <Col span={8}>
-            <Form.Item name="expertType" label="需求状态">
-              <Select placeholder="请选择" allowClear>
-                {(expertTypes || []).map((item: any) => {
-                  return (
-                    <Select.Option key={item.id} value={item.id}>
-                      {item.name}
-                    </Select.Option>
-                  );
-                })}
-              </Select>
-            </Form.Item>
-          </Col>
           <Row>
+
+            <Col span={8}>
+              <Form.Item name="expertType" label="需求状态">
+                <Select placeholder="请选择" allowClear>
+                  {(expertTypes || []).map((item: any) => {
+                    return (
+                      <Select.Option key={item.id} value={item.id}>
+                        {item.name}
+                      </Select.Option>
+                    );
+                  })}
+                </Select>
+              </Form.Item>
+            </Col>
             <Col span={8}>
               <Form.Item name="expertName" label="需求指派情况">
                 <Input placeholder="请输入" />
@@ -421,11 +349,6 @@ export default () => {
   return (
     <>
       {useSearchNode()}
-      <div className={sc('container-table-header')}>
-        <div className="title">
-          <span>专家列表(共{pageInfo.totalCount || 0}个)</span>
-        </div>
-      </div>
       <div className={sc('container-table-body')}>
         <SelfTable
           bordered

@@ -100,6 +100,8 @@
   BANKING_SERVICE: '/banking/banking_service_manage',
   BANKING_SERVICE_INDEX: '/banking/banking_service_manage/index',
   BANKING_SERVICE_DETAIL: '/banking/banking_service_manage/detail',
+
+  ORG_MANAGE: '/user-config/org-manage'
 };
 
 export default [
@@ -704,7 +706,11 @@ export default [
         name: '用户反馈',
         component: './user_config/user_feedback',
       },
-
+      {
+        path: routeName.ORG_MANAGE,
+        name: '组织管理',
+        component: './user_config/org_manage',
+      },
       {
         path: routeName.COMMISSIONER_SERVICE,
         name: '专员服务记录',

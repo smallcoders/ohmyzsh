@@ -1,13 +1,15 @@
-@prefix: user-config-logout-verify;
+@prefix: user-config-org-manage;
 
 .@{prefix}-container {
   &-table-header {
     padding: 20px;
     background-color: #fff;
+
     .title {
       display: flex;
       justify-content: space-between;
-      > span {
+
+      >span {
         color: rgba(0, 0, 0, 0.85);
         font-weight: 600;
         font-size: 16px;
@@ -15,10 +17,12 @@
       }
     }
   }
+
   &-table-body {
-    padding: 20px 20px;
+    padding: 0 20px;
     background-color: #fff;
   }
+
   &-search {
     margin-bottom: 20px;
     padding: 20px 0 0 0;
@@ -27,11 +31,13 @@
     //   margin-bottom: 0;
     // }
   }
+
   &-reupload {
     position: relative;
     width: 100%;
     height: 100%;
-    > img {
+
+    >img {
       position: absolute;
       top: 50%;
       left: 50%;
@@ -39,7 +45,8 @@
       max-height: 100%;
       transform: translate(-50%, -50%);
     }
-    > div {
+
+    >div {
       position: absolute;
       bottom: 0;
       width: 100%;
@@ -48,9 +55,11 @@
       opacity: 0.5;
     }
   }
+
   .state2 {
     position: relative;
     padding-left: 15px;
+
     &::before {
       position: absolute;
       top: 8px;
@@ -62,9 +71,11 @@
       content: ' ';
     }
   }
+
   .state3 {
     position: relative;
     padding-left: 15px;
+
     &::before {
       position: absolute;
       top: 8px;
@@ -76,9 +87,11 @@
       content: ' ';
     }
   }
+
   .state4 {
     position: relative;
     padding-left: 15px;
+
     &::before {
       position: absolute;
       top: 8px;

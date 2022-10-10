@@ -90,7 +90,6 @@ export default () => {
       antdMessage.error(`${tooltipMessage}失败，原因:{${error}}`);
     }
   };
-
   const columns = [
     {
       title: '序号',
@@ -125,15 +124,15 @@ export default () => {
     },
     {
       title: '需求状态',
-      dataIndex: 'expertName',
+      dataIndex: 'contactPhone',
       isEllipsis: true,
       width: 150,
     },
     {
       title: '分发情况',
-      dataIndex: 'content',
+      dataIndex: 'contactPhone',
       isEllipsis: true,
-      width: 250,
+      width: 150,
     },
     {
       title: '操作',
@@ -144,42 +143,41 @@ export default () => {
         return !record.contacted ? (
           <div style={{ textAlign: 'center' }}>
             <Space size={20}>
-              <Popconfirm
-                icon={null}
-                title={
-                  <>
-                    <Input.TextArea
-                      placeholder="可在此填写备注内容，备注非必填"
-                      onChange={(e) => setRemark(e.target.value)}
-                      value={remark}
-                      showCount
-                      maxLength={100}
-                    />
-                  </>
-                }
-                okText="确定"
-                cancelText="取消"
-                onConfirm={() => mark(record)}
+              <Button
+                type="link"
+                onClick={() => {
+                  setRemark(record.remark || '');
+                }}
               >
-                <Button
-                  type="link"
-                  onClick={() => {
-                    setRemark(record.remark || '');
-                  }}
-                >
-                  标记已联系
-                </Button>
-              </Popconfirm>
+                需求细化
+              </Button>
+              <Button
+                type="link"
+                onClick={() => {
+                  setRemark(record.remark || '');
+                }}
+              >
+                编辑细化内容
+              </Button>
+              <Button
+                type="link"
+                onClick={() => {
+                  setRemark(record.remark || '');
+                }}
+              >
+                分发
+              </Button>
+              <Button
+                type="link"
+                onClick={() => {
+                  setRemark(record.remark || '');
+                }}
+              >
+                撤回分发
+              </Button>
             </Space>
           </div>
-        ) : (
-          <div style={{ display: 'grid', justifyItems: 'center' }}>
-            <span>
-              {record.operateTime ? moment(record.operateTime).format('YYYY-MM-DD HH:mm:ss') : '--'}
-            </span>
-            <span>操作人：{record.operatorName}</span>
-          </div>
-        );
+        ) : ('--');
       },
     },
   ];
@@ -249,52 +247,16 @@ export default () => {
   return (
     <>
       {useSearchNode()}
-      <div className={sc('container-table-header')}>
+      {/* <div className={sc('container-table-header')}>
         <div className="title">
           <span>咨询记录列表(共{pageInfo.totalCount || 0}个)</span>
         </div>
-      </div>
+      </div> */}
       <div className={sc('container-table-body')}>
         <SelfTable
           bordered
           scroll={{ x: 1280 }}
           columns={columns}
-          expandable={{
-            expandedRowRender: (record: ConsultRecord.Content) => (
-              <p style={{ margin: 0 }}>
-                备注：{record.remark}
-                {record.editing && (
-                  <Popconfirm
-                    icon={null}
-                    title={
-                      <>
-                        <Input.TextArea
-                          placeholder="可在此填写备注内容，备注非必填"
-                          onChange={(e) => setRemark(e.target.value)}
-                          value={remark}
-                          showCount
-                          maxLength={100}
-                        />
-                      </>
-                    }
-                    okText="确定"
-                    cancelText="取消"
-                    onConfirm={() => updRemark(record)}
-                  >
-                    <EditTwoTone
-                      onClick={() => {
-                        setRemark(record.remark || '');
-                      }}
-                    />
-                  </Popconfirm>
-                )}
-              </p>
-            ),
-            // rowExpandable: () => true,
-            expandIcon: () => <></>,
-            defaultExpandAllRows: true,
-            expandedRowKeys: dataSource.map((p) => p.id),
-          }}
           rowKey={'id'}
           dataSource={dataSource}
           pagination={
