@@ -18,7 +18,7 @@ export default () => {
 
   const [contentType, setContentType] = useState<number>(1)
   const {
-    businessLicense,
+    businessLicenseFile,
     orgTypeName,
     orgName,
     creditCode,
@@ -32,7 +32,7 @@ export default () => {
     registeredCapital,
     aboutUs,
     ability,
-    cover,
+    coverFile,
     businessType = 1,
     legalName,
     totalAssets,
@@ -42,7 +42,7 @@ export default () => {
     businessScope,
   } = orgDetail || {};
   const {
-    personalPhoto,
+    personalPhotoFile,
     expertName,
     provinceName: personProvince,
     cityName: personCity,
@@ -116,8 +116,8 @@ export default () => {
   const basicContent1 = [
     {
       label: '营业执照',
-      value: businessLicense ? (
-        <Image className="img-photo" src={businessLicense} alt="营业执照" />
+      value: businessLicenseFile ? (
+        <Image className="img-photo" src={businessLicenseFile?.path} alt="营业执照" />
       ) : (
         ''
       ),
@@ -138,8 +138,8 @@ export default () => {
   const basicContent2 = [
     {
       label: '组织logo',
-      value: cover ? (
-        <Image className="img-photo" src={cover} alt="组织logo" />
+      value: coverFile ? (
+        <Image className="img-photo" src={coverFile?.path} alt="组织logo" />
       ) : (
         ''
       ),
@@ -156,8 +156,8 @@ export default () => {
   const basicExpertContent1 = [
     {
       label: '个人照片',
-      value: personalPhoto ? (
-        <Image className="img-photo" src={personalPhoto} alt="个人照片" />
+      value: personalPhotoFile ? (
+        <Image className="img-photo" src={personalPhotoFile} alt="个人照片" />
       ) : (
         ''
       ),
@@ -303,7 +303,7 @@ export default () => {
             </div>
           )
         })}
-      </div> : <Empty description={'当前用户暂未完成专家认证'} />)}
+      </div> : <Empty description={'当前用户暂未完成组织信息认证'} />)}
       {contentType == 2 && (orgDetail?.auditState == 3 ?
         <div className={sc('detail-container')}>
           {expertInfoAuthContent?.map((item, index) => {
@@ -332,7 +332,7 @@ export default () => {
               />
             </div>
           )}
-        </div> : <Empty description={'当前组织暂未完成组织信息认证'} />)
+        </div> : <Empty description={'当前用户暂未完成专家认证'} />)
       }
     </PageContainer>
   );

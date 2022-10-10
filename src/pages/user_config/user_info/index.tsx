@@ -21,7 +21,7 @@ import moment from 'moment';
 import { routeName } from '@/../config/routes';
 import SelfTable from '@/components/self_table';
 
-import { getUserPage } from '@/services/user';
+import { exportUsers, getUserPage } from '@/services/user';
 import User from '@/types/user.d';
 const sc = scopedClasses('service-config-requirement-manage');
 
@@ -237,6 +237,46 @@ export default () => {
     );
   };
 
+
+  const exportExcel = async () => {
+
+    const res = await exportUsers({})
+    console.log(res.data)
+
+
+    //创建 blob对象 第一个参数 response.data是代表后端返回的文件流  ，第二个参数设置文件类型
+    let blob = new Blob([res], {
+      type: 'application/vnd.ms-excel;charset=UTF-8'
+    });
+    //生成生成下载链接  这个链接放在a标签上是直接下载，放在img上可以直接显示图片问价，视频同理
+
+
+    let objectUrl = URL.createObjectURL(blob)
+    let link = document.createElement("a");
+    link.href = objectUrl;
+    link.download = '用户信息列表'
+    document.body.appendChild(link);
+    link.click();
+    //释放内存
+    window.URL.revokeObjectURL(link.href);
+
+    // const url = URL.createObjectURL(blob);
+    //   let linkElement = document.createElement("a");
+    //   linkElement.setAttribute("href", url);
+    //   linkElement.setAttribute("download", '用户信息列表');
+    // //模拟点击a标签
+    //   if (typeof MouseEvent == "function") {
+    //     var event = new MouseEvent("click", {
+    //       view: window,
+    //       bubbles: true,
+    //       cancelable: false
+    //     });
+    //     linkElement.dispatchEvent(event);
+    //   }  
+    //   window.URL.revokeObjectURL(linkElement.href); 
+  }
+
+
   return (
     <PageContainer className={sc('container')}>
       {useSearchNode()}
@@ -247,6 +287,7 @@ export default () => {
         <Button
           type="primary"
           onClick={() => {
+            exportExcel()
           }}
         >
           导出数据

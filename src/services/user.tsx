@@ -32,3 +32,15 @@ export async function getExpertAuthDetail(id: string) {
 export async function getOrgInfoAuthDetail(id: string) {
     return request<any>(`/antelope-user/mng/org/getOrgInfo?id=${id}`);
 }
+
+/**
+ * 导出
+ * @param data 
+ * @returns 
+ */
+export async function exportUsers(data?: { [key: string]: any }) {
+    return request<UserFeedback.RecordList>('/antelope-user/mng/user/exportUser', {
+        method: 'post',
+        data,
+    });
+}
