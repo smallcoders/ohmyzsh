@@ -1,4 +1,4 @@
-﻿export const routeName = {
+export const routeName = {
   DATA_COLUMN: '/service-config/data-column', // 数据栏
   DIAGNOSTIC_TASKS: '/service-config/diagnostic-tasks/index', // 诊断任务
   DIAGNOSTIC_TASKS_DETAIL: '/service-config/diagnostic-tasks/detail', // 诊断记录
@@ -21,9 +21,9 @@
   EXPERT_MANAGE: '/service-config/expert-manage', // 专家管理
   EXPERT_MANAGE_INDEX: '/service-config/expert-manage/index', // 专家管理
   EXPERT_MANAGE_DETAIL: '/service-config/expert-manage/detail', // 专家详情
-  REQUIREMENT_MANAGEMENT: '/service-config/requirement-management', // 需求管理
-  REQUIREMENT_MANAGEMENT_INDEX: '/service-config/requirement-management/index', // 需求管理
-  REQUIREMENT_MANAGEMENT_DETAIL: '/service-config/requirement-management/detail', // 需求管理详情
+  DEMAND_MANAGEMENT: '/service-config/requirement-management', // 需求管理
+  DEMAND_MANAGEMENT_INDEX: '/supply-demand-setting/demand-manage/index', // 需求管理
+  DEMAND_MANAGEMENT_DETAIL: '/supply-demand-setting/demand-manage/detail', // 需求管理详情
   ACCOUNT: '/system-config/account', // 账号管理
 
   CREATIVE_VERIFY: '/verify-agency/creative-verify', // 科技成果审核
@@ -100,7 +100,7 @@
   BANKING_SERVICE: '/banking/banking_service_manage',
   BANKING_SERVICE_INDEX: '/banking/banking_service_manage/index',
   BANKING_SERVICE_DETAIL: '/banking/banking_service_manage/detail',
-
+  ORG_MANAGE: '/user-config/org-manage',
   // 推荐管理
   RECOMMENDED_HOT_WORDS: '/recommended/hot_words',
   RECOMMENDED_HOT_WORDS_INDEX: '/recommended/hot_words/index',
@@ -321,7 +321,6 @@ export default [
           },
         ],
       },
-
       {
         path: routeName.ORG_TYPE_MANAGE,
         name: '机构类型管理',
@@ -349,28 +348,28 @@ export default [
           },
         ],
       },
-      {
-        path: routeName.REQUIREMENT_MANAGEMENT,
-        name: '需求管理',
-        hideChildrenInMenu: true,
-        routes: [
-          {
-            path: routeName.REQUIREMENT_MANAGEMENT,
-            redirect: routeName.REQUIREMENT_MANAGEMENT_INDEX,
-          },
-          {
-            path: routeName.REQUIREMENT_MANAGEMENT_INDEX,
-            name: '需求管理',
-            hideInBreadcrumb: true,
-            component: './service_config/requirement_management/index',
-          },
-          {
-            path: routeName.REQUIREMENT_MANAGEMENT_DETAIL,
-            name: '需求详情',
-            component: './service_config/requirement_management/detail',
-          },
-        ],
-      },
+      // {
+      //   path: routeName.REQUIREMENT_MANAGEMENT,
+      //   name: '需求管理',
+      //   hideChildrenInMenu: true,
+      //   routes: [
+      //     {
+      //       path: routeName.REQUIREMENT_MANAGEMENT,
+      //       redirect: routeName.REQUIREMENT_MANAGEMENT_INDEX,
+      //     },
+      //     {
+      //       path: routeName.REQUIREMENT_MANAGEMENT_INDEX,
+      //       name: '需求管理',
+      //       hideInBreadcrumb: true,
+      //       component: './service_config/requirement_management/index',
+      //     },
+      //     {
+      //       path: routeName.REQUIREMENT_MANAGEMENT_DETAIL,
+      //       name: '需求详情',
+      //       component: './service_config/requirement_management/detail',
+      //     },
+      //   ],
+      // },
       {
         path: routeName.NEWS,
         name: '新闻资讯',
@@ -408,6 +407,39 @@ export default [
             component: './service_config/diagnose_manage/history_diagnose',
           },
         ],
+      },
+    ],
+  },
+  {
+    path: '/supply-demand-setting',
+    name: '供需设置',
+    icon: 'desktop',
+    access: 'SERVICE_CONFIG',
+    routes: [
+      {
+        path: '/supply-demand-setting',
+        redirect: routeName.DEMAND_MANAGEMENT_INDEX,
+      },
+      {
+        path: routeName.DEMAND_MANAGEMENT_INDEX,
+        name: '需求管理',
+        component: './supply_demand_setting/demand_manage/index',
+      },
+      {
+        path: routeName.DEMAND_MANAGEMENT_DETAIL,
+        name: '需求详情',
+        component: './supply_demand_setting/demand_manage/detail/index',
+      },
+      // {
+      //   path: '/supply-demand-setting/docking-manage/index',
+      //   name: '供需详情',
+      //   hideInBreadcrumb: true,
+      //   component: './operate_data/demand/detail',
+      // },
+      {
+        path: '/supply-demand-setting/docking-manage/index',
+        name: '供需对接管理',
+        component: './supply_demand_setting/docking_manage/index',
       },
     ],
   },
@@ -676,7 +708,11 @@ export default [
         name: '用户反馈',
         component: './user_config/user_feedback',
       },
-
+      {
+        path: routeName.ORG_MANAGE,
+        name: '组织管理',
+        component: './user_config/org_manage',
+      },
       {
         path: routeName.COMMISSIONER_SERVICE,
         name: '专员服务记录',
