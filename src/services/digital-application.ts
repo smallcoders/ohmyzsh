@@ -169,8 +169,9 @@ export async function updateInterfaceConfig(data: {
 }
 
 // 【羚羊开放平台】获取token
-export async function getOpenInsideToken() {
+export async function getOpenInsideToken(params: { appId?: string }) {
   return request('/antelope-other/token/inside/getToken', {
     method: 'get',
+    params,
   });
 }

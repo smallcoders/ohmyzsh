@@ -382,12 +382,10 @@ export const OrderItem = ({
                   >
                     {p.productName}
                   </span>
-                  {p?.specVoList?.map((spec, i: number) => (
-                    <div key={i}>
-                      <span style={{ color: 'rgba(0, 0, 0, 0.45)' }}>{spec.spec}</span>
-                      <span>{spec.specValue}</span>
-                    </div>
-                  ))}
+                  <div>
+                    <span style={{ color: 'rgba(0, 0, 0, 0.45)' }}>规格：</span>
+                    <span>{p?.specVoList[0]?.specValue}</span>
+                  </div>
                 </div>
               </div>
               <div style={{ flex: 3 }}>{p.productNo}</div>

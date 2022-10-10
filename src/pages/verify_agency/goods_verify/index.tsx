@@ -85,7 +85,6 @@ export default () => {
         pageSize,
         ...search,
       };
-      console.log(params);
       if (params.handleResult === -1) {
         // 未处理
         delete params.handleResult;
