@@ -67,13 +67,17 @@ export default () => {
       try {
         const userRes = await getUserDetail(id)
         setDetail(userRes?.result)
-        if (userRes?.result?.orgId) {
-          getEnterpriseInfoVerifyDetail(userRes?.result?.orgId)
-        }else {
-          setContentType(2)
-        }
+
         if (userRes?.result?.expertId) {
           getExpertAuthVerifyDetail(userRes?.result?.expertId)
+          setContentType(2)
+        }
+        if (userRes?.result?.orgId) {
+          getEnterpriseInfoVerifyDetail(userRes?.result?.orgId)
+          setContentType(1)
+        }
+        if (!userRes?.result?.expertId && !userRes?.result?.orgId) {
+          setContentType(-1)
         }
       } catch (error) {
         message.error('服务器错误');
@@ -274,7 +278,7 @@ export default () => {
           </Col>
           <Col span={6}></Col>
           <Col span={6}></Col>
-          <div style={{display: 'flex', gap: 10}}>{detail?.userIdentities?.map(p => {
+          <div style={{ display: 'flex', gap: 10 }}>{detail?.userIdentities?.map(p => {
             return <span style={{ color: '#F59A23', background: 'rgba(254, 246, 241, 1)', padding: '0 5px', height: 20 }}>
               {p?.desc}</span>
           })
