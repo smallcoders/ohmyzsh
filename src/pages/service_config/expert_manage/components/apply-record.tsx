@@ -24,6 +24,8 @@ import {
   markApplyRecordContracted,
   updateApplyRecordRemark,
 } from '@/services/expert_manage/apply-record';
+import { UploadOutlined } from '@ant-design/icons';
+import { expertApplyExport } from '@/services/export';
 import ApplyRecord from '@/types/expert_manage/apply-record';
 const sc = scopedClasses('user-config-logout-verify');
 
@@ -277,12 +279,29 @@ export default () => {
     );
   };
 
+  const exportList = () => {
+    console.log('申请记录', searchContent)
+    const { orgName, expertName, contacted, startCreateTime, endCreateTime } = searchContent;
+    expertApplyExport({
+      orgName,
+      expertName,
+      contacted,
+      startCreateTime,
+      endCreateTime,
+    })
+  }
   return (
     <>
       {useSearchNode()}
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>申请查看专家信息记录列表(共{pageInfo.totalCount || 0}个)</span>
+          <Button
+            icon={<UploadOutlined />}
+            onClick={exportList}
+          >
+            导出
+          </Button>
         </div>
       </div>
       <div className={sc('container-table-body')}>

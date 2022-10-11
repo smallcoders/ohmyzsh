@@ -132,3 +132,14 @@ export async function updateRemark(id: string, remark: string) {
     },
   });
 }
+
+// 应用管理-设置排序权重
+export async function getHttpAppSort(params:{
+  id?: string,
+  sort?: string
+}) {
+  return request<any>('/antelope-manage/app/sort',{
+    method: 'get',
+    params,
+  })
+}

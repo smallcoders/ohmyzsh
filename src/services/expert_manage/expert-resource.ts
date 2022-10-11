@@ -41,3 +41,14 @@ export async function getExpertDetail(id: string) {
 export async function showTop(id: string) {
   return request<Common.ResultCode & { result: any }>(`/antelope-manage/expert/showTop?id=${id}`);
 }
+
+// 专家-设置排序权重
+export async function getExportSort(params:{
+  id?: string,
+  sort?: string
+}) {
+  return request<any>('/antelope-manage/expert/setSort',{
+    method: 'get',
+    params,
+  })
+}
