@@ -126,8 +126,6 @@ export default () => {
             ])
             setAddedDataYesterday(res[0].result || {})
             setStatistics(res[1].result || {})
-            console.log('@@@',res[0].result)
-            console.log('@@@',res[1].result) // 数组
         } catch (error) {
             console.log(error)
             message.error('服务器错误');
@@ -135,7 +133,7 @@ export default () => {
     }
     useEffect(() => {
         prepare()
-        chartShow();
+        // chartShow();
     },[]);
 
     const {diagnosisIntentionCount, appConsultationCount, solutionIntentionCount, expertConsultationCount, liveIntentionCount} = addedDataYesterday || {}
@@ -208,7 +206,7 @@ export default () => {
                     }
                 </Row>
             </div>
-            <div className={sc('container')}>
+            {/* <div className={sc('container')}>
                 <h3>页面流量统计</h3>
                 <div className={sc('container-search')}>
                     <div className={sc('container-search-item')}>
@@ -242,7 +240,7 @@ export default () => {
                     </div>
                 </div>
                 <div id='charts' style={{width: '100%', height: 500}}></div>
-            </div>
+            </div> */}
         </>
     )
 }
