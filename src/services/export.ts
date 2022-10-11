@@ -7,6 +7,7 @@ export function creativeDemandExport(data: {
   state?: string, // 对接状态
   createTimeStart?: string, 
   createTimeEnd?: string,
+  areaCode?: string, // 区域
 }) {
   request<any>('/antelope-science/mng/creative/demand/export',{
     method: 'post',

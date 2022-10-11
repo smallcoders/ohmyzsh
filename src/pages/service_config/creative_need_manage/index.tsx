@@ -488,13 +488,14 @@ export default () => {
 
   // 导出列表
   const exportList = () => {
-    const { name, createTimeStart, state, createTimeEnd, industryTypeId } = searchContent;
+    const { name, createTimeStart, state, createTimeEnd, industryTypeId, areaCode } = searchContent;
     creativeDemandExport({
       name,
       createTimeStart,
       state,
       createTimeEnd,
       industryTypeId,
+      areaCode,
     })
   };
   return (
