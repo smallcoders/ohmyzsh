@@ -290,7 +290,7 @@ export default () => {
         {detail?.orgId && <Radio.Button value={1}>组织信息</Radio.Button>}
         {detail?.expertId && <Radio.Button value={2}>专家信息</Radio.Button>}
       </Radio.Group>
-      {contentType == 1 && (expertDetail?.auditState == 3 ? <div className={sc('detail-container')}>
+      {contentType == 1 && (orgDetail?.auditState == 3 ? <div className={sc('detail-container')}>
         {infoAuthContent?.map((item, index) => {
           return (
             <div key={index}>
@@ -308,7 +308,7 @@ export default () => {
           )
         })}
       </div> : <Empty description={'当前用户暂未完成组织信息认证'} />)}
-      {contentType == 2 && (orgDetail?.auditState == 3 ?
+      {contentType == 2 && (expertDetail?.auditState == 3 ?
         <div className={sc('detail-container')}>
           {expertInfoAuthContent?.map((item, index) => {
             return (
