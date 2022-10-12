@@ -228,7 +228,7 @@ export default () => {
 
   const columns = [
     {
-      title: '序号',
+      title: '权重',
       dataIndex: 'sort',
       width: 80,
     },
@@ -264,7 +264,7 @@ export default () => {
     },
     {
       title: '需求区域',
-      dataIndex: 'areaCode',
+      dataIndex: 'areaName',
       isEllipsis: true,
       width: 150,
     },

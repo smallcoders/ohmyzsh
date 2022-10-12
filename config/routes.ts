@@ -659,30 +659,31 @@ export default [
     routes: [
       {
         path: '/user-config',
-        redirect: routeName.AUTHENTICATION_INFO_INDEX,
+        redirect: routeName.USER_INFO,
+        // redirect: routeName.AUTHENTICATION_INFO_INDEX,
       },
-      {
-        path: routeName.AUTHENTICATION_INFO,
-        name: '认证信息',
-        hideChildrenInMenu: true,
-        routes: [
-          {
-            path: routeName.AUTHENTICATION_INFO,
-            redirect: routeName.AUTHENTICATION_INFO_INDEX,
-          },
-          {
-            path: routeName.AUTHENTICATION_INFO_INDEX,
-            name: '认证信息',
-            hideInBreadcrumb: true,
-            component: './user_config/authentication_info',
-          },
-          {
-            path: routeName.AUTHENTICATION_INFO_DETAIL,
-            name: '认证信息详情',
-            component: './user_config/authentication_info/detail',
-          },
-        ],
-      },
+      // {
+      //   path: routeName.AUTHENTICATION_INFO,
+      //   name: '认证信息',
+      //   hideChildrenInMenu: true,
+      //   routes: [
+      //     {
+      //       path: routeName.AUTHENTICATION_INFO,
+      //       redirect: routeName.AUTHENTICATION_INFO_INDEX,
+      //     },
+      //     {
+      //       path: routeName.AUTHENTICATION_INFO_INDEX,
+      //       name: '认证信息',
+      //       hideInBreadcrumb: true,
+      //       component: './user_config/authentication_info',
+      //     },
+      //     {
+      //       path: routeName.AUTHENTICATION_INFO_DETAIL,
+      //       name: '认证信息详情',
+      //       component: './user_config/authentication_info/detail',
+      //     },
+      //   ],
+      // },
       {
         path: routeName.USER_INFO,
         name: '用户信息',
@@ -764,13 +765,14 @@ export default [
     routes: [
       {
         path: '/verify-agency',
-        redirect: routeName.LOGOUT_VERIFY,
+        redirect: routeName.SERVICE_COMMISSIONER_VERIFY,
+        // redirect: routeName.LOGOUT_VERIFY,
       },
-      {
-        path: routeName.LOGOUT_VERIFY,
-        name: '注销审核',
-        component: './verify_agency/logout_verify',
-      },
+      // {
+      //   path: routeName.LOGOUT_VERIFY,
+      //   name: '注销审核',
+      //   component: './verify_agency/logout_verify',
+      // },
       {
         path: routeName.SERVICE_COMMISSIONER_VERIFY,
         name: '服务专员审核',
