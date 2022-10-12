@@ -183,7 +183,7 @@ const SolutionTable: React.FC = () => {
 
   const columns: ProColumns<SolutionTypes.Solution>[] = [
     {
-      title: '序号',
+      title: '权重',
       dataIndex: 'sort',
       hideInSearch: true,
     },

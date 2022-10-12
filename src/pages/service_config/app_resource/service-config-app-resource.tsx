@@ -266,7 +266,7 @@ export default () => {
 
   const columns = [
     {
-      title: '排序',
+      title: '权重',
       dataIndex: 'sort',
     },
     {
@@ -344,7 +344,7 @@ export default () => {
             >
               编辑
             </a>
-            {record.isTopApp === 0 && (
+            {(
               <Popconfirm
                 title="确定删除么？"
                 okText="确定"
@@ -354,7 +354,7 @@ export default () => {
                 <a href="#">删除</a>
               </Popconfirm>
             )}
-            {record.isTopApp === 0 && record.releaseStatus === 1 && (
+            {record.releaseStatus === 1 && (
               <Popconfirm
                 title="确定下架么？"
                 okText="确定"

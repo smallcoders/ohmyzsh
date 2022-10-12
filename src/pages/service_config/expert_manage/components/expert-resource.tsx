@@ -261,7 +261,7 @@ export default () => {
 
   const columns = [
     {
-      title: '序号',
+      title: '权重',
       dataIndex: 'sort',
       width: 80,
     },
