@@ -3,8 +3,7 @@ import { InboxOutlined } from "@ant-design/icons";
 import { message } from "antd";
 import { UploadChangeParam, UploadFile } from "antd/lib/upload";
 import Dragger from "antd/lib/upload/Dragger";
-import { useState } from "react";
-const accept = '.xls,.xlxs';
+const accept = '.xls,.xlsx';
 export default () => {
     const handleChange = (info: UploadChangeParam<UploadFile<any>>) => {
         if (info.file.status === 'uploading') {
