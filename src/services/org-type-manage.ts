@@ -1,6 +1,7 @@
 // @ts-ignore
 /* eslint-disable */
 import Common from '@/types/common';
+import OrgManage from '@/types/org-manage';
 import OrgTypeManage from '@/types/org-type-manage';
 import { request } from 'umi';
 
@@ -58,3 +59,25 @@ export async function sortOrgType(ids: string[]) {
 export async function getOrgTypeOptions() {
   return request<{ result: { id: string; name: string }[] }>('/antelope-manage/org/type/options');
 }
+
+
+/**
+ * 获取组织分页
+ * */
+export async function getOrgManagePage(data?: any) {
+  return request<OrgManage.RecordList>(`/antelope-manage/org/page`, {
+    method: 'get',
+    params: data,
+  });
+}
+
+/**
+ * 标记
+ * */
+export async function signOrgTag(data?: { [key: string]: any }) {
+  return request<Common.ResultCode & { result: any }>(`/antelope-manage/org/sign`, {
+    method: 'put',
+    data,
+  });
+}
+

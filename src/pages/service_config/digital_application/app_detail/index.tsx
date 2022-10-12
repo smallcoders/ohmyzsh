@@ -13,7 +13,7 @@ import type { AuditModalType } from '../app_audit/audit-modal'
 
 import {
   getApplicationInfo,
-  getOpenInsideToken
+  getOpenInsideTokenV2
 } from '@/services/digital-application';
 
 const sc = scopedClasses('service-config-digital-app-detail');
@@ -46,7 +46,7 @@ export default () => {
   }
 
   function handleJumpLink(url: string) {
-    getOpenInsideToken().then(({ result, code, message: msg }) => {
+    getOpenInsideTokenV2(query.id).then(({ result, code, message: msg }) => {
       if (code === 0) {
         const token = !~url.indexOf('?') ? `?token=${result}` : `&token=${result}`
         window.open(url + token)
