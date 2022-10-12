@@ -146,8 +146,8 @@ export async function updateInterfaceConfig(data: { id?: number, interfaceDescri
 }
 
 // 【羚羊开放平台】获取token
-export async function getOpenInsideToken() {
-  return request('/antelope-other/token/inside/getToken', {
+export async function getOpenInsideTokenV2(id: string) {
+  return request(`/antelope-other/token/inside/getTokenV2/${id}`, {
     method: 'get'
   })
 }
