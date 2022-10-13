@@ -1,8 +1,6 @@
-import CourseManage from "@/types/service-config-course-manage";
-import { InboxOutlined } from "@ant-design/icons";
-import { message } from "antd";
+import { InboxOutlined, UploadOutlined } from "@ant-design/icons";
+import { Button, message, Upload } from "antd";
 import { UploadChangeParam, UploadFile } from "antd/lib/upload";
-import Dragger from "antd/lib/upload/Dragger";
 const accept = '.xls,.xlsx';
 export default () => {
     const handleChange = (info: UploadChangeParam<UploadFile<any>>) => {
@@ -38,36 +36,36 @@ export default () => {
     const uploadProps = {
         name: 'file',
         multiple: true,
-        itemRender:()=>{},
+        itemRender: () => { },
         action: '/antelope-pay/mng/iflytek/flow/sync',
         onChange: handleChange,
         beforeUpload: beforeUpload,
-        onDrop: (e: React.DragEvent) => {
-            try {
-                const fileList = (e.dataTransfer.files as FileList) || [];
-                for (let index = 0; index < fileList.length; index++) {
-                    const file = fileList[index];
-                    const lastName = file.name.split('.');
-                    const accepts = accept.split(',');
-                    if (!accepts.includes('.' + lastName[lastName.length - 1])) {
-                        message.error(`${file.name}不符合标准，已忽略`);
-                    }
-                }
-            } catch (error) {
-                console.log(error);
-            }
-        },
+        // onDrop: (e: React.DragEvent) => {
+        //     try {
+        //         const fileList = (e.dataTransfer.files as FileList) || [];
+        //         for (let index = 0; index < fileList.length; index++) {
+        //             const file = fileList[index];
+        //             const lastName = file.name.split('.');
+        //             const accepts = accept.split(',');
+        //             if (!accepts.includes('.' + lastName[lastName.length - 1])) {
+        //                 message.error(`${file.name}不符合标准，已忽略`);
+        //             }
+        //         }
+        //     } catch (error) {
+        //         console.log(error);
+        //     }
+        // },
     };
     return <div style={{
         height: '100%', width: '100%', display: 'flex', alignItems: 'center',
         justifyContent: 'center'
     }}>
-        <Dragger {...uploadProps} accept={accept} style={{padding: 20}}>
-            <p className="ant-upload-drag-icon">
-                <InboxOutlined />
-            </p>
-            <p className="ant-upload-text">点击或将文件拖拽到这里上传</p>
-            <p className="ant-upload-hint">支持上传图片格式xls，xlxs类型的课件</p>
-        </Dragger>
+        <div>
+            <Upload {...uploadProps} accept={accept}>
+                <Button icon={<UploadOutlined />}>上传</Button>
+            </Upload>
+            <p  style={{ marginTop: 20 }} className="ant-upload-text">点击或将文件拖拽到这里上传</p>
+            <p className="ant-upload-hint">支持上传图片格式xls，xlsx类型的课件</p>
+        </div>
     </div>
 }
