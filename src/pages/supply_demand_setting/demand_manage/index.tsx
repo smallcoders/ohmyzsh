@@ -25,6 +25,8 @@ import moment from 'moment';
 import { getDictionay, getDictionayTree, getEnumByName } from '@/services/common';
 import { routeName } from '@/../config/routes';
 import SelfTable from '@/components/self_table';
+import { UploadOutlined } from '@ant-design/icons';
+import { demandExport } from '@/services/export';
 import { history } from 'umi';
 import {
   getRequirementManagementList,
@@ -752,7 +754,17 @@ export default () => {
     );
   };
 
-
+  const exportList = () => {
+    const { name, type, publisherName, publishStartTime, publishEndTime, operationState } = searchContent;
+    demandExport({
+      name,
+      type,
+      publisherName,
+      publishStartTime,
+      publishEndTime,
+      operationState,
+    })
+  }
 
   return (
     <PageContainer className={sc('container')}>
@@ -760,6 +772,12 @@ export default () => {
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>需求列表(共{pageInfo.totalCount || 0}个)</span>
+          <Button
+            icon={<UploadOutlined />}
+            onClick={exportList}
+          >
+            导出
+          </Button>
         </div>
       </div>
       <div className={sc('container-table-body')}>
