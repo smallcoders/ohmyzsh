@@ -637,6 +637,11 @@ export default [
           },
         ],
       },
+      {
+        path: '/purchase-manage/gvm',
+        name: 'GVM管理',
+        component: './purchase_manage/gvm',
+      },
     ],
   },
   {
