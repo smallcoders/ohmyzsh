@@ -76,12 +76,12 @@ export async function getUserListBySearch(keyword: string, limit = 10) {
  * @param data
  * @returns
  */
-export async function postAchievementUpload(data?: {
-  fileId: string; // 文件Id
-  userId: string; // 用户Id
-}) {
-  return request<any>('/antelope-science/mng/creative/achievement/import', {
-    method: 'post',
-    data,
-  });
+export async function postAchievementUpload(userId: string, fileId: string) {
+  return request<any>(
+    `/antelope-science/mng/creative/achievement/import?userId=${userId}&fileId=${fileId}`,
+    {
+      method: 'post',
+    },
+  );
 }
+
