@@ -753,11 +753,11 @@ export default [
         name: '用户反馈',
         component: './user_config/user_feedback',
       },
-      {
-        path: routeName.ORG_MANAGE,
-        name: '组织管理',
-        component: './user_config/org_manage',
-      },
+      // {
+      //   path: routeName.ORG_MANAGE,
+      //   name: '组织管理',
+      //   component: './user_config/org_manage',
+      // },
       {
         path: routeName.COMMISSIONER_SERVICE,
         name: '专员服务记录',
