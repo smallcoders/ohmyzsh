@@ -161,7 +161,7 @@ export default () => {
     {
       label: '个人照片',
       value: personalPhotoFile ? (
-        <Image className="img-photo" src={personalPhotoFile} alt="个人照片" />
+        <Image className="img-photo" src={personalPhotoFile?.path} alt="个人照片" />
       ) : (
         ''
       ),
