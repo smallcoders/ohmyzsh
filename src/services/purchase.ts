@@ -15,9 +15,9 @@ export async function getActivityManageList(params: {
   return request('/antelope-pay/mng/activity/pageQuery', {
     method: 'POST',
     data: { ...params, pageIndex: params.current },
-    headers: {
-      'rpc-tag': 'jbxu5',
-    },
+    // headers: {
+    //   'rpc-tag': 'jbxu5',
+    // },
   }).then((e: { code: number; totalCount: any; result: any }) => ({
     success: e.code === 0,
     total: e.totalCount,
@@ -42,9 +42,9 @@ export async function getActivityAppProducts(options?: Record<string, any>) {
   return request<LogoutVerify.ResultList>('/antelope-pay/mng/activity/queryProductApp', {
     method: 'post',
     data: { ...(options || {}) },
-    headers: {
-      'rpc-tag': 'jbxu5',
-    },
+    // headers: {
+    //   'rpc-tag': 'jbxu5',
+    // },
   });
 }
 

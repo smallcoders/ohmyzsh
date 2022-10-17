@@ -9,9 +9,9 @@ export async function getGoodsVerifyPage(data?: { [key: string]: any }) {
   return request<GoodsVerify.ResultList>('/antelope-pay/mng/apply/queryAppPage', {
     method: 'post',
     data,
-    headers: {
-      'rpc-tag': 'jbxu5',
-    },
+    // headers: {
+    //   'rpc-tag': 'jbxu5',
+    // },
   });
 }
 
@@ -26,9 +26,9 @@ export async function updateVerityStatus(data: {
   return request<Common.ResultCode>('/antelope-pay/mng/apply/handleApply', {
     method: 'post',
     data,
-    headers: {
-      'rpc-tag': 'jbxu5',
-    },
+    // headers: {
+    //   'rpc-tag': 'jbxu5',
+    // },
   });
 }
 /**
@@ -44,8 +44,8 @@ export async function getDetail(data: { productId: string }) {
   >('/antelope-pay/mng/apply/queryAppProductDetail', {
     method: 'get',
     params: { ...(data || {}) },
-    headers: {
-      'rpc-tag': 'jbxu5',
-    },
+    // headers: {
+    //   'rpc-tag': 'jbxu5',
+    // },
   });
 }

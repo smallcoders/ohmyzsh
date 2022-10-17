@@ -38,11 +38,11 @@ export default {
       pathRewrite: { '^': '' },
     },
     '/antelope-pay/': {
-      // target: 'http://172.30.33.222:10086',
-      target: 'http://10.8.7.227:8089',
+      target: 'http://172.30.33.222:10086',
+      // target: 'http://10.8.7.227:8089',
       changeOrigin: true,
-      // pathRewrite: { '^': '' },
-      pathRewrite: { '^/antelope-pay': '' },
+      pathRewrite: { '^': '' },
+      // pathRewrite: { '^/antelope-pay': '' },
     },
     '/antelope-diagnose/': {
       target: 'http://172.30.35.217:9103',
@@ -65,11 +65,11 @@ export default {
       pathRewrite: { '^': '' },
     },
     '/antelope-other/': {
-      // target: 'http://172.30.33.222:10086',
-      target: 'http://10.8.7.227:9099',
+      target: 'http://172.30.33.222:10086',
+      // target: 'http://10.8.7.227:9099',
       changeOrigin: true,
-      // pathRewrite: { '^': '' },
-      pathRewrite: { '^/antelope-other': '' },
+      pathRewrite: { '^': '' },
+      // pathRewrite: { '^/antelope-other': '' },
     },
     '/antelope-finance/': {
       target: 'http://172.30.33.222:10086',

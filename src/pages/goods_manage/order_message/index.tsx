@@ -75,7 +75,8 @@ export default () => {
       setLoading(false);
     } catch (error) {
       setLoading(false);
-      message.error(error);
+      console.log(error);
+      message.error('请求失败');
     }
   };
 

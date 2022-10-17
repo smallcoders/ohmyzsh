@@ -372,12 +372,12 @@ export default () => {
     {
       title: '商品采购价',
       dataIndex: 'originPricePart',
-      width: 80,
+      width: 100,
     },
     {
       title: '商品销售价',
       dataIndex: 'salePricePart',
-      width: 280,
+      width: 200,
     },
     {
       title: '商品划线价',
@@ -408,14 +408,14 @@ export default () => {
             >
               商品详情
             </Button>
-            <a
+            {/* <a
               href="#!"
               onClick={() => {
                 getProductPrices(record.id || record.productId, index, record.productName);
               }}
             >
               设置价格
-            </a>
+            </a> */}
             <Popconfirm
               title={
                 <>
@@ -1012,7 +1012,7 @@ export default () => {
       <div className={'container-table-body'} style={{ marginTop: 10 }}>
         <SelfTable
           bordered
-          scroll={{ x: 1400 }}
+          scroll={{ x: 1600 }}
           columns={chooseColumns}
           rowKey={'id'}
           dataSource={choosedProducts}

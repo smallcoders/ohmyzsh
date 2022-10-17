@@ -8,9 +8,9 @@ export async function getApplicationList(data?: { [key: string]: any }) {
   return request<ApplicationManager.ResultList>('/antelope-other/mng/api/manage/queryAppPage', {
     method: 'post',
     data,
-    headers: {
-      'rpc-tag': 'jbxu5',
-    },
+    // headers: {
+    //   'rpc-tag': 'jbxu5',
+    // },
   });
 }
 
