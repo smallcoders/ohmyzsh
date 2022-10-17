@@ -10,7 +10,7 @@ import { request } from 'umi';
  * @returns
  */
 export async function getLogoutPage(data?: { [key: string]: any }) {
-  return request<LogoutVerify.ResultList>('/antelope-manage/user/audit/userDeleteAuditPage', {
+  return request<LogoutVerify.ResultList>('/antelope-user/mng/user/queryUserDeletePage', {
     method: 'post',
     data,
   });
@@ -22,3 +22,5 @@ export async function getLogoutPage(data?: { [key: string]: any }) {
 export async function confirmUserDelete(id: string) {
   return request<Common.ResultCode>(`/antelope-manage/user/audit/confirmUserDelete?id=${id}`);
 }
+
+

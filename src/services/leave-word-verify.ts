@@ -35,12 +35,8 @@ export function getCommentsDetailPage(params: {
   pageSize?: number;
   pageIndex?: number;
 }) {
-  const key = 'rpc-tag'
   return request('/antelope-manage/comments/detail/page',{
     method: 'get',
     params,
-    headers: {
-      [key]: 'yushen'
-    }
   })
 }

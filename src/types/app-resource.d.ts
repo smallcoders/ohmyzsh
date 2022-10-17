@@ -48,6 +48,10 @@ namespace AppResource {
       collectCount: number; //收藏次数
       tryCount: number; //试用次数
     };
+    /**
+     * 权重
+     */
+     sort?: number;
   };
 
   export type Detail = Content & {

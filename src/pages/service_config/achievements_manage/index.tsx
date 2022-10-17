@@ -10,6 +10,7 @@ import {
   Modal,
   Checkbox
 } from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
 import { request } from 'umi';
 import ProTable from '@ant-design/pro-table';
@@ -17,12 +18,17 @@ import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import React, { useEffect, useState, useRef } from 'react';
 import type AchievementsTypes from '@/types/service-config-achievements-manage';
 import { history } from 'umi';
+import { getUrl } from '@/utils/util';
+import scopedClasses from '@/utils/scopedClasses';
+import { creativeAchievementExport } from '@/services/export';
+const sc = scopedClasses('service-config-achievements-manage');
 import {
   getKeywords, // 关键词枚举 
   getCreativeTypes, // 应用行业
   updateKeyword, // 关键词编辑
   updateConversion // 完成转化
 } from '@/services/achievements-manage';
+import './index.less';
 const stateObj = {
   NOT_CONNECT: '未对接',
   CONNECTING: '对接中',
@@ -285,29 +291,58 @@ export default () => {
     history.push(`/service-config/achievements-manage/multi-upload`);
   }
 
+  const [searchInfo, setSearchInfo] = useState<any>({})
+  const exportList = () => {
+    const { name, typeId, state, dateTime } = searchInfo;
+    creativeAchievementExport({
+      name,
+      typeId,
+      state,
+      startDate: dateTime ? dateTime[0] : undefined,
+      endDate: dateTime ? dateTime[1] : undefined,
+    })
+  }
   return (
     <PageContainer>
-      <ProTable
-        headerTitle={<Button type="primary" ghost onClick={handleMultiUpload}>批量导入</Button>}
-        options={false}
-        rowKey="id"
-        actionRef={actionRef}
-        search={{
-          span: 8,
-          labelWidth: 100,
-          defaultCollapsed: false,
-          optionRender: (searchConfig, formProps, dom) => [dom[1], dom[0]],
-        }}
-        request={async (pagination) => {
-          const result = await pageQuery(pagination);
-          paginationRef.current = pagination;
-          setTotal(result.total);
-          return result;
-        }}
-        columns={columns}
-        pagination={{ size: 'default', showQuickJumper: true, defaultPageSize: 10 }}
-      />
-      {useModal()}
+      <div className={sc('container')}>
+        <ProTable
+          headerTitle={
+          <div style={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'space-between'
+          }}>
+            <Button type="primary" ghost onClick={handleMultiUpload}>批量导入</Button>
+            <Button
+              icon={<UploadOutlined />}
+              onClick={exportList}
+            >
+              导出
+            </Button>
+          </div>
+        }
+          options={false}
+          rowKey="id"
+          actionRef={actionRef}
+          search={{
+            span: 8,
+            labelWidth: 100,
+            defaultCollapsed: false,
+            optionRender: (searchConfig, formProps, dom) => [dom[1], dom[0]],
+          }}
+          request={async (pagination) => {
+            // 保存seatchInfo
+            setSearchInfo(pagination)
+            const result = await pageQuery(pagination);
+            paginationRef.current = pagination;
+            setTotal(result.total);
+            return result;
+          }}
+          columns={columns}
+          pagination={{ size: 'default', showQuickJumper: true, defaultPageSize: 10 }}
+        />
+        {useModal()}
+      </div>
     </PageContainer>
   );
 };
