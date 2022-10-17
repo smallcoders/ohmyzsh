@@ -17,8 +17,11 @@ import {
 	Space,
 	Breadcrumb,
 	Popconfirm,
-	Switch
+	Switch,
+	Upload
 } from 'antd';
+import { RcFile, UploadChangeParam } from 'antd/lib/upload';
+import { UploadFile } from 'antd/lib/upload/interface';
 const { Option } = Select;
 import { 
 	CheckOutlined, 
@@ -38,6 +41,9 @@ import {
   getOrgList,
   editOrgList,
 } from '@/services/digital-application';
+import {
+	getKeywords, // 产业
+  } from '@/services/achievements-manage';
 import { listAllAreaCode } from '@/services/common';
 import {
 	addOrgType,
@@ -62,6 +68,7 @@ export default () => {
 	const [provinceList, setProvinceList] = useState<any>([])
 	const [diagnoseListString, setDiagnoseListString] = useState<string>('')
 	const [oldTitle, setOldTitle] = useState<string>('')
+	const [industryData, setIndustryData] = useState<any>([])
 	/**
    * 准备数据和路由获取参数等
    */
@@ -89,7 +96,12 @@ export default () => {
 			let areaRes = await listAllAreaCode()
 			console.log(areaRes, 'areaRes');
 			setProvinceList(areaRes && areaRes.result || [] )
-			
+			getKeywords().then((res) => {
+				console.log(11111111, res);
+				if(res.code == 0) {
+					setIndustryData(res.result)
+				}
+			})
 		} catch (error) {
 		  console.log('error', error);
 		  message.error('获取初始数据失败');
@@ -104,8 +116,9 @@ export default () => {
 	// 当前正在编辑的对象内容，回显右侧编辑项
 	const [currentEditObj, setCurrentEditObj] = useState<any>({})
 
-	const [diagnoseTitle, setDiagnoseTitle] = useState<string>('')
-
+	const [diagnoseTitle, setDiagnoseTitle] = useState<string>('')//诊断标题
+	const [exclusiveIndustry, setExclusiveIndustry] = useState<any>([])
+	const [exclusiveIndustryString, setExclusiveIndustryString] = useState<string>('')
 	const [addModalVisible, setAddModalVisible] = useState<boolean>(false)
 	// 左侧问卷题目
 	const [diagnoseList, setDiagnoseList] = useState<any>([]);
@@ -243,7 +256,14 @@ export default () => {
 				return false
 			}
 			if(diagnoseList && diagnoseList.length > 0) {
-				if(editId && (JSON.stringify(diagnoseList) != diagnoseListString || diagnoseTitle != oldTitle)) {
+				if(
+					editId && 
+					(
+						JSON.stringify(diagnoseList) != diagnoseListString 
+						|| diagnoseTitle != oldTitle
+						|| JSON.stringify(exclusiveIndustry) != exclusiveIndustryString
+					)
+				) {
 					info('当前问卷题目发生变动，诊断结果关联项将会被全部清空，请在诊断结果页重新配置', 'toNext')
 				}else {
 					setCurrentStep(currentStep+1)
@@ -337,9 +357,10 @@ export default () => {
 	}
 	// 发布问卷/完成迭代
 	const addOrEdit = async () => {
-		console.log(diagnoseList,diagnoseTitle,111);
-		console.log(dataSource,222);
-		console.log(covers,333);
+		// console.log(diagnoseList,diagnoseTitle,111);
+		// console.log(dataSource,222);
+		// console.log(covers,333);
+		console.log(exclusiveIndustry, 111111);
 		const { firstQuestionnaireNo } = history.location.query as { firstQuestionnaireNo: string | undefined };
 		coverForm
 			.validateFields()
@@ -588,7 +609,12 @@ export default () => {
 	const onValuesChange = (changedValues: any, allValues: any) => {
 		console.log(changedValues, 999, allValues);
 		if(currentAddIndex == -1) {
-			setDiagnoseTitle(changedValues.title)
+			if(changedValues.title) {
+				setDiagnoseTitle(changedValues.title)
+			}
+			if(changedValues.exclusiveIndustry) {
+				setExclusiveIndustry(changedValues.exclusiveIndustry)
+			}
 		}else {
 			const list = [...diagnoseList]
 			if(changedValues.validate == 1 || changedValues.validate == 2) {
@@ -1181,6 +1207,35 @@ export default () => {
 				
 			}
 		}
+		const handleChange = (info: UploadChangeParam<UploadFile<any>>) => {
+			console.log(info, '---------------info');
+			// if (info.file.status === 'uploading') {
+			//   setUploadLoading(true);
+			//   return;
+			// }
+			// if (info.file.status === 'error') {
+			//   setUploadLoading(false);
+			//   return;
+			// }
+		
+			// if (info.file.status === 'done') {
+			//   const uploadResponse = info?.file?.response;
+			//   if (uploadResponse?.code === 0 && uploadResponse.result) {
+			// 	const upLoadResult = info?.fileList.map((p) => {
+			// 	  return {
+			// 		picId: p.response?.result?.id,
+			// 		banner: p.response?.result?.path
+			// 	  };
+			// 	});
+			// 	// console.log(upLoadResult, '上传成功后的结果');
+			// 	setFiles(upLoadResult);
+			// 	setUploadLoading(false);
+			//   } else {
+			// 	setUploadLoading(false);
+			// 	message.error(`上传失败，原因:{${uploadResponse.message}}`);
+			//   }
+			// };
+		}
 		return (
 			<Modal
 				title={editResultIndex>-1 ? '编辑诊断结果' : '新建诊断结果'}
@@ -1237,6 +1292,43 @@ export default () => {
 											showCount={false}
 											rows={3}
 										/>
+									</Form.Item>
+									<Form.Item name={'offerings'} label="服务方案" rules={[
+										{
+											required: true,
+											message: '必填',
+										}
+									]}>
+										<Input.TextArea
+											autoSize={false}
+											placeholder='请输入'
+											maxLength={2000}
+											showCount={false}
+											rows={3}
+										/>
+									</Form.Item>
+									<Form.Item
+										name="offeringsFile"
+										label=""
+									>
+										<Upload 
+											maxCount={1} 
+											listType="picture-card"
+											action='/antelope-manage/common/upload/record'
+											onChange={handleChange}
+											// onRemove={onRemove}
+											accept=".pdf"
+										>
+											<button>上传文件</button>
+										</Upload>
+										{/* <UploadForm
+											listType="picture-card"
+											className="avatar-uploader"
+											showUploadList={false}
+											maxSize={1}
+											accept=".pdf"
+											tooltip={<span className={'tooltip'}>仅支持上传PDF文件</span>}
+										/> */}
 									</Form.Item>
 								</>
 							)}
@@ -1618,8 +1710,15 @@ export default () => {
 								</div>
 								<div className={'diagnose-wrapper'} ref={diagnoseRef}>
 									<div className={currentAddIndex == -1 ? 'active' : ''} onClick={() => { clickLeftProblem(-1) }}>
-										<h3>问卷标题</h3>
+										<h3>基础设置</h3>
 										<p>{diagnoseTitle}</p>
+										<p className='industry-wrap'>{
+											exclusiveIndustry && exclusiveIndustry.map((item: any, index: number) => {
+												return (
+													<span className='industry-item'>#{item}</span>
+												)
+											})
+										}</p>
 									</div>
 									<Form
 										layout={'vertical'}
@@ -1762,6 +1861,22 @@ export default () => {
 													<Input placeholder='请输入' maxLength={10} />
 												</Form.Item>
 												<p className='tip'>提示：问卷标题将作为诊断标题使用</p>
+												<Form.Item label="专属产业" name='exclusiveIndustry' style={{marginBottom: 8}}>
+													<Select 
+														mode="multiple"
+														allowClear
+														onChange={(e) => {console.log(e)}}
+													>
+														{industryData && industryData.map((item: any) =>
+															<Option 
+																value={item.name} 
+																key={item.enumName}
+															>
+																{item.name}
+															</Option>
+														)}
+													</Select>
+												</Form.Item>
 											</Form>
 										)}
 										{currentEditObj && (currentEditObj.type == 'radio' || currentEditObj.type == 'checkbox') && (

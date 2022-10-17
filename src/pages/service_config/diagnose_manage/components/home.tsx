@@ -140,6 +140,18 @@ const TableList: React.FC = () => {
       width: 180,
     },
     {
+      title: '专属产业',
+      dataIndex: 'name',
+      isEllipsis: true,
+      width: 180,
+      render: (_: any, record: any) => {
+        return (
+          <p className='industry-cell' title={_}>{_}</p>
+        )
+      }
+      // render: (_: string) => '111222333gjaowijfjawoirfjawoirfjawifjawoirjgfaeovnaowrgfnaowrjgfnvajrgaworjlfgnajwrignvaowrjgnaowrjgnvaoejrnaejngojfnoawrghnaow',
+    },
+    {
       title: '创建时间',
       dataIndex: 'createTime',
       width: 200,
