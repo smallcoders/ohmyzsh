@@ -160,7 +160,7 @@ export default () => {
         history.push(`${routeName.USER_INFO_INDEX}`);
         break;
       case 'ENTERPRISE':
-        history.push(`${routeName.LOGOUT_RECORD}`);
+        // history.push(`${routeName.LOGOUT_RECORD}`);
         break;
       case 'EXPERT':
         history.push(`${routeName.EXPERT_MANAGE_INDEX}`);
