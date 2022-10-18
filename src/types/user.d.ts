@@ -15,10 +15,10 @@ namespace User {
     }
 
     export const PlatRoleJson = {
-        ORG_MEMBER: '组织成员',
-        ORG_MANAGER: '企业管理员',
-        EXPERT: '专家',
-        INDIVIDUAL: '普通'
+        ORG_MEMBER: '组织其他成员',
+        ORG_MANAGER: '组织管理员',
+        EXPERT: '已认证专家',
+        INDIVIDUAL: '普通用户'
     }
 
     export type Content = {
