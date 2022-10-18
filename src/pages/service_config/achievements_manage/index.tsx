@@ -303,7 +303,7 @@ export default () => {
         name,
         typeId,
         state,
-        publishTimeSpan: dateTime ? [dateTime[0], dateTime[1]] : undefined,
+        dateTime: dateTime ? [dateTime[0], dateTime[1]] : undefined,
       });
       if (res?.data.size == 51) return message.warning('操作太过频繁，请稍后再试')
       const content = res?.data;
