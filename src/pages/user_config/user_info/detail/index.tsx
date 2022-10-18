@@ -311,7 +311,7 @@ export default () => {
       </div> : <Empty description={'当前用户暂未完成组织信息认证'} />)}
       {contentType == 2 && (expertDetail?.auditState == 3 ?
         <div className={sc('detail-container')}  style={{position: 'relative'}}>
-          <div  style={{position: 'absolute', right: 20, top: 20}}>认证时间：{expertDetail?.auditPassedtime|| '--'}</div> 
+          <div  style={{position: 'absolute', right: 20, top: 20}}>认证时间：{expertDetail?.auditPassedTime|| '--'}</div> 
           {expertInfoAuthContent?.map((item, index) => {
             return (
               <div key={index}>
