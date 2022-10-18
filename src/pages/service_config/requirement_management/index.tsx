@@ -701,18 +701,33 @@ export default () => {
     );
   };
 
-  const exportList = () => {
-    console.log('需求列表', searchContent)
-    const { name, type, publisherName, publishStartTime, publishEndTime, operationState } = searchContent;
-    demandExport({
-      name,
-      type,
-      publisherName,
-      publishStartTime,
-      publishEndTime,
-      operationState,
-    })
-  }
+  const exportList = async () => {
+    const { name, type, publisherName, publishStartTime, publishEndTime, operationState } =
+      searchContent;
+    try {
+      const res = await demandExport({
+        name,
+        type,
+        publisherName,
+        publishStartTime,
+        publishEndTime,
+        operationState,
+      });
+      if (res?.data.size == 51) return message.warning('操作太过频繁，请稍后再试')
+      const content = res?.data;
+      const blob  = new Blob([content], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"});
+      const fileName = '企业需求.xlsx'
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a')
+      link.style.display = 'none'
+      link.href = url;
+      link.setAttribute('download', fileName)
+      document.body.appendChild(link);
+      link.click();
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <PageContainer className={sc('container')}>
       {useSearchNode()}
