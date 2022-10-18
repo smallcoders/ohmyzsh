@@ -143,3 +143,21 @@ export async function onlineDiagnosisExport(data: {
     getResponse: true,
   })
 }
+
+// 用户导出
+export async function exportUserList(data: {
+  name?: string,
+  phone?: string,
+  createTimeStart?: string,
+  createTimeEnd?: string,
+  registerSource?: string, // 注册来源
+  orgName?: string,
+  userIdentity?: string,
+}) {
+  return request<any>('/antelope-user/mng/user/exportUser',{
+    method: 'post',
+    data,
+    responseType: 'blob',
+    getResponse: true,
+  })
+}
