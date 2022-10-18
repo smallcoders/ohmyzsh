@@ -11,7 +11,7 @@ import {
   Radio,
   Checkbox,
   Modal,
-  InputNumber
+  InputNumber,
 } from 'antd';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
@@ -19,14 +19,18 @@ import React, { useEffect, useState } from 'react';
 import type Common from '@/types/common';
 import SelfTable from '@/components/self_table';
 import { history } from 'umi';
-import { getExpertResourcePage, updateKeyword, getExportSort } from '@/services/expert_manage/expert-resource';
+import {
+  getExpertResourcePage,
+  updateKeyword,
+  getExportSort,
+} from '@/services/expert_manage/expert-resource';
 import type ExpertResource from '@/types/expert_manage/expert-resource';
 import { getAreaTree } from '@/services/area';
 import { getDictionay } from '@/services/common';
 import { routeName } from '../../../../../config/routes';
 import { signCommissioner } from '@/services/service-commissioner-verify';
-import { 
-  getKeywords, //关键词枚举 
+import {
+  getKeywords, //关键词枚举
 } from '@/services/creative-demand';
 import { UploadOutlined } from '@ant-design/icons';
 import { expertExport } from '@/services/export';
@@ -37,7 +41,7 @@ export default () => {
   const [dataSource, setDataSource] = useState<ExpertResource.Content[]>([]);
   const [searchContent, setSearChContent] = useState<ExpertResource.SearchBody>({});
   const [selectTypes, setSelectTypes] = useState<any>([]);
-  const [keywords, setKeywords] = useState<any[]>([]);// 关键词数据
+  const [keywords, setKeywords] = useState<any[]>([]); // 关键词数据
   const [weightVisible, setWeightVistble] = useState(false);
   const [currentId, setCurrentId] = useState<Number>(0);
   const formLayout = {
@@ -70,9 +74,9 @@ export default () => {
       getDictionay('COMMISSIONER_SERVICE_TYPE').then((data) => {
         setServiceType(data.result || []);
       });
-      getKeywords().then(res => {
-        setKeywords(res.result || [])
-      })
+      getKeywords().then((res) => {
+        setKeywords(res.result || []);
+      });
     } catch (error) {
       antdMessage.error('数据初始化错误');
     }
@@ -119,7 +123,6 @@ export default () => {
     }
   };
 
-
   const formLayout2 = {
     labelCol: { span: 3 },
     wrapperCol: { span: 20 },
@@ -131,7 +134,7 @@ export default () => {
     editForm
       .validateFields()
       .then(async (value) => {
-        console.log(value)
+        console.log(value);
         // setLoading(true);
         const submitRes = await updateKeyword({
           id: currentId,
@@ -148,7 +151,7 @@ export default () => {
         // setLoading(false);
       })
       .catch(() => {});
-    };
+  };
 
   const handleCancel = () => {
     setModalVisible(false);
@@ -166,34 +169,51 @@ export default () => {
           <Button key="back" onClick={handleCancel}>
             取消
           </Button>,
-          <Button
-            key="link"
-            type="primary"
-            onClick={handleOk}
-          >
+          <Button key="link" type="primary" onClick={handleOk}>
             确定
           </Button>,
         ]}
       >
         <Form {...formLayout2} form={editForm}>
-          <Form.Item name="keyword" label="所属行业" rules={[{required: true}]} extra="多选（最多三个）">
+          <Form.Item
+            name="keyword"
+            label="所属行业"
+            rules={[{ required: true }]}
+            extra="多选（最多三个）"
+          >
             <Checkbox.Group>
               <Row>
                 {keywords?.map((i) => {
                   return i.enumName == 'OTHER' ? (
                     <Col span={6} key={i.enumName}>
-                      <Checkbox value={i.enumName} style={{ lineHeight: '32px' }} disabled={newKeywords&&newKeywords.length==3&&(!newKeywords.includes(i.enumName))}>
+                      <Checkbox
+                        value={i.enumName}
+                        style={{ lineHeight: '32px' }}
+                        disabled={
+                          newKeywords &&
+                          newKeywords.length == 3 &&
+                          !newKeywords.includes(i.enumName)
+                        }
+                      >
                         {i.name}
                       </Checkbox>
-                      {newKeywords && (newKeywords.indexOf('OTHER') > -1) && (
+                      {newKeywords && newKeywords.indexOf('OTHER') > -1 && (
                         <Form.Item name="keywordOther" label="">
-                          <Input placeholder='请输入' maxLength={10}/>
+                          <Input placeholder="请输入" maxLength={10} />
                         </Form.Item>
                       )}
                     </Col>
                   ) : (
                     <Col span={6}>
-                      <Checkbox value={i.enumName} style={{ lineHeight: '32px' }} disabled={newKeywords&&newKeywords.length==3&&(!newKeywords.includes(i.enumName))}>
+                      <Checkbox
+                        value={i.enumName}
+                        style={{ lineHeight: '32px' }}
+                        disabled={
+                          newKeywords &&
+                          newKeywords.length == 3 &&
+                          !newKeywords.includes(i.enumName)
+                        }
+                      >
                         {i.name}
                       </Checkbox>
                     </Col>
@@ -211,13 +231,11 @@ export default () => {
   const [weightForm] = Form.useForm();
   const handleWeightOk = async () => {
     try {
-      weightForm
-      .validateFields()
-      .then(async (value)=>{
+      weightForm.validateFields().then(async (value) => {
         const res = await getExportSort({
           id: String(currentId),
-          sort: value.sort
-        })
+          sort: value.sort,
+        });
         if (res?.code === 0) {
           antdMessage.success(`权重设置成功！`);
           setWeightVistble(false);
@@ -228,11 +246,11 @@ export default () => {
         } else {
           antdMessage.error(`权重设置失败，原因:{${res?.message}}`);
         }
-      })
+      });
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
   const weightModal = (): React.ReactNode => {
     return (
@@ -241,23 +259,18 @@ export default () => {
         width="780px"
         visible={weightVisible}
         onOk={handleWeightOk}
-        onCancel={()=>{
-          setWeightVistble(false)
+        onCancel={() => {
+          setWeightVistble(false);
         }}
       >
         <Form form={weightForm}>
-          <Form.Item name="sort" rules={[{required: true,message: '必填',}]}>
-            <InputNumber 
-              style={{ width: '100%' }} 
-              placeholder='请输入权重'                 
-              min={1}
-              step={0.001}
-            />
+          <Form.Item name="sort" rules={[{ required: true, message: '必填' }]}>
+            <InputNumber style={{ width: '100%' }} placeholder="请输入权重" min={1} step={0.001} />
           </Form.Item>
         </Form>
       </Modal>
-    )
-  }  
+    );
+  };
 
   const columns = [
     {
@@ -320,12 +333,17 @@ export default () => {
               >
                 详情
               </Button>
-              <Button type="link" onClick={() => {
-                setWeightVistble(true);
-                setCurrentId(record.id)
-                    // 重置 keyword: record.keyword  这里需要把权重选上
-                weightForm.setFieldsValue({sort: record.sort || [],})
-              }}>权重</Button>
+              <Button
+                type="link"
+                onClick={() => {
+                  setWeightVistble(true);
+                  setCurrentId(record.id);
+                  // 重置 keyword: record.keyword  这里需要把权重选上
+                  weightForm.setFieldsValue({ sort: record.sort || [] });
+                }}
+              >
+                权重
+              </Button>
               <Popconfirm
                 icon={<span style={{ fontSize: 18 }}>服务专员标记</span>}
                 title={
@@ -383,11 +401,17 @@ export default () => {
                   服务专员标记
                 </Button>
               </Popconfirm>
-              <Button type="link" onClick={() => {
-                setModalVisible(true);
-                setCurrentId(record.id)
-                editForm.setFieldsValue({keyword: record.keyword || [], keywordOther: record.keywordOther || ''})
-              }}>
+              <Button
+                type="link"
+                onClick={() => {
+                  setModalVisible(true);
+                  setCurrentId(record.id);
+                  editForm.setFieldsValue({
+                    keyword: record.keyword || [],
+                    keywordOther: record.keywordOther || '',
+                  });
+                }}
+              >
                 所属行业编辑
               </Button>
             </Space>
@@ -473,26 +497,37 @@ export default () => {
     );
   };
 
-  const exportList = () => {
-    console.log('专家资源', searchContent)
+  const exportList = async () => {
     const { expertName, expertType, areaCode, commissioner } = searchContent;
-    expertExport({
-      expertName,
-      expertType,
-      areaCode,
-      commissioner,
-    })
-  }
+    try {
+      const res = await expertExport({
+        expertName,
+        expertType,
+        areaCode,
+        commissioner,
+      });
+      if (res?.data.size == 51) return antdMessage.warning('操作太过频繁，请稍后再试')
+      const content = res?.data;
+      const blob  = new Blob([content], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"});
+      const fileName = '专家资源.xlsx'
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a')
+      link.style.display = 'none'
+      link.href = url;
+      link.setAttribute('download', fileName)
+      document.body.appendChild(link);
+      link.click();
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <>
       {useSearchNode()}
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>专家列表(共{pageInfo.totalCount || 0}个)</span>
-          <Button
-            icon={<UploadOutlined />}
-            onClick={exportList}
-          >
+          <Button icon={<UploadOutlined />} onClick={exportList}>
             导出
           </Button>
         </div>
