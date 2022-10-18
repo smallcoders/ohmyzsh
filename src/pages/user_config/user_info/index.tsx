@@ -20,13 +20,14 @@ import type Common from '@/types/common';
 import moment from 'moment';
 import { routeName } from '@/../config/routes';
 import SelfTable from '@/components/self_table';
-
+import { UploadOutlined } from '@ant-design/icons';
+import { exportUserList } from '@/services/export';
 import { exportUsers, getUserPage } from '@/services/user';
 import User from '@/types/user.d';
 const sc = scopedClasses('service-config-requirement-manage');
 
 const registerSource = {
-  WEB: 'web端注册', WECHAT: '微信小程序注册', APP: 'APP'
+  WEB: 'web端注册', WECHAT: '微信小程序注册', APP: 'APP', 其他: 'OTHER'
 }
 
 export default () => {
@@ -300,7 +301,35 @@ export default () => {
   //   //   }  
   //   //   window.URL.revokeObjectURL(linkElement.href); 
   // }
+  const exportList = async () => {
+    const { name, phone, registerSource, orgName, userIdentity, createTimeStart, createTimeEnd } = searchContent;
+    console.log('@searchContent',searchContent)
 
+    try {
+      const res = await exportUserList({
+        name,
+        phone,
+        registerSource,
+        orgName,
+        userIdentity,
+        createTimeStart,
+        createTimeEnd,
+      });
+      if (res?.data.size == 51) return message.warning('操作太过频繁，请稍后再试')
+      const content = res?.data;
+      const blob  = new Blob([content], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"});
+      const fileName = '用户信息.xlsx'
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a')
+      link.style.display = 'none'
+      link.href = url;
+      link.setAttribute('download', fileName)
+      document.body.appendChild(link);
+      link.click();
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <PageContainer className={sc('container')}>
@@ -309,12 +338,15 @@ export default () => {
         <div className="title">
           <span>用户信息列表(共{pageInfo.totalCount || 0}个)</span>
         </div>
-        <Button
+        {/* <Button
           type="primary"
           onClick={() => {
             downloadLink(getExportUrl());
           }}
         >
+          导出
+        </Button> */}
+        <Button icon={<UploadOutlined />} onClick={exportList}>
           导出
         </Button>
       </div>
