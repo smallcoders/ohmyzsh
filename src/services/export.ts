@@ -22,7 +22,7 @@ export async function creativeAchievementExport(data: {
   name?: string, // 成果名
   typeId?: string, // 应用行业id
   state?: string, // 对接状态
-  publishTimeSpan?: string[], // 时间
+  dateTime?: string[], // 时间
 }) {
   return request<any>('/antelope-science/mng/creative/achievement/export',{
     method: 'post',
