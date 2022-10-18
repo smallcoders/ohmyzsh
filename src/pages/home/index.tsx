@@ -8,6 +8,8 @@ import React, { useState, useEffect } from 'react';
 import * as echarts from 'echarts';
 import './index.less';
 import { getAddedDataYesterday, getStatistics } from '@/services/home';
+import { useHistory } from 'react-router-dom';
+import { routeName } from '@/../config/routes';
 
 const sc = scopedClasses('home-page');
 const { RangePicker } = DatePicker;
@@ -41,6 +43,7 @@ const statisticsType = {
 type RangeValue = [Moment | null, Moment | null] | null;
 
 export default () => {
+  const history = useHistory();
   const [addedDataYesterday, setAddedDataYesterday] = useState<any>({});
   const [statistics, setStatistics] = useState<any>([]);
   const [quicklyDate, setQuicklyDate] = useState('1');
@@ -149,6 +152,40 @@ export default () => {
     liveIntentionCount,
   } = addedDataYesterday || {};
 
+  const handleDataStatistic = (item: any) => {
+    console.log('e',item)
+    const { type } = item || {}
+    switch (type) {
+      case 'USER':
+        history.push(`${routeName.USER_INFO_INDEX}`);
+        break;
+      case 'ENTERPRISE':
+        history.push(`${routeName.LOGOUT_RECORD}`);
+        break;
+      case 'EXPERT':
+        history.push(`${routeName.EXPERT_MANAGE_INDEX}`);
+        break;
+      case 'ENTERPRISE_DEMAND':
+        history.push(`${routeName.DEMAND_MANAGEMENT_INDEX}`);
+        break;
+      case 'CREATIVE_DEMAND':
+        history.push(`/service-config/creative-need-manage/index`);
+        break;
+      case 'CREATIVE_ACHIEVEMENT':
+        history.push(`/service-config/achievements-manage/index`);
+        break;
+      case 'APP':
+        history.push(`${routeName.APP_MANAGE}`);
+        break;
+      case 'SOLUTION':
+        history.push(`${routeName.SOLUTION_INDEX}`);
+        break;
+    
+      default:
+        break;
+    }
+  }
+
   return (
     <>
       <div className={sc('container')}>
@@ -208,7 +245,7 @@ export default () => {
               item || {};
             return (
               <Col span={4}>
-                <div className={sc('container-statistic-item')}>
+                <div className={sc('container-statistic-item')} onClick={()=>{handleDataStatistic(item)}}>
                   <p>{statisticsType[type]}</p>
                   <strong>{todayCount}</strong>
                   <p className={sc('container-statistic-item-content')}>

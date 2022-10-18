@@ -249,8 +249,8 @@ export default () => {
                 onClick={() => {
                   const search = searchForm.getFieldsValue();
                   if (search.time) {
-                    search.intendStartTime = moment(search.time[0]).format('YYYY-MM-DDTHH:mm:ss');
-                    search.intendEndTime = moment(search.time[1]).format('YYYY-MM-DDTHH:mm:ss');
+                    search.intendStartTime = moment(search.time[0]).format('YYYY-MM-DD HH:mm:ss');
+                    search.intendEndTime = moment(search.time[1]).format('YYYY-MM-DD HH:mm:ss');
                   }
                   if (search.handlerState) {
                     search.handlerState = !!(search.handlerState - 1);
@@ -277,17 +277,33 @@ export default () => {
     );
   };
 
-  const exportList = () => {
-    console.log('searchInfo', searchContent)
+  const exportList = async () => {
+    console.log('searchInfo', searchContent);
     const { enterprise, solution, handlerState, intendEndTime, intendStartTime } = searchContent;
-    intendMessageExport({
-      enterprise,
-      solution,
-      handlerState,
-      intendEndTime,
-      intendStartTime,
-    })
-  }
+
+    try {
+      const res = await intendMessageExport({
+        enterprise,
+        solution,
+        handlerState,
+        intendEndTime,
+        intendStartTime,
+      });
+      if (res?.data.size == 51) return antdMessage.warning('操作太过频繁，请稍后再试')
+      const content = res?.data;
+      const blob  = new Blob([content], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"});
+      const fileName = '意向消息.xlsx'
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a')
+      link.style.display = 'none'
+      link.href = url;
+      link.setAttribute('download', fileName)
+      document.body.appendChild(link);
+      link.click();
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <>
@@ -295,10 +311,7 @@ export default () => {
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>意向消息列表(共{pageInfo.totalCount || 0}个)</span>
-          <Button
-            icon={<UploadOutlined />}
-            onClick={exportList}
-          >
+          <Button icon={<UploadOutlined />} onClick={exportList}>
             导出
           </Button>
         </div>
