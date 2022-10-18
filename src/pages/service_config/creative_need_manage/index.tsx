@@ -52,7 +52,7 @@ export default () => {
     state?: string; // 状态
     createTimeEnd?: string; // 提交结束时间
     typeId?: number; // 行业类型id 三级类型
-    industryTypeId?: string // 所属行业
+    industryTypeId?: string; // 所属行业
   }>({});
 
   const [weightVisible, setWeightVistble] = useState(false);
@@ -443,8 +443,8 @@ export default () => {
       weightForm.validateFields().then(async (value) => {
         const res = await updateSort({
           id: currentId,
-          sort: value.sort
-        })
+          sort: value.sort,
+        });
         if (res?.code === 0) {
           message.success(`权重设置成功！`);
           setWeightVistble(false);
@@ -487,16 +487,31 @@ export default () => {
   };
 
   // 导出列表
-  const exportList = () => {
+  const exportList = async () => {
     const { name, createTimeStart, state, createTimeEnd, industryTypeId, areaCode } = searchContent;
-    creativeDemandExport({
-      name,
-      createTimeStart,
-      state,
-      createTimeEnd,
-      industryTypeId,
-      areaCode,
-    })
+    try {
+      const res = await creativeDemandExport({
+        name,
+        createTimeStart,
+        state,
+        createTimeEnd,
+        industryTypeId,
+        areaCode,
+      });
+      if (res?.data.size == 51) return message.warning('操作太过频繁，请稍后再试')
+      const content = res?.data;
+      const blob  = new Blob([content], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"});
+      const fileName = '创新需求.xlsx'
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a')
+      link.style.display = 'none'
+      link.href = url;
+      link.setAttribute('download', fileName)
+      document.body.appendChild(link);
+      link.click();
+    } catch (error) {
+      console.log(error);
+    }
   };
   return (
     <PageContainer className={sc('container')}>
