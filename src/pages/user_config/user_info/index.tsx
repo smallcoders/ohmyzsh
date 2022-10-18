@@ -26,7 +26,7 @@ import User from '@/types/user.d';
 const sc = scopedClasses('service-config-requirement-manage');
 
 const registerSource = {
-  WEB: 'web端注册', WECHAT: '微信小程序注册', APP: 'APP', 其他: 'OTHER'
+  WEB: 'web端注册', WECHAT: '微信小程序注册', APP: 'APP', OTHER: '其他'
 }
 
 export default () => {
