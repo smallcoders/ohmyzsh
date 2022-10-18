@@ -93,3 +93,14 @@ export async function intentionPageQuery(params: {
     data,
   });
 }
+
+// 解决方案-设置排序权重
+export async function getSolutionSort(params:{
+  id?: string,
+  sort?: string
+}) {
+  return request<any>('/antelope-manage/solution/setSort',{
+    method: 'get',
+    params,
+  })
+}

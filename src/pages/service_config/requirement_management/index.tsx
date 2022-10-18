@@ -26,6 +26,8 @@ import { getDictionay, getDictionayTree, getEnumByName } from '@/services/common
 import { routeName } from '@/../config/routes';
 import SelfTable from '@/components/self_table';
 import { history } from 'umi';
+import { UploadOutlined } from '@ant-design/icons';
+import { demandExport } from '@/services/export';
 import {
   getRequirementManagementList,
   demandEditType,
@@ -699,12 +701,30 @@ export default () => {
     );
   };
 
+  const exportList = () => {
+    console.log('需求列表', searchContent)
+    const { name, type, publisherName, publishStartTime, publishEndTime, operationState } = searchContent;
+    demandExport({
+      name,
+      type,
+      publisherName,
+      publishStartTime,
+      publishEndTime,
+      operationState,
+    })
+  }
   return (
     <PageContainer className={sc('container')}>
       {useSearchNode()}
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>需求列表(共{pageInfo.totalCount || 0}个)</span>
+          <Button
+            icon={<UploadOutlined />}
+            onClick={exportList}
+          >
+            导出
+          </Button>
         </div>
       </div>
       <div className={sc('container-table-body')}>

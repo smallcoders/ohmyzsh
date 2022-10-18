@@ -256,13 +256,6 @@ export default () => {
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>咨询记录列表(共{pageInfo.totalCount || 0}个)</span>
-          <Button
-            key=""
-            onClick={() => {
-            }}
-          >
-            <PlusOutlined /> 导出
-          </Button>
         </div>
       </div>
       <div className={sc('container-table-body')}>

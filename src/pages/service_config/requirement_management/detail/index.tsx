@@ -1,4 +1,4 @@
-import { message, Image, Timeline, Form, Button, DatePicker, Input, Space, Table } from 'antd';
+import { message, Image, Timeline, Form, Button, DatePicker, Input, Space, Tooltip } from 'antd';
 import { MinusCircleOutlined, DeleteOutlined } from '@ant-design/icons';
 import { history } from 'umi';
 import moment from 'moment';
@@ -79,18 +79,33 @@ export default () => {
       message.error(`请求失败，原因:{${error}}`);
     }
   };
-  const typeEnum: Record<string, string> = {
-    '1': '科技成果',
-    '2': '专家服务',
-    '3': '解决方案',
-    '4': '需求信息',
-    '5': '数字化应用',
+  const typeEnum: Record<string, Record<string, string>> = {
+    '1': {
+      label: '科技成果',
+      linkPath: '',
+    },
+    '2': {
+      label: '专家服务',
+      linkPath: '',
+    },
+    '3': {
+      label: '解决方案',
+      linkPath: '',
+    },
+    '4': {
+      label: '需求信息',
+      linkPath: '',
+    },
+    '5': {
+      label: '数字化应用',
+      linkPath: '',
+    },
   };
   const recommendColumns = [
     {
-      title: 'ID',
-      dataIndex: 'reqDemandId',
-      width: 120,
+      title: '推荐时间',
+      dataIndex: 'recTime',
+      width: 200,
     },
     {
       title: '结果顺位',
@@ -101,30 +116,48 @@ export default () => {
       title: '名称',
       dataIndex: 'recName',
       width: 180,
+      render: (_: string) => (
+        <Tooltip placement="top" title={_}>
+          <div className="table_row_desc">
+            {_}
+            {/* <a
+              onClick={() => {
+                history.push(`${typeEnum[record.recType].linkPath}?id=${record.id}`);
+              }}
+            >
+              {_}
+            </a> */}
+          </div>
+        </Tooltip>
+      ),
     },
     {
       title: '简介',
       dataIndex: 'recContent',
+      width: 300,
+      render: (_: string) => (
+        <Tooltip placement="top" title={_}>
+          <div className="table_row_desc">{_}</div>
+        </Tooltip>
+      ),
     },
     {
       title: '类型',
       dataIndex: 'recType',
-      render: (_: string | number) => <span>{typeEnum[_]}</span>,
+      render: (_: string | number) => <span>{typeEnum[_].label}</span>,
       width: 180,
     },
-    {
-      title: '推荐时间',
-      dataIndex: 'recTime',
-      width: 200,
-    },
+
     {
       title: '是否为兜底数据',
       dataIndex: 'revealState',
+      render: (_: boolean) => <span>{_ ? '是' : '否'}</span>,
       width: 140,
     },
     {
       title: '相关性评价',
       dataIndex: 'recScore',
+      render: (_: string | number) => <span>{_ || '-'}</span>,
       width: 120,
     },
     // {
@@ -314,8 +347,8 @@ export default () => {
                         <Timeline.Item color="gray" key={0}>
                           <Button onClick={() => add()}>新增对接记录</Button>
                         </Timeline.Item>
-                        {fields.map((field) => (
-                          <Timeline.Item color="gray" key={1}>
+                        {fields.map((field, i) => (
+                          <Timeline.Item color="gray" key={i}>
                             <Space key={field.key} align="baseline">
                               <Form.Item
                                 noStyle
@@ -400,8 +433,8 @@ export default () => {
         <div className={sc('container-title')}>推荐位管理</div>
 
         <SelfTable
-          scroll={{ x: 1600 }}
-          rowKey="id"
+          scroll={{ x: 1400 }}
+          rowKey={(item: Record<string, any>, i: number) => i}
           bordered
           columns={recommendColumns}
           dataSource={recommendedList}
