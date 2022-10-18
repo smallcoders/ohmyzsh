@@ -141,7 +141,7 @@ const TableList: React.FC = () => {
     },
     {
       title: '专属产业',
-      dataIndex: 'name',
+      dataIndex: 'industries',
       isEllipsis: true,
       width: 180,
       render: (_: any, record: any) => {

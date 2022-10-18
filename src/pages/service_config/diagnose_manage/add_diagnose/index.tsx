@@ -74,6 +74,11 @@ export default () => {
    */
 	const prepare = async () => {
 		try {
+			getKeywords().then((res) => {
+				if(res.code == 0) {
+					setIndustryData(res.result)
+				}
+			})
 			const { id,firstQuestionnaireNo,version } = history.location.query as { id: string | undefined, firstQuestionnaireNo: string | undefined, version: string | undefined };
 		
 			if (id) {
@@ -88,20 +93,15 @@ export default () => {
 				coverForm.setFieldsValue({...covers, coverUrl: covers.coverUrlId, icon: covers.iconId || '', inIcon: covers.inIconId || ''})
 				setDataSource(diagnose)
 				setDiagnoseTitle(questionnaireObject.title || '')
+				setExclusiveIndustry(questionnaireObject.exclusiveIndustry || [])
 				setOldTitle(questionnaireObject.title || '')
-				rightForm.setFieldsValue({ title: questionnaireObject.title });
+				rightForm.setFieldsValue({ title: questionnaireObject.title, exclusiveIndustry: questionnaireObject.exclusiveIndustry || [] });
 				setDiagnoseList(questionnaireObject.problems)
 				setDiagnoseListString(JSON.stringify(questionnaireObject.problems))
+				setExclusiveIndustryString(JSON.stringify(questionnaireObject.exclusiveIndustry))
 			}
 			let areaRes = await listAllAreaCode()
-			console.log(areaRes, 'areaRes');
 			setProvinceList(areaRes && areaRes.result || [] )
-			getKeywords().then((res) => {
-				console.log(11111111, res);
-				if(res.code == 0) {
-					setIndustryData(res.result)
-				}
-			})
 		} catch (error) {
 		  console.log('error', error);
 		  message.error('获取初始数据失败');
@@ -369,6 +369,7 @@ export default () => {
 				let params:any = {
 					questionnaireObject: {
 						title: diagnoseTitle,
+						exclusiveIndustry: exclusiveIndustry,
 						problems: diagnoseList
 					},
 					diagnose: dataSource,
@@ -1062,11 +1063,24 @@ export default () => {
 		}else {
 			setSelectedOrgList([])
 		}
+		if(record.offeringsFileName) {
+			setFiles([
+				{title: record.offeringsFileName, storeId: record.offeringsFile}
+			]);
+		}
+		//   form.setFieldsValue({
+		// 	...record, 
+		// 	videoId: [{uid: record.videoId, name: record.videoName+'.mp4', status: 'done',}],
+		// 	typeIds: record.typeIds ? record.typeIds.split(',').map(Number) : []
+		//   });
 		resultForm.setFieldsValue({
 			name: record.name || '',
 			summary: record.summary || '',
+			// offeringsFile: record.offeringsFile || '',
+			offeringsFile: record.offeringsFileName ? [{uid: record.offeringsFile, name: record.offeringsFileName, status: 'done',}] : [],
 			recommendations: record.recommendations || '',
 			remind: record.remind || '',
+			offerings: record.offerings || '',
 			relations: record.relations || [],
 			relatedServers: record.relatedServers || [],
 			relatedTechnicalManager: {
@@ -1118,6 +1132,7 @@ export default () => {
 			},
 		});
 	};
+	const [files, setFiles] = useState<any>([]);
 	// 添加诊断结果
 	const addReultOk = () => {
 		resultForm
@@ -1128,8 +1143,8 @@ export default () => {
 				selectedOrgList && selectedOrgList.map((item: any) => {
 					serverIds.push(item.id)
 				})
-				if(!resultObj.name || !resultObj.summary) {
-					info('请检查「诊断报告名称」和「诊断报告概述」是否填写')
+				if(!resultObj.name || !resultObj.summary || !resultObj.offerings) {
+					info('请检查「诊断报告名称」、「诊断报告概述」和「服务方案」是否填写')
 					return false
 				}
 				if(editResultIndex > -1) {// 编辑
@@ -1137,12 +1152,20 @@ export default () => {
 					list.splice(editResultIndex, 1, {
 						...list[editResultIndex],
 						...resultObj,
-						relatedServers: serverIds
+						relatedServers: serverIds,
+						offeringsFile: files && files[0].storeId,
+						offeringsFileName: files && files[0].title
 					} as DiagnoseResult);
 					setDataSource(list)
 				}else {// 新增
+					console.log(files, '新增诊断结果-------files');
 					let arr = [...dataSource]
-					arr.push({...resultObj, relatedServers: serverIds})
+					arr.push({
+						...resultObj, 
+						relatedServers: serverIds,
+						offeringsFile: files && files[0].storeId,
+						offeringsFileName: files && files[0].title
+					})
 					setDataSource(arr)
 				}
 				setEdge(1)
@@ -1207,6 +1230,61 @@ export default () => {
 				
 			}
 		}
+		const normFile = (e: any) => {
+			const lastName = e.file.name.split('.');
+			if (lastName[lastName.length - 1] != 'pdf') {
+			  message.error(`请上传以pdf后缀名开头的文件`);
+			  return [];
+			}
+			const isLt800M = e.file.size / 1024 / 1024 < 800;
+			if (Array.isArray(e)) {
+			  return e;
+			}
+			if (!isLt800M) {
+			  message.error('视频大小不得超过800M!');
+			  return []
+			}
+			return e?.fileList;
+		};
+		const props = {
+			name: 'file',
+			accept: ".pdf",
+			maxCount: 1,
+			maxSize: 30,
+			action: '/antelope-manage/common/upload/record',
+			onRemove: (file: UploadFile<any>) => {
+			//   if (file.status === 'uploading' || file.status === 'error') {
+			// 	setUploadLoading(false);
+			//   }
+			  const files_copy = [...files];
+			  const existIndex = files_copy.findIndex((p) => p.storeId === file?.response?.result);
+			  if (existIndex > -1) {
+				files_copy.splice(existIndex, 1);
+				setFiles(files_copy);
+			  }
+			},
+			onChange(info:any) {
+			  if (info.file.status === 'done') {
+				console.log(info, 'info-----done');
+				const uploadResponse = info?.file?.response;
+				if (uploadResponse?.code === 0 && uploadResponse.result) {
+				  const upLoadResult = info?.fileList.map((p) => {
+					return {
+					  title: p.name,
+					  storeId: p.response?.result?.id
+					};
+				  });
+				  console.log(upLoadResult, 'upLoadResult-------done');
+				  setFiles(upLoadResult);
+				} else {
+				  message.error(`上传失败，原因:{${uploadResponse.message}}`);
+				}
+				message.success(`${info.file.name} 上传成功`);
+			  } else if (info.file.status === 'error') {
+				message.error(`${info.file.name} file upload failed.`);
+			  }
+			}
+		};
 		const handleChange = (info: UploadChangeParam<UploadFile<any>>) => {
 			console.log(info, '---------------info');
 			// if (info.file.status === 'uploading') {
@@ -1310,8 +1388,13 @@ export default () => {
 									<Form.Item
 										name="offeringsFile"
 										label=""
+										valuePropName="fileList"
+										getValueFromEvent={normFile}
 									>
-										<Upload 
+										<Upload {...props}>
+											<Button type="primary">上传文件</Button>
+										</Upload>
+										{/* <Upload 
 											maxCount={1} 
 											listType="picture-card"
 											action='/antelope-manage/common/upload/record'
@@ -1320,7 +1403,7 @@ export default () => {
 											accept=".pdf"
 										>
 											<button>上传文件</button>
-										</Upload>
+										</Upload> */}
 										{/* <UploadForm
 											listType="picture-card"
 											className="avatar-uploader"
@@ -1546,6 +1629,9 @@ export default () => {
 					<p>{resultObj&&resultObj.recommendations || ''}</p>
 					<h3>特殊提醒</h3>
 					<p>{resultObj&&resultObj.remind || ''}</p>
+					<h3>服务方案</h3>
+					<p>{resultObj&&resultObj.offerings || ''}</p>
+					<a href={resultObj.offeringsFilePath}>{resultObj.offeringsFileName}</a>
 					<h3>推荐服务商</h3>
 					<p>{resultObj&&resultObj.relatedServers&&resultObj.relatedServers.join(',') || ''}</p>
 					<h3>推荐技术经理人</h3>
@@ -1713,9 +1799,11 @@ export default () => {
 										<h3>基础设置</h3>
 										<p>{diagnoseTitle}</p>
 										<p className='industry-wrap'>{
-											exclusiveIndustry && exclusiveIndustry.map((item: any, index: number) => {
+											exclusiveIndustry && exclusiveIndustry.map((item: any) => {
+												console.log(industryData, 'industryData', item);
+												let arr = industryData.filter(chinaName => chinaName.id == item)
 												return (
-													<span className='industry-item'>#{item}</span>
+													<span className='industry-item'>#{arr[0].name}</span>
 												)
 											})
 										}</p>
@@ -1862,20 +1950,29 @@ export default () => {
 												</Form.Item>
 												<p className='tip'>提示：问卷标题将作为诊断标题使用</p>
 												<Form.Item label="专属产业" name='exclusiveIndustry' style={{marginBottom: 8}}>
-													<Select 
+													<Select
+														getPopupContainer={(trigger: any) => trigger as HTMLElement}
+														placeholder={"请选择"}
 														mode="multiple"
 														allowClear
+														options={industryData}
+														fieldNames={{ label: 'name', value: 'id' }}
+													/>
+													{/* <Select 
+														mode="multiple"
+														allowClear
+														fieldNames={{ label: 'name', value: 'id' }}
 														onChange={(e) => {console.log(e)}}
 													>
 														{industryData && industryData.map((item: any) =>
 															<Option 
-																value={item.name} 
-																key={item.enumName}
+																value={item.id} 
+																key={item.id}
 															>
 																{item.name}
 															</Option>
 														)}
-													</Select>
+													</Select> */}
 												</Form.Item>
 											</Form>
 										)}
@@ -2120,6 +2217,8 @@ export default () => {
 									resultForm.setFieldsValue({
 										name: '',
 										summary: '',
+										// offeringsFile: '',
+										offerings: '',
 										recommendations: '',
 										remind: '',
 										relations: [],
