@@ -384,7 +384,8 @@ export default () => {
       render: (_: string, _record: any) => (
         <a
           onClick={() => {
-            history.push(`${routeName.REQUIREMENT_MANAGEMENT_DETAIL}?id=${_record.id}`);
+            history.push(`/service-config/requirement-management/detail?id=${_record.id}`);
+            // history.push(`${routeName.REQUIREMENT_MANAGEMENT_DETAIL}?id=${_record.id}`);
           }}
         >
           {_}
@@ -515,7 +516,8 @@ export default () => {
               size="small"
               type="link"
               onClick={() => {
-                history.push(`${routeName.REQUIREMENT_MANAGEMENT_DETAIL}?id=${record.id}&isEdit=1`);
+                history.push(`/service-config/requirement-management/detail?id=${record.id}&isEdit=1`);
+                // history.push(`${routeName.REQUIREMENT_MANAGEMENT_DETAIL}?id=${record.id}&isEdit=1`);
               }}
             >
               节点维护
