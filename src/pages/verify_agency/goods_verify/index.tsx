@@ -132,7 +132,7 @@ export default () => {
     },
     {
       title: '申请时间',
-      dataIndex: 'applyTime',
+      dataIndex: 'createTime',
       width: 200,
       render: (_: string) => moment(_).format('YYYY-MM-DD HH:mm:ss'),
     },
