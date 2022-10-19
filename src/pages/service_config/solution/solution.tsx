@@ -1,16 +1,17 @@
-import { Button, message, Form, Modal, TreeSelect, Input } from 'antd';
+import { Button, message, Form, Modal, TreeSelect, Input, InputNumber } from 'antd';
 import React, { useState, useRef, useEffect } from 'react';
 import { history } from 'umi';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import { getDictionayTree } from '@/services/common';
 import ProTable from '@ant-design/pro-table';
-import { PageContainer } from '@ant-design/pro-layout';
-import { pageQuery, setTop, unsetTop, solutionEditType } from '@/services/solution';
+import { pageQuery, solutionEditType, getSolutionSort } from '@/services/solution';
 import { getDictionay } from '@/services/common';
 import { getAreaTree } from '@/services/area';
 import type SolutionTypes from '@/types/solution';
 import type { ProSchemaValueEnumObj } from '@ant-design/pro-utils';
 import { routeName } from '@/../config/routes';
+import { UploadOutlined } from '@ant-design/icons';
+import { solutionExport } from '@/services/export';
 
 /**
  * 渲染服务类型
@@ -34,16 +35,18 @@ const SolutionTable: React.FC = () => {
   const [typeOptions, setTypeOptions] = useState<any>({});
   const [areaOptions, setAreaOptions] = useState<ProSchemaValueEnumObj>({});
   const [total, setTotal] = useState<number>(0);
+  const [weightVisible, setWeightVistble] = useState(false);
+  const [currentId, setCurrentId] = useState<Number>(0);
 
   /**
    * 新建窗口的弹窗
    *  */
-   const formLayout = {
+  const formLayout = {
     labelCol: { span: 6 },
     wrapperCol: { span: 14 },
   };
   const [createModalVisible, setModalVisible] = useState<boolean>(false);
- 
+
   const [form] = Form.useForm();
   const [editingItem, setEditingItem] = useState<any>({});
   const [addOrUpdateLoading, setAddOrUpdateLoading] = useState<boolean>(false);
@@ -69,7 +72,6 @@ const SolutionTable: React.FC = () => {
     getDictionay('NEW_ENTERPRISE_DICT').then((data) => {
       const options = {};
       data?.result.forEach(({ id, name }) => (options[id] = name));
-      console.log('optionsoptionsoptionsoptions',options)
       setTypeOptions(options);
     });
 
@@ -121,21 +123,67 @@ const SolutionTable: React.FC = () => {
    * @param isTop
    * @param id
    */
-  const handleSetTop = async (isTop: boolean, id: number) => {
-    const result = isTop ? await unsetTop(id) : await setTop(id);
-    if (result.code !== 0) {
-      message.error(result.message);
-    } else {
-      actionRef.current?.reload();
+  // const handleSetTop = async (isTop: boolean, id: number) => {
+  //   const result = isTop ? await unsetTop(id) : await setTop(id);
+  //   if (result.code !== 0) {
+  //     message.error(result.message);
+  //   } else {
+  //     actionRef.current?.reload();
+  //   }
+  // };
+
+  const [weightForm] = Form.useForm();
+  const handleWeightOk = async () => {
+    try {
+      weightForm.validateFields().then(async (value) => {
+        const res = await getSolutionSort({
+          id: String(currentId),
+          sort: value.sort,
+        });
+        if (res?.code === 0) {
+          message.success(`权重设置成功！`);
+          setWeightVistble(false);
+          weightForm.resetFields();
+          actionRef.current?.reload();
+        } else {
+          message.error(`权重设置失败，原因:{${res?.message}}`);
+        }
+      });
+    } catch (error) {
+      console.log(error);
     }
+  };
+
+  const weightModal = (): React.ReactNode => {
+    return (
+      <Modal
+        title="请输入权重"
+        width="780px"
+        visible={weightVisible}
+        onOk={handleWeightOk}
+        onCancel={() => {
+          setWeightVistble(false);
+        }}
+      >
+        <Form form={weightForm}>
+          <Form.Item name="sort" rules={[{ required: true, message: '必填' }]}>
+            <InputNumber
+              style={{ width: '100%' }}
+              placeholder="数字越大排名越靠前"
+              min={1}
+              step={0.001}
+            />
+          </Form.Item>
+        </Form>
+      </Modal>
+    );
   };
 
   const columns: ProColumns<SolutionTypes.Solution>[] = [
     {
-      title: '序号',
+      title: '权重',
+      dataIndex: 'sort',
       hideInSearch: true,
-      renderText: (text: any, record: any, index: number) =>
-        (paginationRef.current.current - 1) * paginationRef.current.pageSize + index + 1,
     },
     {
       title: '服务名称',
@@ -218,7 +266,10 @@ const SolutionTable: React.FC = () => {
           onClick={() => {
             setEditingItem(record);
             setModalVisible(true);
-            form.setFieldsValue({ ...record,dealName: record.types?.map((e) => e.name).join('、') || ''});
+            form.setFieldsValue({
+              ...record,
+              dealName: record.types?.map((e) => e.name).join('、') || '',
+            });
           }}
         >
           服务类型编辑
@@ -232,12 +283,15 @@ const SolutionTable: React.FC = () => {
           详情
         </Button>,
         <Button
-          key="2"
-          size="small"
           type="link"
-          onClick={() => handleSetTop(record.isTop, record.id)}
+          onClick={() => {
+            setWeightVistble(true);
+            setCurrentId(record.id);
+            // 重置 keyword: record.keyword  这里需要把权重选上
+            weightForm.setFieldsValue({ sort: record.sort || [] });
+          }}
         >
-          {record.isTop ? '取消置顶' : '置顶'}
+          权重
         </Button>,
       ],
     },
@@ -260,7 +314,7 @@ const SolutionTable: React.FC = () => {
       >
         <Form {...formLayout} form={form} layout="horizontal">
           <Form.Item name="dealName" label="原类型">
-            <Input placeholder="请输入" disabled/>
+            <Input placeholder="请输入" disabled />
           </Form.Item>
           <Form.Item
             name="type"
@@ -269,38 +323,70 @@ const SolutionTable: React.FC = () => {
             rules={[
               {
                 validator(rule, value) {
-                  if(value.length>3){
-                    return Promise.reject('最多选3个')
+                  if (value.length > 3) {
+                    return Promise.reject('最多选3个');
                   }
-                  if(!value||value.length===0){
-                    return Promise.reject('必填')
-                  }else {
-                    return Promise.resolve()
+                  if (!value || value.length === 0) {
+                    return Promise.reject('必填');
+                  } else {
+                    return Promise.resolve();
                   }
                 },
               },
             ]}
           >
             <TreeSelect
-                multiple
-                style={{ width: '100%' }}
-                value={treeNodeValue}
-                dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-                allowClear
-                treeData={serviceTypes}
-                fieldNames={{ label: 'name', value: 'id', children: 'nodes' }}
-                onChange={onChange}
-              />
+              multiple
+              style={{ width: '100%' }}
+              value={treeNodeValue}
+              dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+              allowClear
+              treeData={serviceTypes}
+              fieldNames={{ label: 'name', value: 'id', children: 'nodes' }}
+              onChange={onChange}
+            />
           </Form.Item>
         </Form>
       </Modal>
     );
   };
 
+  const [searchInfo, setSearchInfo] = useState<any>({});
+  const exportList = async () => {
+    const { name, typeId, providerName, areaCode, publishTimeSpan } = searchInfo;
+
+    try {
+      const res = await solutionExport({
+        name,
+        typeId,
+        providerName,
+        areaCode,
+        publishTimeSpan: publishTimeSpan ? [publishTimeSpan[0], publishTimeSpan[1]] : undefined,
+      });
+      if (res?.data.size == 51) return message.warning('操作太过频繁，请稍后再试')
+      const content = res?.data;
+      const blob  = new Blob([content], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"});
+      const fileName = '解决方案.xlsx'
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a')
+      link.style.display = 'none'
+      link.href = url;
+      link.setAttribute('download', fileName)
+      document.body.appendChild(link);
+      link.click();
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <>
       <ProTable
         headerTitle={`服务列表（共${total}个）`}
+        toolBarRender={() => [
+          <Button icon={<UploadOutlined />} onClick={exportList}>
+            导出
+          </Button>,
+        ]}
         options={false}
         rowKey="id"
         actionRef={actionRef}
@@ -311,6 +397,8 @@ const SolutionTable: React.FC = () => {
           optionRender: (searchConfig, formProps, dom) => [dom[1], dom[0]],
         }}
         request={async (pagination) => {
+          // 保存seatchInfo
+          setSearchInfo(pagination);
           const result = await pageQuery(pagination);
           paginationRef.current = pagination;
           setTotal(result.total);
@@ -320,6 +408,7 @@ const SolutionTable: React.FC = () => {
         pagination={{ size: 'default', showQuickJumper: true, defaultPageSize: 10 }}
       />
       {getModal()}
+      {weightModal()}
     </>
   );
 };

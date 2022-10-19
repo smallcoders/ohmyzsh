@@ -19,6 +19,7 @@ namespace SolutionTypes {
     areas: TreeNode[];
     publishTime: string;
     intentionCount: number;
+    sort: number;
   };
 
   export type SolutionDetail = {

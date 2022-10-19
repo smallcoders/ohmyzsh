@@ -28,6 +28,7 @@ import SelfTable from '@/components/self_table';
 import type DiagnosticTasks from '@/types/service-config-diagnostic-tasks';
 import UploadFormFile from '@/components/upload_form/upload-form-file';
 import { getAreaTree } from '@/services/area';
+import { onlineDiagnosisExport } from '@/services/export';
 const sc = scopedClasses('service-config-diagnostic-tasks');
 export default () => {
   const [dataSource, setDataSource] = useState<DiagnosticTasks.OnlineRecord[]>([]);
@@ -37,7 +38,7 @@ export default () => {
     areaCode?: number;
     startTime?: string;
     endTime?: string;
-  }>({});
+  }>({}); 
   const [editingItem, setEditingItem] = useState<DiagnosticTasks.OnlineRecord | undefined>();
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [addOrUpdateLoading, setAddOrUpdateLoading] = useState<boolean>(false);
@@ -427,12 +428,40 @@ export default () => {
     );
   };
 
+  const exportList = async () => {
+    const { status, orgName, areaCode, startTime, endTime } = searchContent;
+    try {
+      const res = await onlineDiagnosisExport({
+        status,
+        orgName,
+        areaCode,
+        startTime,
+        endTime,
+      });
+      if (res?.data.size == 51) return message.warning('操作太过频繁，请稍后再试')
+      const content = res?.data;
+      const blob  = new Blob([content], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"});
+      const fileName = '线上诊断.xlsx'
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a')
+      link.style.display = 'none'
+      link.href = url;
+      link.setAttribute('download', fileName)
+      document.body.appendChild(link);
+      link.click();
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <>
       {useSearchNode()}
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>诊断记录列表(共{pageInfo.totalCount || 0}个)</span>
+          <Button icon={<UploadOutlined />} onClick={exportList}>
+            导出
+          </Button>
         </div>
       </div>
       <div className={sc('container-table-body')}>

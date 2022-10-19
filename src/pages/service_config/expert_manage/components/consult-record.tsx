@@ -24,6 +24,8 @@ import {
   markConsultRecordContracted,
   updateConsultRecordRemark,
 } from '@/services/expert_manage/consult-record';
+import { UploadOutlined } from '@ant-design/icons';
+import { expertConsultationExport } from '@/services/export';
 const sc = scopedClasses('user-config-logout-verify');
 
 export default () => {
@@ -276,12 +278,42 @@ export default () => {
     );
   };
 
+  const exportList = async () => {
+    console.log('咨询记录', searchContent);
+    const { orgName, expertName, startCreateTime, endCreateTime, contacted } = searchContent;
+    try {
+      const res = await expertConsultationExport({
+        orgName,
+        expertName,
+        startCreateTime,
+        endCreateTime,
+        contacted,
+      });
+      if (res?.data.size == 51) return antdMessage.warning('操作太过频繁，请稍后再试')
+      const content = res?.data;
+      const blob  = new Blob([content], {type: "application/vnd.ms-excel;charset=utf-8"});
+      const fileName = '咨询记录.xlsx'
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a')
+      link.style.display = 'none'
+      link.href = url;
+      link.setAttribute('download', fileName)
+      document.body.appendChild(link);
+      link.click();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <>
       {useSearchNode()}
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>咨询记录列表(共{pageInfo.totalCount || 0}个)</span>
+          <Button icon={<UploadOutlined />} onClick={exportList}>
+            导出
+          </Button>
         </div>
       </div>
       <div className={sc('container-table-body')}>

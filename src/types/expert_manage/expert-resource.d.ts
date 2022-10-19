@@ -49,6 +49,8 @@ namespace ExpertResource {
     expertType?: string; //专家类型
     startPublishTime?: string; // 发布时间
     endPublishTime?: string; // 发布时间
+    areaCode?: number; // 所属区域
+    commissioner?: boolean; // 服务专员
   };
 }
 export default ExpertResource;

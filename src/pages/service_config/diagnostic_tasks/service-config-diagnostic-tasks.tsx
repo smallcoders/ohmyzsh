@@ -1,7 +1,8 @@
 import { PageContainer } from '@ant-design/pro-layout';
 import './service-config-diagnostic-tasks.less';
 import scopedClasses from '@/utils/scopedClasses';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { history } from 'umi';
 
 import Online from './components/Online';
 import Offline from './components/Offline';
@@ -9,6 +10,18 @@ import Intention from './components/Intention';
 const sc = scopedClasses('service-config-diagnostic-tasks');
 export default () => {
   const [activeKey, setActiveKey] = useState<string>('1');
+
+  const { type } = history.location.query as any;
+
+  const prepare = async () => {
+    if (type) {
+      setActiveKey(type);
+    }
+  };
+
+  useEffect(() => {
+    prepare();
+  }, []);
 
   return (
     <PageContainer

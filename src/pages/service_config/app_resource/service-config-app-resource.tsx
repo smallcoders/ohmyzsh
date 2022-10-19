@@ -1,7 +1,7 @@
 // @ts-ignore
 /* eslint-disable */
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Input, Table, Form, Select, Row, Col, message, Space, Popconfirm } from 'antd';
+import { Button, Input, Table, Form, Select, Row, Col, message, Space, Popconfirm, Modal, InputNumber } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import './service-config-app-resource.less';
 import scopedClasses from '@/utils/scopedClasses';
@@ -13,6 +13,7 @@ import {
   offShelf,
   removeAppSource,
   topApp,
+  getHttpAppSort,
 } from '@/services/app-resource';
 import Common from '@/types/common';
 import AppResource from '@/types/app-resource.d';
@@ -146,10 +147,127 @@ export default () => {
     }
   };
 
+  /**
+   * 搜索表单
+   * @returns
+   */
+  const [searchForm] = Form.useForm();
+  const GetSearchNode = (): React.ReactNode => {
+    const formLayout = {
+      labelCol: { span: 6 },
+      wrapperCol: { span: 14 },
+    };
+
+    return (
+      <div className={sc('container-search')}>
+        <Form {...formLayout} form={searchForm}>
+          <Row>
+            <Col span={7}>
+              <Form.Item name="name" label="应用名称">
+                <Input placeholder="请输入" />
+              </Form.Item>
+            </Col>
+            <Col span={7}>
+              <Form.Item name="orgName" label="所属厂商">
+                <Input placeholder="请输入" />
+              </Form.Item>
+            </Col>
+            <Col span={7}>
+              <Form.Item name="releaseStatus" label="当前状态">
+                <Select placeholder="请选择">
+                  <Select.Option value={0}>已下架</Select.Option>
+                  <Select.Option value={1}>发布中</Select.Option>
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={3}>
+              <Button
+                style={{ marginRight: 20 }}
+                type="primary"
+                key="search"
+                onClick={() => {
+                  const search = searchForm.getFieldsValue();
+                  setSearChContent(search);
+                }}
+              >
+                查询
+              </Button>
+              <Button
+                type="primary"
+                key="reset"
+                onClick={() => {
+                  searchForm.resetFields();
+                  setSearChContent({});
+                }}
+              >
+                重置
+              </Button>
+            </Col>
+          </Row>
+        </Form>
+      </div>
+    );
+  };
+
+
+    /**
+   * 权重Modal
+   */
+
+    const [weightVisible, setWeightVistble] = useState(false);
+    const [currentId, setCurrentId] = useState<string>('');
+    const [weightForm] = Form.useForm();
+    const handleWeightOk = async () => {
+      try {
+        weightForm.validateFields().then(async (value) => {
+          const res = await getHttpAppSort({
+            id: currentId,
+            sort: value.sort
+          })
+          if (res?.code === 0) {
+            message.success(`权重设置成功！`);
+            setWeightVistble(false);
+            weightForm.resetFields();
+            //  重新获取列表数据
+            const search = searchForm.getFieldsValue();
+            setSearChContent(search);
+          } else {
+            message.error(`权重设置失败，原因:{${res?.message}}`);
+          }
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    const weightModal = (): React.ReactNode => {
+    return (
+      <Modal
+        title="请输入权重"
+        width="780px"
+        visible={weightVisible}
+        onOk={handleWeightOk}
+        onCancel={() => {
+          setWeightVistble(false);
+        }}
+      >
+        <Form form={weightForm}>
+          <Form.Item name="sort" rules={[{ required: true, message: '必填' }]}>
+            <InputNumber
+              style={{ width: '100%' }}
+              placeholder="数字越大排名越靠前"
+              min={1}
+              step={0.001}
+            />
+          </Form.Item>
+        </Form>
+      </Modal>
+    );
+  };
+
   const columns = [
     {
-      title: '排序',
-      dataIndex: 'priority',
+      title: '权重',
+      dataIndex: 'sort',
     },
     {
       title: '应用名称',
@@ -166,11 +284,6 @@ export default () => {
     {
       title: '所属厂商',
       dataIndex: 'orgName',
-    },
-    {
-      title: '尖刀应用',
-      dataIndex: 'isTopApp',
-      render: (_: number) => (_ === 0 ? '否' : '是'),
     },
     {
       title: '状态',
@@ -231,7 +344,7 @@ export default () => {
             >
               编辑
             </a>
-            {record.isTopApp === 0 && (
+            {(
               <Popconfirm
                 title="确定删除么？"
                 okText="确定"
@@ -241,7 +354,7 @@ export default () => {
                 <a href="#">删除</a>
               </Popconfirm>
             )}
-            {record.isTopApp === 0 && record.releaseStatus === 1 && (
+            {record.releaseStatus === 1 && (
               <Popconfirm
                 title="确定下架么？"
                 okText="确定"
@@ -252,85 +365,22 @@ export default () => {
               </Popconfirm>
             )}
             {record.releaseStatus === 1 && (
-              <a href="#" onClick={() => top(record.id as string)}>
-                置顶
-              </a>
+              <Button
+                type="link"
+                onClick={() => {
+                  setWeightVistble(true);
+                  setCurrentId(record.id as string);
+                  weightForm.setFieldsValue({ sort: record.sort  || [] });
+                }}
+              >
+                权重
+              </Button>
             )}
           </Space>
         );
       },
     },
   ];
-
-  /**
-   * 搜索表单
-   * @returns
-   */
-  const GetSearchNode = (): React.ReactNode => {
-    const [searchForm] = Form.useForm();
-    const formLayout = {
-      labelCol: { span: 6 },
-      wrapperCol: { span: 14 },
-    };
-
-    return (
-      <div className={sc('container-search')}>
-        <Form {...formLayout} form={searchForm}>
-          <Row>
-            <Col span={5}>
-              <Form.Item name="name" label="应用名称">
-                <Input placeholder="请输入" />
-              </Form.Item>
-            </Col>
-            <Col span={5}>
-              <Form.Item name="orgName" label="所属厂商">
-                <Input placeholder="请输入" />
-              </Form.Item>
-            </Col>
-            <Col span={5}>
-              <Form.Item name="isTopApp" label="尖刀应用">
-                <Select placeholder="请选择">
-                  <Select.Option value={0}>否</Select.Option>
-                  <Select.Option value={1}>是</Select.Option>
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={5}>
-              <Form.Item name="releaseStatus" label="当前状态">
-                <Select placeholder="请选择">
-                  <Select.Option value={0}>已下架</Select.Option>
-                  <Select.Option value={1}>发布中</Select.Option>
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={4}>
-              <Button
-                style={{ marginRight: 20 }}
-                type="primary"
-                key="search"
-                onClick={() => {
-                  const search = searchForm.getFieldsValue();
-                  setSearChContent(search);
-                }}
-              >
-                查询
-              </Button>
-              <Button
-                type="primary"
-                key="reset"
-                onClick={() => {
-                  searchForm.resetFields();
-                  setSearChContent({});
-                }}
-              >
-                重置
-              </Button>
-            </Col>
-          </Row>
-        </Form>
-      </div>
-    );
-  };
   return (
     // <PageContainer className={sc('container')}>
     <>
@@ -395,6 +445,7 @@ export default () => {
           dataSource={dataSource}
         />
       </div>
+      {weightModal()}
     </>
     // </PageContainer>
   );

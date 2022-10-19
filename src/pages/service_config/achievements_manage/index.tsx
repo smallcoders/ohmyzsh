@@ -1,15 +1,5 @@
-import {
-  Button,
-  Input,
-  Form,
-  Row,
-  Col,
-  message,
-  Space,
-  Popconfirm,
-  Modal,
-  Checkbox
-} from 'antd';
+import { Button, Input, Form, Row, Col, message, Space, Popconfirm, Modal, Checkbox } from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
 import { request } from 'umi';
 import ProTable from '@ant-design/pro-table';
@@ -17,23 +7,28 @@ import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import React, { useEffect, useState, useRef } from 'react';
 import type AchievementsTypes from '@/types/service-config-achievements-manage';
 import { history } from 'umi';
+import { getUrl } from '@/utils/util';
+import scopedClasses from '@/utils/scopedClasses';
+import { creativeAchievementExport } from '@/services/export';
+const sc = scopedClasses('service-config-achievements-manage');
 import {
-  getKeywords, // 关键词枚举 
+  getKeywords, // 关键词枚举
   getCreativeTypes, // 应用行业
   updateKeyword, // 关键词编辑
-  updateConversion // 完成转化
+  updateConversion, // 完成转化
 } from '@/services/achievements-manage';
+import './index.less';
 const stateObj = {
   NOT_CONNECT: '未对接',
   CONNECTING: '对接中',
-  CONVERTED: '已转化'
+  CONVERTED: '已转化',
 };
 export default () => {
   const actionRef = useRef<ActionType>();
   const paginationRef = useRef<any>();
   const [total, setTotal] = useState<number>(0);
-  const [typeOptions, setTypeOptions] = useState<any>({});// 应用行业数据
-  const [keywords, setKeywords] = useState<any[]>([]);// 关键词数据
+  const [typeOptions, setTypeOptions] = useState<any>({}); // 应用行业数据
+  const [keywords, setKeywords] = useState<any[]>([]); // 关键词数据
   const [modalVisible, setModalVisible] = useState<boolean>(false);
 
   // 点击关键词编辑，记录当前编辑的id
@@ -60,17 +55,14 @@ export default () => {
       total: e.totalCount,
       data: e.result,
     }));
-  }
+  };
 
   const prepare = async () => {
     try {
-      const res = await Promise.all([
-        getKeywords(),
-        getCreativeTypes()
-      ]);
-      setKeywords(res[0].result || [])
+      const res = await Promise.all([getKeywords(), getCreativeTypes()]);
+      setKeywords(res[0].result || []);
       const options = {};
-      res[1].result.forEach(({ id, name }) => (options[id] = name))
+      res[1].result.forEach(({ id, name }) => (options[id] = name));
       setTypeOptions(options || {});
     } catch (error) {
       message.error('获取类型失败');
@@ -115,7 +107,7 @@ export default () => {
           message.error(`所属产业编辑失败，原因:{${submitRes.message}}`);
         }
       })
-      .catch(() => { });
+      .catch(() => {});
   };
 
   const useModal = (): React.ReactNode => {
@@ -131,34 +123,43 @@ export default () => {
           <Button key="back" onClick={handleCancel}>
             取消
           </Button>,
-          <Button
-            key="link"
-            type="primary"
-            onClick={handleOk}
-          >
+          <Button key="link" type="primary" onClick={handleOk}>
             确定
           </Button>,
         ]}
       >
         <Form {...formLayout} form={editForm}>
-          <Form.Item name="keyword" label="所属产业" rules={[{ required: true }]} extra="多选（最多三个）">
+          <Form.Item
+            name="keyword"
+            label="所属产业"
+            rules={[{ required: true }]}
+            extra="多选（最多三个）"
+          >
             <Checkbox.Group>
               <Row>
                 {keywords?.map((i) => {
                   return (
                     <React.Fragment key={i.name}>
                       <Col span={6}>
-                        <Checkbox value={i.enumName} style={{ lineHeight: '32px' }} disabled={newKeywords && newKeywords.length == 3 && (!newKeywords.includes(i.enumName))}>
+                        <Checkbox
+                          value={i.enumName}
+                          style={{ lineHeight: '32px' }}
+                          disabled={
+                            newKeywords &&
+                            newKeywords.length == 3 &&
+                            !newKeywords.includes(i.enumName)
+                          }
+                        >
                           {i.name}
                         </Checkbox>
-                        {i.enumName == 'OTHER' && newKeywords && (newKeywords.indexOf('OTHER') > -1) && (
+                        {i.enumName == 'OTHER' && newKeywords && newKeywords.indexOf('OTHER') > -1 && (
                           <Form.Item name="keywordOther" label="">
-                            <Input placeholder='请输入' maxLength={10} />
+                            <Input placeholder="请输入" maxLength={10} />
                           </Form.Item>
                         )}
                       </Col>
                     </React.Fragment>
-                  )
+                  );
                 })}
               </Row>
             </Checkbox.Group>
@@ -169,10 +170,10 @@ export default () => {
   };
 
   const stateColumn = {
-    'NOT_CONNECT': '未对接',
-    'CONNECTING': '对接中',
-    'CONVERTED': '已转化'
-  }
+    NOT_CONNECT: '未对接',
+    CONNECTING: '对接中',
+    CONVERTED: '已转化',
+  };
 
   const columns: ProColumns<AchievementsTypes.Achievements>[] = [
     {
@@ -228,7 +229,7 @@ export default () => {
       title: '发布时间',
       dataIndex: 'updateTime',
       hideInSearch: true, // 用于隐藏筛选
-      width: 200
+      width: 200,
     },
     {
       title: '发布时间',
@@ -256,58 +257,116 @@ export default () => {
       hideInSearch: true, // 用于隐藏筛选
       dataIndex: 'option',
       render: (_: any, record: any) => {
-        return record.state == 'CONVERTED' ? (<div style={{ textAlign: 'center' }}>/</div>) : (
+        return record.state == 'CONVERTED' ? (
+          <div style={{ textAlign: 'center' }}>/</div>
+        ) : (
           <Space>
-            <Button type="link" style={{ padding: 0 }} onClick={() => {
-              setCurrentId(record.id)
-              setModalVisible(true);
-              editForm.setFieldsValue({ keyword: record.keyword || [], keywordOther: record.keywordOther || '' })
-            }}>
+            <Button
+              type="link"
+              style={{ padding: 0 }}
+              onClick={() => {
+                setCurrentId(record.id);
+                setModalVisible(true);
+                editForm.setFieldsValue({
+                  keyword: record.keyword || [],
+                  keywordOther: record.keywordOther || '',
+                });
+              }}
+            >
               所属产业编辑
             </Button>
             <Popconfirm
-              title={
-                '确定已完成转化吗？'
-              }
+              title={'确定已完成转化吗？'}
               okText="确定"
               cancelText="取消"
               onConfirm={() => editState(record.id)}
             >
-              <Button type="link" style={{ padding: 0 }}>完成转化</Button>
+              <Button type="link" style={{ padding: 0 }}>
+                完成转化
+              </Button>
             </Popconfirm>
           </Space>
-        )
+        );
       },
     },
   ];
 
   const handleMultiUpload = () => {
     history.push(`/service-config/achievements-manage/multi-upload`);
-  }
+  };
 
+  const [searchInfo, setSearchInfo] = useState<any>({});
+  const exportList = async () => {
+    const { name, typeId, state, dateTime } = searchInfo;
+    try {
+      const res = await creativeAchievementExport({
+        name,
+        typeId,
+        state,
+        dateTime: dateTime ? [dateTime[0], dateTime[1]] : undefined,
+      });
+      if (res?.data.size == 51) return message.warning('操作太过频繁，请稍后再试')
+      const content = res?.data;
+      const blob  = new Blob([content], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"});
+      const fileName = '科产成果.xlsx';
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.style.display = 'none';
+      link.href = url;
+      link.setAttribute('download', fileName);
+      document.body.appendChild(link);
+      link.click();
+    } catch (error) {
+      console.log(error)
+    }
+  };
   return (
     <PageContainer>
-      <ProTable
-        headerTitle={<Button type="primary" ghost onClick={handleMultiUpload}>批量导入</Button>}
-        options={false}
-        rowKey="id"
-        actionRef={actionRef}
-        search={{
-          span: 8,
-          labelWidth: 100,
-          defaultCollapsed: false,
-          optionRender: (searchConfig, formProps, dom) => [dom[1], dom[0]],
-        }}
-        request={async (pagination) => {
-          const result = await pageQuery(pagination);
-          paginationRef.current = pagination;
-          setTotal(result.total);
-          return result;
-        }}
-        columns={columns}
-        pagination={{ size: 'default', showQuickJumper: true, defaultPageSize: 10 }}
-      />
-      {useModal()}
+      <div className={sc('container')}>
+        <ProTable
+          headerTitle={
+            <div
+              style={{
+                width: '100%',
+                display: 'flex',
+                justifyContent: 'space-between',
+              }}
+            >
+              <Button type="primary" ghost onClick={handleMultiUpload}>
+                批量导入
+              </Button>
+              <Button
+                icon={<UploadOutlined />}
+                onClick={() => {
+                  exportList();
+                }}
+              >
+                导出
+              </Button>
+            </div>
+          }
+          options={false}
+          rowKey="id"
+          actionRef={actionRef}
+          search={{
+            span: 8,
+            labelWidth: 100,
+            defaultCollapsed: false,
+            optionRender: (searchConfig, formProps, dom) => [dom[1], dom[0]],
+          }}
+          request={async (pagination) => {
+            // 保存seatchInfo
+            setSearchInfo(pagination);
+            const result = await pageQuery(pagination);
+            paginationRef.current = pagination;
+            setTotal(result.total);
+            return result;
+          }}
+          columns={columns}
+          pagination={{ size: 'default', showQuickJumper: true, defaultPageSize: 10 }}
+        />
+        {useModal()}
+      </div>
     </PageContainer>
   );
 };

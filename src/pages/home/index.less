@@ -1,0 +1,52 @@
+@prefix: home-page;
+
+.@{prefix}-container {
+    margin-bottom: 8px;
+    width: 100%;
+    padding: 16px;
+    background: #fff;
+
+    &-add-item {
+        display: block;
+        padding: 16px 24px;
+        text-align: center;
+        border: 1px dashed #ccc;
+        color: #333;
+
+        p {
+            margin: 0;
+        }
+
+        strong {
+            font-size: 24px;
+        }
+    }
+
+    &-statistic-item {
+        cursor: pointer;
+        padding: 16px 24px;
+        text-align: center;
+
+        a {
+            color: #333;  
+        }
+
+        p {
+            text-align: center;
+            margin: 0;
+        }
+        strong {
+            font-size: 24px;
+        }
+        span {
+            color: red;
+        }
+    }
+
+    &-search-item {
+        // display: flex;
+        height: 50px;
+        line-height: 50px;
+        margin-left: 16px;
+    }
+}
