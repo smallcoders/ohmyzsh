@@ -1,7 +1,7 @@
 import ProCard from '@ant-design/pro-card';
 import { PageContainer } from '@ant-design/pro-layout';
 import { Anchor, Button, Form, Select, Modal, message as antdMessage } from 'antd';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useHistory } from 'umi';
 import VerifyStepsDetail from '@/components/verify_steps';
 import CommonTitle from '@/components/verify_steps/common_title';
@@ -11,6 +11,7 @@ import {
   updateVerityStatus,
   getDetailAddress,
 } from '@/services/banking-service';
+import './detail.less'
 
 const { Link } = Anchor;
 
@@ -57,6 +58,7 @@ export default () => {
   const [updateSelStatus, setUpdateSelStatus] = useState<number | undefined>();
   /**
    * 新建窗口的弹窗
+   *
    *  */
   const [updateModalVisible, setModalVisible] = useState<boolean>(false);
 
@@ -71,6 +73,7 @@ export default () => {
         const lastVerityStatus = result[0].verityStatus;
         const updateDetail = {
           ...detail,
+          verityStatusContent: result[0].verityStatusContent,
           verityStatus: lastVerityStatus,
         };
         localStorage.setItem('banking_detail', JSON.stringify(updateDetail));
@@ -192,30 +195,56 @@ export default () => {
     hanldeGetDemandRecord();
     hanldeGetAddress();
   }, []);
-
   return (
     <PageContainer loading={loading} title={false}>
       <ProCard gutter={8} ghost>
         <ProCard direction="column" ghost gutter={[0, 8]}>
           <ProCard>
-            <h2 id="anchor-base-info">金融需求信息</h2>
+            <div className="anchor-base-info">
+              <div className="legend">金融需求信息</div>
+              <div className={`status status${detail?.verityStatus}`}>{detail?.verityStatusContent}</div>
+            </div>
             <Form labelCol={{ span: 4 }}>
               <Form.Item label="金融需求编号">{detail?.id}</Form.Item>
               <Form.Item label="需求提交日期">{detail?.createTime}</Form.Item>
               <Form.Item label="需求登记产品信息">
-                {detail?.bank}-{detail?.productName}
+                {detail?.productName}
               </Form.Item>
-              <Form.Item label="拟融资金额">{(detail?.amount / 100).toFixed(2)}元</Form.Item>
-              <Form.Item label="融资期限">{detail?.termContent}</Form.Item>
-              <Form.Item label="融资用途">/</Form.Item>
-              <Form.Item label="资金需求紧迫度">/</Form.Item>
-              <Form.Item label="企业资产信息">/</Form.Item>
+              {
+                detail?.bank && <Form.Item label="合作机构">
+                  {detail.bank}
+                </Form.Item>
+              }
+              {
+                !(detail.type === 2) && <Form.Item label="拟融资金额">{(detail?.amount / 100).toFixed(2)}元</Form.Item>
+              }
+              {
+                !(detail.type === 2) && <Form.Item label="融资期限">{detail?.termContent}</Form.Item>
+              }
+              {
+                !(detail.type === 2) && <Form.Item label="融资用途">/</Form.Item>
+              }
+              {
+                !(detail.type === 2) && <Form.Item label="资金需求紧迫度">/</Form.Item>
+              }
+              {
+                !(detail.type === 2) && <Form.Item label="企业资产信息">/</Form.Item>
+              }
+              {
+                detail.type === 2 && <Form.Item label="保单拟生效时间">{detail?.effectiveDate}</Form.Item>
+              }
+              {
+                detail.type === 2 && <Form.Item label="承保过该类产品">{detail?.acceptInsurance === 1 ? '是' : '否'}</Form.Item>
+              }
+              {
+                detail.type === 2 && <Form.Item label="申请人">{detail?.name}</Form.Item>
+              }
             </Form>
           </ProCard>
           <ProCard>
             <h2 id="anchor-specs">需求企业信息</h2>
             <Form labelCol={{ span: 4 }}>
-              <Form.Item label="申请">{detail?.name}</Form.Item>
+              <Form.Item label="申请人">{detail?.name}</Form.Item>
               <Form.Item label="联系电话">{detail?.phone}</Form.Item>
               <Form.Item label="组织名称">{detail?.orgName}</Form.Item>
               <Form.Item label="统一社会信用代码">{detail?.creditCode}</Form.Item>
