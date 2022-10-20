@@ -150,6 +150,7 @@ export default () => {
       width: 200,
       render: (_: number, record: any) => {
         if(record.type === 2){
+
           return '/'
         }
         return (_ / 100).toFixed(2)
