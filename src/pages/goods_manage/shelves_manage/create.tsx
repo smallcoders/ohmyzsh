@@ -523,7 +523,7 @@ export default () => {
       <Modal
         title={'选择商品'}
         width="800px"
-        open={modalVisible}
+        visible={modalVisible}
         maskClosable={false}
         onOk={handleOk}
         onCancel={handleCancel}

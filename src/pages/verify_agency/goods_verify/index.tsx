@@ -76,8 +76,8 @@ export default () => {
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     const search = searchForm.getFieldsValue();
     if (search.time) {
-      search.startTime = moment(search.time[0]).format('YYYY-MM-DDTHH:mm:ss');
-      search.endTime = moment(search.time[1]).format('YYYY-MM-DDTHH:mm:ss');
+      search.startTime = moment(search.time[0]).format('YYYY-MM-DD HH:mm:ss');
+      search.endTime = moment(search.time[1]).format('YYYY-MM-DD HH:mm:ss');
     }
     try {
       const params = {

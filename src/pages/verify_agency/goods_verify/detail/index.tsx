@@ -230,7 +230,28 @@ export default () => {
               pagination={false}
             >
               <Column title="名称" dataIndex={'name'} />
-              <Column title="内容" dataIndex="content" />
+              <Column
+                title="内容"
+                dataIndex="content"
+                render={(text: string, record: any) => {
+                  if (record?.name === '可售范围') {
+                    const areas = (text ?? '')
+                      .split?.(';')
+                      .map?.((code: string) =>
+                        code.split('-').map?.((item) => item.split(':')?.[1]),
+                      )
+                      .map?.((area) => area.join('-'));
+                    return (
+                      <>
+                        {(areas ?? []).map((area) => (
+                          <div key={area}>{area}</div>
+                        ))}
+                      </>
+                    );
+                  }
+                  return text;
+                }}
+              />
             </Table>
           </ProCard>
           <ProCard>
