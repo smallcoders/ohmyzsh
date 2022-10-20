@@ -148,13 +148,26 @@ export default () => {
       dataIndex: 'amount',
       isEllipsis: true,
       width: 200,
-      render: (_: number) => (_ / 100).toFixed(2),
+      render: (_: number, record: any) => {
+        if(record.type === 2){
+
+          return '/'
+        }
+        return (_ / 100).toFixed(2)
+      },
     },
     {
       title: '拟融资期限',
       dataIndex: 'termContent',
       isEllipsis: true,
       width: 200,
+      render: (_: any, record: any) => {
+        if(record.type === 2){
+
+          return '/'
+        }
+        return _
+      },
     },
     {
       title: '申请金融产品',
@@ -192,7 +205,7 @@ export default () => {
       hideInSearch: true,
       width: 200,
       fixed: 'right',
-      render: (_, record) => (
+      render: (_: any, record: any) => (
         <>
           <Button
             size="small"
