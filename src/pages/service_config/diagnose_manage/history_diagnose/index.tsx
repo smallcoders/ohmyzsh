@@ -210,6 +210,9 @@ export default () => {
 					<p>{resultObj && resultObj.recommendations || ''}</p>
 					<h3>特殊提醒</h3>
 					<p>{resultObj && resultObj.remind || ''}</p>
+					<h3>服务方案</h3>
+					<p>{resultObj && resultObj.offerings || ''}</p>
+					<a href={resultObj.offeringsFilePath}>{resultObj.offeringsFileName}</a>
 					<h3>推荐服务商</h3>
 					<p>{resultObj&&resultObj.relatedServers&&resultObj.relatedServers.join(',') || ''}</p>
 					<h3>推荐技术经理人</h3>

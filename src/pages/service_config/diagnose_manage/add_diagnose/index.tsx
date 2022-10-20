@@ -1095,7 +1095,7 @@ export default () => {
 				phone: record.relatedTechnicalManager && record.relatedTechnicalManager.phone || ''
 			}
 		})
-		setResultObj({...record, offeringsFile: record.offeringsFile || []});
+		setResultObj({...record, offeringsFile: []});
 		setAddResultVisible(true);
 	}
 	/**
