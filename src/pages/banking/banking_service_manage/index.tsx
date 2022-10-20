@@ -162,6 +162,7 @@ export default () => {
       width: 200,
       render: (_: any, record: any) => {
         if(record.type === 2){
+
           return '/'
         }
         return _
