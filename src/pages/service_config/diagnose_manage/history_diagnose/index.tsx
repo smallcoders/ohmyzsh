@@ -44,6 +44,9 @@ import {
 import {
 	editOrgList,
   } from '@/services/digital-application';
+  import {
+	getKeywords, // 产业
+} from '@/services/achievements-manage';
 import UploadForm from '@/components/upload_form';
 import DiagnoseManage from '@/types/service-config-diagnose-manage';
 import './index.less'
@@ -56,13 +59,20 @@ type Covers = DiagnoseManage.Covers;
 export default () => {
 	const [provinceList, setProvinceList] = useState<any>([])
 	const [diagnoseTitle, setDiagnoseTitle] = useState<string>('')
+	const [exclusiveIndustry, setExclusiveIndustry] = useState<any>([])
 	const [diagnoseList, setDiagnoseList] = useState<any>([]);
 	const [dataSource, setDataSource] = useState<any>([]);
 	const [leftForm] = Form.useForm();
+	const [industryData, setIndustryData] = useState<any>([])
 	/**
    * 准备数据和路由获取参数等
    */
 	const prepare = async () => {
+		getKeywords().then((res) => {
+			if (res.code == 0) {
+				setIndustryData(res.result)
+			}
+		})
 		try {
 			const { firstQuestionnaireNo,version } = history.location.query as { firstQuestionnaireNo: string | undefined, version: string | undefined };
 			// 获取详情 塞入表单
@@ -74,6 +84,7 @@ export default () => {
 			setCovers(covers)
 			setDataSource(diagnose)
 			setDiagnoseTitle(questionnaireObject.title || '')
+			setExclusiveIndustry(questionnaireObject.exclusiveIndustry || [])
 			setDiagnoseList(questionnaireObject.problems)
 			let areaRes = await listAllAreaCode()
 			setProvinceList(areaRes && areaRes.result || [] )
@@ -361,6 +372,17 @@ export default () => {
 									<div>
 										<h3>问卷标题</h3>
 										<p>{diagnoseTitle}</p>
+										<p className='industry-wrap'>
+											{
+												exclusiveIndustry && exclusiveIndustry.map((item: any) => {
+													console.log(industryData, 'industryData', item);
+													let arr = industryData.filter(chinaName => chinaName.id == item)
+													return (
+														<span className='industry-item'>#{arr[0].name}</span>
+													)
+												})
+											}
+										</p>
 									</div>
 									<Form
 										layout={'vertical'}
