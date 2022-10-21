@@ -74,34 +74,34 @@ export default () => {
    */
 	const prepare = async () => {
 		try {
-			getKeywords().then((res) => {
+			getKeywords().then(async(res) => {
 				if (res.code == 0) {
 					setIndustryData(res.result)
 				}
-			})
-			const { id, firstQuestionnaireNo, version } = history.location.query as { id: string | undefined, firstQuestionnaireNo: string | undefined, version: string | undefined };
+				const { id, firstQuestionnaireNo, version } = history.location.query as { id: string | undefined, firstQuestionnaireNo: string | undefined, version: string | undefined };
 
-			if (id) {
-				setEditId(id)
-				// 获取详情 塞入表单
-				const detailRs = await diagnoseDetail({
-					firstQuestionnaireNo,
-					version
-				});
-				const { covers, diagnose, questionnaireObject } = detailRs.result
-				setCovers({ ...covers, coverUrl: covers.coverUrlId, icon: covers.iconId || '', inIcon: covers.inIconId || '' })
-				coverForm.setFieldsValue({ ...covers, coverUrl: covers.coverUrlId, icon: covers.iconId || '', inIcon: covers.inIconId || '' })
-				setDataSource(diagnose)
-				setDiagnoseTitle(questionnaireObject.title || '')
-				setExclusiveIndustry(questionnaireObject.exclusiveIndustry || [])
-				setOldTitle(questionnaireObject.title || '')
-				rightForm.setFieldsValue({ title: questionnaireObject.title, exclusiveIndustry: questionnaireObject.exclusiveIndustry || [] });
-				setDiagnoseList(questionnaireObject.problems)
-				setDiagnoseListString(JSON.stringify(questionnaireObject.problems))
-				setExclusiveIndustryString(JSON.stringify(questionnaireObject.exclusiveIndustry))
-			}
-			let areaRes = await listAllAreaCode()
-			setProvinceList(areaRes && areaRes.result || [])
+				if (id) {
+					setEditId(id)
+					// 获取详情 塞入表单
+					const detailRs = await diagnoseDetail({
+						firstQuestionnaireNo,
+						version
+					});
+					const { covers, diagnose, questionnaireObject } = detailRs.result
+					setCovers({ ...covers, coverUrl: covers.coverUrlId, icon: covers.iconId || '', inIcon: covers.inIconId || '' })
+					coverForm.setFieldsValue({ ...covers, coverUrl: covers.coverUrlId, icon: covers.iconId || '', inIcon: covers.inIconId || '' })
+					setDataSource(diagnose)
+					setDiagnoseTitle(questionnaireObject.title || '')
+					setExclusiveIndustry(questionnaireObject.exclusiveIndustry || [])
+					setOldTitle(questionnaireObject.title || '')
+					rightForm.setFieldsValue({ title: questionnaireObject.title, exclusiveIndustry: questionnaireObject.exclusiveIndustry || [] });
+					setDiagnoseList(questionnaireObject.problems)
+					setDiagnoseListString(JSON.stringify(questionnaireObject.problems))
+					setExclusiveIndustryString(JSON.stringify(questionnaireObject.exclusiveIndustry))
+				}
+				let areaRes = await listAllAreaCode()
+				setProvinceList(areaRes && areaRes.result || [])
+			})
 		} catch (error) {
 			console.log('error', error);
 			message.error('获取初始数据失败');
@@ -273,7 +273,7 @@ export default () => {
 				return false
 			}
 		} else {
-			console.log(dataSource);
+			// console.log(dataSource);
 			let defaultFlag = false
 			if (dataSource && dataSource.length > 0) {
 				dataSource.map((item) => {
@@ -283,22 +283,24 @@ export default () => {
 				})
 			}
 			if (!defaultFlag || dataSource.length < 1) {
-				Modal.confirm({
+				Modal.info({
 					title: '提示',
 					content: (
 						<div>
 							<p>当前问卷没有设置默认诊断结果，若不设置可能会出现用户填写诊断问卷，结果为空的情况</p>
 						</div>
 					),
-					okText: '知道了，进入下一步',
-					cancelText: '去设置',
+					icon: null,
+					// closeIcon: true,
+					okText: '我知道了',
+					// cancelText: '去设置',
 					onOk() {
-						setCurrentStep(currentStep + 1)
+						// setCurrentStep(currentStep + 1)
 						Modal.destroyAll();
 					},
-					onCancel() {
-						Modal.destroyAll();
-					}
+					// onCancel() {
+					// 	Modal.destroyAll();
+					// }
 				});
 			} else {
 				setCurrentStep(currentStep + 1)
