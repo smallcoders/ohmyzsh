@@ -14,7 +14,11 @@ export async function getOfficeRequirementVerifyList(data?: { [key: string]: any
     data,
   });
 }
-
+export async function getManageTypeList() {
+  return request<any>(`/antelope-manage/demand/manageTypeList`, {
+    method: 'get',
+  });
+}
 /**
  * 企业需求审核详情
  */

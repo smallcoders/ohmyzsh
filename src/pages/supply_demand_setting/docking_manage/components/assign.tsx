@@ -3,14 +3,15 @@ import React, { useEffect, useState } from 'react'
 import { Cascader, Checkbox, DatePicker, Form, Input, InputNumber, Radio, Select } from 'antd'
 import SelfTable from '@/components/self_table'
 import Common from '@/types/common'
+import { getOrgManagePage } from '@/services/org-type-manage'
+import OrgManage from '@/types/org-manage.d'
+import { appoint } from '@/services/creative-demand'
 
-const AssignModal = (props) => {
-    const { visible, setVisible } = props
-    const [dataSource, setDataSource] = useState([
-        {
-            name: 'aaa', age: 'bbb'
-        }
-    ])
+const AssignModal = (props: { visible: any; setVisible: (b: boolean, isRefresh?: boolean)=> void; record: any }) => {
+    const { visible, setVisible, record } = props
+    const [dataSource, setDataSource] = useState([])
+    const [selectKey, setSelectKey] = useState<any>({})
+
     const [form] = Form.useForm()
     const [searchContent, setSearChContent] = useState<any>({});
 
@@ -27,9 +28,10 @@ const AssignModal = (props) => {
 
     const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
         try {
-            const { result, totalCount, pageTotal, code, message } = await getExpertResourcePage({
+            const { result, totalCount, pageTotal, code, message } = await getOrgManagePage({
                 pageIndex,
                 pageSize,
+                signed: true,
                 ...searchContent,
             });
             if (code === 0) {
@@ -45,23 +47,41 @@ const AssignModal = (props) => {
     const columns = [
         {
             title: '服务商名称',
-            dataIndex: 'name',
+            dataIndex: 'orgName',
         },
         {
             title: '标注类型',
-            dataIndex: 'age',
+            dataIndex: 'orgSignName',
         },
     ];
 
     const rowSelection = {
         onChange: (selectedRowKeys: React.Key[], selectedRows: any[]) => {
-            console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+            setSelectKey(selectedRows?.[0])
         },
         getCheckboxProps: (record: any) => ({
-            disabled: record.name === 'Disabled User', // Column configuration not to be checked
             name: record.name,
         }),
     };
+
+    const onSubmit = async () => {
+        if(!selectKey?.id){
+        message.info('请选择服务商')
+        return
+        }
+        const tooltipMessage = '指派';
+        try {
+            const markResult = await appoint(record.id, selectKey?.id, selectKey?.orgName);
+            if (markResult.code === 0) {
+                message.success(`${tooltipMessage}成功`);
+                setVisible(false, true)
+            } else {
+                throw new Error(markResult.message);
+            }
+        } catch (error) {
+            message.error(`${tooltipMessage}失败，原因:{${error}}`);
+        }
+    }
 
     return (
         <Modal
@@ -77,32 +97,35 @@ const AssignModal = (props) => {
             cancelText="取消"
             destroyOnClose={true}
             bodyStyle={{ padding: 20, minWidth: 600 }}
+            onOk={onSubmit}
         >
             <Form form={form} name="advanced_search">
-                <div>需求名称</div>
-                <div>企业数字化改造服务</div>
-                <span style={{ marginBottom: 20 }}>标注服务商列表：</span>
+                <div style={{ marginBottom: 10 }}>需求名称</div>
+                <div style={{ marginBottom: 20, fontWeight: 'bold' }}>{record?.name}</div>
+                <div style={{ marginBottom: 10 }}>标注服务商列表：</div>
 
                 <Row gutter={20}>
                     <Col span={12}>
                         <Form.Item label={'服务商名称'}>
-                            <Input />
+                            <Input onChange={(e) => {
+                                setSearChContent({ ...searchContent, orgName: e.target.value })
+                            }} />
                         </Form.Item>
                     </Col>
                     <Col span={12}>
                         <Form.Item label={'标注类型'}>
-                            <Select placeholder="请选择" allowClear>
-                                {[]?.map((p) => (
-                                    <Select.Option key={p.id} value={p.enumName || p.id || p.code}>
-                                        {p.name}
-                                    </Select.Option>
-                                ))}
+                            <Select placeholder="请选择"
+                                onChange={(e) => {
+                                    setSearChContent({ ...searchContent, orgSign: e })
+                                }}
+                                allowClear>
+                                {Object.entries(OrgManage.orgManageTypeJson).map(p => {
+                                    return <Select.Option value={p[0]}>{p[1]}</Select.Option>
+                                })}
                             </Select>
                         </Form.Item>
                     </Col>
                 </Row>
-
-
 
             </Form>
             <SelfTable
@@ -110,6 +133,8 @@ const AssignModal = (props) => {
                     type: 'radio',
                     ...rowSelection,
                 }}
+                rowKey='id'
+                size={'small'}
                 columns={columns}
                 dataSource={dataSource}
                 pagination={

@@ -7,37 +7,31 @@ import {
   Col,
   message as antdMessage,
   Space,
-  Popconfirm,
-  Radio,
-  Checkbox,
-  Modal
 } from 'antd';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
 import type Common from '@/types/common';
 import SelfTable from '@/components/self_table';
-import { history } from 'umi';
-import { getExpertResourcePage, showTop, updateKeyword } from '@/services/expert_manage/expert-resource';
 import type ExpertResource from '@/types/expert_manage/expert-resource';
-import { getAreaTree } from '@/services/area';
-import { getDictionay } from '@/services/common';
-import { routeName } from '../../../../../config/routes';
-import { signCommissioner } from '@/services/service-commissioner-verify';
+import { history } from 'umi';
+import { routeName } from '@/../config/routes';
 import {
-  getKeywords, //关键词枚举 
+  cancelAppoint,
+  getDemandPage,
 } from '@/services/creative-demand';
-import SelfSelect from '@/components/self_select';
 import RefineModal from './refine';
 import AssignModal from './assign';
 import FeedBackModal from './feedback';
+import DockingManage from '@/types/docking-manage.d';
 const sc = scopedClasses('user-config-logout-verify');
 
-export default () => {
-  const [dataSource, setDataSource] = useState<ExpertResource.Content[]>([]);
-  const [searchContent, setSearChContent] = useState<ExpertResource.SearchBody>({});
-  const [selectTypes, setSelectTypes] = useState<any>([]);
-  const [keywords, setKeywords] = useState<any[]>([]);// 关键词数据
+
+
+export default (props: { gid: any; }) => {
+  const { gid } = props
+  const [dataSource, setDataSource] = useState<any[]>([]);
+  const [searchContent, setSearChContent] = useState<any>({});
   const formLayout = {
     labelCol: { span: 6 },
     wrapperCol: { span: 16 },
@@ -49,39 +43,14 @@ export default () => {
     totalCount: 0,
     pageTotal: 0,
   });
-  const [areaOptions, setAreaOptions] = useState<any>([]);
-
-  const [expertTypes, setExpertType] = useState<any>([]);
-
-  const [serviceTypes, setServiceType] = useState<any>([]);
-
-  const [isCommissioner, setIsCommissioner] = useState<boolean>(false);
-
-  useEffect(() => {
-    try {
-      getAreaTree({}).then((data) => {
-        setAreaOptions(data?.children || []);
-      });
-      getDictionay('EXPERT_DICT').then((data) => {
-        setExpertType(data.result || []);
-      });
-      getDictionay('COMMISSIONER_SERVICE_TYPE').then((data) => {
-        setServiceType(data.result || []);
-      });
-      getKeywords().then(res => {
-        setKeywords(res.result || [])
-      })
-    } catch (error) {
-      antdMessage.error('数据初始化错误');
-    }
-  }, []);
-
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     try {
-      const { result, totalCount, pageTotal, code, message } = await getExpertResourcePage({
+      const { result, totalCount, pageTotal, code, message } = await getDemandPage({
         pageIndex,
         pageSize,
         ...searchContent,
+        specifyType: gid,
+        tabType: 2
       });
       if (code === 0) {
         setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
@@ -94,89 +63,70 @@ export default () => {
     }
   };
 
-  // 置顶
-  const top = async (record: any) => {
-    const tooltipMessage = '置顶';
-    try {
-      const markResult = await showTop(record.id);
-      if (markResult.code === 0) {
-        antdMessage.success(`${tooltipMessage}成功`);
-        getPage();
-      } else {
-        throw new Error(markResult.message);
-      }
-    } catch (error) {
-      antdMessage.error(`${tooltipMessage}失败，原因:{${error}}`);
-    }
-  };
-  const [signForm] = Form.useForm();
 
-  // 标记
-  const sign = async (record: any) => {
-    const tooltipMessage = '标记';
-    try {
-      const values = {
-        commissioner: isCommissioner,
-        ids: isCommissioner ? selectTypes : undefined,
-      };
-      const markResult = await signCommissioner({ expertShowId: record.id, ...values });
-      if (markResult.code === 0) {
-        antdMessage.success(`${tooltipMessage}成功`);
-        signForm.resetFields();
-        getPage();
-      } else {
-        throw new Error(markResult.message);
-      }
-    } catch (error) {
-      antdMessage.error(`${tooltipMessage}失败，原因:{${error}}`);
-    }
-  };
-
-
-  const formLayout2 = {
-    labelCol: { span: 3 },
-    wrapperCol: { span: 20 },
-  };
   const [refineVisible, setRefineVisible] = useState<boolean>(false);
   const [assignVisible, setAssignVisible] = useState<boolean>(false);
   const [feedbackVisible, setFeedbackVisible] = useState<boolean>(false);
-  const [currentId, setCurrentId] = useState<string>('');
-  const [editForm] = Form.useForm<{ keyword: any; keywordOther: string }>();
-  const newKeywords = Form.useWatch('keyword', editForm);
-  const handleOk = async () => {
-    editForm
-      .validateFields()
-      .then(async (value) => {
-        console.log(value)
-        // setLoading(true);
-        const submitRes = await updateKeyword({
-          id: currentId,
-          ...value,
-        });
-        if (submitRes.code === 0) {
-          antdMessage.success(`所属行业编辑成功！`);
-          setModalVisible(false);
-          editForm.resetFields();
-          getPage();
-        } else {
-          antdMessage.error(`所属行业编辑失败，原因:{${submitRes.message}}`);
-        }
-        // setLoading(false);
-      })
-      .catch(() => { });
-  };
-
-  const handleCancel = () => {
-    setModalVisible(false);
-  };
+  const [record, setRecord] = useState<any>({})
   const useModal = (): React.ReactNode => {
     return (<>
-      <RefineModal visible={refineVisible} setVisible={setRefineVisible} />
-      <AssignModal visible={assignVisible} setVisible={setAssignVisible} />
-      <FeedBackModal visible={feedbackVisible} setVisible={setFeedbackVisible} />
+      <RefineModal record={record} visible={refineVisible} setVisible={(b, isRefresh) => {
+        setRefineVisible(b)
+        setRecord({})
+        isRefresh&&getPage()
+      }} />
+      <AssignModal record={record} visible={assignVisible}
+        setVisible={(b, isRefresh) => {
+          setAssignVisible(b)
+          setRecord({})
+          isRefresh && getPage()
+        }}
+      />
+      <FeedBackModal record={record} visible={feedbackVisible} setVisible={(b, isRefresh) => {
+        setFeedbackVisible(b)
+        setRecord({})
+        isRefresh&&getPage()
+      }} />
     </>
     );
   };
+
+  const methodObj = {
+    refine: async (record: any) => {
+      setRefineVisible(true)
+      setRecord({ ...record, editType: 'add' })
+    },
+    editRefine: async (record: any) => {
+      setRefineVisible(true)
+      setRecord({ ...record, editType: 'edit' })
+    },
+    feedback: async (record: any) => {
+      setRecord(record)
+      setFeedbackVisible(true)
+    },
+    editFeedback: async (record: any) => {
+      setRecord(record)
+      setFeedbackVisible(true)
+    },
+    assign: async (record: any) => {
+      setRecord(record)
+      setAssignVisible(true)
+    },
+    cancelAssign: async (record: any) => {
+      const tooltipMessage = '取消分发';
+      try {
+        const markResult = await cancelAppoint(record.id);
+        if (markResult.code === 0) {
+          antdMessage.success(`${tooltipMessage}成功`);
+          getPage();
+        } else {
+          throw new Error(markResult.message);
+        }
+      } catch (error) {
+        antdMessage.error(`${tooltipMessage}失败，原因:{${error}}`);
+      }
+    },
+  }
 
   const columns = [
     {
@@ -188,40 +138,48 @@ export default () => {
     },
     {
       title: '需求名称',
-      dataIndex: 'expertName',
+      dataIndex: 'name',
       width: 150,
+      render: (_: string, _record: any) => (
+        <a
+          onClick={() => {
+            history.push(`${routeName.DEMAND_MANAGEMENT_DETAIL}?id=${_record.id}`);
+          }}
+        >
+          {_}
+        </a>
+      ),
       isEllipsis: true,
     },
     {
       title: '所属企业',
-      dataIndex: 'phone',
+      dataIndex: 'orgName',
       isEllipsis: true,
       width: 150,
     },
     {
       title: '联系人',
-      dataIndex: 'typeNames',
+      dataIndex: 'contact',
       isEllipsis: true,
-      render: (_: string[]) => (_ || []).join(','),
       width: 200,
     },
     {
       title: '联系电话',
-      dataIndex: 'keywordShow',
+      dataIndex: 'phone',
       isEllipsis: true,
-      render: (_: string[]) => (_ || []).join(','),
       width: 150,
     },
     {
       title: '需求状态',
-      dataIndex: 'areaName',
-      isEllipsis: true,
+      dataIndex: 'claimState',
+      render: (_: string) => DockingManage.demandType[_] || '--',
       width: 150,
     },
     {
       title: '指派情况',
-      dataIndex: 'commissioner',
-      render: (_: boolean) => (_ ? '是' : '否'),
+      dataIndex: 'appointOrgName',
+      render: (appointOrgName: string) => appointOrgName || '--',
+
       width: 80,
     },
     {
@@ -231,56 +189,17 @@ export default () => {
       fixed: 'right',
       render: (_: any, record: any) => {
         return (
-          <div style={{ textAlign: 'center' }}>
+          <div>
             <Space size={1}>
-              <Button
+              {record?.btnList?.map(p => <Button
                 type="link"
                 onClick={() => {
-                  setRefineVisible(true)
+                  // setRemark(record.remark || '');
+                  DockingManage.btnList[p]?.method && methodObj?.[DockingManage.btnList[p]?.method](record)
                 }}
               >
-                编辑细化内容
-              </Button>
-              <Button
-                type="link"
-                onClick={() => {
-                  setRefineVisible(true)
-                }}
-              >
-                需求细化
-              </Button>
-              <Button
-                type="link"
-                onClick={() => {
-                  setFeedbackVisible(true)
-                }}
-              >
-                需求反馈
-              </Button>
-              <Button
-                type="link"
-                onClick={() => {
-                  setFeedbackVisible(true)
-                }}
-              >
-                编辑反馈
-              </Button>
-              <Button
-                type="link"
-                onClick={() => {
-                  setAssignVisible(true)
-                }}
-              >
-                指派
-              </Button>
-              <Button
-                type="link"
-                onClick={() => {
-                  top(record);
-                }}
-              >
-                撤回指派
-              </Button>
+                {DockingManage.btnList[p]?.text}
+              </Button>)}
             </Space>
           </div>
         );
@@ -289,8 +208,8 @@ export default () => {
   ];
 
   useEffect(() => {
-    getPage();
-  }, [searchContent]);
+    gid && getPage();
+  }, [searchContent, gid]);
 
   const useSearchNode = (): React.ReactNode => {
     const [searchForm] = Form.useForm();
@@ -300,20 +219,18 @@ export default () => {
           <Row>
 
             <Col span={8}>
-              <Form.Item name="expertType" label="需求状态">
+              <Form.Item name="claimState" label="需求状态">
                 <Select placeholder="请选择" allowClear>
-                  {(expertTypes || []).map((item: any) => {
-                    return (
-                      <Select.Option key={item.id} value={item.id}>
-                        {item.name}
-                      </Select.Option>
-                    );
-                  })}
+                  {
+                    Object.entries(DockingManage.demandType).filter(p => (p[0] != '1' && p[0] != '3')).map(p => {
+                      return <Select.Option value={p[0]}>{p[1]}</Select.Option>
+                    })
+                  }
                 </Select>
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="expertName" label="需求指派情况">
+              <Form.Item name="appointOrgName" label="需求指派情况">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
