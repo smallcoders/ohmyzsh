@@ -39,11 +39,11 @@ export default () => {
       dataIndex: 'productModel',
       width: 120,
     },
-    {
-      title: '商品采购价',
-      dataIndex: 'purchasePricePart',
-      width: 80,
-    },
+    // {
+    //   title: '商品采购价',
+    //   dataIndex: 'purchasePricePart',
+    //   width: 80,
+    // },
     {
       title: '商品销售价',
       dataIndex: 'salePricePart',
