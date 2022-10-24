@@ -1,35 +1,39 @@
 import {
   Button,
-  Input,
   Form,
   Select,
   Row,
   Col,
-  DatePicker,
   message as antdMessage,
   Space,
   Popconfirm,
-  Tooltip,
 } from 'antd';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
+import { routeName } from '@/../config/routes';
 import type Common from '@/types/common';
 import moment from 'moment';
 import SelfTable from '@/components/self_table';
-import { EditTwoTone } from '@ant-design/icons';
 import type ConsultRecord from '@/types/expert_manage/consult-record';
-import {
-  getConsultRecordPage,
-  markConsultRecordContracted,
-  updateConsultRecordRemark,
-} from '@/services/expert_manage/consult-record';
+import { cancelDistributeDemand, distributeDemand, getDemandPage } from '@/services/creative-demand';
+import RefineModal from './refine';
+import { history } from 'umi';
+import DockingManage from '@/types/docking-manage.d';
 const sc = scopedClasses('user-config-logout-verify');
+
+const group = Object.entries(DockingManage.specifyType)?.filter(p => p[0] != '6')
 
 export default () => {
   const [dataSource, setDataSource] = useState<ConsultRecord.Content[]>([]);
   const [searchContent, setSearChContent] = useState<ConsultRecord.SearchBody>({});
-  const [remark, setRemark] = useState<string>('');
+  const [refineVisible, setRefineVisible] = useState<boolean>(false);
+  const [activeTag, setActiveTag] = useState<string>('');
+  const [popVisible, setPopVisible] = useState<{
+    visible: boolean, id: string
+  }>({
+    visible: false, id: ''
+  });
 
   const formLayout = {
     labelCol: { span: 6 },
@@ -42,13 +46,14 @@ export default () => {
     totalCount: 0,
     pageTotal: 0,
   });
-
+  const [record, setRecord] = useState<any>({})
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     try {
-      const { result, totalCount, pageTotal, code, message } = await getConsultRecordPage({
+      const { result, totalCount, pageTotal, code, message } = await getDemandPage({
         pageIndex,
         pageSize,
         ...searchContent,
+        tabType: 1
       });
       if (code === 0) {
         setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
@@ -61,35 +66,48 @@ export default () => {
     }
   };
 
-  const mark = async (record: any) => {
-    const tooltipMessage = '标记已联系';
-    try {
-      const markResult = await markConsultRecordContracted(record.id, remark);
-      if (markResult.code === 0) {
-        antdMessage.success(`${tooltipMessage}成功`);
-        getPage();
-      } else {
-        throw new Error(markResult.message);
+  const methodObj = {
+    refine: async (record: any) => {
+      setRefineVisible(true)
+      setRecord({ ...record, editType: 'add' })
+    },
+    editRefine: async (record: any) => {
+      setRefineVisible(true)
+      setRecord({ ...record, editType: 'edit' })
+    },
+    distribute: async (record: any, value: string) => {
+      const tooltipMessage = '分发';
+      try {
+        const markResult = await distributeDemand(record.id, value);
+        if (markResult.code === 0) {
+          antdMessage.success(`${tooltipMessage}成功`);
+          getPage();
+          setPopVisible({
+            visible: false, id: ''
+          })
+        } else {
+          throw new Error(markResult.message);
+        }
+      } catch (error) {
+        antdMessage.error(`${tooltipMessage}失败，原因:{${error}}`);
       }
-    } catch (error) {
-      antdMessage.error(`${tooltipMessage}失败，原因:{${error}}`);
-    }
-  };
+    },
+    cancelDistribute: async (record: any) => {
+      const tooltipMessage = '取消分发';
+      try {
+        const markResult = await cancelDistributeDemand(record.id);
+        if (markResult.code === 0) {
+          antdMessage.success(`${tooltipMessage}成功`);
+          getPage();
+        } else {
+          throw new Error(markResult.message);
+        }
+      } catch (error) {
+        antdMessage.error(`${tooltipMessage}失败，原因:{${error}}`);
+      }
+    },
+  }
 
-  const updRemark = async (record: any) => {
-    const tooltipMessage = '修改';
-    try {
-      const markResult = await updateConsultRecordRemark(record.id, remark);
-      if (markResult.code === 0) {
-        antdMessage.success(`${tooltipMessage}成功`);
-        getPage();
-      } else {
-        throw new Error(markResult.message);
-      }
-    } catch (error) {
-      antdMessage.error(`${tooltipMessage}失败，原因:{${error}}`);
-    }
-  };
   const columns = [
     {
       title: '序号',
@@ -100,38 +118,49 @@ export default () => {
     },
     {
       title: '需求名称',
-      dataIndex: 'orgName',
+      dataIndex: 'name',
       width: 150,
+      render: (_: string, _record: any) => (
+        <a
+          onClick={() => {
+            history.push(`${routeName.DEMAND_MANAGEMENT_DETAIL}?id=${_record.id}`);
+          }}
+        >
+          {_}
+        </a>
+      ),
       isEllipsis: true,
     },
     {
       title: '所属企业',
-      dataIndex: 'contactName',
+      dataIndex: 'orgName',
       isEllipsis: true,
       width: 100,
     },
     {
       title: '联系人',
-      dataIndex: 'contactPhone',
+      dataIndex: 'contact',
       isEllipsis: true,
       width: 150,
     },
     {
       title: '联系电话',
-      dataIndex: 'contactPhone',
+      dataIndex: 'phone',
       isEllipsis: true,
       width: 150,
     },
     {
       title: '需求状态',
-      dataIndex: 'contactPhone',
+      dataIndex: 'claimState',
       isEllipsis: true,
+      render: (_: string) => DockingManage.demandType[_] || '--',
       width: 150,
     },
     {
       title: '分发情况',
-      dataIndex: 'contactPhone',
+      dataIndex: 'specifyType',
       isEllipsis: true,
+      render: (_: string) => DockingManage.specifyType[_] || '--',
       width: 150,
     },
     {
@@ -140,44 +169,60 @@ export default () => {
       fixed: 'right',
       dataIndex: 'option',
       render: (_: any, record: any) => {
-        return !record.contacted ? (
-          <div style={{ textAlign: 'center' }}>
-            <Space size={20}>
+        return <div style={{ textAlign: 'center' }}>
+          <Space size={20}>
+            {record?.btnList?.map(p => DockingManage.btnList?.[p]?.render ? <Popconfirm
+              visible={popVisible.visible && record?.id == popVisible?.id}
+              icon={null}
+              title={
+                <>
+                  <span>
+                    请选择此条需求要分发的业务组：
+                  </span>
+                  <div>
+                    {group?.map(p => {
+                      const [value, title] = p
+                      return <div
+                        onClick={() => {
+                          activeTag != value && methodObj.distribute(record, value)
+                        }}
+                        style={{ textAlign: 'center', padding: '5px 30px', cursor: 'pointer', marginTop: 10, borderRadius: '4px', backgroundColor: '#E6E6E6' }}>
+                        {title}
+                      </div>
+                    })}
+                  </div>
+                </>
+              }
+              onCancel={() => {
+                setPopVisible({
+                  visible: false, id: ''
+                })
+              }}
+              okButtonProps={{ style: { display: 'none' } }}
+            >
               <Button
                 type="link"
                 onClick={() => {
-                  setRemark(record.remark || '');
-                }}
-              >
-                需求细化
-              </Button>
-              <Button
-                type="link"
-                onClick={() => {
-                  setRemark(record.remark || '');
-                }}
-              >
-                编辑细化内容
-              </Button>
-              <Button
-                type="link"
-                onClick={() => {
-                  setRemark(record.remark || '');
+                  setActiveTag(record?.specifyType || '')
+                  setPopVisible({
+                    visible: true,
+                    id: record?.id
+                  })
                 }}
               >
                 分发
               </Button>
+            </Popconfirm> : DockingManage.btnList[p]?.method ?
               <Button
                 type="link"
                 onClick={() => {
-                  setRemark(record.remark || '');
+                  methodObj?.[DockingManage.btnList[p]?.method](record)
                 }}
               >
-                撤回分发
-              </Button>
-            </Space>
-          </div>
-        ) : ('--');
+                {DockingManage.btnList[p]?.text}
+              </Button> : DockingManage.btnList[p]?.text)}
+          </Space>
+        </div>
       },
     },
   ];
@@ -193,18 +238,25 @@ export default () => {
         <Form {...formLayout} form={searchForm}>
           <Row>
             <Col span={8}>
-              <Form.Item name="orgName" label="需求状态">
+              <Form.Item name="claimState" label="需求状态">
                 <Select placeholder="请选择" allowClear>
-                  <Select.Option value={1}>待联系</Select.Option>
-                  <Select.Option value={2}>已联系</Select.Option>
+                  {
+                    Object.entries(DockingManage.demandType)?.filter(p => p[0] != '3').map(p => {
+                      return <Select.Option value={p[0]}>{p[1]}</Select.Option>
+                    })
+                  }
                 </Select>
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="expertName" label="需求分发情况">
+              <Form.Item name="specifyType" label="需求分发情况">
                 <Select placeholder="请选择" allowClear>
-                  <Select.Option value={1}>待联系</Select.Option>
-                  <Select.Option value={2}>已联系</Select.Option>
+                  <Select.Option value={6}>待分发</Select.Option>
+                  {
+                    group?.map(p => {
+                      return <Select.Option value={p[0]}>{p[1]}</Select.Option>
+                    })
+                  }
                 </Select>
               </Form.Item>
             </Col>
@@ -247,11 +299,6 @@ export default () => {
   return (
     <>
       {useSearchNode()}
-      {/* <div className={sc('container-table-header')}>
-        <div className="title">
-          <span>咨询记录列表(共{pageInfo.totalCount || 0}个)</span>
-        </div>
-      </div> */}
       <div className={sc('container-table-body')}>
         <SelfTable
           bordered
@@ -273,6 +320,12 @@ export default () => {
           }
         />
       </div>
+
+      <RefineModal record={record} visible={refineVisible} setVisible={(b: boolean, isRefresh) => {
+        setRefineVisible(b)
+        setRecord({})
+        isRefresh && getPage()
+      }} />
     </>
   );
 };

@@ -30,7 +30,7 @@ export default observer(
       value: 'value',
       children: 'children',
     },
-    max = 3,
+    max = 5,
   }: Props) => {
     const label = fieldNames.label
     const value_field = fieldNames.value
@@ -52,7 +52,6 @@ export default observer(
     }>([])
 
     useEffect(() => {
-      console.log(value, dictionaryObj)
       // 初始化
       value && setSelected(value)
     }, [value])
@@ -60,9 +59,11 @@ export default observer(
     useEffect(() => {
       // 将可选的最后一层数据存储
       const dictionaryObj = {}
-      dictionary.map((p) => {
-        p.children?.map((i) => {
-          dictionaryObj[i[value_field]] = i
+      dictionary?.map((p) => {
+        p?.[children]?.map((i: any) => {
+          i?.[children].map((c: any) => {
+            dictionaryObj[c[value_field]] = c
+          })
         })
       })
       setDictionaryObj(dictionaryObj)
@@ -92,21 +93,11 @@ export default observer(
         >
           <div className={sc('footer-left')}>
             {!value || value.length === 0 ? (
-              <span className={sc('footer-left-placeholder')}>最多可选三种类型</span>
+              <span className={sc('footer-left-placeholder')}>最多可选五种类型</span>
             ) : (
               value?.map((p) => (
                 <div key={`selected-tag-${p}`} style={{ width: 88 }}>
-                  {/* {console.log(p, value, dictionaryObj, label)} */}
                   <span title={dictionaryObj?.[p]?.[label]}>{dictionaryObj?.[p]?.[label]}</span>
-                  {/* <CloseOutlined
-                    onClick={() => {
-                      setSelected((pre) => {
-                        const exist = pre.filter((i) => i !== p)
-                        return [...exist]
-                      })
-                    }}
-                    style={{ cursor: 'pointer', flex: '0 0 12px' }}
-                  /> */}
                 </div>
               ))
             )}
@@ -114,7 +105,7 @@ export default observer(
         </div>
         <Modal
           title="请选择需求类型"
-          width={560}
+          width={850}
           bodyStyle={{
             height: 405,
             overflowY: 'auto',
@@ -128,7 +119,7 @@ export default observer(
             <div className={sc('footer')}>
               <div className={sc('footer-left')}>
                 {selected.length === 0 ? (
-                  <span className={sc('footer-left-placeholder')}>最多可选三种类型</span>
+                  <span className={sc('footer-left-placeholder')}>最多可选五种类型</span>
                 ) : (
                   selected.map((p) => (
                     <div key={`selected-tag-${p}`}>
@@ -157,32 +148,38 @@ export default observer(
             </div>
           }
         >
-          {dictionary.map((p) => {
-            return (
-              <div key={p[value_field]} className={sc('item')}>
-                <div className={sc('item-title')}>{p[label]}:</div>
-                <div className={sc('item-values')}>
-                  <Row gutter={10}>
-                    {p[children].map((i) => {
-                      const isSelected = selected.includes(i[value_field])
-                      return (
-                        <Col
-                          onClick={() => onClick(i[value_field])}
-                          span={6}
-                          className={sc(
-                            isSelected ? 'item-values-tag-selected' : 'item-values-tag',
-                          )}
-                          key={i[value_field]}
-                        >
-                          {i[label]}
-                        </Col>
-                      )
-                    })}
-                  </Row>
-                </div>
-              </div>
-            )
-          })}
+          {dictionary?.map((a) => (
+            <> <div style={{ borderBottom: '1px solid #ccc', fontWeight: 'bold'}}>{a?.[label]}</div>
+              {
+                a?.[children]?.map((p: any) => {
+                  return (
+                    <div key={p[value_field]} className={sc('item')}>
+                      <div className={sc('item-title')}>{p[label]}:</div>
+                      <div className={sc('item-values')}>
+                        <Row gutter={10}>
+                          {p[children].map((i) => {
+                            const isSelected = selected.includes(i[value_field])
+                            return (
+                              <Col
+                                onClick={() => onClick(i[value_field])}
+                                span={6}
+                                className={sc(
+                                  isSelected ? 'item-values-tag-selected' : 'item-values-tag',
+                                )}
+                                key={i[value_field]}
+                              >
+                                {i[label]}
+                              </Col>
+                            )
+                          })}
+                        </Row>
+                      </div>
+                    </div>
+                  )
+                })
+              }
+            </>
+          ))}
         </Modal>
       </div>
     )
