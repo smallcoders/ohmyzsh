@@ -103,7 +103,7 @@ export default () => {
       title: '组织注册区域',
       dataIndex: 'areaName',
       isEllipsis: true,
-      width: 150,
+      width: 250,
     },
     {
       title: '标注情况',
@@ -117,61 +117,50 @@ export default () => {
       fixed: 'right',
       dataIndex: 'option',
       render: (_: any, record: OrgManage.Content) => {
-        return record.handlerState ? (
-          <div style={{ textAlign: 'center' }}>
-            <Space size={20}>
-              <Popconfirm
-                icon={null}
-                title={
-                  <>
-                    <span>
-                      请选择将要给该组织标注的标签
-                    </span>
-                    <div>
-                      {Object.entries(OrgManage.orgManageTypeJson).map(p => {
-                        const [value, title] = p
-                        const isExist = activeTags.includes(value)
-                        return <div onClick={() => {
-                          setActiveTags((pre) => {
-                            if (isExist) {
-                              return pre.filter(i => i != value);
-                            }
-                            else {
-                              return [...pre, value]
-                            }
-                          })
-                        }} style={{ padding: '5px 30px', cursor: 'pointer', marginTop: 10, borderRadius: '4px', backgroundColor: isExist ? '#C0E3FA' : '#E6E6E6' }}>
-                          {title}
-                        </div>
-                      })}
+        return <Space size={20}>
+          <Popconfirm
+            icon={null}
+            title={
+              <>
+                <span>
+                  请选择将要给该组织标注的标签
+                </span>
+                <div>
+                  {Object.entries(OrgManage.orgManageTypeJson).map(p => {
+                    const [value, title] = p
+                    const isExist = activeTags.includes(value as OrgManage.OrgManageTypeEnum)
+                    return <div onClick={() => {
+                      setActiveTags((pre) => {
+                        if (isExist) {
+                          return pre.filter(i => i != value);
+                        }
+                        else {
+                          return [...pre, value]
+                        }
+                      })
+                    }} style={{ padding: '5px 30px', cursor: 'pointer', marginTop: 10, borderRadius: '4px', textAlign: 'center', backgroundColor: isExist ? '#C0E3FA' : '#E6E6E6' }}>
+                      {title}
                     </div>
-                  </>
-                }
-                onConfirm={() => {
-                  tag(record?.id)
-                }}
-                okText="确定"
-                cancelText="取消"
-              >
-                <Button
-                  type="link"
-                  onClick={() => {
-                    setActiveTags(record?.orgSignEnumList || [])
-                  }}
-                >
-                  标记
-                </Button>
-              </Popconfirm>
-            </Space>
-          </div>
-        ) : (
-          <div style={{ display: 'grid', justifyItems: 'center' }}>
-            <span>
-              {record.handlerTime ? moment(record.handlerTime).format('YYYY-MM-DD HH:mm:ss') : '--'}
-            </span>
-            <span>操作人：{record.handlerName}</span>
-          </div>
-        );
+                  })}
+                </div>
+              </>
+            }
+            onConfirm={() => {
+              tag(record?.id)
+            }}
+            okText="确定"
+            cancelText="取消"
+          >
+            <Button
+              type="link"
+              onClick={() => {
+                setActiveTags(record?.orgSignEnumList || [])
+              }}
+            >
+              标记
+            </Button>
+          </Popconfirm>
+        </Space>
       },
     },
   ];
@@ -207,8 +196,11 @@ export default () => {
             <Col span={8}>
               <Form.Item name="orgTypeId" label="组织类型">
                 <Select placeholder="请选择" allowClear>
-                  <Select.Option value={1}>待联系</Select.Option>
-                  <Select.Option value={2}>已联系</Select.Option>
+                  {
+                    Object.entries(OrgManage.orgTypeJson)?.map(p => {
+                      return <Select.Option key={p[0]} value={p[0]}>{p[1]}</Select.Option>
+                    })
+                  }
                 </Select>
               </Form.Item>
             </Col>
@@ -228,7 +220,7 @@ export default () => {
                   {Object.entries(OrgManage.orgManageTypeJson).map(p => {
                     return <Select.Option value={p[0]}>{p[1]}</Select.Option>
                   })}
-                  <Select.Option value={undefined}>未标注</Select.Option>
+                  <Select.Option value={999}>未标注</Select.Option>
                 </Select>
               </Form.Item>
             </Col>
@@ -239,6 +231,10 @@ export default () => {
                 key="search"
                 onClick={() => {
                   const search = searchForm.getFieldsValue();
+                  if (search?.orgSign && search?.orgSign == 999) {
+                    search.signed = false
+                    search.orgSign = undefined
+                  }
                   setSearChContent(search);
                 }}
               >

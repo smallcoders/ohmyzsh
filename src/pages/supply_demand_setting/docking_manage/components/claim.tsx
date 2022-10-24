@@ -17,20 +17,18 @@ import React, { useEffect, useState } from 'react';
 import type Common from '@/types/common';
 import moment from 'moment';
 import SelfTable from '@/components/self_table';
-import { EditTwoTone } from '@ant-design/icons';
+import { history } from 'umi';
+import { routeName } from '@/../config/routes';
 import type ConsultRecord from '@/types/expert_manage/consult-record';
-import {
-  getApplyRecordPage,
-  markApplyRecordContracted,
-  updateApplyRecordRemark,
-} from '@/services/expert_manage/apply-record';
-import ApplyRecord from '@/types/expert_manage/apply-record';
+import { cancelClaimDemand, claimDemand, getClaimUsers, getDemandPage } from '@/services/creative-demand';
+import DockingManage from '@/types/docking-manage.d';
+const { RangePicker } = DatePicker
+
 const sc = scopedClasses('user-config-logout-verify');
 
 export default () => {
-  const [dataSource, setDataSource] = useState<ConsultRecord.Content[]>([]);
-  const [searchContent, setSearChContent] = useState<ConsultRecord.SearchBody>({});
-  const [remark, setRemark] = useState<string>('');
+  const [dataSource, setDataSource] = useState<DockingManage.Content[]>([]);
+  const [searchContent, setSearChContent] = useState<DockingManage.searchContent>({});
 
   const formLayout = {
     labelCol: { span: 6 },
@@ -46,10 +44,11 @@ export default () => {
 
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     try {
-      const { result, totalCount, pageTotal, code, message } = await getApplyRecordPage({
+      const { result, totalCount, pageTotal, code, message } = await getDemandPage({
         pageIndex,
         pageSize,
         ...searchContent,
+        tabType: 0
       });
       if (code === 0) {
         setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
@@ -62,35 +61,38 @@ export default () => {
     }
   };
 
-  const mark = async (record: any) => {
-    const tooltipMessage = '标记已联系';
-    try {
-      const markResult = await markApplyRecordContracted(record.id, remark);
-      if (markResult.code === 0) {
-        antdMessage.success(`${tooltipMessage}成功`);
-        getPage();
-      } else {
-        throw new Error(markResult.message);
+  const methodObj = {
+    claim: async (record: any) => {
+      const tooltipMessage = '认领';
+      try {
+        const markResult = await claimDemand(record.id);
+        if (markResult.code === 0) {
+          antdMessage.success(`${tooltipMessage}成功`);
+          getPage();
+        } else {
+          throw new Error(markResult.message);
+        }
+      } catch (error) {
+        antdMessage.error(`${tooltipMessage}失败，原因:{${error}}`);
       }
-    } catch (error) {
-      antdMessage.error(`${tooltipMessage}失败，原因:{${error}}`);
-    }
-  };
+    },
 
-  const updRemark = async (record: any) => {
-    const tooltipMessage = '修改';
-    try {
-      const markResult = await updateApplyRecordRemark(record.id, remark);
-      if (markResult.code === 0) {
-        antdMessage.success(`${tooltipMessage}成功`);
-        getPage();
-      } else {
-        throw new Error(markResult.message);
+    cancelClaim: async (record: any) => {
+      const tooltipMessage = '取消认领';
+      try {
+        const markResult = await cancelClaimDemand(record.id);
+        if (markResult.code === 0) {
+          antdMessage.success(`${tooltipMessage}成功`);
+          getPage();
+        } else {
+          throw new Error(markResult.message);
+        }
+      } catch (error) {
+        antdMessage.error(`${tooltipMessage}失败，原因:{${error}}`);
       }
-    } catch (error) {
-      antdMessage.error(`${tooltipMessage}失败，原因:{${error}}`);
     }
-  };
+
+  }
 
   const columns = [
     {
@@ -102,34 +104,45 @@ export default () => {
     },
     {
       title: '需求名称',
-      dataIndex: 'orgName',
+      dataIndex: 'name',
       width: 150,
+      render: (_: string, _record: any) => (
+        <a
+          onClick={() => {
+            history.push(`${routeName.DEMAND_MANAGEMENT_DETAIL}?id=${_record.id}`);
+          }}
+        >
+          {_}
+        </a>
+      ),
       isEllipsis: true,
     },
     {
       title: '所属企业',
-      dataIndex: 'contactName',
+      dataIndex: 'orgName',
       isEllipsis: true,
-      width: 100,
+      width: 200,
     },
     {
       title: '需求状态',
-      dataIndex: 'contactPhone',
+      dataIndex: 'claimState',
       isEllipsis: true,
+      render: (_: string) => DockingManage.demandType[_],
       width: 150,
     },
 
     {
       title: '需求发布时间',
-      dataIndex: 'content',
+      dataIndex: 'publishTime',
       isEllipsis: true,
       render: (_: string) => moment(_).format('YYYY-MM-DD HH:mm:ss'),
       width: 250,
     },
     {
       title: '需求认领人',
-      dataIndex: 'createTime',
-      width: 200,
+      dataIndex: 'claimName',
+      render: (_: string) => _ || '--',
+      width: 100,
 
     },
     {
@@ -138,65 +151,19 @@ export default () => {
       fixed: 'right',
       dataIndex: 'option',
       render: (_: any, record: any) => {
-        return !record.contacted ? (
-          <div style={{ textAlign: 'center' }}>
-            <Space size={20}>
-              <Popconfirm
-                icon={null}
-                title={
-                  <>
-                    <Input.TextArea
-                      placeholder="可在此填写备注内容，备注非必填"
-                      onChange={(e) => setRemark(e.target.value)}
-                      value={remark}
-                      showCount
-                      maxLength={100}
-                    />
-                  </>
-                }
-                okText="确定"
-                cancelText="取消"
-                onConfirm={() => mark(record)}
-              >
-                <Button
-                  type="link"
-                  onClick={() => {
-                    setRemark(record.remark || '');
-                  }}
-                >
-                  认领
-                </Button>
-              </Popconfirm>
-
-              <Popconfirm
-                icon={null}
-                title={
-                  <>
-                    <Input.TextArea
-                      placeholder="可在此填写备注内容，备注非必填"
-                      onChange={(e) => setRemark(e.target.value)}
-                      value={remark}
-                      showCount
-                      maxLength={100}
-                    />
-                  </>
-                }
-                okText="确定"
-                cancelText="取消"
-                onConfirm={() => mark(record)}
-              >
-                <Button
-                  type="link"
-                  onClick={() => {
-                    setRemark(record.remark || '');
-                  }}
-                >
-                  取消认领
-                </Button>
-              </Popconfirm>
-            </Space>
-          </div>
-        ) : ('--');
+        return <div style={{ textAlign: 'center' }}>
+          <Space size={20}>
+            {record?.btnList?.map(p => <Button
+              type="link"
+              onClick={() => {
+                // setRemark(record.remark || '');
+                DockingManage.btnList[p]?.method && methodObj?.[DockingManage.btnList[p]?.method](record)
+              }}
+            >
+              {DockingManage.btnList[p]?.text}
+            </Button>)}
+          </Space>
+        </div>
       },
     },
   ];
@@ -205,6 +172,19 @@ export default () => {
     getPage();
   }, [searchContent]);
 
+  useEffect(() => {
+    prepare()
+  }, [])
+  const [users, setUsers] = useState<any>([])
+  const prepare = async () => {
+    try {
+      const userRes = await getClaimUsers()
+      setUsers(userRes?.result || [])
+    } catch (error) {
+
+    }
+  }
+
   const useSearchNode = (): React.ReactNode => {
     const [searchForm] = Form.useForm();
     return (
@@ -212,20 +192,20 @@ export default () => {
         <Form {...formLayout} form={searchForm}>
           <Row>
             <Col span={8}>
-              <Form.Item name="orgName" label="需求名称">
+              <Form.Item name="name" label="需求名称">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="expertName" label="所属企业">
+              <Form.Item name="orgName" label="所属企业">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="contacted" label="需求状态">
+              <Form.Item name="claimState" label="需求状态">
                 <Select placeholder="请选择" allowClear>
-                  <Select.Option value={1}>待联系</Select.Option>
-                  <Select.Option value={2}>已联系</Select.Option>
+                  <Select.Option value={3}>新发布</Select.Option>
+                  <Select.Option value={1}>已认领</Select.Option>
                 </Select>
               </Form.Item>
             </Col>
@@ -233,14 +213,20 @@ export default () => {
           <Row>
             <Col span={8}>
               <Form.Item name="time" label="需求发布时间">
-                <DatePicker.RangePicker allowClear showTime />
+                <RangePicker allowClear showTime />
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="time" label="需求认领人">
+              <Form.Item name="claimId" label="需求认领人">
                 <Select placeholder="请选择" allowClear>
-                  <Select.Option value={1}>待联系</Select.Option>
-                  <Select.Option value={2}>已联系</Select.Option>
+                  <Select.Option value={-1}>
+                    待认领
+                  </Select.Option>
+                  {users?.map((p: { claimUserId: React.Key | null | undefined; claimName: boolean | React.ReactChild | React.ReactFragment | React.ReactPortal | null | undefined; }) => (
+                    <Select.Option key={p.claimUserId} value={p.claimUserId}>
+                      {p.claimName}
+                    </Select.Option>
+                  ))}
                 </Select>
               </Form.Item>
             </Col>
@@ -252,11 +238,8 @@ export default () => {
                 onClick={() => {
                   const search = searchForm.getFieldsValue();
                   if (search.time) {
-                    search.startCreateTime = moment(search.time[0]).format('YYYY-MM-DD HH:mm:ss');
-                    search.endCreateTime = moment(search.time[1]).format('YYYY-MM-DD HH:mm:ss');
-                  }
-                  if (search.contacted) {
-                    search.contacted = !!(search.contacted - 1);
+                    search.publishStartTime = moment(search.time[0]).format('YYYY-MM-DD HH:mm:ss');
+                    search.publishEndTime = moment(search.time[1]).format('YYYY-MM-DD HH:mm:ss');
                   }
                   setSearChContent(search);
                 }}
