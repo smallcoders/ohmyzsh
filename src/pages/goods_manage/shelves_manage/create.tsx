@@ -167,11 +167,11 @@ export default () => {
       dataIndex: 'productModel',
       width: 120,
     },
-    {
-      title: '商品采购价',
-      dataIndex: 'originPricePart',
-      width: 80,
-    },
+    // {
+    //   title: '商品采购价',
+    //   dataIndex: 'originPricePart',
+    //   width: 80,
+    // },
     {
       title: '商品销售价',
       dataIndex: 'salePricePart',
@@ -369,11 +369,11 @@ export default () => {
       dataIndex: 'productModel',
       width: 120,
     },
-    {
-      title: '商品采购价',
-      dataIndex: 'originPricePart',
-      width: 100,
-    },
+    // {
+    //   title: '商品采购价',
+    //   dataIndex: 'originPricePart',
+    //   width: 100,
+    // },
     {
       title: '商品销售价',
       dataIndex: 'salePricePart',
@@ -733,10 +733,10 @@ export default () => {
       title: '规格值',
       dataIndex: 'specs',
     },
-    {
-      title: '商品采购价（元）',
-      dataIndex: 'purchasePrice',
-    },
+    // {
+    //   title: '商品采购价（元）',
+    //   dataIndex: 'purchasePrice',
+    // },
     {
       title: '商品销售价（元）',
       dataIndex: 'salePrice',
@@ -787,7 +787,7 @@ export default () => {
       <Modal
         title={'配置商品活动价'}
         width="800px"
-        open={priceModalVisible}
+        visible={priceModalVisible}
         maskClosable={false}
         onOk={setPriceOk}
         onCancel={cancelSetPrice}
