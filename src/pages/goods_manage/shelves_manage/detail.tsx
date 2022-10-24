@@ -114,7 +114,7 @@ export default () => {
         breadcrumb: (
           <Breadcrumb>
             <Breadcrumb.Item>
-              <Link to={routeName.SHELVES_MANAGE_INDEX}>活动管理 </Link>
+              <Link to={routeName.SHELVES_MANAGE_INDEX}>上架管理 </Link>
             </Breadcrumb.Item>
             <Breadcrumb.Item>活动详情</Breadcrumb.Item>
           </Breadcrumb>

@@ -425,7 +425,7 @@ export default [
   },
   {
     path: '/goods-manage',
-    name: '商品管理',
+    name: '数字化商品管理',
     icon: 'account-book',
     access: 'goodsManage',
     routes: [
