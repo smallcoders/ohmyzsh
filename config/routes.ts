@@ -110,6 +110,22 @@ export const routeName = {
   // 推荐管理
   RECOMMENDED_HOT_WORDS: '/recommended/hot_words',
   RECOMMENDED_HOT_WORDS_INDEX: '/recommended/hot_words/index',
+
+  // 商品审核
+  GOODS_VERIFY: '/verify-agency/goods_verify',
+  GOODS_VERIFY_INDEX: '/verify-agency/goods_verify/index',
+  GOODS_VERIFY_DETAIL: '/verify-agency/goods_verify/detail',
+
+  // 商品管理---上架管理
+  SHELVES_MANAGE: '/goods-manage/shelves_manage',
+  SHELVES_MANAGE_INDEX: '/goods-manage/shelves_manage/index',
+  SHELVES_MANAGE_CREATE: '/goods-manage/shelves_manage/create',
+  SHELVES_MANAGE_DETAIL: '/goods-manage/shelves_manage/detail',
+
+  //商品管理---订单信息
+  ORDER_MESSAGE: '/goods-manage/order_manage',
+  ORDER_MESSAGE_INDEX: '/goods-manage/order_manage/index',
+  ORDER_MESSAGE_DETAIL: '/goods-manage/order_manage/detail',
 };
 
 export default [
@@ -136,8 +152,8 @@ export default [
     path: '/home',
     name: '首页',
     icon: 'home',
-    component: './home'
-  },  
+    component: './home',
+  },
   {
     path: '/service-config',
     name: '服务配置',
@@ -460,6 +476,67 @@ export default [
   //     },
   //   ],
   // },
+  {
+    path: '/goods-manage',
+    name: '数字化商品管理',
+    icon: 'account-book',
+    access: 'goodsManage',
+    routes: [
+      {
+        path: '/goods-manage',
+        redirect: routeName.SHELVES_MANAGE,
+      },
+      {
+        path: routeName.SHELVES_MANAGE,
+        name: '上架管理',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.SHELVES_MANAGE,
+            redirect: routeName.SHELVES_MANAGE_INDEX,
+          },
+          {
+            path: routeName.SHELVES_MANAGE_INDEX,
+            hideInBreadcrumb: true,
+            name: '上架管理',
+            component: './goods_manage/shelves_manage/index',
+          },
+          {
+            path: routeName.SHELVES_MANAGE_CREATE,
+            name: '活动新增',
+            component: './goods_manage/shelves_manage/create',
+          },
+          {
+            path: routeName.SHELVES_MANAGE_DETAIL,
+            name: '活动详情',
+            component: './goods_manage/shelves_manage/detail',
+          },
+        ],
+      },
+      {
+        path: routeName.ORDER_MESSAGE,
+        name: '订单信息',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.ORDER_MESSAGE,
+            redirect: routeName.ORDER_MESSAGE_INDEX,
+          },
+          {
+            path: routeName.ORDER_MESSAGE_INDEX,
+            name: '订单信息',
+            hideInBreadcrumb: true,
+            component: './goods_manage/order_message/index',
+          },
+          {
+            path: routeName.ORDER_MESSAGE_DETAIL,
+            name: '订单详情',
+            component: './goods_manage/order_message/detail',
+          },
+        ],
+      },
+    ],
+  },
   {
     path: '/local-propaganda',
     name: '地市专题管理',
@@ -997,6 +1074,28 @@ export default [
             path: routeName.LEAVE_WORD_VERIFY_DETAIL,
             name: '留言审核详情',
             component: './verify_agency/leave_word_verify/components/detail',
+          },
+        ],
+      },
+      {
+        path: routeName.GOODS_VERIFY,
+        name: '商品审核',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.GOODS_VERIFY,
+            redirect: routeName.GOODS_VERIFY_INDEX,
+          },
+          {
+            path: routeName.GOODS_VERIFY_INDEX,
+            name: '商品审核',
+            hideInBreadcrumb: true,
+            component: './verify_agency/goods_verify',
+          },
+          {
+            path: routeName.GOODS_VERIFY_DETAIL,
+            name: '商品详情',
+            component: './verify_agency/goods_verify/detail',
           },
         ],
       },
