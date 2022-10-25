@@ -11,6 +11,7 @@ import VerifyDescription from '@/components/verify_steps/verify_description/veri
 import CommonTitle from '@/components/verify_steps/common_title';
 import { getDetail, updateVerityStatus } from '@/services/goods-verify';
 import { getApplicationTypeList } from '@/services/digital-application';
+import { routeName } from '../../../../../config/routes';
 const { Link } = Anchor;
 const { Column } = Table;
 const { Option } = Select;
@@ -63,6 +64,9 @@ export default () => {
       setApplicationTypeList(result || []);
     });
   };
+  const gobackList = () => {
+    history.replace(routeName.GOODS_VERIFY);
+  };
   const onSave = async () => {
     const id = history.location.query?.id as string;
     form
@@ -83,7 +87,7 @@ export default () => {
         if (submitRes.code === 0) {
           AntdMessage.success(`${tooltipMessage}成功`);
           form.resetFields();
-          history.goBack();
+          gobackList();
         } else {
           AntdMessage.error(`${tooltipMessage}失败，原因:{${submitRes.message}}`);
         }
@@ -291,7 +295,7 @@ export default () => {
               </Button>
             )}
 
-            <Button onClick={() => history.goBack()}>返回</Button>
+            <Button onClick={gobackList}>返回</Button>
           </ProCard>
 
           {/* <ProCard layout="center">
