@@ -326,9 +326,14 @@ export default () => {
           </Button>,
         ]}
         request={async (pagination) => {
+          const { updateTime = [] } = pagination;
+          const [startDate, endDate] = updateTime;
+          delete pagination.updateTime;
           const result = await getActivityManageList({
             ...pagination,
             type: 1,
+            startDate,
+            endDate,
           });
 
           setPageIndex(pagination.current);

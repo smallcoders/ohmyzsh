@@ -205,7 +205,7 @@ export default () => {
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="handleResult" label="审核状态" initialValue={-1}>
+              <Form.Item name="handleResult" label="审核状态">
                 <Select placeholder="请选择" allowClear>
                   <Select.Option value={-1}>待审核</Select.Option>
                   <Select.Option value={0}>拒绝</Select.Option>
@@ -246,7 +246,7 @@ export default () => {
       {useSearchNode()}
       <div className={sc('container-table-header')}>
         <div className="title">
-          <span>需求列表(共{pageInfo.totalCount || 0}个)</span>
+          <span>审核列表(共{pageInfo.totalCount || 0}个)</span>
         </div>
       </div>
       <div className={sc('container-table-body')}>
