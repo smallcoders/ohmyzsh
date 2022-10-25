@@ -59,6 +59,9 @@ export default () => {
     publisherName?: string; // 用户名
     publishEndTime?: string; // 发布结束时间
     type?: number; // 需求类型
+    claimId?: number; // 需求认领人
+    claimState?: string; // 需求状态
+    areaCode?: number; // 需求地区
   }>({});
 
   const formLayout = {
@@ -695,17 +698,35 @@ export default () => {
     );
   };
 
-  const exportList = () => {
-    const { name, type, publisherName, publishStartTime, publishEndTime, operationState } = searchContent;
-    demandExport({
-      name,
-      type,
-      publisherName,
-      publishStartTime,
-      publishEndTime,
-      operationState,
-    })
-  }
+  const exportList = async () => {
+    const { name, type, publisherName, publishStartTime, publishEndTime, operationState, claimId, claimState, areaCode   } =
+      searchContent;
+    try {
+      const res = await demandExport({
+        name,
+        type,
+        publisherName,
+        publishStartTime,
+        publishEndTime,
+        operationState,
+        claimId,
+        claimState,
+        areaCode,
+      });
+      const content = res?.data;
+      const blob  = new Blob([content], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"});
+      const fileName = '企业需求.xlsx'
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a')
+      link.style.display = 'none'
+      link.href = url;
+      link.setAttribute('download', fileName)
+      document.body.appendChild(link);
+      link.click();
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <PageContainer className={sc('container')}>
