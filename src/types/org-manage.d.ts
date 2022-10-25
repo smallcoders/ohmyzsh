@@ -14,7 +14,7 @@ namespace OrgManage {
     }
 
     export const orgManageTypeJson = {
-        [OrgManageTypeEnum.DIGITIZATION]: '数字化',
+        [OrgManageTypeEnum.DIGITIZATION]: '数字化应用服务商',
         [OrgManageTypeEnum.PURCHASE]: '工品采购服务商',
         [OrgManageTypeEnum.SCIENCE]: '科产服务商',
         [OrgManageTypeEnum.FINANCE]: '羚羊金融服务商',
