@@ -11,6 +11,7 @@ export async function getActivityManageList(params: {
   current?: number;
   pageSize?: number;
   type?: number;
+  [key: string]: any;
 }) {
   return request('/antelope-pay/mng/activity/pageQuery', {
     method: 'POST',
