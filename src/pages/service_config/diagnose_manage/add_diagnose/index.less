@@ -1,3 +1,4 @@
+@import '../../../../global.less';
 @prefix: service-config-add-diagnose;
 
 .@{prefix}-container {
@@ -38,6 +39,13 @@
                 overflow: auto;
                 border: 1px solid #ddd;
                 border-top: none;
+                .industry-wrap {
+                    .ellipseText(1);
+                }
+                .industry-item {
+                    margin-right: 8px;
+                    color: #666;
+                }
                 & > div {
                     padding: 16px;
                 }

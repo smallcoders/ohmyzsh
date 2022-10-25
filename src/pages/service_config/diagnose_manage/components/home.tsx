@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { Button, Input, Table, Form, InputNumber, Typography, message, Space, Modal, Popconfirm, Select } from 'antd';
+import { Button, Input, Table, Form, InputNumber, Typography, message, Space, Modal, Popconfirm, Select, Tooltip } from 'antd';
 const { Option } = Select;
 import { MenuOutlined, PlusOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
@@ -138,6 +138,22 @@ const TableList: React.FC = () => {
       dataIndex: 'name',
       isEllipsis: true,
       width: 180,
+    },
+    {
+      title: '专属产业',
+      dataIndex: 'industries',
+      isEllipsis: true,
+      width: 180,
+      // render: (_: string) => (_),
+      render: (_: any, record: any) => {
+        return (
+          <Tooltip title={_}>
+            <p className='industry-cell'>{_}</p>
+            {/* <span>{_}</span> */}
+          </Tooltip>
+        )
+      }
+      // render: (_: string) => '111222333gjaowijfjawoirfjawoirfjawifjawoirjgfaeovnaowrgfnaowrjgfnvajrgaworjlfgnajwrignvaowrjgnaowrjgnvaoejrnaejngojfnoawrghnaow',
     },
     {
       title: '创建时间',
