@@ -102,7 +102,7 @@ const RefineModal = (props: { record: any; visible: boolean; setVisible: (b: boo
             }
 
             let { areaCode = undefined, settleBank = undefined, relate = undefined, demandSpType = undefined, orgType = undefined, specifyType = undefined, specifyTypeV2 = undefined, demandSpIndustry = undefined, financeUse = undefined, demandSpStartTime = undefined, demandSpEndTime = undefined, ...rest } = { ...record, ...res?.result?.[obj[record?.specifyTypeV2]] }
-          
+
             if (demandSpIndustry) {
                 demandSpIndustry = demandSpIndustry?.split(',')
                 if (demandSpIndustry.includes('OTHER')) {
@@ -954,7 +954,7 @@ const RefineModal = (props: { record: any; visible: boolean; setVisible: (b: boo
                 labelCol={{ span: 24 }}
                 wrapperCol={{ span: 24 }}
                 form={form} name="advanced_search">
-                <Form.Item label={'需求名称'}>
+                <Form.Item label={'需求名称'} style={{ color: '#999' }}>
                     {record?.name}
                 </Form.Item>
                 <Form.Item name="specifyType" label={'选择需求预指派业务组'}>
