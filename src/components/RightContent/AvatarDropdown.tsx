@@ -131,6 +131,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = () => {
             label="姓名"
           />
           <ProFormText
+            validateTrigger='onBlur'
             rules={[
               {
                 validator(_, value) {

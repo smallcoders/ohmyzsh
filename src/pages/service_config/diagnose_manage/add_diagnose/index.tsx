@@ -287,7 +287,7 @@ export default () => {
 					title: '提示',
 					content: (
 						<div>
-							<p>当前问卷没有设置默认诊断结果，若不设置可能会出现用户填写诊断问卷，结果为空的情况</p>
+							<p>当前问卷没有设置默认诊断结果，可能会出现诊断结果为空的情况，请设置默认诊断结果后再进入下一步</p>
 						</div>
 					),
 					icon: null,
@@ -1156,6 +1156,16 @@ export default () => {
 					info('请检查「诊断报告名称」、「诊断报告概述」和「服务方案」是否填写')
 					return false
 				}
+				if(resultObj.relatedTechnicalManager && resultObj.relatedTechnicalManager.phone) {
+					if (
+						!/^(?:(?:\+|00)86)?1(?:(?:3[\d])|(?:4[5-79])|(?:5[0-35-9])|(?:6[5-7])|(?:7[0-8])|(?:8[\d])|(?:9[189]))\d{8}$/.test(
+							resultObj.relatedTechnicalManager.phone
+						)
+					) {
+						info('请输入正确的手机号码')
+						return false
+					}
+				}
 				if (editResultIndex > -1) {// 编辑
 					const list = [...dataSource]
 					list.splice(editResultIndex, 1, {
@@ -1182,7 +1192,7 @@ export default () => {
 			})
 			.catch((err) => {
 				console.log(err, '---------err');
-				info('请检查「诊断报告名称」、「诊断报告概述」和「服务方案」是否填写')
+				// info('请检查「诊断报告名称」、「诊断报告概述」和「服务方案」是否填写')
 			});
 	}
 	// 获取服务商
@@ -1569,6 +1579,7 @@ export default () => {
 									</Form.Item>
 									<Form.Item
 										name={['relatedTechnicalManager', 'phone']}
+										validateTrigger='onBlur'
 										rules={[
 											{
 												validator(_, value) {
