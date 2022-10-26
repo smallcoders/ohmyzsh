@@ -25,7 +25,7 @@ export const routeName = {
   DEMAND_MANAGEMENT_INDEX: '/supply-demand-setting/demand-manage/index', // 需求管理
   DEMAND_MANAGEMENT_DETAIL: '/supply-demand-setting/demand-manage/detail', // 需求管理详情
   ACCOUNT: '/system-config/account', // 账号管理
-  DEMAND_CONTACTS: '/supply-demand-setting/demand-contacts', // 需求联系人
+  DEMAND_CONTACTS: '/supply-demand-setting/demand_contacts/index', // 需求联系人
 
   CREATIVE_VERIFY: '/verify-agency/creative-verify', // 科技成果审核
   CREATIVE_VERIFY_INDEX: '/verify-agency/creative-verify/index', // 科技成果审核
@@ -453,6 +453,11 @@ export default [
         path: '/supply-demand-setting/docking-manage/index',
         name: '供需对接管理',
         component: './supply_demand_setting/docking_manage/index',
+      },
+      {
+        path: routeName.DEMAND_CONTACTS,
+        name: '需求联系人管理',
+        component: './supply_demand_setting/demand_contacts/index',
       },
     ],
   },

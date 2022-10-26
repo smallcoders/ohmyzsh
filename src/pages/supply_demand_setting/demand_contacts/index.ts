@@ -1,1 +1,1 @@
-// export { default } from './supply-demand-setting-demand-contacts';
+export { default } from './supply-demand-setting-demand-contacts';
