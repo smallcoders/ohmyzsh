@@ -1,8 +1,12 @@
 import { FormInstance, message, Modal } from 'antd'
 import React, { useEffect, useMemo, useState } from 'react'
 import { Cascader, Checkbox, DatePicker, Form, Input, InputNumber, Radio, Select } from 'antd'
-import { listAllAreaCode } from '@/services/common'
+import { getDictionayTree, getEnumByName, listAllAreaCode } from '@/services/common'
 import TwoLevelSelect from './two-level-select'
+import { specifyApp, specifyPurchase, specifyScience, specifyFinance, getSpecifyInfo } from '@/services/creative-demand'
+import moment from 'moment'
+import { SoundOutlined } from '@ant-design/icons'
+import DockingManage from '@/types/docking-manage.d'
 
 export enum SearchItemControlEnum {
     INPUT = 'input',
@@ -36,8 +40,8 @@ export const renderSearchItemControl = (searchItem: SearchItem, form: FormInstan
             return (
                 <Select placeholder="请选择" allowClear {...(searchItem?.props || [])}>
                     {searchItem?.dictionary?.map((p) => (
-                        <Select.Option key={p.id} value={p.enumName || p.id || p.code} >
-                            {p.name}
+                        <Select.Option key={p.value} value={p.value} >
+                            {p.title}
                         </Select.Option>
                     ))}
                 </Select>
@@ -53,45 +57,101 @@ export const renderSearchItemControl = (searchItem: SearchItem, form: FormInstan
         case SearchItemControlEnum.CHECKBOX:
             return <Checkbox.Group {...(searchItem?.props || [])}>
                 {searchItem?.dictionary?.map((p) => (
-                    <Checkbox value="A">A</Checkbox>
+                    <Checkbox value={p.value}>{p.title}</Checkbox>
                 ))}
             </Checkbox.Group>
         case SearchItemControlEnum.RADIO:
             return <Radio.Group {...(searchItem?.props || [])}>
                 {searchItem?.dictionary?.map((p) => (
-                    <Radio value="A">A</Radio>
+                    <Radio value={p.value}>{p.title}</Radio>
                 ))}
             </Radio.Group>
         case SearchItemControlEnum.RANGEPICKER:
-            return <DatePicker.RangePicker allowClear showTime {...(searchItem?.props || [])} />
+            return <DatePicker.RangePicker allowClear {...(searchItem?.props || [])} />
         case SearchItemControlEnum.CUSTOM:
             return searchItem?.render?.(form)
         default:
             return null
     }
 }
-
-const RefineModal = (props) => {
-    const { current, visible, setVisible } = props
+const group = Object.entries(DockingManage.specifyType)?.filter(p => p[0] != '6')
+const RefineModal = (props: { record: any; visible: boolean; setVisible: (b: boolean, isRefresh?: boolean) => void }) => {
+    const { record, visible, setVisible } = props
     const [area, setArea] = useState<any[]>([]);
-    const [selectOrgType, setSelectOrgType] = useState<any>()
-    const [selectOrg, setSelectOrg] = useState<any>()
-    const [saveData, setSaveData] = useState<any>({})
-    const [typeSelected, setTypeSelected] = useState<string[] | null>(null)
+    const [type, setType] = useState<number>(999)
     const [form] = Form.useForm()
     useEffect(() => {
         prepare()
     }, [])
 
+    useEffect(() => {
+        if (!record?.id) return
+        getInfo()
+    }, [record])
+
+    const getInfo = async () => {
+
+        try {
+            const res = await getSpecifyInfo(record?.id)
+
+            const obj = {
+                1: 'app',
+                2: 'purchase',
+                3: 'science',
+                4: 'finance',
+            }
+
+            let { areaCode = undefined, settleBank = undefined, relate = undefined, demandSpType = undefined, orgType = undefined, specifyType = undefined, specifyTypeV2 = undefined, demandSpIndustry = undefined, financeUse = undefined, demandSpStartTime = undefined, demandSpEndTime = undefined, ...rest } = { ...record, ...res?.result?.[obj[record?.specifyTypeV2]] }
+
+            if (demandSpIndustry) {
+                demandSpIndustry = demandSpIndustry?.split(',')
+                if (demandSpIndustry.includes('OTHER')) {
+                    setActiveElse(true)
+                } else setActiveElse(false)
+            }
+
+            if (financeUse == 2) {
+                setFinanceUseElse(true)
+            }
+            setType(specifyTypeV2 < 5 ? specifyTypeV2 : undefined)
+
+            form.setFieldsValue({
+                areaCode: areaCode ? areaCode?.split(',')?.map((p: string) => Number(p)) : undefined,
+                settleBank: settleBank ? settleBank?.split(',')?.map((p: string) => Number(p)) : undefined,
+                demandSpType: demandSpType ? demandSpType?.split(',') : undefined,
+                orgType: orgType ? orgType?.split(',')?.map(p => Number(p)) : undefined,
+                demandSpTime: demandSpStartTime && demandSpEndTime ? [moment(demandSpStartTime), moment(demandSpEndTime)] : undefined,
+                financeUse,
+                demandSpIndustry,
+                specifyType: specifyTypeV2 && specifyTypeV2 < 5 ? specifyTypeV2 : undefined,
+                relate: relate != undefined ? String(relate) : undefined,
+                ...rest
+            })
+
+        } catch (error) {
+            message.error('服务器错误')
+        }
+    }
+
     const [activeElse, setActiveElse] = useState<any>(false)
+    const [financeUseElse, setFinanceUseElse] = useState<any>(false)
+
+    const [demandTypes, setDemandTypes] = useState<any[]>([])
+    const [industryTypes, setIndustryTypes] = useState<any[]>([])
     const prepare = async () => {
         try {
             const areaRes = await listAllAreaCode()
             setArea(areaRes && areaRes.result || [])
+            const res = await Promise.all([getDictionayTree('DEMAND_TYPE'), getEnumByName('ORG_INDUSTRY')])
+            setDemandTypes(res?.[0]?.result)
+            setIndustryTypes(res?.[1]?.result)
+
+            console.log("======>", res)
         } catch (error) {
-            message.error('获取省市区数据出错')
+            message.error('服务器错误')
         }
     }
+
     const searchList = {
         1: [
             {
@@ -214,19 +274,20 @@ const RefineModal = (props) => {
                 key: 'relate',
                 label: `是否需要与上下游系统关联`,
                 type: SearchItemControlEnum.CUSTOM,
-                render: (form) => {
+                render: (form: { getFieldValue: (arg0: string) => any; setFieldsValue: (arg0: { relate: undefined }) => void }) => {
                     const dict = [
-                        { name: '是', value: true },
-                        { name: '否', value: false },
+                        { name: '是', value: 'true' },
+                        { name: '否', value: 'false' },
                     ]
                     return <Radio.Group>
                         {
                             dict.map(p => {
                                 return <Radio onClick={(e) => {
+                                    console.log('e===>', e.target.value, form.getFieldValue('relate'))
                                     if (
-                                        form.getFieldValue('typeId') == e.target.value
+                                        form.getFieldValue('relate') == e.target.value
                                     ) {
-                                        form.setFieldsValue({ 'typeId': undefined })
+                                        form.setFieldsValue({ 'relate': undefined })
                                     }
                                 }} value={p.value}>{p.name}</Radio>
                             })
@@ -367,7 +428,26 @@ const RefineModal = (props) => {
                 key: 'productCase',
                 label: `商品使用场景`,
                 type: SearchItemControlEnum.SELECT,
-                dictionary: [],
+                dictionary: [{
+                    title: '工厂车间',
+                    value: 0
+                },
+                {
+                    title: '办公劳保',
+                    value: 1
+                },
+                {
+                    title: '市场营销',
+                    value: 2
+                }, {
+                    title: '员工福利',
+                    value: 3
+                },
+                {
+                    title: '其他',
+                    value: 4
+                },
+                ],
                 props: {
                     style: {
                         width: '100%'
@@ -444,11 +524,11 @@ const RefineModal = (props) => {
                 label: `需求类型`,
                 type: SearchItemControlEnum.CUSTOM,
                 render: () => {
-                    return <TwoLevelSelect dictionary={[]} />
+                    return <TwoLevelSelect dictionary={demandTypes} fieldNames={{ label: 'name', value: 'id', children: 'nodes' }} />
                 }
             },
             {
-                key: 'demandSpIndustry',
+                key: 'demandSpSector',
                 label: `所属行业`,
                 type: SearchItemControlEnum.INPUT,
                 props: {
@@ -460,31 +540,17 @@ const RefineModal = (props) => {
             },
             {
                 key: '',
-                label: `所属产业`,
+                label: ``,
                 type: SearchItemControlEnum.CUSTOM,
                 render: () => {
                     return <>
                         <Form.Item
                             name="demandSpIndustry"
                             label="所属产业"
-                            required
-                            rules={[
-                                () => ({
-                                    validator(_, value) {
-                                        if (!value || value.length === 0) {
-                                            return Promise.reject(new Error('必选'))
-                                        }
-                                        if (value && value.length > 3) {
-                                            return Promise.reject(new Error('最多选3个所属产业'))
-                                        }
-                                        return Promise.resolve()
-                                    },
-                                }),
-                            ]}
                         >
                             <Checkbox.Group
                                 options={
-                                    (commonEnumList?.[CommonEnumDicTypes.ORG_INDUSTRY] || []).map((p) => {
+                                    (industryTypes || []).map((p) => {
                                         return {
                                             label: p.name,
                                             value: p.enumName,
@@ -687,51 +753,62 @@ const RefineModal = (props) => {
                 },
             },
             {
-                key: 'financeUse',
-                label: `拟融资用途`,
+                key: '',
+                label: ``,
                 type: SearchItemControlEnum.CUSTOM,
                 render: (form: any) => {
                     //	融资用途 0-日常周转 1-设备采买 2-其他 financeUseMark
                     return <>
                         <Form.Item
-                            name="demandSpIndustry"
-                            label="所属产业"
-                            required
-                            rules={[
-                                () => ({
-                                    validator(_, value) {
-                                        if (!value || value.length === 0) {
-                                            return Promise.reject(new Error('必选'))
-                                        }
-                                        if (value && value.length > 3) {
-                                            return Promise.reject(new Error('最多选3个所属产业'))
-                                        }
-                                        return Promise.resolve()
-                                    },
-                                }),
-                            ]}
+                            name="financeUse"
+                            label="拟融资用途"
                         >
                             <Radio.Group>
-                                <Radio value={0}>日常周转</Radio>
-                                <Radio value={1}>设备采买</Radio>
-                                <Radio value={2}>其他</Radio>
+                                <Radio
+                                    onClick={(e) => {
+                                        if (
+                                            form.getFieldValue('financeUse') == e.target.value
+                                        ) {
+                                            form.setFieldsValue({ 'financeUse': undefined })
+                                        }
+                                    }} value={0}>日常周转</Radio>
+                                <Radio
+                                    onClick={(e) => {
+                                        if (
+                                            form.getFieldValue('financeUse') == e.target.value
+                                        ) {
+                                            form.setFieldsValue({ 'financeUse': undefined })
+                                        }
+                                    }}
+                                    value={1}>设备采买</Radio>
+                                <Radio value={2}
+                                    onClick={(e) => {
+                                        if (
+                                            form.getFieldValue('financeUse') == e.target.value
+                                        ) {
+                                            form.setFieldsValue({ 'financeUse': undefined })
+                                        } else {
+                                            setFinanceUseElse(true)
+                                        }
+                                    }}
+                                >其他</Radio>
                             </Radio.Group>
                         </Form.Item>
-                        {activeElse && (
+                        {financeUseElse && (
                             <Form.Item
                                 name="financeUseMark"
                                 label=" "
                                 colon={false}
-                                rules={[
-                                    () => ({
-                                        validator(_, value) {
-                                            if (!value || value.length === 0) {
-                                                return Promise.reject(new Error('请输入'))
-                                            }
-                                            return Promise.resolve()
-                                        },
-                                    }),
-                                ]}
+                            // rules={[
+                            //     () => ({
+                            //         validator(_, value) {
+                            //             if (!value || value.length === 0) {
+                            //                 return Promise.reject(new Error('请输入'))
+                            //             }
+                            //             return Promise.resolve()
+                            //         },
+                            //     }),
+                            // ]}
                             >
                                 <Input
                                     style={{ width: '300px' }}
@@ -812,14 +889,52 @@ const RefineModal = (props) => {
         ],
     }
 
-
+    const onSubmit = () => {
+        const action = {
+            1: specifyApp,
+            2: specifyPurchase,
+            3: specifyScience,
+            4: specifyFinance,
+        }
+        form
+            .validateFields()
+            .then(async (values) => {
+                const { areaCode, demandSpType, demandSpIndustry, orgType, settleBank, demandSpTime, ...rest } = values
+                const time = demandSpTime ? {
+                    demandSpStartTime: demandSpTime[0].format('YYYY-MM-DD'),
+                    demandSpEndTime: demandSpTime[1].format('YYYY-MM-DD'),
+                } : {}
+                const res = await action[type]({
+                    demandId: record?.id,
+                    gid: type,
+                    areaCode: areaCode ? areaCode?.join(',') : undefined,
+                    demandSpType: demandSpType ? demandSpType?.join(',') : undefined,
+                    demandSpIndustry: demandSpIndustry ? demandSpIndustry?.join(',') : undefined,
+                    orgType: orgType ? orgType?.join(',') : undefined,
+                    settleBank: settleBank ? settleBank?.join(',') : undefined,
+                    ...rest,
+                    ...time
+                });
+                if (res?.code == 0) {
+                    message.success('细化成功')
+                    form.resetFields();
+                    setVisible(false, true)
+                } else {
+                    message.error(res?.message || '细化失败')
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    }
 
     return (
         <Modal
-            title={'需求细化'}
+            title={record?.editType == 'add' ? '需求细化' : '编辑细化内容'}
             visible={visible}
             onCancel={() => {
                 setVisible(false)
+                setType(999)
             }}
             width={600}
             centered
@@ -828,26 +943,33 @@ const RefineModal = (props) => {
             cancelText="取消"
             destroyOnClose={true}
             bodyStyle={{ padding: '20px 40px', minWidth: 600 }}
+            onOk={() => onSubmit()}
         >
+
+            <div style={{ color: '#999' }}>
+                <SoundOutlined />   选择需求预指派业务组后将会出现需要完善的需求信息。其中技术经理人跟进的需求暂无需细化需求，所以不支持选择
+            </div>
 
             <Form
                 labelCol={{ span: 24 }}
                 wrapperCol={{ span: 24 }}
                 form={form} name="advanced_search">
-                <Form.Item label={'需求名称'}>
-                    企业数字化改造服务
+                <Form.Item label={'需求名称'} style={{ color: '#999' }}>
+                    {record?.name}
                 </Form.Item>
-                <Form.Item label={'选择需求预指派业务组'}>
-                    <Select placeholder="请选择" allowClear>
-                        {[]?.map((p) => (
-                            <Select.Option key={p.id} value={p.enumName || p.id || p.code}>
-                                {p.name}
+                <Form.Item name="specifyType" label={'选择需求预指派业务组'}>
+                    <Select placeholder="请选择" allowClear onChange={(e) => {
+                        setType(e)
+                    }}>
+                        {group?.map((p) => (
+                            <Select.Option key={p[0]} value={Number(p[0])} disabled={p[0] == '5'}>
+                                {p[1]}
                             </Select.Option>
                         ))}
                     </Select>
                 </Form.Item>
 
-                {searchList[1]?.map((search) => (
+                {searchList?.[type]?.map((search: SearchItem) => (
                     <Form.Item {...search?.formProps || {}} name={search?.key} label={search?.label}>
                         {renderSearchItemControl(search, form)}
                     </Form.Item>

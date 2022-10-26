@@ -70,7 +70,7 @@ export function updateSort(params:{
  * @param id 
  * @returns 
  */
-export async function claimDemand(id: string) {
+ export async function claimDemand(id: string) {
   return request<any>(`/antelope-science/mng/demand/claim?demandId=${id}`);
 }
 
@@ -90,7 +90,7 @@ export async function cancelClaimDemand(id: string) {
  * @returns 
  */
 export async function distributeDemand(id: string, groupId: string) {
-  return request<any>(`/antelope-science/mng/demand/follow/distribute?demandId=${id}&groupId=${groupId}`);
+  return request<any>(`/antelope-science/mng/demand/mine/distribute?demandId=${id}&groupId=${groupId}`);
 }
 
 /**
@@ -99,8 +99,8 @@ export async function distributeDemand(id: string, groupId: string) {
  * @param groupId 
  * @returns 
  */
-export async function cancelDistributeDemand(id: string, groupId: string) {
-  return request<any>(`/antelope-science/mng/demand/follow/distribute/cancel?demandId=${id}`);
+export async function cancelDistributeDemand(id: string) {
+  return request<any>(`/antelope-science/mng/demand/mine/distribute/cancel?demandId=${id}`);
 }
 
 /**
@@ -121,7 +121,7 @@ export async function appoint(id: string, orgId: string, orgName: string) {
  * @param orgName 
  * @returns 
  */
-export async function cancelAppoint(id: string, orgId: string, orgName: string) {
+export async function cancelAppoint(id: string,) {
   return request<any>(`/antelope-science/mng/demand/follow/appoint/cancel?demandId=${id}`);
 }
 
@@ -157,7 +157,7 @@ export async function specifyApp(data?: { [key: string]: any }) {
  * @param data 
  * @returns 
  */
- export async function specifyPurchase(data?: { [key: string]: any }) {
+export async function specifyPurchase(data?: { [key: string]: any }) {
   return request<any>('/antelope-science/mng/demand/mine/specify/purchase', {
     method: 'post',
     data,
@@ -169,7 +169,7 @@ export async function specifyApp(data?: { [key: string]: any }) {
  * @param data 
  * @returns 
  */
- export async function specifyScience(data?: { [key: string]: any }) {
+export async function specifyScience(data?: { [key: string]: any }) {
   return request<any>('/antelope-science/mng/demand/mine/specify/science', {
     method: 'post',
     data,
@@ -181,9 +181,35 @@ export async function specifyApp(data?: { [key: string]: any }) {
  * @param data 
  * @returns 
  */
- export async function specifyFinance(data?: { [key: string]: any }) {
+export async function specifyFinance(data?: { [key: string]: any }) {
   return request<any>('/antelope-science/mng/demand/mine/specify/finance', {
     method: 'post',
     data,
+  });
+}
+
+export async function getDemandPage(data?: { [key: string]: any }) {
+  return request<any>('/antelope-manage/demand/pageManage/v2', {
+    method: 'post',
+    data,
+  });
+}
+
+export async function getBizGroup() {
+  return request<any>(`/antelope-science/mng/demand/biz/group`);
+}
+
+export async function getSpecifyInfo(demandId: string) {
+  return request<any>(`/antelope-science/mng/demand/mine/specify/info?demandId=${demandId}`);
+}
+
+export async function getClaimUsers() {
+  return request<any>(`/antelope-science/mng/demand/claim/all`);
+}
+
+
+export async function getFeedbackDetail(demandId: string) {
+  return request<any>(`/antelope-science/mng/demand/follow/feedback/detail?demandId=${demandId}`, {
+    method: 'post',
   });
 }

@@ -119,6 +119,9 @@ export async function demandExport(data: {
   publishStartTime?: string, 
   publishEndTime?: string, 
   operationState?: string, // 需求状态
+  claimId?: number,
+  claimState?: string,
+  areaCode?: number,
 }) {
   return request<any>('/antelope-manage/demand/export',{
     method: 'post',
