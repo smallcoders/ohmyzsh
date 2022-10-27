@@ -38,10 +38,6 @@ export default () => {
    */
   const [isSkip, setIsSkip] = useState<string | number>(1);
   /**
-   * 是否是尖刀应用 1 是 0 不是
-   */
-  const [isTop, setIsTop] = useState<string | number>(1);
-  /**
    * 直播类型
    */
   const [appTypes, setAppTypes] = useState<{ id: string; name: string }[]>([]);
@@ -57,6 +53,8 @@ export default () => {
    * 详情记录
    */
    const [isDetail, setIsDetail] = useState<boolean>(false);
+
+   const [isAdd, setIsAdd] = useState<boolean>(false);
 
   /**
    * 添加或者修改 loading
@@ -114,7 +112,7 @@ export default () => {
       })]);
       setAppTypes(prepareResultArray[0].result || []);
 
-      const { id, isDetail } = history.location.query as { id: string | undefined, isDetail: string | undefined };
+      const { id, isDetail, isAdd } = history.location.query as { id: string | undefined, isDetail: string | undefined, isAdd: string | undefined };
       if (id) {
         // 获取详情 塞入表单
         const detailRs = await getVideoDetail(id);
@@ -157,6 +155,9 @@ export default () => {
         setIsClosejumpTooltip(false);
       }else {
         setIsClosejumpTooltip(true);
+      }
+      if(isAdd == '1') {
+        setIsAdd(true)
       }
     } catch (error) {
       console.log('error', error);
@@ -265,7 +266,7 @@ export default () => {
                 取消
               </Button>
             )}
-            {!editingItem && (
+            {isAdd && (
               <Button key="save" loading={addOrUpdateLoading} onClick={() => {addOrUpdate(true)}}>
                 保存并上架
               </Button>
