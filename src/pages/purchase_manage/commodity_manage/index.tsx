@@ -30,7 +30,7 @@ export default () => {
 
   const goDetail = useCallback(
     (record: { id: number }) => {
-      history.push(`/purchase-manage/commodity-detail?id=${record.id}`);
+      window.open(`/purchase-manage/commodity-detail?id=${record.id}`);
     },
     [history],
   );

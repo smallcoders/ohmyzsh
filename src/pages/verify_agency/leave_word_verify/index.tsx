@@ -129,7 +129,11 @@ export default () => {
             <Button 
               type="link"
               onClick={() => {
-                history.push(`${routeName.LEAVE_WORD_VERIFY_DETAIL}?auditId=${_record.auditId}&commentId=${_record.commentId}&tab=${_record.tab}&detailId=${_record.detailId}`);
+                if(_record?.status === 'AUDITING') {
+                  history.push(`${routeName.LEAVE_WORD_VERIFY_DETAIL}?auditId=${_record.auditId}&commentId=${_record.commentId}&tab=${_record.tab}&detailId=${_record.detailId}`);
+                }else {
+                  window.open(`${routeName.LEAVE_WORD_VERIFY_DETAIL}?auditId=${_record.auditId}&commentId=${_record.commentId}&tab=${_record.tab}&detailId=${_record.detailId}`);
+                }
               }}
             >
               {_record?.status === 'AUDITING' ? '审核' : '详情'} 

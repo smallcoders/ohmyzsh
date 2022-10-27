@@ -143,7 +143,7 @@ export default () => {
           href="#!"
           onClick={(e) => {
             e.preventDefault(); 
-            history.push(`${routeName.ANTELOPE_LIVE_MANAGEMENT_ADD}?id=${_record.id}&isDetail=1`);
+            window.open(`${routeName.ANTELOPE_LIVE_MANAGEMENT_ADD}?id=${_record.id}&isDetail=1`);
           }}
         >
           {_}

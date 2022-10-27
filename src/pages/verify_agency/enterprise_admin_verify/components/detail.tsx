@@ -188,23 +188,23 @@ export default () => {
           </div>
         )}
       </div>
-      <div style={{ background: '#fff', margin: '20px 0', paddingTop: 20 }}>
+      <div style={{ background: '#fff', margin: '20px 0' }}>
         <VerifyInfoDetail list={list || []} form={form} reset={prepare} />
-        <Space size={20} style={{ margin: '0 0 20px 100px' }}>
-          {detail?.auditList?.[0]?.stateEnum == Common.AuditStatus.AUDITING && (
+        {detail?.auditList?.[0]?.stateEnum == Common.AuditStatus.AUDITING && (
+          <Space size={20} style={{ margin: '0 0 20px 100px' }}>
             <Button type="primary" className={'content-btns-save-btn'} onClick={onSave}>
               提交
             </Button>
-          )}
-          <Button
-            className={'content-btns-back-btn'}
-            onClick={() => {
-              history.goBack();
-            }}
-          >
-            返回
-          </Button>
-        </Space>
+            <Button
+              className={'content-btns-back-btn'}
+              onClick={() => {
+                history.goBack();
+              }}
+            >
+              返回
+            </Button>
+          </Space>
+        )}
       </div>
     </PageContainer>
   );

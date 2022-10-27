@@ -448,7 +448,7 @@ export const OrderItem = ({
                 )}
                 <a
                   onClick={() => {
-                    history.push(`${routeName.PURCHASE_MANAGE_DETAIL}?id=${record.orderNo}`);
+                    window.open(`${routeName.PURCHASE_MANAGE_DETAIL}?id=${record.orderNo}`);
                   }}
                 >
                   订单详情

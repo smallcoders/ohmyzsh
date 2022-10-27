@@ -278,7 +278,7 @@ const SolutionTable: React.FC = () => {
           key="1"
           size="small"
           type="link"
-          onClick={() => history.push(`${routeName.SOLUTION_DETAIL}?id=${record.id}`)}
+          onClick={() => window.open(`${routeName.SOLUTION_DETAIL}?id=${record.id}`)}
         >
           详情
         </Button>,

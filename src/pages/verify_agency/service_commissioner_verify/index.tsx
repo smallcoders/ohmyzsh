@@ -123,7 +123,7 @@ export default () => {
       render: (_: string, _record: any) => (
         <a
           onClick={() => {
-            history.push(
+            window.open(
               `${routeName.EXPERT_MANAGE_DETAIL}?id=${_record.expertShowId}&auditId=${_record.auditId}`,
             );
           }}
