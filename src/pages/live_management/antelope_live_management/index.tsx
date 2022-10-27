@@ -349,7 +349,7 @@ export default () => {
             type="primary"
             key="pushRoute"
             onClick={() => {
-              history.push(routeName.ANTELOPE_LIVE_MANAGEMENT_ADD);
+              history.push(`${routeName.ANTELOPE_LIVE_MANAGEMENT_ADD}?isAdd=1`)
             }}
           >
             <PlusOutlined /> 新增直播
