@@ -70,14 +70,8 @@ export default () => {
    * 是否在编辑
    */
   const isEditing = Boolean(editingItem.id && !isDetail);
-  console.log(isEditing, 'isEditing');
-
-  //判断初始的是否尖刀应用并且是否正在修改的开关
-  const [isBeginTopAndEditing, setIsBeginTopAndEditing] = useState<boolean>(false);
 
   const [form] = Form.useForm();
-
-  const [formParams, setFormParams] = useState<object>({});
 
   const stateObj = {
     0: '未开始',
@@ -107,33 +101,6 @@ export default () => {
   
     return result;
   };
-  const disabledDate = (current) => {
-    // Can not select days before today
-    return current < moment().endOf('day');
-  };
-  const disabledRangeTime = (_, type) => {
-    if (type === 'start') {
-      return {
-        disabledHours: () => range(0, 60).splice(4, 20),
-        disabledMinutes: () => range(30, 60),
-        disabledSeconds: () => [55, 56],
-      };
-    }
-  
-    return {
-      disabledHours: () => range(0, 60).splice(20, 4),
-      disabledMinutes: () => range(0, 31),
-      disabledSeconds: () => [55, 56],
-    };
-  };
-
-  /**
-   * 清楚表单
-   */
-  // const clearForm = () => {
-  //   isEditing && setEditingItem({});
-  //   // form.resetFields()
-  // };
 
   /**
    * 准备数据和路由获取参数等
@@ -148,18 +115,14 @@ export default () => {
       setAppTypes(prepareResultArray[0].result || []);
 
       const { id, isDetail } = history.location.query as { id: string | undefined, isDetail: string | undefined };
-
       if (id) {
         // 获取详情 塞入表单
         const detailRs = await getVideoDetail(id);
         let editItem = { ...detailRs.result };
         editItem.typeIds = editItem.typeIds?.split(',').map(Number);//返回的类型为字符串，需转为数组
-        console.log(editItem, '---editItem')
         if (detailRs.code === 0) {
           editItem.isSkip = detailRs.result.url ? 1 : 0;
           setIsSkip(editItem.isSkip);
-          // setIsBeginTopAndEditing(Boolean(editItem.isTopApp));
-          console.log(editItem, 'res---editItem');
           let extended = [];//扩展功能数据获取
           if(!editItem.closeReplay) {
             extended.push('replay');
@@ -214,10 +177,12 @@ export default () => {
       .validateFields()
       .then(async (value: AppResource.Detail) => {
         const tooltipMessage = editingItem.id ? '编辑' : '新增';
-        console.log(value, '<---value');
+        console.log(editingItem, '---------editingItem');
+        console.log(isEditing, '---------isEditing')
+        // console.log(value, '<---value');
         const hide = message.loading(`正在${tooltipMessage}`);
         setAddOrUpdateLoading(true);
-        // // 编辑
+        // 编辑
         let addorUpdateRes = {};
         if(editingItem.id) {
           addorUpdateRes = await updateLive({
@@ -300,7 +265,7 @@ export default () => {
                 取消
               </Button>
             )}
-            {!isDetail && !isEditing && (
+            {!editingItem && (
               <Button key="save" loading={addOrUpdateLoading} onClick={() => {addOrUpdate(true)}}>
                 保存并上架
               </Button>

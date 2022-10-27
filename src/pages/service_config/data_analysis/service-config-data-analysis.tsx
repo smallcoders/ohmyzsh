@@ -183,10 +183,10 @@ export default () => {
                   const search = searchForm.getFieldsValue();
                   if (search.operateTime) {
                     search.beginOperateTime = moment(search.operateTime[0]).format(
-                      'YYYY-MM-DDTHH:mm:ss',
+                      'YYYY-MM-DD HH:mm:ss',
                     );
                     search.endOperateTime = moment(search.operateTime[1]).format(
-                      'YYYY-MM-DDTHH:mm:ss',
+                      'YYYY-MM-DD HH:mm:ss',
                     );
                   }
                   setSearChContent({ ...searchContent, ...search });
