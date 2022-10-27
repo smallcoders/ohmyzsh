@@ -257,7 +257,7 @@ const TableList: React.FC = () => {
       <Modal
         title={editingItem.id ? '修改banner' : '新增banner'}
         width="400px"
-        open={createModalVisible}
+        visible={createModalVisible}
         maskClosable={false}
         onCancel={() => {
           clearForm();

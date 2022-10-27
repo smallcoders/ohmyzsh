@@ -7,22 +7,20 @@ import {
   Col,
   DatePicker,
   Checkbox,
-  TreeSelect,
   Modal,
   message,
   Space,
   Popconfirm,
   InputNumber,
-  Radio,
 } from 'antd';
-import { CaretDownOutlined, CaretUpOutlined, InfoOutlined } from '@ant-design/icons';
+import { CaretDownOutlined, CaretUpOutlined, InfoOutlined } from '@ant-design/icons'
 import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
 import type Common from '@/types/common';
 import moment from 'moment';
-import { getDictionay, getDictionayTree, getEnumByName } from '@/services/common';
+import { getDictionayTree, getEnumByName } from '@/services/common';
 import { routeName } from '@/../config/routes';
 import SelfTable from '@/components/self_table';
 import { UploadOutlined } from '@ant-design/icons';
@@ -33,23 +31,25 @@ import {
   demandEditType,
   demandIndestrialEditType,
   demandEditSort, //权重编辑
-  demandEditConnectState, //对接状态编辑
   demandUpper, //上架
   demandDown, //下架
+  getManageTypeList
 } from '@/services/office-requirement-verify';
+import TwoLevelSelect from '../docking_manage/components/two-level-select'
+import { getClaimUsers } from '@/services/creative-demand';
+import { getAreaTree } from '@/services/area';
 const sc = scopedClasses('setting-demand-manage');
-const stateObj = {
-  //需求状态
+const stateObj = {//需求状态
   ON_SHELF: '上架',
-  FINISHED: '已结束',
-  OFF_SHELF: '下架',
+  // FINISHED: '已结束',
+  OFF_SHELF: '下架'
+
 };
-const stateObj2 = {
-  //对接状态
-  NOT_CONNECT: '未对接',
-  CONNECTING: '对接中',
-  CONNECT_SUCCESS: '对接成功',
+const stateObj3 = {//
+  NEW_DEMAND: '新发布', CLAIMED: '已认领', DISTRIBUTE: '已分发', CONNECTING: '对接中', FEEDBACK: '已反馈', EVALUATED: '已评价', FINISHED: '已结束'
 };
+
+
 export default () => {
   const [dataSource, setDataSource] = useState<any[]>([]);
   const [searchContent, setSearChContent] = useState<{
@@ -59,6 +59,9 @@ export default () => {
     publisherName?: string; // 用户名
     publishEndTime?: string; // 发布结束时间
     type?: number; // 需求类型
+    claimId?: number; // 需求认领人
+    claimState?: string; // 需求状态
+    areaCode?: number; // 需求地区
   }>({});
 
   const formLayout = {
@@ -71,7 +74,7 @@ export default () => {
    *  */
   const dialogFormLayout = {
     labelCol: { span: 6 },
-    wrapperCol: { span: 14 },
+    wrapperCol: { span: 18 },
   };
   const [createModalVisible, setModalVisible] = useState<boolean>(false);
   const [editingItem, setEditingItem] = useState<any>({});
@@ -80,13 +83,8 @@ export default () => {
     if (editingItem.photoId || editingItem.id) setEditingItem({});
   };
 
-  const [treeNodeValue, setTreeNodeValue] = useState();
+  const [demandTypes, setDemandTypes] = useState<any[]>([])
   const [isMore, setIsMore] = useState<boolean>(false);
-
-  const onChange = (newValue: any) => {
-    console.log(newValue);
-    setTreeNodeValue(newValue);
-  };
 
   const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
     pageIndex: 1,
@@ -99,8 +97,7 @@ export default () => {
   const updateOnlineStatus = async (id: string, status: boolean) => {
     const params = { demandId: id };
     let addorUpdateRes = {};
-    if (status) {
-      //上架
+    if (status) {//上架
       addorUpdateRes = await demandUpper(params);
     } else {
       addorUpdateRes = await demandDown(params);
@@ -115,15 +112,15 @@ export default () => {
     } else {
       message.error(`${status ? '上架' : '下架'}失败，原因:{${addorUpdateRes.message}}`);
     }
-  };
+  }
 
   // 编辑权重
   const editSort = async (id: string, value: number) => {
     console.log(id, value);
     const editRes = await demandEditSort({
       id: id,
-      sort: value,
-    });
+      sort: value
+    })
     if (editRes.code === 0) {
       message.success(`编辑权重成功！`);
       getPage();
@@ -131,45 +128,25 @@ export default () => {
     } else {
       message.error(`编辑权重失败，原因:{${editRes.message}}`);
     }
-  };
+  }
 
-  // 编辑对接状态
-  const editConnect = async (id: string, value: number) => {
-    console.log(id, value);
-    const editRes = await demandEditConnectState({
-      id: id,
-      connectState: value,
-    });
-    if (editRes.code === 0) {
-      message.success(`编辑对接状态成功！`);
-      getPage();
-      clearForm();
-    } else {
-      message.error(`编辑对接状态失败，原因:{${editRes.message}}`);
-    }
-  };
 
   // 需求类型
   const [typeOptions, setTypeOptions] = useState<any>([]);
 
   const [form] = Form.useForm();
 
-  const [serviceTypes, setServiceType] = useState<any>([]);
-  const [industryTypes, setIndustryTypes] = useState<any>([]);
+  const [industryTypes, setIndustryTypes] = useState<any>([])
+  const [users, setUsers] = useState<any>([])
+  const [area, setArea] = useState<any>([])
   const prepare = async () => {
     try {
-      // 查询需求类型选项
-      getDictionay('NEW_ENTERPRISE_DICT').then((data) => {
-        setTypeOptions(data?.result || []);
-      });
-      // 获取服务类型树
-      getDictionayTree('NEW_ENTERPRISE_DICT').then((data) => {
-        setServiceType(data.result || []);
-      });
-      // 获取所属产业类型
-      getEnumByName('ORG_INDUSTRY').then((data) => {
-        setIndustryTypes(data.result || []);
-      });
+      const data = await Promise.all([getManageTypeList(), getEnumByName('ORG_INDUSTRY'), getClaimUsers(), getAreaTree({}), getDictionayTree('DEMAND_TYPE')])
+      setTypeOptions(data?.[0]?.result || []);
+      setIndustryTypes(data?.[1]?.result || [])
+      setUsers(data?.[2]?.result || [])
+      setArea(data?.[3]?.children || [])
+      setDemandTypes(data?.[4]?.result || [])
     } catch (error) {
       message.error('数据初始化错误');
     }
@@ -201,6 +178,7 @@ export default () => {
         } catch (error) {
           console.log(error);
         }
+
       })
       .catch((err) => {
         message.error('服务器错误');
@@ -211,7 +189,7 @@ export default () => {
     return (
       <Modal
         title="需求类型编辑"
-        width="400px"
+        width="720px"
         maskClosable={false}
         visible={createModalVisible}
         onCancel={() => {
@@ -233,28 +211,19 @@ export default () => {
             rules={[
               {
                 validator(rule, value) {
-                  if (value.length > 3) {
-                    return Promise.reject('最多选3个');
+                  if (value.length > 5) {
+                    return Promise.reject('最多选5个')
                   }
                   if (!value || value.length === 0) {
-                    return Promise.reject('必填');
+                    return Promise.reject('必填')
                   } else {
-                    return Promise.resolve();
+                    return Promise.resolve()
                   }
                 },
               },
             ]}
           >
-            <TreeSelect
-              multiple
-              style={{ width: '100%' }}
-              value={treeNodeValue}
-              dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-              allowClear
-              treeData={serviceTypes}
-              fieldNames={{ label: 'name', value: 'id', children: 'nodes' }}
-              onChange={onChange}
-            />
+            <TwoLevelSelect dictionary={demandTypes} fieldNames={{ label: 'name', value: 'id', children: 'nodes' }} />
           </Form.Item>
         </Form>
       </Modal>
@@ -266,8 +235,8 @@ export default () => {
   const clearIndustrialForm = () => {
     // 未处理
     form.resetFields();
-    if (industrialItem.id) setIndustrialItem({});
-  };
+    if (industrialItem.id) setIndustrialItem({})
+  }
 
   // 所属产业变价
   const addIndustrialUpdata = () => {
@@ -276,18 +245,19 @@ export default () => {
         const res = await demandIndestrialEditType({
           id: industrialItem.id,
           ...value,
-        });
+        })
         if (res?.code === 0) {
           message.success(`所属产业编辑成功！`);
-          setIndustrialModal(false);
-          getPage();
-          clearIndustrialForm();
+          setIndustrialModal(false)
+          getPage()
+          clearIndustrialForm()
         }
       } catch (error) {
         console.log(error);
       }
-    });
-  };
+    })
+
+  }
 
   const getIndustrialModal = () => {
     return (
@@ -297,73 +267,60 @@ export default () => {
         visible={industrialModal}
         maskClosable={false}
         onOk={async () => {
-          await addIndustrialUpdata();
+          await addIndustrialUpdata()
         }}
         onCancel={() => {
-          clearIndustrialForm();
-          setIndustrialModal(false);
+          clearIndustrialForm()
+          setIndustrialModal(false)
         }}
         footer={[
-          <Button
-            key="back"
-            onClick={() => {
-              clearIndustrialForm();
-              setIndustrialModal(false);
-            }}
-          >
+          <Button key="back" onClick={() => {
+            clearIndustrialForm()
+            setIndustrialModal(false)
+          }}>
             取消
           </Button>,
           <Button
             key="link"
             type="primary"
             onClick={async () => {
-              await addIndustrialUpdata();
+              await addIndustrialUpdata()
             }}
           >
             确定
           </Button>,
         ]}
       >
-        <Form labelCol={{ span: 3 }} wrapperCol={{ span: 20 }} form={form}>
-          <Form.Item
-            name="industry"
-            label="所属行业"
-            rules={[{ required: true }]}
-            extra="多选（最多三个）"
-          >
+        <Form
+          labelCol={{ span: 3 }}
+          wrapperCol={{ span: 20 }}
+          form={form}>
+          <Form.Item name="industry" label="所属行业" rules={[{ required: true }]} extra="多选（最多三个）">
             <Checkbox.Group>
               <Row>
                 {industryTypes?.map((i: any) => {
                   return (
                     <React.Fragment key={i.name}>
                       <Col span={6}>
-                        <Checkbox
-                          value={i.enumName}
-                          style={{ lineHeight: '32px' }}
-                          disabled={
-                            newKeywords &&
-                            newKeywords.length == 3 &&
-                            !newKeywords.includes(i.enumName)
-                          }
-                        >
+                        <Checkbox value={i.enumName} style={{ lineHeight: '32px' }} disabled={newKeywords && newKeywords.length == 3 && (!newKeywords.includes(i.enumName))}>
                           {i.name}
                         </Checkbox>
-                        {i.enumName == 'OTHER' && newKeywords && newKeywords.indexOf('OTHER') > -1 && (
+                        {i.enumName == 'OTHER' && newKeywords && (newKeywords.indexOf('OTHER') > -1) && (
                           <Form.Item name="industryOther" label="">
-                            <Input placeholder="请输入" maxLength={10} />
+                            <Input placeholder='请输入' maxLength={10} />
                           </Form.Item>
                         )}
                       </Col>
                     </React.Fragment>
-                  );
+                  )
                 })}
               </Row>
             </Checkbox.Group>
           </Form.Item>
         </Form>
-      </Modal>
-    );
-  };
+      </Modal >
+    )
+  }
 
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     try {
@@ -398,7 +355,7 @@ export default () => {
       render: (_: string, _record: any) => (
         <a
           onClick={() => {
-            history.push(`${routeName.DEMAND_MANAGEMENT_DETAIL}?id=${_record.id}`);
+            history.push(`${routeName.DEMAND_MANAGEMENT_DETAIL}?id=${_record.id}&type=1`);
           }}
         >
           {_}
@@ -432,7 +389,7 @@ export default () => {
       title: '需求时间范围',
       dataIndex: 'startDate',
       isEllipsis: true,
-      render: (_: string, _record: any) => _record.startDate + '至' + _record.endDate,
+      render: (_: string, _record: any) => _record.startDate ? (_record.startDate + '至' + _record.endDate) : '--',
       width: 300,
     },
     {
@@ -451,7 +408,7 @@ export default () => {
       title: '是否隐藏',
       dataIndex: 'hide',
       isEllipsis: true,
-      render: (_: string, _record: any) => (_record.hide ? '是' : '否'),
+      render: (_: string, _record: any) => _record.hide ? '是' : '否',
       width: 100,
     },
     {
@@ -464,14 +421,14 @@ export default () => {
       title: '用户需求',
       dataIndex: 'hide',
       isEllipsis: true,
-      render: (_: string, _record: any) => (_record.hide ? '是' : '否'),
+      render: (_: string, _record: any) => _record.hide ? '是' : '否',
       width: 100,
     },
     {
       title: '发布时间',
       dataIndex: 'publishTime',
       width: 200,
-      render: (_: string) => (_ ? _ : '--'),
+      render: (_: string) => _ || '--',
     },
 
     {
@@ -488,20 +445,21 @@ export default () => {
     },
     {
       title: '需求状态',
-      dataIndex: 'connectState',
+      dataIndex: 'claimState',
       width: 200,
       render: (_: string) => {
         return (
           <div className={`state${_}`}>
-            {Object.prototype.hasOwnProperty.call(stateObj2, _) ? stateObj2[_] : '--'}
+            {Object.prototype.hasOwnProperty.call(stateObj3, _) ? stateObj3[_] : '--'}
           </div>
         );
       },
     },
     {
       title: '需求认领人',
-      dataIndex: 'phone',
+      dataIndex: 'claimName',
       isEllipsis: true,
+      render: (_: string) => _ || '--',
       width: 150,
     },
     {
@@ -512,61 +470,6 @@ export default () => {
       render: (_: any, record: any) => {
         return (
           <Space>
-            {/* <Button
-              key="2"
-              size="small"
-              type="link"
-              onClick={() => {
-                setIndustrialItem(record);
-                setIndustrialModal(true);
-                form.setFieldsValue({ industry: record.industry || [], industryOther: record.industryOther || '' })
-              }}
-            >
-              所属产业编辑
-            </Button> */}
-
-            {/* <Popconfirm
-              title={
-                <>
-                  <Form form={abutStatusForm} initialValues={{ abutStatus: 'NOT_CONNECT' }}>
-                    <Form.Item
-                      name={'abutStatus'}
-                      label="对接状态">
-                      <Radio.Group>
-                        <Radio className="radio-label" value={'NOT_CONNECT'}>
-                          未对接
-                        </Radio>
-                        <Radio className="radio-label" value={'CONNECTING'}>
-                          对接中
-                        </Radio>
-                        <Radio className="radio-label" value={'CONNECT_SUCCESS'}>
-                          对接完成
-                        </Radio>
-                      </Radio.Group>
-                    </Form.Item>
-                  </Form>
-                </>
-              }
-              icon={<InfoOutlined style={{ display: 'none' }} />}
-              okText="确定"
-              cancelText="取消"
-              onConfirm={() => {
-                console.log(abutStatusForm.getFieldValue('abutStatus'), record, 111);
-                editConnect(record.id, abutStatusForm.getFieldValue('abutStatus'))
-              }}
-            >
-              <Button
-                key="1"
-                size="small"
-                type="link"
-                onClick={() => {
-                  abutStatusForm.setFieldsValue({ abutStatus: record.connectState })
-                }}
-              >
-                对接状态
-              </Button>
-            </Popconfirm> */}
-
             {record.operationState == 'ON_SHELF' && (
               <>
                 {' '}
@@ -584,7 +487,7 @@ export default () => {
                   type="link"
                   onClick={() => {
                     history.push(
-                      `${routeName.REQUIREMENT_MANAGEMENT_DETAIL}?id=${record.id}&isEdit=1`,
+                      `${routeName.DEMAND_MANAGEMENT_DETAIL}?id=${record.id}&isEdit=1`,
                     );
                   }}
                 >
@@ -594,7 +497,9 @@ export default () => {
                   title={
                     <>
                       <Form form={weightForm}>
-                        <Form.Item name={'weight'} label="权重设置">
+                        <Form.Item
+                          name={'weight'}
+                          label="权重设置">
                           <InputNumber min={1} max={100} />
                         </Form.Item>
                       </Form>
@@ -604,7 +509,7 @@ export default () => {
                   okText="确定"
                   cancelText="取消"
                   onConfirm={() => {
-                    editSort(record.id, weightForm.getFieldValue('weight'));
+                    editSort(record.id, weightForm.getFieldValue('weight'))
                   }}
                 >
                   <Button
@@ -612,46 +517,42 @@ export default () => {
                     size="small"
                     type="link"
                     onClick={() => {
-                      weightForm.setFieldsValue({ weight: record.sort });
+                      weightForm.setFieldsValue({ weight: record.sort })
                     }}
                   >
                     权重
                   </Button>
                 </Popconfirm>
               </>
-            )}
-            {record.operationState == 'OFF_SHELF' && (
-              <Popconfirm
-                title="确定上架么？"
-                okText="确定"
-                cancelText="取消"
-                onConfirm={() => updateOnlineStatus(record.id as string, true)}
-              >
-                <a href="#">上架</a>
-              </Popconfirm>
-            )}
-            {record.operationState == 'FINISHED' ? (
-              '/'
-            ) : (
-              <Button
-                key="1"
-                size="small"
-                type="link"
-                onClick={() => {
-                  setEditingItem(record);
-                  setModalVisible(true);
-                  form.setFieldsValue({
-                    ...record,
-                    dealName: record.typeNames?.map((e) => e).join('、') || '',
-                  });
-                }}
-              >
-                需求类型编辑
-              </Button>
-            )}
+            )
+            }
+            {
+              record.operationState == 'OFF_SHELF' && (
+                <Popconfirm
+                  title="确定上架么？"
+                  okText="确定"
+                  cancelText="取消"
+                  onConfirm={() => updateOnlineStatus(record.id as string, true)}
+                >
+                  <a href="#">上架</a>
+                </Popconfirm>
+              )
+            }
+            {record.operationState == 'FINISHED' ? '/' : <Button
+              key="1"
+              size="small"
+              type="link"
+              onClick={() => {
+                setEditingItem(record);
+                setModalVisible(true);
+                form.setFieldsValue({ ...record, dealName: record.typeNames?.map((e) => e).join('、') || '' });
+              }}
+            >
+              需求类型编辑
+            </Button>}
           </Space>
-        );
-      },
+        )
+      }
     },
   ];
 
@@ -671,68 +572,87 @@ export default () => {
               </Form.Item>
             </Col>
             <Col span={6}>
-              <Form.Item name="solution" label="需求地区">
-                <Input placeholder="请输入" />
+              <Form.Item name="areaCode" label="需求地区">
+                <Select placeholder="请选择" allowClear>
+                  {area?.map((item: any) => (
+                    <Select.Option key={item?.code} value={Number(item?.code)}>
+                      {item?.name}
+                    </Select.Option>
+                  ))}
+                </Select>
               </Form.Item>
             </Col>
             <Col span={6}>
-              <Form.Item name="operationState" label="需求状态">
+              <Form.Item name="claimState" label="需求状态">
                 <Select placeholder="请选择" allowClear>
-                  <Select.Option key={'ON_SHELF'} value={'ON_SHELF'}>
-                    上架
-                  </Select.Option>
-                  <Select.Option key={'OFF_SHELF'} value={'OFF_SHELF'}>
-                    下架
-                  </Select.Option>
-                  <Select.Option key={'FINISHED'} value={'FINISHED'}>
-                    已结束
-                  </Select.Option>
+                  {
+                    Object.entries(stateObj3).map(p => {
+                      return <Select.Option key={p[0]} value={p[0]}>{p[1]}</Select.Option>
+                    })
+                  }
                 </Select>
               </Form.Item>
             </Col>
 
-            {isMore && (
-              <>
-                <Col span={6}>
-                  <Form.Item name="publisherName" label="发布人">
-                    <Input placeholder="请输入" />
-                  </Form.Item>
-                </Col>
-                <Col span={6}>
-                  <Form.Item name="type" label="需求类型">
-                    <Select placeholder="请选择" allowClear>
-                      {typeOptions?.map((p) => (
-                        <Select.Option key={p.id} value={p.id}>
-                          {p.name}
-                        </Select.Option>
-                      ))}
-                    </Select>
-                  </Form.Item>
-                </Col>
-                <Col span={6}>
-                  <Form.Item name="enterprise" label="用户需求">
-                    <Input placeholder="请输入" />
-                  </Form.Item>
-                </Col>
-                <Col span={6}>
-                  <Form.Item name="time" label="发布时间">
-                    <Input placeholder="请输入" />
-                  </Form.Item>
-                </Col>
-                <Col span={6}>
-                  <Form.Item name="enterprise" label="上架状态">
-                    <Input placeholder="请输入" />
-                  </Form.Item>
-                </Col>
-                <Col span={6}>
-                  <Form.Item name="enterprise" label="需求认领人">
-                    <Input placeholder="请输入" />
-                  </Form.Item>
-                </Col>
-              </>
-            )}
+            {isMore && <>
+              <Col span={6}>
+                <Form.Item name="publisherName" label="发布人">
+                  <Input placeholder="请输入" />
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item name="type" label="需求类型">
+                  <Select placeholder="请选择" allowClear>
+                    {typeOptions?.map((p) => (
+                      <Select.Option key={p.id} value={p.id}>
+                        {p.name}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </Col>
+              {/* <Col span={6}>
+                <Form.Item name="userDemand" label="用户需求">
+                  <Select placeholder="请选择" allowClear>
+                    <Select.Option value={true}>
+                      是
+                    </Select.Option>
+                    <Select.Option value={false}>
+                      否
+                    </Select.Option>
+                  </Select>
+                </Form.Item>
+              </Col> */}
+              <Col span={6}>
+                <Form.Item name="time" label="发布时间">
+                  <DatePicker.RangePicker allowClear showTime />
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item name="operationState" label="上架状态">
+                  <Select placeholder="请选择" allowClear>
+                    {
+                      Object.entries(stateObj).map(p => {
+                        return <Select.Option key={p[0]} value={p[0]}>{p[1]}</Select.Option>
+                      })
+                    }
+                  </Select>
+                </Form.Item>
+              </Col>
+              <Col span={6}>
+                <Form.Item name="claimId" label="需求认领人">
+                  <Select placeholder="请选择" allowClear>
+                    {users?.map((p) => (
+                      <Select.Option key={p.claimUserId} value={p.claimUserId}>
+                        {p.claimName}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                </Form.Item>
+              </Col>
+            </>}
 
-            <Col offset={isMore ? 13 : 1} span={4}>
+            <Col offset={isMore ? 19 : 1} span={4}>
               <Button
                 style={{ marginRight: 20 }}
                 type="primary"
@@ -740,11 +660,8 @@ export default () => {
                 onClick={() => {
                   const search = searchForm.getFieldsValue();
                   if (search.time) {
-                    search.intendStartTime = moment(search.time[0]).format('YYYY-MM-DDTHH:mm:ss');
-                    search.intendEndTime = moment(search.time[1]).format('YYYY-MM-DDTHH:mm:ss');
-                  }
-                  if (search.handlerState) {
-                    search.handlerState = !!(search.handlerState - 1);
+                    search.publishStartTime = moment(search.time[0]).format('YYYY-MM-DD HH:mm:ss');
+                    search.publishEndTime = moment(search.time[1]).format('YYYY-MM-DD HH:mm:ss');
                   }
                   setSearChContent(search);
                 }}
@@ -767,12 +684,13 @@ export default () => {
                 style={{ marginRight: 10 }}
                 type="link"
                 onClick={() => {
-                  setIsMore(!isMore);
+                  setIsMore(!isMore)
                 }}
               >
-                高级
+                {isMore ? '收起' : '高级'}
                 {isMore ? <CaretUpOutlined /> : <CaretDownOutlined />}
               </Button>
+
             </Col>
           </Row>
         </Form>
@@ -781,7 +699,7 @@ export default () => {
   };
 
   const exportList = async () => {
-    const { name, type, publisherName, publishStartTime, publishEndTime, operationState } =
+    const { name, type, publisherName, publishStartTime, publishEndTime, operationState, claimId, claimState, areaCode   } =
       searchContent;
     try {
       const res = await demandExport({
@@ -791,8 +709,10 @@ export default () => {
         publishStartTime,
         publishEndTime,
         operationState,
+        claimId,
+        claimState,
+        areaCode,
       });
-      if (res?.data.size == 51) return message.warning('操作太过频繁，请稍后再试')
       const content = res?.data;
       const blob  = new Blob([content], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"});
       const fileName = '企业需求.xlsx'
@@ -814,7 +734,10 @@ export default () => {
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>需求列表(共{pageInfo.totalCount || 0}个)</span>
-          <Button icon={<UploadOutlined />} onClick={exportList}>
+          <Button
+            icon={<UploadOutlined />}
+            onClick={exportList}
+          >
             导出
           </Button>
         </div>
@@ -827,34 +750,9 @@ export default () => {
           dataSource={dataSource}
           rowKey={'id'}
           expandable={{
-            expandedRowRender: (record: IntendMessage.Content) => (
+            expandedRowRender: (record: any) => (
               <p style={{ margin: 0 }}>
-                备注：{record.remark}
-                {record.editState && (
-                  <Popconfirm
-                    icon={null}
-                    title={
-                      <>
-                        <Input.TextArea
-                          placeholder="可在此填写备注内容，备注非必填"
-                          onChange={(e) => setRemark(e.target.value)}
-                          value={remark}
-                          showCount
-                          maxLength={100}
-                        />
-                      </>
-                    }
-                    okText="确定"
-                    cancelText="取消"
-                    onConfirm={() => updRemark(record)}
-                  >
-                    <EditTwoTone
-                      onClick={() => {
-                        setRemark(record.remark || '');
-                      }}
-                    />
-                  </Popconfirm>
-                )}
+                {record.content}
               </p>
             ),
             // rowExpandable: () => true,
@@ -866,13 +764,13 @@ export default () => {
             pageInfo.totalCount === 0
               ? false
               : {
-                  onChange: getPage,
-                  total: pageInfo.totalCount,
-                  current: pageInfo.pageIndex,
-                  pageSize: pageInfo.pageSize,
-                  showTotal: (total: number) =>
-                    `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
-                }
+                onChange: getPage,
+                total: pageInfo.totalCount,
+                current: pageInfo.pageIndex,
+                pageSize: pageInfo.pageSize,
+                showTotal: (total: number) =>
+                  `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
+              }
           }
         />
       </div>

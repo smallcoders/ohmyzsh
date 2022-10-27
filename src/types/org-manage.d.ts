@@ -9,9 +9,12 @@ namespace OrgManage {
         SCIENCE = 'SCIENCE',
         FINANCE = 'FINANCE',
     }
+    export const orgTypeJson = {
+        1: '企业', 2: '高校', 3: '科研机构', 4: '其他组织', 5: '医疗卫生机构', 6: '个体工商户'
+    }
 
     export const orgManageTypeJson = {
-        [OrgManageTypeEnum.DIGITIZATION]: '数字化',
+        [OrgManageTypeEnum.DIGITIZATION]: '数字化应用服务商',
         [OrgManageTypeEnum.PURCHASE]: '工品采购服务商',
         [OrgManageTypeEnum.SCIENCE]: '科产服务商',
         [OrgManageTypeEnum.FINANCE]: '羚羊金融服务商',

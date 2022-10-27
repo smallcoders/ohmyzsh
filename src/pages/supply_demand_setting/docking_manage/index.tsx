@@ -1,16 +1,36 @@
 import { PageContainer } from '@ant-design/pro-layout';
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Follow from './components/follow';
 import ClaimMy from './components/claim-my';
 import Claim from './components/claim';
-import { Select } from 'antd';
+import { message, Select } from 'antd';
 import './index.less'
+import { getBizGroup } from '@/services/creative-demand';
+
+
+
 export default () => {
   const [activeKey, setActiveKey] = useState<string>('1');
+  const [activeGroup, setActiveGroup] = useState<string>();
+  const [group, setGroup] = useState<any[]>([])
+
+  useEffect(() => {
+    prepare()
+  }, [])
+
+  const prepare = async () => {
+    try {
+      const res = await getBizGroup()
+      setGroup(res?.result?.filter((p: { gid: number; }) => p.gid < 6))
+      setActiveGroup(res?.result?.[0]?.gid)
+    } catch (error) {
+      message.error('服务器错误')
+    }
+  }
 
   return (
     <PageContainer
-
+      className='docking-manage-container'
       tabList={[
         {
           tab: '需求认领',
@@ -21,11 +41,19 @@ export default () => {
           key: '2',
         },
         {
-          tab: <>需求跟进-<Select defaultValue="数字化应用" className='parent-header' style={{ paddingLeft: 0, width: 160 }} bordered={false}>
-            <Select.Option value="数字化应用">数字化应用</Select.Option>
-            <Select.Option value="数字化应用业务组">数字化应用业务组</Select.Option>
-            <Select.Option value="工品采购业务组">工品采购业务组</Select.Option>
-          </Select></>,
+          tab: <>需求跟进-
+            <Select
+              style={{ paddingLeft: 0, width: 160 }}
+              value={activeGroup}
+              onChange={(e) => {
+                setActiveGroup(e)
+              }}
+              bordered={false}>
+              {group?.map((p) => {
+                return <Select.Option value={p?.gid}>{p?.name}</Select.Option>
+              })}
+            </Select>
+          </>,
           key: '3',
         },
       ]}
@@ -33,8 +61,8 @@ export default () => {
       onTabChange={(key: string) => setActiveKey(key)}
     >
       {activeKey === '1' && <Claim />}
-      {activeKey === '2' && <ClaimMy />}
-      {activeKey === '3' && <Follow />}
+      {activeKey === '2' && <ClaimMy/>}
+      {activeKey === '3' && <Follow gid={activeGroup}/>}
     </PageContainer>
   );
 };

@@ -1,18 +1,26 @@
-@prefix: user-config-logout-verify;
+@prefix: docking-manage;
 
-.parent-header{
-  .ant-select-selector{
+.parent-header {
+  .ant-select-selector {
     padding: 0 !important;
   }
 }
+
 .@{prefix}-container {
+
+  // .ant-select-selection-item {
+  //   color: #6680FF;
+  // }
+
   &-table-header {
     padding: 20px;
     background-color: #fff;
+
     .title {
       display: flex;
       justify-content: space-between;
-      > span {
+
+      >span {
         color: rgba(0, 0, 0, 0.85);
         font-weight: 600;
         font-size: 16px;
@@ -20,10 +28,12 @@
       }
     }
   }
+
   &-table-body {
     padding: 0 20px;
     background-color: #fff;
   }
+
   &-search {
     margin-bottom: 20px;
     padding: 20px 0 0 0;
@@ -31,68 +41,5 @@
     // .ant-form-item {
     //   margin-bottom: 0;
     // }
-  }
-  &-reupload {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    > img {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      max-width: 100%;
-      max-height: 100%;
-      transform: translate(-50%, -50%);
-    }
-    > div {
-      position: absolute;
-      bottom: 0;
-      width: 100%;
-      color: #fff;
-      background: #000;
-      opacity: 0.5;
-    }
-  }
-  .state2 {
-    position: relative;
-    padding-left: 15px;
-    &::before {
-      position: absolute;
-      top: 8px;
-      left: 0;
-      width: 8px;
-      height: 8px;
-      background-color: #52c41a;
-      border-radius: 4px;
-      content: ' ';
-    }
-  }
-  .state3 {
-    position: relative;
-    padding-left: 15px;
-    &::before {
-      position: absolute;
-      top: 8px;
-      left: 0;
-      width: 8px;
-      height: 8px;
-      background-color: #faad14;
-      border-radius: 4px;
-      content: ' ';
-    }
-  }
-  .state4 {
-    position: relative;
-    padding-left: 15px;
-    &::before {
-      position: absolute;
-      top: 8px;
-      left: 0;
-      width: 8px;
-      height: 8px;
-      background-color: #ff4d4f;
-      border-radius: 4px;
-      content: ' ';
-    }
   }
 }
