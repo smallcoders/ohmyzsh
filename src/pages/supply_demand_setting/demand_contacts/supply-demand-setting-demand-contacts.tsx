@@ -98,7 +98,6 @@ export default () => {
           phone,
         })
         if (res?.code === 0) {
-          console.log('res',res?.result)
           message.success(`${tooltipMessage}成功`);
           setLoading(false);
           getDemandContactList()
@@ -137,6 +136,7 @@ export default () => {
             name='contactName'
             label="联系人" 
             required 
+            validateTrigger='onBlur'
             rules={[{ required: true, message: '请输入联系人姓名' }]}
           >
             <Input placeholder='请输入' maxLength={35} />
@@ -145,6 +145,7 @@ export default () => {
             name='phone'
             label="联系方式" 
             required 
+            validateTrigger='onBlur'
             rules={[
               {
                 validator(_, value) {
