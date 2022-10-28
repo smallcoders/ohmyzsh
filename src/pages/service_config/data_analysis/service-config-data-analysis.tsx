@@ -181,13 +181,17 @@ export default () => {
                 key="reset"
                 onClick={() => {
                   const search = searchForm.getFieldsValue();
+                  console.log(searchContent, search);
                   if (search.operateTime) {
                     search.beginOperateTime = moment(search.operateTime[0]).format(
-                      'YYYY-MM-DDTHH:mm:ss',
+                      'YYYY-MM-DD HH:mm:ss',
                     );
                     search.endOperateTime = moment(search.operateTime[1]).format(
-                      'YYYY-MM-DDTHH:mm:ss',
+                      'YYYY-MM-DD HH:mm:ss',
                     );
+                  }else {
+                    search.beginOperateTime = ''
+                    search.endOperateTime = ''
                   }
                   setSearChContent({ ...searchContent, ...search });
                 }}
