@@ -123,7 +123,7 @@ export default () => {
     form.setFieldsValue({ ...editingItem });
   }, [editingItem]);
 
-  const getProducts = async (pageIndex: number = 1, pageSize = 10) => {
+  const getProducts = async (pageIndex: number = 1, pageSize = 100000) => {
     try {
       const { result, totalCount, pageTotal, code } = await getActivityAppProducts({
         pageIndex,
