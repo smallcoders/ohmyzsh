@@ -24,6 +24,8 @@ export const routeName = {
   DEMAND_MANAGEMENT: '/service-config/requirement-management', // 需求管理
   DEMAND_MANAGEMENT_INDEX: '/supply-demand-setting/demand-manage/index', // 需求管理
   DEMAND_MANAGEMENT_DETAIL: '/supply-demand-setting/demand-manage/detail', // 需求管理详情
+  OPERATION_ACTIVITY_PARAMETER:'/operation-activity/parameter-setting/index',//运营活动参数设置
+  OPERATION_ACTIVITY_LINK:'/operation-activity/link-setting/index',//运营活动链接设置
   ACCOUNT: '/system-config/account', // 账号管理
 
   CREATIVE_VERIFY: '/verify-agency/creative-verify', // 科技成果审核
@@ -137,7 +139,7 @@ export default [
     name: '首页',
     icon: 'home',
     component: './home'
-  },  
+  },
   {
     path: '/service-config',
     name: '服务配置',
@@ -452,6 +454,28 @@ export default [
         path: '/supply-demand-setting/docking-manage/index',
         name: '供需对接管理',
         component: './supply_demand_setting/docking_manage/index',
+      },
+    ],
+  },
+  {
+    path: '/operation-activity',
+    name: '运营活动管理',
+    icon: 'unordered-list',
+    access: 'OPERATION_ACTIVITY',
+    routes: [
+      {
+        path: '/operation-activity',
+        redirect: routeName.OPERATION_ACTIVITY_PARAMETER,
+      },
+      {
+        path: routeName.OPERATION_ACTIVITY_PARAMETER,
+        name: '参数配置',
+        component: './operation_activity/parameter-setting/index',
+      },
+      {
+        path: routeName.OPERATION_ACTIVITY_LINK,
+        name: '链接配置',
+        component: './operation_activity/link-setting/index',
       },
     ],
   },
