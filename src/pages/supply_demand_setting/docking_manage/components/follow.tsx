@@ -43,7 +43,7 @@ export default (props: { gid: any; }) => {
     totalCount: 0,
     pageTotal: 0,
   });
-  const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
+  const getPage = async (pageIndex = pageInfo.pageIndex, pageSize = pageInfo.pageSize) => {
     try {
       const { result, totalCount, pageTotal, code, message } = await getDemandPage({
         pageIndex,
@@ -143,7 +143,7 @@ export default (props: { gid: any; }) => {
       render: (_: string, _record: any) => (
         <a
           onClick={() => {
-            history.push(`${routeName.DEMAND_MANAGEMENT_DETAIL}?id=${_record.id}`);
+            window.open(`${routeName.DEMAND_MANAGEMENT_DETAIL}?id=${_record.id}`);
           }}
         >
           {_}
@@ -240,6 +240,12 @@ export default (props: { gid: any; }) => {
                 type="primary"
                 key="primary1"
                 onClick={() => {
+                  setPageInfo({
+                    pageIndex: 1,
+                    pageSize: 10,
+                    totalCount: 0,
+                    pageTotal: 0
+                  });
                   const search = searchForm.getFieldsValue();
                   setSearChContent(search);
                 }}

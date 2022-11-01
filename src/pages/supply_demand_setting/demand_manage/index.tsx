@@ -322,7 +322,7 @@ export default () => {
     )
   }
 
-  const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
+  const getPage = async (pageIndex = pageInfo.pageIndex, pageSize = pageInfo.pageSize) => {
     try {
       const { result, totalCount, pageTotal, code } = await getRequirementManagementList({
         pageIndex,
@@ -355,7 +355,7 @@ export default () => {
       render: (_: string, _record: any) => (
         <a
           onClick={() => {
-            history.push(`${routeName.DEMAND_MANAGEMENT_DETAIL}?id=${_record.id}&type=1`);
+            window.open(`${routeName.DEMAND_MANAGEMENT_DETAIL}?id=${_record.id}&type=1`);
           }}
         >
           {_}
@@ -486,7 +486,7 @@ export default () => {
                   size="small"
                   type="link"
                   onClick={() => {
-                    history.push(
+                    window.open(
                       `${routeName.DEMAND_MANAGEMENT_DETAIL}?id=${record.id}&isEdit=1`,
                     );
                   }}
@@ -658,6 +658,12 @@ export default () => {
                 type="primary"
                 key="search"
                 onClick={() => {
+                  setPageInfo({
+                    pageIndex: 1,
+                    pageSize: 20,
+                    totalCount: 0,
+                    pageTotal: 0
+                  })
                   const search = searchForm.getFieldsValue();
                   if (search.time) {
                     search.publishStartTime = moment(search.time[0]).format('YYYY-MM-DD HH:mm:ss');
