@@ -1,13 +1,13 @@
-import { message, Image, Button, Radio, Space, Breadcrumb } from 'antd';
+import { message, Radio, Space, Breadcrumb } from 'antd';
 import { history, Link } from 'umi';
 import React, { useState, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
-import { exportOrder, getOrderDetail } from '@/services/order/order-manage';
+import { getOrderDetail } from '@/services/order/order-manage';
 import OrderManage from '@/types/order/order-manage';
-import { FieldTimeOutlined, UploadOutlined } from '@ant-design/icons';
-import OrderList, { ButtonManage } from '../components/order-list';
+import { FieldTimeOutlined } from '@ant-design/icons';
+import OrderList from '../components/order-list';
 import { dateFormat } from '@/utils/date';
 import { routeName } from '../../../../../config/routes';
 
@@ -70,6 +70,15 @@ export default () => {
     if (hour > 0) return hour + '小时' + (minutes % 60) + '分钟';
     return minutes + '分钟';
   };
+  const handleCopy = (text = '') => {
+    const input = document.createElement('textarea');
+    document.body.appendChild(input);
+    input.value = text;
+    input.select();
+    document.execCommand('copy');
+    message.success('复制成功');
+    document.body.removeChild(input);
+  };
 
   const copy = (text = '') => {
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
@@ -104,9 +113,9 @@ export default () => {
       <div className={sc('container-operate')}>
         <div>
           <div className={sc('container-desc')}>
-            <span>当前就订单状态：</span>
+            <span>当前订单状态：</span>
             <Space size={10}>
-              {OrderManage.StateJson[detail?.state || ''] || '--'}
+              {OrderManage.StateJsonInOrderDetail[detail?.state || ''] || '--'}
               {(detail?.state == 1 || detail?.state == 25) && (
                 <>
                   <span
@@ -133,18 +142,7 @@ export default () => {
                   </span>
                 </>
               )}
-              {detail?.state == 3 && (
-                <>
-                  <div>
-                    <span style={{ color: '#999' }}>已发货数量：</span>
-                    <span style={{ color: '#000' }}>{detail?.shipNum}</span>
-                  </div>
-                  <div>
-                    <span style={{ color: '#999' }}>未发货数量：</span>
-                    <span style={{ color: '#FF6680' }}>{detail?.unShipNum}</span>
-                  </div>
-                </>
-              )}
+
               {detail?.state == 6 && (
                 <span style={{ color: '#999' }}>（{detail?.remarkMsgReason || '--'}）</span>
               )}
@@ -156,23 +154,9 @@ export default () => {
                 <span>交易关闭原因：</span>
                 <span>{detail?.remarkMsg || '无'}</span>
               </>
-            ) : // <>
-            //   <span>交易操作：</span>
-            //   <Space size={10}>
-            //     {detail?.mngButtonList?.map((b) => {
-            //       return <ButtonManage type={b as any} record={detail} callback={prepare} />;
-            //     })}
-            //   </Space>
-            // </>
-            null}
+            ) : null}
           </div>
         </div>
-        {/* <Button
-          href={`/antelope-pay/mng/order/detail/export?orderNo=${detail?.orderNo}`}
-          icon={<UploadOutlined />}
-        >
-          导出
-        </Button> */}
       </div>
 
       <div className={sc('container-info')}>
@@ -191,7 +175,7 @@ export default () => {
                     <span>{detail?.orderNo}</span>
                     <a
                       onClick={() => {
-                        copy(detail?.orderNo);
+                        handleCopy(detail?.orderNo);
                       }}
                     >
                       复制
@@ -253,7 +237,7 @@ export default () => {
                 </div>
               </div>
             </div>
-            <OrderList type="PRODUCT" dataSource={[detail] || []} callback={prepare} />
+            <OrderList type="PRODUCT" dataSource={[detail] || []} />
           </>
         )}
         {type === 2 && (
