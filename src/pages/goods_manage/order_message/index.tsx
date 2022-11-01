@@ -1,4 +1,3 @@
-import { UploadOutlined } from '@ant-design/icons';
 import type { RadioChangeEvent } from 'antd';
 import {
   Button,
@@ -23,9 +22,8 @@ import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import OrderManage from '@/types/order/order-manage';
 import { getOrderPage } from '@/services/order/order-manage';
-import { getUrl } from '@/utils/util';
 const sc = scopedClasses('order-manage');
-
+const RangePicker: any = DatePicker.RangePicker;
 export default () => {
   const [dataSource, setDataSource] = useState<OrderManage.Content[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -36,7 +34,7 @@ export default () => {
   }>({});
 
   const formLayout = {
-    labelCol: { span: 6 },
+    labelCol: { span: 8 },
     wrapperCol: { span: 16 },
   };
 
@@ -108,18 +106,6 @@ export default () => {
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
-
-            <Col span={6}>
-              <Form.Item name="payMethod" label="支付方式">
-                <Select placeholder="请选择" allowClear>
-                  {Object.entries(OrderManage.PayTypeJson).map((p) => (
-                    <Select.Option key={p[0] + p[1]} value={p[0]}>
-                      {p[1]}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </Col>
             <Col span={6}>
               <Form.Item name="orderState" label="订单状态">
                 <Select placeholder="请选择" allowClear>
@@ -136,10 +122,10 @@ export default () => {
                 name="time" // beginPublishTime  endPublishTime
                 label="订单生成时间"
               >
-                <DatePicker.RangePicker allowClear showTime />
+                <RangePicker allowClear showTime />
               </Form.Item>
             </Col>
-            <Col offset={3} span={3}>
+            <Col span={12} style={{ textAlign: 'right' }}>
               <Button
                 style={{ marginRight: 20 }}
                 type="primary"
@@ -199,17 +185,6 @@ export default () => {
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>订单列表(共{pageInfo.totalCount || 0}个)</span>
-          {/* <Button
-            href={getUrl('/antelope-pay/mng/order/exportOrderList', {
-              ...searchContent,
-              pageIndex: 1,
-              pageSize: 10000,
-            })}
-            icon={<UploadOutlined />}
-      
-          >
-            导出
-          </Button> */}
         </div>
       </div>
       <Spin wrapperClassName={sc('container-table-body')} spinning={loading}>
@@ -233,9 +208,6 @@ export default () => {
             alignItems: 'center',
           }}
         >
-          {/* <span>
-            共{pageInfo.totalCount}条记录 第{pageInfo.pageIndex}/{pageInfo.pageTotal}页
-          </span> */}
           <Pagination
             current={pageInfo.pageIndex}
             pageSize={pageInfo.pageSize}

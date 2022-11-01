@@ -12,6 +12,7 @@ import CommonTitle from '@/components/verify_steps/common_title';
 import { getDetail, updateVerityStatus } from '@/services/goods-verify';
 import { getApplicationTypeList } from '@/services/digital-application';
 import { routeName } from '../../../../../config/routes';
+import { numdiv } from '@/utils/util';
 const { Link } = Anchor;
 const { Column } = Table;
 const { Option } = Select;
@@ -218,8 +219,16 @@ export default () => {
             >
               <Column title="规格" dataIndex={'specs'} />
               <Column title="订货编号" dataIndex="productNo" />
-              <Column title="商品原价（元)" dataIndex="originPrice" />
-              <Column title="商品促销价（元)" dataIndex="salePrice" />
+              <Column
+                title="商品原价（元)"
+                dataIndex="originPrice"
+                render={(_) => numdiv(_, 100)}
+              />
+              <Column
+                title="商品促销价（元)"
+                dataIndex="salePrice"
+                render={(_) => numdiv(_, 100)}
+              />
             </Table>
           </ProCard>
           <ProCard>

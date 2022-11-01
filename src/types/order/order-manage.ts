@@ -4,11 +4,15 @@ import type Common from '../common';
 namespace OrderManage {
   export const StateJson = {
     '25': '订单待确认',
-    '1': '未支付',
+    // '1': '未支付',
     '3': '已支付',
     '4': '已发货',
     '6': '交易关闭',
     '5': '交易成功',
+  };
+  export const StateJsonInOrderDetail = {
+    ...StateJson,
+    '1': '订单待确认',
   };
   export const PayTypeJson = {
     P01: '微信',
@@ -35,7 +39,7 @@ namespace OrderManage {
     addressDetail?: string; //	收获地址-详细地址
     orderNo?: string; //	订单号
     createTime?: string; //	订单创建时间
-    shipTimeNumList?: any[] // 发货时间
+    shipTimeNumList?: any[]; // 发货时间
     payTime?: string; //	订单支付时间
 
     shipTime?: string; //	物流发货时间
@@ -65,7 +69,7 @@ namespace OrderManage {
     invoiceTypeName?: string; //	发票类型名称
     invoiceFormName?: string; //	发票形式名称
     shipAddressDetail?: string; //	收获地址详情，收获地址各字段拼接成
-    invoiceAddress?: any // 收件人信息
+    invoiceAddress?: any; // 收件人信息
     payMethod?: string; //	支付方式
     taxPrice?: number; //	税费价格
     shipPrice?: number; //	运费价格
@@ -93,6 +97,7 @@ namespace OrderManage {
     // BUTTON_RECEIVE(6),
     mngButtonList?: number[];
     invoiceNo?: string; //	发票编号
+    remarkMsgReason?: string;
   };
 }
 export default OrderManage;
