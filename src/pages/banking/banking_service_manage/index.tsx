@@ -212,7 +212,7 @@ export default () => {
             type="link"
             onClick={() => {
               localStorage.setItem('banking_detail', JSON.stringify(record));
-              history.push(`${routeName.BANKING_SERVICE_DETAIL}`);
+              window.open(`${routeName.BANKING_SERVICE_DETAIL}`);
             }}
           >
             详情
