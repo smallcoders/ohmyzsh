@@ -4,6 +4,14 @@ import type Common from '../common';
 namespace OrderManage {
   export const StateJson = {
     '25': '订单待确认',
+    '1': '未支付',
+    '3': '已支付',
+    '4': '已发货',
+    '6': '交易关闭',
+    '5': '交易成功',
+  };
+  export const StateOrderDetailJson = {
+    '25': '订单待确认',
     // '1': '未支付',
     '3': '已支付',
     '4': '已发货',
@@ -11,7 +19,7 @@ namespace OrderManage {
     '5': '交易成功',
   };
   export const StateJsonInOrderDetail = {
-    ...StateJson,
+    ...StateOrderDetailJson,
     '1': '订单待确认',
   };
   export const PayTypeJson = {

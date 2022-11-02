@@ -109,7 +109,7 @@ export default () => {
             <Col span={6}>
               <Form.Item name="orderState" label="订单状态">
                 <Select placeholder="请选择" allowClear>
-                  {Object.entries(OrderManage.StateJson).map((p) => (
+                  {Object.entries(OrderManage.StateOrderDetailJson).map((p) => (
                     <Select.Option key={p[0] + p[1]} value={p[0]}>
                       {p[1]}
                     </Select.Option>
