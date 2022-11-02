@@ -328,7 +328,7 @@ export default () => {
               <Button
                 type="link"
                 onClick={() => {
-                  history.push(`${routeName.EXPERT_MANAGE_DETAIL}?id=${record.id}`);
+                  window.open(`${routeName.EXPERT_MANAGE_DETAIL}?id=${record.id}`);
                 }}
               >
                 详情

@@ -180,7 +180,7 @@ export default () => {
           )}
 
           <Button size="small" type="link" onClick={() => {
-            history.push(`/purchase-manage/promotions-detail?id=${record.id}`);
+            window.open(`/purchase-manage/promotions-detail?id=${record.id}`);
           }}>
             详情
           </Button>

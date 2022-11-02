@@ -135,7 +135,11 @@ export default () => {
             <Button
               type="link"
               onClick={() => {
-                history.push(`${routeName.ENTERPRISE_ADMIN_VERIFY_DETAIL}?id=${record.id}`);
+                if(record?.state === 'UN_CHECK') {
+                  history.push(`${routeName.ENTERPRISE_ADMIN_VERIFY_DETAIL}?id=${record.id}`);
+                }else {
+                  window.open(`${routeName.ENTERPRISE_ADMIN_VERIFY_DETAIL}?id=${record.id}`);
+                }
               }}
             >
               {record?.state === 'UN_CHECK' ? '审核' : '详情'}

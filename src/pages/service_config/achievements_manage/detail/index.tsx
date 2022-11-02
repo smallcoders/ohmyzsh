@@ -71,7 +71,7 @@ export default () => {
   return (
     <PageContainer loading={loading}
       footer={[
-        <Button onClick={() => history.goBack()}>返回</Button>,
+        <Button onClick={() => history.push('/service-config/achievements-manage')}>返回</Button>,
       ]}
     >
       <div className={sc('container')}>

@@ -120,7 +120,7 @@ export default () => {
               size="small"
               type="link"
               onClick={() => {
-                history.push(`${routeName.USER_INFO_DETAIL}?id=${record.id}`);
+                window.open(`${routeName.USER_INFO_DETAIL}?id=${record.id}`);
               }}
             >
               详情

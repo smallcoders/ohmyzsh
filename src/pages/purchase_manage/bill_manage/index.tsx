@@ -115,7 +115,7 @@ export default () => {
             <Space size={20}>
               {/* 跳转到订单管理-订单详情，且选中「发票信息」页签 */}
               <Button type="link" onClick={() => {
-                history.push(`/purchase-manage/order-manage/detail?id=${record.orderNo}&type=2`)
+                window.open(`/purchase-manage/order-manage/detail?id=${record.orderNo}&type=2`)
               }}>
                 查看详情
               </Button>

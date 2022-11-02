@@ -384,7 +384,7 @@ export default () => {
       render: (_: string, _record: any) => (
         <a
           onClick={() => {
-            history.push(`/service-config/requirement-management/detail?id=${_record.id}`);
+            window.open(`/service-config/requirement-management/detail?id=${_record.id}`);
             // history.push(`${routeName.REQUIREMENT_MANAGEMENT_DETAIL}?id=${_record.id}`);
           }}
         >

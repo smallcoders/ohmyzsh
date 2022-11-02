@@ -126,7 +126,7 @@ export default () => {
               href="#"
               onClick={(e) => {
                 e.preventDefault(); 
-                history.push(`${routeName.PROVIDERS_MANAGE_ADD}?id=${record.id}&isDetail=1`)
+                window.open(`${routeName.PROVIDERS_MANAGE_ADD}?id=${record.id}&isDetail=1`)
               }}
             >
               详情
