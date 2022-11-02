@@ -13,30 +13,23 @@ import {
   Menu, Radio,
   Row,
   Select,
-  Space, Table, Modal, Steps
+  Popover,
+  Space, Table, Modal, Steps, Popconfirm
 } from "antd";
 import {PageContainer} from "@ant-design/pro-layout";
 import {DownOutlined} from "@ant-design/icons";
 import type {ColumnsType} from "antd/es/table";
+import './index.less';
 import Activity from "@/types/operation-activity";
 import UploadForm from "@/components/upload_form";
 import ProCard from "@ant-design/pro-card";
+import {
+  postDeleteChannel, postDeleteScene,
+  postQueryActivityByPage,
+} from "@/services/opration-activity";
+import moment from 'moment';
 
 const { Step } = Steps;
-const steps = [
-  {
-    title: 'First',
-    content: 'First-content',
-  },
-  {
-    title: 'Second',
-    content: 'Second-content',
-  },
-  {
-    title: 'Last',
-    content: 'Last-content',
-  },
-];
 const sc = scopedClasses('operation-activity-link-setting');
 export default () => {
   //数据
@@ -44,16 +37,17 @@ export default () => {
   const [btnValue, setBtnValue] = useState({});
   const [createModalVisible, setModalVisible] = useState<boolean>(false);
   const [editingItem, setEditingItem] = useState<Activity.Content>({});
-  const [productId, setProductId] = useState<number | string>();
   const [current, setCurrent] = useState(0);
   const [searchContent, setSearChContent] = useState<{
-    title?: string; // 标题
-    publishTime?: string; // 发布时间
-    state?: number; // 状态：0发布中、1待发布、2已下架
+    activeName?: string; // 活动名称
+    startTime?: string; // 活动时间
+    endTime?: string; // 活动时间
+    activeChannelId?: number; // 状态：0发布中、1待发布、2已下架
+    activeSceneId?: number; // 状态：0发布中、1待发布、2已下架
   }>({});
   const [form] = Form.useForm();
   const formLayout = {
-    labelCol: { span: 8 },
+    labelCol: { span: 6 },
     wrapperCol: { span: 16 },
   };
 
@@ -64,15 +58,98 @@ export default () => {
     totalCount: 1,
     pageTotal: 0,
   });
-  const changeCurrent = useCallback((val: number) => {
-    setCurrent((v) => v + val);
-  }, []);
 
   //方法
+  /*
+  * 获取分页数据
+  * @param pageIndex
+  * @param pageSize
+  * @param activeType
+  */
+  const getOperationActivity = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
+    try {
+      let activeType
+      if(edge==2){
+        activeType = 'H5'
+      }else if(edge==3){
+        activeType = 'APPLET'
+      }else if(edge==4){
+        activeType = 'SHARE_CODE'
+      }
+      const { result, totalCount, pageTotal, code } = await postQueryActivityByPage({
+          pageIndex,
+          pageSize,
+        activeType,
+        ...searchContent,
+        })
+      if (code === 0) {
+        setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
+        // setDataSource(result);
+      } else {
+        message.error(`请求分页数据失败`);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    getOperationActivity();
+  }, [edge,searchContent]);
+
   const clearForm = () => {
     form.resetFields();
-    if (editingItem.name || editingItem.description) setEditingItem({});
   };
+  //删除渠道/场景值的按钮
+  const remove = async () =>{
+
+  }
+  const next = async ()=>{
+    form
+      .validateFields()
+      .then(async (value) => {
+        const { time, ...rest } = value;
+        if (time) {
+          rest.startDate = moment(value.time[0]).format('YYYY-MM-DD');
+          rest.endDate = moment(value.time[1]).format('YYYY-MM-DD');
+        }
+        if(edge==2){
+          setBtnValue('发布并复制分享链接')
+          setCurrent(1)
+
+        }
+        else if(edge==3){
+          setBtnValue('发布并复制二维码')
+          setCurrent(2)
+
+        }
+        else if(edge==4){
+          setBtnValue('发布并复制图片')
+          setCurrent(3)
+        }
+        clearForm();
+        // const res =await postAddActivity(rest)
+        // if (res.code === 0) {
+        //   // setModalVisible(false);
+        //   if(edge==2){
+        //     setBtnValue('发布并复制分享链接')
+        //   }
+        //   else if(edge==3){
+        //     setBtnValue('发布并复制二维码')
+        //   }
+        //   else if(edge==4){
+        //     setBtnValue('发布并复制图片')
+        //   }
+        //   setCurrent(1)
+        //   clearForm();
+        // } else {
+        //   message.error(res.message);
+        // }
+      })
+      .catch((err)=>{
+        console.log(err)
+      })
+
+  }
   const onFinish = (values: any) => {
     console.log('Success:', values);
     clearForm();
@@ -81,11 +158,15 @@ export default () => {
   const onFinishFailed = (errorInfo: any) => {
     console.log('Failed:', errorInfo);
   };
+  //编辑
+  const editActivity = ()=>{
+    setModalVisible(true);
+  }
   // 复制链接
   const copyLink = () => {
     message.success('链接复制成功');
   };
-  //复制二维码
+  // 复制二维码
   const downWechatCode = () =>{
     message.success('二维码下载成功');
   }
@@ -95,6 +176,7 @@ export default () => {
   }
   //新增链接按钮
   function handleButtonClick() {
+    console.log(edge)
     if(edge==2){
       setTypes('新建H5链接')
     }
@@ -108,11 +190,21 @@ export default () => {
   }
   //新增链接按钮下拉
   const handleMenuClick=(e: any)=> {
-    message.info('Click on menu item.');
-    console.log('click', e);
+    setEdge(e.key);
+    if(e.key=='H5'){
+      setTypes('新建H5链接')
+      setEdge(2)
+    }
+    else if(e.key=='WECHAT'){
+      setTypes('新建小程序码')
+      setEdge(3)
+    }
+    else if(e.key=='SHARE'){
+      setTypes('新建分享码')
+      setEdge(4)
+    }
+    setModalVisible(true);
   }
-
-
   // 结构
   const menu = (
     <Menu onClick={handleMenuClick}>
@@ -133,15 +225,42 @@ export default () => {
         <a
           href="#"
           onClick={() => {
+            if(edge==2){
+              setTypes('编辑H5链接')
+            }
+            else if(edge==3){
+              setTypes('编辑小程序码')
+            }
+            else if(edge==4){
+              setTypes('编辑分享码')
+            }
+            setModalVisible(true);
           }}
-        >下架</a>
+        >编辑</a>
       </Menu.Item>
       <Menu.Item>
+        <Popconfirm
+          title="下架后该链接将会失效，确认下架？？"
+          okText="下架"
+          cancelText="取消"
+          onConfirm={() => remove()}
+        >
         <a
           href="#"
           onClick={() => {
           }}
-        >删除</a>
+        >下架</a>
+        </Popconfirm>
+      </Menu.Item>
+      <Menu.Item>
+        <Popconfirm
+          title="删除后该链接将会失效，且不可恢复，确认删除？"
+          okText="删除"
+          cancelText="取消"
+          onConfirm={() => remove()}
+        >
+          <a href="#">删除</a>
+        </Popconfirm>
       </Menu.Item>
     </Menu>
   );
@@ -152,17 +271,17 @@ export default () => {
         <Form {...formLayout} form={searchForm}>
           <Row>
             <Col span={8}>
-              <Form.Item name="title" label="活动名称">
+              <Form.Item name="activeName" label="活动名称">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
             <Col span={8}>
             <Form.Item name="time" label="活动时间">
-              <DatePicker.RangePicker allowClear showTime />
+              <DatePicker.RangePicker allowClear />
             </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="channelId" label="渠道值">
+              <Form.Item name="activeChannelId" label="渠道值">
                 <Select placeholder="请选择" allowClear>
                   <Select.Option value={'true'}>发布中</Select.Option>
                   <Select.Option value={'false'}>待发布</Select.Option>
@@ -170,7 +289,7 @@ export default () => {
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="sceneId" label="场景值">
+              <Form.Item name="activeSceneId" label="场景值">
                 <Select placeholder="请选择" allowClear>
                   <Select.Option value={'true'}>发布中</Select.Option>
                   <Select.Option value={'false'}>待发布</Select.Option>
@@ -184,7 +303,12 @@ export default () => {
                 key="search"
                 onClick={() => {
                   const search = searchForm.getFieldsValue();
-                  setSearChContent(search);
+                  const { time, ...rest } = search;
+                  if (time) {
+                    rest.startDate = moment(search.time[0]).format('YYYY-MM-DD');
+                    rest.endDate = moment(search.time[1]).format('YYYY-MM-DD');
+                  }
+                  setSearChContent(rest);
                 }}
               >
                 查询
@@ -205,161 +329,33 @@ export default () => {
       </div>
     );
   };
-
-  const StepsForm0=()=>{
-    return (
-    <Form
-      form={form}
-      layout="horizontal"
-      name="basic"
-      labelCol={{ span: 8 }}
-      wrapperCol={{ span: 14 }}
-      initialValues={{ remember: true }}
-      onFinish={onFinish}
-      onFinishFailed={onFinishFailed}
-      autoComplete="off"
-    >
-
-      <Form.Item
-        label='活动名称'
-        name="name"
-        rules={[{ required: true, message: '请输入活动名称！' }]}
-      >
-        <Input placeholder="请输入" />
-      </Form.Item>
-
-      <Form.Item
-        label='活动时间'
-        name="time"
-        rules={[{ required: true, message: '请输入活动时间！' }]}
-      >
-        <DatePicker.RangePicker allowClear showTime />
-      </Form.Item>
-
-      <Form.Item name="channelId" label="渠道值"  rules={[{ required: true, message: '请输入渠道值！' }]}>
-        <Select placeholder="请选择" allowClear>
-          <Select.Option value={'true'}>发布中</Select.Option>
-          <Select.Option value={'false'}>待发布</Select.Option>
-        </Select>
-      </Form.Item>
-
-      <Form.Item name="sceneId" label="场景值"  rules={[{ required: true, message: '请输入场景值！' }]}>
-        <Select placeholder="请选择" allowClear>
-          <Select.Option value={'true'}>发布中</Select.Option>
-          <Select.Option value={'false'}>待发布</Select.Option>
-        </Select>
-      </Form.Item>
-
-      <Form.Item
-        label='跳转目标链接'
-        name="name"
-        rules={[{ required: true, message: '请输入跳转目标链接！' }]}
-      >
-        <Input placeholder="请输入" />
-      </Form.Item>
-
-      <Form.Item
-        label="上传banner"
-        labelCol={{ span: 8 }}
-        name="cityBannerId"
-      >
-        <UploadForm
-          listType="picture-card"
-          className="avatar-uploader"
-          maxSize={1}
-          showUploadList={false}
-          accept=".bmp,.gif,.png,.jpeg,.jpg"
-          tooltip={
-            <span className={'tooltip'}>
-                  议尺寸xx*xx，大小在1M以下，图片格式限制jpg、jpeg、png
-                </span>
-          }
-        />
-      </Form.Item>
-
-      <Form.Item
-        label='按钮文案'
-        name="name"
-        rules={[{ required: true, message: '请输入按钮文案！' }]}
-      >
-        <Input placeholder="请输入" />
-      </Form.Item>
-    </Form>)
-  }
-
-  const FormContent = useMemo(() => {
-    switch (current) {
-      case 1:
-        return (
-          <StepsForm0 />
-        );
-      default:
-        return (
-          <StepsForm0 />
-        );
-    }
-  }, [current]);
-
-  const getModal = () => {
-    return (
-      <Modal
-        title={types}
-        width="600px"
-        maskClosable={false}
-        visible={createModalVisible}
-        onCancel={() => {
-          clearForm();
-          setModalVisible(false);
-        }}
-        onOk={ onFinish}
-        footer={(current==0&&[
-          <Button key="back" onClick={() => {
-            clearForm();
-            setModalVisible(false);
-          }}>
-            取消
-          </Button>,
-          <Button key="submit" type="primary" onClick={()=>{
-            if(edge==2){
-              setBtnValue('发布并复制分享链接')
-            }
-            else if(edge==3){
-              setBtnValue('发布并复制二维码')
-            }
-            else if(edge==4){
-              setBtnValue('发布并复制图片')
-            }
-            setCurrent(1)
-          }}>
-            下一步
-          </Button>,
-        ]) ||(current==1&&[
-          <Button key="back" onClick={() => {
-            clearForm();
-            setCurrent(0)
-          }}>
-            上一步
-          </Button>,
-          <Button key="submit" type="primary" onClick={()=>{
-            setCurrent(1)
-          }}>
-            {btnValue}
-          </Button>,
-        ])}
-      >
-        <ProCard direction="column" ghost gutter={[0, 8]}>
-          <ProCard>
-            <Steps current={current}>
-              <Step title="配置信息" />
-              <Step title="预览效果" />
-            </Steps>
-          </ProCard>
-          <ProCard>{FormContent}</ProCard>
-        </ProCard>
-
-      </Modal>
-    );
-  };
+  const content = (
+    <div className={sc('operate-record')}>
+      <div className={sc('operate-record-container')}>
+        <div className={sc('operate-record-container-left')}>编辑链接</div>
+        <div className={sc('operate-record-container-right')}>
+          <div className={sc('operate-record-container-right-time')}>2022-06-14  12:32:23</div>
+          <div className={sc('operate-record-container-right-name')}>操作人：顾小满</div>
+        </div>
+      </div>
+      <div className={sc('operate-record-divider')}></div>
+      <div className={sc('operate-record-container')}>
+        <div className={sc('operate-record-container-left')}>创建链接</div>
+        <div className={sc('operate-record-container-right')}>
+          <div className={sc('operate-record-container-right-time')}>2022-06-14  12:32:23</div>
+          <div className={sc('operate-record-container-right-name')}>操作人：顾小满</div>
+        </div>
+      </div>
+      <div className={sc('operate-record-divider')}></div>
+      <div className={sc('operate-record-container')}>
+        <div className={sc('operate-record-container-left')}>下架链接</div>
+        <div className={sc('operate-record-container-right')}>
+          <div className={sc('operate-record-container-right-time')}>2022-06-14  12:32:23</div>
+          <div className={sc('operate-record-container-right-name')}>操作人：顾小满</div>
+        </div>
+      </div>
+    </div>
+  );
   const columns: ColumnsType<Activity.Content> = [
     {
       title: '序号',
@@ -402,15 +398,31 @@ export default () => {
       width: 260,
       render: () => (
         <Space size="middle">
+          {edge == 2 &&
           <a
             href="#"
             onClick={copyLink}
           >复制链接</a>
-          <a
-            href="#"
-            onClick={() => {
-            }}
-          >操作记录</a>
+          }
+          {edge == 3 &&
+            <a
+              href="#"
+              onClick={downWechatCode}
+            >下载二维码</a>
+          }
+          {edge == 4 &&
+            <a
+              href="#"
+              onClick={downShareCode}
+            >下载分享码</a>
+          }
+          <Popover content={content} trigger="click">
+            <a
+              href="#"
+              onClick={() => {
+              }}
+            >操作记录</a>
+          </Popover>
           <Dropdown overlay={moreMenu}>
             <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
               更多 <DownOutlined />
@@ -488,7 +500,6 @@ export default () => {
   const selectButton = (): React.ReactNode => {
     const handleEdgeChange = (e: RadioChangeEvent) => {
       setEdge(e.target.value);
-      console.log(e.target.value)
     };
     return (
       <Radio.Group value={edge} onChange={handleEdgeChange}>
@@ -500,8 +511,8 @@ export default () => {
   };
   const dataSource: Activity.Content[] = [
     {
+      id: '1',
       key: '1',
-      index: 1,
       activityName: 'New York No. 1 Lake Park',
       activityTime: 'New York No. 1 Lake Park',
       channelValue: 'true',
@@ -511,9 +522,9 @@ export default () => {
       codeMaster:'fdsa'
     },
     {
+      id: '2',
       key: '2',
-      index: 2,
-      activityName: 'New York No. 2Lake Park',
+      activityName: 'china No. 2Lake Park',
       activityTime: 'New York No. 2 Lake Park',
       channelValue: 'true',
       sceneValue:'2022-05-09  13:32:23',
@@ -521,9 +532,9 @@ export default () => {
       dataStatistics:'43214'
     },
     {
+      id: '3',
       key: '3',
-      index: 3,
-      activityName: 'New York No. 3 Lake Park',
+      activityName: 'japanse No. 3 Lake Park',
       activityTime: 'New York No. 3 Lake Park',
       channelValue: 'true',
       sceneValue:'2022-05-09  13:32:23',
@@ -531,21 +542,216 @@ export default () => {
       dataStatistics:'43214'
     },
   ];
+  const StepsForm0=()=>{
+    return (
+      <Form
+        form={form}
+        layout="horizontal"
+        name="basic"
+        labelCol={{ span: 8 }}
+        wrapperCol={{ span: 14 }}
+        initialValues={{ remember: true }}
+        onFinish={onFinish}
+        onFinishFailed={onFinishFailed}
+        autoComplete="off"
+      >
 
+        <Form.Item
+          label='活动名称'
+          name="activeName"
+          rules={[{ required: true, message: '请输入活动名称！' }]}
+        >
+          <Input placeholder="请输入" maxLength={10}/>
+        </Form.Item>
+
+        <Form.Item
+          label='活动时间'
+          name="time"
+          rules={[{ required: true, message: '请输入活动时间！' }]}
+        >
+          <DatePicker.RangePicker allowClear size={'large'}/>
+        </Form.Item>
+
+        <Form.Item name="activeChannelId" label="渠道值"  rules={[{ required: true, message: '请输入渠道值！' }]}>
+          <Select placeholder="请选择" allowClear>
+            <Select.Option value={'true'}>发布中</Select.Option>
+            <Select.Option value={'false'}>待发布</Select.Option>
+          </Select>
+        </Form.Item>
+
+        <Form.Item name="activeSceneId" label="场景值"  rules={[{ required: true, message: '请输入场景值！' }]}>
+          <Select placeholder="请选择" allowClear>
+            <Select.Option value={'true'}>发布中</Select.Option>
+            <Select.Option value={'false'}>待发布</Select.Option>
+          </Select>
+        </Form.Item>
+
+        <Form.Item
+          label='跳转目标链接'
+          name="targetLink"
+          rules={[{ required: true, message: '请输入跳转目标链接！' }]}
+        >
+          <Input placeholder="请输入" maxLength={2000}/>
+        </Form.Item>
+
+        {edge === 2 &&
+          <Form.Item
+            label="活动配图"
+            labelCol={{span: 8}}
+            name="activeImageId"
+          >
+            <UploadForm
+              listType="picture-card"
+              className="avatar-uploader"
+              maxSize={1}
+              showUploadList={false}
+              accept=".bmp,.gif,.png,.jpeg,.jpg"
+              tooltip={
+                <span className={'tooltip'}>
+                  建议尺寸1920*1080，大小在1M以下，图片格式限制jpg、jpeg、png
+                </span>
+              }
+            />
+          </Form.Item>}
+
+        {edge === 2&&
+          <Form.Item
+            label='按钮文案'
+            name="buttonText"
+            rules={[{required: true, message: '请输入按钮文案！'}]}
+          >
+            <Input placeholder="请输入"/>
+          </Form.Item>
+        }
+
+        {edge === 4 &&
+          <Form.Item
+            label='分享码主人'
+            name="shareMaster"
+            rules={[{ required: true, message: '请输入分享码主人！' }]}
+          >
+            <Input placeholder="请输入" maxLength={2000}/>
+          </Form.Item>
+        }
+      </Form>)
+  }
+  const StepsForm1=()=>{
+    return (
+      <div>
+        <h2>以下链接用于预览效果用，不计入数据统计</h2>
+      </div>
+    )
+  }
+  const StepsForm2=()=>{
+    return (
+      <div>
+        <h2>以下小程序码用于预览效果用，不计入数据统计</h2>
+      </div>
+    )
+  }
+  const StepsForm3=()=>{
+    return (
+      <div>
+        <h2>以下分享码用于预览效果用，不计入数据统计</h2>
+      </div>
+    )
+  }
+  const FormContent = useMemo(() => {
+    switch (current) {
+      case 1:
+        return (
+          <StepsForm1 />
+        );
+      case 2:
+        return (
+          <StepsForm2 />
+        );
+      case 3:
+        return (
+          <StepsForm3 />
+        );
+      default:
+        return (
+          <StepsForm0 />
+        );
+    }
+  }, [current,edge]);
+  const getModal = () => {
+    return (
+      <Modal
+        title={types}
+        width="600px"
+        maskClosable={false}
+        visible={createModalVisible}
+        onCancel={() => {
+          clearForm();
+          setModalVisible(false);
+        }}
+        onOk={ onFinish}
+        footer={(current==0&&[
+          <Button key="back" onClick={() => {
+            clearForm();
+            setModalVisible(false);
+          }}>
+            取消
+          </Button>,
+          <Button key="submit" type="primary" onClick={ async () => {
+            await next();
+          }}>
+            下一步
+          </Button>,
+        ]) ||(current!==0&&[
+          <Button key="back" onClick={() => {
+            clearForm();
+            setCurrent(0)
+          }}>
+            上一步
+          </Button>,
+          <Button key="submit" type="primary" onClick={()=>{
+            if(edge==2){
+              message.success('链接复制成功')
+            }
+            else if(edge==3){
+              message.success('链接复制成功')
+            }
+            else if(edge==4){
+              message.success('链接复制成功')
+            }
+          }}>
+            {btnValue}
+          </Button>,
+        ])}
+      >
+        <ProCard direction="column" ghost gutter={[0, 8]}>
+          <ProCard>
+            <Steps current={current}>
+              <Step title="配置信息" />
+              <Step title="预览效果" />
+            </Steps>
+          </ProCard>
+          <ProCard>{FormContent}</ProCard>
+        </ProCard>
+
+      </Modal>
+    );
+  };
 
   return (
     <PageContainer className={sc('container')}>
       {useSearchNode()}
-        <div className={sc('container-header')}>
+      <div className={sc('container-header')}>
           {selectButton()}
+          <div className={sc('container-header-select')}>
           <Dropdown.Button
             type="primary"
             overlay={menu}
             onClick={handleButtonClick}
           >
-            新增链接
+            新增
           </Dropdown.Button>
+          </div>
         </div>
+      <div className={sc('container-body')}>
       {(edge === Activity.Edge.H5 || edge === Activity.Edge.WECHAT) &&
         <Table
           bordered
@@ -574,6 +780,7 @@ export default () => {
             pageInfo.totalCount === 0
               ? false
               : {
+              onChange:getOperationActivity,
                 total: pageInfo.totalCount,
                 current: pageInfo.pageIndex,
                 pageSize: pageInfo.pageSize,
@@ -582,6 +789,7 @@ export default () => {
               }
           }
         />}
+      </div>
       {getModal()}
     </PageContainer>
   );

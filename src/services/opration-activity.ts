@@ -129,3 +129,19 @@ export async function getCheckedScene(name:string) {
     method: 'GET',
   });
 }
+
+/** 活动分页查询 */
+export async function postQueryActivityByPage(data?: { [key: string]: any} ) {
+  return request<any>('/antelope-manage/manage/active/query', {
+    method: 'POST',
+    data
+  });
+}
+
+/** 新增活动 */
+export async function postAddActivity(data?: { [key: string]: any} ) {
+  return request<any>('/antelope-manage/manage/active/add', {
+    method: 'POST',
+    data
+  });
+}

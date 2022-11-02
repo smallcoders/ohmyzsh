@@ -18,6 +18,7 @@ import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
 import type Common from "@/types/common";
+import './index.less';
 import Activity from "@/types/operation-activity";
 import {
   postAddChannel,
@@ -50,7 +51,6 @@ const Tablist: React.FC = () => {
   };
   //新增和修改渠道值的确认按钮
   const onFinish = async () => {
-    const hide = message.loading(`正在${btnType}`);
     form
       .validateFields()
       .then(async (value) => {
@@ -65,7 +65,6 @@ const Tablist: React.FC = () => {
             ? await postUpdateChannel({ channelName:value.name,description:value.description})
             : await postUpdateScene({ sceneName:value.name,description:value.description });
         }
-        hide();
         if (addorUpdateRes.code === 0) {
           setModalVisible(false);
           message.success(`${btnType}成功`);
@@ -76,7 +75,6 @@ const Tablist: React.FC = () => {
         setAddOrUpdateLoading(false);
       })
       .catch((err)=>{
-        hide()
         console.log(err)
       })
       .finally(()=>{
@@ -147,12 +145,10 @@ const Tablist: React.FC = () => {
         ? await postQueryChannelByPage({
           pageIndex,
           pageSize,
-          belong: edge,
         })
         :await postQuerySceneByPage({
           pageIndex,
           pageSize,
-          belong: edge,
         })
       if (code === 0) {
         setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
@@ -164,13 +160,16 @@ const Tablist: React.FC = () => {
       console.log(error);
     }
   };
+  // useEffect(() => {
+  //   getOperationActivity();
+  // }, [edge]);
   //是否启用的switch按钮
   const onChange = (checked: boolean) => {
     console.log(`switch to ${checked}`);
-    if (!checked) {
-      setOpen(!checked);
-      return;
-    }
+    // if (!checked) {
+    //   setOpen(!checked);
+    //   return;
+    // }
   };
   //是否启用的的确认按钮
   const confirm = async(record: any) => {
@@ -195,7 +194,7 @@ const Tablist: React.FC = () => {
     console.log(record)
     await getOperationActivity();
   }
-  //阐述渠道/场景值的按钮
+  //删除渠道/场景值的按钮
   const remove = async (id: string) =>{
     try {
     const res = edge==0
@@ -214,9 +213,7 @@ const Tablist: React.FC = () => {
   }
   }
 
-  // useEffect(() => {
-  //   getOperationActivity();
-  // }, [edge]);
+
   //定义行
   const columns: ColumnsType<Activity.Content> = [
     {
@@ -298,6 +295,7 @@ const Tablist: React.FC = () => {
   const dataSource: Activity.Content[] = [
     {
       id: '1',
+      key: '1',
       index: 'John Brown',
       name: 32,
       description: 'New York No. 1 Lake Park',
@@ -306,6 +304,7 @@ const Tablist: React.FC = () => {
     },
     {
       id: '2',
+      key: '2',
       index: 'Jim Green',
       name: 42,
       description: 'London No. 1 Lake Park',
@@ -314,6 +313,7 @@ const Tablist: React.FC = () => {
     },
     {
       id: '3',
+      key: '3',
       index: 'Joe Black',
       name: 32,
       description: 'Sidney No. 1 Lake Park',
@@ -339,6 +339,7 @@ const Tablist: React.FC = () => {
               <PlusOutlined /> 新增
             </Button>
           </div>
+          <div className={sc('container-body')}>
           <Table
             bordered
             columns={columns}
@@ -357,6 +358,7 @@ const Tablist: React.FC = () => {
                 }
             }
           />
+          </div>
         </div>
       </>
       {getModal()}

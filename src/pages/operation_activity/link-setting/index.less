@@ -1,0 +1,57 @@
+@prefix:operation-activity-link-setting;
+
+.@{prefix}-container {
+  &-header {
+    padding: 20px;
+    background-color: #fff;
+    display: flex;
+    justify-content: space-between;
+    .title {
+      display: flex;
+      justify-content: space-between;
+
+      > span {
+        color: rgba(0, 0, 0, 0.85);
+        font-weight: 600;
+        font-size: 16px;
+        line-height: 22px;
+      }
+    }
+
+  }
+  &-body{
+    padding: 0 20px;
+    background-color: #fff;
+  }
+  &-search {
+    margin-bottom: 20px;
+    padding: 20px 0;
+    background-color: #fff;
+    .ant-form-item {
+      margin-bottom: 20px;
+    }
+
+  }
+}
+.@{prefix} {
+
+  &-operate-record{
+    height: 100px;
+    overflow-y: auto;
+    width: 250px;
+    display: flex;
+    flex-flow: column;
+    &-container{
+      display: flex;
+      flex-flow: row;
+      justify-content: space-between;
+      margin-bottom: 5px;
+      &-right{
+        display: flex;
+        flex-flow: column;
+      }
+    }
+
+  }
+
+}
