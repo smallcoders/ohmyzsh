@@ -31,7 +31,7 @@ export default ({
       </div>
       {special ? (
         <div className="common-title-reason" style={{ color: color }}>
-          <span className="common-title-reason-placeholder"></span>
+          <span className="common-title-reason-placeholder" />
           <span className="common-title-reason-detail">{reason}</span>
         </div>
       ) : null}
