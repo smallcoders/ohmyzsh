@@ -1080,7 +1080,7 @@ export default [
       },
       {
         path: routeName.GOODS_VERIFY,
-        name: '商品审核',
+        name: '数字化商品审核',
         hideChildrenInMenu: true,
         routes: [
           {
@@ -1089,13 +1089,13 @@ export default [
           },
           {
             path: routeName.GOODS_VERIFY_INDEX,
-            name: '商品审核',
+            name: '数字化商品审核',
             hideInBreadcrumb: true,
             component: './verify_agency/goods_verify',
           },
           {
             path: routeName.GOODS_VERIFY_DETAIL,
-            name: '商品详情',
+            name: '数字化商品详情',
             component: './verify_agency/goods_verify/detail',
           },
         ],
