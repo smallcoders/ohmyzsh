@@ -268,7 +268,7 @@ export default () => {
               </Button>
             )}
 
-            <Button onClick={() => history.goBack()}>返回</Button>
+            <Button onClick={() => history.push('/banking/banking_service_manage')}>返回</Button>
           </ProCard>
         </ProCard>
         <ProCard colSpan="200px" />
