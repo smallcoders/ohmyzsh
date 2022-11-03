@@ -114,6 +114,12 @@ export const routeName = {
 
 export default [
   {
+    path: 'form_creat',
+    name: '模板创建',
+    layout: false,
+    component: './form_creat',
+  },
+  {
     path: '/user',
     layout: false,
     routes: [
@@ -137,7 +143,7 @@ export default [
     name: '首页',
     icon: 'home',
     component: './home'
-  },  
+  },
   {
     path: '/service-config',
     name: '服务配置',
@@ -1085,7 +1091,7 @@ export default [
         path: routeName.ACCOUNT,
         name: '账号管理',
         component: './account',
-      },
+      }
     ],
   },
   // {
