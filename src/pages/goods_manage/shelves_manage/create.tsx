@@ -967,7 +967,7 @@ export default () => {
             type="number"
           />
         </Form.Item>
-        <Form.Item label="活动促销词" name="actSpreadWord" rules={[{ required: true }]}>
+        <Form.Item label="活动促销词" name="actSpreadWord">
           <Input style={{ width: '300px' }} placeholder="请输入" maxLength={30} />
         </Form.Item>
 
