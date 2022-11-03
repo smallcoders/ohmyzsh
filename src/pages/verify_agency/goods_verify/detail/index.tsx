@@ -13,6 +13,7 @@ import { getDetail, updateVerityStatus } from '@/services/goods-verify';
 import { getApplicationTypeList } from '@/services/digital-application';
 import { routeName } from '../../../../../config/routes';
 import { numdiv } from '@/utils/util';
+import { get } from 'lodash';
 const { Link } = Anchor;
 const { Column } = Table;
 const { Option } = Select;
@@ -39,11 +40,15 @@ export default () => {
               title: (
                 <CommonTitle
                   title={result?.payProductApply?.handleUserName}
-                  detail={result?.payProductApply?.handleResult === 1 ? '同意' : '拒绝'}
+                  detail={result?.payProductApply?.handleResult === 1 ? '审核通过' : '拒绝'}
                   time={result?.payProductApply?.applyTime}
                   reason={result?.payProductApply?.handleReason}
                   special={true}
-                  color={'red'}
+                  color={
+                    result?.payProductApply?.handleResult === 1
+                      ? 'rgba(0, 0, 0, 0.65)'
+                      : 'rgb(255, 101, 179)'
+                  }
                 />
               ),
               description: null,
@@ -159,22 +164,30 @@ export default () => {
               ]}
 
               <Form.Item label="商品类型">
-                <Select
-                  placeholder="请选择"
-                  value={appTypeId}
-                  onChange={(val) => {
-                    setAppTypeId(val);
-                  }}
-                  allowClear
-                  disabled={detail?.payProductApply?.isHandle === 1}
-                  style={{ width: '200px' }}
-                >
-                  {applicationTypeList.map((item: any) => (
-                    <Option key={item.id} value={item.id}>
-                      {item.name}
-                    </Option>
-                  ))}
-                </Select>
+                {detail?.payProductApply?.isHandle === 1 ? (
+                  get(
+                    applicationTypeList.find((item: any) => appTypeId === item.id),
+                    'name',
+                    '--',
+                  )
+                ) : (
+                  <Select
+                    placeholder="请选择"
+                    value={appTypeId}
+                    onChange={(val) => {
+                      setAppTypeId(val);
+                    }}
+                    allowClear
+                    disabled={detail?.payProductApply?.isHandle === 1}
+                    style={{ width: '200px' }}
+                  >
+                    {applicationTypeList.map((item: any) => (
+                      <Option key={item.id} value={item.id}>
+                        {item.name}
+                      </Option>
+                    ))}
+                  </Select>
+                )}
               </Form.Item>
               <Form.Item label="商品名称">{detail?.payProduct?.productName}</Form.Item>
               <Form.Item label="商品型号">{detail?.payProduct?.productModel}</Form.Item>
@@ -206,7 +219,7 @@ export default () => {
               pagination={false}
               style={{ width: 400 }}
             >
-              <Column title="规格" dataIndex="specsName" />
+              <Column title="规格" dataIndex="specsValue" />
             </Table>
           </ProCard>
           <ProCard>
