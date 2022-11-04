@@ -17,10 +17,10 @@ import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
-import type Common from "@/types/common";
 import './index.less';
 import Activity from "@/types/operation-activity";
 import {
+  getChannelByName, getSceneByName,
   postAddChannel,
   postAddScene, postDeleteChannel,
   postDeleteScene, postQueryChannelByPage, postQuerySceneByPage,
@@ -31,55 +31,78 @@ import {
 const sc = scopedClasses('operation-activity-param-setting');
 const Tablist: React.FC = () => {
   const [createModalVisible, setModalVisible] = useState<boolean>(false);
-  // const [dataSource, setDataSource] = useState<Activity.Content[]>([]);
+  const [dataSource, setDataSource] = useState<Activity.Content[]>([]);
   const [editingItem, setEditingItem] = useState<Activity.Content>({});
   const [btnType, setBtnType] = useState({});
-  const [open, setOpen] = useState<boolean>(false);
   const [edge, setEdge] = useState<Activity.Edge>(Activity.Edge.CHANNEL);
-  const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
+  const [pageInfo, setPageInfo] = useState({
     pageIndex: 1,
-    pageSize: 20,
-    totalCount: 0,
-    pageTotal: 0,
+    pageSize: 10,
+    total: 0,
   });
-  const [addOrUpdateLoading, setAddOrUpdateLoading] = useState<boolean>(false);
   const { TextArea } = Input;
   const [form] = Form.useForm();
+
+  //获取渠道/场景值列表
+  const getOperationActivity = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
+    try {
+      const { result, code } =edge==0
+        ? await postQueryChannelByPage({
+          pageIndex,
+          pageSize,
+        })
+        :await postQuerySceneByPage({
+          pageIndex,
+          pageSize,
+        })
+     const {total}=result
+      if (code === 0) {
+        setPageInfo({ total, pageIndex, pageSize });
+        setDataSource(result.list);
+      } else {
+        message.error(`请求分页数据失败`);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    getOperationActivity();
+  }, [edge]);
+
   const clearForm = () => {
     form.resetFields();
-    if (editingItem.name || editingItem.description) setEditingItem({});
+    if (editingItem.channelName
+      || editingItem.description) setEditingItem({});
   };
   //新增和修改渠道值的确认按钮
   const onFinish = async () => {
     form
       .validateFields()
       .then(async (value) => {
-        setAddOrUpdateLoading(true);
         let addorUpdateRes;
         if(btnType=='新增'){
           addorUpdateRes = edge == 0
-            ? await postAddChannel({ channelName:value.name,description:value.description})
-            : await postAddScene({ sceneName:value.name,description:value.description });
+            ? await postAddChannel({ channelName:value.channelName,description:value.description})
+            : await postAddScene({ sceneName:value.sceneName,description:value.description });
         }else{
           addorUpdateRes = edge == 0
-            ? await postUpdateChannel({ channelName:value.name,description:value.description})
-            : await postUpdateScene({ sceneName:value.name,description:value.description });
+            ? await postUpdateChannel({id:editingItem.id, channelName:value.channelName,description:value.description})
+            : await postUpdateScene({ id:editingItem.id, sceneName:value.sceneName,description:value.description });
         }
         if (addorUpdateRes.code === 0) {
           setModalVisible(false);
           message.success(`${btnType}成功`);
+          await getOperationActivity()
           clearForm();
         } else {
           message.error(`${btnType}失败，原因:{${addorUpdateRes.message}}`);
         }
-        setAddOrUpdateLoading(false);
       })
       .catch((err)=>{
         console.log(err)
       })
-      .finally(()=>{
-        setAddOrUpdateLoading(true);
-      })
+
   };
   //新增和修改渠道/场景值弹窗
   const getModal = () => {
@@ -92,7 +115,6 @@ const Tablist: React.FC = () => {
         onCancel={() => {
           clearForm();
           setModalVisible(false);
-          setAddOrUpdateLoading(false);
         }}
         onOk={ async () => {
           await onFinish();
@@ -107,19 +129,69 @@ const Tablist: React.FC = () => {
           initialValues={{ remember: true }}
           autoComplete="off"
         >
+        {edge == 0&&
           <Form.Item
-            label={edge == 0? '渠道值名称' : '场景值名称'}
-            name="name"
-            rules={[{ required: true, message: '请输入渠道值名称！' }]}
+            label={'渠道值名称'}
+            name="channelName"
+            rules={[{ required: true, message: '请输入渠道值名称！' },
+              {
+                validator(rule,value, callback) {
+                  try{
+                    console.log(typeof value)
+                    if(value.length>0){
+                      getChannelByName(value).then(res=> {
+                        if (res?.code !== 0 ) {
+                          form.setFields([
+                            { name: 'channelName', value:'', errors: ['该渠道值名称已存在'] },
+                          ]);
+                        }else{
+                          callback()
+                        }
+                      })}
+                  }catch (e){
+                    console.log(e,'err')
+                  }
+                },
+                validateTrigger: 'onBlur',
+              },]}
           >
-            <Input placeholder="请输入" />
-          </Form.Item>
+            <Input placeholder="请输入" maxLength={10}/>
+          </Form.Item>}
+
+          {edge == 1&&
+          <Form.Item
+            label={'场景值名称'}
+            name="sceneName"
+            rules={[{ required: true, message: '请输入场景值名称！' },
+              {
+                validator(rule,value, callback) {
+                  try{
+                    if(value.length>0){
+                      getSceneByName(value).then(res=> {
+                        if (res?.code !== 0 ) {
+                          form.setFields([
+                            { name: 'sceneName', value:'', errors: ['该场景值名称已存在'] },
+                          ]);
+                        }else{
+                          callback()
+                        }
+                      })}
+                  }catch (e){
+                    console.log(e,'err')
+                  }
+                },
+                validateTrigger: 'onBlur',
+              }
+            ]}
+          >
+            <Input placeholder="请输入" maxLength={10}/>
+          </Form.Item>}
 
           <Form.Item
-            label={edge == 0? '渠道值名描述' : '场景值名描述'}
+            label={edge == 0? '渠道值描述' : '场景值描述'}
             name="description"
           >
-            <TextArea rows={4} />
+            <TextArea rows={4} maxLength={200}/>
           </Form.Item>
 
         </Form>
@@ -138,34 +210,11 @@ const Tablist: React.FC = () => {
       </Radio.Group>
     );
   };
-  //获取渠道/场景值列表
-  const getOperationActivity = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
-    try {
-      const { result, totalCount, pageTotal, code } =edge==0
-        ? await postQueryChannelByPage({
-          pageIndex,
-          pageSize,
-        })
-        :await postQuerySceneByPage({
-          pageIndex,
-          pageSize,
-        })
-      if (code === 0) {
-        setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
-        // setDataSource(result);
-      } else {
-        message.error(`请求分页数据失败`);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  // useEffect(() => {
-  //   getOperationActivity();
-  // }, [edge]);
+
+
   //是否启用的switch按钮
-  const onChange = (checked: boolean) => {
-    console.log(`switch to ${checked}`);
+  const onChange = (started: boolean) => {
+    console.log(`switch to ${started}`);
     // if (!checked) {
     //   setOpen(!checked);
     //   return;
@@ -174,17 +223,17 @@ const Tablist: React.FC = () => {
   //是否启用的的确认按钮
   const confirm = async(record: any) => {
     try {
-      const data={id:record.id,isActive:record.checked}
+      const data={id:record.id,isActive:record.started}
       const res = edge==0
         ?await postUpdateChannel(data)
         : await postUpdateScene(data)
       if (res.code === 0) {
         setModalVisible(false);
-        message.success(`${btnType}成功`);
+        message.success(`启用成功`);
         clearForm();
         await getOperationActivity();
       } else {
-        message.error(`${btnType}失败，原因:{${res.message}}`);
+        message.error(`启用失败，原因:{${res.message}}`);
       }
     } catch (error) {
       console.log(error);
@@ -218,13 +267,13 @@ const Tablist: React.FC = () => {
   const columns: ColumnsType<Activity.Content> = [
     {
       title: '序号',
-      dataIndex: 'index',
-      key: 'index',
+      dataIndex: 'sort',
+      key: 'sort',
     },
     {
       title: edge == 0? '渠道值名称' : '场景值名称',
-      dataIndex: 'name',
-      key: 'nme',
+      dataIndex:  edge == 0? 'channelName' : 'sceneName',
+      key:  edge == 0? 'channelName' : 'sceneName',
     },
     {
       title: edge == 0? '渠道值描述' : '场景值描述',
@@ -238,18 +287,18 @@ const Tablist: React.FC = () => {
     },
     {
       title: '是否启用',
-      key: 'checked',
-      dataIndex: 'checked',
-      render: (checked: boolean, record: Activity.Content) => (
+      key: 'started',
+      dataIndex: 'started',
+      render: (started: boolean, record: Activity.Content) => (
         <>
           <Popconfirm
             title={
-              (checked&&
+              (started&&
               <div className="className">
                 <div>提示</div>
                 <div>停用后，新配置{edge == 0? '渠道值' : '场景值'}时不可
                   <br/>再选择此项内容</div>
-              </div>)||  (!checked&&
+              </div>)||  (!started&&
                 <div className="className">
                   <div>提示</div>
                   <div>启用的数据，在进行活动配置时，
@@ -261,7 +310,7 @@ const Tablist: React.FC = () => {
             onConfirm={()=>confirm(record as any)}
             onCancel={()=>cancel(record as any)}
           >
-            <Switch defaultChecked={checked}  onChange={onChange} />
+            <Switch defaultChecked={started}  onChange={onChange} />
           </Popconfirm>
         </>
       ),
@@ -274,10 +323,11 @@ const Tablist: React.FC = () => {
           <a
             href="#"
             onClick={() => {
+              console.log(record)
+              form.setFieldsValue({ ...record });
               setEditingItem(record);
               setBtnType('编辑')
               setModalVisible(true);
-              form.setFieldsValue({ ...record });
             }}
           >编辑</a>
           <Popconfirm
@@ -292,35 +342,6 @@ const Tablist: React.FC = () => {
       ),
     },
   ];
-  const dataSource: Activity.Content[] = [
-    {
-      id: '1',
-      key: '1',
-      index: 'John Brown',
-      name: 32,
-      description: 'New York No. 1 Lake Park',
-      checked: true,
-      createTime:'2022-05-09  13:32:23',
-    },
-    {
-      id: '2',
-      key: '2',
-      index: 'Jim Green',
-      name: 42,
-      description: 'London No. 1 Lake Park',
-      checked: false,
-      createTime:'2022-05-09  13:32:23',
-    },
-    {
-      id: '3',
-      key: '3',
-      index: 'Joe Black',
-      name: 32,
-      description: 'Sidney No. 1 Lake Park',
-      checked: false,
-      createTime:'2022-05-09  13:32:23',
-    },
-  ];
   return(
     <PageContainer className={sc('container')} >
       <>
@@ -330,7 +351,6 @@ const Tablist: React.FC = () => {
             <Button
               type="primary"
               key="newAdd"
-              loading={addOrUpdateLoading}
               onClick={() => {
                 setBtnType('新增')
                 setModalVisible(true);
@@ -346,15 +366,15 @@ const Tablist: React.FC = () => {
             dataSource={dataSource}
             rowKey={'id'}
             pagination={
-              pageInfo.totalCount === 0
+              pageInfo.total === 0
                 ? false
                 : {
-                  // onChange: getOperationActivity,
-                  total: pageInfo.totalCount,
+                  onChange: getOperationActivity,
+                  total: pageInfo.total,
                   current: pageInfo.pageIndex,
                   pageSize: pageInfo.pageSize,
                   showTotal: (total) =>
-                    `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
+                    `共${total}条记录 第${pageInfo.pageIndex}/${Math.ceil(pageInfo.total / pageInfo.pageSize) || 1}页`,
                 }
             }
           />

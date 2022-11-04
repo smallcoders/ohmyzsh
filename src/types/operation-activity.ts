@@ -15,19 +15,23 @@ namespace Activity {
 
   export type Content = {
     id?: string;
-    key?: string;
+    sort?: string;
     index?: string;//序号
     name?: number;//名称
     description?: string;//描述
     createTime?: string;//创建时间
-    checked?: boolean;//是否启用
-    activityName?: string;//活动名称
+    started?: boolean;//是否启用
+    activeName?: string;//活动名称
     activityTime?: string;//活动时间
-    channelValue?: string;//渠道值
-    sceneValue?: string;//场景值
-    codeMaster?: string;//码主人
-    status?: string;//状态
+    channelName?: string;//渠道值
+    sceneName?: string;//场景值
+    shardCodeMaster?: string;//码主人
+    activeStatus?: string;//状态
+    url?: string;
+    randomId?: string;
     dataStatistics?: string;//数据统计
+    action?: any;//操作
+    time?: any;
   };
 }
 export default Activity;

@@ -1,6 +1,5 @@
 import scopedClasses from "@/utils/scopedClasses";
-import React, {useCallback, useEffect, useMemo, useState} from "react";
-import type Common from "@/types/common";
+import React, {useCallback, useEffect, useState} from "react";
 import type { RadioChangeEvent,} from "antd";
 import {
   Button,
@@ -24,8 +23,11 @@ import Activity from "@/types/operation-activity";
 import UploadForm from "@/components/upload_form";
 import ProCard from "@ant-design/pro-card";
 import {
-  postDeleteChannel, postDeleteScene,
   postQueryActivityByPage,
+  getAllScene,
+  getAllChannel,
+  postDeleteActivity,
+  postAddActivity, postDownActivity, postAppletCode
 } from "@/services/opration-activity";
 import moment from 'moment';
 
@@ -33,11 +35,19 @@ const { Step } = Steps;
 const sc = scopedClasses('operation-activity-link-setting');
 export default () => {
   //数据
-  const [types, setTypes] = useState({});
+  const [selectChannelList,setSelectChannel] = useState<Activity.Content[]>([])
+  const [selectSceneList,setSelectScene] = useState<Activity.Content[]>([])
+  const [activeStatusData, setActiveStatusData] = useState({});
+  const [columnData, setColumnData] = useState({});
+  const [removeData, setRemoveData] = useState({});
+  const [dataSource, setDataSource] = useState<Activity.Content[]>([]);
+  const [types, setTypes] = useState('');
   const [btnValue, setBtnValue] = useState({});
+  const [url, setUrl] = useState('');
+  const [randomId, setRandomId] = useState('');
   const [createModalVisible, setModalVisible] = useState<boolean>(false);
-  const [editingItem, setEditingItem] = useState<Activity.Content>({});
   const [current, setCurrent] = useState(0);
+  const [formData, setFormData] = useState<Activity.Content[]>([]);
   const [searchContent, setSearChContent] = useState<{
     activeName?: string; // 活动名称
     startTime?: string; // 活动时间
@@ -50,13 +60,11 @@ export default () => {
     labelCol: { span: 6 },
     wrapperCol: { span: 16 },
   };
-
   const [edge, setEdge] = useState<Activity.Edge>(Activity.Edge.H5);
-  const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
+  const [pageInfo, setPageInfo] = useState({
     pageIndex: 1,
-    pageSize: 20,
-    totalCount: 1,
-    pageTotal: 0,
+    pageSize: 10,
+    total: 0,
   });
 
   //方法
@@ -74,17 +82,18 @@ export default () => {
       }else if(edge==3){
         activeType = 'APPLET'
       }else if(edge==4){
-        activeType = 'SHARE_CODE'
+        activeType = 'SHARD_CODE'
       }
-      const { result, totalCount, pageTotal, code } = await postQueryActivityByPage({
+      const { result, code } = await postQueryActivityByPage({
           pageIndex,
           pageSize,
         activeType,
         ...searchContent,
         })
+      const {total}=result
       if (code === 0) {
-        setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
-        // setDataSource(result);
+        setPageInfo({ total, pageIndex, pageSize  });
+        setDataSource(result.list);
       } else {
         message.error(`请求分页数据失败`);
       }
@@ -96,60 +105,116 @@ export default () => {
     getOperationActivity();
   }, [edge,searchContent]);
 
+  //获取全部渠道值
+  const getChannelList =async () =>{
+    try {
+      const res =await getAllChannel()
+      if(res.code === 0){
+        setSelectChannel(res.result)
+      }
+    }catch (e) {
+      console.log(e)
+    }
+  }
+  useEffect(() => {
+    getChannelList();
+  }, []);
+
+  //获取全部场景值
+  const getSceneList =async () =>{
+    try {
+      const res =await getAllScene()
+      if(res.code === 0){
+          setSelectScene(res.result)
+      }
+    }catch (e) {
+      console.log(e)
+    }
+  }
+  useEffect(() => {
+    getSceneList();
+  }, []);
+
+  //获取活动的小程序码
+  const getAppletCode =async (value: any) =>{
+    try {
+      const data= {
+        endTime:value.endTime,
+        path:value.targetLink
+      }
+      const res =await postAppletCode(data)
+      if(res.code === 0){
+        setUrl(res.result.url)
+        setRandomId(res.result.randomId)
+      }
+    }catch (e) {
+      console.log(e)
+    }
+  }
+
+
   const clearForm = () => {
     form.resetFields();
   };
-  //删除渠道/场景值的按钮
-  const remove = async () =>{
-
-  }
-  const next = async ()=>{
-    form
-      .validateFields()
-      .then(async (value) => {
-        const { time, ...rest } = value;
-        if (time) {
-          rest.startDate = moment(value.time[0]).format('YYYY-MM-DD');
-          rest.endDate = moment(value.time[1]).format('YYYY-MM-DD');
-        }
-        if(edge==2){
-          setBtnValue('发布并复制分享链接')
-          setCurrent(1)
-
-        }
-        else if(edge==3){
-          setBtnValue('发布并复制二维码')
-          setCurrent(2)
-
-        }
-        else if(edge==4){
-          setBtnValue('发布并复制图片')
-          setCurrent(3)
-        }
+  //下架
+  const soldOut= async ()=>{
+    try {
+      const res = await postDownActivity(removeData)
+      if (res.code === 0) {
+        setModalVisible(false);
+        message.success(`下架成功`);
         clearForm();
-        // const res =await postAddActivity(rest)
-        // if (res.code === 0) {
-        //   // setModalVisible(false);
-        //   if(edge==2){
-        //     setBtnValue('发布并复制分享链接')
-        //   }
-        //   else if(edge==3){
-        //     setBtnValue('发布并复制二维码')
-        //   }
-        //   else if(edge==4){
-        //     setBtnValue('发布并复制图片')
-        //   }
-        //   setCurrent(1)
-        //   clearForm();
-        // } else {
-        //   message.error(res.message);
-        // }
-      })
-      .catch((err)=>{
-        console.log(err)
-      })
-
+        await getOperationActivity();
+      } else {
+        message.error(`下架失败，原因:{${res.message}}`);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   }
+  //删除按钮
+  const remove = async () =>{
+    try {
+      const res = await postDeleteActivity(removeData)
+      if (res.code === 0) {
+        setModalVisible(false);
+        message.success(`删除成功`);
+        clearForm();
+        await getOperationActivity();
+      } else {
+        message.error(`删除失败，原因:{${res.message}}`);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  //下一步
+  const next =  ()=>{
+    form.validateFields().then(async (value)=>{
+      console.log(value)
+      if (value.time) {
+        value.startTime = moment(value.time[0]).format('YYYY-MM-DD');
+        value.endTime = moment(value.time[1]).format('YYYY-MM-DD');
+      }
+      if(edge==2){
+        setBtnValue('发布并复制分享链接')
+        value.activeType = 'H5'
+        value.activeUrl='https://www.lingyangplat.com/antelope-activity-h5/antelope-download/index.html'
+      }else if(edge==3){
+        setBtnValue('发布并复制二维码')
+        value.activeType = 'APPLET'
+        await getAppletCode(value)
+        value.url=url
+        value.randomId=randomId
+      }else if(edge==4){
+        setBtnValue('发布并复制图片')
+        value.activeType = 'SHARD_CODE'
+      }
+      setFormData(value)
+      setCurrent(1)
+    })
+  }
+  //完成
   const onFinish = (values: any) => {
     console.log('Success:', values);
     clearForm();
@@ -158,14 +223,55 @@ export default () => {
   const onFinishFailed = (errorInfo: any) => {
     console.log('Failed:', errorInfo);
   };
+
   //编辑
   const editActivity = ()=>{
+    form.setFieldsValue(columnData)
+    if(edge==2){
+      setTypes('编辑H5链接')
+    }
+    else if(edge==3){
+      setTypes('编辑小程序码')
+    }
+    else if(edge==4){
+      setTypes('编辑分享码')
+    }
     setModalVisible(true);
   }
   // 复制链接
-  const copyLink = () => {
-    message.success('链接复制成功');
+  const copyLink = (e: any) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    navigator &&
+    navigator.clipboard &&
+    navigator.clipboard.writeText(e.targetLink).then(() => {
+      message.success('链接复制成功');
+    });
+
   };
+  const init = () => {
+    // const image = new Image();
+    // // 解决canvas跨域问题
+    // image.setAttribute('crossOrigin', 'anonymous');
+    // image.src = url;
+    // // 利用图片加载，触发事件
+    // image.onload = function () {
+    //   try {
+    //     const canvas = document.getElementsByTagName('canvas');
+    //     const ctx = canvas[0].getContext('2d');
+    //     ctx.drawImage(image, 200, 200);
+    //     const imgUrl = canvas[0].toDataURL('image/png');
+    //     setUrl(imgUrl);
+    //   } catch {
+    //     message.error('生成失败，请重试');
+    //     props.onCancel();
+    //   }
+    // };
+  };
+
+  useEffect(() => {
+    init();
+  }, []);
+
   // 复制二维码
   const downWechatCode = () =>{
     message.success('二维码下载成功');
@@ -174,9 +280,39 @@ export default () => {
   const downShareCode = () =>{
     message.success('分享码下载成功');
   }
+  // 完成复制并提交
+  const finishSubmit = async ()=>{
+    if(edge==2){
+      message.success('链接复制成功')
+      const res =await postAddActivity(formData)
+      if (res.code === 0) {
+        await getOperationActivity();
+      } else {
+        message.error(res.message);
+      }
+    }
+    else if(edge==3){
+      message.success('链接复制成功')
+      const microProgramQRCodeUrl=url
+      const data= {...formData,microProgramQRCodeUrl,randomId}
+      const res =await postAddActivity(data)
+      if (res.code === 0) {
+        await getOperationActivity();
+      } else {
+        message.error(res.message);
+      }
+    }
+    else if(edge==4){
+      message.success('链接复制成功')
+    }
+    clearForm();
+    setModalVisible(false)
+  }
+
   //新增链接按钮
   function handleButtonClick() {
     console.log(edge)
+    setCurrent(0)
     if(edge==2){
       setTypes('新建H5链接')
     }
@@ -188,9 +324,11 @@ export default () => {
     }
     setModalVisible(true);
   }
+
   //新增链接按钮下拉
   const handleMenuClick=(e: any)=> {
     setEdge(e.key);
+    setCurrent(0)
     if(e.key=='H5'){
       setTypes('新建H5链接')
       setEdge(2)
@@ -204,6 +342,23 @@ export default () => {
       setEdge(4)
     }
     setModalVisible(true);
+  }
+
+  //更多下拉
+  const handleMoreMenuClick=(e: any)=> {
+    console.log(e)
+    const {startTime ,endTime} = e
+    const result=e
+    const time = [
+      result.time=moment(startTime),
+      result.time=moment(endTime),
+    ]
+    console.log(result)
+    result.time=time
+    console.log(result)
+    setActiveStatusData(e.activeStatus)
+    setRemoveData(e.id)
+    setColumnData(result)
   }
   // 结构
   const menu = (
@@ -220,30 +375,23 @@ export default () => {
     </Menu>
   );
   const moreMenu = (
-    <Menu>
-      <Menu.Item>
+    <Menu >
+      {activeStatusData=='DOWN'&&
+      <Menu.Item key={'1'}>
         <a
           href="#"
           onClick={() => {
-            if(edge==2){
-              setTypes('编辑H5链接')
-            }
-            else if(edge==3){
-              setTypes('编辑小程序码')
-            }
-            else if(edge==4){
-              setTypes('编辑分享码')
-            }
-            setModalVisible(true);
+            editActivity()
           }}
         >编辑</a>
-      </Menu.Item>
-      <Menu.Item>
+      </Menu.Item>}
+      {activeStatusData=='UP'&&
+      <Menu.Item key={'2'}>
         <Popconfirm
           title="下架后该链接将会失效，确认下架？？"
           okText="下架"
           cancelText="取消"
-          onConfirm={() => remove()}
+          onConfirm={ soldOut}
         >
         <a
           href="#"
@@ -251,13 +399,13 @@ export default () => {
           }}
         >下架</a>
         </Popconfirm>
-      </Menu.Item>
-      <Menu.Item>
+      </Menu.Item>}
+      <Menu.Item key={'3'}>
         <Popconfirm
           title="删除后该链接将会失效，且不可恢复，确认删除？"
           okText="删除"
           cancelText="取消"
-          onConfirm={() => remove()}
+          onConfirm={remove}
         >
           <a href="#">删除</a>
         </Popconfirm>
@@ -283,16 +431,22 @@ export default () => {
             <Col span={8}>
               <Form.Item name="activeChannelId" label="渠道值">
                 <Select placeholder="请选择" allowClear>
-                  <Select.Option value={'true'}>发布中</Select.Option>
-                  <Select.Option value={'false'}>待发布</Select.Option>
+                {selectChannelList.map((item ) => (
+                  <Select.Option key={item.channelName} value={item.id}>
+                    {item.channelName}
+                  </Select.Option>
+                ))}
                 </Select>
               </Form.Item>
             </Col>
             <Col span={8}>
               <Form.Item name="activeSceneId" label="场景值">
                 <Select placeholder="请选择" allowClear>
-                  <Select.Option value={'true'}>发布中</Select.Option>
-                  <Select.Option value={'false'}>待发布</Select.Option>
+                {selectSceneList.map((item ) => (
+                  <Select.Option key={item.sceneName} value={item.id}>
+                    {item.sceneName}
+                  </Select.Option>
+                ))}
                 </Select>
               </Form.Item>
             </Col>
@@ -304,9 +458,10 @@ export default () => {
                 onClick={() => {
                   const search = searchForm.getFieldsValue();
                   const { time, ...rest } = search;
+                  console.log(time)
                   if (time) {
-                    rest.startDate = moment(search.time[0]).format('YYYY-MM-DD');
-                    rest.endDate = moment(search.time[1]).format('YYYY-MM-DD');
+                    rest.startTime = moment(search.time[0]).format('YYYY-MM-DD');
+                    rest.endTime = moment(search.time[1]).format('YYYY-MM-DD');
                   }
                   setSearChContent(rest);
                 }}
@@ -338,7 +493,7 @@ export default () => {
           <div className={sc('operate-record-container-right-name')}>操作人：顾小满</div>
         </div>
       </div>
-      <div className={sc('operate-record-divider')}></div>
+      <div className={sc('operate-record-divider')} />
       <div className={sc('operate-record-container')}>
         <div className={sc('operate-record-container-left')}>创建链接</div>
         <div className={sc('operate-record-container-right')}>
@@ -346,7 +501,7 @@ export default () => {
           <div className={sc('operate-record-container-right-name')}>操作人：顾小满</div>
         </div>
       </div>
-      <div className={sc('operate-record-divider')}></div>
+      <div className={sc('operate-record-divider')} />
       <div className={sc('operate-record-container')}>
         <div className={sc('operate-record-container-left')}>下架链接</div>
         <div className={sc('operate-record-container-right')}>
@@ -359,56 +514,72 @@ export default () => {
   const columns: ColumnsType<Activity.Content> = [
     {
       title: '序号',
-      dataIndex: 'index',
-      key: 'index',
+      dataIndex: 'sort',
+      key: 'sort',
+      width: 80,
+      render: (_: any, _record: any, index: number) =>
+        pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
       title: '活动名称',
-      dataIndex: 'activityName',
-      key: 'activityName',
+      dataIndex: 'activeName',
+      key: 'activeName',
     },
     {
       title: '活动时间',
       dataIndex: 'activityTime',
       key: 'activityTime',
+      render: (_: any, _record: any) =>
+        _record.startTime + '～' + _record.startTime,
     },
     {
       title: '渠道值',
-      dataIndex: 'channelValue',
-      key: 'channelValue',
+      dataIndex: 'channelName',
+      key: 'channelName',
     },
     {
       title: '场景值',
-      dataIndex: 'sceneValue',
-      key: 'sceneValue',
+      dataIndex: 'sceneName',
+      key: 'sceneName',
     },
     {
       title: '状态',
-      dataIndex: 'status',
-      key: 'status',
+      dataIndex: 'activeStatus',
+      key: 'activeStatus',
+      render: (_: any, _record: any) =>
+        _record.activeStatus=='UP'?'上架中':'已下架',
     },
     {
       title: '数据统计',
       dataIndex: 'dataStatistics',
       key: 'dataStatistics',
+      render: (_: any, _record: any) =>
+        <div>链接点击量：
+          <span className={sc('statusName')}>  {_record.linkHitsQuantity }   </span>
+            ，按钮点击量：
+          <span className={sc('statusName')}> {_record.buttonHitsQuantity } </span>
+        </div>,
     },
     {
       title: '操作',
       key: 'action',
-      width: 260,
-      render: () => (
+      width: 250,
+      render: (_record: any) => (
         <Space size="middle">
           {edge == 2 &&
           <a
             href="#"
-            onClick={copyLink}
+            onClick={() => copyLink(_record as any)}
           >复制链接</a>
           }
           {edge == 3 &&
             <a
-              href="#"
-              onClick={downWechatCode}
-            >下载二维码</a>
+              type="primary"
+              href={_record.microProgramQRCodeUrl}
+              download={_record.microProgramQRCodeUrl}
+            >
+              下载二维码
+            </a>
           }
           {edge == 4 &&
             <a
@@ -423,8 +594,8 @@ export default () => {
               }}
             >操作记录</a>
           </Popover>
-          <Dropdown overlay={moreMenu}>
-            <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
+          <Dropdown overlay={moreMenu} trigger={['click']}>
+            <a className="ant-dropdown-link" onClick={()=>{handleMoreMenuClick(_record as any)}}>
               更多 <DownOutlined />
             </a>
           </Dropdown>
@@ -435,61 +606,93 @@ export default () => {
   const columns1: ColumnsType<Activity.Content> = [
     {
       title: '序号',
-      dataIndex: 'index',
-      key: 'index',
+      dataIndex: 'sort',
+      key: 'sort',
+      width: 80,
+      render: (_: any, _record: any, index: number) =>
+        pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
       title: '活动名称',
-      dataIndex: 'activityName',
-      key: 'activityName',
+      dataIndex: 'activeName',
+      key: 'activeName',
     },
     {
       title: '活动时间',
       dataIndex: 'activityTime',
       key: 'activityTime',
+      render: (_: any, _record: any) =>
+        _record.startTime + '～' + _record.startTime,
     },
     {
       title: '渠道值',
-      dataIndex: 'channelValue',
-      key: 'channelValue',
+      dataIndex: 'channelName',
+      key: 'channelName',
     },
     {
       title: '场景值',
-      dataIndex: 'sceneValue',
-      key: 'sceneValue',
+      dataIndex: 'sceneName',
+      key: 'sceneName',
     },
     {
       title: '码主人',
-      dataIndex: 'codeMaster',
-      key: 'codeMaster',
+      dataIndex: 'shardCodeMaster',
+      key: 'shardCodeMaster',
     },
     {
       title: '状态',
-      dataIndex: 'status',
-      key: 'status',
+      dataIndex: 'activeStatus',
+      key: 'activeStatus',
+      render: (_: any, _record: any) =>
+        _record.activeStatus=='UP'?'上架中':'已下架',
     },
     {
       title: '数据统计',
       dataIndex: 'dataStatistics',
       key: 'dataStatistics',
+      render: (_: any, _record: any) =>
+        <div>链接点击量：
+          <span className={sc('statusName')}>  {_record.linkHitsQuantity }   </span>
+          ，按钮点击量：
+          <span className={sc('statusName')}> {_record.buttonHitsQuantity } </span>
+        </div>,
     },
     {
       title: '操作',
       key: 'action',
-      width: 260,
-      render: () => (
+      width: 250,
+      render: (_record: any) => (
         <Space size="middle">
-          <a
-            href="#"
-            onClick={copyLink}
-          >复制链接</a>
-          <a
-            href="#"
-            onClick={() => {
-            }}
-          >操作记录</a>
-          <Dropdown overlay={moreMenu}>
-            <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
+          {edge == 2 &&
+            <a
+              href="#"
+              onClick={() => copyLink(_record as any)}
+            >复制链接</a>
+          }
+          {edge == 3 &&
+            <a
+              type="primary"
+              href={_record.microProgramQRCodeUrl}
+              download={_record.microProgramQRCodeUrl}
+            >
+              下载二维码
+            </a>
+          }
+          {edge == 4 &&
+            <a
+              href="#"
+              onClick={downShareCode}
+            >下载分享码</a>
+          }
+          <Popover content={content} trigger="click">
+            <a
+              href="#"
+              onClick={() => {
+              }}
+            >操作记录</a>
+          </Popover>
+          <Dropdown overlay={moreMenu} trigger={['click']}>
+            <a className="ant-dropdown-link" onClick={()=>{handleMoreMenuClick(_record as any)}}>
               更多 <DownOutlined />
             </a>
           </Dropdown>
@@ -509,173 +712,6 @@ export default () => {
       </Radio.Group>
     );
   };
-  const dataSource: Activity.Content[] = [
-    {
-      id: '1',
-      key: '1',
-      activityName: 'New York No. 1 Lake Park',
-      activityTime: 'New York No. 1 Lake Park',
-      channelValue: 'true',
-      sceneValue:'2022-05-09  13:32:23',
-      status:'43214',
-      dataStatistics:'43214',
-      codeMaster:'fdsa'
-    },
-    {
-      id: '2',
-      key: '2',
-      activityName: 'china No. 2Lake Park',
-      activityTime: 'New York No. 2 Lake Park',
-      channelValue: 'true',
-      sceneValue:'2022-05-09  13:32:23',
-      status:'43214',
-      dataStatistics:'43214'
-    },
-    {
-      id: '3',
-      key: '3',
-      activityName: 'japanse No. 3 Lake Park',
-      activityTime: 'New York No. 3 Lake Park',
-      channelValue: 'true',
-      sceneValue:'2022-05-09  13:32:23',
-      status:'43214',
-      dataStatistics:'43214'
-    },
-  ];
-  const StepsForm0=()=>{
-    return (
-      <Form
-        form={form}
-        layout="horizontal"
-        name="basic"
-        labelCol={{ span: 8 }}
-        wrapperCol={{ span: 14 }}
-        initialValues={{ remember: true }}
-        onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
-        autoComplete="off"
-      >
-
-        <Form.Item
-          label='活动名称'
-          name="activeName"
-          rules={[{ required: true, message: '请输入活动名称！' }]}
-        >
-          <Input placeholder="请输入" maxLength={10}/>
-        </Form.Item>
-
-        <Form.Item
-          label='活动时间'
-          name="time"
-          rules={[{ required: true, message: '请输入活动时间！' }]}
-        >
-          <DatePicker.RangePicker allowClear size={'large'}/>
-        </Form.Item>
-
-        <Form.Item name="activeChannelId" label="渠道值"  rules={[{ required: true, message: '请输入渠道值！' }]}>
-          <Select placeholder="请选择" allowClear>
-            <Select.Option value={'true'}>发布中</Select.Option>
-            <Select.Option value={'false'}>待发布</Select.Option>
-          </Select>
-        </Form.Item>
-
-        <Form.Item name="activeSceneId" label="场景值"  rules={[{ required: true, message: '请输入场景值！' }]}>
-          <Select placeholder="请选择" allowClear>
-            <Select.Option value={'true'}>发布中</Select.Option>
-            <Select.Option value={'false'}>待发布</Select.Option>
-          </Select>
-        </Form.Item>
-
-        <Form.Item
-          label='跳转目标链接'
-          name="targetLink"
-          rules={[{ required: true, message: '请输入跳转目标链接！' }]}
-        >
-          <Input placeholder="请输入" maxLength={2000}/>
-        </Form.Item>
-
-        {edge === 2 &&
-          <Form.Item
-            label="活动配图"
-            labelCol={{span: 8}}
-            name="activeImageId"
-          >
-            <UploadForm
-              listType="picture-card"
-              className="avatar-uploader"
-              maxSize={1}
-              showUploadList={false}
-              accept=".bmp,.gif,.png,.jpeg,.jpg"
-              tooltip={
-                <span className={'tooltip'}>
-                  建议尺寸1920*1080，大小在1M以下，图片格式限制jpg、jpeg、png
-                </span>
-              }
-            />
-          </Form.Item>}
-
-        {edge === 2&&
-          <Form.Item
-            label='按钮文案'
-            name="buttonText"
-            rules={[{required: true, message: '请输入按钮文案！'}]}
-          >
-            <Input placeholder="请输入"/>
-          </Form.Item>
-        }
-
-        {edge === 4 &&
-          <Form.Item
-            label='分享码主人'
-            name="shareMaster"
-            rules={[{ required: true, message: '请输入分享码主人！' }]}
-          >
-            <Input placeholder="请输入" maxLength={2000}/>
-          </Form.Item>
-        }
-      </Form>)
-  }
-  const StepsForm1=()=>{
-    return (
-      <div>
-        <h2>以下链接用于预览效果用，不计入数据统计</h2>
-      </div>
-    )
-  }
-  const StepsForm2=()=>{
-    return (
-      <div>
-        <h2>以下小程序码用于预览效果用，不计入数据统计</h2>
-      </div>
-    )
-  }
-  const StepsForm3=()=>{
-    return (
-      <div>
-        <h2>以下分享码用于预览效果用，不计入数据统计</h2>
-      </div>
-    )
-  }
-  const FormContent = useMemo(() => {
-    switch (current) {
-      case 1:
-        return (
-          <StepsForm1 />
-        );
-      case 2:
-        return (
-          <StepsForm2 />
-        );
-      case 3:
-        return (
-          <StepsForm3 />
-        );
-      default:
-        return (
-          <StepsForm0 />
-        );
-    }
-  }, [current,edge]);
   const getModal = () => {
     return (
       <Modal
@@ -703,20 +739,13 @@ export default () => {
         ]) ||(current!==0&&[
           <Button key="back" onClick={() => {
             clearForm();
+            form.setFieldsValue(formData)
             setCurrent(0)
           }}>
             上一步
           </Button>,
-          <Button key="submit" type="primary" onClick={()=>{
-            if(edge==2){
-              message.success('链接复制成功')
-            }
-            else if(edge==3){
-              message.success('链接复制成功')
-            }
-            else if(edge==4){
-              message.success('链接复制成功')
-            }
+          <Button key="submit" type="primary" onClick={ async ()=>{
+           await finishSubmit()
           }}>
             {btnValue}
           </Button>,
@@ -729,7 +758,114 @@ export default () => {
               <Step title="预览效果" />
             </Steps>
           </ProCard>
-          <ProCard>{FormContent}</ProCard>
+          {current==0 &&(
+            <Form
+              form={form}
+              layout="horizontal"
+              name="basic"
+              labelCol={{ span: 8 }}
+              wrapperCol={{ span: 14 }}
+              initialValues={{ remember: true }}
+              onFinish={onFinish}
+              onFinishFailed={onFinishFailed}
+              autoComplete="off"
+            >
+
+              <Form.Item
+                label='活动名称'
+                name="activeName"
+                rules={[{ required: true, message: '请输入活动名称！' }]}
+              >
+                <Input placeholder="请输入" maxLength={10}/>
+              </Form.Item>
+
+              <Form.Item
+                label='活动时间'
+                name="time"
+                rules={[{ required: true, message: '请输入活动时间！' }]}
+              >
+                <DatePicker.RangePicker allowClear size={"large"}/>
+              </Form.Item>
+
+              <Form.Item name="activeChannelId" label="渠道值"  rules={[{ required: true, message: '请输入渠道值！' }]}>
+                <Select placeholder="请选择" allowClear disabled={activeStatusData=='DOWN'&&types.indexOf("新建") == -1}>
+                  {selectChannelList.map((item ) => (
+                    <Select.Option key={item.channelName} value={item.id}>
+                      {item.channelName}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+
+              <Form.Item name="activeSceneId" label="场景值"  rules={[{ required: true, message: '请输入场景值！' }]}>
+                <Select placeholder="请选择" allowClear disabled={activeStatusData=='DOWN'&&types.indexOf("新建") == -1}>
+                  {selectSceneList.map((item ) => (
+                    <Select.Option key={item.sceneName} value={item.id}>
+                      {item.sceneName}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+
+              <Form.Item
+                label='跳转目标链接'
+                name="targetLink"
+                rules={[{ required: true, message: '请输入跳转目标链接！' }]}
+              >
+                <Input placeholder="请输入" maxLength={2000}/>
+              </Form.Item>
+
+              {edge === 2 &&
+                <Form.Item
+                  label="活动配图"
+                  labelCol={{span: 8}}
+                  name="activeImageId"
+                >
+                  <UploadForm
+                    listType="picture-card"
+                    className="avatar-uploader"
+                    maxSize={1}
+                    showUploadList={false}
+                    accept=".bmp,.gif,.png,.jpeg,.jpg"
+                    tooltip={
+                      <span className={'tooltip'}>
+                  建议尺寸1920*1080，大小在1M以下，图片格式限制jpg、jpeg、png
+                </span>
+                    }
+                  />
+                </Form.Item>}
+
+              {edge === 2&&
+                <Form.Item
+                  label='按钮文案'
+                  name="buttonText"
+                  rules={[{required: true, message: '请输入按钮文案！'}]}
+                >
+                  <Input placeholder="请输入" maxLength={8}/>
+                </Form.Item>
+              }
+
+              {edge === 4 &&
+                <Form.Item
+                  label='分享码主人'
+                  name="shareMaster"
+                  rules={[{ required: true, message: '请输入分享码主人！' }]}
+                >
+                  <Input placeholder="请输入" maxLength={35} disabled={activeStatusData=='DOWN'&&types.indexOf("新建") == -1}/>
+                </Form.Item>
+              }
+            </Form>
+          )}
+          {current==1 && (<div className={sc('modelWord')}>
+            <h2 >以下链接用于预览效果用，不计入数据统计</h2>
+            <img src={url} alt=""/>
+          </div>)}
+          {current==2 && (<div className={sc('modelWord')}>
+            <h2 >以下小程序码用于预览效果用，不计入数据统计</h2>
+          </div>)}
+          {current==3 && (<div className={sc('modelWord')}>
+            <h2 >以下分享码用于预览效果用，不计入数据统计</h2>
+          </div>)}
         </ProCard>
 
       </Modal>
@@ -752,40 +888,39 @@ export default () => {
           </div>
         </div>
       <div className={sc('container-body')}>
-      {(edge === Activity.Edge.H5 || edge === Activity.Edge.WECHAT) &&
+        {(edge==2||edge==3)&&
         <Table
           bordered
           columns={columns}
           dataSource={dataSource}
-          rowKey={'key'}
+          rowKey={'id'}
           pagination={
-            pageInfo.totalCount === 0
+            pageInfo.total === 0
               ? false
               : {
-                total: pageInfo.totalCount,
+                total: pageInfo.total,
                 current: pageInfo.pageIndex,
                 pageSize: pageInfo.pageSize,
                 showTotal: (total) =>
-                  `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
+                  `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.total || 1}页`,
               }
           }
         />}
-      {edge === Activity.Edge.SHARE&&
+        {edge==4&&
         <Table
           bordered
           columns={columns1}
           dataSource={dataSource}
-          rowKey={'key'}
+          rowKey={'id'}
           pagination={
-            pageInfo.totalCount === 0
+            pageInfo.total === 0
               ? false
               : {
-              onChange:getOperationActivity,
-                total: pageInfo.totalCount,
+                total: pageInfo.total,
                 current: pageInfo.pageIndex,
                 pageSize: pageInfo.pageSize,
                 showTotal: (total) =>
-                  `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
+                  `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.total || 1}页`,
               }
           }
         />}

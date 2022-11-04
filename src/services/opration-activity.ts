@@ -92,7 +92,7 @@ export async function getAllScene(options?: { [key: string]: any }) {
 }
 
 /** 根据名称获取场景值 */
-export async function getSceneByName(name:string) {
+export async function getSceneByName(name:any) {
   return request<any>(`/antelope-manage/manage/active/scene/getByName/${name}`, {
     method: 'GET',
   });
@@ -143,5 +143,27 @@ export async function postAddActivity(data?: { [key: string]: any} ) {
   return request<any>('/antelope-manage/manage/active/add', {
     method: 'POST',
     data
+  });
+}
+
+/** 根据id删除活动 */
+export async function postDeleteActivity(id:any) {
+  return request<any>(`/antelope-manage/manage/active/delete/${id}`, {
+    method: 'POST',
+  });
+}
+
+/** 活动上下架管理 */
+export async function postDownActivity(activeId:any) {
+  return request<any>(`/antelope-manage/manage/active/up-or-down-shelves/${activeId}/DOWN`, {
+    method: 'POST',
+  });
+}
+
+/** 获取活动的小程序码 */
+export async function postAppletCode(options?: { [key: string]: any }) {
+  return request<any>(`/antelope-manage/manage/active/new-applet-code`, {
+    method: 'GET',
+    params: { ...(options || {}) },
   });
 }
