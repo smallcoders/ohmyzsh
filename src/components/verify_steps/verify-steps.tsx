@@ -1,4 +1,5 @@
-import React, { ReactNode, useState, useEffect } from 'react';
+import type { ReactNode } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Steps, Button, Avatar } from 'antd';
 // import StepsAvatar from '@/assets/svg/steps-avatar.svg'
 import './verify-steps.less';

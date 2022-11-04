@@ -1,0 +1,67 @@
+@import '../../../../global.less';
+@prefix: order-manage-detail;
+.@{prefix}-container {
+  // padding: 20px 0;
+  &-title {
+    font-weight: bolder;
+    font-size: 18px;
+  }
+  &-desc {
+    display: flex;
+    gap: 10px;
+    line-height: 30px;
+    > :first-child {
+      width: 130px;
+      color: rgba(0, 0, 0, 0.45);
+      text-align: right;
+    }
+    > :last-child {
+      flex: 1;
+      font-weight: 600;
+      font-size: 16px;
+    }
+  }
+
+  &-operate {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    background-color: #fff;
+  }
+
+  &-info {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #fff;
+    .order {
+      display: flex;
+      padding: 10px;
+    }
+    .invoice {
+      margin-top: 10px;
+      padding: 10px;
+      background: rgba(0, 0, 0, 0.03);
+      border-radius: 2px;
+      .invoice-desc {
+        display: flex;
+        gap: 10px;
+        line-height: 30px;
+        > :first-child {
+          width: 70px;
+          color: rgba(0, 0, 0, 0.45);
+          text-align: left;
+        }
+        > :last-child {
+          flex: 1;
+          font-weight: 600;
+          font-size: 16px;
+        }
+      }
+    }
+  }
+
+  .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+    color: #fff;
+    background-color: @primary !important;
+  }
+}
