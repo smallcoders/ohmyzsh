@@ -123,7 +123,7 @@ export default () => {
           href="#!"
           onClick={(e) => {
             e.preventDefault(); 
-            history.push(`${routeName.NEED_VERIFY_DETAIL}?id=${_record.id}`);
+            window.open(`${routeName.NEED_VERIFY_DETAIL}?id=${_record.id}`);
           }}
         >
           {_}

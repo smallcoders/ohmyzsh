@@ -240,7 +240,7 @@ export default () => {
           href="#!"
           onClick={(e) => {
             e.preventDefault();
-            history.push(`/service-config/creative-need-manage/detail?id=${_record.id}`);
+            window.open(`/service-config/creative-need-manage/detail?id=${_record.id}`);
           }}
         >
           {_}

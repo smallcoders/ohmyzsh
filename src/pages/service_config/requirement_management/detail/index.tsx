@@ -239,7 +239,7 @@ export default () => {
         ),
         <Button
           onClick={() => {
-            history.push(routeName.REQUIREMENT_MANAGEMENT);
+            history.push(routeName.DEMAND_MANAGEMENT);
           }}
         >
           返回

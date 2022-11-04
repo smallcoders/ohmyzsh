@@ -188,7 +188,7 @@ export default () => {
           href="#!"
           onClick={(e) => {
             e.preventDefault(); 
-            history.push(`${routeName.WONDERFUL_VIDEO_MANAGEMENT_DETAIL}?id=${_record.id}`);
+            window.open(`${routeName.WONDERFUL_VIDEO_MANAGEMENT_DETAIL}?id=${_record.id}`);
           }}
         >
           {_}

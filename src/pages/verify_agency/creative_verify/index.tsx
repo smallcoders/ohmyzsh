@@ -122,7 +122,7 @@ export default () => {
           href="#!"
           onClick={(e) => {
             e.preventDefault(); 
-            history.push(`${routeName.CREATIVE_VERIFY_DETAIL}?id=${_record.id}`);
+            window.open(`${routeName.CREATIVE_VERIFY_DETAIL}?id=${_record.id}`);
           }}
         >
           {_}

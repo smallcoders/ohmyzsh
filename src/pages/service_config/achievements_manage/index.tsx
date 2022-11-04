@@ -191,7 +191,7 @@ export default () => {
           href="#!"
           onClick={(e) => {
             e.preventDefault();
-            history.push(`/service-config/achievements-manage/detail?id=${_record.id}`);
+            window.open(`/service-config/achievements-manage/detail?id=${_record.id}`);
           }}
         >
           {_}

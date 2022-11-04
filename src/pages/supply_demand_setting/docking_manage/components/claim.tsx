@@ -22,6 +22,7 @@ import { routeName } from '@/../config/routes';
 import type ConsultRecord from '@/types/expert_manage/consult-record';
 import { cancelClaimDemand, claimDemand, getClaimUsers, getDemandPage } from '@/services/creative-demand';
 import DockingManage from '@/types/docking-manage.d';
+import { PageInfo } from '@ant-design/pro-table/lib/typing';
 const { RangePicker } = DatePicker
 
 const sc = scopedClasses('user-config-logout-verify');
@@ -42,7 +43,7 @@ export default () => {
     pageTotal: 0,
   });
 
-  const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
+  const getPage = async (pageIndex = pageInfo.pageIndex, pageSize = pageInfo.pageSize) => {
     try {
       const { result, totalCount, pageTotal, code, message } = await getDemandPage({
         pageIndex,
@@ -109,7 +110,7 @@ export default () => {
       render: (_: string, _record: any) => (
         <a
           onClick={() => {
-            history.push(`${routeName.DEMAND_MANAGEMENT_DETAIL}?id=${_record.id}`);
+            window.open(`${routeName.DEMAND_MANAGEMENT_DETAIL}?id=${_record.id}`);
           }}
         >
           {_}
@@ -236,6 +237,12 @@ export default () => {
                 type="primary"
                 key="search"
                 onClick={() => {
+                  setPageInfo({
+                    pageIndex: 1,
+                    pageSize: 10,
+                    totalCount: 0,
+                    pageTotal: 0
+                  });
                   const search = searchForm.getFieldsValue();
                   if (search.time) {
                     search.publishStartTime = moment(search.time[0]).format('YYYY-MM-DD HH:mm:ss');

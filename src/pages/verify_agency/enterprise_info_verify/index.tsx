@@ -89,7 +89,11 @@ export default () => {
           <Button
             type="link"
             onClick={() => {
-              history.push(`${routeName.ENTERPRISE_INFO_VERIFY_DETAIL}?id=${record.auditId}`)
+              if(record?.auditState === 'AUDITING') {
+                history.push(`${routeName.ENTERPRISE_INFO_VERIFY_DETAIL}?id=${record.auditId}`)
+              }else {
+                window.open(`${routeName.ENTERPRISE_INFO_VERIFY_DETAIL}?id=${record.auditId}`)
+              }
             }}
           >
             {record?.auditState === 'AUDITING' ? '审核' : '详情'}
