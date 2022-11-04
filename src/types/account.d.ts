@@ -7,6 +7,8 @@ namespace Account {
     name: string;
     phone: string;
     type: string;
+    menuShowMap: { [key]: string };
+    permissionCodes: string[]
   };
 
   export interface CurrentUserResult extends Common.ResultCode {
