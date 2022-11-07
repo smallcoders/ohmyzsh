@@ -10,6 +10,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 
 import { getPermissionById, getPermissionConfigForm, updatePermissions } from '@/services/auth';
 import { EditType } from '..';
+import isManage from '../isManage';
 
 const sc = scopedClasses('system-config-auth-auth');
 
@@ -250,6 +251,7 @@ export default ({ current }: { current?: EditType }) => {
                     </div>
                 </div>
                 <Button
+                 
                     type="primary"
                     loading={updateLoading}
                     onClick={() => {
@@ -258,7 +260,7 @@ export default ({ current }: { current?: EditType }) => {
                     {editEnable ? '完成' : '编辑'}</Button>
             </div>
             <div className={sc('container-table-body')}>
-                <Table pagination={false} columns={getColumn()} dataSource={getData()} bordered />
+                <Table size='small' pagination={false} columns={getColumn()} dataSource={getData()} bordered />
             </div>
         </div>
     );

@@ -27,9 +27,11 @@ import {
   Tooltip,
 } from 'antd';
 import React, { useEffect, useState } from 'react';
+import { useModel } from 'umi';
 import Auth from './components/auth';
 import Role from './components/role';
 import './index.less';
+import isManage from './isManage';
 
 const sc = scopedClasses('system-config-auth');
 
@@ -41,9 +43,15 @@ export type EditType = {
   createTime?: string	// 创建时间
 };
 
+
+
 export default () => {
   const [selectItem, setSelectItem] = useState<EditType | undefined>();
   const [initDataSource, setInitDataSource] = useState<EditType[]>([]);
+
+
+
+
   const [dataSource, setDataSource] = useState<(EditType & {
     html_name?: string
     html_description?: string
@@ -101,6 +109,7 @@ export default () => {
       const rolesRes = await deleteRole(id);
       if (rolesRes.code === 0) {
         message.success(`删除成功`);
+        getRoles()
       } else {
         message.error(`删除失败，原因:{${rolesRes.message}}`);
       }
@@ -124,7 +133,6 @@ export default () => {
       return
     }
 
-    console.log(searchContent, searchContent.length)
     const searchResult: any[] = []
     initDataSource.map(p => {
       if (p?.name?.indexOf(searchContent || '') > -1 || p?.description?.indexOf(searchContent) > -1) {
@@ -149,7 +157,7 @@ export default () => {
             overflowY: 'auto'
           }}
         >
-          <Button onClick={() => {
+          <Button  onClick={() => {
             setRoleModal({ visible: true })
           }} type="primary" icon={<PlusOutlined />} style={{ width: '100%' }}>
             新增角色
@@ -180,6 +188,7 @@ export default () => {
                 >
                   <Space size={5}>
                     <EditOutlined
+                      
                       onClick={() => {
                         setRoleModal({
                           visible: true,
@@ -191,6 +200,7 @@ export default () => {
                       }}
                     />
                     <DeleteOutlined
+                      
                       onClick={() => {
                         Modal.confirm({
                           title: '提示',
@@ -246,7 +256,7 @@ export default () => {
                 <span>创建时间：{selectItem?.createTime}</span>
               </div>
               <div>
-                <Switch style={{ marginRight: 20 }} checked={selectItem?.enable} onChange={(e) => {
+                <Switch checkedChildren="开启" unCheckedChildren="关闭" style={{ marginRight: 20 }} checked={selectItem?.enable} onChange={(e) => {
                   onChangeRoleEnabled(e)
                 }} />
                 <Tooltip placement="left" title="角色开启时，该角色对应的成员账号才能正常使用">

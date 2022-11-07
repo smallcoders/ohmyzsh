@@ -13,6 +13,7 @@ import React, { useEffect, useState } from 'react';
 import SelfTable from '@/components/self_table';
 import { EditType } from '..';
 import { getListMemberCandidates, getMembersByRoleId, removeMember, updateMembers } from '@/services/role';
+import isManage from '../isManage';
 const sc = scopedClasses('system-config-auth-role');
 
 export default ({ current }: { current?: EditType }) => {
@@ -139,7 +140,7 @@ export default ({ current }: { current?: EditType }) => {
                 roleId: current?.id,
                 roleMemberIds: selectedKeys
             });
-            if (code === 0) { 
+            if (code === 0) {
                 prepare()
                 setSelectRoleModal({ visible: false })
             } else {
@@ -171,12 +172,15 @@ export default ({ current }: { current?: EditType }) => {
                     rowKey={'id'}
                     dataSource={dataSource}
                     pagination={false}
+                    size={'small'}
                 />
             </div>
 
             <Modal
+                
                 title={'管理角色成员'}
                 width="600px"
+                bodyStyle={{ minHeight: 500 }}
                 visible={selectRoleModal.visible}
                 maskClosable={false}
                 onCancel={() => {
@@ -193,6 +197,10 @@ export default ({ current }: { current?: EditType }) => {
             >
 
                 <Transfer
+                listStyle={{
+                    height: 460,
+                    width: 260
+                }}
                     showSearch
                     rowKey={record => record.id}
                     dataSource={members}
