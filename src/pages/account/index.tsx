@@ -150,7 +150,7 @@ const AccountTable: React.FC = () => {
       title: '角色',
       dataIndex: 'roleId',
       valueType: 'select',
-      renderText: (text: any, record: any) => record.roles.length > 0 ?  record.roles.map((p: any) => p.name): '--',
+      renderText: (text: any, record: any) => record.roles && record.roles.length > 0 ?  record.roles.map((p: any) => p.name): '--',
       request: async () => listRoles
     },
     {
