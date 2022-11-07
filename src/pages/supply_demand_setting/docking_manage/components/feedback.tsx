@@ -57,6 +57,14 @@ const FeedBackModal = (props: { record: any; visible: any; setVisible: (b: boole
             key: 'content',
             label: `交付物内容描述`,
             type: SearchItemControlEnum.TEXTAREA,
+            props: {
+                style: {
+                    width: '100%',
+                    
+                },
+                showCount: true,
+                maxLength: 500,
+            },
         },
         {
             key: 'fileIds',
