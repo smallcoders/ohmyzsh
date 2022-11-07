@@ -17,6 +17,7 @@ import {
 import type Account from '@/types/account';
 import type Common from '@/types/common';
 import { decryptWithAES } from '@/utils/crypto';
+import { useModel } from 'umi';
 
 // 是否为管理员
 const isAdmin = (type: string) => type === 'MANAGER_ADMIN';
@@ -30,6 +31,17 @@ const AccountTable: React.FC = () => {
   const paginationRef = useRef<any>();
   const [listRoles, setListRoles] = useState<any>([]) // 查询所有角色
   const [useListRoles, setUseListRoles] = useState<any>([]) // 查询所有角色
+
+  // 获取用户信息user
+  const { initialState } = useModel('@@initialState');
+  const { currentUser } = initialState || {};
+  const [handle, setHandle] = useState<boolean>(false); // true展示， false隐藏。   默认隐藏
+  useEffect(()=>{
+    const {type = ''} = currentUser || {}
+    if (type && type === 'MANAGER_ADMIN') {
+      setHandle(true)
+    }
+  },[currentUser])
 
   /**
    * 查询所有角色
@@ -210,6 +222,47 @@ const AccountTable: React.FC = () => {
       ],
     },
   ];
+  const columnsTwo: ProColumns<Account.Account>[] = [
+    {
+      title: '序号',
+      hideInSearch: true,
+      renderText: (text: any, record: any, index: number) =>
+        (paginationRef.current.current - 1) * paginationRef.current.pageSize + index + 1,
+    },
+    {
+      title: '账号',
+      dataIndex: 'loginName',
+      valueType: 'textarea',
+    },
+    {
+      title: '姓名',
+      dataIndex: 'name',
+      valueType: 'textarea',
+    },
+    {
+      title: '联系方式',
+      dataIndex: 'phone',
+      valueType: 'textarea',
+    },
+    {
+      title: '角色',
+      dataIndex: 'roleId',
+      valueType: 'select',
+      renderText: (text: any, record: any) => record.roles && record.roles.length > 0 ?  record.roles.map((p: any) => p.name): '--',
+      request: async () => listRoles
+    },
+    {
+      title: '创建时间',
+      dataIndex: 'createTime',
+      valueType: 'textarea',
+      hideInSearch: true,
+    },
+    {
+      title: '创建人',
+      hideInSearch: true,
+      renderText: (text: any, record: any) => record.creator?.name,
+    },
+  ];
 
   const renderAddModal = () => {
     return (
@@ -318,6 +371,7 @@ const AccountTable: React.FC = () => {
           optionRender: (searchConfig, formProps, dom) => [dom[1], dom[0]],
         }}
         toolBarRender={() => [
+          handle  && 
           <Button type="primary" key="createAccount" onClick={() => setCreateModalVisible(true)}>
             <PlusOutlined /> 新建账号
           </Button>,
@@ -327,7 +381,7 @@ const AccountTable: React.FC = () => {
           paginationRef.current = pagination;
           return result;
         }}
-        columns={columns}
+        columns={ handle ? columns : columnsTwo}
         pagination={{ size: 'default', showQuickJumper: true, defaultPageSize: 10 }}
       />
       {renderAddModal()}
