@@ -249,7 +249,7 @@ const AccountTable: React.FC = () => {
       dataIndex: 'roleId',
       valueType: 'select',
       renderText: (text: any, record: any) => record.roles && record.roles.length > 0 ?  record.roles.map((p: any) => p.name): '--',
-      request: async () => listRoles
+      request: async () => getListRolesData(false)
     },
     {
       title: '创建时间',
