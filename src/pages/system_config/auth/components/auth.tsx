@@ -10,7 +10,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 
 import { getPermissionById, getPermissionConfigForm, updatePermissions } from '@/services/auth';
 import { EditType } from '..';
-import isManage from '../isManage';
+import isManage from '@/hooks/useManage';
 
 const sc = scopedClasses('system-config-auth-auth');
 
@@ -251,7 +251,7 @@ export default ({ current }: { current?: EditType }) => {
                     </div>
                 </div>
                 <Button
-                 
+                  disabled={!isManage()}
                     type="primary"
                     loading={updateLoading}
                     onClick={() => {

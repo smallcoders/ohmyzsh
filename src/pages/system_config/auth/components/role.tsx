@@ -13,7 +13,7 @@ import React, { useEffect, useState } from 'react';
 import SelfTable from '@/components/self_table';
 import { EditType } from '..';
 import { getListMemberCandidates, getMembersByRoleId, removeMember, updateMembers } from '@/services/role';
-import isManage from '../isManage';
+import useManage from '@/hooks/useManage';
 const sc = scopedClasses('system-config-auth-role');
 
 export default ({ current }: { current?: EditType }) => {
@@ -94,6 +94,7 @@ export default ({ current }: { current?: EditType }) => {
                         cancelText="取消"
                     >
                         <Button
+                            disabled={!isManage}
                             type="link"
                         >
                             移除
@@ -103,6 +104,8 @@ export default ({ current }: { current?: EditType }) => {
             },
         },
     ];
+
+    const isManage = useManage()
 
     const [selectRoleModal, setSelectRoleModal] = useState<{
         visible: boolean
@@ -159,7 +162,7 @@ export default ({ current }: { current?: EditType }) => {
                 <div className="title">
                     <span>全部成员(共{dataSource?.length || 0}人)</span>
                 </div>
-                <Button type="primary" onClick={() => {
+                <Button disabled={!isManage} type="primary" onClick={() => {
                     setSelectRoleModal({ visible: true })
                     setSelectedKeys(dataSource?.map(p => p?.id))
                 }}>管理角色成员</Button>
@@ -177,7 +180,7 @@ export default ({ current }: { current?: EditType }) => {
             </div>
 
             <Modal
-                
+
                 title={'管理角色成员'}
                 width="600px"
                 bodyStyle={{ minHeight: 500 }}
@@ -197,10 +200,10 @@ export default ({ current }: { current?: EditType }) => {
             >
 
                 <Transfer
-                listStyle={{
-                    height: 460,
-                    width: 260
-                }}
+                    listStyle={{
+                        height: 460,
+                        width: 260
+                    }}
                     showSearch
                     rowKey={record => record.id}
                     dataSource={members}

@@ -1090,7 +1090,7 @@ export default [
     path: '/system-config',
     name: '系统管理',
     icon: 'setting',
-    access: 'SYSTEM_CONFIG',
+    access: 'M_SC',
     routes: [
       {
         path: '/system-config',
@@ -1099,6 +1099,7 @@ export default [
       {
         path: routeName.AUTH,
         name: '权限管理',
+        access: 'M_SC_ZHGL',
         component: './system_config/auth',
       },
       {

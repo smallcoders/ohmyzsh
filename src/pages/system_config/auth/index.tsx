@@ -1,6 +1,5 @@
-import { addChapters, getChaptersById } from '@/services/course-manage';
+import useManage from '@/hooks/useManage';
 import { addRole, deleteRole, enableRole, getListRoles, updateRole } from '@/services/role';
-import CourseManage from '@/types/service-config-course-manage';
 import scopedClasses from '@/utils/scopedClasses';
 import {
   DeleteOutlined,
@@ -27,11 +26,9 @@ import {
   Tooltip,
 } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { useModel } from 'umi';
 import Auth from './components/auth';
 import Role from './components/role';
 import './index.less';
-import isManage from './isManage';
 
 const sc = scopedClasses('system-config-auth');
 
@@ -157,7 +154,7 @@ export default () => {
             overflowY: 'auto'
           }}
         >
-          <Button  onClick={() => {
+          <Button disabled={!isManage} onClick={() => {
             setRoleModal({ visible: true })
           }} type="primary" icon={<PlusOutlined />} style={{ width: '100%' }}>
             新增角色
@@ -188,7 +185,6 @@ export default () => {
                 >
                   <Space size={5}>
                     <EditOutlined
-                      
                       onClick={() => {
                         setRoleModal({
                           visible: true,
@@ -200,13 +196,15 @@ export default () => {
                       }}
                     />
                     <DeleteOutlined
-                      
                       onClick={() => {
                         Modal.confirm({
                           title: '提示',
                           icon: <ExclamationCircleOutlined />,
                           content: '确定删除',
                           okText: '删除',
+                          okButtonProps: {
+                            disabled: !isManage
+                          },
                           onOk: () => remove(p?.id),
                           cancelText: '取消',
                         });
@@ -236,7 +234,7 @@ export default () => {
       </Radio.Group>
     );
   };
-
+  const isManage = useManage()
   const options = () => {
     return (
       <div>
@@ -256,7 +254,7 @@ export default () => {
                 <span>创建时间：{selectItem?.createTime}</span>
               </div>
               <div>
-                <Switch checkedChildren="开启" unCheckedChildren="关闭" style={{ marginRight: 20 }} checked={selectItem?.enable} onChange={(e) => {
+                <Switch disabled={!isManage} checkedChildren="开启" unCheckedChildren="关闭" style={{ marginRight: 20 }} checked={selectItem?.enable} onChange={(e) => {
                   onChangeRoleEnabled(e)
                 }} />
                 <Tooltip placement="left" title="角色开启时，该角色对应的成员账号才能正常使用">
@@ -361,6 +359,9 @@ export default () => {
         onOk={async () => {
           // 提交角色
           addOrUpdateRole()
+        }}
+        okButtonProps={{
+          disabled: !isManage
         }}
         confirmLoading={addOrUpdateLoading}
       >
