@@ -90,6 +90,7 @@ export async function pageQuery(params: {
   loginName?: string;
   name?: string;
   phone?: string;
+  roleId?: string;
 }) {
   return request('/antelope-manage/account/pageQuery', {
     method: 'POST',
@@ -148,4 +149,11 @@ export async function httpGetAllTags() {
   return request('/antelope-pay/recommend/label/all', {
     method: 'GET',
   });
+}
+
+// 查询所有角色
+export function httpGetListRoles(enable?: boolean) {
+  return request(`/antelope-manage/mng/role/listRoles?enable=${enable}`,{
+    method: 'GET',
+  })
 }

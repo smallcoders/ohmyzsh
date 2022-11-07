@@ -23,6 +23,7 @@ namespace Account {
     type: string;
     uapUserId: string;
     creator?: Account;
+    roles?: number[];
   };
 
   export type SaveAccountRequest = {
@@ -30,6 +31,7 @@ namespace Account {
     loginName?: string;
     name: string;
     phone: string;
+    roleIds?: number[];
   };
 }
 export default Account;
