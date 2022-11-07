@@ -1196,15 +1196,16 @@ export default [
         redirect: '/system-config/auth',
       },
       {
-        path: routeName.AUTH,
-        name: '权限管理',
-        access: 'M_SC_ZHGL',
-        component: './system_config/auth',
-      },
-      {
         path: routeName.ACCOUNT,
         name: '账号管理',
+        access: 'M_SC_ZHGL',
         component: './system_config/account',
+      },
+      {
+        path: routeName.AUTH,
+        name: '权限管理',
+        access: 'M_SC_QXGL',
+        component: './system_config/auth',
       },
     ],
   },
