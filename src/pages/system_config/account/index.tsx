@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { ModalForm, ProFormText } from '@ant-design/pro-form';
+import { ModalForm, ProFormText, ProFormSelect } from '@ant-design/pro-form';
 import {
   pageQuery,
   addAccount,
@@ -12,10 +12,12 @@ import {
   deleteAccount,
   resetPassword,
   getUapDefaultPwd,
+  httpGetListRoles,
 } from '@/services/account';
 import type Account from '@/types/account';
 import type Common from '@/types/common';
 import { decryptWithAES } from '@/utils/crypto';
+import { useModel } from 'umi';
 
 // 是否为管理员
 const isAdmin = (type: string) => type === 'MANAGER_ADMIN';
@@ -27,11 +29,52 @@ const AccountTable: React.FC = () => {
   const actionRef = useRef<ActionType>();
   const defaultPwdRef = useRef<string>('');
   const paginationRef = useRef<any>();
+  const [listRoles, setListRoles] = useState<any>([]) // 查询所有角色
+  const [useListRoles, setUseListRoles] = useState<any>([]) // 查询所有角色
+
+  // 获取用户信息user
+  const { initialState } = useModel('@@initialState');
+  const { currentUser } = initialState || {};
+  const [handle, setHandle] = useState<boolean>(false); // true展示， false隐藏。   默认隐藏
+  useEffect(()=>{
+    const {type = ''} = currentUser || {}
+    if (type && type === 'MANAGER_ADMIN') {
+      setHandle(true)
+    }
+  },[currentUser])
+
+  /**
+   * 查询所有角色
+   */
+  const getListRolesData = async (enable?: boolean) => {
+    try {
+      const res = await httpGetListRoles(enable)
+      if (res?.code === 0) {
+        const list = res?.result?.map((item: any) => {
+          return {
+            label: item?.name,
+            value: item?.id,
+          }
+        })
+        enable 
+          ? setUseListRoles(list || [])
+          : setListRoles(list || [])
+        
+      } else {
+        throw new Error("");
+      }
+    } catch (error) {
+      message.error('获取所有角色失败，请重试')
+    }
+  }
 
   /**
    * 查询默认密码
    */
   useEffect(() => {
+    // 查询所有角色
+    getListRolesData(false)
+    getListRolesData(true)
     getUapDefaultPwd().then((json) => {
       console.log(json);
       defaultPwdRef.current = decryptWithAES(json.result);
@@ -116,6 +159,13 @@ const AccountTable: React.FC = () => {
       valueType: 'textarea',
     },
     {
+      title: '角色',
+      dataIndex: 'roleId',
+      valueType: 'select',
+      renderText: (text: any, record: any) => record.roles && record.roles.length > 0 ?  record.roles.map((p: any) => p.name): '--',
+      request: async () => listRoles
+    },
+    {
       title: '创建时间',
       dataIndex: 'createTime',
       valueType: 'textarea',
@@ -172,6 +222,47 @@ const AccountTable: React.FC = () => {
       ],
     },
   ];
+  const columnsTwo: ProColumns<Account.Account>[] = [
+    {
+      title: '序号',
+      hideInSearch: true,
+      renderText: (text: any, record: any, index: number) =>
+        (paginationRef.current.current - 1) * paginationRef.current.pageSize + index + 1,
+    },
+    {
+      title: '账号',
+      dataIndex: 'loginName',
+      valueType: 'textarea',
+    },
+    {
+      title: '姓名',
+      dataIndex: 'name',
+      valueType: 'textarea',
+    },
+    {
+      title: '联系方式',
+      dataIndex: 'phone',
+      valueType: 'textarea',
+    },
+    {
+      title: '角色',
+      dataIndex: 'roleId',
+      valueType: 'select',
+      renderText: (text: any, record: any) => record.roles && record.roles.length > 0 ?  record.roles.map((p: any) => p.name): '--',
+      request: async () => listRoles
+    },
+    {
+      title: '创建时间',
+      dataIndex: 'createTime',
+      valueType: 'textarea',
+      hideInSearch: true,
+    },
+    {
+      title: '创建人',
+      hideInSearch: true,
+      renderText: (text: any, record: any) => record.creator?.name,
+    },
+  ];
 
   const renderAddModal = () => {
     return (
@@ -190,6 +281,16 @@ const AccountTable: React.FC = () => {
             width="sm"
             name="name"
             label="姓名"
+          />
+          <ProFormSelect
+            name="roleIds"
+            label="所属角色"
+            rules={[{ required: true, message: '请选择所属角色' }]}
+            options={useListRoles}
+            fieldProps={{
+              mode: 'multiple',
+            }}
+            width="sm"
           />
           <ProFormText
             rules={[{ required: true }, { type: 'string', max: 35 }]}
@@ -213,7 +314,7 @@ const AccountTable: React.FC = () => {
   };
 
   const renderUpdateModal = () => {
-    const { id, loginName, name, phone } = currentRow || {};
+    const { id, loginName, name, phone, roles } = currentRow || {};
     return (
       updateModalVisible && (
         <ModalForm
@@ -223,7 +324,7 @@ const AccountTable: React.FC = () => {
           labelCol={{ span: 6 }}
           visible={updateModalVisible}
           onVisibleChange={setUpdateModalVisible}
-          initialValues={{ loginName, name, phone }}
+          initialValues={{ loginName, name, roleIds:roles ? roles?.map((item: any) => { return{ label: item?.name, value: item?.id}}) : [], phone }}
           onFinish={async (value) =>
             await handleSave(false, { ...value, id } as Account.SaveAccountRequest)
           }
@@ -234,6 +335,16 @@ const AccountTable: React.FC = () => {
             width="sm"
             name="name"
             label="姓名"
+          />
+          <ProFormSelect
+            name="roleIds"
+            label="所属角色"
+            rules={[{ required: true, message: '请选择所属角色' }]}
+            options={useListRoles}
+            fieldProps={{
+              mode: 'multiple',
+            }}
+            width="sm"
           />
           <ProFormText
             rules={[{ required: true }, { type: 'string', max: 35 }]}
@@ -256,9 +367,11 @@ const AccountTable: React.FC = () => {
         search={{
           span: 6,
           labelWidth: 70,
+          defaultCollapsed: false,
           optionRender: (searchConfig, formProps, dom) => [dom[1], dom[0]],
         }}
         toolBarRender={() => [
+          handle  && 
           <Button type="primary" key="createAccount" onClick={() => setCreateModalVisible(true)}>
             <PlusOutlined /> 新建账号
           </Button>,
@@ -268,7 +381,7 @@ const AccountTable: React.FC = () => {
           paginationRef.current = pagination;
           return result;
         }}
-        columns={columns}
+        columns={ handle ? columns : columnsTwo}
         pagination={{ size: 'default', showQuickJumper: true, defaultPageSize: 10 }}
       />
       {renderAddModal()}
