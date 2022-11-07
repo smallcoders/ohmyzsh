@@ -157,7 +157,7 @@ export default () => {
                 setActiveTags(record?.orgSignEnumList || [])
               }}
             >
-              标记
+              标注
             </Button>
           </Popconfirm>
         </Space>

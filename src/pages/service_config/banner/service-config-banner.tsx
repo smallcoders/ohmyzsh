@@ -28,6 +28,7 @@ import {
 import Banner from '@/types/service-config-banner.d';
 import type Common from '@/types/common';
 import UploadForm from '@/components/upload_form';
+import { Access, useAccess } from 'umi';
 const sc = scopedClasses('service-config-banner');
 
 const stateObj = {
@@ -56,6 +57,7 @@ const TableList: React.FC = () => {
     totalCount: 0,
     pageTotal: 0,
   });
+
 
   const [dataSource, setDataSource] = useState<Banner.Content[]>([]);
 
@@ -194,41 +196,75 @@ const TableList: React.FC = () => {
       title: '操作',
       dataIndex: 'option',
       render: (_: any, record: Banner.Content) => {
+        const accessible = access?.[permissions?.[edge].replace(new RegExp("Q"), "")]
         return (
-          <Space size="middle">
-            <a
-              href="#"
-              onClick={() => {
-                setEditingItem(record);
-                setModalVisible(true);
-                form.setFieldsValue({ ...record });
-              }}
-            >
-              编辑
-            </a>
-            <Popconfirm
-              title="确定删除么？"
-              okText="确定"
-              cancelText="取消"
-              onConfirm={() => remove(record.id as string)}
-            >
-              <a href="#">删除</a>
-            </Popconfirm>
-            {record.state === 0 && (
+          <Access accessible={accessible}>
+            <Space size="middle">
+              <a
+                href="#"
+                onClick={() => {
+                  setEditingItem(record);
+                  setModalVisible(true);
+                  form.setFieldsValue({ ...record });
+                }}
+              >
+                编辑
+              </a>
               <Popconfirm
-                title="确定下架么？"
+                title="确定删除么？"
                 okText="确定"
                 cancelText="取消"
-                onConfirm={() => off(record)}
+                onConfirm={() => remove(record.id as string)}
               >
-                <a href="#">下架</a>
+                <a href="#">删除</a>
               </Popconfirm>
-            )}
-          </Space>
+              {record.state === 0 && (
+                <Popconfirm
+                  title="确定下架么？"
+                  okText="确定"
+                  cancelText="取消"
+                  onConfirm={() => off(record)}
+                >
+                  <a href="#">下架</a>
+                </Popconfirm>
+              )}
+            </Space></Access>
         );
       },
     },
   ];
+
+  const edges = {
+    [Banner.Edge.PC]: '官网-首页', // 官网-首页
+    [Banner.Edge.FINANCIAL_SERVICE]: '官网-金融', // 官网-金融
+    [Banner.Edge.PC_CITY]: '官网-地市专题首页', // 官网-地市专题首页
+    [Banner.Edge.APPLET]: '小程序-首页', // 小程序-首页
+    [Banner.Edge.APPLET_CREATIVE]: '小程序-科产', // 小程序-科产
+    [Banner.Edge.APP]: 'APP-首页', // APP-首页
+    [Banner.Edge.APP_CREATIVE]: 'APP-科产', // APP-科产
+  }
+
+  console.log('Object.entries(edges)', edges, Object.keys(edges))
+
+  useEffect(() => {
+    for (const key in permissions) {
+      const permission = permissions[key]
+      if (Object.prototype.hasOwnProperty.call(access, permission)) {
+        setEdge(key as any)
+        break
+      }
+    }
+  }, [])
+
+  const permissions = {
+    [Banner.Edge.PC]: 'PQ_PC_B_SY', // 官网-首页
+    [Banner.Edge.FINANCIAL_SERVICE]: 'PQ_PC_B_JR', // 官网-金融
+    [Banner.Edge.PC_CITY]: 'PQ_PC_B_DSZT', // 官网-地市专题首页
+    [Banner.Edge.APPLET]: 'PQ_PC_B_XCX', // 小程序-首页
+    [Banner.Edge.APPLET_CREATIVE]: 'PQ_PC_B_XKC', // 小程序-科产
+    [Banner.Edge.APP]: 'PQ_PC_B_ASY', // APP-首页
+    [Banner.Edge.APP_CREATIVE]: 'PQ_PC_B_AKC', // APP-科产
+  }
 
   /**
    * 切换 app、小程序、pc
@@ -241,16 +277,23 @@ const TableList: React.FC = () => {
     };
     return (
       <Radio.Group value={edge} onChange={handleEdgeChange}>
-        <Radio.Button value={Banner.Edge.PC}>官网-首页</Radio.Button>
+        {
+          Object.keys(edges).map((p, index) => {
+            return <Access accessible={access?.[permissions[p]]}><Radio.Button value={p}>{edges[p]}</Radio.Button></Access>
+          })
+        }
+
+        {/*<Radio.Button value={Banner.Edge.PC}>官网-首页</Radio.Button>
         <Radio.Button value={Banner.Edge.FINANCIAL_SERVICE}>官网-金融</Radio.Button>
         <Radio.Button value={Banner.Edge.PC_CITY}>官网-地市专题主页</Radio.Button>
         <Radio.Button value={Banner.Edge.APPLET}>小程序-首页</Radio.Button>
         <Radio.Button value={Banner.Edge.APPLET_CREATIVE}>小程序-科产</Radio.Button>
         <Radio.Button value={Banner.Edge.APP}>APP-首页</Radio.Button>
-        <Radio.Button value={Banner.Edge.APP_CREATIVE}>APP-科产</Radio.Button>
+        <Radio.Button value={Banner.Edge.APP_CREATIVE}>APP-科产</Radio.Button> */}
       </Radio.Group>
     );
   };
+  const access = useAccess()
 
   const getModal = () => {
     return (
@@ -320,12 +363,11 @@ const TableList: React.FC = () => {
 
   return (
     <PageContainer className={sc('container')}>
-      {/* {edge === Banner.Edge.PC && ( */}
       <>
         <div style={{ backgroundColor: '#fff', padding: 20 }}>
           <div className={sc('container-header')}>
             {selectButton()}
-            <Button
+            <Access accessible={access['PA_PC_B']}>  <Button
               type="primary"
               key="newAdd"
               loading={addOrUpdateLoading}
@@ -335,6 +377,7 @@ const TableList: React.FC = () => {
             >
               <PlusOutlined /> 新增
             </Button>
+            </Access>
           </div>
           <Table
             bordered
@@ -345,18 +388,17 @@ const TableList: React.FC = () => {
               pageInfo.totalCount === 0
                 ? false
                 : {
-                    onChange: getBanners,
-                    total: pageInfo.totalCount,
-                    current: pageInfo.pageIndex,
-                    pageSize: pageInfo.pageSize,
-                    showTotal: (total) =>
-                      `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
-                  }
+                  onChange: getBanners,
+                  total: pageInfo.totalCount,
+                  current: pageInfo.pageIndex,
+                  pageSize: pageInfo.pageSize,
+                  showTotal: (total) =>
+                    `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
+                }
             }
           />
         </div>
       </>
-      {/* )} */}
 
       {getModal()}
     </PageContainer>

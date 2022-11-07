@@ -25,6 +25,7 @@ export const routeName = {
   DEMAND_MANAGEMENT_INDEX: '/supply-demand-setting/demand-manage/index', // 需求管理
   DEMAND_MANAGEMENT_DETAIL: '/supply-demand-setting/demand-manage/detail', // 需求管理详情
   ACCOUNT: '/system-config/account', // 账号管理
+  AUTH: '/system-config/auth', // 权限管理
   DEMAND_CONTACTS: '/supply-demand-setting/demand_contacts/index', // 需求联系人
 
   CREATIVE_VERIFY: '/verify-agency/creative-verify', // 科技成果审核
@@ -153,7 +154,7 @@ export default [
     path: '/home',
     name: '首页',
     icon: 'home',
-    component: './home',
+    component: './home'
   },
   {
     path: '/service-config',
@@ -168,6 +169,7 @@ export default [
       {
         path: '/service-config/banner',
         name: 'banner',
+        access: 'M_PC_B',
         component: './service_config/banner',
       },
       {
@@ -885,10 +887,13 @@ export default [
     path: '/verify-agency',
     name: '审核待办',
     icon: 'control',
-    access: 'SERVICE_CONFIG',
+    access: 'M_AT',
+    code: 'M_AT',
     routes: [
       {
         path: '/verify-agency',
+        access: 'M_AT_FWZY',
+        code: 'M_AT_FWZY',
         redirect: routeName.SERVICE_COMMISSIONER_VERIFY,
         // redirect: routeName.LOGOUT_VERIFY,
       },
@@ -899,11 +904,15 @@ export default [
       // },
       {
         path: routeName.SERVICE_COMMISSIONER_VERIFY,
+        code: 'M_AT_FWZY',
+        access: 'M_AT_FWZY',
         name: '服务专员审核',
         component: './verify_agency/service_commissioner_verify',
       },
       {
         path: routeName.CREATIVE_VERIFY,
+        code: 'M_AT_KJCG',
+        access: 'M_AT_KJCG',
         name: '科技成果审核',
         hideChildrenInMenu: true,
         routes: [
@@ -1180,16 +1189,22 @@ export default [
     path: '/system-config',
     name: '系统管理',
     icon: 'setting',
-    access: 'SYSTEM_CONFIG',
+    access: 'M_SC',
     routes: [
       {
         path: '/system-config',
-        redirect: '/system-config/account',
+        redirect: '/system-config/auth',
+      },
+      {
+        path: routeName.AUTH,
+        name: '权限管理',
+        access: 'M_SC_ZHGL',
+        component: './system_config/auth',
       },
       {
         path: routeName.ACCOUNT,
         name: '账号管理',
-        component: './account',
+        component: './system_config/account',
       },
     ],
   },
