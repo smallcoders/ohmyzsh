@@ -10,6 +10,7 @@ import {
   Space,
   Popconfirm,
   Tooltip,
+  TreeSelect,
 } from 'antd';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
@@ -27,7 +28,7 @@ const { RangePicker } = DatePicker
 
 const sc = scopedClasses('user-config-logout-verify');
 
-export default () => {
+export default ({demandTypes}: {demandTypes: any[]}) => {
   const [dataSource, setDataSource] = useState<DockingManage.Content[]>([]);
   const [searchContent, setSearChContent] = useState<DockingManage.searchContent>({});
 
@@ -229,6 +230,19 @@ export default () => {
                     </Select.Option>
                   ))}
                 </Select>
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              <Form.Item name="claimId" label="需求认领人">
+                <TreeSelect
+                  showSearch
+                  style={{ width: '100%' }}
+                  dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                  placeholder="Please select"
+                  allowClear
+                  treeDefaultExpandAll
+                  treeData={treeData}
+                />
               </Form.Item>
             </Col>
             <Col offset={4} span={4}>

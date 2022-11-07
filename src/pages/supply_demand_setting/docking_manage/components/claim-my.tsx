@@ -24,7 +24,7 @@ const sc = scopedClasses('user-config-logout-verify');
 
 const group = Object.entries(DockingManage.specifyType)?.filter(p => p[0] != '6')
 
-export default () => {
+export default ({ demandTypes }: { demandTypes: any[] }) => {
   const [dataSource, setDataSource] = useState<ConsultRecord.Content[]>([]);
   const [searchContent, setSearChContent] = useState<ConsultRecord.SearchBody>({});
   const [refineVisible, setRefineVisible] = useState<boolean>(false);

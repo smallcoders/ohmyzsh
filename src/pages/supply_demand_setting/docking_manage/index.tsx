@@ -6,6 +6,7 @@ import Claim from './components/claim';
 import { message, Select } from 'antd';
 import './index.less'
 import { getBizGroup } from '@/services/creative-demand';
+import { getDictionayTree } from '@/services/common';
 
 
 
@@ -14,15 +15,18 @@ export default () => {
   const [activeGroup, setActiveGroup] = useState<string>();
   const [group, setGroup] = useState<any[]>([])
 
+  const [demandTypes, setDemandTypes] = useState<any[]>([])
+
   useEffect(() => {
     prepare()
   }, [])
 
   const prepare = async () => {
     try {
-      const res = await getBizGroup()
-      setGroup(res?.result?.filter((p: { gid: number; }) => p.gid < 6))
-      setActiveGroup(res?.result?.[0]?.gid)
+      const res = await Promise.all([getDictionayTree('DEMAND_TYPE'), getBizGroup()])
+      setDemandTypes(res?.[0]?.result)
+      setGroup(res[1]?.result?.filter((p: { gid: number; }) => p.gid < 6))
+      setActiveGroup(res[1]?.result?.[0]?.gid)
     } catch (error) {
       message.error('服务器错误')
     }
@@ -60,9 +64,9 @@ export default () => {
       tabActiveKey={activeKey}
       onTabChange={(key: string) => setActiveKey(key)}
     >
-      {activeKey === '1' && <Claim />}
-      {activeKey === '2' && <ClaimMy/>}
-      {activeKey === '3' && <Follow gid={activeGroup}/>}
+      {activeKey === '1' && <Claim demandTypes={demandTypes} />}
+      {activeKey === '2' && <ClaimMy demandTypes={demandTypes} />}
+      {activeKey === '3' && <Follow gid={activeGroup} demandTypes={demandTypes} />}
     </PageContainer>
   );
 };

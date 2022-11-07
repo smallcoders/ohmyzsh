@@ -28,8 +28,8 @@ const sc = scopedClasses('user-config-logout-verify');
 
 
 
-export default (props: { gid: any; }) => {
-  const { gid } = props
+export default (props: { gid: any; demandTypes: any[] }) => {
+  const { gid, demandTypes } = props
   const [dataSource, setDataSource] = useState<any[]>([]);
   const [searchContent, setSearChContent] = useState<any>({});
   const formLayout = {
