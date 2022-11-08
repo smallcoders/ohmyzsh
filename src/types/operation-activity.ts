@@ -37,6 +37,7 @@ namespace Activity {
     updateTime?: any;//更新时间
     activeImageId?: any;
     buttonText?: any;
+    targetLink?: any;
   };
 }
 export default Activity;

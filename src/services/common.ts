@@ -97,7 +97,7 @@ export async function listAllAreaCode() {
  * @param data FormData
  * @returns
  */
-export async function uploadFile(data) {
+export async function uploadFile(data:any) {
   return request<Common.ResultCode & { result: { path: string } }>(
     `/antelope-manage/common/upload/record`,
     {

@@ -59,7 +59,7 @@ export default () => {
   const [recordContent,setRecordContent]=useState<Activity.Content[]>([]);
   const [createModalVisible, setModalVisible] = useState<boolean>(false);
   const [current, setCurrent] = useState(0);
-  const [formData, setFormData] = useState<Activity.Content[]>([]);
+  const [formData, setFormData] = useState<Activity.Content>({});
   const [searchContent, setSearChContent] = useState<{
     activeName?: string; // 活动名称
     startTime?: string; // 活动时间
@@ -202,7 +202,7 @@ export default () => {
       }
       const blob=new Blob([u8arr], { type: mime });
       const nowDate=moment().format("yy-MM-dd");
-      const file = new window.File([blob], `${formData.activeName}-${nowDate}.png`, {type: 'image/png'});
+      const file = new window.File([blob], `${formData?.activeName}-${nowDate}.png`, {type: 'image/png'});
       const formData1 = new FormData();
       formData1.append("file",file);
       console.log(formData1)
