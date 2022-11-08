@@ -153,6 +153,19 @@ const Tablist: React.FC = () => {
                   }
                 },
                 validateTrigger: 'onBlur',
+              },
+              {
+                validator(rule,value, callback) {
+                  if (value==undefined) {
+                    form.setFields([
+                      // { name: '表单字段name', value: '需要设置的值', errors: ['错误信息'] }, 当 errors 为非空数组时，表单项呈现红色，
+                      {name: 'channelName', value: '', errors: ['请输入渠道值名称']},
+                    ]);
+                  }else{
+                    callback()
+                  }
+                },
+                validateTrigger: 'onBlur',
               },]}
           >
             <Input placeholder="请输入" maxLength={10}/>
@@ -181,7 +194,20 @@ const Tablist: React.FC = () => {
                   }
                 },
                 validateTrigger: 'onBlur',
-              }
+              },
+              {
+                validator(rule,value, callback) {
+                  if (value==undefined) {
+                    form.setFields([
+                      // { name: '表单字段name', value: '需要设置的值', errors: ['错误信息'] }, 当 errors 为非空数组时，表单项呈现红色，
+                      {name: 'sceneName', value: '', errors: ['请输入场景值名称']},
+                    ]);
+                  }else{
+                    callback()
+                  }
+                },
+                validateTrigger: 'onBlur',
+              },
             ]}
           >
             <Input placeholder="请输入" maxLength={10}/>
@@ -223,7 +249,7 @@ const Tablist: React.FC = () => {
   //是否启用的的确认按钮
   const confirm = async(record: any) => {
     try {
-      const data={id:record.id,isActive:record.started}
+      const data={id:record.id,isActive:!record.started}
       const res = edge==0
         ?await postUpdateChannel(data)
         : await postUpdateScene(data)
@@ -269,6 +295,8 @@ const Tablist: React.FC = () => {
       title: '序号',
       dataIndex: 'sort',
       key: 'sort',
+      render: (_: any, _record: any, index: number) =>
+        pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
       title: edge == 0? '渠道值名称' : '场景值名称',
@@ -279,6 +307,7 @@ const Tablist: React.FC = () => {
       title: edge == 0? '渠道值描述' : '场景值描述',
       dataIndex: 'description',
       key: 'description',
+      ellipsis: true,
     },
     {
       title: '创建时间',

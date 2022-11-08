@@ -1,5 +1,5 @@
 import scopedClasses from "@/utils/scopedClasses";
-import React, {useCallback, useEffect, useState} from "react";
+import React, { useEffect, useState} from "react";
 import type { RadioChangeEvent,} from "antd";
 import {
   Button,
@@ -15,6 +15,8 @@ import {
   Popover,
   Space, Table, Modal, Steps, Popconfirm
 } from "antd";
+import html2canvas from 'html2canvas'
+import QRCode from 'qrcode.react'
 import {PageContainer} from "@ant-design/pro-layout";
 import {DownOutlined} from "@ant-design/icons";
 import type {ColumnsType} from "antd/es/table";
@@ -27,9 +29,15 @@ import {
   getAllScene,
   getAllChannel,
   postDeleteActivity,
-  postAddActivity, postDownActivity, postAppletCode
+  postAddActivity,
+  postDownActivity,
+  postAppletCode,
+  postOperationRecord,
+  postEditActivity,
+  getCheckedMasterName, getUrlById
 } from "@/services/opration-activity";
 import moment from 'moment';
+import {httpUpload} from "@/services/common";
 
 const { Step } = Steps;
 const sc = scopedClasses('operation-activity-link-setting');
@@ -39,12 +47,16 @@ export default () => {
   const [selectSceneList,setSelectScene] = useState<Activity.Content[]>([])
   const [activeStatusData, setActiveStatusData] = useState({});
   const [columnData, setColumnData] = useState({});
+  const [activeImageId, setActiveImageId] = useState('');
   const [removeData, setRemoveData] = useState({});
   const [dataSource, setDataSource] = useState<Activity.Content[]>([]);
   const [types, setTypes] = useState('');
   const [btnValue, setBtnValue] = useState({});
   const [url, setUrl] = useState('');
+  const [idName, setIdName] = useState('');
+  const [shardCodeMaster, setShardCodeMaster] = useState('');
   const [randomId, setRandomId] = useState('');
+  const [recordContent,setRecordContent]=useState<Activity.Content[]>([]);
   const [createModalVisible, setModalVisible] = useState<boolean>(false);
   const [current, setCurrent] = useState(0);
   const [formData, setFormData] = useState<Activity.Content[]>([]);
@@ -146,16 +158,95 @@ export default () => {
       if(res.code === 0){
         setUrl(res.result.url)
         setRandomId(res.result.randomId)
+        setActiveImageId(res.result.activeImageId)
       }
     }catch (e) {
       console.log(e)
     }
   }
 
+  //获取活动的操作记录
+  const getOperationRecord =async (value: any) =>{
+    try {
+      const res =await postOperationRecord(value)
+      if(res.code === 0){
+        setRecordContent(res.result)
+      }
+    }catch (e) {
+      console.log(e)
+    }
+  }
 
+  const downloadIamge=(imgsrc: any,) =>{//下载图片地址和图片名
+    const image = new Image();
+    console.log(formData)
+    // 解决跨域 Canvas 污染问题
+    image.setAttribute("crossOrigin", "anonymous");
+    console.log(image.width)
+    image.onload = function () {
+      const canvas = document.createElement("canvas");
+      canvas.width = 1080;
+      canvas.height = 1920;
+      const context = canvas.getContext("2d");
+      // @ts-ignore
+      context.drawImage(image, 0, 0, image.width, image.height);
+      const urlName = canvas.toDataURL("image/png"); //得到图片的base64编码数据
+      const arr = urlName.split(',')
+      // @ts-ignore
+      const mime = arr[0].match(/:(.*?);/)[1]
+      const bstr = atob(arr[1])
+      let n = bstr.length
+      const  u8arr = new Uint8Array(n);
+      while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+      }
+      const blob=new Blob([u8arr], { type: mime });
+      const nowDate=moment().format("yy-MM-dd");
+      const file = new window.File([blob], `${formData.activeName}-${nowDate}.png`, {type: 'image/png'});
+      const formData1 = new FormData();
+      formData1.append("file",file);
+      console.log(formData1)
+      httpUpload(formData1).then(res=>{
+        if(res.code==0){
+          const activeImageId1=res.result
+          window.location.href=(`/antelope-manage/common/download/${res.result}`)
+          message.success('下载成功')
+          if(edge==4){
+            if(types.indexOf("新建") !== -1){
+              const data={...formData,...{activeImageId:activeImageId1}}
+              postAddActivity(data).then(res1=>{
+                if (res1.code === 0) {
+                   getOperationActivity().then(r=>{
+                     console.log(r)
+                   });
+                } else {
+                  message.error(res1.message);
+                }
+              })
+            }
+          }
+        }
+      })
+
+    };
+    image.src = imgsrc;
+  }
+  const exportImg = () => {
+    console.log(idName)
+    const imgshare=document.querySelector(idName)
+    html2canvas(imgshare as HTMLElement, { // 转换为图片
+      useCORS: true // 解决资源跨域问题
+    }).then(canvas => {
+      // imgUrl 是图片的 base64格式 代码 png 格式
+      const imgUrl = canvas.toDataURL('image/png');
+      //下面是 下载图片的功能。 不需要不加 注意加 .png
+      downloadIamge(imgUrl)
+      // message.success('下载成功')
+    }) };
   const clearForm = () => {
     form.resetFields();
   };
+
   //下架
   const soldOut= async ()=>{
     try {
@@ -191,27 +282,36 @@ export default () => {
   //下一步
   const next =  ()=>{
     form.validateFields().then(async (value)=>{
-      console.log(value)
       if (value.time) {
         value.startTime = moment(value.time[0]).format('YYYY-MM-DD');
         value.endTime = moment(value.time[1]).format('YYYY-MM-DD');
       }
       if(edge==2){
         setBtnValue('发布并复制分享链接')
+        console.log(value)
         value.activeType = 'H5'
-        value.activeUrl='https://www.lingyangplat.com/antelope-activity-h5/antelope-download/index.html'
+           const res=await  getUrlById(value.activeImageId)
+          if(res.code==0){
+            value.url=res?.result
+          }
+        value.activeUrl=window.location.origin + `/antelope-activity-h5/share-code/index.html?preview=true&buttonText=${value.buttonText}&targetLink=${value.targetLink}&url=${value.url}`
+        setCurrent(1)
+        setFormData(value)
       }else if(edge==3){
-        setBtnValue('发布并复制二维码')
+        setBtnValue('发布并下载二维码')
+        setCurrent(2)
         value.activeType = 'APPLET'
+        setIdName('#imgWechat')
         await getAppletCode(value)
-        value.url=url
-        value.randomId=randomId
+        setFormData(value)
       }else if(edge==4){
-        setBtnValue('发布并复制图片')
+        setBtnValue('发布并下载图片')
         value.activeType = 'SHARD_CODE'
+        setIdName('#imgShare')
+        setFormData(value)
+        setShardCodeMaster(value.shardCodeMaster)
+        setCurrent(3)
       }
-      setFormData(value)
-      setCurrent(1)
     })
   }
   //完成
@@ -240,37 +340,23 @@ export default () => {
   }
   // 复制链接
   const copyLink = (e: any) => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    navigator &&
-    navigator.clipboard &&
-    navigator.clipboard.writeText(e.targetLink).then(() => {
-      message.success('链接复制成功');
-    });
-
+    console.log(e)
+    if(e.id){
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      navigator &&
+      navigator.clipboard &&
+      navigator.clipboard.writeText(window.location.origin + `/antelope-activity-h5/share-code/index.html?preview=false&id=${e.id}`).then(() => {
+        message.success('链接复制成功');
+      });
+    }else{
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      navigator &&
+      navigator.clipboard &&
+      navigator.clipboard.writeText(window.location.origin + `/antelope-activity-h5/share-code/index.html?preview=true&buttonText=${e.buttonText}&targetLink=${e.targetLink}&url=${e.url}`).then(() => {
+        message.success('链接复制成功');
+      });
+    }
   };
-  const init = () => {
-    // const image = new Image();
-    // // 解决canvas跨域问题
-    // image.setAttribute('crossOrigin', 'anonymous');
-    // image.src = url;
-    // // 利用图片加载，触发事件
-    // image.onload = function () {
-    //   try {
-    //     const canvas = document.getElementsByTagName('canvas');
-    //     const ctx = canvas[0].getContext('2d');
-    //     ctx.drawImage(image, 200, 200);
-    //     const imgUrl = canvas[0].toDataURL('image/png');
-    //     setUrl(imgUrl);
-    //   } catch {
-    //     message.error('生成失败，请重试');
-    //     props.onCancel();
-    //   }
-    // };
-  };
-
-  useEffect(() => {
-    init();
-  }, []);
 
   // 复制二维码
   const downWechatCode = () =>{
@@ -283,35 +369,46 @@ export default () => {
   // 完成复制并提交
   const finishSubmit = async ()=>{
     if(edge==2){
-      message.success('链接复制成功')
-      const res =await postAddActivity(formData)
+      const res =types.indexOf("新建") !== -1?await postAddActivity(formData):await postEditActivity(columnData)
       if (res.code === 0) {
         await getOperationActivity();
+        const data= types.indexOf("新建") !== -1?{...formData,...{id:res.result}}:columnData
+        setColumnData(data)
+        copyLink(data)
       } else {
         message.error(res.message);
       }
     }
     else if(edge==3){
-      message.success('链接复制成功')
       const microProgramQRCodeUrl=url
-      const data= {...formData,microProgramQRCodeUrl,randomId}
-      const res =await postAddActivity(data)
+      const res =types.indexOf("新建") !== -1
+        ?await postAddActivity({...formData,microProgramQRCodeUrl,randomId,activeImageId})
+        :await postEditActivity({...columnData,microProgramQRCodeUrl,randomId,activeImageId})
       if (res.code === 0) {
         await getOperationActivity();
+        exportImg()
       } else {
         message.error(res.message);
       }
     }
     else if(edge==4){
-      message.success('链接复制成功')
+      exportImg()
+      if(types.indexOf("新建") == -1){
+        const res =await postEditActivity({...columnData})
+        if (res.code === 0) {
+          await getOperationActivity();
+        } else {
+          message.error(res.message);
+        }
+      }
     }
     clearForm();
+    setCurrent(0)
     setModalVisible(false)
   }
 
   //新增链接按钮
   function handleButtonClick() {
-    console.log(edge)
     setCurrent(0)
     if(edge==2){
       setTypes('新建H5链接')
@@ -346,16 +443,13 @@ export default () => {
 
   //更多下拉
   const handleMoreMenuClick=(e: any)=> {
-    console.log(e)
     const {startTime ,endTime} = e
     const result=e
     const time = [
       result.time=moment(startTime),
       result.time=moment(endTime),
     ]
-    console.log(result)
     result.time=time
-    console.log(result)
     setActiveStatusData(e.activeStatus)
     setRemoveData(e.id)
     setColumnData(result)
@@ -484,33 +578,18 @@ export default () => {
       </div>
     );
   };
-  const content = (
-    <div className={sc('operate-record')}>
-      <div className={sc('operate-record-container')}>
-        <div className={sc('operate-record-container-left')}>编辑链接</div>
-        <div className={sc('operate-record-container-right')}>
-          <div className={sc('operate-record-container-right-time')}>2022-06-14  12:32:23</div>
-          <div className={sc('operate-record-container-right-name')}>操作人：顾小满</div>
-        </div>
-      </div>
-      <div className={sc('operate-record-divider')} />
-      <div className={sc('operate-record-container')}>
-        <div className={sc('operate-record-container-left')}>创建链接</div>
-        <div className={sc('operate-record-container-right')}>
-          <div className={sc('operate-record-container-right-time')}>2022-06-14  12:32:23</div>
-          <div className={sc('operate-record-container-right-name')}>操作人：顾小满</div>
-        </div>
-      </div>
-      <div className={sc('operate-record-divider')} />
-      <div className={sc('operate-record-container')}>
-        <div className={sc('operate-record-container-left')}>下架链接</div>
-        <div className={sc('operate-record-container-right')}>
-          <div className={sc('operate-record-container-right-time')}>2022-06-14  12:32:23</div>
-          <div className={sc('operate-record-container-right-name')}>操作人：顾小满</div>
-        </div>
-      </div>
-    </div>
-  );
+  const content =(
+    recordContent?.map((item: any) => (
+      <div className={sc('operate-record')}>
+           <div className={sc('operate-record-container')}>
+             <div className={sc('operate-record-container-left')}>{item.operation}</div>
+             <div className={sc('operate-record-container-right')}>
+               <div className={sc('operate-record-container-right-time')}>{item.updateTime}</div>
+               <div className={sc('operate-record-container-right-name')}>操作人：{item.operatorName}</div>
+             </div>
+           </div>
+         </div>
+    )));
   const columns: ColumnsType<Activity.Content> = [
     {
       title: '序号',
@@ -575,15 +654,110 @@ export default () => {
           {edge == 3 &&
             <a
               type="primary"
-              href={_record.microProgramQRCodeUrl}
-              download={_record.microProgramQRCodeUrl}
+              onClick={downWechatCode}
+              href={`/antelope-manage/common/download/${_record?.activeImageId}`}
+              download={`/antelope-manage/common/download/${_record?.activeImageId}`}
             >
               下载二维码
             </a>
           }
           {edge == 4 &&
             <a
+              download={`/antelope-manage/common/download/${_record?.activeImageId}`}
+             href={`/antelope-manage/common/download/${_record?.activeImageId}`}
+              onClick={downShareCode}
+            >下载分享码</a>
+          }
+          <Popover content={content} trigger="click">
+            <a
               href="#"
+              onClick={async () => {
+              await  getOperationRecord(_record.id as any)
+              }}
+            >操作记录</a>
+          </Popover>
+          <Dropdown overlay={moreMenu} trigger={['click']}>
+            <a className="ant-dropdown-link" onClick={()=>{handleMoreMenuClick(_record as any)}}>
+              更多 <DownOutlined />
+            </a>
+          </Dropdown>
+        </Space>
+      ),
+    },
+  ];
+  const columns1: ColumnsType<Activity.Content> = [
+    {
+      title: '序号',
+      dataIndex: 'sort',
+      key: 'sort',
+      width: 80,
+      render: (_: any, _record: any, index: number) =>
+        pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
+    },
+    {
+      title: '活动名称',
+      dataIndex: 'activeName',
+      key: 'activeName',
+    },
+    {
+      title: '活动时间',
+      dataIndex: 'activityTime',
+      key: 'activityTime',
+      render: (_: any, _record: any) =>
+        _record.startTime + '～' + _record.startTime,
+    },
+    {
+      title: '渠道值',
+      dataIndex: 'channelName',
+      key: 'channelName',
+    },
+    {
+      title: '场景值',
+      dataIndex: 'sceneName',
+      key: 'sceneName',
+    },
+    {
+      title: '状态',
+      dataIndex: 'activeStatus',
+      key: 'activeStatus',
+      render: (_: any, _record: any) =>
+        _record.activeStatus=='UP'?'上架中':'已下架',
+    },
+    {
+      title: '数据统计',
+      dataIndex: 'dataStatistics',
+      key: 'dataStatistics',
+      render: (_: any, _record: any) =>
+        <div>扫码量：
+          <span className={sc('statusName')}>  {_record.linkHitsQuantity }   </span>
+        </div>,
+    },
+    {
+      title: '操作',
+      key: 'action',
+      width: 250,
+      render: (_record: any) => (
+        <Space size="middle">
+          {edge == 2 &&
+            <a
+              href="#"
+              onClick={() => copyLink(_record as any)}
+            >复制链接</a>
+          }
+          {edge == 3 &&
+            <a
+              type="primary"
+              onClick={downWechatCode}
+              href={`/antelope-manage/common/download/${_record?.activeImageId}`}
+              download={`/antelope-manage/common/download/${_record?.activeImageId}`}
+            >
+              下载二维码
+            </a>
+          }
+          {edge == 4 &&
+            <a
+              download={`/antelope-manage/common/download/${_record?.activeImageId}`}
+              href={`/antelope-manage/common/download/${_record?.activeImageId}`}
               onClick={downShareCode}
             >下载分享码</a>
           }
@@ -603,7 +777,7 @@ export default () => {
       ),
     },
   ];
-  const columns1: ColumnsType<Activity.Content> = [
+  const columns2: ColumnsType<Activity.Content> = [
     {
       title: '序号',
       dataIndex: 'sort',
@@ -651,10 +825,8 @@ export default () => {
       dataIndex: 'dataStatistics',
       key: 'dataStatistics',
       render: (_: any, _record: any) =>
-        <div>链接点击量：
+        <div>扫码量：
           <span className={sc('statusName')}>  {_record.linkHitsQuantity }   </span>
-          ，按钮点击量：
-          <span className={sc('statusName')}> {_record.buttonHitsQuantity } </span>
         </div>,
     },
     {
@@ -672,15 +844,17 @@ export default () => {
           {edge == 3 &&
             <a
               type="primary"
-              href={_record.microProgramQRCodeUrl}
-              download={_record.microProgramQRCodeUrl}
+              onClick={downWechatCode}
+              href={`/antelope-manage/common/download/${_record?.activeImageId}`}
+              download={`/antelope-manage/common/download/${_record?.activeImageId}`}
             >
               下载二维码
             </a>
           }
           {edge == 4 &&
             <a
-              href="#"
+              download={`/antelope-manage/common/download/${_record?.activeImageId}`}
+              href={`/antelope-manage/common/download/${_record?.activeImageId}`}
               onClick={downShareCode}
             >下载分享码</a>
           }
@@ -744,7 +918,9 @@ export default () => {
           }}>
             上一步
           </Button>,
-          <Button key="submit" type="primary" onClick={ async ()=>{
+          <Button key="submit"
+                  type="primary"
+               onClick={ async ()=>{
            await finishSubmit()
           }}>
             {btnValue}
@@ -806,14 +982,14 @@ export default () => {
                   ))}
                 </Select>
               </Form.Item>
-
+              {edge !== 4&&
               <Form.Item
                 label='跳转目标链接'
                 name="targetLink"
                 rules={[{ required: true, message: '请输入跳转目标链接！' }]}
               >
                 <Input placeholder="请输入" maxLength={2000}/>
-              </Form.Item>
+              </Form.Item>}
 
               {edge === 2 &&
                 <Form.Item
@@ -845,11 +1021,54 @@ export default () => {
                 </Form.Item>
               }
 
-              {edge === 4 &&
+              {edge === 4 &&activeStatusData!=='DOWN'&&(types.indexOf("新建") !== -1)&&
                 <Form.Item
                   label='分享码主人'
-                  name="shareMaster"
-                  rules={[{ required: true, message: '请输入分享码主人！' }]}
+                  name="shardCodeMaster"
+                  rules={[{ required: true, message: '请输入分享码主人！' },
+                    {
+                      validator(rule,value, callback) {
+                        try{
+                          if(value.length>0){
+                            getCheckedMasterName(value).then(res=> {
+                              if (res?.code == 0 &&res?.result) {
+                                form.setFields([
+                                  { name: 'shardCodeMaster', value:'', errors: ['该用户已存在分享码'] },
+                                ]);
+                              }else{
+                                callback()
+                              }
+                            })}
+                        }catch (e){
+                          console.log(e,'err')
+                        }
+                      },
+                      validateTrigger: 'onBlur',
+                    },
+                    {
+                      validator(rule,value, callback) {
+                        if (value==undefined) {
+                          form.setFields([
+                            // { name: '表单字段name', value: '需要设置的值', errors: ['错误信息'] }, 当 errors 为非空数组时，表单项呈现红色，
+                            {name: 'shardCodeMaster', value: '', errors: ['请输入分享码主人!']},
+                          ]);
+                        }else{
+                          callback()
+                        }
+                      },
+                      validateTrigger: 'onBlur',
+                    },
+                  ]}
+                >
+                  <Input placeholder="请输入" maxLength={35} disabled={activeStatusData=='DOWN'&&types.indexOf("新建") == -1}/>
+                </Form.Item>
+              }
+              {edge === 4 &&activeStatusData=='DOWN'&&(types.indexOf("新建") == -1)&&
+                <Form.Item
+                  label='分享码主人'
+                  name="shardCodeMaster"
+                  rules={[{ required: true, message: '请输入分享码主人！' },
+                   ]}
                 >
                   <Input placeholder="请输入" maxLength={35} disabled={activeStatusData=='DOWN'&&types.indexOf("新建") == -1}/>
                 </Form.Item>
@@ -858,16 +1077,43 @@ export default () => {
           )}
           {current==1 && (<div className={sc('modelWord')}>
             <h2 >以下链接用于预览效果用，不计入数据统计</h2>
-            <img src={url} alt=""/>
+            {formData&&(
+              <div>
+            <h2 className={sc('modelWord-link')}>{window.location.origin + `/antelope-activity-h5/share-code/index.html?preview=true&buttonText=${formData.buttonText}&targetLink=${formData.targetLink}&url=${formData.url}`}
+            </h2>
+            <Button
+              type="primary"
+              key="search"
+              onClick={() => copyLink(formData as any)}
+            >
+              复制链接
+            </Button></div>)
+            }
           </div>)}
           {current==2 && (<div className={sc('modelWord')}>
             <h2 >以下小程序码用于预览效果用，不计入数据统计</h2>
+            <div id={'imgWechat'}>
+              <img src={url} />
+            </div>
           </div>)}
-          {current==3 && (<div className={sc('modelWord')}>
+          {current==3 && (<div className={sc('modelWord')} >
             <h2 >以下分享码用于预览效果用，不计入数据统计</h2>
+            <div className={sc('modelWord-bk')} id={'imgShare'}>
+            <div className={sc('modelWord-bk-invite')}>邀请人：{shardCodeMaster}</div>
+            <div className="qr-anhui-pf">
+              <QRCode
+                value={ window.location.origin+ `/antelope-activity-h5/antelope-download/index.html`}
+                renderAs={'canvas'}
+                size={77}
+                bgColor={'#FFFFFF'}
+                fgColor={'#000000'}
+                level="H"
+                includeMargin={true}
+              />
+            </div>
+            </div>
           </div>)}
         </ProCard>
-
       </Modal>
     );
   };
@@ -888,7 +1134,7 @@ export default () => {
           </div>
         </div>
       <div className={sc('container-body')}>
-        {(edge==2||edge==3)&&
+        {edge==2&&
         <Table
           bordered
           columns={columns}
@@ -898,29 +1144,50 @@ export default () => {
             pageInfo.total === 0
               ? false
               : {
+                onChange: getOperationActivity,
                 total: pageInfo.total,
                 current: pageInfo.pageIndex,
                 pageSize: pageInfo.pageSize,
                 showTotal: (total) =>
-                  `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.total || 1}页`,
+                  `共${total}条记录 第${pageInfo.pageIndex}/${Math.ceil(pageInfo.total / pageInfo.pageSize) || 1}页`,
               }
           }
         />}
+        {edge==3&&
+          <Table
+            bordered
+            columns={columns1}
+            dataSource={dataSource}
+            rowKey={'id'}
+            pagination={
+              pageInfo.total === 0
+                ? false
+                : {
+                  onChange: getOperationActivity,
+                  total: pageInfo.total,
+                  current: pageInfo.pageIndex,
+                  pageSize: pageInfo.pageSize,
+                  showTotal: (total) =>
+                    `共${total}条记录 第${pageInfo.pageIndex}/${Math.ceil(pageInfo.total / pageInfo.pageSize) || 1}页`,
+                }
+            }
+          />}
         {edge==4&&
         <Table
           bordered
-          columns={columns1}
+          columns={columns2}
           dataSource={dataSource}
           rowKey={'id'}
           pagination={
             pageInfo.total === 0
               ? false
               : {
+                onChange: getOperationActivity,
                 total: pageInfo.total,
                 current: pageInfo.pageIndex,
                 pageSize: pageInfo.pageSize,
                 showTotal: (total) =>
-                  `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.total || 1}页`,
+                  `共${total}条记录 第${pageInfo.pageIndex}/${Math.ceil(pageInfo.total / pageInfo.pageSize) || 1}页`,
               }
           }
         />}

@@ -160,10 +160,41 @@ export async function postDownActivity(activeId:any) {
   });
 }
 
+/** 编辑活动 */
+export async function postEditActivity(data?: { [key: string]: any}) {
+  return request<any>(`/antelope-manage/manage/active/edit`, {
+    method: 'POST',
+    data
+  });
+}
+
 /** 获取活动的小程序码 */
 export async function postAppletCode(options?: { [key: string]: any }) {
   return request<any>(`/antelope-manage/manage/active/new-applet-code`, {
     method: 'GET',
     params: { ...(options || {}) },
+  });
+}
+
+/** 获取活动的操作记录 */
+export async function postOperationRecord(activeId:any) {
+  return request<any>(`/antelope-manage/manage/active/query/operation-record/${activeId}`, {
+    method: 'GET',
+  });
+}
+
+
+/** 根据分享码主人查询是否存在*/
+export async function getCheckedMasterName(masterName:string) {
+  return request<any>(`/antelope-manage/manage/active/query/shard-code-master/${masterName}`, {
+    method: 'GET',
+  });
+}
+
+
+/** 根据图片id查询图片url*/
+export async function getUrlById(activeImageId:string) {
+  return request<any>(`/antelope-manage/manage/active/query/url/${activeImageId}`, {
+    method: 'GET',
   });
 }

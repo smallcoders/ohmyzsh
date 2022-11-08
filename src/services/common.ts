@@ -19,6 +19,15 @@ export const httpUploadWithDetail = (
   });
 };
 
+export const httpUpload = (
+  data: FormData,
+) => {
+  return request(`/antelope-manage/common/upload`, {
+    method: 'post',
+    data,
+  });
+};
+
 /**
  * 下载
  */

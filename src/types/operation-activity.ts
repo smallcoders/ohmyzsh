@@ -32,6 +32,11 @@ namespace Activity {
     dataStatistics?: string;//数据统计
     action?: any;//操作
     time?: any;
+    operation?: any;//曹自拍
+    operatorName?: any;//操作人
+    updateTime?: any;//更新时间
+    activeImageId?: any;
+    buttonText?: any;
   };
 }
 export default Activity;
