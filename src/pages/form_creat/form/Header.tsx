@@ -29,26 +29,32 @@ const Header: FC<DesignFormProps> = (props) => {
         () => (
           <Layout.Header className="btn-bar">
             <Space>
-              {uploadJson && (
-                <a href="/#" onClick={handlerSetVisible(setUploadVisible, true)}>
-                  导入Json
-                </a>
-              )}
-              {clearable && (
-                <a href="/#" onClick={handleClear}>
-                  清空
-                </a>
-              )}
+              <a href="/#" onClick={handlerSetVisible(setUploadVisible, true)}>
+                保存
+              </a>
+              <a href="/#" onClick={handleClear}>
+                发布
+              </a>
+              {/*{uploadJson && (*/}
+              {/*  <a href="/#" onClick={handlerSetVisible(setUploadVisible, true)}>*/}
+              {/*    导入Json*/}
+              {/*  </a>*/}
+              {/*)}*/}
+              {/*{clearable && (*/}
+              {/*  <a href="/#" onClick={handleClear}>*/}
+              {/*    清空*/}
+              {/*  </a>*/}
+              {/*)}*/}
               {preview && (
                 <a href="/#" onClick={handlerSetVisible(setPreviewVisible, true)}>
                   预览
                 </a>
               )}
-              {generateJson && (
-                <a href="/#" onClick={handlerSetVisible(setGenerateJsonVisible, true)}>
-                  生成JSON
-                </a>
-              )}
+              {/*{generateJson && (*/}
+              {/*  <a href="/#" onClick={handlerSetVisible(setGenerateJsonVisible, true)}>*/}
+              {/*    生成JSON*/}
+              {/*  </a>*/}
+              {/*)}*/}
             </Space>
           </Layout.Header>
         ),
