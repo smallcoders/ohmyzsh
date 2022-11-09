@@ -124,7 +124,7 @@ const Tablist: React.FC = () => {
           form={form}
           layout="horizontal"
           name="basic"
-          labelCol={{ span: 8 }}
+          labelCol={{ span: 7 }}
           wrapperCol={{ span: 16 }}
           initialValues={{ remember: true }}
           autoComplete="off"
