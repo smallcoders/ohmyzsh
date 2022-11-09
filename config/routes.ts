@@ -24,6 +24,8 @@ export const routeName = {
   DEMAND_MANAGEMENT: '/service-config/requirement-management', // 需求管理
   DEMAND_MANAGEMENT_INDEX: '/supply-demand-setting/demand-manage/index', // 需求管理
   DEMAND_MANAGEMENT_DETAIL: '/supply-demand-setting/demand-manage/detail', // 需求管理详情
+  OPERATION_ACTIVITY_PARAMETER:'/operation-activity/parameter-setting/index',//运营活动参数设置
+  OPERATION_ACTIVITY_LINK:'/operation-activity/link-setting/index',//运营活动链接设置
   ACCOUNT: '/system-config/account', // 账号管理
   AUTH: '/system-config/auth', // 权限管理
   DEMAND_CONTACTS: '/supply-demand-setting/demand_contacts/index', // 需求联系人
@@ -537,6 +539,28 @@ export default [
             component: './goods_manage/order_message/detail',
           },
         ],
+      },
+    ],
+  },
+  {
+    path: '/operation-activity',
+    name: '运营活动管理',
+    icon: 'unordered-list',
+    access: 'OPERATION_ACTIVITY',
+    routes: [
+      {
+        path: '/operation-activity',
+        redirect: routeName.OPERATION_ACTIVITY_PARAMETER,
+      },
+      {
+        path: routeName.OPERATION_ACTIVITY_PARAMETER,
+        name: '参数配置',
+        component: './operation_activity/parameter-setting/index',
+      },
+      {
+        path: routeName.OPERATION_ACTIVITY_LINK,
+        name: '链接配置',
+        component: './operation_activity/link-setting/index',
       },
     ],
   },

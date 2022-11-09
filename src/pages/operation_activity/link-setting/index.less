@@ -1,0 +1,80 @@
+@prefix:operation-activity-link-setting;
+
+.@{prefix}-container {
+  &-header {
+    padding: 20px;
+    background-color: #fff;
+    display: flex;
+    justify-content: space-between;
+  }
+  &-body{
+    padding: 0 20px;
+    background-color: #fff;
+  }
+  &-search {
+    margin-bottom: 20px;
+    padding: 20px 0;
+    background-color: #fff;
+    .ant-form-item {
+      margin-bottom: 20px;
+    }
+
+  }
+}
+.ant-picker-range{
+  width: 100%;
+}
+.@{prefix} {
+  &-statusName{
+    color:#0068ff;
+  }
+  &-modelWord{
+    display: flex;
+    flex-flow:column ;
+    justify-content: center;
+    align-items: center;
+    &-link{
+      width: 400px;
+    }
+    &-bk{
+      background: url("../../../assets/system/share-banner.png") no-repeat;
+      background-size: 100% 100%;
+      width: 326px;
+      height: 576px;
+      position: relative;
+      &-invite{
+        position: absolute;
+        padding: 3px;
+        border:2px solid #0068ff;
+        top: 21px;
+        font-size: 10px;
+        font-weight: 400;
+        color: #2C4B91;
+        right: 14px;
+      }
+      .qr-anhui-pf{
+        right: 23px;
+        position: absolute;
+        bottom: 45px;
+      }
+    }
+  }
+  &-operate-record{
+    height: 50px;
+    overflow-y: auto;
+    width: 250px;
+    display: flex;
+    flex-flow: column;
+    &-container{
+      display: flex;
+      flex-flow: row;
+      justify-content: space-between;
+      margin-bottom: 5px;
+      &-right{
+        display: flex;
+        flex-flow: column;
+      }
+    }
+  }
+
+}
