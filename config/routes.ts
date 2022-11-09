@@ -447,6 +447,70 @@ export default [
     ],
   },
   {
+    path: '/diagnose-manage',
+    name: '诊断管理',
+    icon: 'unordered-list',
+    access: 'DIAGNOSE_MANAGE',
+    routes: [
+      {
+        path: '/diagnose-manage',
+        redirect: '/diagnose-manage/diagnostic-tasks',
+      },
+      {
+        path: '/diagnose-manage/diagnostic-tasks',
+        name: '诊断通',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: '/diagnose-manage/diagnostic-tasks',
+            redirect: '/diagnose-manage/diagnostic-tasks/index',
+          },
+          {
+            path: '/diagnose-manage/diagnostic-tasks/index',
+            hideInBreadcrumb: true,
+            name: '诊断通',
+            access: 'M_DM_XSZD',
+            component: './diagnose_manage/diagnostic_tasks',
+          },
+          {
+            path: '/diagnose-manage/diagnostic-tasks/detail',
+            name: '诊断记录',
+            component: './diagnose_manage/diagnostic_tasks_detail',
+          },
+          {
+            path: '/diagnose-manage/diagnostic-tasks/report',
+            name: '诊断报告',
+            component: './diagnose_manage/diagnostic_tasks_report',
+          },
+        ],
+      },
+      {
+        path: '/diagnose-manage/diagnose',
+        name: '企业诊断管理',
+        // component: './service_config/diagnose_manage',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: '/diagnose-manage/diagnose',
+            // hideInBreadcrumb: true,
+            name: '企业诊断管理',
+            component: './diagnose_manage/diagnose_manage',
+          },
+          {
+            path: '/diagnose-manage/diagnose/add',
+            name: '新建诊断',
+            component: './diagnose_manage/diagnose_manage/add_diagnose',
+          },
+          {
+            path: '/diagnose-manage/diagnose/history',
+            name: '历史版本查看',
+            component: './diagnose_manage/diagnose_manage/history_diagnose',
+          },
+        ],
+      },
+    ]
+  },
+  {
     path: '/goods-manage',
     name: '数字化商品管理',
     icon: 'account-book',
