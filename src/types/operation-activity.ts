@@ -38,6 +38,7 @@ namespace Activity {
     activeImageId?: any;
     buttonText?: any;
     targetLink?: any;
+    targettLinkType?: any;
   };
 }
 export default Activity;

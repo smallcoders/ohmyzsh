@@ -39,6 +39,7 @@ import {
 import moment from 'moment';
 import {httpUpload} from "@/services/common";
 
+
 const { Step } = Steps;
 const sc = scopedClasses('operation-activity-link-setting');
 export default () => {
@@ -151,8 +152,8 @@ export default () => {
   const getAppletCode =async (value: any) =>{
     try {
       const data= {
-        endTime:value.endTime,
-        path:value.targetLink
+        path:'pagesMine/jump-blank',
+        reallyPath:value.targetLink
       }
       const res =await postAppletCode(data)
       if(res.code === 0){
@@ -189,7 +190,11 @@ export default () => {
       canvas.height = 1920;
       const context = canvas.getContext("2d");
       // @ts-ignore
-      context.drawImage(image, 0, 0, image.width, image.height);
+      if(idName==='#imgWechat'&& context){
+        context.drawImage(image, 0, 0,0,0);
+      }else if(idName==='#imgShare'&& context){
+        context.drawImage(image, 0, 0,1080, 1920,);
+      }
       const urlName = canvas.toDataURL("image/png"); //得到图片的base64编码数据
       const arr = urlName.split(',')
       // @ts-ignore
@@ -201,33 +206,39 @@ export default () => {
         u8arr[n] = bstr.charCodeAt(n);
       }
       const blob=new Blob([u8arr], { type: mime });
-      const nowDate=moment().format("yy-MM-dd");
+      const nowDate=moment().format("YY-MM-DD");
       const file = new window.File([blob], `${formData?.activeName}-${nowDate}.png`, {type: 'image/png'});
       const formData1 = new FormData();
       formData1.append("file",file);
       console.log(formData1)
-      httpUpload(formData1).then(res=>{
-        if(res.code==0){
-          const activeImageId1=res.result
-          window.location.href=(`/antelope-manage/common/download/${res.result}`)
-          message.success('下载成功')
-          if(edge==4){
-            if(types.indexOf("新建") !== -1){
-              const data={...formData,...{activeImageId:activeImageId1}}
-              postAddActivity(data).then(res1=>{
-                if (res1.code === 0) {
-                   getOperationActivity().then(r=>{
-                     console.log(r)
-                   });
-                } else {
-                  message.error(res1.message);
-                }
-              })
+      if(edge==4){
+        httpUpload(formData1).then(res=>{
+          if(res.code==0){
+            const activeImageId1=res.result
+            debugger
+            window.location.href=(`/antelope-manage/common/download/${res.result}`)
+            debugger
+            message.success('下载成功')
+            if(edge==4){
+              if(types.indexOf("新建") !== -1){
+                const data={...formData,...{activeImageId:activeImageId1}}
+                postAddActivity(data).then(res1=>{
+                  if (res1.code === 0) {
+                    getOperationActivity().then(r=>{
+                      console.log(r)
+                    });
+                  } else {
+                    message.error(res1.message);
+                  }
+                })
+              }
             }
           }
-        }
-      })
-
+        })
+      }
+      if(edge==3){
+        window.location.href=(`/antelope-manage/common/download/${activeImageId}`)
+      }
     };
     image.src = imgsrc;
   }
@@ -282,6 +293,7 @@ export default () => {
   //下一步
   const next =  ()=>{
     form.validateFields().then(async (value)=>{
+      console.log(value)
       if (value.time) {
         value.startTime = moment(value.time[0]).format('YYYY-MM-DD');
         value.endTime = moment(value.time[1]).format('YYYY-MM-DD');
@@ -294,7 +306,7 @@ export default () => {
           if(res.code==0){
             value.url=res?.result
           }
-        value.activeUrl=window.location.origin + `/antelope-activity-h5/share-code/index.html?preview=true&buttonText=${value.buttonText}&targetLink=${value.targetLink}&url=${value.url}`
+        value.activeUrl=window.location.origin + `/antelope-activity-h5/share-code/index.html?preview=true&targetLinkType=${value.targetLinkType}&buttonText=${value.buttonText}&targetLink=${value.targetLink}&url=${value.url}`
         setCurrent(1)
         setFormData(value)
       }else if(edge==3){
@@ -345,14 +357,14 @@ export default () => {
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       navigator &&
       navigator.clipboard &&
-      navigator.clipboard.writeText(window.location.origin + `/antelope-activity-h5/share-code/index.html?preview=false&id=${e.id}`).then(() => {
+      navigator.clipboard.writeText(window.location.origin + `/antelope-activity-h5/share-code/index.html?preview=false&targetLinkType=${e.targetLinkType}&id=${e.id}`).then(() => {
         message.success('链接复制成功');
       });
     }else{
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       navigator &&
       navigator.clipboard &&
-      navigator.clipboard.writeText(window.location.origin + `/antelope-activity-h5/share-code/index.html?preview=true&buttonText=${e.buttonText}&targetLink=${e.targetLink}&url=${e.url}`).then(() => {
+      navigator.clipboard.writeText(window.location.origin + `/antelope-activity-h5/share-code/index.html?preview=true&targetLinkType=${e.targetLinkType}&buttonText=${e.buttonText}&targetLink=${e.targetLink}&url=${e.url}`).then(() => {
         message.success('链接复制成功');
       });
     }
@@ -668,7 +680,7 @@ export default () => {
               onClick={downShareCode}
             >下载分享码</a>
           }
-          <Popover content={content} trigger="click">
+          <Popover content={content} trigger="click" >
             <a
               href="#"
               onClick={async () => {
@@ -764,7 +776,8 @@ export default () => {
           <Popover content={content} trigger="click">
             <a
               href="#"
-              onClick={() => {
+              onClick={async () => {
+                await  getOperationRecord(_record.id as any)
               }}
             >操作记录</a>
           </Popover>
@@ -861,7 +874,8 @@ export default () => {
           <Popover content={content} trigger="click">
             <a
               href="#"
-              onClick={() => {
+              onClick={async () => {
+                await  getOperationRecord(_record.id as any)
               }}
             >操作记录</a>
           </Popover>
@@ -982,6 +996,18 @@ export default () => {
                   ))}
                 </Select>
               </Form.Item>
+              {edge === 2&&
+                <Form.Item
+                  label='目标链接类型'
+                  name="targetLinkType"
+                  rules={[{ required: true, message: '请输入目标链接类型！' }]}
+                >
+                  <Select placeholder="请选择" allowClear >
+                    <Select.Option value={'H5'}>H5</Select.Option>
+                    <Select.Option value={'APPLET'}>APPLET</Select.Option>
+                  </Select>
+                </Form.Item>}
+
               {edge !== 4&&
               <Form.Item
                 label='跳转目标链接'
@@ -1079,7 +1105,7 @@ export default () => {
             <h2 >以下链接用于预览效果用，不计入数据统计</h2>
             {formData&&(
               <div>
-            <h2 className={sc('modelWord-link')}>{window.location.origin + `/antelope-activity-h5/share-code/index.html?preview=true&buttonText=${formData.buttonText}&targetLink=${formData.targetLink}&url=${formData.url}`}
+            <h2 className={sc('modelWord-link')}>{window.location.origin + `/antelope-activity-h5/share-code/index.html?preview=true&targetLinkType=${formData.targetLinkType}&buttonText=${formData.buttonText}&targetLink=${formData.targetLink}&url=${formData.url}`}
             </h2>
             <Button
               type="primary"
