@@ -45,7 +45,7 @@ export async function getAllChannel(options?: { [key: string]: any }) {
 
 /** 根据名称获取渠道值 */
 export async function getChannelByName(name:string) {
-  return request<any>(`/antelope-manage/manage/active/channel/getByName/${name}`, {
+  return request<any>(`/antelope-manage/manage/active/channel/exist/${name}`, {
     method: 'GET',
   });
 }
@@ -93,7 +93,7 @@ export async function getAllScene(options?: { [key: string]: any }) {
 
 /** 根据名称获取场景值 */
 export async function getSceneByName(name:any) {
-  return request<any>(`/antelope-manage/manage/active/scene/getByName/${name}`, {
+  return request<any>(`/antelope-manage/manage/active/scene/exist/${name}`, {
     method: 'GET',
   });
 }

@@ -124,7 +124,7 @@ const Tablist: React.FC = () => {
           form={form}
           layout="horizontal"
           name="basic"
-          labelCol={{ span: 8 }}
+          labelCol={{ span: 7 }}
           wrapperCol={{ span: 16 }}
           initialValues={{ remember: true }}
           autoComplete="off"
@@ -140,12 +140,14 @@ const Tablist: React.FC = () => {
                     console.log(typeof value)
                     if(value.length>0){
                       getChannelByName(value).then(res=> {
-                        if (res?.code !== 0 ) {
-                          form.setFields([
-                            { name: 'channelName', value:'', errors: ['该渠道值名称已存在'] },
-                          ]);
-                        }else{
-                          callback()
+                        if (res?.code == 0) {
+                          if(res.result.exist){
+                            form.setFields([
+                              { name: 'channelName', value:'', errors: ['该渠道值名称已存在'] },
+                            ]);
+                          }else{
+                            callback()
+                          }
                         }
                       })}
                   }catch (e){
@@ -179,14 +181,17 @@ const Tablist: React.FC = () => {
               {
                 validator(rule,value, callback) {
                   try{
+                    console.log(value)
                     if(value.length>0){
                       getSceneByName(value).then(res=> {
-                        if (res?.code !== 0 ) {
-                          form.setFields([
-                            { name: 'sceneName', value:'', errors: ['该场景值名称已存在'] },
-                          ]);
-                        }else{
-                          callback()
+                        if (res?.code == 0) {
+                          if(res.result.exist){
+                            form.setFields([
+                              { name: 'channelName', value:'', errors: ['该渠道值名称已存在'] },
+                            ]);
+                          }else{
+                            callback()
+                          }
                         }
                       })}
                   }catch (e){
@@ -295,6 +300,7 @@ const Tablist: React.FC = () => {
       title: '序号',
       dataIndex: 'sort',
       key: 'sort',
+      width:100,
       render: (_: any, _record: any, index: number) =>
         pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
@@ -302,12 +308,14 @@ const Tablist: React.FC = () => {
       title: edge == 0? '渠道值名称' : '场景值名称',
       dataIndex:  edge == 0? 'channelName' : 'sceneName',
       key:  edge == 0? 'channelName' : 'sceneName',
+      width:200,
     },
     {
       title: edge == 0? '渠道值描述' : '场景值描述',
       dataIndex: 'description',
       key: 'description',
       ellipsis: true,
+      width:400
     },
     {
       title: '创建时间',
