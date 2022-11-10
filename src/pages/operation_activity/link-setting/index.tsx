@@ -154,7 +154,8 @@ export default () => {
     try {
       const data= {
         path:'pagesMine/jump-blank',
-        reallyPath:value.targetLink
+        reallyPath:value.targetLink,
+        activeName:value.activeName
       }
       const res =await postAppletCode(data)
       if(res.code === 0){
@@ -238,7 +239,7 @@ export default () => {
         })
       }
       if(edge==3){
-        window.location.href=(`/antelope-manage/common/download/${activeImageId}`)
+        window.location.href=(`/antelope-manage/manage/active/download/${activeImageId}`)
       }
     };
     image.src = imgsrc;
@@ -295,6 +296,7 @@ export default () => {
   const next =  ()=>{
     form.validateFields().then(async (value)=>{
       console.log(value)
+      setColumnData({...columnData,...value})
       if (value.time) {
         value.startTime = moment(value.time[0]).format('YYYY-MM-DD');
         value.endTime = moment(value.time[1]).format('YYYY-MM-DD');
@@ -402,7 +404,7 @@ export default () => {
     else if(edge==4){
       exportImg()
       if(types.indexOf("新建") == -1){
-        const res =await postEditActivity({...columnData})
+        const res =await postEditActivity({...formData})
         if (res.code === 0) {
           await getOperationActivity();
         } else {
@@ -663,8 +665,8 @@ export default () => {
             <a
               type="primary"
               onClick={downWechatCode}
-              href={`/antelope-manage/common/download/${_record?.activeImageId}`}
-              download={`/antelope-manage/common/download/${_record?.activeImageId}`}
+              href={`/antelope-manage/manage/active/download/${_record?.activeImageId}`}
+              download={`/antelope-manage/manage/active/download/${_record?.activeImageId}`}
             >
               下载二维码
             </a>
@@ -756,8 +758,8 @@ export default () => {
             <a
               type="primary"
               onClick={downWechatCode}
-              href={`/antelope-manage/common/download/${_record?.activeImageId}`}
-              download={`/antelope-manage/common/download/${_record?.activeImageId}`}
+              href={`/antelope-manage/manage/active/download/${_record?.activeImageId}`}
+              download={`/antelope-manage/manage/active/download/${_record?.activeImageId}`}
             >
               下载二维码
             </a>
@@ -854,8 +856,8 @@ export default () => {
             <a
               type="primary"
               onClick={downWechatCode}
-              href={`/antelope-manage/common/download/${_record?.activeImageId}`}
-              download={`/antelope-manage/common/download/${_record?.activeImageId}`}
+              href={`/antelope-manage/manage/active/download/${_record?.activeImageId}`}
+              download={`/antelope-manage/manage/active/download/${_record?.activeImageId}`}
             >
               下载二维码
             </a>
