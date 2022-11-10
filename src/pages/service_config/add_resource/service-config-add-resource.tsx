@@ -25,6 +25,7 @@ import UploadForm from '@/components/upload_form';
 import AppResource from '@/types/app-resource';
 import { Link, history, Prompt } from 'umi';
 import { routeName } from '../../../../config/routes';
+import FormEdit from '@/components/FormEdit';
 
 const sc = scopedClasses('service-config-add-resource');
 export default () => {
@@ -126,8 +127,15 @@ export default () => {
     form
       .validateFields()
       .then(async (value: AppResource.Detail) => {
+        const { webUrl, h5Url } = value;
+        console.log(webUrl, h5Url);
+        if (!webUrl && !h5Url) {
+          message.error('请至少填一个试用地址');
+          return;
+        }
         const tooltipMessage = isEditing ? '修改' : '添加';
         const hide = message.loading(`正在${tooltipMessage}`);
+
         setAddOrUpdateLoading(true);
         const addorUpdateRes = await addOrUpdateAppSource({
           ...value,
@@ -157,8 +165,8 @@ export default () => {
   }, [editingItem]);
 
   const formLayout = {
-    labelCol: { span: 4 },
-    wrapperCol: { span: 14 },
+    labelCol: { span: 6 },
+    wrapperCol: { span: 16 },
   };
 
   const listener = (e: any) => {
@@ -437,6 +445,16 @@ export default () => {
               </Radio.Group>
             </Form.Item>
             {isTry ? (
+              <>
+                <Form.Item name="webUrl" label="网页端Web应用地址">
+                  <Input placeholder="请输入" />
+                </Form.Item>
+                <Form.Item name="h5Url" label="移动端(H5)应用地址">
+                  <Input placeholder="请输入" />
+                </Form.Item>
+              </>
+            ) : null}
+            {isTry ? (
               <Form.Item name="tryTime" label="试用周期（天）">
                 <InputNumber
                   placeholder="请输入"
@@ -474,6 +492,7 @@ export default () => {
                 <Radio value={0}>否</Radio>
               </Radio.Group>
             </Form.Item>
+
             {isSkip ? (
               <Form.Item
                 name="url"
@@ -488,43 +507,42 @@ export default () => {
                 <Input placeholder="请输入" />
               </Form.Item>
             ) : (
-              <Form.Item
-                name="detailPdfId"
-                label="上传详情"
-                rules={
-                  isEditing
-                    ? undefined
-                    : [
-                        {
-                          required: true,
-                          message: '必填',
-                        },
-                      ]
-                }
-              >
-                <UploadForm
-                  listType="picture-card"
-                  className="avatar-uploader"
-                  accept=".bmp,.gif,.png,.jpeg,.jpg"
-                  showUploadList={false}
-                />
-
-                {/* <Upload name="file" accept=".pdf" action="/antelope-manage/common/upload" maxCount={1} beforeUpload={(file) => {
-                  if (file.type !== "application/pdf") {
-                    message.error(`请上传pdf文件`);
-                    return Upload.LIST_IGNORE
-                  } else return true
-                }}>
-                  <Button icon={<UploadOutlined />}>上传文件</Button>
-                </Upload> */}
-                {/* <UploadForm
-                  name="file"
-                  action="/antelope-manage/common/upload"
-                  listType="picture"
+              //
+              <>
+                <Form.Item
+                  name="introduction"
+                  label="应用介绍"
+                  rules={[
+                    {
+                      required: true,
+                    },
+                  ]}
                 >
-                  <Button icon={<UploadOutlined />}>上传文件</Button>
-                </UploadForm> */}
-              </Form.Item>
+                  <FormEdit width={'100%'} />
+                </Form.Item>
+                <Form.Item
+                  name="productWorth"
+                  label="应用价值"
+                  rules={[
+                    {
+                      required: true,
+                    },
+                  ]}
+                >
+                  <FormEdit width={'100%'} />
+                </Form.Item>
+                <Form.Item
+                  name="appScene"
+                  label="应用场景"
+                  rules={[
+                    {
+                      required: true,
+                    },
+                  ]}
+                >
+                  <FormEdit width={'100%'} />
+                </Form.Item>
+              </>
             )}
           </Col>
         </Row>
