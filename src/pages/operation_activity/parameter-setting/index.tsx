@@ -187,7 +187,7 @@ const Tablist: React.FC = () => {
                         if (res?.code == 0) {
                           if(res.result.exist){
                             form.setFields([
-                              { name: 'channelName', value:'', errors: ['该渠道值名称已存在'] },
+                              { name: 'sceneName', value:'', errors: ['该渠道值名称已存在'] },
                             ]);
                           }else{
                             callback()
@@ -242,7 +242,9 @@ const Tablist: React.FC = () => {
     );
   };
 
+  const help=()=>{
 
+  };
   //是否启用的switch按钮
   const onChange = (started: boolean) => {
     console.log(`switch to ${started}`);
@@ -260,7 +262,12 @@ const Tablist: React.FC = () => {
         : await postUpdateScene(data)
       if (res.code === 0) {
         setModalVisible(false);
-        message.success(`启用成功`);
+        if(!record.started){
+          message.success(`启用成功`);
+        }else{
+          message.success(`停用成功`);
+        }
+        setDataSource([])
         clearForm();
         await getOperationActivity();
       } else {
@@ -272,6 +279,7 @@ const Tablist: React.FC = () => {
   };
   const cancel= async (record: any)=>{
     console.log(record)
+    setDataSource([])
     await getOperationActivity();
   }
   //删除渠道/场景值的按钮
@@ -282,11 +290,11 @@ const Tablist: React.FC = () => {
       : await postDeleteScene(id)
     if (res.code === 0) {
       setModalVisible(false);
-      message.success(`${btnType}成功`);
+      message.success(`删除成功`);
       clearForm();
      await getOperationActivity();
     } else {
-      message.error(`${btnType}失败，原因:{${res.message}}`);
+      message.error(`删除失败，原因:{${res.message}}`);
     }
   } catch (error) {
     console.log(error);
@@ -300,7 +308,7 @@ const Tablist: React.FC = () => {
       title: '序号',
       dataIndex: 'sort',
       key: 'sort',
-      width:100,
+      width:80,
       render: (_: any, _record: any, index: number) =>
         pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
@@ -315,7 +323,7 @@ const Tablist: React.FC = () => {
       dataIndex: 'description',
       key: 'description',
       ellipsis: true,
-      width:400
+      width:500,
     },
     {
       title: '创建时间',
@@ -326,6 +334,7 @@ const Tablist: React.FC = () => {
       title: '是否启用',
       key: 'started',
       dataIndex: 'started',
+      width:100,
       render: (started: boolean, record: Activity.Content) => (
         <>
           <Popconfirm
@@ -347,7 +356,7 @@ const Tablist: React.FC = () => {
             onConfirm={()=>confirm(record as any)}
             onCancel={()=>cancel(record as any)}
           >
-            <Switch defaultChecked={started}  onChange={onChange} />
+            <div onClick={() => { help()}}><Switch   defaultChecked={started}  onChange={onChange} /></div>
           </Popconfirm>
         </>
       ),

@@ -376,8 +376,9 @@ export default () => {
   }
   // 完成复制并提交
   const finishSubmit = async ()=>{
+    form.validateFields().then(async (value)=>{
     if(edge==2){
-      const res =types.indexOf("新建") !== -1?await postAddActivity(formData):await postEditActivity(columnData)
+      const res =types.indexOf("新建") !== -1?await postAddActivity(value):await postEditActivity(value)
       if (res.code === 0) {
         await getOperationActivity();
         const data= types.indexOf("新建") !== -1?{...formData,...{id:res.result}}:columnData
@@ -390,8 +391,8 @@ export default () => {
     else if(edge==3){
       const microProgramQRCodeUrl=url
       const res =types.indexOf("新建") !== -1
-        ?await postAddActivity({...formData,microProgramQRCodeUrl,randomId,activeImageId})
-        :await postEditActivity({...columnData,microProgramQRCodeUrl,randomId,activeImageId})
+        ?await postAddActivity({...value,microProgramQRCodeUrl,randomId,activeImageId})
+        :await postEditActivity({...value,microProgramQRCodeUrl,randomId,activeImageId})
       if (res.code === 0) {
         await getOperationActivity();
         exportImg()
@@ -402,7 +403,7 @@ export default () => {
     else if(edge==4){
       exportImg()
       if(types.indexOf("新建") == -1){
-        const res =await postEditActivity({...columnData})
+        const res =await postEditActivity({...value})
         if (res.code === 0) {
           await getOperationActivity();
         } else {
@@ -413,6 +414,7 @@ export default () => {
     clearForm();
     setCurrent(0)
     setModalVisible(false)
+    })
   }
 
   //新增链接按钮
