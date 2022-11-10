@@ -102,6 +102,8 @@
     "@umijs/preset-react": "^1.8.17",
     "@umijs/yorkie": "^2.0.3",
     "antd": "^4.17.1",
+    "browserslist": "^4.21.4",
+    "caniuse-lite": "^1.0.30001431",
     "carlo": "^0.9.46",
     "cross-env": "^7.0.3",
     "cross-port-killer": "^1.1.1",
