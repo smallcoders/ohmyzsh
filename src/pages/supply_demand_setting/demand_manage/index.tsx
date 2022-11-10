@@ -340,7 +340,6 @@ export default () => {
     }
   };
   const [weightForm] = Form.useForm();
-  const [abutStatusForm] = Form.useForm();
   const columns = [
     {
       title: '序号',
@@ -463,8 +462,14 @@ export default () => {
       width: 150,
     },
     {
+      title: '需求跟进次数',
+      dataIndex: 'demandConnectNum',
+      isEllipsis: true,
+      width: 150,
+    },
+    {
       title: '操作',
-      width: 500,
+      width: 400,
       fixed: 'right',
       dataIndex: 'option',
       render: (_: any, record: any) => {
@@ -481,7 +486,7 @@ export default () => {
                 >
                   <a href="#">下架</a>
                 </Popconfirm>
-                <Button
+                {/* <Button
                   key="1"
                   size="small"
                   type="link"
@@ -492,7 +497,7 @@ export default () => {
                   }}
                 >
                   节点维护
-                </Button>
+                </Button> */}
                 <Popconfirm
                   title={
                     <>
@@ -751,7 +756,7 @@ export default () => {
       <div className={sc('container-table-body')}>
         <SelfTable
           bordered
-          scroll={{ x: 2880 }}
+          scroll={{ x: 2930 }}
           columns={columns}
           dataSource={dataSource}
           rowKey={'id'}

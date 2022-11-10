@@ -24,6 +24,7 @@ export const routeName = {
   DEMAND_MANAGEMENT: '/service-config/requirement-management', // 需求管理
   DEMAND_MANAGEMENT_INDEX: '/supply-demand-setting/demand-manage/index', // 需求管理
   DEMAND_MANAGEMENT_DETAIL: '/supply-demand-setting/demand-manage/detail', // 需求管理详情
+  DEMAND_MANAGEMENT_FEEDBACK: '/supply-demand-setting/demand-manage/feedback', // 需求管理详情
   ACCOUNT: '/system-config/account', // 账号管理
   DEMAND_CONTACTS: '/supply-demand-setting/demand_contacts/index', // 需求联系人
 
@@ -525,6 +526,12 @@ export default [
         hideInMenu: true,
         name: '需求详情',
         component: './supply_demand_setting/demand_manage/detail/index',
+      },
+      {
+        path: routeName.DEMAND_MANAGEMENT_FEEDBACK,
+        hideInMenu: true,
+        name: '需求反馈',
+        component: './supply_demand_setting/docking_manage/components/feedback',
       },
       {
         path: '/supply-demand-setting/docking-manage/index',

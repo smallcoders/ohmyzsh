@@ -8,8 +8,6 @@ import {
   DatePicker,
   message as antdMessage,
   Space,
-  Popconfirm,
-  Tooltip,
   TreeSelect,
 } from 'antd';
 import './index.less';
@@ -18,17 +16,15 @@ import React, { useEffect, useState } from 'react';
 import type Common from '@/types/common';
 import moment from 'moment';
 import SelfTable from '@/components/self_table';
-import { history } from 'umi';
 import { routeName } from '@/../config/routes';
 import type ConsultRecord from '@/types/expert_manage/consult-record';
 import { cancelClaimDemand, claimDemand, getClaimUsers, getDemandPage } from '@/services/creative-demand';
 import DockingManage from '@/types/docking-manage.d';
-import { PageInfo } from '@ant-design/pro-table/lib/typing';
 const { RangePicker } = DatePicker
 
 const sc = scopedClasses('user-config-logout-verify');
 
-export default ({demandTypes}: {demandTypes: any[]}) => {
+export default ({ demandTypes, area }: { demandTypes: any[], area: any[] }) => {
   const [dataSource, setDataSource] = useState<DockingManage.Content[]>([]);
   const [searchContent, setSearChContent] = useState<DockingManage.searchContent>({});
 
@@ -107,7 +103,7 @@ export default ({demandTypes}: {demandTypes: any[]}) => {
     {
       title: '需求名称',
       dataIndex: 'name',
-      width: 150,
+      width: 200,
       render: (_: string, _record: any) => (
         <a
           onClick={() => {
@@ -124,6 +120,13 @@ export default ({demandTypes}: {demandTypes: any[]}) => {
       dataIndex: 'orgName',
       isEllipsis: true,
       width: 200,
+    },
+    {
+      title: '需求地区',
+      dataIndex: 'areaNameList',
+      isEllipsis: true,
+      render: (item?: string[]) => item ? item.join(',') : '--',
+      width: 150,
     },
     {
       title: '需求状态',
@@ -145,7 +148,13 @@ export default ({demandTypes}: {demandTypes: any[]}) => {
       dataIndex: 'claimName',
       render: (_: string) => _ || '--',
       width: 100,
-
+    },
+    {
+      title: '需求类型',
+      isEllipsis: true,
+      dataIndex: 'typeNameList',
+      render: (item?: string[]) => item ? item.join(',') : '--',
+      width: 300,
     },
     {
       title: '操作',
@@ -204,6 +213,21 @@ export default ({demandTypes}: {demandTypes: any[]}) => {
               </Form.Item>
             </Col>
             <Col span={8}>
+              <Form.Item name="areaCode" label="需求地区">
+                <TreeSelect
+                  treeNodeFilterProp={'name'}
+                  showSearch
+                  style={{ width: '100%' }}
+                  dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                  placeholder="请选择"
+                  allowClear
+                  treeDefaultExpandAll
+                  treeData={area}
+                  fieldNames={{ children: 'nodes', value: 'code', label: 'name' }}
+                />
+              </Form.Item>
+            </Col>
+            <Col span={8}>
               <Form.Item name="claimState" label="需求状态">
                 <Select placeholder="请选择" allowClear>
                   <Select.Option value={3}>新发布</Select.Option>
@@ -211,8 +235,7 @@ export default ({demandTypes}: {demandTypes: any[]}) => {
                 </Select>
               </Form.Item>
             </Col>
-          </Row>
-          <Row>
+
             <Col span={8}>
               <Form.Item name="time" label="需求发布时间">
                 <RangePicker allowClear showTime />
@@ -233,19 +256,23 @@ export default ({demandTypes}: {demandTypes: any[]}) => {
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="claimId" label="需求认领人">
+              <Form.Item name="type" label="需求类型">
                 <TreeSelect
+                  treeNodeFilterProp={'name'}
                   showSearch
                   style={{ width: '100%' }}
                   dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-                  placeholder="Please select"
+                  placeholder="请选择"
                   allowClear
                   treeDefaultExpandAll
-                  treeData={treeData}
+                  treeData={demandTypes}
+                  fieldNames={{ children: 'nodes', value: 'id', label: 'name' }}
                 />
               </Form.Item>
             </Col>
-            <Col offset={4} span={4}>
+
+
+            <Col offset={12} span={4} >
               <Button
                 style={{ marginRight: 20 }}
                 type="primary"
@@ -290,7 +317,7 @@ export default ({demandTypes}: {demandTypes: any[]}) => {
       <div className={sc('container-table-body')}>
         <SelfTable
           bordered
-          scroll={{ x: 1280 }}
+          scroll={{ x: 1480 }}
           columns={columns}
           rowKey={'id'}
           dataSource={dataSource}

@@ -1,47 +1,50 @@
-import { Button, message, Modal } from 'antd'
+import { Button, message, Popconfirm, } from 'antd'
 import React, { useEffect, useState } from 'react'
-import { Cascader, Checkbox, DatePicker, Form, Input, InputNumber, Radio, Select } from 'antd'
-import { renderSearchItemControl, SearchItem, SearchItemControlEnum } from './refine'
+import { Form } from 'antd'
+import { renderSearchItemControl, SearchItemControlEnum } from './refine'
 import UploadFormFile from '@/components/upload_form/upload-form-file'
-import { UploadOutlined } from '@ant-design/icons'
-import { getFeedbackDetail, postFeedback } from '@/services/creative-demand'
+import { DeleteTwoTone, UploadOutlined } from '@ant-design/icons'
+import { deleteFeedback, getFeedbackDetail, postFeedback } from '@/services/creative-demand'
+import scopedClasses from '@/utils/scopedClasses';
+import { history } from 'umi';
+import { PageContainer } from '@ant-design/pro-layout'
+const sc = scopedClasses('user-config-logout-verify');
 
-const FeedBackModal = (props: { record: any; visible: any; setVisible: (b: boolean, isRefresh?: boolean) => void }) => {
-    const { record, visible, setVisible } = props
-
+const FeedBackModal = () => {
+    const [detail, setDetail] = useState<any>('')
+    const id = history.location.query?.id as string;
+    const name = history.location.query?.name as string;
     const [form] = Form.useForm()
 
     useEffect(() => {
-        if (!record?.id) return
+        if (!id) return
         getInfo()
-    }, [record])
+    }, [id])
 
 
     const getInfo = async () => {
-
         try {
-            const res = await getFeedbackDetail(record?.id)
-
-            const { fileInfo, ...rest } = res?.result || {}
-
-            form.setFieldsValue({
-                fileIds: fileInfo
-                    ? fileInfo?.map((p) => {
-                        return {
-                            uid: p.fileId,
-                            name: p.fileName,
-                            status: 'done',
-                            url: p?.path
-                        };
-                    })
-                    : [],
-                ...rest
-            })
-
+            const res = await getFeedbackDetail(id)
+            setDetail(res?.result || {})
         } catch (error) {
             message.error('服务器错误')
         }
     }
+
+    const remove = async (feedbackId: string) => {
+        try {
+            const res = await deleteFeedback(feedbackId)
+            if (res?.code == 0) {
+                message.success('删除成功')
+                getInfo()
+            } else {
+                message.error(res?.message || '删除失败')
+            }
+        } catch (error) {
+            message.error('服务器错误')
+        }
+    }
+
 
 
     const searchList = [
@@ -50,7 +53,7 @@ const FeedBackModal = (props: { record: any; visible: any; setVisible: (b: boole
             label: `需求名称`,
             type: SearchItemControlEnum.CUSTOM,
             render: () => {
-                return record?.name
+                return <div style={{fontSize: '16px', fontWeight: 'bold'}}>{name}</div>
             }
         },
         {
@@ -60,7 +63,7 @@ const FeedBackModal = (props: { record: any; visible: any; setVisible: (b: boole
             props: {
                 style: {
                     width: '100%',
-                    
+
                 },
                 showCount: true,
                 maxLength: 500,
@@ -84,9 +87,13 @@ const FeedBackModal = (props: { record: any; visible: any; setVisible: (b: boole
             .validateFields()
             .then(async (values) => {
                 const { fileIds, ...rest } = values
-                console.log('fileIdsfileIdsfileIdsfileIds', fileIds)
+                console.log(values)
+                if (!values?.content && !fileIds) {
+                    message.error('请上传交付物或者填写交付物内容描述')
+                    return
+                }
                 const res = await postFeedback({
-                    demandId: record?.id,
+                    demandId: id,
                     list: fileIds ? fileIds?.map(p => {
                         return {
                             fileName: p?.name,
@@ -99,7 +106,7 @@ const FeedBackModal = (props: { record: any; visible: any; setVisible: (b: boole
                 if (res?.code == 0) {
                     message.success('反馈成功')
                     form.resetFields();
-                    setVisible(false, true)
+                    getInfo()
                 } else {
                     message.error(res?.message || '反馈失败')
                 }
@@ -110,22 +117,7 @@ const FeedBackModal = (props: { record: any; visible: any; setVisible: (b: boole
     }
 
     return (
-        <Modal
-            title={'需求反馈'}
-            visible={visible}
-            onCancel={() => {
-                setVisible(false)
-            }}
-            width={600}
-            centered
-            maskClosable={false}
-            okText="确定"
-            cancelText="取消"
-            destroyOnClose={true}
-            bodyStyle={{ padding: 20, minWidth: 600 }}
-            onOk={onSubmit}
-        >
-
+        <PageContainer style={{ background: '#fff' }}>
             <Form
                 labelCol={{ span: 24 }}
                 wrapperCol={{ span: 24 }}
@@ -135,8 +127,51 @@ const FeedBackModal = (props: { record: any; visible: any; setVisible: (b: boole
                         {renderSearchItemControl(search, form)}
                     </Form.Item>
                 ))}
+
+                <Button type="primary" onClick={() => {
+                    onSubmit()
+                }}>
+                    提交
+                </Button>
             </Form>
-        </Modal >
+            <div style={{ margin: '10px 0', fontWeight: 'bolder', fontSize: '18px' }}>反馈记录</div>
+            {detail?.feedbackList?.map((p) => {
+                return <div className={sc('container')}>
+                    <div className={sc('container-desc')}>
+                        <div style={{ margin: '10px 0', fontWeight: 'bolder' }}>
+
+                            <span style={{ marginRight: 20 }}>{p?.createTime}</span>
+                            <Popconfirm
+                                title="确定删除么？"
+                                okText="确定"
+                                cancelText="取消"
+                                onConfirm={() => remove(p.id)}
+                            >
+                                <DeleteTwoTone
+                                />
+                            </Popconfirm>
+                        </div>
+                        <div style={{ padding: '20px 0' }}>{p?.content || '--'}</div>
+                    </div>
+                    <div className={sc('container-desc')}>
+                        <div>
+                            {p?.fileInfo &&
+                                detail?.demandFeedback?.fileList?.map((p: any) => {
+                                    return (
+                                        <div>
+                                            <a target="_blank" rel="noreferrer" href={p.path}>
+                                                {p.fileName}
+                                            </a>
+                                        </div>
+                                    );
+                                })}
+                        </div>
+                    </div>
+                    <div>
+                    </div>
+                </div>
+            })}
+        </PageContainer>
     )
 }
 

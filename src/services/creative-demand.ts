@@ -213,3 +213,15 @@ export async function getFeedbackDetail(demandId: string) {
     method: 'post',
   });
 }
+
+export async function deleteFeedback(feedbackId: string) {
+  return request<any>(`/antelope-science/mng/demand/follow/feedback?feedbackId=${feedbackId}`, {
+    method: 'delete',
+  });
+}
+
+//查询需求跟进阶段的需求认领人
+export async function getClaimFollow(specifyType: string) {
+  return request<any>(`/antelope-science/mng/demand/claim/follow?specifyType=${specifyType}`);
+}
+
