@@ -1,4 +1,4 @@
-import Common from './common';
+import type Common from './common';
 
 namespace AppResource {
   export type ResultList = {
@@ -51,7 +51,7 @@ namespace AppResource {
     /**
      * 权重
      */
-     sort?: number;
+    sort?: number;
   };
 
   export type Detail = Content & {
@@ -76,6 +76,9 @@ namespace AppResource {
           url: string;
         }[]
       | { response: { result: string } }[0];
+
+    webUrl?: string;
+    h5Url?: string;
   };
 
   export type DataAnalyseList = {
