@@ -153,7 +153,7 @@ export default ({ demandTypes, area }: { demandTypes: any[], area: any[] }) => {
       title: '需求地区',
       dataIndex: 'areaNameList',
       isEllipsis: true,
-      render: (item?: string[]) => item ? item.join(',') : '--',
+      render: (item?: string[]) => item ? item.join('、') : '--',
       width: 200,
     },
     {
@@ -173,7 +173,7 @@ export default ({ demandTypes, area }: { demandTypes: any[], area: any[] }) => {
       title: '需求类型',
       dataIndex: 'typeNameList',
       isEllipsis: true,
-      render: (item?: string[]) => item ? item.join(',') : '--',
+      render: (item?: string[]) => item ? item.join('、') : '--',
       width: 300,
     },
     {
@@ -185,7 +185,7 @@ export default ({ demandTypes, area }: { demandTypes: any[], area: any[] }) => {
     },
     {
       title: '操作',
-      width: 200,
+      width: 300,
       fixed: 'right',
       dataIndex: 'option',
       render: (_: any, record: any) => {
@@ -357,7 +357,7 @@ export default ({ demandTypes, area }: { demandTypes: any[], area: any[] }) => {
       <div className={sc('container-table-body')}>
         <SelfTable
           bordered
-          scroll={{ x: 1930 }}
+          scroll={{ x: 2030 }}
           columns={columns}
           rowKey={'id'}
           dataSource={dataSource}

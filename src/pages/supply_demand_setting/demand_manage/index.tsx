@@ -469,7 +469,7 @@ export default () => {
     },
     {
       title: '操作',
-      width: 400,
+      width: 300,
       fixed: 'right',
       dataIndex: 'option',
       render: (_: any, record: any) => {
@@ -756,7 +756,7 @@ export default () => {
       <div className={sc('container-table-body')}>
         <SelfTable
           bordered
-          scroll={{ x: 2930 }}
+          scroll={{ x: 2830 }}
           columns={columns}
           dataSource={dataSource}
           rowKey={'id'}

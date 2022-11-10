@@ -150,6 +150,13 @@ export default (props: { gid: any; demandTypes: any[], area: any[] }) => {
       isEllipsis: true,
     },
     {
+      title: '需求类型',
+      dataIndex: 'typeNameList',
+      isEllipsis: true,
+      render: (item?: string[]) => item ? item.join('、') : '--',
+      width: 300,
+    },
+    {
       title: '所属企业',
       dataIndex: 'orgName',
       isEllipsis: true,
@@ -171,7 +178,7 @@ export default (props: { gid: any; demandTypes: any[], area: any[] }) => {
       title: '需求地区',
       dataIndex: 'areaNameList',
       isEllipsis: true,
-      render: (item?: string[]) => item ? item.join(',') : '--',
+      render: (item?: string[]) => item ? item.join('、') : '--',
       width: 150,
     },
     {
@@ -186,13 +193,7 @@ export default (props: { gid: any; demandTypes: any[], area: any[] }) => {
       isEllipsis: true,
       width: 150,
     },
-    {
-      title: '需求类型',
-      dataIndex: 'typeNameList',
-      isEllipsis: true,
-      render: (item?: string[]) => item ? item.join(',') : '--',
-      width: 300,
-    },
+
     {
       title: '指派情况',
       dataIndex: 'appointOrgName',
@@ -316,7 +317,7 @@ export default (props: { gid: any; demandTypes: any[], area: any[] }) => {
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="claimState" label="需求认领人">
+              <Form.Item name="claimId" label="需求认领人">
                 <Select placeholder="请选择" allowClear>
                   {
                     users?.map(p => {

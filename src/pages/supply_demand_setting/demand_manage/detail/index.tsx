@@ -553,11 +553,13 @@ export default () => {
             <div style={{ display: 'flex', justifyContent: 'space-between' }}> <div className={sc('container-title')}>需求反馈</div>
               {detail?.demandFeedback && <div className={sc('container-title')}>反馈来自：{detail?.demandFeedback?.feedbackPerson || '--'}</div>}
             </div>
-            {detail?.demandFeedback?.feedbackList?.length > 0 ? <><div className={sc('container-desc')}>
-              <span>交付物内容描述：</span>
-              <span>{detail?.demandFeedback?.feedbackList?.[0]?.content || '--'}</span>
-            </div>
-              <div className={sc('container-desc')}>
+            {detail?.demandFeedback?.feedbackList?.length > 0 ? <div style={{ padding: '10px 20px' }}>
+
+              <div>
+                <span>交付物内容描述：</span>
+                <div>{detail?.demandFeedback?.feedbackList?.[0]?.content || '--'}</div>
+              </div>
+              <div>
                 <span>交付物文件：</span>
                 <div>
                   {detail?.demandFeedback?.feedbackList?.[0]?.fileList &&
@@ -565,7 +567,7 @@ export default () => {
                       return (
                         <div>
                           <a target="_blank" rel="noreferrer" href={p.path}>
-                            {p.fileName}
+                            {p.name + '.' + p.format}
                           </a>
                         </div>
                       );
@@ -577,7 +579,7 @@ export default () => {
                   setVisible(true)
                 }}>查看完整反馈记录{'>'}</Button>
               </div>
-            </> : <Empty description="未到当前步骤" />}
+            </div> : <Empty description="未到当前步骤" />}
           </div>
           <div className={sc('container')}>
             <div className={sc('container-title')}>企业评价</div>
@@ -711,7 +713,7 @@ export default () => {
         onCancel={() => {
           setVisible(false)
         }}
-        width={600}
+        width={800}
         centered
         maskClosable={false}
         destroyOnClose={true}
@@ -720,17 +722,22 @@ export default () => {
         {detail?.demandFeedback?.feedbackList?.map((p) => {
           return <div className={sc('container')}>
             <div className={sc('container-desc')}>
-              <span>交付物内容描述：</span>
+              <span></span>
+              <span>{p?.createTime || '--'}</span>
+            </div>
+            <div className={sc('container-desc')}>
+              <span></span>
               <span>{p?.content || '--'}</span>
             </div>
             <div className={sc('container-desc')}>
+              <span></span>
               <div>
                 {p?.fileList &&
                   p?.fileList?.map((f: any) => {
                     return (
                       <div>
                         <a target="_blank" rel="noreferrer" href={f.path}>
-                          {f.fileName}
+                          {f.name + '.' + f.format}
                         </a>
                       </div>
                     );

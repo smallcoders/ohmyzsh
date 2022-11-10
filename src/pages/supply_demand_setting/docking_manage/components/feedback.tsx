@@ -1,4 +1,4 @@
-import { Button, message, Popconfirm, } from 'antd'
+import { Button, Empty, message, Popconfirm, } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { Form } from 'antd'
 import { renderSearchItemControl, SearchItemControlEnum } from './refine'
@@ -53,7 +53,7 @@ const FeedBackModal = () => {
             label: `需求名称`,
             type: SearchItemControlEnum.CUSTOM,
             render: () => {
-                return <div style={{fontSize: '16px', fontWeight: 'bold'}}>{name}</div>
+                return <div style={{ fontSize: '16px', fontWeight: 'bold' }}>{name}</div>
             }
         },
         {
@@ -74,7 +74,7 @@ const FeedBackModal = () => {
             label: `交付物文件上传`,
             type: SearchItemControlEnum.CUSTOM,
             render: () => {
-                return <UploadFormFile multiple accept=".png,.jpg,.pdf,.xlsx,.xls" showUploadList={true} maxSize={30}>
+                return <UploadFormFile maxCount={3} multiple accept=".png,.jpg,.pdf,.xlsx,.xls" showUploadList={true} maxSize={30}>
                     <Button icon={<UploadOutlined />}>上传文件</Button>
                     <div style={{ fontSize: '12px' }}>支持上传以下格式文件：jpg、pdf、xlxs、xls、png，单个文件上传大小限制30M</div>
                 </UploadFormFile>
@@ -94,14 +94,10 @@ const FeedBackModal = () => {
                 }
                 const res = await postFeedback({
                     demandId: id,
-                    list: fileIds ? fileIds?.map(p => {
-                        return {
-                            fileName: p?.name,
-                            fileId: p?.response?.result || p?.uid
-                        }
+                    fileIdList: fileIds ? fileIds?.map(p => {
+                        return p?.response?.result || p?.uid
                     }) : undefined,
                     ...rest,
-                    type: 0,
                 });
                 if (res?.code == 0) {
                     message.success('反馈成功')
@@ -135,7 +131,7 @@ const FeedBackModal = () => {
                 </Button>
             </Form>
             <div style={{ margin: '10px 0', fontWeight: 'bolder', fontSize: '18px' }}>反馈记录</div>
-            {detail?.feedbackList?.map((p) => {
+            {detail?.feedbackList?.length > 0 ? detail?.feedbackList?.map((p) => {
                 return <div className={sc('container')}>
                     <div className={sc('container-desc')}>
                         <div style={{ margin: '10px 0', fontWeight: 'bolder' }}>
@@ -155,12 +151,12 @@ const FeedBackModal = () => {
                     </div>
                     <div className={sc('container-desc')}>
                         <div>
-                            {p?.fileInfo &&
-                                detail?.demandFeedback?.fileList?.map((p: any) => {
+                            {p?.fileList &&
+                                p?.fileList?.map((p: any) => {
                                     return (
                                         <div>
                                             <a target="_blank" rel="noreferrer" href={p.path}>
-                                                {p.fileName}
+                                                {p.name + '.' + p.format}
                                             </a>
                                         </div>
                                     );
@@ -170,7 +166,9 @@ const FeedBackModal = () => {
                     <div>
                     </div>
                 </div>
-            })}
+            }) : <div style={{ height: 300 }}>
+                <Empty description="暂无记录" />
+            </div>}
         </PageContainer>
     )
 }
