@@ -187,7 +187,7 @@ const Tablist: React.FC = () => {
                         if (res?.code == 0) {
                           if(res.result.exist){
                             form.setFields([
-                              { name: 'sceneName', value:'', errors: ['该渠道值名称已存在'] },
+                              { name: 'sceneName', value:'', errors: ['该场景值名称已存在'] },
                             ]);
                           }else{
                             callback()
@@ -242,9 +242,6 @@ const Tablist: React.FC = () => {
     );
   };
 
-  const help=()=>{
-
-  };
   //是否启用的switch按钮
   const onChange = (started: boolean) => {
     console.log(`switch to ${started}`);
@@ -356,7 +353,7 @@ const Tablist: React.FC = () => {
             onConfirm={()=>confirm(record as any)}
             onCancel={()=>cancel(record as any)}
           >
-            <div onClick={() => { help()}}><Switch   defaultChecked={started}  onChange={onChange} /></div>
+          <Switch   defaultChecked={started}  onChange={onChange} />
           </Popconfirm>
         </>
       ),

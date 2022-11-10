@@ -217,9 +217,7 @@ export default () => {
         httpUpload(formData1).then(res=>{
           if(res.code==0){
             const activeImageId1=res.result
-            debugger
             window.location.href=(`/antelope-manage/common/download/${res.result}`)
-            debugger
             message.success('下载成功')
             if(edge==4){
               if(types.indexOf("新建") !== -1){
@@ -404,7 +402,7 @@ export default () => {
     else if(edge==4){
       exportImg()
       if(types.indexOf("新建") == -1){
-        const res =await postEditActivity({...formData})
+        const res =await postEditActivity({...columnData})
         if (res.code === 0) {
           await getOperationActivity();
         } else {
