@@ -161,8 +161,8 @@ const RefineModal = (props: { record: any; visible: boolean; setVisible: (b: boo
                 props: {
                     style: {
                         width: '100%',
-                        maxLength: 35
                     },
+                    maxLength: 35
                 },
             },
             {
@@ -172,9 +172,10 @@ const RefineModal = (props: { record: any; visible: boolean; setVisible: (b: boo
                 props: {
                     style: {
                         width: '100%',
-                        precision: 2,
-                        maxLength: 35
+
                     },
+                    precision: 2,
+                    maxLength: 35
                 },
             },
             {
@@ -184,9 +185,10 @@ const RefineModal = (props: { record: any; visible: boolean; setVisible: (b: boo
                 props: {
                     style: {
                         width: '100%',
-                        precision: 0,
-                        maxLength: 35
+
                     },
+                    precision: 0,
+                    maxLength: 35
                 },
             },
             {
@@ -196,9 +198,10 @@ const RefineModal = (props: { record: any; visible: boolean; setVisible: (b: boo
                 props: {
                     style: {
                         width: '100%',
-                        precision: 2,
-                        maxLength: 35
+
                     },
+                    precision: 2,
+                    maxLength: 35
                 },
             },
             {
@@ -208,9 +211,10 @@ const RefineModal = (props: { record: any; visible: boolean; setVisible: (b: boo
                 props: {
                     style: {
                         width: '100%',
-                        precision: 2,
-                        maxLength: 35
+
                     },
+                    precision: 2,
+                    maxLength: 35
                 },
             },
             {
@@ -220,8 +224,9 @@ const RefineModal = (props: { record: any; visible: boolean; setVisible: (b: boo
                 props: {
                     style: {
                         width: '100%',
-                        maxLength: 1000
                     },
+                    maxLength: 1000
+
                 },
             },
             {
@@ -231,8 +236,9 @@ const RefineModal = (props: { record: any; visible: boolean; setVisible: (b: boo
                 props: {
                     style: {
                         width: '100%',
-                        maxLength: 1000
                     },
+                    maxLength: 1000
+
                 },
             },
             {
@@ -253,9 +259,10 @@ const RefineModal = (props: { record: any; visible: boolean; setVisible: (b: boo
                 props: {
                     style: {
                         width: '100%',
-                        precision: 2,
-                        maxLength: 35
+
                     },
+                    precision: 2,
+                    maxLength: 35
                 },
             },
             {
@@ -265,9 +272,9 @@ const RefineModal = (props: { record: any; visible: boolean; setVisible: (b: boo
                 props: {
                     style: {
                         width: '100%',
-                        precision: 0,
-                        maxLength: 35
-                    },
+
+                    }, precision: 0,
+                    maxLength: 35
                 },
             },
             {
@@ -305,8 +312,9 @@ const RefineModal = (props: { record: any; visible: boolean; setVisible: (b: boo
                 props: {
                     style: {
                         width: '100%',
-                        maxLength: 35
                     },
+                    maxLength: 35
+
                 },
             },
             {
@@ -316,8 +324,9 @@ const RefineModal = (props: { record: any; visible: boolean; setVisible: (b: boo
                 props: {
                     style: {
                         width: '100%',
-                        maxLength: 100
                     },
+                    maxLength: 100
+
                 },
             },
             {
@@ -327,8 +336,9 @@ const RefineModal = (props: { record: any; visible: boolean; setVisible: (b: boo
                 props: {
                     style: {
                         width: '100%',
-                        maxLength: 1000
                     },
+                    maxLength: 1000
+
                 },
             },
             {
@@ -338,8 +348,9 @@ const RefineModal = (props: { record: any; visible: boolean; setVisible: (b: boo
                 props: {
                     style: {
                         width: '100%',
-                        maxLength: 1000
                     },
+                    maxLength: 1000
+
                 },
             },
             {
@@ -349,9 +360,10 @@ const RefineModal = (props: { record: any; visible: boolean; setVisible: (b: boo
                 props: {
                     style: {
                         width: '100%',
-                        maxLength: 1000,
-                        precision: 0,
+
                     },
+                    maxLength: 1000,
+                    precision: 0,
                 },
             },
             {
@@ -372,8 +384,9 @@ const RefineModal = (props: { record: any; visible: boolean; setVisible: (b: boo
                 props: {
                     style: {
                         width: '100%',
-                        maxLength: 100,
                     },
+                    maxLength: 100,
+
                 },
             },
             {
@@ -463,8 +476,9 @@ const RefineModal = (props: { record: any; visible: boolean; setVisible: (b: boo
                 props: {
                     style: {
                         width: '100%',
-                        maxLength: 35,
                     },
+                    maxLength: 35,
+
                 },
             },
             {
@@ -485,8 +499,9 @@ const RefineModal = (props: { record: any; visible: boolean; setVisible: (b: boo
                 props: {
                     style: {
                         width: '100%',
-                        maxLength: 35,
                     },
+                    maxLength: 35,
+
                 },
             },
             {
@@ -496,8 +511,9 @@ const RefineModal = (props: { record: any; visible: boolean; setVisible: (b: boo
                 props: {
                     style: {
                         width: '100%',
-                        maxLength: 16
                     },
+                    maxLength: 16
+
                 },
                 formProps: {
                     rules: [
@@ -515,8 +531,9 @@ const RefineModal = (props: { record: any; visible: boolean; setVisible: (b: boo
                 props: {
                     style: {
                         width: '100%',
-                        maxLength: 35
                     },
+                    maxLength: 35
+
                 },
             },
             {
@@ -534,8 +551,9 @@ const RefineModal = (props: { record: any; visible: boolean; setVisible: (b: boo
                 props: {
                     style: {
                         width: '100%',
-                        maxLength: 1000,
                     },
+                    maxLength: 1000,
+
                 },
             },
             {
@@ -611,8 +629,9 @@ const RefineModal = (props: { record: any; visible: boolean; setVisible: (b: boo
                 props: {
                     style: {
                         width: '100%',
-                        maxLength: 1000,
                     },
+                    maxLength: 1000,
+
                 },
             },
             {
@@ -622,9 +641,10 @@ const RefineModal = (props: { record: any; visible: boolean; setVisible: (b: boo
                 props: {
                     style: {
                         width: '100%',
-                        maxLength: 35,
-                        precision: 2,
+
                     },
+                    maxLength: 35,
+                    precision: 2,
                 },
             },
         ],
@@ -636,8 +656,9 @@ const RefineModal = (props: { record: any; visible: boolean; setVisible: (b: boo
                 props: {
                     style: {
                         width: '100%',
-                        maxLength: 35
                     },
+                    maxLength: 35
+
                 },
             },
             {
@@ -647,8 +668,9 @@ const RefineModal = (props: { record: any; visible: boolean; setVisible: (b: boo
                 props: {
                     style: {
                         width: '100%',
-                        maxLength: 35
                     },
+                    maxLength: 35
+
                 },
             },
             {
@@ -658,8 +680,9 @@ const RefineModal = (props: { record: any; visible: boolean; setVisible: (b: boo
                 props: {
                     style: {
                         width: '100%',
-                        maxLength: 16
                     },
+                    maxLength: 16
+
                 },
                 formProps: {
                     rules: [
@@ -688,9 +711,10 @@ const RefineModal = (props: { record: any; visible: boolean; setVisible: (b: boo
                 props: {
                     style: {
                         width: '100%',
-                        maxLength: 35,
-                        precision: 2,
+
                     },
+                    maxLength: 35,
+                    precision: 2,
                 },
             },
             {
@@ -700,9 +724,10 @@ const RefineModal = (props: { record: any; visible: boolean; setVisible: (b: boo
                 props: {
                     style: {
                         width: '100%',
-                        maxLength: 35,
-                        precision: 0,
+
                     },
+                    maxLength: 35,
+                    precision: 0,
                 },
             },
             {
@@ -860,8 +885,9 @@ const RefineModal = (props: { record: any; visible: boolean; setVisible: (b: boo
                 props: {
                     style: {
                         width: '100%',
-                        maxLength: 1000,
                     },
+                    maxLength: 1000,
+
                 },
             },
             {
@@ -871,8 +897,8 @@ const RefineModal = (props: { record: any; visible: boolean; setVisible: (b: boo
                 props: {
                     style: {
                         width: '100%',
-                        maxLength: 1000,
                     },
+                    maxLength: 1000,
                 },
             },
             {
@@ -882,8 +908,8 @@ const RefineModal = (props: { record: any; visible: boolean; setVisible: (b: boo
                 props: {
                     style: {
                         width: '100%',
-                        maxLength: 1000,
                     },
+                    maxLength: 1000,
                 },
             },
         ],
