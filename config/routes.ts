@@ -24,8 +24,11 @@ export const routeName = {
   DEMAND_MANAGEMENT: '/service-config/requirement-management', // 需求管理
   DEMAND_MANAGEMENT_INDEX: '/supply-demand-setting/demand-manage/index', // 需求管理
   DEMAND_MANAGEMENT_DETAIL: '/supply-demand-setting/demand-manage/detail', // 需求管理详情
+<<<<<<< HEAD
   OPERATION_ACTIVITY_PARAMETER: '/operation-activity/parameter-setting/index',//运营活动参数设置
   OPERATION_ACTIVITY_LINK: '/operation-activity/link-setting/index',//运营活动链接设置
+=======
+>>>>>>> feature/demand-v2
   DEMAND_MANAGEMENT_FEEDBACK: '/supply-demand-setting/demand-manage/feedback', // 需求管理详情
   ACCOUNT: '/system-config/account', // 账号管理
   AUTH: '/system-config/auth', // 权限管理

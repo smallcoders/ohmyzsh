@@ -12,6 +12,7 @@ import {
   Space,
   Popconfirm,
   InputNumber,
+  TreeSelect,
 } from 'antd';
 import { CaretDownOutlined, CaretUpOutlined, InfoOutlined } from '@ant-design/icons'
 import { PageContainer } from '@ant-design/pro-layout';
@@ -132,8 +133,6 @@ export default () => {
 
 
   // 需求类型
-  const [typeOptions, setTypeOptions] = useState<any>([]);
-
   const [form] = Form.useForm();
 
   const [industryTypes, setIndustryTypes] = useState<any>([])
@@ -141,12 +140,11 @@ export default () => {
   const [area, setArea] = useState<any>([])
   const prepare = async () => {
     try {
-      const data = await Promise.all([getManageTypeList(), getEnumByName('ORG_INDUSTRY'), getClaimUsers(), getAreaTree({}), getDictionayTree('DEMAND_TYPE')])
-      setTypeOptions(data?.[0]?.result || []);
-      setIndustryTypes(data?.[1]?.result || [])
-      setUsers(data?.[2]?.result || [])
-      setArea(data?.[3]?.children || [])
-      setDemandTypes(data?.[4]?.result || [])
+      const data = await Promise.all([ getEnumByName('ORG_INDUSTRY'), getClaimUsers(), getAreaTree({}), getDictionayTree('DEMAND_TYPE')])
+      setIndustryTypes(data?.[0]?.result || [])
+      setUsers(data?.[1]?.result || [])
+      setArea(data?.[2]?.children || [])
+      setDemandTypes(data?.[3]?.result || [])
     } catch (error) {
       message.error('数据初始化错误');
     }
@@ -354,7 +352,7 @@ export default () => {
       render: (_: string, _record: any) => (
         <a
           onClick={() => {
-            window.open(`${routeName.DEMAND_MANAGEMENT_DETAIL}?id=${_record.id}&type=1`);
+            history.push(`${routeName.DEMAND_MANAGEMENT_DETAIL}?id=${_record.id}&type=1`);
           }}
         >
           {_}
@@ -607,13 +605,24 @@ export default () => {
               </Col>
               <Col span={6}>
                 <Form.Item name="type" label="需求类型">
-                  <Select placeholder="请选择" allowClear>
+                  {/* <Select placeholder="请选择" allowClear>
                     {typeOptions?.map((p) => (
                       <Select.Option key={p.id} value={p.id}>
                         {p.name}
                       </Select.Option>
                     ))}
-                  </Select>
+                  </Select> */}
+                  <TreeSelect
+                    treeNodeFilterProp={'name'}
+                    showSearch
+                    style={{ width: '100%' }}
+                    dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                    placeholder="请选择"
+                    allowClear
+                    treeDefaultExpandAll
+                    treeData={demandTypes}
+                    fieldNames={{ children: 'nodes', value: 'id', label: 'name' }}
+                  />
                 </Form.Item>
               </Col>
               {/* <Col span={6}>
@@ -710,7 +719,7 @@ export default () => {
   };
 
   const exportList = async () => {
-    const { name, type, publisherName, publishStartTime, publishEndTime, operationState, claimId, claimState, areaCode   } =
+    const { name, type, publisherName, publishStartTime, publishEndTime, operationState, claimId, claimState, areaCode } =
       searchContent;
     try {
       const res = await demandExport({
@@ -725,7 +734,7 @@ export default () => {
         areaCode,
       });
       const content = res?.data;
-      const blob  = new Blob([content], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"});
+      const blob = new Blob([content], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8" });
       const fileName = '企业需求.xlsx'
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a')

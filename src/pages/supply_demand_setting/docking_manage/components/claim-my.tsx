@@ -10,6 +10,7 @@ import {
   TreeSelect,
 } from 'antd';
 import './index.less';
+import { history } from 'umi';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
 import { routeName } from '@/../config/routes';
@@ -123,13 +124,20 @@ export default ({ demandTypes, area }: { demandTypes: any[], area: any[] }) => {
       render: (_: string, _record: any) => (
         <a
           onClick={() => {
-            window.open(`${routeName.DEMAND_MANAGEMENT_DETAIL}?id=${_record.id}`);
+            history.push(`${routeName.DEMAND_MANAGEMENT_DETAIL}?id=${_record.id}`);
           }}
         >
           {_}
         </a>
       ),
       isEllipsis: true,
+    },
+    {
+      title: '需求类型',
+      dataIndex: 'typeNameList',
+      isEllipsis: true,
+      render: (item?: string[]) => item ? item.join('、') : '--',
+      width: 300,
     },
     {
       title: '所属企业',
@@ -169,13 +177,6 @@ export default ({ demandTypes, area }: { demandTypes: any[], area: any[] }) => {
       isEllipsis: true,
       width: 150,
     },  
-      {
-      title: '需求类型',
-      dataIndex: 'typeNameList',
-      isEllipsis: true,
-      render: (item?: string[]) => item ? item.join('、') : '--',
-      width: 300,
-    },
     {
       title: '分发情况',
       dataIndex: 'specifyType',

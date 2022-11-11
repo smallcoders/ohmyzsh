@@ -20,6 +20,7 @@ import { routeName } from '@/../config/routes';
 import type ConsultRecord from '@/types/expert_manage/consult-record';
 import { cancelClaimDemand, claimDemand, getClaimUsers, getDemandPage } from '@/services/creative-demand';
 import DockingManage from '@/types/docking-manage.d';
+import { history } from 'umi';
 const { RangePicker } = DatePicker
 
 const sc = scopedClasses('user-config-logout-verify');
@@ -107,7 +108,7 @@ export default ({ demandTypes, area }: { demandTypes: any[], area: any[] }) => {
       render: (_: string, _record: any) => (
         <a
           onClick={() => {
-            window.open(`${routeName.DEMAND_MANAGEMENT_DETAIL}?id=${_record.id}`);
+            history.push(`${routeName.DEMAND_MANAGEMENT_DETAIL}?id=${_record.id}`);
           }}
         >
           {_}
