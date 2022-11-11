@@ -1,5 +1,5 @@
 import useManage from '@/hooks/useManage';
-import { addRole, deleteRole, enableRole, getListRoles, updateRole } from '@/services/role';
+import { addRole, deleteRole, enableRole, getListRoles, getMembersByRoleId, updateRole } from '@/services/role';
 import scopedClasses from '@/utils/scopedClasses';
 import {
   DeleteOutlined,
@@ -103,10 +103,21 @@ export default () => {
 
   const remove = async (id: string) => {
     try {
+
+      const { result } = await getMembersByRoleId(id as string);
+
+      if(result?.length>0){
+        Modal.info({
+          title: '提示',
+          content: '请先移除当前角色下的成员'
+        })
+        return
+      }
+
       const rolesRes = await deleteRole(id);
       if (rolesRes.code === 0) {
         message.success(`删除成功`);
-        getRoles()
+        prepare()
       } else {
         message.error(`删除失败，原因:{${rolesRes.message}}`);
       }
