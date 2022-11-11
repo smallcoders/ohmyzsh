@@ -105,6 +105,18 @@ export default ({ current }: { current?: EditType }) => {
         },
     ];
 
+    // const transferColumns = [
+    //     {
+    //         title: '姓名',
+    //         dataIndex: 'name',
+    //     },
+    //     {
+    //         title: '账号',
+    //         dataIndex: 'loginName',
+    //         isEllipsis: true,
+    //     },
+    // ];
+
     const isManage = useManage()
 
     const [selectRoleModal, setSelectRoleModal] = useState<{
@@ -204,14 +216,21 @@ export default ({ current }: { current?: EditType }) => {
                         height: 460,
                         width: 260
                     }}
+                    // columns={transferColumns}
                     showSearch
                     rowKey={record => record.id}
                     dataSource={members}
                     titles={['成员列表', '已选角色成员']}
                     targetKeys={selectedKeys}
                     onChange={onChange}
+                    locale={{
+                        itemUnit: '名', itemsUnit: '名',
+                    }}
                     // selectedKeys={dataSource}
-                    render={item => item.name}
+                    render={item => {
+                        return <div>{item?.name}：{item?.loginName}</div>
+                    }
+                    }
                 />
 
             </Modal>
