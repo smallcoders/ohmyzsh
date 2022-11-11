@@ -1,4 +1,4 @@
-import { Button, Empty, message, Popconfirm, } from 'antd'
+import { Button, Empty, message, Popconfirm,  } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { Form } from 'antd'
 import { renderSearchItemControl, SearchItemControlEnum } from './refine'
@@ -73,14 +73,22 @@ const FeedBackModal = () => {
             key: 'fileIds',
             label: `交付物文件上传`,
             type: SearchItemControlEnum.CUSTOM,
-            render: () => {
+            render: (form) => {
                 return <UploadFormFile maxCount={3} multiple accept=".png,.jpg,.pdf,.xlsx,.xls" showUploadList={true} maxSize={30}>
-                    <Button icon={<UploadOutlined />}>上传文件</Button>
-                    <div style={{ fontSize: '12px' }}>支持上传以下格式文件：jpg、pdf、xlxs、xls、png，单个文件上传大小限制30M</div>
+                    <Button
+                        onClick={() => {
+                            const files = form.getFieldValue('fileIds')
+                            if(files?.length>= 3){
+                                message.error('上传文件数目不得超3个')
+                            }
+                        }}
+                        icon={<UploadOutlined />}>上传文件</Button>
+                    <div style={{ fontSize: '12px' }}>支持上传以下格式文件：jpg、pdf、xlxs、xls、png，单个文件上传大小限制30M，最多上传三个文件</div>
                 </UploadFormFile>
             }
         },
     ]
+
 
     const onSubmit = async () => {
         form
