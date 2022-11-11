@@ -47,6 +47,8 @@ export default () => {
   //数据
   const [selectChannelList,setSelectChannel] = useState<Activity.Content[]>([])
   const [selectSceneList,setSelectScene] = useState<Activity.Content[]>([])
+  const [selectChannelListAll,setSelectChannelAll] = useState<Activity.Content[]>([])
+  const [selectSceneListAll,setSelectSceneAll] = useState<Activity.Content[]>([])
   const [activeStatusData, setActiveStatusData] = useState({});
   const [columnData, setColumnData] = useState({});
   const [activeImageId, setActiveImageId] = useState('');
@@ -122,7 +124,7 @@ export default () => {
   //获取全部渠道值
   const getChannelList =async () =>{
     try {
-      const res =await getAllChannel()
+      const res =await getAllChannel({falg:true})
       if(res.code === 0){
         setSelectChannel(res.result)
       }
@@ -130,14 +132,25 @@ export default () => {
       console.log(e)
     }
   }
+  const getChannelListAll =async () =>{
+    try {
+      const res =await getAllChannel({falg:false})
+      if(res.code === 0){
+        setSelectChannelAll(res.result)
+      }
+    }catch (e) {
+      console.log(e)
+    }
+  }
   useEffect(() => {
     getChannelList();
+    getChannelListAll();
   }, []);
 
   //获取全部场景值
   const getSceneList =async () =>{
     try {
-      const res =await getAllScene()
+      const res =await getAllScene({falg:true})
       if(res.code === 0){
           setSelectScene(res.result)
       }
@@ -145,8 +158,19 @@ export default () => {
       console.log(e)
     }
   }
+  const getSceneListAll =async () =>{
+    try {
+      const res =await getAllScene({falg:false})
+      if(res.code === 0){
+          setSelectSceneAll(res.result)
+      }
+    }catch (e) {
+      console.log(e)
+    }
+  }
   useEffect(() => {
     getSceneList();
+    getSceneListAll();
   }, []);
 
   //获取活动的小程序码
@@ -195,7 +219,7 @@ export default () => {
       if(idName==='#imgWechat'&& context){
         context.drawImage(image, 0, 0,0,0);
       }else if(idName==='#imgShare'&& context){
-        context.drawImage(image, 0, 0,1080, 1920,);
+        context.drawImage(image, 0, 0,2160, 3840,);
       }
       const urlName = canvas.toDataURL("image/png"); //得到图片的base64编码数据
       const arr = urlName.split(',')
@@ -242,6 +266,7 @@ export default () => {
     };
     image.src = imgsrc;
   }
+  //下载图片
   const exportImg = () => {
     console.log(idName)
     const imgshare=document.querySelector(idName)
@@ -975,7 +1000,7 @@ export default () => {
 
               <Form.Item name="activeChannelId" label="渠道值"  rules={[{ required: true, message: '请输入渠道值！' }]}>
                 <Select placeholder="请选择" allowClear disabled={activeStatusData=='DOWN'&&types.indexOf("新建") == -1}>
-                  {selectChannelList.map((item ) => (
+                  {selectChannelListAll.map((item ) => (
                     <Select.Option key={item.channelName} value={item.id}>
                       {item.channelName}
                     </Select.Option>
@@ -985,7 +1010,7 @@ export default () => {
 
               <Form.Item name="activeSceneId" label="场景值"  rules={[{ required: true, message: '请输入场景值！' }]}>
                 <Select placeholder="请选择" allowClear disabled={activeStatusData=='DOWN'&&types.indexOf("新建") == -1}>
-                  {selectSceneList.map((item ) => (
+                  {selectSceneListAll.map((item ) => (
                     <Select.Option key={item.sceneName} value={item.id}>
                       {item.sceneName}
                     </Select.Option>
