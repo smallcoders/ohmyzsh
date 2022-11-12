@@ -614,6 +614,7 @@ export default () => {
   };
   const content =(
     recordContent?.map((item: any) => (
+      // eslint-disable-next-line react/jsx-key
       <div className={sc('operate-record')}>
            <div className={sc('operate-record-container')}>
              <div className={sc('operate-record-container-left')}>{item.operation}</div>
@@ -1152,7 +1153,7 @@ export default () => {
               <QRCode
                 value={  window.location.protocol + '//' + window.location.host.split(':')[0] + `/antelope-activity-h5/antelope-download/index.html?shardCodeMaster=${shardCodeMaster}`}
                 renderAs={'canvas'}
-                size={77}
+                size={128}
                 bgColor={'#FFFFFF'}
                 fgColor={'#000000'}
                 level="H"
