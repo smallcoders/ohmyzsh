@@ -219,7 +219,7 @@ export default () => {
       if(idName==='#imgWechat'&& context){
         context.drawImage(image, 0, 0,0,0);
       }else if(idName==='#imgShare'&& context){
-        context.drawImage(image, 0, 0,2160, 3840,);
+        context.drawImage(image, 0, 0,1080, 1920,);
       }
       const urlName = canvas.toDataURL("image/png"); //得到图片的base64编码数据
       const arr = urlName.split(',')
@@ -271,7 +271,8 @@ export default () => {
     console.log(idName)
     const imgshare=document.querySelector(idName)
     html2canvas(imgshare as HTMLElement, { // 转换为图片
-      useCORS: true // 解决资源跨域问题
+      useCORS: true, // 解决资源跨域问题
+      scale:5
     }).then(canvas => {
       // imgUrl 是图片的 base64格式 代码 png 格式
       const imgUrl = canvas.toDataURL('image/png');
