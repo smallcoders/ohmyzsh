@@ -244,9 +244,9 @@ export default () => {
             <Col span={8}>
               <Form.Item name="identity" label="身份">
                 <Select placeholder="请选择" allowClear>
-                  <Select.Option value={'ORG_EXPERT'}>专家</Select.Option>
+                  <Select.Option value={'EXPERT'}>已认证专家</Select.Option>
+                  <Select.Option value={'ORG_MEMBER'}>组织其他成员</Select.Option>
                   <Select.Option value={'ORG_MANAGER'}>组织管理员</Select.Option>
-                  <Select.Option value={'MEMBER'}>组织其他成员</Select.Option>
                   <Select.Option value={'INDIVIDUAL'}>普通用户</Select.Option>
                 </Select>
               </Form.Item>
