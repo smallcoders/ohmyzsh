@@ -1,0 +1,63 @@
+@import '../../../global.less';
+@prefix: service_config_activity_project;
+
+.@{prefix}-container {
+  &-table-header {
+    padding: 20px;
+    background-color: #fff;
+    .title {
+      display: flex;
+      justify-content: space-between;
+      > span {
+        color: rgba(0, 0, 0, 0.85);
+        font-weight: 600;
+        font-size: 16px;
+        line-height: 22px;
+      }
+    }
+  }
+  &-table-body {
+    padding: 0 20px;
+    background-color: #fff;
+  }
+  &-search {
+    margin-bottom: 20px;
+    padding: 20px;
+    background-color: #fff;
+    // .ant-form-item {
+    //   margin-bottom: 0;
+    // }
+  }
+
+
+  &-goods-message {
+    display: flex;
+    align-items: center;
+
+    img {
+      width: 60px;
+      height: 60px;
+      margin-right: 20px;
+    }
+
+    .info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+
+      span {
+        max-width: 600px;
+        .textoverflow(1);
+      }
+
+      span:first-child {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: .5em;
+        color: blue;
+        cursor: pointer;
+      }
+    }
+  }
+}

@@ -134,6 +134,11 @@ export const routeName = {
   ORDER_MESSAGE: '/goods-manage/order_manage',
   ORDER_MESSAGE_INDEX: '/goods-manage/order_manage/index',
   ORDER_MESSAGE_DETAIL: '/goods-manage/order_manage/detail',
+
+  //活动专题
+  ACTIVITY_PROJECT: '/service-config/activity_project',
+  ACTIVITY_PROJECT_INDEX: '/service-config/activity_project/index',
+  ACTIVITY_PROJECT_DETAIL: '/service-config/activity_project/detail',
 };
 
 export default [
@@ -447,6 +452,28 @@ export default [
             path: '/service-config/diagnose/history',
             name: '历史版本查看',
             component: './service_config/diagnose_manage/history_diagnose',
+          },
+        ],
+      },
+      {
+        path: routeName.ACTIVITY_PROJECT,
+        name: '活动专题',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.ACTIVITY_PROJECT,
+            redirect: routeName.ACTIVITY_PROJECT_INDEX,
+          },
+          {
+            path: routeName.ACTIVITY_PROJECT_INDEX,
+            name: '活动专题',
+            hideInBreadcrumb: true,
+            component: './service_config/activity_project',
+          },
+          {
+            path: routeName.ACTIVITY_PROJECT_DETAIL,
+            name: '活动专题详情',
+            component: './service_config/activity_project/detail',
           },
         ],
       },
