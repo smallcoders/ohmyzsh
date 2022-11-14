@@ -315,16 +315,18 @@ export default () => {
     } catch (error) {
       console.log(error);
     }
-  }
+  } 
   //下一步
   const next =  ()=>{
     form.validateFields().then(async (value)=>{
+      console.log(columnData)
       console.log(value)
-      setColumnData({...columnData,...value})
       if (value.time) {
         value.startTime = moment(value.time[0]).format('YYYY-MM-DD');
         value.endTime = moment(value.time[1]).format('YYYY-MM-DD');
       }
+      const data={ ...columnData, ...value };
+      setColumnData(data)
       if(edge==2){
         setBtnValue('发布并复制分享链接')
         console.log(value)
