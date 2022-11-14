@@ -519,6 +519,8 @@ export default () => {
       <Menu.Item key={'2'}>
         <Popconfirm
           title="下架后该链接将会失效，确认下架？？"
+          overlayStyle={{translate:'10px 40px'}}
+          placement="topRight"
           okText="下架"
           cancelText="取消"
           onConfirm={ soldOut}

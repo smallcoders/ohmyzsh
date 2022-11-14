@@ -276,8 +276,8 @@ const Tablist: React.FC = () => {
   };
   const cancel= async (record: any)=>{
     console.log(record)
-    setDataSource([])
-    await getOperationActivity();
+    // setDataSource([])
+    // await getOperationActivity();
   }
   //删除渠道/场景值的按钮
   const remove = async (id: string) =>{
@@ -353,7 +353,7 @@ const Tablist: React.FC = () => {
             onConfirm={()=>confirm(record as any)}
             onCancel={()=>cancel(record as any)}
           >
-          <Switch   defaultChecked={started}  onChange={(e)=>{onChange(e)}} />
+           <Switch  style={{ marginRight: 20 }} checked={started}  />
           </Popconfirm>
         </>
       ),
