@@ -123,7 +123,7 @@ export default () => {
       width: 150,
       render: (_: string) => (
         <Tooltip placement="top" title={_}>
-          {_}
+          <div className="name">{_}</div>
         </Tooltip>
       ),
     },
