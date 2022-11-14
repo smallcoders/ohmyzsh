@@ -1,5 +1,6 @@
 import type Common from './common';
 
+// eslint-disable-next-line @typescript-eslint/no-namespace
 namespace Activity {
   export enum Edge {
     CHANNEL = 0, // 渠道值
@@ -38,7 +39,7 @@ namespace Activity {
     activeImageId?: any;
     buttonText?: any;
     targetLink?: any;
-    targettLinkType?: any;
+    targetLinkType?: any;
   };
 }
 export default Activity;

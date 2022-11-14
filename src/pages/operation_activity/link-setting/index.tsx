@@ -124,7 +124,7 @@ export default () => {
   //获取全部渠道值
   const getChannelList =async () =>{
     try {
-      const res =await getAllChannel({falg:true})
+      const res =await getAllChannel({flag:true})
       if(res.code === 0){
         setSelectChannel(res.result)
       }
@@ -134,7 +134,7 @@ export default () => {
   }
   const getChannelListAll =async () =>{
     try {
-      const res =await getAllChannel({falg:false})
+      const res =await getAllChannel({flag:false})
       if(res.code === 0){
         setSelectChannelAll(res.result)
       }
@@ -150,7 +150,7 @@ export default () => {
   //获取全部场景值
   const getSceneList =async () =>{
     try {
-      const res =await getAllScene({falg:true})
+      const res =await getAllScene({flag:true})
       if(res.code === 0){
           setSelectScene(res.result)
       }
@@ -160,7 +160,7 @@ export default () => {
   }
   const getSceneListAll =async () =>{
     try {
-      const res =await getAllScene({falg:false})
+      const res =await getAllScene({flag:false})
       if(res.code === 0){
           setSelectSceneAll(res.result)
       }
@@ -219,7 +219,7 @@ export default () => {
       if(idName==='#imgWechat'&& context){
         context.drawImage(image, 0, 0,0,0);
       }else if(idName==='#imgShare'&& context){
-        context.drawImage(image, 0, 0,2160, 3840,);
+        context.drawImage(image, 0, 0,1080, 1920,);
       }
       const urlName = canvas.toDataURL("image/png"); //得到图片的base64编码数据
       const arr = urlName.split(',')
@@ -271,7 +271,8 @@ export default () => {
     console.log(idName)
     const imgshare=document.querySelector(idName)
     html2canvas(imgshare as HTMLElement, { // 转换为图片
-      useCORS: true // 解决资源跨域问题
+      useCORS: true, // 解决资源跨域问题
+      scale:5
     }).then(canvas => {
       // imgUrl 是图片的 base64格式 代码 png 格式
       const imgUrl = canvas.toDataURL('image/png');
@@ -314,16 +315,18 @@ export default () => {
     } catch (error) {
       console.log(error);
     }
-  }
+  } 
   //下一步
   const next =  ()=>{
     form.validateFields().then(async (value)=>{
+      console.log(columnData)
       console.log(value)
-      setColumnData({...columnData,...value})
       if (value.time) {
         value.startTime = moment(value.time[0]).format('YYYY-MM-DD');
         value.endTime = moment(value.time[1]).format('YYYY-MM-DD');
       }
+      const data={ ...columnData, ...value };
+      setColumnData(data)
       if(edge==2){
         setBtnValue('发布并复制分享链接')
         console.log(value)
@@ -613,6 +616,7 @@ export default () => {
   };
   const content =(
     recordContent?.map((item: any) => (
+      // eslint-disable-next-line react/jsx-key
       <div className={sc('operate-record')}>
            <div className={sc('operate-record-container')}>
              <div className={sc('operate-record-container-left')}>{item.operation}</div>
@@ -1151,7 +1155,7 @@ export default () => {
               <QRCode
                 value={  window.location.protocol + '//' + window.location.host.split(':')[0] + `/antelope-activity-h5/antelope-download/index.html?shardCodeMaster=${shardCodeMaster}`}
                 renderAs={'canvas'}
-                size={77}
+                size={128}
                 bgColor={'#FFFFFF'}
                 fgColor={'#000000'}
                 level="H"
