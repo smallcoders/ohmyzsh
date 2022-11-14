@@ -353,7 +353,7 @@ const Tablist: React.FC = () => {
             onConfirm={()=>confirm(record as any)}
             onCancel={()=>cancel(record as any)}
           >
-          <Switch   defaultChecked={started}  onChange={onChange} />
+          <Switch   defaultChecked={started}  onChange={(e)=>{onChange(e)}} />
           </Popconfirm>
         </>
       ),

@@ -315,7 +315,7 @@ export default () => {
     } catch (error) {
       console.log(error);
     }
-  } 
+  }
   //下一步
   const next =  ()=>{
     form.validateFields().then(async (value)=>{
