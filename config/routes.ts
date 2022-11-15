@@ -1,4 +1,4 @@
-export const routeName = {
+﻿export const routeName = {
   DATA_COLUMN: '/service-config/data-column', // 数据栏
   DIAGNOSTIC_TASKS: '/service-config/diagnostic-tasks/index', // 诊断任务
   DIAGNOSTIC_TASKS_DETAIL: '/service-config/diagnostic-tasks/detail', // 诊断记录
@@ -110,15 +110,15 @@ export const routeName = {
   // 推荐管理
   RECOMMENDED_HOT_WORDS: '/recommended/hot_words',
   RECOMMENDED_HOT_WORDS_INDEX: '/recommended/hot_words/index',
+
+  // 运营模板
+  PAGE_CREAT_MANAGE_EDIT: "/system-config/page_creat_manage/edit",
+  PAGE_CREAT_MANAGE_PUBLISH: "/system-config/page_creat_manage/publish",
+  PAGE_CREAT_MANAGE_PAGE_LIST: "/system-config/page_creat_manage/page_list",
+  PAGE_CREAT_MANAGE_PAGE_DATA: "/system-config/page_creat_manage/page_data"
 };
 
 export default [
-  {
-    path: 'form_creat',
-    name: '模板创建',
-    layout: false,
-    component: './form_creat',
-  },
   {
     path: '/user',
     layout: false,
@@ -1091,6 +1091,24 @@ export default [
         path: routeName.ACCOUNT,
         name: '账号管理',
         component: './account',
+      },
+      {
+        path: "/system-config/page_creat_manage/edit",
+        name: '页面编辑',
+        component: './page_creat_manage/edit/index',
+        layout: false,
+      },
+      {
+        path: "/system-config/page_creat_manage/publish",
+        name: '发布',
+        hideInMenu: true,
+        component: './page_creat_manage/publish/index',
+        layout: false,
+      },
+      {
+        path: "/system-config/page_creat_manage/page_list",
+        name: '运营模版配置',
+        component: './page_creat_manage/page_list/index',
       }
     ],
   },
