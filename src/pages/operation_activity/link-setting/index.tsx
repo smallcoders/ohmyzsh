@@ -218,7 +218,7 @@ export default () => {
       // @ts-ignore
       if(idName==='#imgWechat'&& context){
         context.drawImage(image, 0, 0,0,0);
-      }else if(idName==='#imgShare'&& context){
+      }else if(idName==='#imgShare1'&& context){
         context.drawImage(image, 0, 0,1080, 1920,);
       }
       const urlName = canvas.toDataURL("image/png"); //得到图片的base64编码数据
@@ -335,7 +335,7 @@ export default () => {
           if(res.code==0){
             value.url=res?.result
           }
-        value.activeUrl=window.location.protocol + '//' + window.location.host.split(':')[0] + `/antelope-activity-h5/share-code/index.html?preview=true&targetLinkType=${value.targetLinkType}&buttonText=${value.buttonText}&targetLink=${value.targetLink}&url=${value.url}`
+        value.activeUrl= `https://lingyangplat.com/antelope-activity-h5/share-code/index.html?preview=true&targetLinkType=${value.targetLinkType}&buttonText=${value.buttonText}&targetLink=${value.targetLink}&url=${value.url}`
         setCurrent(1)
         setFormData(value)
       }else if(edge==3){
@@ -348,7 +348,7 @@ export default () => {
       }else if(edge==4){
         setBtnValue('发布并下载图片')
         value.activeType = 'SHARD_CODE'
-        setIdName('#imgShare')
+        setIdName('#imgShare1')
         setFormData(value)
         setShardCodeMaster(value.shardCodeMaster)
         setCurrent(3)
@@ -384,12 +384,12 @@ export default () => {
     console.log(e)
     if(e.id){
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      copy(window.location.protocol + '//' + window.location.host.split(':')[0] + `/antelope-activity-h5/share-code/index.html?preview=false&targetLinkType=${e.targetLinkType}&id=${e.id}`)
+      copy(`https://lingyangplat.com/antelope-activity-h5/share-code/index.html?preview=false&targetLinkType=${e.targetLinkType}&id=${e.id}`)
         message.success('链接复制成功');
 
     }else{
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      copy(window.location.protocol + '//' + window.location.host.split(':')[0] + `/antelope-activity-h5/share-code/index.html?preview=true&targetLinkType=${e.targetLinkType}&buttonText=${e.buttonText}&targetLink=${e.targetLink}&url=${e.url}`)
+      copy(`https://lingyangplat.com/antelope-activity-h5/share-code/index.html?preview=true&targetLinkType=${e.targetLinkType}&buttonText=${e.buttonText}&targetLink=${e.targetLink}&url=${e.url}`)
         message.success('链接复制成功');
     }
   };
@@ -936,6 +936,7 @@ export default () => {
         visible={createModalVisible}
         onCancel={() => {
           clearForm();
+          setCurrent(0)
           setModalVisible(false);
         }}
         onOk={ onFinish}
@@ -1074,7 +1075,7 @@ export default () => {
                 </Form.Item>
               }
 
-              {edge === 4 &&activeStatusData!=='DOWN'&&(types.indexOf("新建") !== -1)&&
+              {edge === 4 &&(types.indexOf("新建") !== -1)&&
                 <Form.Item
                   label='分享码主人'
                   name="shardCodeMaster"
@@ -1116,7 +1117,7 @@ export default () => {
                   <Input placeholder="请输入" maxLength={35} disabled={activeStatusData=='DOWN'&&types.indexOf("新建") == -1}/>
                 </Form.Item>
               }
-              {edge === 4 &&(types.indexOf("新建") == -1)&&
+              {edge === 4 &&activeStatusData =='DOWN'&&(types.indexOf("新建") == -1)&&
                 <Form.Item
                   label='分享码主人'
                   name="shardCodeMaster"
@@ -1132,7 +1133,7 @@ export default () => {
             <h2 >以下链接用于预览效果用，不计入数据统计</h2>
             {formData&&(
               <div>
-            <h2 className={sc('modelWord-link')}>{window.location.protocol + '//' + window.location.host.split(':')[0] + `/antelope-activity-h5/share-code/index.html?preview=true&targetLinkType=${formData.targetLinkType}&buttonText=${formData.buttonText}&targetLink=${formData.targetLink}&url=${formData.url}`}
+            <h2 className={sc('modelWord-link')}>{ `https://lingyangplat.com/antelope-activity-h5/share-code/index.html?preview=true&targetLinkType=${formData.targetLinkType}&buttonText=${formData.buttonText}&targetLink=${formData.targetLink}&url=${formData.url}`}
             </h2>
             <Button
               type="primary"
@@ -1152,18 +1153,32 @@ export default () => {
           {current==3 && (<div className={sc('modelWord')} >
             <h2 >以下分享码用于预览效果用，不计入数据统计</h2>
             <div className={sc('modelWord-bk')} id={'imgShare'}>
-            <div className={sc('modelWord-bk-invite')}>邀请人：{shardCodeMaster}</div>
-            <div className="qr-anhui-pf">
-              <QRCode
-                value={types.indexOf("新建") !== -1? ( window.location.protocol + '//' + window.location.host.split(':')[0] + `/antelope-activity-h5/antelope-download/index.html?shardCodeMaster=${shardCodeMaster}&preview=true`) :(window.location.protocol + '//' + window.location.host.split(':')[0] + `/antelope-activity-h5/antelope-download/index.html?shardCodeMaster=${shardCodeMaster}&preview=false`)}
-                renderAs={'canvas'}
-                size={128}
-                bgColor={'#FFFFFF'}
-                fgColor={'#000000'}
-                level="H"
-                includeMargin={true}
-              />
+              <div className={sc('modelWord-bk-invite')}>邀请人：{shardCodeMaster}</div>
+              <div className="qr-anhui-pf">
+                <QRCode
+                  value={(  `https://lingyangplat.com/antelope-activity-h5/antelope-download/index.html?shardCodeMaster=${shardCodeMaster}&preview=true`) }
+                  renderAs={'canvas'}
+                  size={113}
+                  bgColor={'#FFFFFF'}
+                  fgColor={'#000000'}
+                  level="H"
+                  includeMargin={true}
+                />
+              </div>
             </div>
+            <div className={sc('modelWord-bk1')} id={'imgShare1'}>
+              <div className={sc('modelWord-bk1-invite')}>邀请人：{shardCodeMaster}</div>
+              <div className="qr-anhui-pf">
+                <QRCode
+                  value={(`https://lingyangplat.com/antelope-activity-h5/antelope-download/index.html?shardCodeMaster=${shardCodeMaster}&preview=false`)}
+                  renderAs={'canvas'}
+                  size={113}
+                  bgColor={'#FFFFFF'}
+                  fgColor={'#000000'}
+                  level="H"
+                  includeMargin={true}
+                />
+              </div>
             </div>
           </div>)}
         </ProCard>
@@ -1177,13 +1192,9 @@ export default () => {
       <div className={sc('container-header')}>
           {selectButton()}
           <div className={sc('container-header-select')}>
-          <Dropdown.Button
-            type="primary"
-            overlay={menu}
-            onClick={handleButtonClick}
-          >
-            新增
-          </Dropdown.Button>
+            <Dropdown overlay={menu} placement="bottomLeft">
+              <Button style={{background:'#6680FF',color:'#fff'}}>新增  ···</Button>
+            </Dropdown>
           </div>
         </div>
       <div className={sc('container-body')}>
