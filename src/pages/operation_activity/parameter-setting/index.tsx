@@ -129,94 +129,111 @@ const Tablist: React.FC = () => {
           initialValues={{ remember: true }}
           autoComplete="off"
         >
-        {edge == 0&&
+        {edge == 0&&btnType=='编辑'&&
           <Form.Item
             label={'渠道值名称'}
             name="channelName"
             rules={[{ required: true, message: '请输入渠道值名称！' },
-              {
-                validator(rule,value, callback) {
-                  try{
-                    console.log(typeof value)
-                    if(value.length>0){
-                      getChannelByName(value).then(res=> {
-                        if (res?.code == 0) {
-                          if(res.result.exist){
-                            form.setFields([
-                              { name: 'channelName', value:'', errors: ['该渠道值名称已存在'] },
-                            ]);
-                          }else{
-                            callback()
-                          }
-                        }
-                      })}
-                  }catch (e){
-                    console.log(e,'err')
-                  }
-                },
-                validateTrigger: 'onBlur',
-              },
-              {
-                validator(rule,value, callback) {
-                  if (value==undefined) {
-                    form.setFields([
-                      // { name: '表单字段name', value: '需要设置的值', errors: ['错误信息'] }, 当 errors 为非空数组时，表单项呈现红色，
-                      {name: 'channelName', value: '', errors: ['请输入渠道值名称']},
-                    ]);
-                  }else{
-                    callback()
-                  }
-                },
-                validateTrigger: 'onBlur',
-              },]}
+           ]}
           >
             <Input placeholder="请输入" maxLength={10}/>
           </Form.Item>}
-
-          {edge == 1&&
+          {edge == 0&&btnType=='新建'&&
+            <Form.Item
+              label={'渠道值名称'}
+              name="channelName"
+              rules={[{ required: true, message: '请输入渠道值名称！' },
+                {
+                  validator(rule,value, callback) {
+                    try{
+                      console.log(typeof value)
+                      if(value.length>0){
+                        getChannelByName(value).then(res=> {
+                          if (res?.code == 0) {
+                            if(res.result.exist){
+                              form.setFields([
+                                { name: 'channelName', value:'', errors: ['该渠道值名称已存在'] },
+                              ]);
+                            }else{
+                              callback()
+                            }
+                          }
+                        })}
+                    }catch (e){
+                      console.log(e,'err')
+                    }
+                  },
+                  validateTrigger: 'onBlur',
+                },
+                {
+                  validator(rule,value, callback) {
+                    if (value==undefined) {
+                      form.setFields([
+                        // { name: '表单字段name', value: '需要设置的值', errors: ['错误信息'] }, 当 errors 为非空数组时，表单项呈现红色，
+                        {name: 'channelName', value: '', errors: ['请输入渠道值名称']},
+                      ]);
+                    }else{
+                      callback()
+                    }
+                  },
+                  validateTrigger: 'onBlur',
+                },]}
+            >
+              <Input placeholder="请输入" maxLength={10}/>
+            </Form.Item>}
+          {edge == 1&&btnType=='编辑'&&
           <Form.Item
             label={'场景值名称'}
             name="sceneName"
             rules={[{ required: true, message: '请输入场景值名称！' },
-              {
-                validator(rule,value, callback) {
-                  try{
-                    console.log(value)
-                    if(value.length>0){
-                      getSceneByName(value).then(res=> {
-                        if (res?.code == 0) {
-                          if(res.result.exist){
-                            form.setFields([
-                              { name: 'sceneName', value:'', errors: ['该场景值名称已存在'] },
-                            ]);
-                          }else{
-                            callback()
-                          }
-                        }
-                      })}
-                  }catch (e){
-                    console.log(e,'err')
-                  }
-                },
-                validateTrigger: 'onBlur',
-              },
-              {
-                validator(rule,value, callback) {
-                  if (value==undefined) {
-                    form.setFields([
-                      // { name: '表单字段name', value: '需要设置的值', errors: ['错误信息'] }, 当 errors 为非空数组时，表单项呈现红色，
-                      {name: 'sceneName', value: '', errors: ['请输入场景值名称']},
-                    ]);
-                  }else{
-                    callback()
-                  }
-                },
-                validateTrigger: 'onBlur',
-              },
             ]}
           >
             <Input placeholder="请输入" maxLength={10}/>
           </Form.Item>}
+          {edge == 1&&btnType=='新建'&&
+            <Form.Item
+              label={'场景值名称'}
+              name="sceneName"
+              rules={[{ required: true, message: '请输入场景值名称！' },
+                {
+                  validator(rule,value, callback) {
+                    try{
+                      console.log(value)
+                      if(value.length>0){
+                        getSceneByName(value).then(res=> {
+                          if (res?.code == 0) {
+                            if(res.result.exist){
+                              form.setFields([
+                                { name: 'sceneName', value:'', errors: ['该场景值名称已存在'] },
+                              ]);
+                            }else{
+                              callback()
+                            }
+                          }
+                        })}
+                    }catch (e){
+                      console.log(e,'err')
+                    }
+                  },
+                  validateTrigger: 'onBlur',
+                },
+                {
+                  validator(rule,value, callback) {
+                    if (value==undefined) {
+                      form.setFields([
+                        // { name: '表单字段name', value: '需要设置的值', errors: ['错误信息'] }, 当 errors 为非空数组时，表单项呈现红色，
+                        {name: 'sceneName', value: '', errors: ['请输入场景值名称']},
+                      ]);
+                    }else{
+                      callback()
+                    }
+                  },
+                  validateTrigger: 'onBlur',
+                },
+              ]}
+            >
+              <Input placeholder="请输入" maxLength={10}/>
+            </Form.Item>}
 
           <Form.Item
             label={edge == 0? '渠道值描述' : '场景值描述'}
