@@ -132,13 +132,13 @@ export default () => {
                   {detail?.payProduct?.appName}
                 </Form.Item>,
                 <Form.Item key="appType" label="商品服务端">
-                  {detail?.payProduct?.appType === 1 ? (
+                  {detail?.payProduct?.appType === 0 ? (
                     <div>
                       <span>H5应用：</span>
                       <span>{detail?.payProduct?.appHomeUrl || '--'} </span>
                       <a onClick={() => handleJumpLink(detail?.payProduct?.appHomeUrl)}>查看</a>
                     </div>
-                  ) : detail?.payProduct?.appType === 2 ? (
+                  ) : detail?.payProduct?.appType === 1 ? (
                     <div>
                       <span>WEB应用:</span>
                       <span>{detail?.payProduct?.pcHomeUrl || '--'} </span>
