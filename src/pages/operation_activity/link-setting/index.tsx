@@ -1155,7 +1155,7 @@ export default () => {
             <div className={sc('modelWord-bk-invite')}>邀请人：{shardCodeMaster}</div>
             <div className="qr-anhui-pf">
               <QRCode
-                value={  window.location.protocol + '//' + window.location.host.split(':')[0] + `/antelope-activity-h5/antelope-download/index.html?shardCodeMaster=${shardCodeMaster}`}
+                value={types.indexOf("新建") !== -1? ( window.location.protocol + '//' + window.location.host.split(':')[0] + `/antelope-activity-h5/antelope-download/index.html?shardCodeMaster=${shardCodeMaster}&preview=true`) :(window.location.protocol + '//' + window.location.host.split(':')[0] + `/antelope-activity-h5/antelope-download/index.html?shardCodeMaster=${shardCodeMaster}&preview=false`)}
                 renderAs={'canvas'}
                 size={128}
                 bgColor={'#FFFFFF'}
