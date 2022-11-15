@@ -936,6 +936,7 @@ export default () => {
         visible={createModalVisible}
         onCancel={() => {
           clearForm();
+          setCurrent(0)
           setModalVisible(false);
         }}
         onOk={ onFinish}
@@ -1157,7 +1158,7 @@ export default () => {
               <QRCode
                 value={types.indexOf("新建") !== -1? (  `https://preprod.lingyangplat.com/antelope-activity-h5/antelope-download/index.html?shardCodeMaster=${shardCodeMaster}&preview=true`) :(`https://preprod.lingyangplat.com/antelope-activity-h5/antelope-download/index.html?shardCodeMaster=${shardCodeMaster}&preview=false`)}
                 renderAs={'canvas'}
-                size={128}
+                size={113}
                 bgColor={'#FFFFFF'}
                 fgColor={'#000000'}
                 level="H"
@@ -1177,13 +1178,9 @@ export default () => {
       <div className={sc('container-header')}>
           {selectButton()}
           <div className={sc('container-header-select')}>
-          <Dropdown.Button
-            type="primary"
-            overlay={menu}
-            onClick={handleButtonClick}
-          >
-            新增
-          </Dropdown.Button>
+            <Dropdown overlay={menu} placement="bottomLeft">
+              <Button style={{background:'#6680FF',color:'#fff'}}>新增  ···</Button>
+            </Dropdown>
           </div>
         </div>
       <div className={sc('container-body')}>
