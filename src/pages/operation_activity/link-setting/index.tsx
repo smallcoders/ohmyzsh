@@ -218,7 +218,7 @@ export default () => {
       // @ts-ignore
       if(idName==='#imgWechat'&& context){
         context.drawImage(image, 0, 0,0,0);
-      }else if(idName==='#imgShare'&& context){
+      }else if(idName==='#imgShare1'&& context){
         context.drawImage(image, 0, 0,1080, 1920,);
       }
       const urlName = canvas.toDataURL("image/png"); //得到图片的base64编码数据
@@ -348,7 +348,7 @@ export default () => {
       }else if(edge==4){
         setBtnValue('发布并下载图片')
         value.activeType = 'SHARD_CODE'
-        setIdName('#imgShare')
+        setIdName('#imgShare1')
         setFormData(value)
         setShardCodeMaster(value.shardCodeMaster)
         setCurrent(3)
@@ -1153,18 +1153,32 @@ export default () => {
           {current==3 && (<div className={sc('modelWord')} >
             <h2 >以下分享码用于预览效果用，不计入数据统计</h2>
             <div className={sc('modelWord-bk')} id={'imgShare'}>
-            <div className={sc('modelWord-bk-invite')}>邀请人：{shardCodeMaster}</div>
-            <div className="qr-anhui-pf">
-              <QRCode
-                value={types.indexOf("新建") !== -1? (  `https://preprod.lingyangplat.com/antelope-activity-h5/antelope-download/index.html?shardCodeMaster=${shardCodeMaster}&preview=true`) :(`https://preprod.lingyangplat.com/antelope-activity-h5/antelope-download/index.html?shardCodeMaster=${shardCodeMaster}&preview=false`)}
-                renderAs={'canvas'}
-                size={113}
-                bgColor={'#FFFFFF'}
-                fgColor={'#000000'}
-                level="H"
-                includeMargin={true}
-              />
+              <div className={sc('modelWord-bk-invite')}>邀请人：{shardCodeMaster}</div>
+              <div className="qr-anhui-pf">
+                <QRCode
+                  value={(  `https://preprod.lingyangplat.com/antelope-activity-h5/antelope-download/index.html?shardCodeMaster=${shardCodeMaster}&preview=true`) }
+                  renderAs={'canvas'}
+                  size={113}
+                  bgColor={'#FFFFFF'}
+                  fgColor={'#000000'}
+                  level="H"
+                  includeMargin={true}
+                />
+              </div>
             </div>
+            <div className={sc('modelWord-bk1')} id={'imgShare1'}>
+              <div className={sc('modelWord-bk1-invite')}>邀请人：{shardCodeMaster}</div>
+              <div className="qr-anhui-pf">
+                <QRCode
+                  value={(`https://preprod.lingyangplat.com/antelope-activity-h5/antelope-download/index.html?shardCodeMaster=${shardCodeMaster}&preview=false`)}
+                  renderAs={'canvas'}
+                  size={113}
+                  bgColor={'#FFFFFF'}
+                  fgColor={'#000000'}
+                  level="H"
+                  includeMargin={true}
+                />
+              </div>
             </div>
           </div>)}
         </ProCard>
