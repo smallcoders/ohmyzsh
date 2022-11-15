@@ -108,6 +108,12 @@ export const routeName = {
   BANKING_SERVICE_INDEX: '/banking/banking_service_manage/index',
   BANKING_SERVICE_DETAIL: '/banking/banking_service_manage/detail',
   ORG_MANAGE: '/user-config/org-manage',
+  // 贷款记录
+  LOAN_RECORD: '/banking/loan_record',
+  LOAN_RECORD_INDEX: '/banking/loan_record/index',
+  LOAN_RECORD_DETAIL: '/banking/loan_record/detail',
+  LOAN_RECORD_ENTER: '/banking/loan_record/enter',
+  LOAN_RECORD_WITHDRAWANDLOAN: '/banking/loan_record/withdrawAndLoan',
   // 推荐管理
   RECOMMENDED_HOT_WORDS: '/recommended/hot_words',
   RECOMMENDED_HOT_WORDS_INDEX: '/recommended/hot_words/index',
@@ -611,6 +617,38 @@ export default [
             path: routeName.BANKING_SERVICE_DETAIL,
             name: '需求详情',
             component: './banking/banking_service_manage/detail/detail',
+          },
+        ],
+      },
+      {
+        path: routeName.LOAN_RECORD,
+        name: '贷款记录',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.LOAN_RECORD,
+            redirect: routeName.LOAN_RECORD_INDEX,
+          },
+          {
+            path: routeName.LOAN_RECORD_INDEX,
+            hideInBreadcrumb: true,
+            name: '贷款记录',
+            component: './banking/loan_record/index',
+          },
+          {
+            path: routeName.LOAN_RECORD_DETAIL,
+            name: '详情',
+            component: './banking/loan_record/detail/detail',
+          },
+          {
+            path: routeName.LOAN_RECORD_ENTER,
+            name: '信息录入',
+            component: './banking/loan_record/detail/detail',
+          },
+          {
+            path: routeName.LOAN_RECORD_WITHDRAWANDLOAN,
+            name: '提款及放款详情',
+            component: './banking/loan_record/detail/withdrawAndLoan',
           },
         ],
       },

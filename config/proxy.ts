@@ -72,9 +72,11 @@ export default {
       // pathRewrite: { '^/antelope-other': '' },
     },
     '/antelope-finance/': {
-      target: 'http://172.30.33.222:10086',
+      // target: 'http://172.30.33.222:10086',
+      target: 'http://10.8.7.112:9102',
       changeOrigin: true,
-      pathRewrite: { '^': '' },
+      pathRewrite: { '^/antelope-finance': '' },
+      // pathRewrite: { '^': '' },
     },
     '/antelope-recommend/': {
       target: 'http://172.30.33.222:10086',
