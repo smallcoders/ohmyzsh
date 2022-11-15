@@ -154,8 +154,8 @@ export default () => {
 
   // 处理回显标签
   const tagsDeal = (tags: any) => {
-    let arr = tags?.split(',') || []
-    let arr2 = []
+    const arr = tags?.split(',') || []
+    const arr2 = []
     if(arr) {
       arr.map((item: any) => {
         arr2.push(Number(item));
@@ -164,7 +164,7 @@ export default () => {
     }else {
       return []
     }
-    
+
   }
 
   const editTags = (record: any) => {
@@ -260,10 +260,10 @@ export default () => {
             </Col>
             <Col span={6}>
               <Form.Item name="isHandle" label="标签">
-                <Select 
-                  placeholder="请选择" 
+                <Select
+                  placeholder="请选择"
                   optionFilterProp="children"
-                  allowClear 
+                  allowClear
                   mode="multiple"
                   showSearch
                   filterOption={(input, option) =>
@@ -323,8 +323,8 @@ export default () => {
   const [banIndustry, setBanIndustry] = useState(false)
 
   const compareArrs = (a: any, b: any) => {
-    let sortA = a.sort()
-    let sortB = b.sort()
+    const sortA = a.sort()
+    const sortB = b.sort()
     return JSON.stringify(sortA)===JSON.stringify(sortB)
   }
   // 跳过
@@ -340,7 +340,7 @@ export default () => {
           okText: '去保存',
           cancelText: '继续跳过',
           onOk: () => {
-            
+
           },
           onCancel: () => {
             setTechnology([])
@@ -365,7 +365,7 @@ export default () => {
           okText: '去保存',
           cancelText: '继续跳过',
           onOk: () => {
-            
+
           },
           onCancel: () => {
             setIndustry([])
@@ -376,7 +376,7 @@ export default () => {
       }else {
         setBanIndustry(false)
         setCurModal(step)
-      } 
+      }
     // 跳到第三步
     }else {
       console.log(sectorItems, '2-sectorItems');
@@ -388,7 +388,7 @@ export default () => {
           okText: '去保存',
           cancelText: '继续跳过',
           onOk: () => {
-            
+
           },
           onCancel: () => {
             setTechnology([])
@@ -399,7 +399,7 @@ export default () => {
       }else {
         setBanIndustry(false)
         setCurModal(step)
-      } 
+      }
     }
   };
 
@@ -408,7 +408,7 @@ export default () => {
     console.log(from, to);
     let params = {}
     if(from == 1) {
-      let arr:any = []
+      const arr: any = []
       industry.map((item) => {
         arr.push({recCode: item})
       })
@@ -418,7 +418,7 @@ export default () => {
         }
       }
     }else if(from == 2) {
-      let arr:any = []
+      const arr: any = []
       sectorItems.map((item) => {
         arr.push({recCode: item})
       })
@@ -428,7 +428,7 @@ export default () => {
         }
       }
     }else if(from == 3) {
-      let arr:any = []
+      const arr: any = []
       technology.map((item) => {
         arr.push({recCode: item})
       })
@@ -492,7 +492,7 @@ export default () => {
         okText: '去保存',
         cancelText: '继续关闭',
         onOk: () => {
-          
+
         },
         onCancel: () => {
           setCurModal(1)
@@ -502,16 +502,16 @@ export default () => {
     }else {
       setCurModal(1)
       setModalVisible(false)
-    } 
+    }
   }
 
   // 选择产业标签
   const selectIndustryItem = (e) => {
     console.log(e, e.target.parentElement.dataset);
     if(e.target.parentElement.dataset && e.target.parentElement.dataset.id) {
-      let arr = [...industry]
+      const arr = [...industry]
       console.log(arr, 'arr');
-      let {id} = e.target.parentElement.dataset
+      const {id} = e.target.parentElement.dataset
       if(arr.length == 3 && arr.indexOf(Number(id)) < 0) {
         return false
       }
@@ -535,9 +535,9 @@ export default () => {
   const selectprofessionItem = (e) => {
     console.log(e, e.target.dataset);
     if(e.target.dataset && e.target.dataset.id) {
-      let arr = [...sectorItems]
+      const arr = [...sectorItems]
       console.log(arr, 'arr');
-      let {id} = e.target.dataset
+      const {id} = e.target.dataset
       if(arr.length == 3 && arr.indexOf(Number(id)) < 0) {
         return false
       }
@@ -561,9 +561,9 @@ export default () => {
   const selectTechnologyItem = (e) => {
     console.log(e, e.target.dataset);
     if(e.target.dataset && e.target.dataset.id) {
-      let arr = [...technology]
+      const arr = [...technology]
       console.log(arr, 'arr');
-      let {id} = e.target.dataset
+      const {id} = e.target.dataset
       if(arr.length == 3 && arr.indexOf(Number(id)) < 0) {
         return false
       }
@@ -613,34 +613,34 @@ export default () => {
               {tagsObj.industryItems.map((el) => {
                 return (
                   <Col span={6} key={el.recCode}>
-                    <li 
-                      className={ sc('container-modal-select-item1')} 
+                    <li
+                      className={ sc('container-modal-select-item1')}
                       style={{
                         border: industry.indexOf(el.recCode) > -1 ? '1px solid #0068FF' : '1px dashed #ddd',
                         cursor: industry.indexOf(el.recCode) < 0 && banIndustry ? 'not-allowed' : 'pointer'
                       }}
                       data-id={el.recCode} data-ban={industry.indexOf(el.recCode) < 0 && banIndustry }
                     >
-                      <img 
+                      <img
                         src={
-                          el.desc == '新能源汽车和智能网联汽车' ? icon2 : 
-                          el.desc == '数字创意' ? icon3 : 
-                          el.desc == '高端制造设备' ? icon4 : 
-                          el.desc == '新能源和节能环保' ? icon5 : 
-                          el.desc == '绿色食品' ? icon6 : 
-                          el.desc == '生命健康' ? icon7 : 
-                          el.desc == '智能家电' ? icon8 : 
-                          el.desc == '新材料' ? icon9 : 
-                          el.desc == '人工智能' ? icon10 : 
+                          el.desc == '新能源汽车和智能网联汽车' ? icon2 :
+                          el.desc == '数字创意' ? icon3 :
+                          el.desc == '高端制造设备' ? icon4 :
+                          el.desc == '新能源和节能环保' ? icon5 :
+                          el.desc == '绿色食品' ? icon6 :
+                          el.desc == '生命健康' ? icon7 :
+                          el.desc == '智能家电' ? icon8 :
+                          el.desc == '新材料' ? icon9 :
+                          el.desc == '人工智能' ? icon10 :
                           el.desc == '其他' ? icon11 : icon1
-                        }  
+                        }
                         className='background-img'/>
                       <p>{el.desc}</p>
                       <div className='mask'
                         style={{
                           background: industry.indexOf(el.recCode) > -1 ? 'rgba(0,0,0,.2)' : 'rgba(30, 35, 42, 0.6)',
                         }}
-                      ></div>
+                       />
                       {
                         industry.indexOf(el.recCode) > -1 && (
                           <img src={selectedIcon} className="selected-icon"/>
@@ -667,9 +667,9 @@ export default () => {
                     tagsObj.directionItems[item].map((el) => {
                       return (
                         <li
-                          className={ sc('container-modal-select-item')} 
+                          className={ sc('container-modal-select-item')}
                           style={{
-                            border: sectorItems.indexOf(el.recCode) > -1 ? '1px solid #0068FF' : '1px solid #DEDFE4', 
+                            border: sectorItems.indexOf(el.recCode) > -1 ? '1px solid #0068FF' : '1px solid #DEDFE4',
                             color: sectorItems.indexOf(el.recCode) > -1 ? '#0068FF' : '#4B586C',
                             cursor: sectorItems.indexOf(el.recCode) < 0 && banIndustry ? 'not-allowed' : 'pointer'
                           }}
@@ -686,7 +686,7 @@ export default () => {
                     })
                   }
                 </ul>
-              </>  
+              </>
             )
           })}
         </div>
@@ -698,10 +698,10 @@ export default () => {
           <ul className={sc('container-modal-select')} onClick={() => {selectTechnologyItem(event)}}>
             {tagsObj.territoryItems.map((el) => {
               return (
-                <li 
-                  className={sc('container-modal-select-item')} 
+                <li
+                  className={sc('container-modal-select-item')}
                   style={{
-                    border: technology.indexOf(el.recCode) > -1 ? '1px solid #0068FF' : '1px solid #DEDFE4', 
+                    border: technology.indexOf(el.recCode) > -1 ? '1px solid #0068FF' : '1px solid #DEDFE4',
                     color: technology.indexOf(el.recCode) > -1 ? '#0068FF' : '#4B586C',
                     cursor: technology.indexOf(el.recCode) < 0 && banIndustry ? 'not-allowed' : 'pointer'
                   }}
@@ -716,11 +716,11 @@ export default () => {
                 </li>
               );
             })}
-            
+
           </ul>
         </div>
       </Modal>
-    ) 
+    )
   }
 
   return (
