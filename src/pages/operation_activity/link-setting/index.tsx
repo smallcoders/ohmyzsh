@@ -1116,7 +1116,7 @@ export default () => {
                   <Input placeholder="请输入" maxLength={35} disabled={activeStatusData=='DOWN'&&types.indexOf("新建") == -1}/>
                 </Form.Item>
               }
-              {edge === 4 &&activeStatusData=='DOWN'&&(types.indexOf("新建") == -1)&&
+              {edge === 4 &&(types.indexOf("新建") == -1)&&
                 <Form.Item
                   label='分享码主人'
                   name="shardCodeMaster"
