@@ -138,7 +138,7 @@ const Tablist: React.FC = () => {
           >
             <Input placeholder="请输入" maxLength={10}/>
           </Form.Item>}
-          {edge == 0&&btnType=='新建'&&
+          {edge == 0&&btnType=='新增'&&
             <Form.Item
               label={'渠道值名称'}
               name="channelName"
@@ -190,7 +190,7 @@ const Tablist: React.FC = () => {
           >
             <Input placeholder="请输入" maxLength={10}/>
           </Form.Item>}
-          {edge == 1&&btnType=='新建'&&
+          {edge == 1&&btnType=='新增'&&
             <Form.Item
               label={'场景值名称'}
               name="sceneName"
