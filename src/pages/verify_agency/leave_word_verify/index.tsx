@@ -4,7 +4,7 @@ import { PageContainer } from '@ant-design/pro-layout';
 import scopedClasses from '@/utils/scopedClasses';
 import Common from '@/types/common.d';
 import { routeName } from '@/../config/routes';
-import { history, useModel } from 'umi';
+import { history, useModel, Access, useAccess } from 'umi';
 import SelfTable from '@/components/self_table';
 import SearchBar from '@/components/search_bar';
 import moment from 'moment';
@@ -62,6 +62,10 @@ export interface SearchInfo {
   status: boolean | null;
 }
 
+const enum Edge {
+  HOME = 0, // 新闻咨询首页
+}
+
 export default () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = useState<boolean>(false)
@@ -69,12 +73,29 @@ export default () => {
   const { pageInfo, setPageInfo, searchInfo, setSearchInfo, resetModel } = useModel(
     'useReportRecordVerify',
   );
+  // 拿到当前角色的access权限兑现
+  const access = useAccess()
+  // 当前页面的对应权限key
+  const [edge, setEdge] = useState<Edge.HOME>(Edge.HOME);
+  // 页面权限
+  const permissions = {
+    [Edge.HOME]: 'PQ_AT_LY', // 留言审核-页面查询
+  }
+
 
   useEffect(()=>{
     // 初始化searchInfo
     form?.setFieldsValue({ ...searchInfo })
     // 获取分页数据
     getLeaveWordVerifyPage({...searchInfo}, pageInfo?.pageSize, pageInfo?.pageIndex)
+    // 获取页面权限
+    for (const key in permissions) {
+      const permission = permissions[key]
+      if (Object.prototype.hasOwnProperty.call(access, permission)) {
+        setEdge(key as any)
+        break
+      }
+    }
   },[])
 
   const columns = [
@@ -124,21 +145,27 @@ export default () => {
       fixed: 'right',
       dataIndex: 'option', // 列数据在数据项中对应的路径，支持通过数组查询嵌套路径
       render: (_: any, _record: LeaveWordVerify.Content) => {
-        return (
-          <div>
+        const accessible = access?.[permissions?.[edge].replace(new RegExp("Q"), "")]
+        return _record?.status === 'AUDITING' ? (
+          <Access accessible={accessible}>
             <Button 
               type="link"
               onClick={() => {
-                if(_record?.status === 'AUDITING') {
-                  history.push(`${routeName.LEAVE_WORD_VERIFY_DETAIL}?auditId=${_record.auditId}&commentId=${_record.commentId}&tab=${_record.tab}&detailId=${_record.detailId}`);
-                }else {
-                  window.open(`${routeName.LEAVE_WORD_VERIFY_DETAIL}?auditId=${_record.auditId}&commentId=${_record.commentId}&tab=${_record.tab}&detailId=${_record.detailId}`);
-                }
+                history.push(`${routeName.LEAVE_WORD_VERIFY_DETAIL}?auditId=${_record.auditId}&commentId=${_record.commentId}&tab=${_record.tab}&detailId=${_record.detailId}`);
               }}
             >
-              {_record?.status === 'AUDITING' ? '审核' : '详情'} 
+              {'审核'} 
             </Button>
-          </div>
+          </Access>
+        ) : (
+          <Button 
+            type="link"
+            onClick={() => {
+              window.open(`${routeName.LEAVE_WORD_VERIFY_DETAIL}?auditId=${_record.auditId}&commentId=${_record.commentId}&tab=${_record.tab}&detailId=${_record.detailId}`);
+            }}
+          >
+            {'详情'} 
+          </Button>
         )
       }
     }

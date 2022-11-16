@@ -18,7 +18,7 @@ import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 import { routeName } from '@/../config/routes';
 import SelfTable from '@/components/self_table';
-import { history } from 'umi';
+import { Access, useAccess } from 'umi';
 import { getDemandPage } from '@/services/kc-verify';
 import { getDictionaryTree } from '@/services/dictionary';
 import Common from '@/types/common';
@@ -31,6 +31,9 @@ const stateObj = {
   AUDIT_PASSED: '已通过',
   AUDIT_REJECTED: '已拒绝',
 };
+const enum Edge {
+  HOME = 0, // 新闻咨询首页
+}
 export default () => {
   const [dataSource, setDataSource] = useState<NeedVerify.Content[]>([]);
   const [refuseContent, setRefuseContent] = useState<string>('');
@@ -43,6 +46,24 @@ export default () => {
     endDateTime?: string; // 提交结束时间
     typeId?: number; // 行业类型id 三级类型
   }>({});
+  // 拿到当前角色的access权限兑现
+  const access = useAccess()
+  // 当前页面的对应权限key
+  const [edge, setEdge] = useState<Edge.HOME>(Edge.HOME);
+  // 页面权限
+  const permissions = {
+    [Edge.HOME]: 'PQ_AT_CXXQ', // 创新需求-页面查询
+  }
+
+  useEffect(() => {
+    for (const key in permissions) {
+      const permission = permissions[key]
+      if (Object.prototype.hasOwnProperty.call(access, permission)) {
+        setEdge(key as any)
+        break
+      }
+    }
+  },[])
 
   const formLayout = {
     labelCol: { span: 6 },
@@ -167,31 +188,34 @@ export default () => {
       dataIndex: 'option',
       fixed: 'right',
       render: (_: any, record: any) => {
+        const accessible = access?.[permissions?.[edge].replace(new RegExp("Q"), "")]
         return record.auditState === 'AUDITING' ? (
-          <Space size={20}>
-            <Button type="link" onClick={() => editState(record, { result: true })}>
-              通过
-            </Button>
-            <Popconfirm
-              icon={null}
-              title={
-                <>
-                  意见说明（非必填）
-                  <Input.TextArea
-                    onChange={(e) => setRefuseContent(e.target.value)}
-                    value={refuseContent}
-                    showCount
-                    maxLength={200}
-                  />
-                </>
-              }
-              okText="确定"
-              cancelText="取消"
-              onConfirm={() => editState(record, { result: false, reason: refuseContent })}
-            >
-              <Button type="link">拒绝</Button>
-            </Popconfirm>
-          </Space>
+          <Access accessible={accessible}>
+            <Space size={20}>
+              <Button type="link" onClick={() => editState(record, { result: true })}>
+                通过
+              </Button>
+              <Popconfirm
+                icon={null}
+                title={
+                  <>
+                    意见说明（非必填）
+                    <Input.TextArea
+                      onChange={(e) => setRefuseContent(e.target.value)}
+                      value={refuseContent}
+                      showCount
+                      maxLength={200}
+                    />
+                  </>
+                }
+                okText="确定"
+                cancelText="取消"
+                onConfirm={() => editState(record, { result: false, reason: refuseContent })}
+              >
+                <Button type="link">拒绝</Button>
+              </Popconfirm>
+            </Space>
+          </Access>
         ) : (
           <div style={{ display: 'grid' }}>
             <span>

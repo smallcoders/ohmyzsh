@@ -20,7 +20,7 @@ import moment from 'moment';
 import { routeName } from '@/../config/routes';
 import SelfTable from '@/components/self_table';
 import type DiagnosticTasks from '@/types/service-config-diagnostic-tasks';
-import { history } from 'umi';
+import { history, Access, useAccess } from 'umi';
 import { getEnumByName, getDictionay } from '@/services/common';
 import { getAreaTree } from '@/services/area';
 import { getProgrammeVerifyPage } from '@/services/service-programme-verify';
@@ -30,6 +30,9 @@ const stateObj = {
   PASSED: '已通过',
   REJECTED: '已拒绝',
 };
+const enum Edge {
+  HOME = 0, // 新闻咨询首页
+}
 import { renderSolutionType } from '../../service_config/solution/solution';
 import { values } from 'lodash';
 export default () => {
@@ -42,6 +45,24 @@ export default () => {
     endDateTime?: string; // 提交结束时间
     typeId?: number; // 行业类型id 三级类型
   }>({});
+  // 拿到当前角色的access权限兑现
+  const access = useAccess()
+  // 当前页面的对应权限key
+  const [edge, setEdge] = useState<Edge.HOME>(Edge.HOME);
+  // 页面权限
+  const permissions = {
+    [Edge.HOME]: 'PQ_AT_FWFA', // 服务方案-页面查询
+  }
+
+  useEffect(() => {
+    for (const key in permissions) {
+      const permission = permissions[key]
+      if (Object.prototype.hasOwnProperty.call(access, permission)) {
+        setEdge(key as any)
+        break
+      }
+    }
+  },[])
 
   const formLayout = {
     labelCol: { span: 6 },
@@ -183,17 +204,20 @@ export default () => {
       fixed: 'right',
       dataIndex: 'option',
       render: (_: any, record: any) => {
+        const accessible = access?.[permissions?.[edge].replace(new RegExp("Q"), "")]
         return record.checkEnum === 'UN_CHECK' ? (
-          <Space size={20}>
-            <a
-              href="javascript:void(0)"
-              onClick={() => {
-                history.push(`${routeName.SERVICE_PROGRAMME_VERIFY_DETAIL}?id=${record.id}`);
-              }}
-            >
-              审核
-            </a>
-          </Space>
+          <Access accessible={accessible}>
+            <Space size={20}>
+              <a
+                href="javascript:void(0)"
+                onClick={() => {
+                  history.push(`${routeName.SERVICE_PROGRAMME_VERIFY_DETAIL}?id=${record.id}`);
+                }}
+              >
+                审核
+              </a>
+            </Space>
+          </Access>
         ) : (
           <div style={{ display: 'grid' }}>
             <span>

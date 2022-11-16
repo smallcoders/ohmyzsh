@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { history, useModel } from 'umi'
+import { history, useModel, Access, useAccess } from 'umi'
 import { Form, Button, message } from 'antd'
 import { PageContainer } from '@ant-design/pro-layout'
 import Common from '@/types/common.d'
@@ -20,6 +20,9 @@ const stateObj = {
   AUDIT_PASSED: '审核通过',
   AUDIT_REJECTED: '审核拒绝',
 }
+const enum Edge {
+  HOME = 0, // 新闻咨询首页
+}
 
 export default () => {
   const [form] = Form.useForm()
@@ -28,6 +31,24 @@ export default () => {
   const [loading, setLoading] = useState<boolean>(false)
   const [dataSource, setDataSource] = useState<ExpertAuthVerify.Content[]>([])
   const { pageInfo, setPageInfo, searchInfo, setSearchInfo, resetModel } = useModel('useExpertAuthVerifyModel')
+  // 拿到当前角色的access权限兑现
+  const access = useAccess()
+  // 当前页面的对应权限key
+  const [edge, setEdge] = useState<Edge.HOME>(Edge.HOME);
+  // 页面权限
+  const permissions = {
+    [Edge.HOME]: 'PQ_AT_ZJRZ', // 专家认证-页面查询
+  }
+
+  useEffect(() => {
+    for (const key in permissions) {
+      const permission = permissions[key]
+      if (Object.prototype.hasOwnProperty.call(access, permission)) {
+        setEdge(key as any)
+        break
+      }
+    }
+  },[])
 
   useEffect(() => {
     form?.setFieldsValue({ ...searchInfo })
@@ -99,16 +120,38 @@ export default () => {
       fixed: 'right',
       dataIndex: 'option',
       render: (_: any, record: ExpertAuthVerify.Content) => {
-        return (
+        const accessible = access?.[permissions?.[edge].replace(new RegExp("Q"), "")]
+        return record?.auditState === 'AUDITING' ? (
+          <Access accessible={accessible}>
+            <Button
+              type="link"
+              onClick={() => {
+                history.push(`${routeName.EXPERT_AUTH_VERIFY_DETAIL}?id=${record?.auditId}`)
+              }}
+            >
+              {'审核'}
+            </Button>
+          </Access>
+        ) : (
           <Button
             type="link"
             onClick={() => {
-              history.push(`${routeName.EXPERT_AUTH_VERIFY_DETAIL}?id=${record?.auditId}`)
+              window.open(`${routeName.EXPERT_AUTH_VERIFY_DETAIL}?id=${record?.auditId}`)
             }}
           >
-            {record?.auditState === 'AUDITING' ? '审核' : '详情'}
+            {'详情'}
           </Button>
         )
+        // return (
+        //   <Button
+        //     type="link"
+        //     onClick={() => {
+        //       history.push(`${routeName.EXPERT_AUTH_VERIFY_DETAIL}?id=${record?.auditId}`)
+        //     }}
+        //   >
+        //     {record?.auditState === 'AUDITING' ? '审核' : '详情'}
+        //   </Button>
+        // )
       },
     },
   ]

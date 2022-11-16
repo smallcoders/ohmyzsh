@@ -4,7 +4,7 @@ import { PageContainer } from '@ant-design/pro-layout'
 import scopedClasses from '@/utils/scopedClasses'
 import Common from '@/types/common.d'
 import moment from 'moment'
-import { history, useModel } from 'umi'
+import { history, useModel, Access, useAccess } from 'umi'
 import { routeName } from '@/../config/routes'
 import SelfTable from '@/components/self_table'
 import SearchBar from '@/components/search_bar'
@@ -18,12 +18,33 @@ const stateObj = {
   AUDIT_PASSED: '审核通过',
   AUDIT_REJECTED: '审核拒绝',
 }
+const enum Edge {
+  HOME = 0, // 新闻咨询首页
+}
 
 export default () => {
   const [form] = Form.useForm()
   const [loading, setLoading] = useState<boolean>(false)
   const [dataSource, setDataSource] = useState<EnterpriseInfoVerify.Content[]>([])
   const { pageInfo, setPageInfo, orgName, setOrgName, resetModel } = useModel('useEnterpriseInfoVerifyModel')
+  // 拿到当前角色的access权限兑现
+  const access = useAccess()
+  // 当前页面的对应权限key
+  const [edge, setEdge] = useState<Edge.HOME>(Edge.HOME);
+  // 页面权限
+  const permissions = {
+    [Edge.HOME]: 'PQ_AT_ZZXX', // 组织信息-页面查询
+  }
+
+  useEffect(() => {
+    for (const key in permissions) {
+      const permission = permissions[key]
+      if (Object.prototype.hasOwnProperty.call(access, permission)) {
+        setEdge(key as any)
+        break
+      }
+    }
+  },[])
 
   useEffect(() => {
     form?.setFieldsValue({ orgName })
@@ -85,18 +106,26 @@ export default () => {
       fixed: 'right',
       dataIndex: 'option',
       render: (_: any, record: EnterpriseInfoVerify.Content) => {
-        return (
+        const accessible = access?.[permissions?.[edge].replace(new RegExp("Q"), "")]
+        return record?.auditState === 'AUDITING' ? (
+          <Access accessible={accessible}>
+            <Button
+              type="link"
+              onClick={() => {
+                history.push(`${routeName.ENTERPRISE_INFO_VERIFY_DETAIL}?id=${record.auditId}`)
+              }}
+            >
+              {'审核'}
+            </Button>
+          </Access>
+        ) : (
           <Button
             type="link"
             onClick={() => {
-              if(record?.auditState === 'AUDITING') {
-                history.push(`${routeName.ENTERPRISE_INFO_VERIFY_DETAIL}?id=${record.auditId}`)
-              }else {
-                window.open(`${routeName.ENTERPRISE_INFO_VERIFY_DETAIL}?id=${record.auditId}`)
-              }
+              window.open(`${routeName.ENTERPRISE_INFO_VERIFY_DETAIL}?id=${record.auditId}`)
             }}
           >
-            {record?.auditState === 'AUDITING' ? '审核' : '详情'}
+            {'详情'}
           </Button>
         )
       },

@@ -2058,22 +2058,22 @@ export default [
       },
     ],
   },
-  {
-    path: '/expert-manage',
-    code: 'M_EM', // 专家管理的tap未处理
-    access: 'M_EM',
-    name: '专家管理',
-    icon: 'account-book',
-    component: './expert_manage',
-    routes: [
-      {
-        path: '/expert-manage/detail',
-        name: '专家详情',
-        hideInMenu: true,
-        component: './expert_manage/expert_detail/index',
-      },
-    ],
-  },
+  // {
+  //   path: '/expert-manage',
+  //   code: 'M_EM', // 专家管理的tap未处理
+  //   access: 'M_EM',
+  //   name: '专家管理',
+  //   icon: 'account-book',
+  //   component: './expert_manage',
+  //   routes: [
+  //     {
+  //       path: '/expert-manage/detail',
+  //       name: '专家详情',
+  //       hideInMenu: true,
+  //       component: './expert_manage/expert_detail/index',
+  //     },
+  //   ],
+  // },
   {
     path: '/purchase-manage',
     code: 'M_PM',

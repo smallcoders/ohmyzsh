@@ -4,7 +4,7 @@ import { PageContainer } from '@ant-design/pro-layout';
 import scopedClasses from '@/utils/scopedClasses';
 import Common from '@/types/common.d';
 import moment from 'moment';
-import { history, useModel } from 'umi';
+import { history, useModel, Access, useAccess } from 'umi';
 import { routeName } from '@/../config/routes';
 import SelfTable from '@/components/self_table';
 import SearchBar from '@/components/search_bar';
@@ -23,10 +23,13 @@ const stateObj = {
   UN_COMMIT: '未审核',
   INVALID: '未审核已失效',
 };
+const enum Edge {
+  HOME = 0, // 新闻咨询首页
+}
 
 export default () => {
   const [form] = Form.useForm();
-  const [loading, setLoading] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(false);
   const [dataSource, setDataSource] = useState<EnterpriseAdminVerify.Content[]>([]);
   const { pageInfo, setPageInfo, orgName, setOrgName, resetModel } = useModel(
     'useEnterpriseAdministratorAudit',
@@ -36,17 +39,35 @@ export default () => {
     createTimeStart?: string; // 提交开始时间
     createTimeEnd?: string; // 提交结束时间
   }>({});
+  // 拿到当前角色的access权限兑现
+  const access = useAccess();
+  // 当前页面的对应权限key
+  const [edge, setEdge] = useState<Edge.HOME>(Edge.HOME);
+  // 页面权限
+  const permissions = {
+    [Edge.HOME]: 'PQ_AT_ZZGLY', // 组织管理员-页面查询
+  };
+
+  useEffect(() => {
+    for (const key in permissions) {
+      const permission = permissions[key];
+      if (Object.prototype.hasOwnProperty.call(access, permission)) {
+        setEdge(key as any);
+        break;
+      }
+    }
+  }, []);
 
   useEffect(() => {
     // form?.setFieldsValue({ orgName })
-    getEnterpriseInfoVerifyPage(pageInfo?.pageSize, pageInfo?.pageIndex)
+    getEnterpriseInfoVerifyPage(pageInfo?.pageSize, pageInfo?.pageIndex);
     const unlisten = history.listen((location) => {
       if (!location?.pathname.includes(routeName.ENTERPRISE_ADMIN_VERIFY)) {
-        resetModel?.()
-        unlisten()
+        resetModel?.();
+        unlisten();
       }
     });
-  }, [searchContent])
+  }, [searchContent]);
 
   const deleteAuthority = async (id: string) => {
     try {
@@ -112,6 +133,7 @@ export default () => {
       fixed: 'right',
       dataIndex: 'option',
       render: (_: any, record: EnterpriseAdminVerify.Content) => {
+        const accessible = access?.[permissions?.[edge].replace(new RegExp("Q"), "")]
         return (
           <div>
             {/* {record?.state === 'UN_COMMIT' && (
@@ -132,7 +154,28 @@ export default () => {
                 移除权限
               </Button>
             )} */}
-            <Button
+            {record?.state === 'UN_CHECK' ? (
+              <Access accessible={accessible}>
+                <Button
+                  type="link"
+                  onClick={() => {
+                    history.push(`${routeName.ENTERPRISE_ADMIN_VERIFY_DETAIL}?id=${record.id}`);
+                  }}
+                >
+                  {'审核'}
+                </Button>
+              </Access>
+            ) : (
+              <Button
+                type="link"
+                onClick={() => {
+                  window.open(`${routeName.ENTERPRISE_ADMIN_VERIFY_DETAIL}?id=${record.id}`);
+                }}
+              >
+                {'详情'}
+              </Button>
+            )}
+            {/* <Button
               type="link"
               onClick={() => {
                 if(record?.state === 'UN_CHECK') {
@@ -143,7 +186,7 @@ export default () => {
               }}
             >
               {record?.state === 'UN_CHECK' ? '审核' : '详情'}
-            </Button>
+            </Button> */}
           </div>
         );
       },
@@ -152,7 +195,7 @@ export default () => {
 
   const getEnterpriseInfoVerifyPage = async (pageSize = 10, pageIndex = 1) => {
     try {
-      setLoading(true)
+      setLoading(true);
       const { result, totalCount, pageTotal, code } = await getEnterpriseAdminVerifyPage({
         pageIndex,
         pageSize,
@@ -167,7 +210,7 @@ export default () => {
     } catch (error) {
       console.log(error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   };
 
@@ -194,7 +237,7 @@ export default () => {
       rest.createTimeStart = moment(time[0]).format('YYYY-MM-DD');
       rest.createTimeEnd = moment(time[1]).format('YYYY-MM-DD');
     }
-    console.log(rest)
+    console.log(rest);
     setSearChContent(rest);
     setPageInfo({ ...pageInfo, pageIndex: 1 });
     setOrgName(orgName);
@@ -222,8 +265,9 @@ export default () => {
             current: pageInfo?.pageIndex,
             pageSize: pageInfo?.pageSize,
             showTotal: (total: number) => (
-              <div className="pagination-text">{`共${total}条记录 第${pageInfo?.pageIndex}/${pageInfo?.pageTotal || 1
-                }页`}</div>
+              <div className="pagination-text">{`共${total}条记录 第${pageInfo?.pageIndex}/${
+                pageInfo?.pageTotal || 1
+              }页`}</div>
             ),
           }}
           onChange={(pagination: any) => {

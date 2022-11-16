@@ -25,6 +25,8 @@ import UploadForm from '@/components/upload_form';
 import SelfTable from '@/components/self_table';
 import { getEnumByName } from '@/services/common';
 import type { CheckboxValueType } from 'antd/es/checkbox/Group'
+import news from '@/types/solution-properties-news.d';
+import { Access, useAccess } from 'umi';
 const sc = scopedClasses('solution-properties-app-news');
 const stateObj = {
   0: '发布中',
@@ -33,6 +35,24 @@ const stateObj = {
 };
 export default () => {
   const [activeElse, setActiveElse] = useState<any>(false)
+  // 拿到当前角色的access权限兑现
+  const access = useAccess()
+  // 当前页面的对应权限key
+  const [edge, setEdge] = useState<news.Edge.HOME>(news.Edge.HOME);
+  // 页面权限
+  const permissions = {
+    [news.Edge.HOME]: 'PQ_PC_XWZX', // 页面查询
+  }
+
+  useEffect(() => {
+    for (const key in permissions) {
+      const permission = permissions[key]
+      if (Object.prototype.hasOwnProperty.call(access, permission)) {
+        setEdge(key as any)
+        break
+      }
+    }
+  },[])
 
   const onChangeKeyWord = (checkedValues: CheckboxValueType[]) => {
     if (checkedValues.includes('OTHER')) {
@@ -219,52 +239,53 @@ export default () => {
       fixed: 'right',
       dataIndex: 'option',
       render: (_: any, record: News.Content) => {
-        console.log('_',_)
-        console.log('record',record)
+        const accessible = access?.[permissions?.[edge].replace(new RegExp("Q"), "")]
         return (
-          <Space size="middle">
-            <a
-              href="#"
-              onClick={() => {
-                setEditingItem(record);
-                setModalVisible(true);
-                form.setFieldsValue({ ...record, publishTime: moment(record.publishTime) });
-              }}
-            >
-              编辑{' '}
-            </a>
-            <a href={record.url} target="_blank" rel="noreferrer">
-              查看
-            </a>
-            <Popconfirm
-              title="确定删除么？"
-              okText="确定"
-              cancelText="取消"
-              onConfirm={() => remove(record.id as string)}
-            >
-              <a href="#">删除</a>
-            </Popconfirm>
-            {record.state === 0 && (
+          <Access accessible={accessible}>
+            <Space size="middle">
+              <a
+                href="#"
+                onClick={() => {
+                  setEditingItem(record);
+                  setModalVisible(true);
+                  form.setFieldsValue({ ...record, publishTime: moment(record.publishTime) });
+                }}
+              >
+                编辑{' '}
+              </a>
+              <a href={record.url} target="_blank" rel="noreferrer">
+                查看
+              </a>
               <Popconfirm
-                title="确定下架么？"
+                title="确定删除么？"
                 okText="确定"
                 cancelText="取消"
-                onConfirm={() => editState(record.id as string, 0)}
+                onConfirm={() => remove(record.id as string)}
               >
-                <a href="#">下架</a>
+                <a href="#">删除</a>
               </Popconfirm>
-            )}
-            {record.state === 1 && (
-              <Popconfirm
-                title="确定上架么？"
-                okText="确定"
-                cancelText="取消"
-                onConfirm={() => editState(record.id as string, 1)}
-              >
-                <a href="#">上架</a>
-              </Popconfirm>
-            )}
-          </Space>
+              {record.state === 0 && (
+                <Popconfirm
+                  title="确定下架么？"
+                  okText="确定"
+                  cancelText="取消"
+                  onConfirm={() => editState(record.id as string, 0)}
+                >
+                  <a href="#">下架</a>
+                </Popconfirm>
+              )}
+              {record.state === 1 && (
+                <Popconfirm
+                  title="确定上架么？"
+                  okText="确定"
+                  cancelText="取消"
+                  onConfirm={() => editState(record.id as string, 1)}
+                >
+                  <a href="#">上架</a>
+                </Popconfirm>
+              )}
+            </Space>
+          </Access>
         );
       },
     },
@@ -478,15 +499,17 @@ export default () => {
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>资讯列表(共{pageInfo.totalCount || 0}个)</span>
-          <Button
-            type="primary"
-            key="addNew"
-            onClick={() => {
-              setModalVisible(true);
-            }}
-          >
-            <PlusOutlined /> 新增资讯
-          </Button>
+          <Access accessible={access['P_PC_XWZX']}>
+            <Button
+              type="primary"
+              key="addNew"
+              onClick={() => {
+                setModalVisible(true);
+              }}
+            >
+              <PlusOutlined /> 新增资讯
+            </Button>
+          </Access>
         </div>
       </div>
       <div className={sc('container-table-body')}>

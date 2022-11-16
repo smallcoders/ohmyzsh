@@ -196,6 +196,9 @@ const TableList: React.FC = () => {
       title: '操作',
       dataIndex: 'option',
       render: (_: any, record: Banner.Content) => {
+        // 利用 tab的权限嘛， 去除Q， 找到对应的编辑按钮权限
+        // 再利用access去找对应账号，是否有对应的编辑按钮权限
+        // 以此利用 Access标签，来完成按钮的展示与隐藏
         const accessible = access?.[permissions?.[edge].replace(new RegExp("Q"), "")]
         return (
           <Access accessible={accessible}>
@@ -253,6 +256,7 @@ const TableList: React.FC = () => {
       // permission 看这个属性，是否再access中存在，存在为true
       if (Object.prototype.hasOwnProperty.call(access, permission)) {
         console.log('key',key)
+        console.log('permission', permission)
         setEdge(key as any)
         break
       }
