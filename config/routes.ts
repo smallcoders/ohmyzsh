@@ -110,6 +110,7 @@ export const routeName = {
   BANKING_SERVICE_INDEX: '/banking/banking_service_manage/index',
   BANKING_SERVICE_DETAIL: '/banking/banking_service_manage/detail',
   ORG_MANAGE: '/user-config/org-manage',
+  FINANCIAL_CUSTOMERS_MANAGE: '/banking/financial_customers_manage/index',
   // 推荐管理
   RECOMMENDED_HOT_WORDS: '/recommended/hot_words',
   RECOMMENDED_HOT_WORDS_INDEX: '/recommended/hot_words/index',
@@ -662,6 +663,11 @@ export default [
             path: routeName.BANKING_SERVICE_DETAIL,
             name: '需求详情',
             component: './banking/banking_service_manage/detail/detail',
+          },
+          {
+            path: routeName.FINANCIAL_CUSTOMERS_MANAGE,
+            name: '金融客户管理',
+            component: './banking/financial_customers_manage/index',
           },
         ],
       },
