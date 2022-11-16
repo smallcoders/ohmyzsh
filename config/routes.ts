@@ -592,26 +592,9 @@ export default [
         component: './operation_activity/parameter-setting/index',
       },
       {
-<<<<<<< HEAD
         path: routeName.OPERATION_ACTIVITY_LINK,
         name: '链接配置',
         component: './operation_activity/link-setting/index',
-=======
-        path: routeName.DEMAND_MANAGEMENT_FEEDBACK,
-        hideInMenu: true,
-        name: '需求反馈',
-        component: './supply_demand_setting/docking_manage/components/feedback',
-      },
-      {
-        path: '/supply-demand-setting/docking-manage/index',
-        name: '供需对接管理',
-        component: './supply_demand_setting/docking_manage/index',
-      },
-      {
-        path: routeName.DEMAND_CONTACTS,
-        name: '需求联系人管理',
-        component: './supply_demand_setting/demand_contacts/index',
->>>>>>> feature/demand-v2
       },
     ],
   },
