@@ -88,7 +88,7 @@ export default (props: { gid: any; demandTypes: any[], area: any[] }) => {
 
   const methodObj = {
     follow: (record: any) => {
-      window.open(
+      history.push(
         `${routeName.DEMAND_MANAGEMENT_DETAIL}?id=${record.id}&isEdit=1`,
       );
     },
