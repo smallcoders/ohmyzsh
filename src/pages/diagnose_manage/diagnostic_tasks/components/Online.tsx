@@ -23,13 +23,14 @@ import {
 } from '@/services/diagnostic-tasks';
 import moment from 'moment';
 import { routeName } from '../../../../../config/routes';
-import { history } from 'umi';
+import { history, Access, useAccess } from 'umi';
 import SelfTable from '@/components/self_table';
 import type DiagnosticTasks from '@/types/service-config-diagnostic-tasks';
 import UploadFormFile from '@/components/upload_form/upload-form-file';
 import { getAreaTree } from '@/services/area';
 import { onlineDiagnosisExport } from '@/services/export';
-const sc = scopedClasses('service-config-diagnostic-tasks');
+// const sc = scopedClasses('service-config-diagnostic-tasks');
+const sc = scopedClasses('tab-menu');
 export default () => {
   const [dataSource, setDataSource] = useState<DiagnosticTasks.OnlineRecord[]>([]);
   const [searchContent, setSearChContent] = useState<{
@@ -193,31 +194,33 @@ export default () => {
             >
               <Button icon={<UploadOutlined />}>上传报告</Button>
             </UploadForm> onClick={() => pass(record)} */}
-            <Button
-              type="link"
-              onClick={() => {
-                const item = {
-                  score: record.score,
-                  conclusion: record.conclusion,
-                  id: record.id,
-                  reportFileId: record?.reportFile
-                    ? [
-                        {
-                          uid: record?.reportFile?.id,
-                          name: record?.reportFile?.fileName + '.' + record?.reportFile?.fileFormat,
-                          status: 'done',
-                          // url: record?.reportFile?.id,
-                        },
-                      ]
-                    : undefined,
-                } as any;
-                setEditingItem(item);
-                setModalVisible(true);
-                form.setFieldsValue({ ...item });
-              }}
-            >
-              编辑
-            </Button>
+            <Access accessible={access['PX_DM_XSZD']}>
+              <Button
+                type="link"
+                onClick={() => {
+                  const item = {
+                    score: record.score,
+                    conclusion: record.conclusion,
+                    id: record.id,
+                    reportFileId: record?.reportFile
+                      ? [
+                          {
+                            uid: record?.reportFile?.id,
+                            name: record?.reportFile?.fileName + '.' + record?.reportFile?.fileFormat,
+                            status: 'done',
+                            // url: record?.reportFile?.id,
+                          },
+                        ]
+                      : undefined,
+                  } as any;
+                  setEditingItem(item);
+                  setModalVisible(true);
+                  form.setFieldsValue({ ...item });
+                }}
+              >
+                编辑
+              </Button>
+            </Access>
             {record?.reportFile?.id && (
               <Button
                 type="link"
@@ -453,15 +456,19 @@ export default () => {
       console.log(error);
     }
   };
+
+  const access = useAccess()
   return (
     <>
       {useSearchNode()}
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>诊断记录列表(共{pageInfo.totalCount || 0}个)</span>
-          <Button icon={<UploadOutlined />} onClick={exportList}>
-            导出
-          </Button>
+          <Access accessible={access['PX_DM_XSZD']}>
+            <Button icon={<UploadOutlined />} onClick={exportList}>
+              导出
+            </Button>
+          </Access>
         </div>
       </div>
       <div className={sc('container-table-body')}>

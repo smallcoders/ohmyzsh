@@ -19,7 +19,7 @@ import moment from 'moment';
 import SelfTable from '@/components/self_table';
 import type LogoutVerify from '@/types/user-config-logout-verify';
 import { getBillPage, exportBillPage } from '@/services/purchase';
-import { history } from 'umi';
+import { Access, useAccess } from 'umi';
 const sc = scopedClasses('user-config-logout-verify');
 
 
@@ -196,20 +196,24 @@ export default () => {
     );
   };
 
+  const access = useAccess()
+
   return (
     <PageContainer className={sc('container')}>
       {useSearchNode()}
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>发票列表(共{pageInfo.totalCount || 0}个)</span>
-          <a
-            key="primary3"
-            className='export-btn'
-            href={`
-              /antelope-pay/mng/invoice/export?pageIndex=1&pageSize=10000&invoiceForm=${searchContent.invoiceForm||''}&orderNo=${searchContent.orderNo||''}&invoiceType=${searchContent.invoiceType||''}&createTimeStart=${searchContent.time?moment(searchContent.time[0]).format('YYYY-MM-DD HH:mm:ss'):''}&createTimeEnd=${searchContent.time?moment(searchContent.time[1]).format('YYYY-MM-DD HH:mm:ss'):''}`}
-          >
-            导出
-          </a>
+          <Access accessible={access['PX_PM_FP']}>
+            <a
+              key="primary3"
+              className='export-btn'
+              href={`
+                /antelope-pay/mng/invoice/export?pageIndex=1&pageSize=10000&invoiceForm=${searchContent.invoiceForm||''}&orderNo=${searchContent.orderNo||''}&invoiceType=${searchContent.invoiceType||''}&createTimeStart=${searchContent.time?moment(searchContent.time[0]).format('YYYY-MM-DD HH:mm:ss'):''}&createTimeEnd=${searchContent.time?moment(searchContent.time[1]).format('YYYY-MM-DD HH:mm:ss'):''}`}
+            >
+              导出
+            </a>
+          </Access>
         </div>
       </div>
       <div className={sc('container-table-body')}>

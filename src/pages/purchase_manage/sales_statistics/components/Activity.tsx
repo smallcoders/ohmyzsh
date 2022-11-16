@@ -15,7 +15,7 @@ import {
   getActivityList
 } from '@/services/purchase';
 import { routeName } from '../../../../../config/routes';
-import { history } from 'umi';
+import { Access, useAccess } from 'umi';
 import SelfTable from '@/components/self_table';
 import type DiagnosticTasks from '@/types/service-config-diagnostic-tasks';
 const sc = scopedClasses('service-config-diagnostic-tasks');
@@ -195,19 +195,23 @@ export default () => {
     );
   };
 
+  const access = useAccess()
+
   return (
     <>
       {useSearchNode()}
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>活动列表(共{pageInfo.totalCount || 0}个)</span>
-          <a
-            key="primary3"
-            className='export-btn'
-            href={`/antelope-pay/mng/statistics/activity/download/activity/list?actNo=${searchContent.actNo || ''}`}
-          >
-            导出
-          </a>
+          <Access accessible={access['PX_PM_TJ_HD']}>
+            <a
+              key="primary3"
+              className='export-btn'
+              href={`/antelope-pay/mng/statistics/activity/download/activity/list?actNo=${searchContent.actNo || ''}`}
+            >
+              导出
+            </a>
+          </Access>
           {/* <Button type='primary' icon={<DownloadOutlined />}>导出</Button> */}
         </div>
       </div>

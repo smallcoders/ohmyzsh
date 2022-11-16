@@ -10,6 +10,7 @@ import {
 import '../index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
+import { Access, useAccess } from 'umi';
 import Common from '@/types/common';
 import {
   getProductList
@@ -182,19 +183,23 @@ export default () => {
     );
   };
 
+  const access = useAccess()
+
   return (
     <>
       {useSearchNode()}
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>商品列表(共{pageInfo.totalCount || 0}个)</span>
-          <a
-            key="primary3"
-            className='export-btn'
-            href={`/antelope-pay/mng/statistics/product/download?productNo=${searchContent.productNo || ''}`}
-          >
-            导出
-          </a>
+          <Access accessible={access['PX_PM_TJ_SP']}>
+            <a
+              key="primary3"
+              className='export-btn'
+              href={`/antelope-pay/mng/statistics/product/download?productNo=${searchContent.productNo || ''}`}
+            >
+              导出
+            </a>
+          </Access>
         </div>
       </div>
       <div className={sc('container-table-body')}>

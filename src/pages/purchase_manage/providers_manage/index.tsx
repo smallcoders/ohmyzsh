@@ -1,6 +1,6 @@
 import { PlusOutlined, DownloadOutlined } from '@ant-design/icons';
 import { Button, Input, Form, message, Space, Popconfirm, Row, Col } from 'antd';
-import { history } from 'umi';
+import { history, Access, useAccess } from 'umi';
 import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
@@ -131,23 +131,25 @@ export default () => {
             >
               详情
             </a>
-            <a
-              href="#"
-              onClick={(e) => {
-                e.preventDefault(); 
-                history.push(`${routeName.PROVIDERS_MANAGE_ADD}?id=${record.id}`)
-              }}
-            >
-              编辑
-            </a>
-            <Popconfirm
-              title="确定删除么？"
-              okText="确定"
-              cancelText="取消"
-              onConfirm={() => remove(record.id as string)}
-            >
-              <a href="#">删除</a>
-            </Popconfirm>
+            <Access accessible={access['P_PM_GYSGL']}>
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault(); 
+                  history.push(`${routeName.PROVIDERS_MANAGE_ADD}?id=${record.id}`)
+                }}
+              >
+                编辑
+              </a>
+              <Popconfirm
+                title="确定删除么？"
+                okText="确定"
+                cancelText="取消"
+                onConfirm={() => remove(record.id as string)}
+              >
+                <a href="#">删除</a>
+              </Popconfirm>
+            </Access>
           </Space>
         );
       },
@@ -198,6 +200,8 @@ export default () => {
     );
   };
 
+  const access = useAccess()
+
   return (
     <PageContainer className={sc('container')}>
       {useSearchNode()}
@@ -205,22 +209,26 @@ export default () => {
         <div className="title">
           <span>供应商列表(共{pageInfo.totalCount || 0}个)</span>
           <Space>
-            <a
-              key="primary3"
-              className='export-btn'
-              href={`/antelope-pay/mng/provider/download?providerName=${searchContent.providerName || ''}`}
-            >
-              导出
-            </a>
-            <Button
-              type="primary"
-              key="primary4"
-              onClick={() => {
-                history.push(`${routeName.PROVIDERS_MANAGE_ADD}`)
-              }}
-            >
-              <PlusOutlined /> 新增供应商
-            </Button>
+            <Access accessible={access['PX_PM_GYSGL']}>
+              <a
+                key="primary3"
+                className='export-btn'
+                href={`/antelope-pay/mng/provider/download?providerName=${searchContent.providerName || ''}`}
+              >
+                导出
+              </a>
+            </Access>
+            <Access accessible={access['P_PM_GYSGL']}>
+              <Button
+                type="primary"
+                key="primary4"
+                onClick={() => {
+                  history.push(`${routeName.PROVIDERS_MANAGE_ADD}`)
+                }}
+              >
+                <PlusOutlined /> 新增供应商
+              </Button>
+            </Access>
           </Space>
         </div>
       </div>

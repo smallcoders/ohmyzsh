@@ -450,7 +450,7 @@ export default [
     path: '/diagnose-manage',
     name: '诊断管理',
     icon: 'unordered-list',
-    access: 'DIAGNOSE_MANAGE',
+    access: 'M_DM',
     routes: [
       {
         path: '/diagnose-manage',
@@ -469,7 +469,7 @@ export default [
             path: '/diagnose-manage/diagnostic-tasks/index',
             hideInBreadcrumb: true,
             name: '诊断通',
-            access: 'M_DM_XSZD',
+            access: 'M_DM_ZDT',
             component: './diagnose_manage/diagnostic_tasks',
           },
           {
@@ -726,7 +726,7 @@ export default [
     path: '/purchase-manage',
     name: '采购管理',
     icon: 'account-book',
-    access: 'SERVICE_CONFIG',
+    access: 'M_PM',
     routes: [
       {
         path: '/purchase-manage',
@@ -735,6 +735,7 @@ export default [
       {
         path: '/purchase-manage/commodity-manage',
         name: '商品管理',
+        access: 'M_PM_SP',
         component: './purchase_manage/commodity_manage',
       },
       {
@@ -752,26 +753,31 @@ export default [
       {
         path: '/purchase-manage/promotions-manage',
         name: '活动管理',
+        access: 'M_PM_HD',
         component: './purchase_manage/promotions_manage',
       },
       {
         path: routeName.BILL_MANAGEMENT,
         name: '发票管理',
+        access: 'M_PM_FP',
         component: './purchase_manage/bill_manage',
       },
       {
         path: routeName.SERVICE_TAGS_MANAGE,
         name: '服务标签管理',
+        access: 'M_PM_FWBQ',
         component: './purchase_manage/service_tags_manage',
       },
       {
         path: routeName.SALES_TAGS_MANAGE,
         name: '促销标签管理',
+        access: 'M_PM_CXBQ',
         component: './purchase_manage/sales_tags_manage',
       },
       {
         path: routeName.PROVIDERS_MANAGE,
         name: '供应商管理',
+        access: 'M_PM_GYSGL',
         component: './purchase_manage/providers_manage',
       },
       {
@@ -783,11 +789,13 @@ export default [
       {
         path: routeName.PROVIDER_TYPES,
         name: '供应商类型',
+        access: 'M_PM_GYSLX',
         component: './purchase_manage/provider_types',
       },
       {
         path: routeName.SALES_STATISTICS,
         name: '销售数据统计',
+        access: 'M_PM_TJ',
         component: './purchase_manage/sales_statistics',
       },
       {
@@ -821,6 +829,7 @@ export default [
             path: routeName.PURCHASE_MANAGE_INDEX,
             name: '订单管理',
             hideInBreadcrumb: true,
+            access: 'M_PM_DD',
             component: './purchase_manage/order_manage',
           },
           {
@@ -1179,7 +1188,7 @@ export default [
     path: '/live-management',
     name: '直播管理',
     icon: 'DesktopOutlined',
-    access: 'SERVICE_CONFIG',
+    access: 'M_LM',
     routes: [
       {
         path: '/live-management',
@@ -1188,6 +1197,7 @@ export default [
       {
         path: routeName.LIVE_TYPES_MAINTAIN,
         name: '直播类型维护',
+        access: 'M_LM_JBLX',
         component: './live_management/live_types_maintain',
       },
       {
@@ -1202,6 +1212,7 @@ export default [
           {
             path: routeName.ANTELOPE_LIVE_MANAGEMENT,
             name: '羚羊直播管理',
+            access: 'M_LM_ZBGL',
             component: './live_management/antelope_live_management',
           },
           {
@@ -1228,6 +1239,7 @@ export default [
           {
             path: routeName.WONDERFUL_VIDEO_MANAGEMENT,
             name: '精彩视频管理',
+            access: 'M_LM_SPGL',
             component: './live_management/wonderful_video_management',
           },
           {
@@ -1240,11 +1252,13 @@ export default [
       {
         path: routeName.SEARCH_RECORD_MANAGEMENT,
         name: '搜索记录管理',
+        access: 'M_LM_SSGL',
         component: './live_management/search_record_management',
       },
       {
         path: routeName.ANTELOPE_LIVE_INTENTION_COLLECT,
         name: '直播意向采集',
+        access: 'M_LM_ZBYX',
         component: './live_management/intention_collect',
       },
     ],
