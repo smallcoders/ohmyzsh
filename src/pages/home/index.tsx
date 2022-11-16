@@ -194,7 +194,7 @@ export default () => {
           <Col span={4} offset={2}>
             <a
               className={sc('container-add-item')}
-              href={`/service-config/diagnostic-tasks/index?type=3`}
+              href={`/service-config/diagnostic-tasks/index?type=M_DM_ZDBM`}
             >
               <p>诊断意向报名</p>
               <ArrowUpOutlined style={{ color: 'red' }} />

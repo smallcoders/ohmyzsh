@@ -28,10 +28,11 @@ import {
 import moment from 'moment';
 import DiagnosticTasks from '@/types/service-config-diagnostic-tasks';
 import DebounceSelect from './DebounceSelect';
-import { Link } from 'umi';
+import { Link, Access, useAccess } from 'umi';
 import { routeName } from '../../../../../config/routes';
 import SelfTable from '@/components/self_table';
-const sc = scopedClasses('service-config-diagnostic-tasks');
+// const sc = scopedClasses('service-config-diagnostic-tasks');
+const sc = scopedClasses('tab-menu');
 const stateObj = {
   1: '待诊断',
   2: '诊断中',
@@ -284,14 +285,17 @@ export default () => {
                 编辑{' '}
               </a>
             )} */}
-            <Popconfirm
-              title="确定删除么？"
-              okText="确定"
-              cancelText="取消"
-              onConfirm={() => remove(record.id as string)}
-            >
-              <a href="#">删除</a>
-            </Popconfirm>
+            <Access accessible={access['PD_DM_XXZD']}>
+              <Popconfirm
+                title="确定删除么？"
+                okText="确定"
+                cancelText="取消"
+                onConfirm={() => remove(record.id as string)}
+              >
+                <a href="#">删除</a>
+              </Popconfirm>
+            </Access>
+            
             {/**
              * 待诊断无诊断记录
              * 待诊断时延期无诊断记录
@@ -601,7 +605,7 @@ export default () => {
       </Modal>
     );
   };
-
+  const access = useAccess()
   return (
     <>
       {useSearchNode()}

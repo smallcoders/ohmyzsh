@@ -2246,6 +2246,7 @@ export default [
           {
             path: routeName.ANTELOPE_LIVE_MANAGEMENT,
             name: '羚羊直播管理',
+            access: 'M_LM_ZBGL',
             component: './live_management/antelope_live_management',
           },
           {
@@ -2274,6 +2275,7 @@ export default [
           {
             path: routeName.WONDERFUL_VIDEO_MANAGEMENT,
             name: '精彩视频管理',
+            access: 'M_LM_SPGL',
             component: './live_management/wonderful_video_management',
           },
           {

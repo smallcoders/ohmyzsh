@@ -4,6 +4,7 @@ import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
+import { Access, useAccess } from 'umi';
 import Common from '@/types/common';
 import SelfTable from '@/components/self_table';
 import LiveTypesMaintain from '@/types/live-types-maintain.d';
@@ -130,24 +131,26 @@ export default () => {
       render: (_: any, record: LiveTypesMaintain.Content) => {
         return (
           <Space size="middle">
-            <a
-              href="#"
-              onClick={() => {
-                setEditingItem(record);
-                setModalVisible(true);
-                form.setFieldsValue({ label: record?.label, labelContent: record?.labelContent });
-              }}
-            >
-              编辑
-            </a>
-            <Popconfirm
-              title="确定删除么？"
-              okText="确定"
-              cancelText="取消"
-              onConfirm={() => remove(record.id as string)}
-            >
-              <a href="#">删除</a>
-            </Popconfirm>
+            <Access accessible={access['P_PM_FWBQ']}>
+              <a
+                href="#"
+                onClick={() => {
+                  setEditingItem(record);
+                  setModalVisible(true);
+                  form.setFieldsValue({ label: record?.label, labelContent: record?.labelContent });
+                }}
+              >
+                编辑
+              </a>
+              <Popconfirm
+                title="确定删除么？"
+                okText="确定"
+                cancelText="取消"
+                onConfirm={() => remove(record.id as string)}
+              >
+                <a href="#">删除</a>
+              </Popconfirm>
+            </Access>
           </Space>
         );
       },
@@ -261,21 +264,25 @@ export default () => {
     );
   };
 
+  const access = useAccess()
+
   return (
     <PageContainer className={sc('container')}>
       {useSearchNode()}
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>服务标签列表(共{pageInfo.totalCount || 0}个)</span>
-          <Button
-            type="primary"
-            key="primary3"
-            onClick={() => {
-              setModalVisible(true);
-            }}
-          >
-            <PlusOutlined /> 新增标签
-          </Button>
+          <Access accessible={access['P_PM_FWBQ']}>
+            <Button
+              type="primary"
+              key="primary3"
+              onClick={() => {
+                setModalVisible(true);
+              }}
+            >
+              <PlusOutlined /> 新增标签
+            </Button>
+          </Access>
         </div>
       </div>
       <div className={sc('container-table-body')}>
