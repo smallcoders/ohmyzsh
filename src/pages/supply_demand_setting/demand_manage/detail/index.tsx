@@ -574,11 +574,11 @@ export default () => {
                     })}
                 </div>
               </div>
-              <div style={{ textAlign: 'center' }}>
+              {detail?.demandFeedback?.feedbackList?.length > 2 && <div style={{ textAlign: 'center' }}>
                 <Button type='link' onClick={() => {
                   setVisible(true)
                 }}>查看完整反馈记录{'>'}</Button>
-              </div>
+              </div>}
             </div> : <Empty description="未到当前步骤" />}
           </div>
           <div className={sc('container')}>

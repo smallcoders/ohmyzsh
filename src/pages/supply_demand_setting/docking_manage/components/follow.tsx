@@ -281,6 +281,21 @@ export default (props: { gid: any; demandTypes: any[], area: any[] }) => {
               </Form.Item>
             </Col>
             <Col span={8}>
+              <Form.Item name="type" label="需求类型">
+                <TreeSelect
+                  treeNodeFilterProp={'name'}
+                  showSearch
+                  style={{ width: '100%' }}
+                  dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                  placeholder="请选择"
+                  allowClear
+                  treeDefaultExpandAll
+                  treeData={demandTypes}
+                  fieldNames={{ children: 'nodes', value: 'id', label: 'name' }}
+                />
+              </Form.Item>
+            </Col>
+            <Col span={8}>
               <Form.Item name="areaCode" label="需求地区">
                 <TreeSelect
                   treeNodeFilterProp={'name'}
@@ -301,21 +316,7 @@ export default (props: { gid: any; demandTypes: any[], area: any[] }) => {
               </Form.Item>
             </Col>
 
-            <Col span={8}>
-              <Form.Item name="type" label="需求类型">
-                <TreeSelect
-                  treeNodeFilterProp={'name'}
-                  showSearch
-                  style={{ width: '100%' }}
-                  dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
-                  placeholder="请选择"
-                  allowClear
-                  treeDefaultExpandAll
-                  treeData={demandTypes}
-                  fieldNames={{ children: 'nodes', value: 'id', label: 'name' }}
-                />
-              </Form.Item>
-            </Col>
+
             <Col span={8}>
               <Form.Item name="claimId" label="需求认领人">
                 <Select placeholder="请选择" allowClear>

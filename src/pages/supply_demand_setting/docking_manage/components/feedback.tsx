@@ -79,7 +79,7 @@ const FeedBackModal = () => {
                     <Button
                         onClick={() => {
                             const files = form.getFieldValue('fileIds')
-                            if(files?.length>= 3){
+                            if (files?.length >= 3) {
                                 message.error('上传文件数目不得超3个')
                             }
                         }}
@@ -124,6 +124,7 @@ const FeedBackModal = () => {
     return (
         <PageContainer style={{ background: '#fff' }}>
             <Form
+                style={{ width: '50%' }}
                 labelCol={{ span: 24 }}
                 wrapperCol={{ span: 24 }}
                 form={form}>
@@ -146,15 +147,8 @@ const FeedBackModal = () => {
                         <div style={{ margin: '10px 0', fontWeight: 'bolder' }}>
 
                             <span style={{ marginRight: 20 }}>{p?.createTime}</span>
-                            <Popconfirm
-                                title="确定删除么？"
-                                okText="确定"
-                                cancelText="取消"
-                                onConfirm={() => remove(p.id)}
-                            >
-                                <DeleteTwoTone
-                                />
-                            </Popconfirm>
+                            <DeleteTwoTone onClick={() => remove(p.id)}
+                            />
                         </div>
                         <div style={{ padding: '20px 0' }}>{p?.content || '--'}</div>
                     </div>
