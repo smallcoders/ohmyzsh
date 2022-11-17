@@ -15,6 +15,7 @@ import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
 import type Common from '@/types/common';
+import { Access, useAccess } from 'umi';
 import SelfTable from '@/components/self_table';
 import {
   getConsultPage, updateRemark, httpGetPublishTags, httpPostSaveTags, httpGetAllTags
@@ -219,14 +220,16 @@ export default () => {
       render: (_: any, record: any) => {
         return (
           <div style={{ textAlign: 'center' }}>
-            <Button
-              type="link"
-              onClick={() => {
-                editTags(record);
-              }}
-            >
-              编辑
-            </Button>
+            <Access accessible={access['P_RM_ZHBQ']}>
+              <Button
+                type="link"
+                onClick={() => {
+                  editTags(record);
+                }}
+              >
+                编辑
+              </Button>
+            </Access>
           </div>
         );
       },
@@ -723,6 +726,8 @@ export default () => {
     ) 
   }
 
+  const access = useAccess()
+
   return (
     <>
       {useSearchNode()}
@@ -739,8 +744,8 @@ export default () => {
           expandable={{
             expandedRowRender: (record: any) => (
               <p style={{ margin: 0 }}>
+                <Access accessible={access['P_RM_ZHBQ']}>
                 备注：{record.mngRemark}
-                {/* {record.isEdit && ( */}
                   <Popconfirm
                     icon={null}
                     title={
@@ -764,7 +769,7 @@ export default () => {
                       }}
                     />
                   </Popconfirm>
-                {/* )} */}
+                </Access>
               </p>
             ),
             expandIcon: () => <></>,

@@ -12,6 +12,10 @@ import Intention from '@/pages/diagnose_manage/diagnostic_tasks/components/Inten
 import Activity from '@/pages/purchase_manage/sales_statistics/components/Activity';
 import Goods from '@/pages/purchase_manage/sales_statistics/components/Goods';
 
+// 直播管理-搜索记录tab页
+import Record from '@/pages/live_management/search_record_management/components/Record';
+import Recommend from '@/pages/live_management/search_record_management/components/Recommend';
+
 import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
 const sc = scopedClasses('tab-menu');
@@ -44,6 +48,15 @@ export default (props: { tabs?: string[]; }) => {
     {
       tab: '商品数据',
       key: 'M_PM_TJ_SP'
+    },
+    // 直播管理-搜索记录tab页
+    {
+      tab: '搜索推荐',
+      key: 'M_LM_SSTJ'
+    },
+    {
+      tab: '搜索记录',
+      key: 'M_LM_SSJL'
     }
   ]
   
@@ -103,6 +116,9 @@ export default (props: { tabs?: string[]; }) => {
       
       {activeKey === 'M_PM_TJ_HD' && <Activity />}
       {activeKey === 'M_PM_TJ_SP' && <Goods />}
+
+      {activeKey === 'M_LM_SSJL' && <Record />}
+      {activeKey === 'M_LM_SSTJ' && <Recommend />}
     </PageContainer>
   );
 };

@@ -7,7 +7,7 @@ import CourseManage from '@/types/service-config-course-manage';
 import { QuestionCircleOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
-import { history } from 'umi';
+import { Access, useAccess } from 'umi';
 import { routeName } from '@/../config/routes';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
@@ -277,6 +277,7 @@ export default () => {
       render: (_: any, record: any) => {
         return (
           <Space size="middle">
+            <Access accessible={access['P_LM_SPGL']}>
             <Button
               type="link"
               onClick={() => {
@@ -349,6 +350,7 @@ export default () => {
                 </Popconfirm>
               )
             }
+            </Access>
           </Space>
         );
       },
@@ -689,21 +691,25 @@ export default () => {
     );
   };
 
+  const access = useAccess()
+
   return (
     <PageContainer className={sc('container')}>
       {useSearchNode()}
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>视频列表(共{pageInfo.totalCount || 0}个)</span>
-          <Button
-            type="primary"
-            key="primary5"
-            onClick={() => {
-              setModalVisible(true);
-            }}
-          >
-            <PlusOutlined /> 新增视频
-          </Button>
+          <Access accessible={access['P_LM_SPGL']}>
+            <Button
+              type="primary"
+              key="primary5"
+              onClick={() => {
+                setModalVisible(true);
+              }}
+            >
+              <PlusOutlined /> 新增视频
+            </Button>
+          </Access>
         </div>
       </div>
       <div className={sc('container-table-body')}>

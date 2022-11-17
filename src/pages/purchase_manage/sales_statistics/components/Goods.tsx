@@ -18,7 +18,7 @@ import {
 import moment from 'moment';
 import DiagnosticTasks from '@/types/service-config-diagnostic-tasks';
 import SelfTable from '@/components/self_table';
-const sc = scopedClasses('service-config-diagnostic-tasks');
+const sc = scopedClasses('tab-menu');
 export default () => {
   const [dataSource, setDataSource] = useState<DiagnosticTasks.Content[]>([]);
   const [searchContent, setSearChContent] = useState<{

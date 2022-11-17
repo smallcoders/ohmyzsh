@@ -2,6 +2,7 @@ import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import { useEffect, useState } from 'react';
 import FormEdit from '@/components/FormEdit'
+import { Access, useAccess } from 'umi';
 
 import { Button, message, Spin, Empty, Tabs, Space, Form, Row, Col } from 'antd';
 
@@ -104,6 +105,8 @@ export default () => {
     }
   }
 
+  const access = useAccess()
+
   return (
     <PageContainer>
       {
@@ -138,15 +141,17 @@ export default () => {
                         </Button>
                       </Space>
                     ) : (
-                      <Button type='primary'
-                        onClick={() => {
-                          setInterfaceDescription({ editing: true })
-                          descForm.setFieldsValue({
-                            interfaceDescription: configInfo?.interfaceDescription
-                          })
-                        }}>
-                          编辑
-                      </Button>
+                      <Access accessible={access['PU_DA_JKGF']}>
+                        <Button type='primary'
+                          onClick={() => {
+                            setInterfaceDescription({ editing: true })
+                            descForm.setFieldsValue({
+                              interfaceDescription: configInfo?.interfaceDescription
+                            })
+                          }}>
+                            编辑
+                        </Button>
+                      </Access>
                     )
                   }
                 </div>
