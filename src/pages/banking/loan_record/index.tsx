@@ -27,6 +27,7 @@ import SelfTable from '@/components/self_table';
 import { UploadOutlined } from '@ant-design/icons';
 import FormEdit from '@/components/FormEdit';
 import BankingLoan from '@/types/banking-loan.d';
+import { history } from 'umi';
 import { regFenToYuan, regYuanToFen } from '@/utils/util';
 import {
   getLoanRecordList,
@@ -301,14 +302,16 @@ export default () => {
       },
     },
     {
-      title: '授信金额',
+      title: '授信金额(万元)',
       dataIndex: 'creditAmount',
-      width: 80,
+      render: (_: number) => regFenToYuan(_),
+      width: 100,
     },
     {
-      title: '已放款金额',
+      title: '已放款金额(万元)',
       dataIndex: 'takeAmount',
-      width: 80,
+      render: (_: number) => regFenToYuan(_),
+      width: 100,
     },
     {
       title: '申请时间',
@@ -331,7 +334,7 @@ export default () => {
               type="link"
               onClick={async () => {
                 const step = await getStep(record);
-                window.open(
+                history.push(
                   `${routeName.LOAN_RECORD_DETAIL}?id=${record.id}&isDetail=1&type=${type}&step=${step}`,
                 );
               }}
@@ -345,7 +348,7 @@ export default () => {
                   type="link"
                   onClick={async () => {
                     const step = await getStep(record);
-                    window.open(
+                    history.push(
                       `${routeName.LOAN_RECORD_ENTER}?id=${record.id}&type=${type}&step=${step}`,
                     );
                   }}

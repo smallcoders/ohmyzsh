@@ -60,6 +60,9 @@ export async function getApplicationInfo(params: { id: string }) {
   return request<any>('/antelope-finance/loanRecord/mng/getApplicationInfo', {
     method: 'get',
     params,
+    // headers: {
+    //   'rpc-tag': 'jianwang44',
+    // },
   });
 }
 /**

@@ -16,7 +16,6 @@ import UploadFormFile from '@/components/upload_form/upload-form-file';
 import React, { useState, useEffect } from 'react';
 import { routeName } from '@/../config/routes';
 import { history } from 'umi';
-import BankingLoan from '@/types/banking-loan.d';
 import { getCreditDetail, updateCreditInfo } from '@/services/banking-loan';
 import { regFenToYuan, regYuanToFen } from '@/utils/util';
 import moment from 'moment';
@@ -25,9 +24,10 @@ export type Props = {
   type?: number; // 数据来源
   id?: string; // 贷款记录id
   step?: string; //跳转页面
+  toTab?: any; //跳转的tab函数
 };
 const { confirm } = Modal;
-export default ({ isDetail, type, step, id }: Props) => {
+export default ({ isDetail, type, step, id, toTab }: Props) => {
   const previewType = ['png', 'jpg', 'jpeg', 'jpeg2000', 'pdf'];
   const [form] = Form.useForm();
   const busiStatus = Form.useWatch('busiStatus', form);
@@ -65,7 +65,8 @@ export default ({ isDetail, type, step, id }: Props) => {
               okText: '录入放款信息',
               cancelText: '返回列表',
               onOk() {
-                history.push(`${routeName.LOAN_RECORD_ENTER}?id=${id}&type=${type}&step=3`);
+                toTab('3');
+                // history.push(`${routeName.LOAN_RECORD_ENTER}?id=${id}&type=${type}&step=3`);
               },
               onCancel() {
                 history.push(`${routeName.LOAN_RECORD}`);

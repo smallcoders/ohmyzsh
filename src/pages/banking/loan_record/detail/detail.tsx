@@ -31,28 +31,32 @@ export default () => {
       key: '4',
     },
   ];
-  const prepare = () => {
+  const prepare = (ste: string) => {
+    setSteps(ste);
+    console.log('steps', ste, steps);
     if (Number(type) === 1) {
-      setTabList(tabLists.filter((item) => item.key <= steps));
+      setTabList(tabLists.filter((item) => item.key <= ste));
     } else {
-      setTabList(tabLists.filter((item) => item.key !== '4' && item.key <= steps));
+      setTabList(tabLists.filter((item) => item.key !== '4' && item.key <= ste));
     }
-    setActiveKey(steps || '1');
+    setActiveKey(ste || '1');
   };
   const unlisten = () => {
     console.log('unlisten');
     history.listen(() => {
       const query = history.location.query as any;
       console.log('unlisten-query', query);
-      setSteps(query.step);
-      prepare();
+      // setSteps(query.step);
+      prepare(query.step);
     });
   };
-  unlisten();
   useEffect(() => {
-    prepare();
+    // unlisten();
+    prepare(step);
   }, []);
-
+  const toTab = (tostep: string) => {
+    prepare(tostep);
+  };
   return (
     <PageContainer
       tabList={tabList}
@@ -61,7 +65,13 @@ export default () => {
     >
       {activeKey === '1' && <ApplicationInfo id={id} />}
       {activeKey === '2' && (
-        <AuthorizationInfo isDetail={isDetail} type={Number(type)} step={steps} id={id} />
+        <AuthorizationInfo
+          isDetail={isDetail}
+          type={Number(type)}
+          step={steps}
+          id={id}
+          toTab={toTab}
+        />
       )}
       {activeKey === '3' && (
         <LoanInfo isDetail={isDetail} type={Number(type)} step={steps} id={id} />
