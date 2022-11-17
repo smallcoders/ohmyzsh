@@ -14,12 +14,13 @@ import React, { useEffect, useState } from 'react';
 import type Common from '@/types/common';
 import type FinancialCustomersManage from '@/types/financial_customers_manage';
 import moment from 'moment';
+import { history } from 'umi';
 import SelfTable from '@/components/self_table';
 import { routeName } from '@/../config/routes';
 import {
   getCustomers,
 } from '@/services/financial_customers_manage';
-const sc = scopedClasses('user-config-logout-verify');
+const sc = scopedClasses('financial-customers-manage');
 
 export default () => {
   const [dataSource, setDataSource] = useState<FinancialCustomersManage.Content[]>([]);
@@ -103,7 +104,7 @@ export default () => {
             size="small"
             type="link"
             onClick={() => {
-              window.open(`${routeName.FINANCIAL_CUSTOMERS_MANAGE_DETAIL}?id=${record.id}`);
+              history.push(`${routeName.FINANCIAL_CUSTOMERS_MANAGE_DETAIL}?id=${record.id}`);
             }}
           >
             详情
@@ -112,7 +113,7 @@ export default () => {
             size="small"
             type="link"
             onClick={() => {
-              window.open(`${routeName.FINANCIAL_CUSTOMERS_MANAGE_DETAIL}?id=${record.id}`);
+              history.push(`${routeName.FINANCIAL_CUSTOMERS_MANAGE_EDIT}?id=${record.id}`);
             }}
           >
             编辑

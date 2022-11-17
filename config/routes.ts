@@ -113,6 +113,7 @@ export const routeName = {
   FINANCIAL_CUSTOMERS_MANAGE: '/banking/financial_customers_manage',
   FINANCIAL_CUSTOMERS_MANAGE_INDEX: '/banking/financial_customers_manage/index',
   FINANCIAL_CUSTOMERS_MANAGE_DETAIL: '/banking/financial_customers_manage/detail',
+  FINANCIAL_CUSTOMERS_MANAGE_EDIT: '/banking/financial_customers_manage/edit',
   // 推荐管理
   RECOMMENDED_HOT_WORDS: '/recommended/hot_words',
   RECOMMENDED_HOT_WORDS_INDEX: '/recommended/hot_words/index',
@@ -687,6 +688,11 @@ export default [
             path: routeName.FINANCIAL_CUSTOMERS_MANAGE_DETAIL,
             name: '金融客户信息',
             component: './banking/financial_customers_manage/detail/detail',
+          },
+          {
+            path: routeName.FINANCIAL_CUSTOMERS_MANAGE_EDIT,
+            name: '编辑',
+            component: './banking/financial_customers_manage/edit/index',
           },
         ],
       },

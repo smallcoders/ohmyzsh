@@ -3,6 +3,7 @@ import {
   getCustomersDetail,
 } from '@/services/financial_customers_manage';
 import { useEffect, useState } from 'react';
+import { customToFixed } from '@/utils/util';
 import { history } from 'umi';
 import {
   orgFormMap,
@@ -23,7 +24,7 @@ export default () => {
 
   useEffect(() => {
     getCustomersDetail({id}).then((res) => {
-      if (res.result){
+      if (res?.result){
         setDetail(res.result)
       }
     })
@@ -32,7 +33,7 @@ export default () => {
     <PageContainer title={false}>
       <div className="customer-detail">
         <div className="top-content">
-          <img src={detail?.logoImageId} alt='' />
+          <img src={`/antelope-manage/common/download/${detail?.logoImageId}`} alt='' />
           <div className="top-right">
             <div className="org-name">
               {detail?.name}
@@ -42,11 +43,11 @@ export default () => {
             <div className="right-bottom-content">
               <div>
                 <div className="item"><label>法定代表人：</label>{detail?.legalPersonName || '--'}</div>
-                <div className="item"><label>实缴资本：</label>{detail?.actualCapital ? `${detail?.actualCapital}万元` : '--'}</div>
+                <div className="item"><label>实缴资本：</label>{detail?.actualCapital ? `${customToFixed(`${detail?.actualCapital / 1000000}`)}万元` : '--'}</div>
               </div>
               <div>
                 <div className="item"><label>注册地址：</label>{detail?.regAddress || '--'}</div>
-                <div className="item"><label>注册资本：</label>{detail?.regCapital ? `${detail?.regCapital}万元` : '--'}</div>
+                <div className="item"><label>注册资本：</label>{detail?.regCapital ? `${customToFixed(`${detail?.regCapital / 1000000}`)}万元` : '--'}</div>
               </div>
               <div>
                 <div className="item"><label>成立日期：</label>{detail?.formedDate || '--'}</div>
@@ -66,12 +67,12 @@ export default () => {
                 <label>组织形式：</label>{detail?.orgForm ? orgFormMap[detail?.orgForm] : '--'}
               </div>
               <div className="item">
-                <label>总资产：</label>{detail?.totalAssets ? `${detail?.totalAssets}万元` : '--'}
+                <label>总资产：</label>{detail?.totalAssets ? `${customToFixed(`${detail?.totalAssets / 1000000}`)}万元` : '--'}
               </div>
             </div>
             <div>
               <div className="item">
-                <label>上年营收：</label>{detail?.revenueLastYear ? `${detail?.revenueLastYear}万元` : '--'}
+                <label>上年营收：</label>{detail?.revenueLastYear ? `${customToFixed(`${detail?.revenueLastYear / 1000000}`)}万元` : '--'}
               </div>
               <div className="item">
                 <label>法人资格：</label>{detail?.legalQualification ? legalQualificationMap[detail?.legalQualification] : '--'}
@@ -82,7 +83,7 @@ export default () => {
             </div>
             <div>
               <div className="item">
-                <label>上年利润：</label>{detail?.profitLastYear ? `${detail?.profitLastYear}万元` : '--'}
+                <label>上年利润：</label>{detail?.profitLastYear ? `${customToFixed(`${detail?.profitLastYear / 1000000}`)}万元` : '--'}
               </div>
               <div className="item">
                 <label>经营成分：</label>{detail?.economyType ? economyTypeMap[detail?.economyType] : '--'}

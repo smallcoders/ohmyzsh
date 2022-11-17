@@ -15,7 +15,18 @@ export async function getCustomersDetail(params?: { [key: string]: any }) {
     method: 'get',
     params,
     headers: {
-      'rpc-tag': 'jbxu5'
+      'rpc-tag': 'jianwang44'
+    }
+  });
+}
+
+/** 获取 详情 */
+export async function editCustomersDetail(data?: { [key: string]: any }) {
+  return request<any>('/antelope-finance/customer/mng/editCustomerInfo', {
+    method: 'POST',
+    data,
+    headers: {
+      'rpc-tag': 'jianwang44'
     }
   });
 }
