@@ -141,7 +141,7 @@ export default (props: { gid: any; demandTypes: any[], area: any[] }) => {
       render: (_: string, _record: any) => (
         <a
           onClick={() => {
-            window.open(`${routeName.DEMAND_MANAGEMENT_DETAIL}?id=${_record.id}`);
+            history.push(`${routeName.DEMAND_MANAGEMENT_DETAIL}?id=${_record.id}`);
           }}
         >
           {_}

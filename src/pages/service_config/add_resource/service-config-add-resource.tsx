@@ -25,6 +25,7 @@ import UploadForm from '@/components/upload_form';
 import AppResource from '@/types/app-resource';
 import { Link, history, Prompt } from 'umi';
 import { routeName } from '../../../../config/routes';
+import FormEdit from '@/components/FormEdit';
 
 const sc = scopedClasses('service-config-add-resource');
 export default () => {
