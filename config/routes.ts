@@ -24,6 +24,8 @@ export const routeName = {
   DEMAND_MANAGEMENT: '/service-config/requirement-management', // 需求管理
   DEMAND_MANAGEMENT_INDEX: '/supply-demand-setting/demand-manage/index', // 需求管理
   DEMAND_MANAGEMENT_DETAIL: '/supply-demand-setting/demand-manage/detail', // 需求管理详情
+  OPERATION_ACTIVITY_PARAMETER:'/operation-activity/parameter-setting/index',//运营活动参数设置
+  OPERATION_ACTIVITY_LINK:'/operation-activity/link-setting/index',//运营活动链接设置
   ACCOUNT: '/system-config/account', // 账号管理
   AUTH: '/system-config/auth', // 权限管理
   DEMAND_CONTACTS: '/supply-demand-setting/demand_contacts/index', // 需求联系人
@@ -128,6 +130,11 @@ export const routeName = {
   ORDER_MESSAGE: '/goods-manage/order_manage',
   ORDER_MESSAGE_INDEX: '/goods-manage/order_manage/index',
   ORDER_MESSAGE_DETAIL: '/goods-manage/order_manage/detail',
+
+  //活动专题
+  ACTIVITY_PROJECT: '/service-config/activity_project',
+  ACTIVITY_PROJECT_INDEX: '/service-config/activity_project/index',
+  ACTIVITY_PROJECT_DETAIL: '/service-config/activity_project/detail',
 };
 
 export default [
@@ -154,7 +161,7 @@ export default [
     path: '/home',
     name: '首页',
     icon: 'home',
-    component: './home',
+    component: './home'
   },
   // {
   //   path: '/service-config',
@@ -1692,7 +1699,17 @@ export default [
     routes: [
       {
         path: '/operate-activity',
-        redirect: '/operate-activity/local-propaganda',
+        redirect: routeName.OPERATION_ACTIVITY_PARAMETER,
+      },
+      {
+        path: routeName.OPERATION_ACTIVITY_PARAMETER,
+        name: '参数配置',
+        component: './operation_activity/parameter-setting/index',
+      },
+      {
+        path: routeName.OPERATION_ACTIVITY_LINK,
+        name: '链接配置',
+        component: './operation_activity/link-setting/index',
       },
       {
         path: '/operate-activity/local-propaganda',
@@ -1742,6 +1759,28 @@ export default [
             access: 'M_OA_DSHD',
             name: '地市活动管理',
             component: './operate_activity/local_propaganda/management_activities/index',
+          },
+        ],
+      },
+      {
+        path: routeName.ACTIVITY_PROJECT,
+        name: '活动专题',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.ACTIVITY_PROJECT,
+            redirect: routeName.ACTIVITY_PROJECT_INDEX,
+          },
+          {
+            path: routeName.ACTIVITY_PROJECT_INDEX,
+            name: '活动专题',
+            hideInBreadcrumb: true,
+            component: './service_config/activity_project',
+          },
+          {
+            path: routeName.ACTIVITY_PROJECT_DETAIL,
+            name: '活动专题详情',
+            component: './service_config/activity_project/detail',
           },
         ],
       },
