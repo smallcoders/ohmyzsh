@@ -15,7 +15,7 @@ import {
 } from '@/services/propaganda-config';
 import { PlusOutlined } from '@ant-design/icons';
 import ProTable from '@ant-design/pro-table';
-import { history } from 'umi';
+import { history, Access, useAccess } from 'umi';
 import { routeName } from '@/../config/routes';
 import type SolutionTypes from '@/types/solution';
 import './propaganda-config.less';
@@ -140,27 +140,29 @@ const TableList: React.FC = () => {
             >
               详情
             </Button>
-            <Button
-              key="2"
-              size="small"
-              type="link"
-              onClick={() => {
-                history.push(`${routeName.ADD_PROPAGANDA_CONFIG}?edit=${record?.id}`)
-              }}
-            >
-              编辑
-            </Button>
-            {
-              record?.state === 'SHOPPED' &&
-            <Popconfirm
-              title="确定下架么？"
-              okText="下架"
-              cancelText="取消"
-              onConfirm={() => soldOut(record?.id.toString(),record?.state)}
-            >
-              <a href="#">下架</a>
-            </Popconfirm>
-            }
+            <Access accessible={access['P_OA_DSXCY']}>
+              <Button
+                key="2"
+                size="small"
+                type="link"
+                onClick={() => {
+                  history.push(`${routeName.ADD_PROPAGANDA_CONFIG}?edit=${record?.id}`)
+                }}
+              >
+                编辑
+              </Button>
+              {
+                record?.state === 'SHOPPED' &&
+              <Popconfirm
+                title="确定下架么？"
+                okText="下架"
+                cancelText="取消"
+                onConfirm={() => soldOut(record?.id.toString(),record?.state)}
+              >
+                <a href="#">下架</a>
+              </Popconfirm>
+              }
+            </Access>
             {
               (record?.state === 'UN_SHOP' || record?.state === 'PREPARE') &&
               <Popconfirm
@@ -189,6 +191,8 @@ const TableList: React.FC = () => {
     }
   ]
 
+  const access = useAccess()
+
   return (
     <PageContainer className={sc('container')}>
       <ProTable 
@@ -210,17 +214,19 @@ const TableList: React.FC = () => {
         }}
         columns={columns}
         toolBarRender={()=>[
-        <Button 
-          key="button" 
-          icon={<PlusOutlined /> } 
-          type="primary" 
-          disabled={total >= 16}
-          onClick={()=>{
-            history.push(`${routeName.ADD_PROPAGANDA_CONFIG}`)
-          }}
-        >
-          新增地市宣传页
-        </Button>
+          <Access accessible={access['P_OA_DSXCY']}>
+            <Button 
+              key="button" 
+              icon={<PlusOutlined /> } 
+              type="primary" 
+              disabled={total >= 16}
+              onClick={()=>{
+                history.push(`${routeName.ADD_PROPAGANDA_CONFIG}`)
+              }}
+            >
+              新增地市宣传页
+            </Button>
+          </Access>
         ]}
         pagination={{ size: 'default', showQuickJumper: true, defaultPageSize: 10 }}
       />

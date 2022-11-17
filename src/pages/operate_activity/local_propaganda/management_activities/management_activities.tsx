@@ -11,6 +11,7 @@ import {
 } from 'antd'
 import { PlusOutlined } from '@ant-design/icons';
 import React, { useState, useEffect, useRef } from 'react';
+import { Access, useAccess } from 'umi';
 import { PageContainer } from '@ant-design/pro-layout';
 import ProTable from '@ant-design/pro-table';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
@@ -137,29 +138,31 @@ const TableList: React.FC = () => {
       hideInSearch: true, // 隐藏筛选
       render: (_: any, record: any) => {
         return (
-          <Space>
-            {
-              record?.state !== 'FINISHED' &&
-              <a
-                href="#"
-                onClick={() => {
-                  setEditingItem(record);
-                  setModalVisible(true);
-                  form.setFieldsValue({ ...record});
-                }}
+          <Access accessible={access['P_OA_DSHD']}>
+            <Space>
+              {
+                record?.state !== 'FINISHED' &&
+                <a
+                  href="#"
+                  onClick={() => {
+                    setEditingItem(record);
+                    setModalVisible(true);
+                    form.setFieldsValue({ ...record});
+                  }}
+                >
+                  编辑{' '}
+                </a>
+              }
+              <Popconfirm
+                title="确定删除么？"
+                okText="确定"
+                cancelText="取消"
+                onConfirm={() => remove(record.id as string)}
               >
-                编辑{' '}
-              </a>
-            }
-            <Popconfirm
-              title="确定删除么？"
-              okText="确定"
-              cancelText="取消"
-              onConfirm={() => remove(record.id as string)}
-            >
-              <a href="#">删除</a>
-            </Popconfirm>
-          </Space>
+                <a href="#">删除</a>
+              </Popconfirm>
+            </Space>
+          </Access>
         )
       }
     }
@@ -272,6 +275,8 @@ const TableList: React.FC = () => {
     );
   };
 
+  const access = useAccess()
+
   return (
     <PageContainer>
       <ProTable 
@@ -294,17 +299,19 @@ const TableList: React.FC = () => {
         columns={columns}
         pagination={{ size: 'default', showQuickJumper: true, defaultPageSize: 10 }}
         toolBarRender={()=>[
-          <Button 
-            key="button" 
-            icon={<PlusOutlined /> } 
-            type="primary" 
-            disabled={total >= 16}
-            onClick={()=>{
-              setModalVisible(true)
-            }}
-          >
-            新增地市活动
-          </Button>
+          <Access accessible={access['P_OA_DSHD']}>
+            <Button 
+              key="button" 
+              icon={<PlusOutlined /> } 
+              type="primary" 
+              disabled={total >= 16}
+              onClick={()=>{
+                setModalVisible(true)
+              }}
+            >
+              新增地市活动
+            </Button>
+          </Access>
           ]}
       />
       {getModal()}
