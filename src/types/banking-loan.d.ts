@@ -39,13 +39,13 @@ namespace BankingLoan {
   }
   export type LoanContent = {
     id?: integer; // id
-    loanStatus?: string; // 放款状态
-    loanStatusReason?: string; // 失败原因
-    loanNo?: string[]; // 借据编号
-    loanTime?: string; // 实际借款日期
-    loanMoney?: float; // 放款金额
-    referenceAnnualInterestRate?: string; // 执行年利率
-    fileIds?: any[];
+    busiStatus?: string; // 放款状态
+    refuseReason?: string; // 失败原因
+    debitNo?: string[]; // 借据编号
+    borrowStartDate?: string; // 实际借款日期
+    takeMoney?: float; // 放款金额
+    rate?: string; // 执行年利率
+    workProves?: any[];
   };
   // 审核状态列表
   export interface StatusResultList extends Common.ResultCode {

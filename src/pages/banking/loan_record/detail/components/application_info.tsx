@@ -8,6 +8,7 @@ import { useHistory } from 'umi';
 import type { Props } from './authorization_info';
 import { getApplicationInfo } from '@/services/banking-loan';
 import { number } from 'echarts';
+import { regFenToYuan } from '@/utils/util';
 export default ({ id }: Props) => {
   const history = useHistory();
   const [list, setList] = useState<any>([]);
@@ -117,7 +118,7 @@ export default ({ id }: Props) => {
           {detail.deadLine !== null && (
             <>
               <Col span={8}>
-                <span>申请金额：{detail.applyAmount}万元</span>
+                <span>申请金额：{regFenToYuan(detail?.applyAmount)}万元</span>
               </Col>
               <Col span={8}>
                 <span>拟融资期限：{detail.deadLine}</span>

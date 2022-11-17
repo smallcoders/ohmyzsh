@@ -27,6 +27,7 @@ import SelfTable from '@/components/self_table';
 import { UploadOutlined } from '@ant-design/icons';
 import FormEdit from '@/components/FormEdit';
 import BankingLoan from '@/types/banking-loan.d';
+import { regFenToYuan, regYuanToFen } from '@/utils/util';
 import {
   getLoanRecordList,
   getTotalAmount,
@@ -215,11 +216,11 @@ export default () => {
       try {
         const { result, code } = await getTakeMoneyDetail({
           pageIndex: 1,
-          pageSize: 100000,
+          pageSize: 10,
           creditId: id,
         });
         if (code === 0) {
-          if (result.some((item: any) => item.status == '放款成功')) {
+          if (result?.takeMoneyInfo?.some((item: any) => item.status == '放款成功')) {
             return 4;
           } else {
             return 3;
@@ -257,6 +258,7 @@ export default () => {
       title: '申请金额(万元)',
       dataIndex: 'amount',
       width: 100,
+      render: (_: number) => regFenToYuan(_),
     },
     {
       title: '联系人',
@@ -320,6 +322,8 @@ export default () => {
       fixed: 'right',
       dataIndex: 'option',
       render: (_: any, record: any) => {
+        const isApiType = record.productId === 1662285468000019;
+        const type = isApiType ? 0 : 1;
         return (
           <Space>
             <Button
@@ -328,13 +332,13 @@ export default () => {
               onClick={async () => {
                 const step = await getStep(record);
                 window.open(
-                  `${routeName.LOAN_RECORD_DETAIL}?id=${record.id}&isDetail=1&type=${record.dataSource}&step=${step}`,
+                  `${routeName.LOAN_RECORD_DETAIL}?id=${record.id}&isDetail=1&type=${type}&step=${step}`,
                 );
               }}
             >
               详情
             </Button>
-            {record.productName !== '供应链e贷' && (
+            {!isApiType && (
               <>
                 <Button
                   size="small"
@@ -342,7 +346,7 @@ export default () => {
                   onClick={async () => {
                     const step = await getStep(record);
                     window.open(
-                      `${routeName.LOAN_RECORD_ENTER}?id=${record.id}&type=${record.dataSource}&step=${step}`,
+                      `${routeName.LOAN_RECORD_ENTER}?id=${record.id}&type=${type}&step=${step}`,
                     );
                   }}
                 >
@@ -487,12 +491,12 @@ export default () => {
                     search.applyTimeEnd = moment(search.time[1]).format('YYYY-MM-DD');
                   }
                   if (search.takeMoney) {
-                    search.takeMoneyMin = search.takeMoney[0];
-                    search.takeMoneyMax = search.takeMoney[1];
+                    search.takeMoneyMin = regYuanToFen(search.takeMoney[0]);
+                    search.takeMoneyMax = regYuanToFen(search.takeMoney[1]);
                   }
                   if (search.creditAmount) {
-                    search.creditAmountMin = search.creditAmount[0];
-                    search.creditAmountMax = search.creditAmount[1];
+                    search.creditAmountMin = regYuanToFen(search.creditAmount[0]);
+                    search.creditAmountMax = regYuanToFen(search.creditAmount[1]);
                   }
                   console.log('search', search);
                   setSearChContent(search);
@@ -583,8 +587,10 @@ export default () => {
       <div className={sc('container-table-header')}>
         <div className="title">
           <div>
-            <span style={{ marginRight: 10 }}>累计授信金额：{totalAmount.creditTotal}万元</span>
-            <span>累计放款金额：{totalAmount.takeTotal}万元</span>
+            <span style={{ marginRight: 10 }}>
+              累计授信金额：{regFenToYuan(totalAmount.creditTotal)}万元
+            </span>
+            <span>累计放款金额：{regFenToYuan(totalAmount.takeTotal)}万元</span>
           </div>
           <Dropdown overlay={menuProps}>
             <Button>

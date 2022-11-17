@@ -29,25 +29,22 @@ import { history } from 'umi';
 import { routeName } from '@/../config/routes';
 import SelfTable from '@/components/self_table';
 // import type LiveTypesMaintain from '@/types/live-types-maintain.d';
-import {
-  getProviderTypesPage,
-  addProviderType,
-  updateProviderType,
-  removeProviderType,
-} from '@/services/purchase';
+import { getTakeMoneyDetail, addOrUpdateTakeMoney, deleteTakeMoney } from '@/services/banking-loan';
 import { getOrgTypeOptions } from '@/services/org-type-manage';
+import { regFenToYuan, regYuanToFen } from '@/utils/util';
 import type { Props } from './authorization_info';
 const sc = scopedClasses('banking-loan-info');
-export default ({ isDetail, type }: Props) => {
+export default ({ isDetail, type, id, step }: Props) => {
   const [createModalVisible, setModalVisible] = useState<boolean>(false);
   const [dataSource, setDataSource] = useState<BankingLoan.LoanContent[]>([]);
-  const [editIndex, setEditIndex] = useState<number>(0);
+  const [editId, setEditId] = useState<number>(0);
   const [columns, setColumns] = useState<any[]>([]);
   const [formIsChange, setFormIsChange] = useState<boolean>(false);
-
+  const [availAmounts, setAvailAmounts] = useState<number>([]);
+  const [addOrUpdateLoading, setAddOrUpdateLoading] = useState<boolean>(false);
   const [options, setOptions] = useState<any>([]);
   const toCreditApply = () => {
-    history.push(`${routeName.LOAN_RECORD_ENTER}?type=${type}&state=2`);
+    history.push(`${routeName.LOAN_RECORD_ENTER}?id=${id}&type=${type}&step=${step}`);
   };
   const getDictionary = async () => {
     try {
@@ -63,25 +60,30 @@ export default ({ isDetail, type }: Props) => {
   };
   const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
     pageIndex: 1,
-    pageSize: 20,
+    pageSize: 10,
     totalCount: 0,
     pageTotal: 0,
   });
   const { LoadStatusTrans, LoadStatus } = BankingLoan;
   const [form] = Form.useForm();
-  const loanStatus = Form.useWatch('loanStatus', form);
+  const loanStatus = Form.useWatch('busiStatus', form);
   // const [searchForm] = Form.useForm();
 
-  const getPages = async () => {
+  const getPages = async (pageIndex = pageInfo.pageIndex, pageSize = pageInfo.pageSize) => {
     try {
-      const result = [{}, {}];
-      setDataSource(result);
-      // const { result, code } = await getProviderTypesPage({});
-      // if (code === 0) {
-      //   setDataSource(result);
-      // } else {
-      //   message.error(`请求分页数据失败`);
-      // }
+      const { result, code } = await getTakeMoneyDetail({
+        pageIndex,
+        pageSize,
+        creditId: id,
+      });
+      if (code === 0) {
+        const { count, takeMoneyInfo, total, availAmount } = result;
+        setPageInfo({ totalCount: count, pageTotal: total, pageIndex, pageSize });
+        setDataSource(takeMoneyInfo);
+        setAvailAmounts(Number(regFenToYuan(availAmount)));
+      } else {
+        message.error(`请求分页数据失败`);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -89,61 +91,45 @@ export default ({ isDetail, type }: Props) => {
 
   const clearForm = () => {
     form.resetFields();
-    setEditIndex(0);
+    setEditId(0);
   };
 
-  // 新增/编辑 type false:保存并继续录入， true:保存
-  const addOrUpdate = async (type: boolean) => {
-    const tooltipMessage = editIndex ? '编辑信息' : '新增信息';
-    form
-      .validateFields()
-      .then(async (value) => {
-        if (value.loanTime) {
-          value.loanTime = moment(value.loanTime).format('YYYY-MM-DD');
-        }
-        const data = [...dataSource];
-        if (editIndex) {
-          data.splice(editIndex - 1, 1, { ...value });
-        } else {
-          data.unshift({ ...value });
-        }
-        setDataSource(data);
-        if (type) {
-          setModalVisible(false);
-        }
-        clearForm();
-        setFormIsChange(false);
-        message.success(`${tooltipMessage}成功！`);
-      })
-      .catch(() => {});
-  };
-  const save = async () => {
+  // 新增/编辑 flag false:保存并继续录入， true:保存
+  const addOrUpdate = async (flag: boolean) => {
+    const tooltipMessage = editId ? '编辑信息' : '新增信息';
     form
       .validateFields()
       .then(async (value) => {
         setAddOrUpdateLoading(true);
-        if (value.loanTime) {
-          value.loanTime = moment(value.loanTime).format('YYYY-MM-DD');
+        if (value.borrowStartDate) {
+          value.borrowStartDate = moment(value.borrowStartDate).format('YYYY-MM-DD');
         }
-        const addorUpdateRes = await (editIndex
-          ? updateProviderType({
+        if (value.workProve) {
+          value.workProve = value.workProve.map((item: any) => item.uid).join(',');
+        }
+        if (value.takeMoney) {
+          value.takeMoney = regYuanToFen(value.takeMoney);
+        }
+        const addorUpdateRes = await (editId
+          ? addOrUpdateTakeMoney({
               ...value,
-              id: editIndex,
+              creditId: id,
+              id: editId,
             })
-          : addProviderType({
+          : addOrUpdateTakeMoney({
               ...value,
+              creditId: id,
             }));
         if (addorUpdateRes.code === 0) {
-          setModalVisible(false);
-          if (!editIndex) {
-            message.success('新增类型成功！');
-          } else {
-            message.success('编辑类型成功！');
+          if (flag) {
+            setModalVisible(false);
           }
-          getPages();
+          message.success(`${tooltipMessage}成功！`);
           clearForm();
+          setFormIsChange(false);
+          getPages();
         } else {
-          // message.error(`${tooltipMessage}失败，原因:{${addorUpdateRes.message}}`);
+          message.error(`${tooltipMessage}失败，原因:{${addorUpdateRes.message}}`);
         }
         setAddOrUpdateLoading(false);
       })
@@ -152,19 +138,15 @@ export default ({ isDetail, type }: Props) => {
       });
   };
   // 删除
-  const remove = async (index: integer) => {
+  const remove = async (recordId: number) => {
     try {
-      // const removeRes = await removeProviderType(id);
-      // if (removeRes.code === 0) {
-      //   message.success(`删除成功`);
-      //   getPages();
-      // } else {
-      //   message.error(`删除失败，原因:${removeRes.message}`);
-      // }
-      const data = [...dataSource];
-      data.splice(index, 1);
-      setDataSource(data);
-      message.success(`删除成功`);
+      const removeRes = await deleteTakeMoney({ id: recordId });
+      if (removeRes.code === 0) {
+        message.success(`删除成功`);
+        getPages();
+      } else {
+        message.error(`删除失败，原因:${removeRes.message}`);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -172,7 +154,7 @@ export default ({ isDetail, type }: Props) => {
   const otherColum = [
     {
       title: '提款申请编号',
-      dataIndex: 'applyloanNo',
+      dataIndex: 'loanBatchNo',
       width: 100,
       render: (_: string) => {
         return <div>{_ || '--'}</div>;
@@ -180,7 +162,7 @@ export default ({ isDetail, type }: Props) => {
     },
     {
       title: '提款申请时间',
-      dataIndex: 'applyloanTime',
+      dataIndex: 'createTime',
       width: 100,
       render: (_: string) => {
         return <div>{_ || '--'}</div>;
@@ -188,10 +170,10 @@ export default ({ isDetail, type }: Props) => {
     },
     {
       title: '提款金额(万元)',
-      dataIndex: 'applyloanMoney',
+      dataIndex: 'takeMoney',
       width: 100,
       render: (_: string) => {
-        return <div>{_ || '--'}</div>;
+        return <div>{regFenToYuan(_)}</div>;
       },
     },
   ];
@@ -199,17 +181,17 @@ export default ({ isDetail, type }: Props) => {
     {
       title: '序号',
       dataIndex: 'sort',
-      width: 80,
+      width: 50,
       render: (_: any, _record: BankingLoan.LoanContent, index: number) => index + 1,
     },
     {
       title: '放款状态',
-      dataIndex: 'loanStatus',
+      dataIndex: 'status',
       width: 100,
       render: (_: string) => {
         return (
           <div className={`state${_}`}>
-            {Object.prototype.hasOwnProperty.call(LoadStatusTrans, _) ? LoadStatusTrans[_] : '--'}
+            {_ || '--'}
             {LoadStatus.LOAN_FAILURE === _ && (
               <Tooltip placement="topLeft" title={'失败原因是因为失败乃成功之母'}>
                 <div className={sc('show-reason')}>查看原因</div>
@@ -221,7 +203,7 @@ export default ({ isDetail, type }: Props) => {
     },
     {
       title: '借款编号',
-      dataIndex: 'loanNo',
+      dataIndex: 'debitNo',
       width: 100,
       render: (_: string) => {
         return <div>{_ || '--'}</div>;
@@ -229,7 +211,7 @@ export default ({ isDetail, type }: Props) => {
     },
     {
       title: '实际放款日期',
-      dataIndex: 'loanTime',
+      dataIndex: 'borrowStartDate',
       width: 80,
       render: (_: string) => {
         return <div>{_ || '--'}</div>;
@@ -237,15 +219,15 @@ export default ({ isDetail, type }: Props) => {
     },
     {
       title: '放款金额(万元)',
-      dataIndex: 'loanMoney',
+      dataIndex: 'takeMoney',
       width: 100,
-      render: (_: string) => {
-        return <div>{_ || '--'}</div>;
+      render: (_: number) => {
+        return <div>{regFenToYuan(_)}</div>;
       },
     },
     {
       title: '执行年利率(%)',
-      dataIndex: 'referenceAnnualInterestRate',
+      dataIndex: 'rate',
       width: 100,
       render: (_: string) => {
         return <div>{_ || '--'}</div>;
@@ -258,7 +240,7 @@ export default ({ isDetail, type }: Props) => {
       dataIndex: 'option',
       render: (_: any, record: BankingLoan.LoanContent, index: integer) => {
         return isDetail ? (
-          type === BankingLoan.DataSources.MANUALENTRY ? (
+          type === 1 ? (
             <Space size="middle">
               <a href={`/antelope-manage/common/download/${record?.id}`}>下载业务凭证</a>
             </Space>
@@ -278,17 +260,17 @@ export default ({ isDetail, type }: Props) => {
             <a
               href="#"
               onClick={() => {
-                setEditIndex(index + 1);
+                setEditId(record.id);
                 setModalVisible(true);
                 form.setFieldsValue({
-                  loanStatus: record?.loanStatus,
-                  loanStatusReason: record?.loanStatusReason,
-                  loanNo: record?.loanNo,
-                  loanTime: record?.loanTime && moment(record?.loanTime),
-                  loanMoney: record?.loanMoney,
-                  referenceAnnualInterestRate: record?.referenceAnnualInterestRate,
-                  fileIds: record?.fileIds
-                    ? record.fileIds.map((p) => {
+                  busiStatus: record?.busiStatus,
+                  refuseReason: record?.refuseReason,
+                  debitNo: record?.debitNo,
+                  borrowStartDate: record?.borrowStartDate && moment(record?.borrowStartDate),
+                  takeMoney: regFenToYuan(record?.takeMoney),
+                  rate: record?.rate,
+                  workProve: record?.workProves
+                    ? record.workProves.map((p) => {
                         return {
                           uid: p.id,
                           name: p.name + '.' + p.format,
@@ -306,7 +288,7 @@ export default ({ isDetail, type }: Props) => {
               title="确定删除么？"
               okText="确定"
               cancelText="取消"
-              onConfirm={() => remove(index)}
+              onConfirm={() => remove(record.id)}
             >
               <a href="#">删除</a>
             </Popconfirm>
@@ -317,7 +299,7 @@ export default ({ isDetail, type }: Props) => {
   ];
   const columDeal = () => {
     const column = [...columnsOrg];
-    if (type == BankingLoan.DataSources.MANUALENTRY) {
+    if (type !== 1) {
       column.splice(1, 0, ...otherColum);
     }
     setColumns(column);
@@ -349,7 +331,7 @@ export default ({ isDetail, type }: Props) => {
   const useModal = (): React.ReactNode => {
     return (
       <Drawer
-        title={editIndex ? '编辑信息' : '新增信息'}
+        title={editId ? '编辑信息' : '新增信息'}
         width={600}
         placement="right"
         onClose={beforeCloseDrawer}
@@ -369,13 +351,13 @@ export default ({ isDetail, type }: Props) => {
           form={form}
           layout="horizontal"
           labelWrap
-          initialValues={{ loanStatus: '1' }}
+          initialValues={{ busiStatus: 3 }}
           onValuesChange={() => {
             setFormIsChange(true);
           }}
         >
           <Form.Item
-            name="loanStatus"
+            name="busiStatus"
             label="放款状态"
             rules={[
               {
@@ -385,13 +367,13 @@ export default ({ isDetail, type }: Props) => {
             ]}
           >
             <Radio.Group>
-              <Radio value="1">已放款</Radio>
-              <Radio value="2">放款失败</Radio>
+              <Radio value={3}>已放款</Radio>
+              <Radio value={4}>放款失败</Radio>
             </Radio.Group>
           </Form.Item>
-          {loanStatus === '2' ? (
+          {loanStatus === 4 ? (
             <Form.Item
-              name="loanStatusReason"
+              name="refuseReason"
               label="失败原因"
               rules={[
                 {
@@ -411,19 +393,20 @@ export default ({ isDetail, type }: Props) => {
           ) : (
             <>
               <Form.Item
-                name="loanNo"
+                name="debitNo"
                 label="借据编号"
                 rules={[
                   {
                     required: true,
                     message: '请输入借据编号',
                   },
+                  { type: 'string', max: 50 },
                 ]}
               >
                 <Input placeholder="请输入" style={{ width: '100%' }} />
               </Form.Item>
               <Form.Item
-                name="loanTime"
+                name="borrowStartDate"
                 label="实际借款日期"
                 rules={[
                   {
@@ -436,8 +419,11 @@ export default ({ isDetail, type }: Props) => {
               </Form.Item>
               <Form.Item
                 label="放款金额"
-                name="loanMoney"
-                rules={[{ required: true, message: '请输入放款金额' }]}
+                name="takeMoney"
+                rules={[
+                  { required: true, message: '请输入放款金额' },
+                  { type: 'number', min: 0, max: availAmounts },
+                ]}
               >
                 <InputNumber
                   placeholder="请输入"
@@ -447,7 +433,7 @@ export default ({ isDetail, type }: Props) => {
                 />
               </Form.Item>
               <Form.Item
-                name="referenceAnnualInterestRate"
+                name="rate"
                 label="执行年利率"
                 rules={[{ required: true, message: '请输入执行年利率' }]}
               >
@@ -461,7 +447,7 @@ export default ({ isDetail, type }: Props) => {
             </>
           )}
           <Form.Item
-            name="fileIds"
+            name="workProve"
             label="业务凭证"
             rules={[{ required: true, message: '请上传业务凭证' }]}
             // extra="上传金融机构授信反馈，支持30M以内的图片、word、Excel或pdf文件"
@@ -487,7 +473,7 @@ export default ({ isDetail, type }: Props) => {
   return isDetail && !dataSource?.length ? (
     <div className="empty">
       <Empty description="暂无数据" />
-      {type === BankingLoan.DataSources.MANUALENTRY && (
+      {type === 1 && (
         <Button className="empty-button" type="primary" onClick={toCreditApply}>
           去录入放款信息
         </Button>
@@ -496,9 +482,9 @@ export default ({ isDetail, type }: Props) => {
   ) : (
     <>
       <div className={sc('container-table-header')}>
-        <div>剩余可借金额：100.00万元</div>
+        <div>剩余可借金额：{availAmounts}万元</div>
         <div className="title">
-          <div>放款信息</div>
+          <div>放款信息：{!isDetail && <span className="tips">请录入每次放款信息</span>}</div>
           {!isDetail && (
             <Button
               type="primary"
@@ -515,11 +501,22 @@ export default ({ isDetail, type }: Props) => {
       <div className={sc('container-table-body')}>
         <SelfTable
           bordered
-          scroll={{ x: 1400 }}
+          scroll={{ x: type === 1 ? 1000 : 1400 }}
           columns={columns}
           rowKey={'id'}
           dataSource={dataSource}
-          pagination={false}
+          pagination={
+            pageInfo.totalCount < 10
+              ? false
+              : {
+                  onChange: getPages,
+                  total: pageInfo.totalCount,
+                  current: pageInfo.pageIndex,
+                  pageSize: pageInfo.pageSize,
+                  showTotal: (total: number) =>
+                    `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
+                }
+          }
         />
       </div>
       {isDetail && (

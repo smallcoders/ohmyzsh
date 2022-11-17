@@ -12,6 +12,9 @@ export async function getLoanRecordList(data?: { [key: string]: any }) {
   return request<any>('/antelope-finance/loanRecord/mng/records', {
     method: 'post',
     data,
+    headers: {
+      'rpc-tag': 'jianwang44',
+    },
   });
 }
 /**
@@ -55,7 +58,7 @@ export async function loanRecordExport(data?: { [key: string]: any }) {
  */
 export async function getApplicationInfo(params: { id: string }) {
   return request<any>('/antelope-finance/loanRecord/mng/getApplicationInfo', {
-    method: 'post',
+    method: 'get',
     params,
   });
 }
@@ -66,7 +69,7 @@ export async function getApplicationInfo(params: { id: string }) {
  */
 export async function getCreditDetail(params: { id: string }) {
   return request<any>('/antelope-finance/loanRecord/mng/getCreditDetail', {
-    method: 'post',
+    method: 'get',
     params,
   });
 }
@@ -121,13 +124,13 @@ export async function addOrUpdateTakeMoney(data: { [key: string]: any }) {
 
 /**
  * 删除放款信息
- * @param data
+ * @param params
  * @returns
  */
-export async function deleteTakeMoney(data: { [key: string]: any }) {
+export async function deleteTakeMoney(params: { [key: string]: any }) {
   return request<any>('/antelope-finance/loanRecord/mng/deleteTakeMoney', {
-    method: 'post',
-    data,
+    method: 'get',
+    params,
   });
 }
 
@@ -152,18 +155,21 @@ export async function addBackMoney(data: { [key: string]: any }) {
   return request<any>('/antelope-finance/loanRecord/mng/addBackMoney', {
     method: 'post',
     data,
+    headers: {
+      'rpc-tag': 'jbxu5',
+    },
   });
 }
 
 /**
  * 删除还款信息
- * @param data
+ * @param params
  * @returns
  */
-export async function delBackMoney(data: { [key: string]: any }) {
+export async function delBackMoney(params: { [key: string]: any }) {
   return request<any>('/antelope-finance/loanRecord/mng/delBackMoney', {
-    method: 'post',
-    data,
+    method: 'get',
+    params,
   });
 }
 
@@ -176,17 +182,23 @@ export async function getBackMoneyDetail(data: { [key: string]: any }) {
   return request<any>('/antelope-finance/loanRecord/mng/getBackMoneyDetail', {
     method: 'post',
     data,
+    headers: {
+      'rpc-tag': 'jbxu5',
+    },
   });
 }
 
 /**
  * 提款及放款详情
- * @param data
+ * @param params
  * @returns
  */
-export async function getTakeDetail(data: { [key: string]: any }) {
+export async function getTakeDetail(params: { [key: string]: any }) {
   return request<any>('/antelope-finance/loanRecord/mng/getTakeDetail', {
-    method: 'post',
-    data,
+    method: 'get',
+    params,
+    headers: {
+      'rpc-tag': 'jianwang44',
+    },
   });
 }

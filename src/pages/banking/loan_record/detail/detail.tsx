@@ -8,7 +8,7 @@ import AuthorizationInfo from './components/authorization_info';
 import LoanInfo from './components/loan_info';
 import RepaymentInfo from './components/repayment_info';
 export default () => {
-  const [activeKey, setActiveKey] = useState<string>('1');
+  const [activeKey, setActiveKey] = useState<string>('');
   const [tabList, setTabList] = useState<any>([]);
   const { type, step, isDetail, id } = history.location.query as any;
   const [steps, setSteps] = useState<string>(step);
@@ -32,21 +32,23 @@ export default () => {
     },
   ];
   const prepare = () => {
-    if (Number(type) === BankingLoan.DataSources.MANUALENTRY) {
-      setTabList(tabLists.filter((item) => item.key <= step));
+    if (Number(type) === 1) {
+      setTabList(tabLists.filter((item) => item.key <= steps));
     } else {
-      setTabList(tabLists.filter((item) => item.key !== '4' && item.key <= step));
+      setTabList(tabLists.filter((item) => item.key !== '4' && item.key <= steps));
     }
     setActiveKey(steps || '1');
   };
   const unlisten = () => {
+    console.log('unlisten');
     history.listen(() => {
       const query = history.location.query as any;
+      console.log('unlisten-query', query);
       setSteps(query.step);
       prepare();
     });
   };
-
+  unlisten();
   useEffect(() => {
     prepare();
   }, []);
@@ -67,7 +69,6 @@ export default () => {
       {activeKey === '4' && (
         <RepaymentInfo isDetail={isDetail} type={Number(type)} id={id} step={steps} />
       )}
-      {unlisten()}
     </PageContainer>
   );
 };

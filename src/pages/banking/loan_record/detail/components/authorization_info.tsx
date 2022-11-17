@@ -18,6 +18,7 @@ import { routeName } from '@/../config/routes';
 import { history } from 'umi';
 import BankingLoan from '@/types/banking-loan.d';
 import { getCreditDetail, updateCreditInfo } from '@/services/banking-loan';
+import { regFenToYuan, regYuanToFen } from '@/utils/util';
 import moment from 'moment';
 export type Props = {
   isDetail?: boolean; //详情展示
@@ -41,20 +42,23 @@ export default ({ isDetail, type, step, id }: Props) => {
     form
       .validateFields()
       .then(async (values) => {
-        const { fileIds, creditTime, ...rest } = values;
+        const { fileIds, creditTime, creditAmount, ...rest } = values;
         const data = {
           id,
           workProve: fileIds?.map((p: any) => p?.uid).join(','),
           ...rest,
+          creditAmount: regYuanToFen(creditAmount),
         };
         if (creditTime) {
           data.startDate = creditTime[0].format('YYYY-MM-DD');
           data.endDate = creditTime[1].format('YYYY-MM-DD');
         }
+
         const res = await updateCreditInfo(data);
         if (res?.code == 0) {
           if (busiStatus === 2) {
             confirm({
+              closable: true,
               title: '保存成功',
               icon: <CheckCircleTwoTone />,
               content: '授信信息录入成功。是否继续录入放款信息？',
@@ -103,7 +107,7 @@ export default ({ isDetail, type, step, id }: Props) => {
               busiStatus: rest.busiStatus,
               rate,
               creditTime,
-              creditAmount: Number(creditAmount),
+              creditAmount: Number(regFenToYuan(creditAmount)),
               contractNo,
             });
           }
@@ -168,7 +172,7 @@ export default ({ isDetail, type, step, id }: Props) => {
   return isDetail && !detail ? (
     <div className="empty">
       <Empty description="暂无数据" />
-      {type === BankingLoan.DataSources.MANUALENTRY && (
+      {type === 1 && (
         <Button className="empty-button" type="primary" onClick={toCreditApply}>
           去录入授信信息
         </Button>
@@ -202,7 +206,7 @@ export default ({ isDetail, type, step, id }: Props) => {
               rules={[{ required: !isDetail, message: '请输入授信金额' }]}
             >
               {isDetail ? (
-                <span>{detail?.creditAmount || '--'}万元</span>
+                <span>{regFenToYuan(detail?.creditAmount) || '--'}万元</span>
               ) : (
                 <InputNumber
                   placeholder="请输入"
@@ -258,7 +262,7 @@ export default ({ isDetail, type, step, id }: Props) => {
           </>
         )}
         {/* 人工录入有业务凭证 */}
-        {type === BankingLoan.DataSources.MANUALENTRY && (
+        {type === 1 && (
           <Form.Item
             name="fileIds"
             label="业务凭证"
