@@ -462,11 +462,11 @@ export default () => {
           }}>
             提交
           </Button> : '',
-        <Button onClick={() => {
-          history.goBack();
-        }}>
-          返回
-        </Button>
+        // <Button onClick={() => {
+        //   history.goBack();
+        // }}>
+        //   返回
+        // </Button>
       ]}
     >
       <div style={{ display: 'flex', gap: 20 }}>
