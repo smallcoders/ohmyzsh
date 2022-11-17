@@ -1704,11 +1704,13 @@ export default [
       {
         path: routeName.OPERATION_ACTIVITY_PARAMETER,
         name: '参数配置',
+        access: 'M_OA_CSPZ',
         component: './operation_activity/parameter-setting/index',
       },
       {
         path: routeName.OPERATION_ACTIVITY_LINK,
         name: '链接配置',
+        access: 'M_OA_LJ',
         component: './operation_activity/link-setting/index',
       },
       {
