@@ -5,7 +5,8 @@ import {
   Row,
   Col,
   DatePicker,
-  message as antdMessage,
+  message as antdMessage, TreeSelect,
+  Cascader
 } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
@@ -20,11 +21,13 @@ import { routeName } from '@/../config/routes';
 import {
   getCustomers,
 } from '@/services/financial_customers_manage';
+import { listAllAreaCode } from '@/services/common';
 const sc = scopedClasses('financial-customers-manage');
 
 export default () => {
   const [dataSource, setDataSource] = useState<FinancialCustomersManage.Content[]>([]);
   const [searchContent, setSearChContent] = useState<FinancialCustomersManage.SearchContent>({});
+  const [areaCodeOptions, setAreaCodeOptions] = useState<any>([])
   const [searchForm] = Form.useForm();
   const formLayout = {
     labelCol: { span: 6 },
@@ -129,12 +132,25 @@ export default () => {
       search.startTime = moment(search.time[0]).format('YYYY-MM-DD');
       search.endTime = moment(search.time[1]).format('YYYY-MM-DD');
     }
+    if (search?.address?.length){
+      search.provinceCode = search.address[0]
+      search.cityCode = search.address[1] || ''
+      search.countyCode = search.address[2] || ''
+    }
     delete search.time;
+    delete search.address;
     return search;
   };
   useEffect(() => {
+    listAllAreaCode().then((res) => {
+      const {result} = res
+      setAreaCodeOptions(result)
+    })
+  }, [])
+  useEffect(() => {
     getPage();
   }, [searchContent]);
+
 
   const useSearchNode = (): React.ReactNode => {
     return (
@@ -152,6 +168,16 @@ export default () => {
               </Form.Item>
             </Col>
             <Col span={8}>
+              <Form.Item name="address" label="注册地址">
+                <Cascader
+                  placeholder="请选择"
+                  fieldNames={{ label: 'name', value: 'code', children: 'nodes' }}
+                  options={areaCodeOptions}
+                  changeOnSelect
+                />
+              </Form.Item>
+            </Col>
+            <Col span={8}>
               <Form.Item name="contacts" label="联系人">
                 <Input placeholder="请输入" />
               </Form.Item>
@@ -161,7 +187,7 @@ export default () => {
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
-            <Col offset={12} span={4}>
+            <Col offset={4} span={4}>
               <Button
                 style={{ marginRight: 20 }}
                 type="primary"
