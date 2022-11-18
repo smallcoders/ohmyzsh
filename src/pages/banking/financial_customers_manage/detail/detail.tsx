@@ -45,11 +45,11 @@ export default () => {
             <div className="right-bottom-content">
               <div>
                 <div className="item"><label>法定代表人：</label>{detail?.legalPersonName || '--'}</div>
-                <div className="item"><label>实缴资本：</label>{detail?.actualCapital ? `${customToFixed(`${detail?.actualCapital / 1000000}`)}万元` : '--'}</div>
+                <div className="item"><label>实缴资本：</label>{detail?.actualCapital > 0 ? `${customToFixed(`${detail?.actualCapital / 1000000}`)}万元` : '--'}</div>
               </div>
               <div>
                 <div className="item"><label>注册地址：</label>{detail?.regAddress || '--'}</div>
-                <div className="item"><label>注册资本：</label>{detail?.regCapital ? `${customToFixed(`${detail?.regCapital / 1000000}`)}万元` : '--'}</div>
+                <div className="item"><label>注册资本：</label>{detail?.regCapital > 0 ? `${customToFixed(`${detail?.regCapital / 1000000}`)}万元` : '--'}</div>
               </div>
               <div>
                 <div className="item"><label>成立日期：</label>{detail?.formedDate || '--'}</div>

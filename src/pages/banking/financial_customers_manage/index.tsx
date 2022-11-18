@@ -28,6 +28,7 @@ export default () => {
   const [dataSource, setDataSource] = useState<FinancialCustomersManage.Content[]>([]);
   const [searchContent, setSearChContent] = useState<FinancialCustomersManage.SearchContent>({});
   const [areaCodeOptions, setAreaCodeOptions] = useState<any>([])
+  const [regAddress, setRegAddress] = useState<string>('')
   const [searchForm] = Form.useForm();
   const formLayout = {
     labelCol: { span: 6 },
@@ -138,10 +139,8 @@ export default () => {
       search.startTime = moment(search.time[0]).format('YYYY-MM-DD');
       search.endTime = moment(search.time[1]).format('YYYY-MM-DD');
     }
-    if (search?.address?.length){
-      search.provinceCode = search.address[0]
-      search.cityCode = search.address[1] || ''
-      search.countyCode = search.address[2] || ''
+    if (regAddress){
+      search.regAddress = regAddress
     }
     delete search.time;
     delete search.address;
@@ -180,6 +179,12 @@ export default () => {
                   fieldNames={{ label: 'name', value: 'code', children: 'nodes' }}
                   options={areaCodeOptions}
                   changeOnSelect
+                  onChange={(_, options) => {
+                    const address = options.map((item) => {
+                      return item.name
+                    }).join('')
+                    setRegAddress(address)
+                  }}
                 />
               </Form.Item>
             </Col>
