@@ -4,6 +4,8 @@ import {
 } from '@/services/financial_customers_manage';
 import { useEffect, useState } from 'react';
 import { customToFixed } from '@/utils/util';
+import { Button } from 'antd';
+import ProCard from '@ant-design/pro-card';
 import { history } from 'umi';
 import {
   orgFormMap,
@@ -130,6 +132,9 @@ export default () => {
           </div>
         </div>
       </div>
+      <ProCard layout="center">
+        <Button onClick={() => history.goBack()}>返回</Button>
+      </ProCard>
     </PageContainer>
   );
 };
