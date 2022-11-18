@@ -146,16 +146,11 @@ export default () => {
   const [area, setArea] = useState<any>([]);
   const prepare = async () => {
     try {
-      const data = await Promise.all([
-        getEnumByName('ORG_INDUSTRY'),
-        getClaimUsers(),
-        getAreaTree({}),
-        getDictionayTree('DEMAND_TYPE'),
-      ]);
-      setIndustryTypes(data?.[0]?.result || []);
-      setUsers(data?.[1]?.result || []);
-      setArea(data?.[2]?.children || []);
-      setDemandTypes(data?.[3]?.result || []);
+      const data = await Promise.all([ getEnumByName('ORG_INDUSTRY'), getClaimUsers(), getAreaTree({}), getDictionayTree('DEMAND_TYPE')])
+      setIndustryTypes(data?.[0]?.result || [])
+      setUsers(data?.[1]?.result || [])
+      setArea(data?.[2]?.children || [])
+      setDemandTypes(data?.[3]?.result || [])
     } catch (error) {
       message.error('数据初始化错误');
     }
@@ -505,29 +500,14 @@ export default () => {
               </Button>
             ) : (
               <>
-                {record.operationState == 'ON_SHELF' && (
-                  <>
-                    {' '}
-                    <Popconfirm
-                      title="确定下架么？"
-                      okText="确定"
-                      cancelText="取消"
-                      onConfirm={() => updateOnlineStatus(record.id as string, false)}
-                    >
-                      <a href="#">下架</a>
-                    </Popconfirm>
-                    {/* <Button
-                  key="1"
-                  size="small"
-                  type="link"
-                  onClick={() => {
-                    window.open(
-                      `${routeName.DEMAND_MANAGEMENT_DETAIL}?id=${record.id}&isEdit=1`,
-                    );
-                  }}
+                <Popconfirm
+                  title="确定下架么？"
+                  okText="确定"
+                  cancelText="取消"
+                  onConfirm={() => updateOnlineStatus(record.id as string, false)}
                 >
-                  节点维护
-                </Button> */}
+                  <a href="#">下架</a>
+                </Popconfirm>
                     <Popconfirm
                       title={
                         <>
@@ -556,8 +536,7 @@ export default () => {
                         权重
                       </Button>
                     </Popconfirm>
-                  </>
-                )}
+               
                 {record.operationState == 'OFF_SHELF' && (
                   <Popconfirm
                     title="确定上架么？"
@@ -760,17 +739,8 @@ export default () => {
   };
 
   const exportList = async () => {
-    const {
-      name,
-      type,
-      publisherName,
-      publishStartTime,
-      publishEndTime,
-      operationState,
-      claimId,
-      claimState,
-      areaCode,
-    } = searchContent;
+    const { name, type, publisherName, publishStartTime, publishEndTime, operationState, claimId, claimState, areaCode } =
+      searchContent;
     try {
       const res = await demandExport({
         name,
@@ -784,10 +754,8 @@ export default () => {
         areaCode,
       });
       const content = res?.data;
-      const blob = new Blob([content], {
-        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8',
-      });
-      const fileName = '企业需求.xlsx';
+      const blob = new Blob([content], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8" });
+      const fileName = '企业需求.xlsx'
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.style.display = 'none';
