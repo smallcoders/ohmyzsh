@@ -31,3 +31,13 @@ export async function getWholeAreaTree({
     params: { parentCode, endLevel },
   }).then(({ result }) => result);
 }
+
+// 带有其他的安徽省地区
+export async function getAhArea(
+  parentCode = 340000,
+) {
+  return request('/antelope-manage/common/areaCode', {
+    method: 'GET',
+    // params: { parentCode },
+  }).then(({ result }) => result);
+}
