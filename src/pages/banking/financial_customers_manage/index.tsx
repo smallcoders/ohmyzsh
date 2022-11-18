@@ -5,7 +5,7 @@ import {
   Row,
   Col,
   DatePicker,
-  message as antdMessage, TreeSelect,
+  message as antdMessage,
   Cascader
 } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
@@ -92,10 +92,16 @@ export default () => {
     {
       title: '联系人',
       dataIndex: 'contacts',
+      render: (contacts: string) => {
+        return <span>{contacts || '--'}</span>
+      }
     },
     {
       title: '联系电话',
       dataIndex: 'phone',
+      render: (phone: string) => {
+        return <span>{phone || '--'}</span>
+      }
     },
     {
       title: '操作',

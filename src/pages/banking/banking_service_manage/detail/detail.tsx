@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { useHistory } from 'umi';
 import VerifyStepsDetail from '@/components/verify_steps';
 import CommonTitle from '@/components/verify_steps/common_title';
-
+import { customToFixed } from '@/utils/util';
 import {
   getDemandRecordList,
   updateVerityStatus,
@@ -216,19 +216,19 @@ export default () => {
                 </Form.Item>
               }
               {
-                !(detail.type === 2) && <Form.Item label="拟融资金额">{(detail?.amount / 100).toFixed(2)}元</Form.Item>
+                detail.type !== 2 && <Form.Item label="拟融资金额">{customToFixed(`${detail.amount / 1000000}`)}万元</Form.Item>
               }
               {
-                !(detail.type === 2) && <Form.Item label="融资期限">{detail?.termContent}</Form.Item>
+                detail.type !== 2 && <Form.Item label="融资期限">{detail?.termContent}</Form.Item>
               }
               {
-                !(detail.type === 2) && <Form.Item label="融资用途">/</Form.Item>
+                detail.type !== 2 && <Form.Item label="融资用途">/</Form.Item>
               }
               {
-                !(detail.type === 2) && <Form.Item label="资金需求紧迫度">/</Form.Item>
+                detail.type !== 2 && <Form.Item label="资金需求紧迫度">/</Form.Item>
               }
               {
-                !(detail.type === 2) && <Form.Item label="企业资产信息">/</Form.Item>
+                detail.type !== 2 && <Form.Item label="企业资产信息">/</Form.Item>
               }
               {
                 detail.type === 2 && <Form.Item label="保单拟生效时间">{detail?.effectiveDate}</Form.Item>
