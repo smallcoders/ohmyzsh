@@ -26,12 +26,34 @@ import {
 } from '@/services/intend-message';
 import { UploadOutlined } from '@ant-design/icons';
 import { intendMessageExport } from '@/services/export';
+import { Access, useAccess } from 'umi';
 const sc = scopedClasses('user-config-logout-verify');
 
+const enum Edge {
+  HOME = 0, // 新闻咨询首页
+}
 export default () => {
   const [dataSource, setDataSource] = useState<IntendMessage.Content[]>([]);
   const [searchContent, setSearChContent] = useState<IntendMessage.SearchBody>({});
   const [remark, setRemark] = useState<string>('');
+  // 拿到当前角色的access权限兑现
+  const access = useAccess()
+  // 当前页面的对应权限key
+  const [edge, setEdge] = useState<Edge.HOME>(Edge.HOME);
+  // 页面权限
+  const permissions = {
+    [Edge.HOME]: 'PQ_SD_FWXX', // 服务管理-意向消息-页面查询
+  }
+
+  useEffect(() => {
+    for (const key in permissions) {
+      const permission = permissions[key]
+      if (Object.prototype.hasOwnProperty.call(access, permission)) {
+        setEdge(key as any)
+        break
+      }
+    }
+  },[])
 
   const formLayout = {
     labelCol: { span: 6 },
@@ -163,37 +185,40 @@ export default () => {
       fixed: 'right',
       dataIndex: 'option',
       render: (_: any, record: any) => {
+        const accessible = access?.[permissions?.[edge].replace(new RegExp("Q"), "")]
         return !record.handlerState ? (
-          <div style={{ textAlign: 'center' }}>
-            <Space size={20}>
-              <Popconfirm
-                icon={null}
-                title={
-                  <>
-                    <Input.TextArea
-                      placeholder="可在此填写备注内容，备注非必填"
-                      onChange={(e) => setRemark(e.target.value)}
-                      value={remark}
-                      showCount
-                      maxLength={100}
-                    />
-                  </>
-                }
-                okText="确定"
-                cancelText="取消"
-                onConfirm={() => mark(record)}
-              >
-                <Button
-                  type="link"
-                  onClick={() => {
-                    setRemark(record.remark || '');
-                  }}
+          <Access accessible={accessible}>
+            <div style={{ textAlign: 'center' }}>
+              <Space size={20}>
+                <Popconfirm
+                  icon={null}
+                  title={
+                    <>
+                      <Input.TextArea
+                        placeholder="可在此填写备注内容，备注非必填"
+                        onChange={(e) => setRemark(e.target.value)}
+                        value={remark}
+                        showCount
+                        maxLength={100}
+                      />
+                    </>
+                  }
+                  okText="确定"
+                  cancelText="取消"
+                  onConfirm={() => mark(record)}
                 >
-                  标记已联系
-                </Button>
-              </Popconfirm>
-            </Space>
-          </div>
+                  <Button
+                    type="link"
+                    onClick={() => {
+                      setRemark(record.remark || '');
+                    }}
+                  >
+                    标记已联系
+                  </Button>
+                </Popconfirm>
+              </Space>
+            </div>
+          </Access>
         ) : (
           <div style={{ display: 'grid', justifyItems: 'center' }}>
             <span>
@@ -311,9 +336,11 @@ export default () => {
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>意向消息列表(共{pageInfo.totalCount || 0}个)</span>
-          <Button icon={<UploadOutlined />} onClick={exportList}>
-            导出
-          </Button>
+          <Access accessible={access['PX_SD_FWXX']}>
+            <Button icon={<UploadOutlined />} onClick={exportList}>
+              导出
+            </Button>
+          </Access>
         </div>
       </div>
       <div className={sc('container-table-body')}>

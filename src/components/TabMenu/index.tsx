@@ -12,10 +12,14 @@ import Intention from '@/pages/diagnose_manage/diagnostic_tasks/components/Inten
 import Activity from '@/pages/purchase_manage/sales_statistics/components/Activity';
 import Goods from '@/pages/purchase_manage/sales_statistics/components/Goods';
 
+// 供需设置-服务管理tab页
+import Solution from '@/pages/supply_demand_setting/solution/solution';
+import DemandIntention from '@/pages/supply_demand_setting/solution/intention_message/index';
+
 import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
 const sc = scopedClasses('tab-menu');
-export default (props: { tabs?: string[]; }) => {
+export default (props: { tabs?: string[];}) => {
   const [contentHtml, setContentHtml] = useState<string | undefined>();
   const [activeKey, setActiveKey] = useState<string>('M_DM_XSZD');
   const [showTabList, setShowTabList] = useState<any>([]);
@@ -44,7 +48,16 @@ export default (props: { tabs?: string[]; }) => {
     {
       tab: '商品数据',
       key: 'M_PM_TJ_SP'
-    }
+    },
+    // 供需设置-服务管理tab页
+    {
+      tab: '解决方案',
+      key: 'M_SD_FW'
+    },
+    {
+      tab: '意向消息',
+      key: 'M_SD_FWXX'
+    },
   ]
   
   const { type } = history.location.query as any;
@@ -55,7 +68,7 @@ export default (props: { tabs?: string[]; }) => {
   };
 
   useEffect(() => {
-    // console.log(currentUser, 'currentUser');
+    if (!currentUser) return
     // console.log(props.tabs, 'props.tabs');
     if(currentUser.menuShowMap) {
       let arr: any = [
@@ -103,6 +116,9 @@ export default (props: { tabs?: string[]; }) => {
       
       {activeKey === 'M_PM_TJ_HD' && <Activity />}
       {activeKey === 'M_PM_TJ_SP' && <Goods />}
+
+      {activeKey === 'M_SD_FW' && <Solution />}
+      {activeKey === 'M_SD_FWXX' && <DemandIntention />}
     </PageContainer>
   );
 };
