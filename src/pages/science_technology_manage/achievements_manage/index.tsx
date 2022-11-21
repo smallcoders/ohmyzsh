@@ -6,7 +6,7 @@ import ProTable from '@ant-design/pro-table';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import React, { useEffect, useState, useRef } from 'react';
 import type AchievementsTypes from '@/types/service-config-achievements-manage';
-import { history } from 'umi';
+import { history, Access, useAccess } from 'umi';
 import { getUrl } from '@/utils/util';
 import scopedClasses from '@/utils/scopedClasses';
 import { creativeAchievementExport } from '@/services/export';
@@ -23,6 +23,9 @@ const stateObj = {
   CONNECTING: '对接中',
   CONVERTED: '已转化',
 };
+enum Edge {
+  HOME = 0, // 新闻咨询首页
+}
 export default () => {
   const actionRef = useRef<ActionType>();
   const paginationRef = useRef<any>();
@@ -30,6 +33,24 @@ export default () => {
   const [typeOptions, setTypeOptions] = useState<any>({}); // 应用行业数据
   const [keywords, setKeywords] = useState<any[]>([]); // 关键词数据
   const [modalVisible, setModalVisible] = useState<boolean>(false);
+  // 拿到当前角色的access权限兑现
+  const access = useAccess()
+  // 当前页面的对应权限key
+  const [edge, setEdge] = useState<Edge.HOME>(Edge.HOME);
+  // 页面权限
+  const permissions = {
+    [Edge.HOME]: 'PQ_SM_CGGL', // 科产管理-科技成果管理页面查询
+  }
+
+  useEffect(() => {
+    for (const key in permissions) {
+      const permission = permissions[key]
+      if (Object.prototype.hasOwnProperty.call(access, permission)) {
+        setEdge(key as any)
+        break
+      }
+    }
+  },[])
 
   // 点击关键词编辑，记录当前编辑的id
   const [currentId, setCurrentId] = useState<string>('');
@@ -257,35 +278,38 @@ export default () => {
       hideInSearch: true, // 用于隐藏筛选
       dataIndex: 'option',
       render: (_: any, record: any) => {
+        const accessible = access?.[permissions?.[edge].replace(new RegExp("Q"), "")]
         return record.state == 'CONVERTED' ? (
           <div style={{ textAlign: 'center' }}>/</div>
         ) : (
-          <Space>
-            <Button
-              type="link"
-              style={{ padding: 0 }}
-              onClick={() => {
-                setCurrentId(record.id);
-                setModalVisible(true);
-                editForm.setFieldsValue({
-                  keyword: record.keyword || [],
-                  keywordOther: record.keywordOther || '',
-                });
-              }}
-            >
-              所属产业编辑
-            </Button>
-            <Popconfirm
-              title={'确定已完成转化吗？'}
-              okText="确定"
-              cancelText="取消"
-              onConfirm={() => editState(record.id)}
-            >
-              <Button type="link" style={{ padding: 0 }}>
-                完成转化
+          <Access accessible={accessible}>
+            <Space>
+              <Button
+                type="link"
+                style={{ padding: 0 }}
+                onClick={() => {
+                  setCurrentId(record.id);
+                  setModalVisible(true);
+                  editForm.setFieldsValue({
+                    keyword: record.keyword || [],
+                    keywordOther: record.keywordOther || '',
+                  });
+                }}
+              >
+                所属产业编辑
               </Button>
-            </Popconfirm>
-          </Space>
+              <Popconfirm
+                title={'确定已完成转化吗？'}
+                okText="确定"
+                cancelText="取消"
+                onConfirm={() => editState(record.id)}
+              >
+                <Button type="link" style={{ padding: 0 }}>
+                  完成转化
+                </Button>
+              </Popconfirm>
+            </Space>
+          </Access>
         );
       },
     },
@@ -332,17 +356,19 @@ export default () => {
                 justifyContent: 'space-between',
               }}
             >
-              <Button type="primary" ghost onClick={handleMultiUpload}>
-                批量导入
-              </Button>
-              <Button
-                icon={<UploadOutlined />}
-                onClick={() => {
-                  exportList();
-                }}
-              >
-                导出
-              </Button>
+              <Access accessible={access['P_SM_CGGL']}>
+                <Button type="primary" ghost onClick={handleMultiUpload}>
+                  批量导入
+                </Button>
+                <Button
+                  icon={<UploadOutlined />}
+                  onClick={() => {
+                    exportList();
+                  }}
+                >
+                  导出
+                </Button>
+              </Access>
             </div>
           }
           options={false}

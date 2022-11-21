@@ -27,12 +27,34 @@ import {
 import { UploadOutlined } from '@ant-design/icons';
 import { expertApplyExport } from '@/services/export';
 import ApplyRecord from '@/types/expert_manage/apply-record';
+import { Access, useAccess } from 'umi';
 const sc = scopedClasses('user-config-logout-verify');
+enum Edge {
+  HOME = 0,
+}
 
 export default () => {
   const [dataSource, setDataSource] = useState<ConsultRecord.Content[]>([]);
   const [searchContent, setSearChContent] = useState<ConsultRecord.SearchBody>({});
   const [remark, setRemark] = useState<string>('');
+  // 拿到当前角色的access权限兑现
+  const access = useAccess()
+  // 当前页面的对应权限key
+  const [edge, setEdge] = useState<Edge.HOME>(Edge.HOME);
+  // 页面权限
+  const permissions = {
+    [Edge.HOME]: 'PQ_UM_SQJL', // 专家管理-申请记录
+  }
+
+  useEffect(() => {
+    for (const key in permissions) {
+      const permission = permissions[key]
+      if (Object.prototype.hasOwnProperty.call(access, permission)) {
+        setEdge(key as any)
+        break
+      }
+    }
+  },[])
 
   const formLayout = {
     labelCol: { span: 6 },
@@ -165,36 +187,39 @@ export default () => {
       fixed: 'right',
       dataIndex: 'option',
       render: (_: any, record: any) => {
+        const accessible = access?.[permissions?.[edge].replace(new RegExp("Q"), "U")]
         return !record.contacted ? (
           <div style={{ textAlign: 'center' }}>
-            <Space size={20}>
-              <Popconfirm
-                icon={null}
-                title={
-                  <>
-                    <Input.TextArea
-                      placeholder="可在此填写备注内容，备注非必填"
-                      onChange={(e) => setRemark(e.target.value)}
-                      value={remark}
-                      showCount
-                      maxLength={100}
-                    />
-                  </>
-                }
-                okText="确定"
-                cancelText="取消"
-                onConfirm={() => mark(record)}
-              >
-                <Button
-                  type="link"
-                  onClick={() => {
-                    setRemark(record.remark || '');
-                  }}
+            <Access accessible={accessible}>
+              <Space size={20}>
+                <Popconfirm
+                  icon={null}
+                  title={
+                    <>
+                      <Input.TextArea
+                        placeholder="可在此填写备注内容，备注非必填"
+                        onChange={(e) => setRemark(e.target.value)}
+                        value={remark}
+                        showCount
+                        maxLength={100}
+                      />
+                    </>
+                  }
+                  okText="确定"
+                  cancelText="取消"
+                  onConfirm={() => mark(record)}
                 >
-                  标记已联系
-                </Button>
-              </Popconfirm>
-            </Space>
+                  <Button
+                    type="link"
+                    onClick={() => {
+                      setRemark(record.remark || '');
+                    }}
+                  >
+                    标记已联系
+                  </Button>
+                </Popconfirm>
+              </Space>
+            </Access>
           </div>
         ) : (
           <div style={{ display: 'grid', justifyItems: 'center' }}>
@@ -310,9 +335,11 @@ export default () => {
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>申请查看专家信息记录列表(共{pageInfo.totalCount || 0}个)</span>
-          <Button icon={<UploadOutlined />} onClick={exportList}>
-            导出
-          </Button>
+          <Access accessible={access['PX_UM_SQJL']}>
+            <Button icon={<UploadOutlined />} onClick={exportList}>
+              导出
+            </Button>
+          </Access>
         </div>
       </div>
       <div className={sc('container-table-body')}>

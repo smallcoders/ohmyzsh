@@ -32,7 +32,8 @@ import {
 } from '@/services/industry-topic';
 import { getApplicationList } from '@/services/digital-application';
 import { getEnumByNameByScience } from '@/services/common';
-import { Prompt } from 'umi';
+import industryTopic from '@/types/solution-properties-industry-topic.d';
+import { Access, useAccess, Prompt } from 'umi';
 const sc = scopedClasses('service-config-app-news');
 
 const DragHandle = SortableHandle(() => <MenuOutlined style={{ cursor: 'grab', color: '#999' }} />);
@@ -45,6 +46,26 @@ const SortableBody = SortableContainer((props: React.HTMLAttributes<HTMLTableSec
 ));
 
 export default (props: { currentTab: any }) => {
+  // 拿到当前角色的access权限兑现
+  const access = useAccess()
+  // 当前页面的对应权限key
+  const [edge, setEdge] = useState<industryTopic.Edge.HOME>(industryTopic.Edge.HOME);
+  // 页面权限
+  const permissions = {
+    [industryTopic.Edge.HOME]: 'PQ_PC_CYZT', // 页面查询
+    //  PU_PC_CYZT 编辑
+  }
+
+  useEffect(() => {
+    for (const key in permissions) {
+      const permission = permissions[key]
+      if (Object.prototype.hasOwnProperty.call(access, permission)) {
+        setEdge(key as any)
+        break
+      }
+    }
+  },[])
+
   const { currentTab } = props;
   const [modalInfo, setModalInfo] = useState<{
     type: string;
@@ -587,15 +608,17 @@ export default (props: { currentTab: any }) => {
     <>
       <div className={sc('container-table-header')}>
         <div className="title">
-          <Button
-            type="primary"
-            key="edit"
-            onClick={() => {
-              editing ? addOrUpdate() : onEdit(true);
-            }}
-          >
-            {editing ? '保存并发布' : '编辑'}
-          </Button>
+          <Access accessible={access['PU_PC_CYZT']}>
+            <Button
+              type="primary"
+              key="edit"
+              onClick={() => {
+                editing ? addOrUpdate() : onEdit(true);
+              }}
+            >
+              {editing ? '保存并发布' : '编辑'}
+            </Button>
+          </Access>
         </div>
       </div>
       <div className={sc('container-table-body')}>

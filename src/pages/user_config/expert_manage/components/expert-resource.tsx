@@ -18,7 +18,7 @@ import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
 import type Common from '@/types/common';
 import SelfTable from '@/components/self_table';
-import { history } from 'umi';
+import { Access, useAccess } from 'umi';
 import {
   getExpertResourcePage,
   updateKeyword,
@@ -36,6 +36,9 @@ import { UploadOutlined } from '@ant-design/icons';
 import { expertExport } from '@/services/export';
 import SelfSelect from '@/components/self_select';
 const sc = scopedClasses('user-config-logout-verify');
+enum Edge {
+  HOME = 0,
+}
 
 export default () => {
   const [dataSource, setDataSource] = useState<ExpertResource.Content[]>([]);
@@ -48,6 +51,24 @@ export default () => {
     labelCol: { span: 6 },
     wrapperCol: { span: 16 },
   };
+  // 拿到当前角色的access权限兑现
+  const access = useAccess()
+  // 当前页面的对应权限key
+  const [edge, setEdge] = useState<Edge.HOME>(Edge.HOME);
+  // 页面权限
+  const permissions = {
+    [Edge.HOME]: 'PQ_UM_ZJZY', // 专家管理-专家资源
+  }
+
+  useEffect(() => {
+    for (const key in permissions) {
+      const permission = permissions[key]
+      if (Object.prototype.hasOwnProperty.call(access, permission)) {
+        setEdge(key as any)
+        break
+      }
+    }
+  },[])
 
   const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
     pageIndex: 1,
@@ -322,99 +343,102 @@ export default () => {
       dataIndex: 'option',
       fixed: 'right',
       render: (_: any, record: any) => {
+        const accessible = access?.[permissions?.[edge].replace(new RegExp("Q"), "")]
         return (
           <div style={{ textAlign: 'center' }}>
-            <Space size={1}>
-              <Button
-                type="link"
-                onClick={() => {
-                  window.open(`/user-config/expert-manage/detail?id=${record.id}`);
-                }}
-              >
-                详情
-              </Button>
-              <Button
-                type="link"
-                onClick={() => {
-                  setWeightVistble(true);
-                  setCurrentId(record.id);
-                  // 重置 keyword: record.keyword  这里需要把权重选上
-                  weightForm.setFieldsValue({ sort: record.sort || [] });
-                }}
-              >
-                权重
-              </Button>
-              <Popconfirm
-                icon={<span style={{ fontSize: 18 }}>服务专员标记</span>}
-                title={
-                  <Form layout="vertical" style={{ padding: 10, width: 400 }}>
-                    <Form.Item label="服务专员">
-                      <Radio.Group
-                        value={isCommissioner}
-                        onChange={(e) => {
-                          setIsCommissioner(e.target.value);
-                        }}
-                      >
-                        <Radio value={true}>是</Radio>
-                        <Radio value={false}>否</Radio>
-                      </Radio.Group>
-                    </Form.Item>
-                    {isCommissioner && (
-                      <Form.Item label="请选择服务类型">
-                        <SelfSelect
-                          dictionary={serviceTypes}
-                          fieldNames={{
-                            label: 'name',
-                            value: 'id',
-                          }}
-                          value={selectTypes}
-                          onChange={(values) => {
-                            setSelectTypes(values);
-                          }}
-                        />
-                      </Form.Item>
-                    )}
-                  </Form>
-                }
-                okButtonProps={{
-                  disabled: isCommissioner && selectTypes?.length === 0,
-                }}
-                okText="确定"
-                cancelText="取消"
-                onConfirm={() => sign(record)}
-                onCancel={() => {
-                  // signForm.resetFields();
-                }}
-              >
+            <Access accessible={accessible}>
+              <Space size={1}>
                 <Button
                   type="link"
                   onClick={() => {
-                    setIsCommissioner(!!record.commissioner);
-                    setSelectTypes(record.serviceTypeIds || []);
-                    // signForm.setFieldsValue({
-                    //   ids: record.serviceTypeIds || [],
-                    //   commissioner: record.commissioner,
-                    // });
+                    window.open(`/user-config/expert-manage/detail?id=${record.id}`);
                   }}
                 >
-                  {' '}
-                  服务专员标记
+                  详情
                 </Button>
-              </Popconfirm>
-              <Button
-                type="link"
-                onClick={() => {
-                  setModalVisible(true);
-                  setCurrentId(record.id);
-                  editForm.setFieldsValue({
-                    keyword: record.keyword || [],
-                    keywordOther: record.keywordOther || '',
-                  });
-                }}
-              >
-                所属行业编辑
-              </Button>
-            </Space>
+                <Button
+                  type="link"
+                  onClick={() => {
+                    setWeightVistble(true);
+                    setCurrentId(record.id);
+                    // 重置 keyword: record.keyword  这里需要把权重选上
+                    weightForm.setFieldsValue({ sort: record.sort || [] });
+                  }}
+                >
+                  权重
+                </Button>
+                <Popconfirm
+                  icon={<span style={{ fontSize: 18 }}>服务专员标记</span>}
+                  title={
+                    <Form layout="vertical" style={{ padding: 10, width: 400 }}>
+                      <Form.Item label="服务专员">
+                        <Radio.Group
+                          value={isCommissioner}
+                          onChange={(e) => {
+                            setIsCommissioner(e.target.value);
+                          }}
+                        >
+                          <Radio value={true}>是</Radio>
+                          <Radio value={false}>否</Radio>
+                        </Radio.Group>
+                      </Form.Item>
+                      {isCommissioner && (
+                        <Form.Item label="请选择服务类型">
+                          <SelfSelect
+                            dictionary={serviceTypes}
+                            fieldNames={{
+                              label: 'name',
+                              value: 'id',
+                            }}
+                            value={selectTypes}
+                            onChange={(values) => {
+                              setSelectTypes(values);
+                            }}
+                          />
+                        </Form.Item>
+                      )}
+                    </Form>
+                  }
+                  okButtonProps={{
+                    disabled: isCommissioner && selectTypes?.length === 0,
+                  }}
+                  okText="确定"
+                  cancelText="取消"
+                  onConfirm={() => sign(record)}
+                  onCancel={() => {
+                    // signForm.resetFields();
+                  }}
+                >
+                  <Button
+                    type="link"
+                    onClick={() => {
+                      setIsCommissioner(!!record.commissioner);
+                      setSelectTypes(record.serviceTypeIds || []);
+                      // signForm.setFieldsValue({
+                      //   ids: record.serviceTypeIds || [],
+                      //   commissioner: record.commissioner,
+                      // });
+                    }}
+                  >
+                    {' '}
+                    服务专员标记
+                  </Button>
+                </Popconfirm>
+                <Button
+                  type="link"
+                  onClick={() => {
+                    setModalVisible(true);
+                    setCurrentId(record.id);
+                    editForm.setFieldsValue({
+                      keyword: record.keyword || [],
+                      keywordOther: record.keywordOther || '',
+                    });
+                  }}
+                >
+                  所属行业编辑
+                </Button>
+              </Space>
+            </Access>
           </div>
         );
       },
@@ -527,9 +551,11 @@ export default () => {
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>专家列表(共{pageInfo.totalCount || 0}个)</span>
-          <Button icon={<UploadOutlined />} onClick={exportList}>
-            导出
-          </Button>
+          <Access accessible={access['PX_UM_ZJZY']}>
+            <Button icon={<UploadOutlined />} onClick={exportList}>
+              导出
+            </Button>
+          </Access>
         </div>
       </div>
       <div className={sc('container-table-body')}>

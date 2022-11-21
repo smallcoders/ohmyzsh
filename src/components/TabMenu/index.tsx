@@ -15,11 +15,19 @@ import Goods from '@/pages/purchase_manage/sales_statistics/components/Goods';
 // 直播管理-搜索记录tab页
 import Record from '@/pages/live_management/search_record_management/components/Record';
 import Recommend from '@/pages/live_management/search_record_management/components/Recommend';
+// 供需设置-服务管理tab页
+import Solution from '@/pages/supply_demand_setting/solution/solution';
+import DemandIntention from '@/pages/supply_demand_setting/solution/intention_message/index';
+
+// 用户管理-专家管理tab页
+import ExpertResource from '@/pages/user_config/expert_manage/components/expert-resource';
+import ConsultRecord from '@/pages/user_config/expert_manage/components/consult-record';
+import ApplyRecord from '@/pages/user_config/expert_manage/components/apply-record';
 
 import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
 const sc = scopedClasses('tab-menu');
-export default (props: { tabs?: string[]; }) => {
+export default (props: { tabs?: string[];}) => {
   const [contentHtml, setContentHtml] = useState<string | undefined>();
   const [activeKey, setActiveKey] = useState<string>('M_DM_XSZD');
   const [showTabList, setShowTabList] = useState<any>([]);
@@ -57,7 +65,29 @@ export default (props: { tabs?: string[]; }) => {
     {
       tab: '搜索记录',
       key: 'M_LM_SSJL'
-    }
+    },
+    // 供需设置-服务管理tab页
+    {
+      tab: '解决方案',
+      key: 'M_SD_FW'
+    },
+    {
+      tab: '意向消息',
+      key: 'M_SD_FWXX'
+    },
+    // 用户管理-专家管理tab页
+    {
+      tab: '专家资源',
+      key: 'M_UM_ZJZY',
+    },
+    {
+      tab: '咨询记录',
+      key: 'M_UM_ZJZX',
+    },
+    {
+      tab: '申请记录',
+      key: 'M_UM_SQJL',
+    },
   ]
   
   const { type } = history.location.query as any;
@@ -68,7 +98,7 @@ export default (props: { tabs?: string[]; }) => {
   };
 
   useEffect(() => {
-    // console.log(currentUser, 'currentUser');
+    if (!currentUser) return
     // console.log(props.tabs, 'props.tabs');
     if(currentUser.menuShowMap) {
       let arr: any = [
@@ -119,6 +149,12 @@ export default (props: { tabs?: string[]; }) => {
 
       {activeKey === 'M_LM_SSJL' && <Record />}
       {activeKey === 'M_LM_SSTJ' && <Recommend />}
+      {activeKey === 'M_SD_FW' && <Solution />}
+      {activeKey === 'M_SD_FWXX' && <DemandIntention />}
+
+      {activeKey === 'M_UM_ZJZY' && <ExpertResource />}
+      {activeKey === 'M_UM_ZJZX' && <ConsultRecord />}
+      {activeKey === 'M_UM_SQJL' && <ApplyRecord />}
     </PageContainer>
   );
 };

@@ -7,7 +7,6 @@ import React, { useEffect, useState } from 'react';
 import Industry from './components/industry';
 import TabPane from '@ant-design/pro-card/lib/components/TabPane';
 import { getKeywords } from '@/services/achievements-manage';
-import { Prompt } from 'umi';
 const sc = scopedClasses('solution-properties-app-news');
 
 export default () => {

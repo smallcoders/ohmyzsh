@@ -6,7 +6,7 @@ import { PageContainer } from '@ant-design/pro-layout';
 import './apply-manage-app-resource.less';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
-import { history, Link } from 'umi';
+import { history, Link, Access, useAccess } from 'umi';
 import {
   getAppSourcePage,
   getAppTypes,
@@ -20,8 +20,29 @@ import AppResource from '@/types/app-resource.d';
 import { routeName } from '../../../../config/routes';
 import getSelfTags from '@/components/self_tag';
 const sc = scopedClasses('apply-manage-app-resource');
+enum Edge {
+  HOME = 0, // 新闻咨询首页
+}
 
 export default () => {
+  // 拿到当前角色的access权限兑现
+  const access = useAccess()
+  // 当前页面的对应权限key
+  const [edge, setEdge] = useState<Edge.HOME>(Edge.HOME);
+  // 页面权限
+  const permissions = {
+    [Edge.HOME]: 'PQ_AM_YYZY', // 应用管理-应用资源页面查询
+  }
+  useEffect(() => {
+    for (const key in permissions) {
+      const permission = permissions[key]
+      if (Object.prototype.hasOwnProperty.call(access, permission)) {
+        setEdge(key as any)
+        break
+      }
+    }
+  },[])
+
   /**
    * 应用类型
    */
@@ -334,49 +355,52 @@ export default () => {
       title: '操作',
       dataIndex: 'option',
       render: (_: any, record: AppResource.Content) => {
+        const accessible = access?.[permissions?.[edge].replace(new RegExp("Q"), "")]
         return (
-          <Space size="middle">
-            <a
-              href="javascript:void(0)"
-              onClick={() => {
-                history.push(`/apply-manage/app-resource/add-resource?id=${record.id}`);
-              }}
-            >
-              编辑
-            </a>
-            {(
-              <Popconfirm
-                title="确定删除么？"
-                okText="确定"
-                cancelText="取消"
-                onConfirm={() => remove(record.id as string)}
-              >
-                <a href="#">删除</a>
-              </Popconfirm>
-            )}
-            {record.releaseStatus === 1 && (
-              <Popconfirm
-                title="确定下架么？"
-                okText="确定"
-                cancelText="取消"
-                onConfirm={() => off(record.id as string)}
-              >
-                <a href="#">下架</a>
-              </Popconfirm>
-            )}
-            {record.releaseStatus === 1 && (
-              <Button
-                type="link"
+          <Access accessible={accessible}>
+            <Space size="middle">
+              <a
+                href="javascript:void(0)"
                 onClick={() => {
-                  setWeightVistble(true);
-                  setCurrentId(record.id as string);
-                  weightForm.setFieldsValue({ sort: record.sort  || [] });
+                  history.push(`/apply-manage/app-resource/add-resource?id=${record.id}`);
                 }}
               >
-                权重
-              </Button>
-            )}
-          </Space>
+                编辑
+              </a>
+              {(
+                <Popconfirm
+                  title="确定删除么？"
+                  okText="确定"
+                  cancelText="取消"
+                  onConfirm={() => remove(record.id as string)}
+                >
+                  <a href="#">删除</a>
+                </Popconfirm>
+              )}
+              {record.releaseStatus === 1 && (
+                <Popconfirm
+                  title="确定下架么？"
+                  okText="确定"
+                  cancelText="取消"
+                  onConfirm={() => off(record.id as string)}
+                >
+                  <a href="#">下架</a>
+                </Popconfirm>
+              )}
+              {record.releaseStatus === 1 && (
+                <Button
+                  type="link"
+                  onClick={() => {
+                    setWeightVistble(true);
+                    setCurrentId(record.id as string);
+                    weightForm.setFieldsValue({ sort: record.sort  || [] });
+                  }}
+                >
+                  权重
+                </Button>
+              )}
+            </Space>
+          </Access>
         );
       },
     },
@@ -388,15 +412,17 @@ export default () => {
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>应用列表(共{pageInfo.totalCount}个)</span>
-          <Button
-            type="primary"
-            key="newAdd"
-            onClick={() => {
-              history.push('/apply-manage/app-resource/add-resource');
-            }}
-          >
-            <PlusOutlined /> 新增
-          </Button>
+          <Access accessible={access['P_AM_YYZY']}>
+            <Button
+              type="primary"
+              key="newAdd"
+              onClick={() => {
+                history.push('/apply-manage/app-resource/add-resource');
+              }}
+            >
+              <PlusOutlined /> 新增
+            </Button>
+          </Access>
         </div>
         <Row style={{ padding: '5px 0' }}>
           {' '}

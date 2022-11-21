@@ -17,7 +17,7 @@ import React, { useEffect, useState } from 'react';
 import type Common from '@/types/common';
 import moment from 'moment';
 import SelfTable from '@/components/self_table';
-import { history } from 'umi';
+import { Access, useAccess } from 'umi';
 import { routeName } from '@/../config/routes';
 import type ConsultRecord from '@/types/expert_manage/consult-record';
 import { cancelClaimDemand, claimDemand, getClaimUsers, getDemandPage } from '@/services/creative-demand';
@@ -26,10 +26,31 @@ import { PageInfo } from '@ant-design/pro-table/lib/typing';
 const { RangePicker } = DatePicker
 
 const sc = scopedClasses('user-config-logout-verify');
+enum Edge {
+  HOME = 0, // 新闻咨询首页
+}
 
 export default () => {
   const [dataSource, setDataSource] = useState<DockingManage.Content[]>([]);
   const [searchContent, setSearChContent] = useState<DockingManage.searchContent>({});
+  // 拿到当前角色的access权限兑现
+  const access = useAccess();
+  // 当前页面的对应权限key
+  const [edge, setEdge] = useState<Edge.HOME>(Edge.HOME);
+  // 页面权限
+  const permissions = {
+    [Edge.HOME]: 'PQ_SD_XQRL', // 供需对接管理-需求认领
+  };
+
+  useEffect(() => {
+    for (const key in permissions) {
+      const permission = permissions[key];
+      if (Object.prototype.hasOwnProperty.call(access, permission)) {
+        setEdge(key as any);
+        break;
+      }
+    }
+  }, []);
 
   const formLayout = {
     labelCol: { span: 6 },
@@ -152,18 +173,21 @@ export default () => {
       fixed: 'right',
       dataIndex: 'option',
       render: (_: any, record: any) => {
+        const accessible = access?.[permissions?.[edge].replace(new RegExp("Q"), "")]
         return <div style={{ textAlign: 'center' }}>
-          <Space size={20}>
-            {record?.btnList?.map(p => <Button
-              type="link"
-              onClick={() => {
-                // setRemark(record.remark || '');
-                DockingManage.btnList[p]?.method && methodObj?.[DockingManage.btnList[p]?.method](record)
-              }}
-            >
-              {DockingManage.btnList[p]?.text}
-            </Button>)}
-          </Space>
+          <Access accessible={accessible}>
+            <Space size={20}>
+              {record?.btnList?.map(p => <Button
+                type="link"
+                onClick={() => {
+                  // setRemark(record.remark || '');
+                  DockingManage.btnList[p]?.method && methodObj?.[DockingManage.btnList[p]?.method](record)
+                }}
+              >
+                {DockingManage.btnList[p]?.text}
+              </Button>)}
+            </Space>
+          </Access>
         </div>
       },
     },

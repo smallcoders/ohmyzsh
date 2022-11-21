@@ -25,7 +25,7 @@ import { routeName } from '@/../config/routes';
 import SelfTable from '@/components/self_table';
 import { UploadOutlined } from '@ant-design/icons';
 import { demandExport } from '@/services/export';
-import { history } from 'umi';
+import { Access, useAccess } from 'umi';
 import {
   getRequirementManagementList,
   demandEditType,
@@ -48,6 +48,9 @@ const stateObj = {//需求状态
 const stateObj3 = {//
   NEW_DEMAND: '新发布', CLAIMED: '已认领', DISTRIBUTE: '已分发', CONNECTING: '对接中', FEEDBACK: '已反馈', EVALUATED: '已评价', FINISHED: '已结束'
 };
+enum Edge {
+  HOME = 0, // 新闻咨询首页
+}
 
 
 export default () => {
@@ -63,11 +66,29 @@ export default () => {
     claimState?: string; // 需求状态
     areaCode?: number; // 需求地区
   }>({});
+  // 拿到当前角色的access权限兑现
+  const access = useAccess()
+  // 当前页面的对应权限key
+  const [edge, setEdge] = useState<Edge.HOME>(Edge.HOME);
+  // 页面权限
+  const permissions = {
+    [Edge.HOME]: 'PQ_SD_XQ', // 需求管理-页面查询
+  }
 
   const formLayout = {
     labelCol: { span: 6 },
     wrapperCol: { span: 16 },
   };
+
+  useEffect(() => {
+    for (const key in permissions) {
+      const permission = permissions[key]
+      if (Object.prototype.hasOwnProperty.call(access, permission)) {
+        setEdge(key as any)
+        break
+      }
+    }
+  },[])
 
   /**
    * 新建窗口的弹窗
@@ -468,89 +489,92 @@ export default () => {
       fixed: 'right',
       dataIndex: 'option',
       render: (_: any, record: any) => {
+        const accessible = access?.[permissions?.[edge].replace(new RegExp("Q"), "")]
         return (
-          <Space>
-            {record.operationState == 'ON_SHELF' && (
-              <>
-                {' '}
-                <Popconfirm
-                  title="确定下架么？"
-                  okText="确定"
-                  cancelText="取消"
-                  onConfirm={() => updateOnlineStatus(record.id as string, false)}
-                >
-                  <a href="#">下架</a>
-                </Popconfirm>
-                <Button
-                  key="1"
-                  size="small"
-                  type="link"
-                  onClick={() => {
-                    window.open(
-                      `${routeName.DEMAND_MANAGEMENT_DETAIL}?id=${record.id}&isEdit=1`,
-                    );
-                  }}
-                >
-                  节点维护
-                </Button>
-                <Popconfirm
-                  title={
-                    <>
-                      <Form form={weightForm}>
-                        <Form.Item
-                          name={'weight'}
-                          label="权重设置">
-                          <InputNumber min={1} max={100} />
-                        </Form.Item>
-                      </Form>
-                    </>
-                  }
-                  icon={<InfoOutlined style={{ display: 'none' }} />}
-                  okText="确定"
-                  cancelText="取消"
-                  onConfirm={() => {
-                    editSort(record.id, weightForm.getFieldValue('weight'))
-                  }}
-                >
+          <Access accessible={accessible}>
+            <Space>
+              {record.operationState == 'ON_SHELF' && (
+                <>
+                  {' '}
+                  <Popconfirm
+                    title="确定下架么？"
+                    okText="确定"
+                    cancelText="取消"
+                    onConfirm={() => updateOnlineStatus(record.id as string, false)}
+                  >
+                    <a href="#">下架</a>
+                  </Popconfirm>
                   <Button
                     key="1"
                     size="small"
                     type="link"
                     onClick={() => {
-                      weightForm.setFieldsValue({ weight: record.sort })
+                      window.open(
+                        `${routeName.DEMAND_MANAGEMENT_DETAIL}?id=${record.id}&isEdit=1`,
+                      );
                     }}
                   >
-                    权重
+                    节点维护
                   </Button>
-                </Popconfirm>
-              </>
-            )
-            }
-            {
-              record.operationState == 'OFF_SHELF' && (
-                <Popconfirm
-                  title="确定上架么？"
-                  okText="确定"
-                  cancelText="取消"
-                  onConfirm={() => updateOnlineStatus(record.id as string, true)}
-                >
-                  <a href="#">上架</a>
-                </Popconfirm>
+                  <Popconfirm
+                    title={
+                      <>
+                        <Form form={weightForm}>
+                          <Form.Item
+                            name={'weight'}
+                            label="权重设置">
+                            <InputNumber min={1} max={100} />
+                          </Form.Item>
+                        </Form>
+                      </>
+                    }
+                    icon={<InfoOutlined style={{ display: 'none' }} />}
+                    okText="确定"
+                    cancelText="取消"
+                    onConfirm={() => {
+                      editSort(record.id, weightForm.getFieldValue('weight'))
+                    }}
+                  >
+                    <Button
+                      key="1"
+                      size="small"
+                      type="link"
+                      onClick={() => {
+                        weightForm.setFieldsValue({ weight: record.sort })
+                      }}
+                    >
+                      权重
+                    </Button>
+                  </Popconfirm>
+                </>
               )
-            }
-            {record.operationState == 'FINISHED' ? '/' : <Button
-              key="1"
-              size="small"
-              type="link"
-              onClick={() => {
-                setEditingItem(record);
-                setModalVisible(true);
-                form.setFieldsValue({ ...record, dealName: record.typeNames?.map((e) => e).join('、') || '' });
-              }}
-            >
-              需求类型编辑
-            </Button>}
-          </Space>
+              }
+              {
+                record.operationState == 'OFF_SHELF' && (
+                  <Popconfirm
+                    title="确定上架么？"
+                    okText="确定"
+                    cancelText="取消"
+                    onConfirm={() => updateOnlineStatus(record.id as string, true)}
+                  >
+                    <a href="#">上架</a>
+                  </Popconfirm>
+                )
+              }
+              {record.operationState == 'FINISHED' ? '/' : <Button
+                key="1"
+                size="small"
+                type="link"
+                onClick={() => {
+                  setEditingItem(record);
+                  setModalVisible(true);
+                  form.setFieldsValue({ ...record, dealName: record.typeNames?.map((e) => e).join('、') || '' });
+                }}
+              >
+                需求类型编辑
+              </Button>}
+            </Space>
+          </Access>
         )
       }
     },
@@ -740,12 +764,14 @@ export default () => {
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>需求列表(共{pageInfo.totalCount || 0}个)</span>
-          <Button
-            icon={<UploadOutlined />}
-            onClick={exportList}
-          >
-            导出
-          </Button>
+          <Access accessible={access['PX_SD_XQ']}>
+            <Button
+              icon={<UploadOutlined />}
+              onClick={exportList}
+            >
+              导出
+            </Button>
+          </Access>
         </div>
       </div>
       <div className={sc('container-table-body')}>

@@ -1,6 +1,6 @@
 import { Button, message, Form, Modal, TreeSelect, Input, InputNumber } from 'antd';
 import React, { useState, useRef, useEffect } from 'react';
-import { history } from 'umi';
+import { history, Access, useAccess } from 'umi';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import { getDictionayTree } from '@/services/common';
 import ProTable from '@ant-design/pro-table';
@@ -12,6 +12,9 @@ import type { ProSchemaValueEnumObj } from '@ant-design/pro-utils';
 import { routeName } from '@/../config/routes';
 import { UploadOutlined } from '@ant-design/icons';
 import { solutionExport } from '@/services/export';
+enum Edge {
+  HOME = 0, // 新闻咨询首页
+}
 
 /**
  * 渲染服务类型
@@ -37,7 +40,24 @@ const SolutionTable: React.FC = () => {
   const [total, setTotal] = useState<number>(0);
   const [weightVisible, setWeightVistble] = useState(false);
   const [currentId, setCurrentId] = useState<Number>(0);
+  // 拿到当前角色的access权限兑现
+  const access = useAccess()
+  // 当前页面的对应权限key
+  const [edge, setEdge] = useState<Edge.HOME>(Edge.HOME);
+  // 页面权限
+  const permissions = {
+    [Edge.HOME]: 'PQ_SD_FW', // 服务管理-解决方案-页面查询
+  }
 
+  useEffect(() => {
+    for (const key in permissions) {
+      const permission = permissions[key]
+      if (Object.prototype.hasOwnProperty.call(access, permission)) {
+        setEdge(key as any)
+        break
+      }
+    }
+  },[])
   /**
    * 新建窗口的弹窗
    *  */
@@ -258,42 +278,47 @@ const SolutionTable: React.FC = () => {
       title: '操作',
       hideInSearch: true,
       width: 200,
-      render: (_, record) => [
-        <Button
-          key="3"
-          size="small"
-          type="link"
-          onClick={() => {
-            setEditingItem(record);
-            setModalVisible(true);
-            form.setFieldsValue({
-              ...record,
-              dealName: record.types?.map((e) => e.name).join('、') || '',
-            });
-          }}
-        >
-          服务类型编辑
-        </Button>,
-        <Button
-          key="1"
-          size="small"
-          type="link"
-          onClick={() => window.open(`/supply-demand-setting/solution/detail?id=${record.id}`)}
-        >
-          详情
-        </Button>,
-        <Button
-          type="link"
-          onClick={() => {
-            setWeightVistble(true);
-            setCurrentId(record.id);
-            // 重置 keyword: record.keyword  这里需要把权重选上
-            weightForm.setFieldsValue({ sort: record.sort || [] });
-          }}
-        >
-          权重
-        </Button>,
-      ],
+      render: (_, record) => {
+        const accessible = access?.[permissions?.[edge].replace(new RegExp("Q"), "")]
+        return (
+          <Access accessible={accessible}>
+            <Button
+              key="3"
+              size="small"
+              type="link"
+              onClick={() => {
+                setEditingItem(record);
+                setModalVisible(true);
+                form.setFieldsValue({
+                  ...record,
+                  dealName: record.types?.map((e) => e.name).join('、') || '',
+                });
+              }}
+            >
+              服务类型编辑
+            </Button>
+            <Button
+              key="1"
+              size="small"
+              type="link"
+              onClick={() => window.open(`/supply-demand-setting/solution/detail?id=${record.id}`)}
+            >
+              详情
+            </Button>
+            <Button
+              type="link"
+              onClick={() => {
+                setWeightVistble(true);
+                setCurrentId(record.id);
+                // 重置 keyword: record.keyword  这里需要把权重选上
+                weightForm.setFieldsValue({ sort: record.sort || [] });
+              }}
+            >
+              权重
+            </Button>
+          </Access>
+        )
+      }
     },
   ];
 
@@ -383,9 +408,11 @@ const SolutionTable: React.FC = () => {
       <ProTable
         headerTitle={`服务列表（共${total}个）`}
         toolBarRender={() => [
-          <Button icon={<UploadOutlined />} onClick={exportList}>
-            导出
-          </Button>,
+          <Access accessible={access['PX_SD_FW']}>
+            <Button icon={<UploadOutlined />} onClick={exportList}>
+              导出
+            </Button>
+          </Access>
         ]}
         options={false}
         rowKey="id"

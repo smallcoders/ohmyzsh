@@ -20,7 +20,7 @@ import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 import { routeName } from '@/../config/routes';
 import SelfTable from '@/components/self_table';
-import { history } from 'umi';
+import { history, Access, useAccess } from 'umi';
 import { getDemandPage } from '@/services/kc-verify';
 import { getGoodsVerifyPage } from '@/services/goods-verify';
 import { getDictionaryTree } from '@/services/dictionary';
@@ -34,6 +34,9 @@ const stateObj = {
   1: '未通过',
   2: '已通过',
 };
+enum Edge {
+  HOME = 0, // 新闻咨询首页
+}
 
 const GoodsMessage = (props: { _: any; row: any }) => (
   <div className={sc('container-goods-message')}>
@@ -72,6 +75,27 @@ export default () => {
     totalCount: 0,
     pageTotal: 0,
   });
+
+  // 拿到当前角色的access权限兑现
+  const access = useAccess()
+
+  // 当前页面的对应权限key
+  const [edge, setEdge] = useState<Edge.HOME>(Edge.HOME);
+
+  // 页面权限
+  const permissions = {
+    [Edge.HOME]: 'PQ_AT_SZHSP', // 数字化商品-页面查询
+  }
+
+  useEffect(() => {
+    for (const key in permissions) {
+      const permission = permissions[key]
+      if (Object.prototype.hasOwnProperty.call(access, permission)) {
+        setEdge(key as any)
+        break
+      }
+    }
+  },[])
 
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     const search = searchForm.getFieldsValue();
@@ -154,18 +178,32 @@ export default () => {
       dataIndex: 'option',
       fixed: 'right',
       render: (_: any, record: any) => {
-        return (
+        const accessible = access?.[permissions?.[edge].replace(new RegExp("Q"), "")]
+        return  record?.status === 0 ? (
+          <Access accessible={accessible}>
+            <Button
+              type="link"
+              onClick={() => {
+                history.push(
+                  `${routeName.GOODS_VERIFY_DETAIL}?productId=${record.productId}&id=${record.id}`,
+                );
+              }}
+            >
+              {'审核'}
+            </Button>
+          </Access>
+        ) : (
           <Button
             type="link"
             onClick={() => {
-              history.push(
+              window.open(
                 `${routeName.GOODS_VERIFY_DETAIL}?productId=${record.productId}&id=${record.id}`,
               );
             }}
           >
-            {record?.status === 0 ? '审核' : '详情'}
+            {'详情'}
           </Button>
-        );
+        )
       },
     },
   ];
