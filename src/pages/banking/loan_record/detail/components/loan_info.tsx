@@ -32,6 +32,7 @@ import SelfTable from '@/components/self_table';
 import { getTakeMoneyDetail, addOrUpdateTakeMoney, deleteTakeMoney } from '@/services/banking-loan';
 import { getOrgTypeOptions } from '@/services/org-type-manage';
 import { regFenToYuan, regYuanToFen } from '@/utils/util';
+import patchDownloadFile from '@/utils/patch-download-file';
 import type { Props } from './authorization_info';
 const sc = scopedClasses('banking-loan-info');
 export default ({ isDetail, type, id, step }: Props) => {
@@ -242,7 +243,16 @@ export default ({ isDetail, type, id, step }: Props) => {
         return isDetail ? (
           type === 1 ? (
             <Space size="middle">
-              <a href={`/antelope-manage/common/download/${record?.id}`}>下载业务凭证</a>
+              <a
+                onClick={() => {
+                  patchDownloadFile(
+                    record.workProves,
+                    `放款信息凭证${moment().format('YYYYMMDD')}`,
+                  );
+                }}
+              >
+                下载业务凭证
+              </a>
             </Space>
           ) : (
             <Space size="middle">
@@ -267,7 +277,7 @@ export default ({ isDetail, type, id, step }: Props) => {
                   refuseReason: record?.refuseReason,
                   debitNo: record?.debitNo,
                   borrowStartDate: record?.borrowStartDate && moment(record?.borrowStartDate),
-                  takeMoney: regFenToYuan(record?.takeMoney),
+                  takeMoney: Number(regFenToYuan(record?.takeMoney)),
                   rate: record?.rate,
                   workProve: record?.workProves
                     ? record.workProves.map((p) => {

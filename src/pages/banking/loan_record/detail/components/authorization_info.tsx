@@ -18,6 +18,7 @@ import { routeName } from '@/../config/routes';
 import { history } from 'umi';
 import { getCreditDetail, updateCreditInfo } from '@/services/banking-loan';
 import { regFenToYuan, regYuanToFen } from '@/utils/util';
+import patchDownloadFile from '@/utils/patch-download-file';
 import moment from 'moment';
 export type Props = {
   isDetail?: boolean; //详情展示
@@ -274,8 +275,13 @@ export default ({ isDetail, type, step, id, toTab }: Props) => {
               <>
                 <Button
                   type="link"
-                  style={{ padding: 0, height: 'auto' }}
-                  href={`/antelope-manage/common/download/${detail?.id}`}
+                  style={{ padding: 0, height: '32px' }}
+                  onClick={() => {
+                    patchDownloadFile(
+                      detail.workProves,
+                      `授信信息凭证${moment().format('YYYYMMDD')}`,
+                    );
+                  }}
                 >
                   下载凭证
                 </Button>

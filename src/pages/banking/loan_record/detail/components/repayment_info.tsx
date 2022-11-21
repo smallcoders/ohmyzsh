@@ -30,6 +30,7 @@ import type { Props } from './authorization_info';
 import moment from 'moment';
 import './repayment_info.less';
 import { regFenToYuan, regYuanToFen } from '@/utils/util';
+import patchDownloadFile from '@/utils/patch-download-file';
 export default ({ isDetail, id }: Props) => {
   const history = useHistory();
   const formLayout = {
@@ -337,7 +338,16 @@ export default ({ isDetail, id }: Props) => {
         render: (_: any, record: any, index: integer) => {
           return isDetail ? (
             <Space size="middle">
-              <a href={`/antelope-manage/common/download/${record?.id}`}>下载业务凭证</a>
+              <a
+                onClick={() => {
+                  patchDownloadFile(
+                    record.workProves,
+                    `还款信息凭证${moment().format('YYYYMMDD')}`,
+                  );
+                }}
+              >
+                下载业务凭证
+              </a>
             </Space>
           ) : (
             <Space size="middle">
