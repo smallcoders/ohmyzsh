@@ -12,8 +12,9 @@ import {
   Space,
   Popconfirm,
   InputNumber,
+  TreeSelect,
 } from 'antd';
-import { CaretDownOutlined, CaretUpOutlined, InfoOutlined } from '@ant-design/icons'
+import { CaretDownOutlined, CaretUpOutlined, InfoOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
@@ -33,22 +34,28 @@ import {
   demandEditSort, //权重编辑
   demandUpper, //上架
   demandDown, //下架
-  getManageTypeList
+  getManageTypeList,
 } from '@/services/office-requirement-verify';
-import TwoLevelSelect from '../docking_manage/components/two-level-select'
+import TwoLevelSelect from '../docking_manage/components/two-level-select';
 import { getClaimUsers } from '@/services/creative-demand';
 import { getAreaTree } from '@/services/area';
 const sc = scopedClasses('setting-demand-manage');
-const stateObj = {//需求状态
+const stateObj = {
+  //需求状态
   ON_SHELF: '上架',
   // FINISHED: '已结束',
-  OFF_SHELF: '下架'
-
+  OFF_SHELF: '下架',
 };
-const stateObj3 = {//
-  NEW_DEMAND: '新发布', CLAIMED: '已认领', DISTRIBUTE: '已分发', CONNECTING: '对接中', FEEDBACK: '已反馈', EVALUATED: '已评价', FINISHED: '已结束'
+const stateObj3 = {
+  //
+  NEW_DEMAND: '新发布',
+  CLAIMED: '已认领',
+  DISTRIBUTE: '已分发',
+  CONNECTING: '对接中',
+  FEEDBACK: '已反馈',
+  EVALUATED: '已评价',
+  FINISHED: '已结束',
 };
-
 
 export default () => {
   const [dataSource, setDataSource] = useState<any[]>([]);
@@ -83,7 +90,7 @@ export default () => {
     if (editingItem.photoId || editingItem.id) setEditingItem({});
   };
 
-  const [demandTypes, setDemandTypes] = useState<any[]>([])
+  const [demandTypes, setDemandTypes] = useState<any[]>([]);
   const [isMore, setIsMore] = useState<boolean>(false);
 
   const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
@@ -97,7 +104,8 @@ export default () => {
   const updateOnlineStatus = async (id: string, status: boolean) => {
     const params = { demandId: id };
     let addorUpdateRes = {};
-    if (status) {//上架
+    if (status) {
+      //上架
       addorUpdateRes = await demandUpper(params);
     } else {
       addorUpdateRes = await demandDown(params);
@@ -112,15 +120,15 @@ export default () => {
     } else {
       message.error(`${status ? '上架' : '下架'}失败，原因:{${addorUpdateRes.message}}`);
     }
-  }
+  };
 
   // 编辑权重
   const editSort = async (id: string, value: number) => {
     console.log(id, value);
     const editRes = await demandEditSort({
       id: id,
-      sort: value
-    })
+      sort: value,
+    });
     if (editRes.code === 0) {
       message.success(`编辑权重成功！`);
       getPage();
@@ -128,25 +136,26 @@ export default () => {
     } else {
       message.error(`编辑权重失败，原因:{${editRes.message}}`);
     }
-  }
-
+  };
 
   // 需求类型
-  const [typeOptions, setTypeOptions] = useState<any>([]);
-
   const [form] = Form.useForm();
 
-  const [industryTypes, setIndustryTypes] = useState<any>([])
-  const [users, setUsers] = useState<any>([])
-  const [area, setArea] = useState<any>([])
+  const [industryTypes, setIndustryTypes] = useState<any>([]);
+  const [users, setUsers] = useState<any>([]);
+  const [area, setArea] = useState<any>([]);
   const prepare = async () => {
     try {
-      const data = await Promise.all([getManageTypeList(), getEnumByName('ORG_INDUSTRY'), getClaimUsers(), getAreaTree({}), getDictionayTree('DEMAND_TYPE')])
-      setTypeOptions(data?.[0]?.result || []);
-      setIndustryTypes(data?.[1]?.result || [])
-      setUsers(data?.[2]?.result || [])
-      setArea(data?.[3]?.children || [])
-      setDemandTypes(data?.[4]?.result || [])
+      const data = await Promise.all([
+        getEnumByName('ORG_INDUSTRY'),
+        getClaimUsers(),
+        getAreaTree({}),
+        getDictionayTree('DEMAND_TYPE'),
+      ]);
+      setIndustryTypes(data?.[0]?.result || []);
+      setUsers(data?.[1]?.result || []);
+      setArea(data?.[2]?.children || []);
+      setDemandTypes(data?.[3]?.result || []);
     } catch (error) {
       message.error('数据初始化错误');
     }
@@ -178,7 +187,6 @@ export default () => {
         } catch (error) {
           console.log(error);
         }
-
       })
       .catch((err) => {
         message.error('服务器错误');
@@ -212,18 +220,21 @@ export default () => {
               {
                 validator(rule, value) {
                   if (value.length > 5) {
-                    return Promise.reject('最多选5个')
+                    return Promise.reject('最多选5个');
                   }
                   if (!value || value.length === 0) {
-                    return Promise.reject('必填')
+                    return Promise.reject('必填');
                   } else {
-                    return Promise.resolve()
+                    return Promise.resolve();
                   }
                 },
               },
             ]}
           >
-            <TwoLevelSelect dictionary={demandTypes} fieldNames={{ label: 'name', value: 'id', children: 'nodes' }} />
+            <TwoLevelSelect
+              dictionary={demandTypes}
+              fieldNames={{ label: 'name', value: 'id', children: 'nodes' }}
+            />
           </Form.Item>
         </Form>
       </Modal>
@@ -235,8 +246,8 @@ export default () => {
   const clearIndustrialForm = () => {
     // 未处理
     form.resetFields();
-    if (industrialItem.id) setIndustrialItem({})
-  }
+    if (industrialItem.id) setIndustrialItem({});
+  };
 
   // 所属产业变价
   const addIndustrialUpdata = () => {
@@ -245,19 +256,18 @@ export default () => {
         const res = await demandIndestrialEditType({
           id: industrialItem.id,
           ...value,
-        })
+        });
         if (res?.code === 0) {
           message.success(`所属产业编辑成功！`);
-          setIndustrialModal(false)
-          getPage()
-          clearIndustrialForm()
+          setIndustrialModal(false);
+          getPage();
+          clearIndustrialForm();
         }
       } catch (error) {
         console.log(error);
       }
-    })
-
-  }
+    });
+  };
 
   const getIndustrialModal = () => {
     return (
@@ -267,60 +277,73 @@ export default () => {
         visible={industrialModal}
         maskClosable={false}
         onOk={async () => {
-          await addIndustrialUpdata()
+          await addIndustrialUpdata();
         }}
         onCancel={() => {
-          clearIndustrialForm()
-          setIndustrialModal(false)
+          clearIndustrialForm();
+          setIndustrialModal(false);
         }}
         footer={[
-          <Button key="back" onClick={() => {
-            clearIndustrialForm()
-            setIndustrialModal(false)
-          }}>
+          <Button
+            key="back"
+            onClick={() => {
+              clearIndustrialForm();
+              setIndustrialModal(false);
+            }}
+          >
             取消
           </Button>,
           <Button
             key="link"
             type="primary"
             onClick={async () => {
-              await addIndustrialUpdata()
+              await addIndustrialUpdata();
             }}
           >
             确定
           </Button>,
         ]}
       >
-        <Form
-          labelCol={{ span: 3 }}
-          wrapperCol={{ span: 20 }}
-          form={form}>
-          <Form.Item name="industry" label="所属行业" rules={[{ required: true }]} extra="多选（最多三个）">
+        <Form labelCol={{ span: 3 }} wrapperCol={{ span: 20 }} form={form}>
+          <Form.Item
+            name="industry"
+            label="所属行业"
+            rules={[{ required: true }]}
+            extra="多选（最多三个）"
+          >
             <Checkbox.Group>
               <Row>
                 {industryTypes?.map((i: any) => {
                   return (
                     <React.Fragment key={i.name}>
                       <Col span={6}>
-                        <Checkbox value={i.enumName} style={{ lineHeight: '32px' }} disabled={newKeywords && newKeywords.length == 3 && (!newKeywords.includes(i.enumName))}>
+                        <Checkbox
+                          value={i.enumName}
+                          style={{ lineHeight: '32px' }}
+                          disabled={
+                            newKeywords &&
+                            newKeywords.length == 3 &&
+                            !newKeywords.includes(i.enumName)
+                          }
+                        >
                           {i.name}
                         </Checkbox>
-                        {i.enumName == 'OTHER' && newKeywords && (newKeywords.indexOf('OTHER') > -1) && (
+                        {i.enumName == 'OTHER' && newKeywords && newKeywords.indexOf('OTHER') > -1 && (
                           <Form.Item name="industryOther" label="">
-                            <Input placeholder='请输入' maxLength={10} />
+                            <Input placeholder="请输入" maxLength={10} />
                           </Form.Item>
                         )}
                       </Col>
                     </React.Fragment>
-                  )
+                  );
                 })}
               </Row>
             </Checkbox.Group>
           </Form.Item>
         </Form>
-      </Modal >
-    )
-  }
+      </Modal>
+    );
+  };
 
   const getPage = async (pageIndex = pageInfo.pageIndex, pageSize = pageInfo.pageSize) => {
     try {
@@ -340,7 +363,6 @@ export default () => {
     }
   };
   const [weightForm] = Form.useForm();
-  const [abutStatusForm] = Form.useForm();
   const columns = [
     {
       title: '序号',
@@ -389,7 +411,8 @@ export default () => {
       title: '需求时间范围',
       dataIndex: 'startDate',
       isEllipsis: true,
-      render: (_: string, _record: any) => _record.startDate ? (_record.startDate + '至' + _record.endDate) : '--',
+      render: (_: string, _record: any) =>
+        _record.startDate ? _record.startDate + '至' + _record.endDate : '--',
       width: 300,
     },
     {
@@ -408,7 +431,7 @@ export default () => {
       title: '是否隐藏',
       dataIndex: 'hide',
       isEllipsis: true,
-      render: (_: string, _record: any) => _record.hide ? '是' : '否',
+      render: (_: string, _record: any) => (_record.hide ? '是' : '否'),
       width: 100,
     },
     {
@@ -421,7 +444,7 @@ export default () => {
       title: '用户需求',
       dataIndex: 'hide',
       isEllipsis: true,
-      render: (_: string, _record: any) => _record.hide ? '是' : '否',
+      render: (_: string, _record: any) => (_record.hide ? '是' : '否'),
       width: 100,
     },
     {
@@ -463,96 +486,112 @@ export default () => {
       width: 150,
     },
     {
+      title: '需求跟进次数',
+      dataIndex: 'demandConnectNum',
+      isEllipsis: true,
+      width: 150,
+    },
+    {
       title: '操作',
-      width: 500,
+      width: 300,
       fixed: 'right',
       dataIndex: 'option',
       render: (_: any, record: any) => {
         return (
           <Space>
-            {record.operationState == 'ON_SHELF' && (
+            {record.claimState == 'FINISHED' ? (
+              <Button type="link" disabled>
+                /
+              </Button>
+            ) : (
               <>
-                {' '}
-                <Popconfirm
-                  title="确定下架么？"
-                  okText="确定"
-                  cancelText="取消"
-                  onConfirm={() => updateOnlineStatus(record.id as string, false)}
-                >
-                  <a href="#">下架</a>
-                </Popconfirm>
-                <Button
-                  key="1"
-                  size="small"
-                  type="link"
-                  onClick={() => {
-                    window.open(
-                      `${routeName.DEMAND_MANAGEMENT_DETAIL}?id=${record.id}&isEdit=1`,
-                    );
-                  }}
-                >
-                  节点维护
-                </Button>
-                <Popconfirm
-                  title={
-                    <>
-                      <Form form={weightForm}>
-                        <Form.Item
-                          name={'weight'}
-                          label="权重设置">
-                          <InputNumber min={1} max={100} />
-                        </Form.Item>
-                      </Form>
-                    </>
-                  }
-                  icon={<InfoOutlined style={{ display: 'none' }} />}
-                  okText="确定"
-                  cancelText="取消"
-                  onConfirm={() => {
-                    editSort(record.id, weightForm.getFieldValue('weight'))
-                  }}
-                >
+                {record.operationState == 'ON_SHELF' && (
+                  <>
+                    {' '}
+                    <Popconfirm
+                      title="确定下架么？"
+                      okText="确定"
+                      cancelText="取消"
+                      onConfirm={() => updateOnlineStatus(record.id as string, false)}
+                    >
+                      <a href="#">下架</a>
+                    </Popconfirm>
+                    {/* <Button
+                      key="1"
+                      size="small"
+                      type="link"
+                      onClick={() => {
+                        window.open(
+                          `${routeName.DEMAND_MANAGEMENT_DETAIL}?id=${record.id}&isEdit=1`,
+                        );
+                      }}
+                    >
+                      节点维护
+                    </Button> */}
+                    <Popconfirm
+                      title={
+                        <>
+                          <Form form={weightForm}>
+                            <Form.Item name={'weight'} label="权重设置">
+                              <InputNumber min={1} max={100} />
+                            </Form.Item>
+                          </Form>
+                        </>
+                      }
+                      icon={<InfoOutlined style={{ display: 'none' }} />}
+                      okText="确定"
+                      cancelText="取消"
+                      onConfirm={() => {
+                        editSort(record.id, weightForm.getFieldValue('weight'));
+                      }}
+                    >
+                      <Button
+                        key="1"
+                        size="small"
+                        type="link"
+                        onClick={() => {
+                          weightForm.setFieldsValue({ weight: record.sort });
+                        }}
+                      >
+                        权重
+                      </Button>
+                    </Popconfirm>
+                  </>
+                )}
+                {record.operationState == 'OFF_SHELF' && (
+                  <Popconfirm
+                    title="确定上架么？"
+                    okText="确定"
+                    cancelText="取消"
+                    onConfirm={() => updateOnlineStatus(record.id as string, true)}
+                  >
+                    <a href="#">上架</a>
+                  </Popconfirm>
+                )}
+                {record.operationState == 'FINISHED' ? (
+                  '/'
+                ) : (
                   <Button
                     key="1"
                     size="small"
                     type="link"
                     onClick={() => {
-                      weightForm.setFieldsValue({ weight: record.sort })
+                      setEditingItem(record);
+                      setModalVisible(true);
+                      form.setFieldsValue({
+                        ...record,
+                        dealName: record.typeNames?.map((e) => e).join('、') || '',
+                      });
                     }}
                   >
-                    权重
+                    需求类型编辑
                   </Button>
-                </Popconfirm>
+                )}
               </>
-            )
-            }
-            {
-              record.operationState == 'OFF_SHELF' && (
-                <Popconfirm
-                  title="确定上架么？"
-                  okText="确定"
-                  cancelText="取消"
-                  onConfirm={() => updateOnlineStatus(record.id as string, true)}
-                >
-                  <a href="#">上架</a>
-                </Popconfirm>
-              )
-            }
-            {record.operationState == 'FINISHED' ? '/' : <Button
-              key="1"
-              size="small"
-              type="link"
-              onClick={() => {
-                setEditingItem(record);
-                setModalVisible(true);
-                form.setFieldsValue({ ...record, dealName: record.typeNames?.map((e) => e).join('、') || '' });
-              }}
-            >
-              需求类型编辑
-            </Button>}
+            )}
           </Space>
-        )
-      }
+        );
+      },
     },
   ];
 
@@ -585,33 +624,47 @@ export default () => {
             <Col span={6}>
               <Form.Item name="claimState" label="需求状态">
                 <Select placeholder="请选择" allowClear>
-                  {
-                    Object.entries(stateObj3).map(p => {
-                      return <Select.Option key={p[0]} value={p[0]}>{p[1]}</Select.Option>
-                    })
-                  }
+                  {Object.entries(stateObj3).map((p) => {
+                    return (
+                      <Select.Option key={p[0]} value={p[0]}>
+                        {p[1]}
+                      </Select.Option>
+                    );
+                  })}
                 </Select>
               </Form.Item>
             </Col>
 
-            {isMore && <>
-              <Col span={6}>
-                <Form.Item name="publisherName" label="发布人">
-                  <Input placeholder="请输入" />
-                </Form.Item>
-              </Col>
-              <Col span={6}>
-                <Form.Item name="type" label="需求类型">
-                  <Select placeholder="请选择" allowClear>
+            {isMore && (
+              <>
+                <Col span={6}>
+                  <Form.Item name="publisherName" label="发布人">
+                    <Input placeholder="请输入" />
+                  </Form.Item>
+                </Col>
+                <Col span={6}>
+                  <Form.Item name="type" label="需求类型">
+                    {/* <Select placeholder="请选择" allowClear>
                     {typeOptions?.map((p) => (
                       <Select.Option key={p.id} value={p.id}>
                         {p.name}
                       </Select.Option>
                     ))}
-                  </Select>
-                </Form.Item>
-              </Col>
-              {/* <Col span={6}>
+                  </Select> */}
+                    <TreeSelect
+                      treeNodeFilterProp={'name'}
+                      showSearch
+                      style={{ width: '100%' }}
+                      dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                      placeholder="请选择"
+                      allowClear
+                      treeDefaultExpandAll
+                      treeData={demandTypes}
+                      fieldNames={{ children: 'nodes', value: 'id', label: 'name' }}
+                    />
+                  </Form.Item>
+                </Col>
+                {/* <Col span={6}>
                 <Form.Item name="userDemand" label="用户需求">
                   <Select placeholder="请选择" allowClear>
                     <Select.Option value={true}>
@@ -623,34 +676,37 @@ export default () => {
                   </Select>
                 </Form.Item>
               </Col> */}
-              <Col span={6}>
-                <Form.Item name="time" label="发布时间">
-                  <DatePicker.RangePicker allowClear showTime />
-                </Form.Item>
-              </Col>
-              <Col span={6}>
-                <Form.Item name="operationState" label="上架状态">
-                  <Select placeholder="请选择" allowClear>
-                    {
-                      Object.entries(stateObj).map(p => {
-                        return <Select.Option key={p[0]} value={p[0]}>{p[1]}</Select.Option>
-                      })
-                    }
-                  </Select>
-                </Form.Item>
-              </Col>
-              <Col span={6}>
-                <Form.Item name="claimId" label="需求认领人">
-                  <Select placeholder="请选择" allowClear>
-                    {users?.map((p) => (
-                      <Select.Option key={p.claimUserId} value={p.claimUserId}>
-                        {p.claimName}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-              </Col>
-            </>}
+                <Col span={6}>
+                  <Form.Item name="time" label="发布时间">
+                    <DatePicker.RangePicker allowClear showTime />
+                  </Form.Item>
+                </Col>
+                <Col span={6}>
+                  <Form.Item name="operationState" label="上架状态">
+                    <Select placeholder="请选择" allowClear>
+                      {Object.entries(stateObj).map((p) => {
+                        return (
+                          <Select.Option key={p[0]} value={p[0]}>
+                            {p[1]}
+                          </Select.Option>
+                        );
+                      })}
+                    </Select>
+                  </Form.Item>
+                </Col>
+                <Col span={6}>
+                  <Form.Item name="claimId" label="需求认领人">
+                    <Select placeholder="请选择" allowClear>
+                      {users?.map((p) => (
+                        <Select.Option key={p.claimUserId} value={p.claimUserId}>
+                          {p.claimName}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </Form.Item>
+                </Col>
+              </>
+            )}
 
             <Col offset={isMore ? 19 : 1} span={4}>
               <Button
@@ -662,8 +718,8 @@ export default () => {
                     pageIndex: 1,
                     pageSize: 20,
                     totalCount: 0,
-                    pageTotal: 0
-                  })
+                    pageTotal: 0,
+                  });
                   const search = searchForm.getFieldsValue();
                   if (search.time) {
                     search.publishStartTime = moment(search.time[0]).format('YYYY-MM-DD HH:mm:ss');
@@ -690,13 +746,12 @@ export default () => {
                 style={{ marginRight: 10 }}
                 type="link"
                 onClick={() => {
-                  setIsMore(!isMore)
+                  setIsMore(!isMore);
                 }}
               >
                 {isMore ? '收起' : '高级'}
                 {isMore ? <CaretUpOutlined /> : <CaretDownOutlined />}
               </Button>
-
             </Col>
           </Row>
         </Form>
@@ -705,8 +760,17 @@ export default () => {
   };
 
   const exportList = async () => {
-    const { name, type, publisherName, publishStartTime, publishEndTime, operationState, claimId, claimState, areaCode   } =
-      searchContent;
+    const {
+      name,
+      type,
+      publisherName,
+      publishStartTime,
+      publishEndTime,
+      operationState,
+      claimId,
+      claimState,
+      areaCode,
+    } = searchContent;
     try {
       const res = await demandExport({
         name,
@@ -720,13 +784,15 @@ export default () => {
         areaCode,
       });
       const content = res?.data;
-      const blob  = new Blob([content], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"});
-      const fileName = '企业需求.xlsx'
+      const blob = new Blob([content], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8',
+      });
+      const fileName = '企业需求.xlsx';
       const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a')
-      link.style.display = 'none'
+      const link = document.createElement('a');
+      link.style.display = 'none';
       link.href = url;
-      link.setAttribute('download', fileName)
+      link.setAttribute('download', fileName);
       document.body.appendChild(link);
       link.click();
     } catch (error) {
@@ -740,10 +806,7 @@ export default () => {
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>需求列表(共{pageInfo.totalCount || 0}个)</span>
-          <Button
-            icon={<UploadOutlined />}
-            onClick={exportList}
-          >
+          <Button icon={<UploadOutlined />} onClick={exportList}>
             导出
           </Button>
         </div>
@@ -751,16 +814,12 @@ export default () => {
       <div className={sc('container-table-body')}>
         <SelfTable
           bordered
-          scroll={{ x: 2880 }}
+          scroll={{ x: 2830 }}
           columns={columns}
           dataSource={dataSource}
           rowKey={'id'}
           expandable={{
-            expandedRowRender: (record: any) => (
-              <p style={{ margin: 0 }}>
-                {record.content}
-              </p>
-            ),
+            expandedRowRender: (record: any) => <p style={{ margin: 0 }}>{record.content}</p>,
             // rowExpandable: () => true,
             expandIcon: () => <></>,
             defaultExpandAllRows: true,
@@ -770,13 +829,13 @@ export default () => {
             pageInfo.totalCount === 0
               ? false
               : {
-                onChange: getPage,
-                total: pageInfo.totalCount,
-                current: pageInfo.pageIndex,
-                pageSize: pageInfo.pageSize,
-                showTotal: (total: number) =>
-                  `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
-              }
+                  onChange: getPage,
+                  total: pageInfo.totalCount,
+                  current: pageInfo.pageIndex,
+                  pageSize: pageInfo.pageSize,
+                  showTotal: (total: number) =>
+                    `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
+                }
           }
         />
       </div>
