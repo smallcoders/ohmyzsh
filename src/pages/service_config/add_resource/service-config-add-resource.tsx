@@ -128,8 +128,8 @@ export default () => {
       .validateFields()
       .then(async (value: AppResource.Detail) => {
         const { webUrl, h5Url } = value;
-        console.log(webUrl, h5Url);
-        if (!webUrl && !h5Url) {
+
+        if (isTry && !webUrl && !h5Url) {
           message.error('请至少填一个试用地址');
           return;
         }
