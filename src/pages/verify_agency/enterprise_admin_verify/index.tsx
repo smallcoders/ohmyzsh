@@ -23,7 +23,7 @@ const stateObj = {
   UN_COMMIT: '未审核',
   INVALID: '未审核已失效',
 };
-const enum Edge {
+enum Edge {
   HOME = 0, // 新闻咨询首页
 }
 

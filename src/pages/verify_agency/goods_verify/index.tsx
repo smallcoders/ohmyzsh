@@ -34,7 +34,7 @@ const stateObj = {
   1: '未通过',
   2: '已通过',
 };
-const enum Edge {
+enum Edge {
   HOME = 0, // 新闻咨询首页
 }
 

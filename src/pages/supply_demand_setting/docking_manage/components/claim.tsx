@@ -26,7 +26,7 @@ import { PageInfo } from '@ant-design/pro-table/lib/typing';
 const { RangePicker } = DatePicker
 
 const sc = scopedClasses('user-config-logout-verify');
-const enum Edge {
+enum Edge {
   HOME = 0, // 新闻咨询首页
 }
 

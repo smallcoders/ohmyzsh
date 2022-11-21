@@ -20,7 +20,7 @@ const stateObj = {
   AUDIT_PASSED: '审核通过',
   AUDIT_REJECTED: '审核拒绝',
 }
-const enum Edge {
+enum Edge {
   HOME = 0, // 新闻咨询首页
 }
 

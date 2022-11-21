@@ -29,7 +29,7 @@ import { intendMessageExport } from '@/services/export';
 import { Access, useAccess } from 'umi';
 const sc = scopedClasses('user-config-logout-verify');
 
-const enum Edge {
+enum Edge {
   HOME = 0, // 新闻咨询首页
 }
 export default () => {

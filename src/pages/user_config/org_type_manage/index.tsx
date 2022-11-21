@@ -17,6 +17,7 @@ import {
   sortOrgType,
   updateOrgType,
 } from '@/services/org-type-manage';
+import { Access, useAccess } from 'umi';
 const sc = scopedClasses('service-config-app-news');
 
 const DragHandle = SortableHandle(() => <MenuOutlined style={{ cursor: 'grab', color: '#999' }} />);
@@ -27,12 +28,33 @@ const SortableItem = SortableElement((props: React.HTMLAttributes<HTMLTableRowEl
 const SortableBody = SortableContainer((props: React.HTMLAttributes<HTMLTableSectionElement>) => (
   <tbody {...props} />
 ));
+enum Edge {
+  HOME = 0,
+}
 
 export default () => {
   const [createModalVisible, setModalVisible] = useState<boolean>(false);
   const [dataSource, setDataSource] = useState<OrgTypeManage.Content[]>([]);
   const [editingItem, setEditingItem] = useState<OrgTypeManage.Content>({});
   const [addOrUpdateLoading, setAddOrUpdateLoading] = useState<boolean>(false);
+  // 拿到当前角色的access权限兑现
+  const access = useAccess()
+  // 当前页面的对应权限key
+  const [edge, setEdge] = useState<Edge.HOME>(Edge.HOME);
+  // 页面权限
+  const permissions = {
+    [Edge.HOME]: 'PQ_UM_JGLX', // 用户管理-机构类型管理
+  }
+
+  useEffect(() => {
+    for (const key in permissions) {
+      const permission = permissions[key]
+      if (Object.prototype.hasOwnProperty.call(access, permission)) {
+        setEdge(key as any)
+        break
+      }
+    }
+  },[])
 
   const formLayout = {
     labelCol: { span: 6 },
@@ -155,43 +177,46 @@ export default () => {
       width: 200,
       dataIndex: 'option',
       render: (_: any, record: OrgTypeManage.Content) => {
+        const accessible = access?.[permissions?.[edge].replace(new RegExp("Q"), "")]
         return (
-          <Space size="middle">
-            {record.isEdit && (
-              <a
-                href="#"
-                onClick={() => {
-                  setEditingItem(record);
-                  setModalVisible(true);
-                  form.setFieldsValue({ ...record });
-                }}
-              >
-                编辑{' '}
-              </a>
-            )}
-            {!record.isDelete ? (
-              <a
-                href="#"
-                onClick={() => {
-                  Modal.info({
-                    title: '提示',
-                    content: '当前类型下有绑定的服务机构，请先解除绑定关系',
-                  });
-                }}
-              >
-                删除
-              </a>
-            ) : (
-              <Popconfirm
-                title="确定删除么？"
-                okText="确定"
-                cancelText="取消"
-                onConfirm={() => remove(record.id as string)}
-              >
-                <a href="#">删除</a>
-              </Popconfirm>
-            )}
-          </Space>
+          <Access accessible={accessible}>
+            <Space size="middle">
+              {record.isEdit && (
+                <a
+                  href="#"
+                  onClick={() => {
+                    setEditingItem(record);
+                    setModalVisible(true);
+                    form.setFieldsValue({ ...record });
+                  }}
+                >
+                  编辑{' '}
+                </a>
+              )}
+              {!record.isDelete ? (
+                <a
+                  href="#"
+                  onClick={() => {
+                    Modal.info({
+                      title: '提示',
+                      content: '当前类型下有绑定的服务机构，请先解除绑定关系',
+                    });
+                  }}
+                >
+                  删除
+                </a>
+              ) : (
+                <Popconfirm
+                  title="确定删除么？"
+                  okText="确定"
+                  cancelText="取消"
+                  onConfirm={() => remove(record.id as string)}
+                >
+                  <a href="#">删除</a>
+                </Popconfirm>
+              )}
+            </Space>
+          </Access>
         );
       },
     },
@@ -288,15 +313,17 @@ export default () => {
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>机构类型列表(共{dataSource?.length || 0}个)</span>
-          <Button
-            type="primary"
-            key="addStyle"
-            onClick={() => {
-              setModalVisible(true);
-            }}
-          >
-            <PlusOutlined /> 添加机构类型
-          </Button>
+          <Access accessible={access['P_UM_JGLX']}>
+            <Button
+              type="primary"
+              key="addStyle"
+              onClick={() => {
+                setModalVisible(true);
+              }}
+            >
+              <PlusOutlined /> 添加机构类型
+            </Button>
+          </Access>
         </div>
       </div>
       <div className={sc('container-table-body')}>

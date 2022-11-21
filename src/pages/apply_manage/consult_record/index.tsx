@@ -19,12 +19,34 @@ import SelfTable from '@/components/self_table';
 import { getConsultPage, markContracted, updateRemark } from '@/services/app-resource';
 import type AppResource from '@/types/app-resource';
 import { EditTwoTone, PlusOutlined } from '@ant-design/icons';
+import { Access, useAccess } from 'umi';
 const sc = scopedClasses('user-config-logout-verify');
+enum Edge {
+  HOME = 0, // 新闻咨询首页
+}
 
 export default () => {
   const [dataSource, setDataSource] = useState<AppResource.ConsultRecordContent[]>([]);
   const [searchContent, setSearChContent] = useState<AppResource.ConsultRecordSearchBody>({});
   const [remark, setRemark] = useState<string>('');
+  // 拿到当前角色的access权限兑现
+  const access = useAccess()
+  // 当前页面的对应权限key
+  const [edge, setEdge] = useState<Edge.HOME>(Edge.HOME);
+  // 页面权限
+  const permissions = {
+    [Edge.HOME]: 'PQ_AM_ZXJL', // 科产管理-创新需求管理页面查询
+  }
+
+  useEffect(() => {
+    for (const key in permissions) {
+      const permission = permissions[key]
+      if (Object.prototype.hasOwnProperty.call(access, permission)) {
+        setEdge(key as any)
+        break
+      }
+    }
+  },[])
 
   const formLayout = {
     labelCol: { span: 6 },
@@ -136,37 +158,40 @@ export default () => {
       dataIndex: 'option',
       fixed: 'right',
       render: (_: any, record: any) => {
+        const accessible = access?.[permissions?.[edge].replace(new RegExp("Q"), "")]
         return !record.isHandle ? (
-          <div style={{ textAlign: 'center' }}>
-            <Space size={20}>
-              <Popconfirm
-                icon={null}
-                title={
-                  <>
-                    <Input.TextArea
-                      placeholder="可在此填写备注内容，备注非必填"
-                      onChange={(e) => setRemark(e.target.value)}
-                      value={remark}
-                      showCount
-                      maxLength={100}
-                    />
-                  </>
-                }
-                okText="确定"
-                cancelText="取消"
-                onConfirm={() => mark(record)}
-              >
-                <Button
-                  type="link"
-                  onClick={() => {
-                    setRemark(record.remark || '');
-                  }}
+          <Access accessible={accessible}>
+            <div style={{ textAlign: 'center' }}>
+              <Space size={20}>
+                <Popconfirm
+                  icon={null}
+                  title={
+                    <>
+                      <Input.TextArea
+                        placeholder="可在此填写备注内容，备注非必填"
+                        onChange={(e) => setRemark(e.target.value)}
+                        value={remark}
+                        showCount
+                        maxLength={100}
+                      />
+                    </>
+                  }
+                  okText="确定"
+                  cancelText="取消"
+                  onConfirm={() => mark(record)}
                 >
-                  标记已联系
-                </Button>
-              </Popconfirm>
-            </Space>
-          </div>
+                  <Button
+                    type="link"
+                    onClick={() => {
+                      setRemark(record.remark || '');
+                    }}
+                  >
+                    标记已联系
+                  </Button>
+                </Popconfirm>
+              </Space>
+            </div>
+          </Access>
         ) : (
           <div style={{ display: 'grid', justifyItems: 'center' }}>
             <span>

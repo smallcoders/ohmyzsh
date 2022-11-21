@@ -30,7 +30,7 @@ const stateObj = {
   PASSED: '已通过',
   REJECTED: '已拒绝',
 };
-const enum Edge {
+enum Edge {
   HOME = 0, // 新闻咨询首页
 }
 import { renderSolutionType } from '../../service_config/solution/solution';

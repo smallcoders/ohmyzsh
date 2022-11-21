@@ -21,7 +21,7 @@ import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 import SelfTable from '@/components/self_table';
-import { history } from 'umi';
+import { Access, useAccess } from 'umi';
 import {
   getCreativePage, //分页数据
   getKeywords, //关键词枚举
@@ -41,6 +41,9 @@ const stateObj = {
   CONVERTED: '已转化',
   RESOLVED: '已解决',
 };
+enum Edge {
+  HOME = 0, // 新闻咨询首页
+}
 export default () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [dataSource, setDataSource] = useState<NeedVerify.Content[]>([]);
@@ -54,6 +57,23 @@ export default () => {
     typeId?: number; // 行业类型id 三级类型
     industryTypeId?: string; // 所属行业
   }>({});
+  // 拿到当前角色的access权限兑现
+  const access = useAccess()
+  // 当前页面的对应权限key
+  const [edge, setEdge] = useState<Edge.HOME>(Edge.HOME);
+  // 页面权限
+  const permissions = {
+    [Edge.HOME]: 'PQ_SM_XQGL', // 科产管理-创新需求管理页面查询
+  }
+  useEffect(() => {
+    for (const key in permissions) {
+      const permission = permissions[key]
+      if (Object.prototype.hasOwnProperty.call(access, permission)) {
+        setEdge(key as any)
+        break
+      }
+    }
+  },[])
 
   const [weightVisible, setWeightVistble] = useState(false);
 
@@ -292,58 +312,67 @@ export default () => {
       dataIndex: 'option',
       fixed: 'right',
       render: (_: any, record: any) => {
-        return record.state == 'RESOLVED' ? (
-          <div style={{ textAlign: 'center' }}>
-            <Button
-              type="link"
-              onClick={() => {
-                setWeightVistble(true);
-                setCurrentId(record.id);
-                weightForm.setFieldsValue({ sort: record.sort || [] });
-              }}
-            >
-              权重
-            </Button>
-          </div>
-        ) : (
-          <Space wrap>
-            <Button
-              type="link"
-              style={{ padding: 0 }}
-              onClick={() => {
-                setModalVisible(true);
-                setCurrentId(record.id);
-                editForm.setFieldsValue({
-                  keyword: record.keyword || [],
-                  keywordOther: record.keywordOther || '',
-                });
-              }}
-            >
-              所属产业编辑
-            </Button>
-            <Popconfirm
-              icon={null}
-              title={'确定该需求已解决？'}
-              okText="确定"
-              cancelText="取消"
-              onConfirm={() => editState(record.id)}
-            >
-              <Button type="link" style={{ padding: 0 }}>
-                已解决
-              </Button>
-            </Popconfirm>
-            <Button
-              type="link"
-              onClick={() => {
-                setWeightVistble(true);
-                setCurrentId(record.id);
-                weightForm.setFieldsValue({ sort: record.sort || [] });
-              }}
-            >
-              权重
-            </Button>
-          </Space>
-        );
+        const accessible = access?.[permissions?.[edge].replace(new RegExp("Q"), "")]
+        return (
+          <Access accessible={accessible}>
+            {
+              record.state == 'RESOLVED' ? (
+                <div style={{ textAlign: 'center' }}>
+                  <Button
+                    type="link"
+                    onClick={() => {
+                      setWeightVistble(true);
+                      setCurrentId(record.id);
+                      weightForm.setFieldsValue({ sort: record.sort || [] });
+                    }}
+                  >
+                    权重
+                  </Button>
+                </div>
+              ) : (
+                <Space wrap>
+                  <Button
+                    type="link"
+                    style={{ padding: 0 }}
+                    onClick={() => {
+                      setModalVisible(true);
+                      setCurrentId(record.id);
+                      editForm.setFieldsValue({
+                        keyword: record.keyword || [],
+                        keywordOther: record.keywordOther || '',
+                      });
+                    }}
+                  >
+                    所属产业编辑
+                  </Button>
+                  <Popconfirm
+                    icon={null}
+                    title={'确定该需求已解决？'}
+                    okText="确定"
+                    cancelText="取消"
+                    onConfirm={() => editState(record.id)}
+                  >
+                    <Button type="link" style={{ padding: 0 }}>
+                      已解决
+                    </Button>
+                  </Popconfirm>
+                  <Button
+                    type="link"
+                    onClick={() => {
+                      setWeightVistble(true);
+                      setCurrentId(record.id);
+                      weightForm.setFieldsValue({ sort: record.sort || [] });
+                    }}
+                  >
+                    权重
+                  </Button>
+                </Space>
+              )
+            }
+          </Access>
+        )
+        
+
       },
     },
   ];
@@ -519,9 +548,11 @@ export default () => {
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>创新需求列表(共{pageInfo.totalCount || 0}个)</span>
-          <Button icon={<UploadOutlined />} onClick={exportList}>
-            导出
-          </Button>
+          <Access accessible={access['P_SM_XQGL']}>
+            <Button icon={<UploadOutlined />} onClick={exportList}>
+              导出
+            </Button>
+          </Access>
         </div>
       </div>
       <div className={sc('container-table-body')}>

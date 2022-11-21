@@ -62,7 +62,7 @@ export interface SearchInfo {
   status: boolean | null;
 }
 
-const enum Edge {
+enum Edge {
   HOME = 0, // 新闻咨询首页
 }
 

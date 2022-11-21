@@ -23,7 +23,7 @@ import DockingManage from '@/types/docking-manage.d';
 const sc = scopedClasses('user-config-logout-verify');
 
 const group = Object.entries(DockingManage.specifyType)?.filter(p => p[0] != '6')
-const enum Edge {
+enum Edge {
   HOME = 0, // 新闻咨询首页
 }
 

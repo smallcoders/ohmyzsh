@@ -16,6 +16,11 @@ import Goods from '@/pages/purchase_manage/sales_statistics/components/Goods';
 import Solution from '@/pages/supply_demand_setting/solution/solution';
 import DemandIntention from '@/pages/supply_demand_setting/solution/intention_message/index';
 
+// 用户管理-专家管理tab页
+import ExpertResource from '@/pages/user_config/expert_manage/components/expert-resource';
+import ConsultRecord from '@/pages/user_config/expert_manage/components/consult-record';
+import ApplyRecord from '@/pages/user_config/expert_manage/components/apply-record';
+
 import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
 const sc = scopedClasses('tab-menu');
@@ -57,6 +62,19 @@ export default (props: { tabs?: string[];}) => {
     {
       tab: '意向消息',
       key: 'M_SD_FWXX'
+    },
+    // 用户管理-专家管理tab页
+    {
+      tab: '专家资源',
+      key: 'M_UM_ZJZY',
+    },
+    {
+      tab: '咨询记录',
+      key: 'M_UM_ZJZX',
+    },
+    {
+      tab: '申请记录',
+      key: 'M_UM_SQJL',
     },
   ]
   
@@ -119,6 +137,10 @@ export default (props: { tabs?: string[];}) => {
 
       {activeKey === 'M_SD_FW' && <Solution />}
       {activeKey === 'M_SD_FWXX' && <DemandIntention />}
+
+      {activeKey === 'M_UM_ZJZY' && <ExpertResource />}
+      {activeKey === 'M_UM_ZJZX' && <ConsultRecord />}
+      {activeKey === 'M_UM_SQJL' && <ApplyRecord />}
     </PageContainer>
   );
 };

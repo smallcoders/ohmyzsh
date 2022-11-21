@@ -25,12 +25,34 @@ import {
 import { listAllAreaCode } from '@/services/common';
 import { PageContainer } from '@ant-design/pro-layout';
 import { getOrgManagePage, signOrgTag } from '@/services/org-type-manage';
+import { Access, useAccess } from 'umi';
 const sc = scopedClasses('user-config-org-manage');
+enum Edge {
+  HOME = 0,
+}
 
 export default () => {
   const [dataSource, setDataSource] = useState<OrgManage.Content[]>([]);
   const [searchContent, setSearChContent] = useState<OrgManage.searchContent>({});
   const [activeTags, setActiveTags] = useState<OrgManage.OrgManageTypeEnum[]>([]);
+  // 拿到当前角色的access权限兑现
+  const access = useAccess()
+  // 当前页面的对应权限key
+  const [edge, setEdge] = useState<Edge.HOME>(Edge.HOME);
+  // 页面权限
+  const permissions = {
+    [Edge.HOME]: 'PQ_UM_ZZGL', // 用户管理-组织管理
+  }
+
+  useEffect(() => {
+    for (const key in permissions) {
+      const permission = permissions[key]
+      if (Object.prototype.hasOwnProperty.call(access, permission)) {
+        setEdge(key as any)
+        break
+      }
+    }
+  },[])
 
   const [area, setArea] = useState<any[]>([]);
   const formLayout = {
@@ -117,50 +139,53 @@ export default () => {
       fixed: 'right',
       dataIndex: 'option',
       render: (_: any, record: OrgManage.Content) => {
-        return <Space size={20}>
-          <Popconfirm
-            icon={null}
-            title={
-              <>
-                <span>
-                  请选择将要给该组织标注的标签
-                </span>
-                <div>
-                  {Object.entries(OrgManage.orgManageTypeJson).map(p => {
-                    const [value, title] = p
-                    const isExist = activeTags.includes(value as OrgManage.OrgManageTypeEnum)
-                    return <div onClick={() => {
-                      setActiveTags((pre) => {
-                        if (isExist) {
-                          return pre.filter(i => i != value);
-                        }
-                        else {
-                          return [...pre, value]
-                        }
-                      })
-                    }} style={{ padding: '5px 30px', cursor: 'pointer', marginTop: 10, borderRadius: '4px', textAlign: 'center', backgroundColor: isExist ? '#C0E3FA' : '#E6E6E6' }}>
-                      {title}
-                    </div>
-                  })}
-                </div>
-              </>
-            }
-            onConfirm={() => {
-              tag(record?.id)
-            }}
-            okText="确定"
-            cancelText="取消"
-          >
-            <Button
-              type="link"
-              onClick={() => {
-                setActiveTags(record?.orgSignEnumList || [])
+        const accessible = access?.[permissions?.[edge].replace(new RegExp("Q"), "")]
+        return <Access accessible={accessible}>
+          <Space size={20}>
+            <Popconfirm
+              icon={null}
+              title={
+                <>
+                  <span>
+                    请选择将要给该组织标注的标签
+                  </span>
+                  <div>
+                    {Object.entries(OrgManage.orgManageTypeJson).map(p => {
+                      const [value, title] = p
+                      const isExist = activeTags.includes(value as OrgManage.OrgManageTypeEnum)
+                      return <div onClick={() => {
+                        setActiveTags((pre) => {
+                          if (isExist) {
+                            return pre.filter(i => i != value);
+                          }
+                          else {
+                            return [...pre, value]
+                          }
+                        })
+                      }} style={{ padding: '5px 30px', cursor: 'pointer', marginTop: 10, borderRadius: '4px', textAlign: 'center', backgroundColor: isExist ? '#C0E3FA' : '#E6E6E6' }}>
+                        {title}
+                      </div>
+                    })}
+                  </div>
+                </>
+              }
+              onConfirm={() => {
+                tag(record?.id)
               }}
+              okText="确定"
+              cancelText="取消"
             >
-              标注
-            </Button>
-          </Popconfirm>
-        </Space>
+              <Button
+                type="link"
+                onClick={() => {
+                  setActiveTags(record?.orgSignEnumList || [])
+                }}
+              >
+                标注
+              </Button>
+            </Popconfirm>
+          </Space>
+        </Access>
       },
     },
   ];

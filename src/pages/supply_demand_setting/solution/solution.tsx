@@ -12,7 +12,7 @@ import type { ProSchemaValueEnumObj } from '@ant-design/pro-utils';
 import { routeName } from '@/../config/routes';
 import { UploadOutlined } from '@ant-design/icons';
 import { solutionExport } from '@/services/export';
-const enum Edge {
+enum Edge {
   HOME = 0, // 新闻咨询首页
 }
 

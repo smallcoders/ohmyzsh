@@ -48,7 +48,7 @@ const stateObj = {//需求状态
 const stateObj3 = {//
   NEW_DEMAND: '新发布', CLAIMED: '已认领', DISTRIBUTE: '已分发', CONNECTING: '对接中', FEEDBACK: '已反馈', EVALUATED: '已评价', FINISHED: '已结束'
 };
-const enum Edge {
+enum Edge {
   HOME = 0, // 新闻咨询首页
 }
 
