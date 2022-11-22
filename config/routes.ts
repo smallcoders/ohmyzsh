@@ -734,6 +734,11 @@ export default [
           },
         ],
       },
+      {
+        path: '/banking/supplier-management',
+        name: '讯飞供应商管理',
+        component: './banking/supplier-management',
+      },
     ],
   },
   {
