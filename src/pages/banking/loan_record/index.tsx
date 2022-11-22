@@ -27,7 +27,7 @@ import SelfTable from '@/components/self_table';
 import { UploadOutlined } from '@ant-design/icons';
 import FormEdit from '@/components/FormEdit';
 import BankingLoan from '@/types/banking-loan.d';
-import { history } from 'umi';
+import { history, useHistory } from 'umi';
 import { regFenToYuan, regYuanToFen } from '@/utils/util';
 import {
   getLoanRecordList,
@@ -44,6 +44,7 @@ const { DataSourcesTrans, creditStatusTrans } = BankingLoan;
 export default () => {
   const [dataSource, setDataSource] = useState<BankingLoan.Content[]>([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const [searchForm] = Form.useForm();
   const [searchContent, setSearChContent] = useState<{
     applyNo?: string; // 业务申请编号
     orgName?: string; // 企业名称
@@ -88,8 +89,19 @@ export default () => {
     totalCount: 0,
     pageTotal: 0,
   });
+  // const historys = useHistory();
+  useEffect(() => {
+    console.log('unlisten');
+    const unlisten = history.listen((historyLocation, action) => {
+      console.log('listen', historyLocation, action);
+    });
+    return () => {
+      unlisten();
+    };
+  }, []);
 
   const prepare = async () => {
+    console.log(history.action);
     try {
       const data = await Promise.all([queryBankList()]);
       setBankList(data?.[0]?.result || []);
@@ -97,8 +109,33 @@ export default () => {
       message.error('数据初始化错误');
     }
   };
-
+  // 参数存储
+  const setParams = () => {
+    localStorage.setItem('load_record_params', JSON.stringify(searchContent));
+  };
+  // 返回参数回填
+  const backParamSet = () => {
+    if (history.action === 'POP') {
+      const SearChContentJson: any = localStorage.getItem('load_record_params');
+      const SearChContentJsonParse: any = JSON.parse(SearChContentJson);
+      const {
+        applyTimeStart,
+        applyTimeEnd,
+        takeMoneyMin,
+        takeMoneyMax,
+        creditAmountMin,
+        creditAmountMax,
+        ...rest
+      } = SearChContentJsonParse;
+      searchForm.setFieldsValue({
+        ...rest,
+        time: applyTimeStart && applyTimeEnd ? [moment(applyTimeStart), moment(applyTimeEnd)] : [],
+      });
+      setSearChContent(SearChContentJsonParse);
+    }
+  };
   useEffect(() => {
+    backParamSet();
     prepare();
   }, []);
   const getPage = async (pageIndex = pageInfo.pageIndex, pageSize = pageInfo.pageSize) => {
@@ -344,6 +381,7 @@ export default () => {
               type="link"
               onClick={async () => {
                 const step = await getStep(record, type);
+                setParams();
                 history.push(
                   `${routeName.LOAN_RECORD_DETAIL}?id=${record.id}&isDetail=1&type=${type}&step=${step}`,
                 );
@@ -358,6 +396,7 @@ export default () => {
                   type="link"
                   onClick={async () => {
                     const step = await getStep(record, type);
+                    setParams();
                     history.push(
                       `${routeName.LOAN_RECORD_ENTER}?id=${record.id}&type=${type}&step=${step}`,
                     );
@@ -393,7 +432,6 @@ export default () => {
   }, [searchContent]);
 
   const useSearchNode = (): React.ReactNode => {
-    const [searchForm] = Form.useForm();
     return (
       <div className={sc('container-search')}>
         <Form {...formLayout} form={searchForm}>

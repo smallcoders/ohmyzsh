@@ -1,9 +1,5 @@
-import { getActivityManageList, changeActState } from '@/services/purchase';
-import BankingLoan from '@/types/banking-loan.d';
+import type BankingLoan from '@/types/banking-loan.d';
 import type DataCommodity from '@/types/data-commodity';
-import type DataPromotions from '@/types/data-promotions';
-import { PlusOutlined } from '@ant-design/icons';
-import { PageContainer } from '@ant-design/pro-layout';
 import { getBackMoneyDetail, addBackMoney, delBackMoney } from '@/services/banking-loan';
 import type Common from '@/types/common';
 import { FooterToolbar } from '@ant-design/pro-components';
@@ -25,7 +21,6 @@ const { confirm } = Modal;
 import { useRef, useState, useEffect } from 'react';
 import { UploadOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { useHistory } from 'umi';
-const { LoadStatusTrans, LoadStatus } = BankingLoan;
 import UploadFormFile from '@/components/upload_form/upload-form-file';
 import type { Props } from './authorization_info';
 import moment from 'moment';
@@ -178,6 +173,7 @@ export default ({ isDetail, id }: Props) => {
               ...value,
               applyId: record.id,
             }));
+        debugger;
         if (code === 0) {
           if (isSave) {
             setModalVisible(false);
@@ -408,7 +404,7 @@ export default ({ isDetail, id }: Props) => {
         headerTitle={
           <div>
             <p>
-              还款信息：<span className="tips">请录入每笔放款对应的还款信息</span>
+              还款信息：{!isDetail && <span className="tips">请录入每笔放款对应的还款信息</span>}
             </p>
           </div>
         }
@@ -433,21 +429,6 @@ export default ({ isDetail, id }: Props) => {
         search={false}
         actionRef={actionRef}
         dataSource={dataSource}
-        // request={async (pagination) => {
-        //   const { updateTime = [] } = pagination;
-        //   const [startDate, endDate] = updateTime;
-        //   delete pagination.updateTime;
-        //   const result = await getActivityManageList({
-        //     ...pagination,
-        //     type: 1,
-        //     startDate,
-        //     endDate,
-        //   });
-
-        //   setPageIndex(pagination.current);
-        //   setTotal(result.total);
-        //   return result;
-        // }}
         columns={columns}
         pagination={
           pageInfo.totalCount < 10
