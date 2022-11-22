@@ -512,7 +512,7 @@ export default () => {
       isEllipsis: true,
       width: 150,
     },
-    {
+    access['P_SD_XQ'] && {
       title: '操作',
       width: 300,
       fixed: 'right',
@@ -617,7 +617,7 @@ export default () => {
         );
       },
     },
-  ];
+  ].filter(p => p);
 
   useEffect(() => {
     getPage();

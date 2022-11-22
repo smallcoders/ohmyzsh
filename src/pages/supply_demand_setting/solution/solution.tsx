@@ -274,7 +274,7 @@ const SolutionTable: React.FC = () => {
         </Button>
       ),
     },
-    {
+    access['P_SD_FW'] && {
       title: '操作',
       hideInSearch: true,
       width: 200,
@@ -320,7 +320,7 @@ const SolutionTable: React.FC = () => {
         )
       }
     },
-  ];
+  ].filter(p => p);
 
   const getModal = () => {
     return (

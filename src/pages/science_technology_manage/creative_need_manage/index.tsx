@@ -306,7 +306,7 @@ export default () => {
         );
       },
     },
-    {
+    access['P_SM_XQGL'] && {
       title: '操作',
       width: 180,
       dataIndex: 'option',
@@ -375,7 +375,7 @@ export default () => {
 
       },
     },
-  ];
+  ].filter(p => p);
 
   useEffect(() => {
     getPage();

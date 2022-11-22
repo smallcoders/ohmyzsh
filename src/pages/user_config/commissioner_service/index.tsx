@@ -155,7 +155,7 @@ export default () => {
         ),
       width: 150,
     },
-    {
+    access['PD_UM_FWZY'] && {
       title: '操作',
       width: 200,
       fixed: 'right',
@@ -176,7 +176,7 @@ export default () => {
         );
       },
     },
-  ];
+  ].filter(p => p);
 
   useEffect(() => {
     getNews();

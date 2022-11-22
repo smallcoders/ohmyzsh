@@ -346,7 +346,7 @@ export default () => {
 				breadcrumb: (
 					<Breadcrumb>
 						<Breadcrumb.Item>
-							<Link to="/service-config/diagnose">企业诊断管理</Link>
+							<Link to="/diagnose-manage/diagnose">企业诊断管理</Link>
 						</Breadcrumb.Item>
 						<Breadcrumb.Item>
 							{'历史版本查看'}

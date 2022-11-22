@@ -108,6 +108,8 @@ export default () => {
     }
   };
 
+  const access = useAccess()
+
   const columns = [
     {
       title: '序号',
@@ -127,7 +129,7 @@ export default () => {
       dataIndex: 'labelContent',
       width: 200,
     },
-    {
+    access['P_PM_CXBQ'] && {
       title: '操作',
       width: 50,
       fixed: 'right',
@@ -135,31 +137,29 @@ export default () => {
       render: (_: any, record: LiveTypesMaintain.Content) => {
         return (
           <Space size="middle">
-            <Access accessible={access['P_PM_CXBQ']}>
-              <a
-                href="#"
-                onClick={() => {
-                  setEditingItem(record);
-                  setModalVisible(true);
-                  form.setFieldsValue({ label: record?.label, labelContent: record?.labelContent });
-                }}
-              >
-                编辑
-              </a>
-              <Popconfirm
-                title="确定删除么？"
-                okText="确定"
-                cancelText="取消"
-                onConfirm={() => remove(record.id as string)}
-              >
-                <a href="#">删除</a>
-              </Popconfirm>
-            </Access>
+            <a
+              href="#"
+              onClick={() => {
+                setEditingItem(record);
+                setModalVisible(true);
+                form.setFieldsValue({ label: record?.label, labelContent: record?.labelContent });
+              }}
+            >
+              编辑
+            </a>
+            <Popconfirm
+              title="确定删除么？"
+              okText="确定"
+              cancelText="取消"
+              onConfirm={() => remove(record.id as string)}
+            >
+              <a href="#">删除</a>
+            </Popconfirm>
           </Space>
         );
       },
     },
-  ];
+  ].filter(p => p);
 
   useEffect(() => {
     getPages();
@@ -267,8 +267,6 @@ export default () => {
       </div>
     );
   };
-
-  const access = useAccess()
 
   return (
     <PageContainer className={sc('container')}>

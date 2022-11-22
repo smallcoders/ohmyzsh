@@ -1,13 +1,8 @@
-import { DeleteOutlined } from '@ant-design/icons';
 import {
   Button,
   Input,
   Form,
   Modal,
-  Select,
-  Row,
-  Col,
-  DatePicker,
   message,
   Space,
   Popconfirm,
@@ -15,26 +10,16 @@ import {
 import '../index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
+import { Access, useAccess } from 'umi';
 import Common from '@/types/common';
 import {
   getRecommendPage,
   addRecommend,
-  changeRecommendStatus,
-  // getDiagnosisInstitutions,
+  changeRecommendStatus
 } from '@/services/search-record';
-import moment from 'moment';
 import DiagnosticTasks from '@/types/service-config-diagnostic-tasks';
-import DebounceSelect from './DebounceSelect';
-import { Link } from 'umi';
-import { routeName } from '../../../../../config/routes';
 import SelfTable from '@/components/self_table';
 const sc = scopedClasses('tab-menu');
-const stateObj = {
-  1: '待诊断',
-  2: '诊断中',
-  3: '已完成',
-  4: '已延期',
-};
 export default () => {
   const [createModalVisible, setModalVisible] = useState<boolean>(false);
   const [dataSource, setDataSource] = useState<DiagnosticTasks.Content[]>([]);
@@ -186,14 +171,16 @@ export default () => {
         return record.status == 1 ? (
           <div style={{ textAlign: 'center' }}>
             <Space size={"middle"}>
-            <Popconfirm
-              title="确定下架么？"
-              okText="确定"
-              cancelText="取消"
-              onConfirm={() => remove(record.id as string, 2)}
-            >
-              <a href="#">下架</a>
-            </Popconfirm>
+              <Access accessible={access['P_LM_SSTJ']}>
+                <Popconfirm
+                  title="确定下架么？"
+                  okText="确定"
+                  cancelText="取消"
+                  onConfirm={() => remove(record.id as string, 2)}
+                >
+                  <a href="#">下架</a>
+                </Popconfirm>
+              </Access>
             </Space>
           </div>
         ) : (
@@ -264,20 +251,24 @@ export default () => {
     );
   };
 
+  const access = useAccess()
+
   return (
     <>
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>搜索推荐列表(共{pageInfo.totalCount || 0}个)</span>
-          <Button
-            type="primary"
-            key="recommend"
-            onClick={() => {
-              setModalVisible(true);
-            }}
-          >
-            上架推荐
-          </Button>
+          <Access accessible={access['P_LM_SSTJ']}>
+            <Button
+              type="primary"
+              key="recommend"
+              onClick={() => {
+                setModalVisible(true);
+              }}
+            >
+              上架推荐
+            </Button>
+          </Access>
         </div>
       </div>
       <div className={sc('container-table-body')}>

@@ -233,7 +233,7 @@ export default () => {
       dataIndex: 'pageViews',
       width: 80,
     },
-    {
+    access['P_PC_XWZX'] && {
       title: '操作',
       width: 200,
       fixed: 'right',
@@ -289,7 +289,7 @@ export default () => {
         );
       },
     },
-  ];
+  ].filter(p => p);
   
   const useSearchNode = (): React.ReactNode => {
     const [searchForm] = Form.useForm();

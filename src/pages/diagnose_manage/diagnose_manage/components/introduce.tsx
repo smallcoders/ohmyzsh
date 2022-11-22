@@ -40,7 +40,7 @@ const Introduce: React.FC = () => {
 
   // 查看历史版本
   const toVersion = async (value: any, record: any) => {
-    history.push((`/service-config/diagnose/history?version=${value}&firstQuestionnaireNo=${record?.firstQuestionnaireNo}`))
+    history.push((`/diagnose-manage/diagnose/history?version=${value}&firstQuestionnaireNo=${record?.firstQuestionnaireNo}`))
   }
   /**
    * column

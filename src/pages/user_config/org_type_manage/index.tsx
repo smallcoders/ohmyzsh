@@ -172,7 +172,7 @@ export default () => {
       width: 200,
       render: (_: string) => moment(_).format('YYYY-MM-DD HH:mm:ss'),
     },
-    {
+    access['P_UM_JGLX'] && {
       title: '操作',
       width: 200,
       dataIndex: 'option',
@@ -220,7 +220,7 @@ export default () => {
         );
       },
     },
-  ];
+  ].filter(p => p);
 
   const onSortEnd = ({ oldIndex, newIndex }: SortEnd) => {
     if (oldIndex !== newIndex) {

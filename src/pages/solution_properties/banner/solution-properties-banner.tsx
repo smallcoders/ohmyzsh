@@ -38,6 +38,16 @@ const stateObj = {
 };
 
 const TableList: React.FC = () => {
+  const access = useAccess()
+  const permissions = {
+    [Banner.Edge.PC]: 'PQ_PC_B_SY', // 官网-首页
+    [Banner.Edge.FINANCIAL_SERVICE]: 'PQ_PC_B_JR', // 官网-金融
+    [Banner.Edge.PC_CITY]: 'PQ_PC_B_DSZT', // 官网-地市专题首页
+    [Banner.Edge.APPLET]: 'PQ_PC_B_XCX', // 小程序-首页
+    [Banner.Edge.APPLET_CREATIVE]: 'PQ_PC_B_XKC', // 小程序-科产
+    [Banner.Edge.APP]: 'PQ_PC_B_ASY', // APP-首页
+    [Banner.Edge.APP_CREATIVE]: 'PQ_PC_B_AKC', // APP-科产
+  }
   const formLayout = {
     labelCol: { span: 6 },
     wrapperCol: { span: 14 },
@@ -192,13 +202,10 @@ const TableList: React.FC = () => {
       title: '发布人',
       dataIndex: 'publishUserName',
     },
-    {
+    access?.[permissions?.[edge].replace(new RegExp("Q"), "")] && {
       title: '操作',
       dataIndex: 'option',
       render: (_: any, record: Banner.Content) => {
-        // 利用 tab的权限嘛， 去除Q， 找到对应的编辑按钮权限
-        // 再利用access去找对应账号，是否有对应的编辑按钮权限
-        // 以此利用 Access标签，来完成按钮的展示与隐藏
         const accessible = access?.[permissions?.[edge].replace(new RegExp("Q"), "")]
         return (
           <Access accessible={accessible}>
@@ -235,7 +242,7 @@ const TableList: React.FC = () => {
         );
       },
     },
-  ];
+  ].filter(p => p);
 
   const edges = {
     [Banner.Edge.PC]: '官网-首页', // 官网-首页
@@ -252,26 +259,13 @@ const TableList: React.FC = () => {
   useEffect(() => {
     for (const key in permissions) {
       const permission = permissions[key]
-      console.log('access', access)
-      // permission 看这个属性，是否再access中存在，存在为true
       if (Object.prototype.hasOwnProperty.call(access, permission)) {
-        console.log('key',key)
-        console.log('permission', permission)
         setEdge(key as any)
         break
       }
     }
   }, [])
 
-  const permissions = {
-    [Banner.Edge.PC]: 'PQ_PC_B_SY', // 官网-首页
-    [Banner.Edge.FINANCIAL_SERVICE]: 'PQ_PC_B_JR', // 官网-金融
-    [Banner.Edge.PC_CITY]: 'PQ_PC_B_DSZT', // 官网-地市专题首页
-    [Banner.Edge.APPLET]: 'PQ_PC_B_XCX', // 小程序-首页
-    [Banner.Edge.APPLET_CREATIVE]: 'PQ_PC_B_XKC', // 小程序-科产
-    [Banner.Edge.APP]: 'PQ_PC_B_ASY', // APP-首页
-    [Banner.Edge.APP_CREATIVE]: 'PQ_PC_B_AKC', // APP-科产
-  }
 
   /**
    * 切换 app、小程序、pc
@@ -300,7 +294,6 @@ const TableList: React.FC = () => {
       </Radio.Group>
     );
   };
-  const access = useAccess()
 
   const getModal = () => {
     return (
