@@ -169,7 +169,7 @@ export default () => {
         )
       }
     }
-  ]
+  ].filter(p => p);
 
   const getLeaveWordVerifyPage = async ( searchInfo: SearchInfo, pageSize = 10, pageIndex = 1) => {
     try {

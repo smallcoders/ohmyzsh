@@ -120,41 +120,42 @@ export default () => {
           <div className={sc('container')}>
             <Tabs defaultActiveKey="应用接口说明" activeKey={activeTab} onChange={(e: string) => setActiveTab(e as InterfaceType) }>
               <Tabs.TabPane tab="应用接口说明" key="应用接口说明">
-                <div className='action'>
-                  {
-                    interfaceDescription.editing ? (
-                      <Space>
-                        <Button
-                          type='primary'
-                          onClick={() => {
-                            setInterfaceDescription({ editing: false })
-                          }}
-                        >
-                          取消
-                        </Button>
-                        <Button
-                          type='primary'
-                          loading={interfaceDescription.loading}
-                          onClick={() => handleSave('应用接口说明')}
-                        >
-                          保存
-                        </Button>
-                      </Space>
-                    ) : (
-                      <Access accessible={access['PU_DA_JKGF']}>
-                        <Button type='primary'
-                          onClick={() => {
-                            setInterfaceDescription({ editing: true })
-                            descForm.setFieldsValue({
-                              interfaceDescription: configInfo?.interfaceDescription
-                            })
-                          }}>
-                            编辑
-                        </Button>
-                      </Access>
-                    )
-                  }
-                </div>
+                <Access accessible={access['PU_DA_JKGF']}>
+                  <div className='action'>
+                    {
+                      interfaceDescription.editing ? (
+                        <Space>
+                          <Button
+                            type='primary'
+                            onClick={() => {
+                              setInterfaceDescription({ editing: false })
+                            }}
+                          >
+                            取消
+                          </Button>
+                          <Button
+                            type='primary'
+                            loading={interfaceDescription.loading}
+                            onClick={() => handleSave('应用接口说明')}
+                          >
+                            保存
+                          </Button>
+                        </Space>
+                      ) : (
+                        
+                          <Button type='primary'
+                            onClick={() => {
+                              setInterfaceDescription({ editing: true })
+                              descForm.setFieldsValue({
+                                interfaceDescription: configInfo?.interfaceDescription
+                              })
+                            }}>
+                              编辑
+                          </Button>
+                      )
+                    }
+                  </div>
+                </Access>
                 <Form
                   style={{ display: interfaceDescription.editing ? 'block' : 'none' }}
                   labelCol={{ span: 3 }}
@@ -179,39 +180,41 @@ export default () => {
                 </div>
               </Tabs.TabPane>
               <Tabs.TabPane tab="API接口规范" key="API接口规范">
-                <div className='action'>
-                  {
-                    interfaceNorm.editing ? (
-                      <Space>
-                        <Button
-                          type='primary'
+                <Access accessible={access['PU_DA_JKGF']}>
+                  <div className='action'>
+                    {
+                      interfaceNorm.editing ? (
+                        <Space>
+                          <Button
+                            type='primary'
+                            onClick={() => {
+                              setInterfaceNorm({ editing: false })
+                            }}
+                          >
+                            取消
+                          </Button>
+                          <Button
+                            type='primary'
+                            loading={interfaceNorm.loading}
+                            onClick={() => handleSave('API接口规范')}
+                          >
+                            保存
+                          </Button>
+                        </Space>
+                      ) : (
+                        <Button type='primary'
                           onClick={() => {
-                            setInterfaceNorm({ editing: false })
-                          }}
-                        >
-                          取消
+                            setInterfaceNorm({ editing: true })
+                            normForm.setFieldsValue({
+                              interfaceNorm: configInfo?.interfaceNorm
+                            })
+                          }}>
+                            编辑
                         </Button>
-                        <Button
-                          type='primary'
-                          loading={interfaceNorm.loading}
-                          onClick={() => handleSave('API接口规范')}
-                        >
-                          保存
-                        </Button>
-                      </Space>
-                    ) : (
-                      <Button type='primary'
-                        onClick={() => {
-                          setInterfaceNorm({ editing: true })
-                          normForm.setFieldsValue({
-                            interfaceNorm: configInfo?.interfaceNorm
-                          })
-                        }}>
-                          编辑
-                      </Button>
-                    )
-                  }
-                </div>
+                      )
+                    }
+                  </div>
+                </Access>
                 <Form
                   style={{ display: interfaceNorm.editing ? 'block' : 'none' }}
                   labelCol={{ span: 3 }}

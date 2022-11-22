@@ -70,7 +70,7 @@ export default () => {
               <span
                 onClick={() => {
                   if (row.isDelete) return message.warning('该应用已不存在，无法查看详情');
-                  history.push(`/digital-application/app-list/detail?id=${row.id}`);
+                  window.open(`/digital-application/app-list/detail?id=${row.id}`);
                 }}
               >
                 {row.appName}
@@ -93,7 +93,7 @@ export default () => {
           type="link"
           onClick={() => {
             if (row.isDelete) return message.warning('该应用已不存在，无法查看详情');
-            history.push(`/digital-application/app-list/detail?id=${row.id}`);
+            window.open(`/digital-application/app-list/detail?id=${row.id}`);
           }}
         >
           查看

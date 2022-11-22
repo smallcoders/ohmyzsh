@@ -80,6 +80,8 @@ const TableList: React.FC = () => {
     'FINISHED': '已结束'
   }
 
+  const access = useAccess()
+
   const columns: ProColumns<SolutionTypes.Solution>[] = [
     {
       title: '序号',
@@ -131,42 +133,40 @@ const TableList: React.FC = () => {
       align: 'center',
       renderText: (_: any, record: any) => record.remark,
     },
-    {
+    access['P_OA_DSHD'] && {
       title: '操作',
       align: 'center',
       width: 300,
       hideInSearch: true, // 隐藏筛选
       render: (_: any, record: any) => {
         return (
-          <Access accessible={access['P_OA_DSHD']}>
-            <Space>
-              {
-                record?.state !== 'FINISHED' &&
-                <a
-                  href="#"
-                  onClick={() => {
-                    setEditingItem(record);
-                    setModalVisible(true);
-                    form.setFieldsValue({ ...record});
-                  }}
-                >
-                  编辑{' '}
-                </a>
-              }
-              <Popconfirm
-                title="确定删除么？"
-                okText="确定"
-                cancelText="取消"
-                onConfirm={() => remove(record.id as string)}
+          <Space>
+            {
+              record?.state !== 'FINISHED' &&
+              <a
+                href="#"
+                onClick={() => {
+                  setEditingItem(record);
+                  setModalVisible(true);
+                  form.setFieldsValue({ ...record});
+                }}
               >
-                <a href="#">删除</a>
-              </Popconfirm>
-            </Space>
-          </Access>
+                编辑{' '}
+              </a>
+            }
+            <Popconfirm
+              title="确定删除么？"
+              okText="确定"
+              cancelText="取消"
+              onConfirm={() => remove(record.id as string)}
+            >
+              <a href="#">删除</a>
+            </Popconfirm>
+          </Space>
         )
       }
     }
-  ]
+  ].filter(p => p)
 
   const clearForm = () => {
     form.resetFields();
@@ -274,8 +274,6 @@ const TableList: React.FC = () => {
       </Modal>
     );
   };
-
-  const access = useAccess()
 
   return (
     <PageContainer>

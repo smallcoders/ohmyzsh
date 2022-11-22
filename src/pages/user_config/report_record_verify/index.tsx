@@ -194,16 +194,27 @@ export default () => {
       dataIndex: 'option', // 列数据在数据项中对应的路径，支持通过数组查询嵌套路径
       render: (_: any, _record: ReportRecordVerify.Content) => {
         const accessible = access?.[permissions?.[edge].replace(new RegExp("Q"), "")]
-        return (
+        return _record?.processed ? (
+          <div>
+            <Button
+              type="link"
+              onClick={() => {
+                history.push(`${routeName.REPORT_RECORD_VERIFY_DETAIL}?id=${_record.id }&type=${_record.module}&bizId=${_record?.bizId}`);
+              }}
+            >
+              {'详情'}
+            </Button>
+          </div>
+        ) : (
           <div>
             <Access accessible={accessible}>
               <Button
                 type="link"
                 onClick={() => {
-                  history.push(`${routeName.REPORT_RECORD_VERIFY_DETAIL}?id=${_record.id }&type=${_record.module}&bizId=${_record?.bizId}`);
+                  window.open(`${routeName.REPORT_RECORD_VERIFY_DETAIL}?id=${_record.id }&type=${_record.module}&bizId=${_record?.bizId}`);
                 }}
               >
-                {_record?.processed ? '详情' : '处理'}
+                {'处理'}
               </Button>
             </Access>
           </div>

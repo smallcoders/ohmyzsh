@@ -341,24 +341,24 @@ export default () => {
       <div className={sc('container-search')}>
         <Form {...formLayout} form={searchForm}>
           <Row>
-            <Col span={5}>
+            <Col span={6}>
               <Form.Item name="name" label="诊断名称">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
-            <Col span={5}>
+            <Col span={6}>
               <Form.Item name="orgName" label="诊断企业">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
-            <Col span={5}>
+            <Col span={6}>
               <Form.Item name="expertName" label="诊断专家">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
           </Row>
           <Row style={{ marginTop: 20 }} justify={'space-between'}>
-            <Col span={15}>
+            <Col span={18}>
               <Row>
                 <Col span={8}>
                   <Form.Item name="institutionId" label="诊断机构">
@@ -389,7 +389,7 @@ export default () => {
                 </Col>
               </Row>
             </Col>
-            <Col span={3}>
+            <Col span={4}>
               <Button
                 style={{ marginRight: 20 }}
                 type="primary"

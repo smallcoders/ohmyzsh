@@ -206,7 +206,7 @@ export default ({ demandTypes, area }: { demandTypes: any[], area: any[] }) => {
       render: (_: string) => DockingManage.specifyType[_] || '--',
       width: 150,
     },
-    {
+    access['P_SD_XQRL'] && {
       title: '操作',
       width: 300,
       fixed: 'right',
@@ -271,7 +271,7 @@ export default ({ demandTypes, area }: { demandTypes: any[], area: any[] }) => {
         </div>
       },
     },
-  ];
+  ].filter(p => p);
 
   useEffect(() => {
     getPage();

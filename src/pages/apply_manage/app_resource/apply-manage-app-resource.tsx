@@ -351,7 +351,7 @@ export default () => {
         );
       },
     },
-    {
+    access['P_AM_YYZY'] && {
       title: '操作',
       dataIndex: 'option',
       render: (_: any, record: AppResource.Content) => {
@@ -404,7 +404,7 @@ export default () => {
         );
       },
     },
-  ];
+  ].filter(p => p);
   return (
     // <PageContainer className={sc('container')}>
     <>

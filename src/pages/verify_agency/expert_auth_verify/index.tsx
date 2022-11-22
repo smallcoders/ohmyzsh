@@ -154,7 +154,7 @@ export default () => {
         // )
       },
     },
-  ]
+  ].filter(p => p);
 
   const getExpertAuthVerifyPage = async (searchInfo: ExpertAuthVerifySearchInfo, pageSize = 10, pageIndex = 1) => {
     try {

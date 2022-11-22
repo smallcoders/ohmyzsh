@@ -347,6 +347,9 @@ const Tablist: React.FC = () => {
 
 
   //定义行
+  const access = useAccess()
+  const accessible = access?.[permissions?.[edge].replace(new RegExp("Q"), "")]
+
   const columns: ColumnsType<Activity.Content> = [
     {
       title: '序号',
@@ -380,7 +383,6 @@ const Tablist: React.FC = () => {
       dataIndex: 'started',
       width:100,
       render: (started: boolean, record: Activity.Content) => {
-        const accessible = access?.[permissions?.[edge].replace(new RegExp("Q"), "")]
         return (
           <Access accessible={accessible}>
             <Popconfirm
@@ -408,41 +410,35 @@ const Tablist: React.FC = () => {
         )
       }
     },
-    {
+    accessible && {
       title: '操作',
       key: 'action',
       render: (_: any, record: Activity.Content) => {
-        const accessible = access?.[permissions?.[edge].replace(new RegExp("Q"), "")]
         return (
-          <Access accessible={accessible}>
-            <Space size="middle">
-              <a
-                href="#"
-                onClick={() => {
-                  console.log(record)
-                  form.setFieldsValue({ ...record });
-                  setEditingItem(record);
-                  setBtnType('编辑')
-                  setModalVisible(true);
-                }}
-              >编辑</a>
-              <Popconfirm
-                title="确定删除？"
-                okText="确定"
-                cancelText="取消"
-                onConfirm={() => remove(record.id as string)}
-              >
-                <a href="#">删除</a>
-              </Popconfirm>
-            </Space>
-          </Access>
+          <Space size="middle">
+            <a
+              href="#"
+              onClick={() => {
+                console.log(record)
+                form.setFieldsValue({ ...record });
+                setEditingItem(record);
+                setBtnType('编辑')
+                setModalVisible(true);
+              }}
+            >编辑</a>
+            <Popconfirm
+              title="确定删除？"
+              okText="确定"
+              cancelText="取消"
+              onConfirm={() => remove(record.id as string)}
+            >
+              <a href="#">删除</a>
+            </Popconfirm>
+          </Space>
         )
       }
     },
-  ];
-
-  const access = useAccess()
-  const accessible = access?.[permissions?.[edge].replace(new RegExp("Q"), "")]
+  ].filter(p => p);
 
   return(
     <PageContainer className={sc('container')} >

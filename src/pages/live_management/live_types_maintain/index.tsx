@@ -146,6 +146,8 @@ export default () => {
     }
   };
 
+  const access = useAccess()
+
   const columns = [
     {
       title: '排序',
@@ -177,7 +179,7 @@ export default () => {
       dataIndex: 'createTime',
       width: 80
     },
-    {
+    access['P_LM_JBLX'] && {
       title: '操作',
       width: 120,
       fixed: 'right',
@@ -185,54 +187,52 @@ export default () => {
       render: (_: any, record: LiveTypesMaintain.Content) => {
         return (
           <Space size="middle">
-            <Access accessible={access['P_LM_JBLX']}>
-              <a
-                href="#"
-                onClick={() => {
-                  setEditingItem(record);
-                  setModalVisible(true);
-                  form.setFieldsValue({ name: record?.name, status: record?.status });
-                }}
+            <a
+              href="#"
+              onClick={() => {
+                setEditingItem(record);
+                setModalVisible(true);
+                form.setFieldsValue({ name: record?.name, status: record?.status });
+              }}
+            >
+              编辑
+            </a>
+            {!record.status ? (
+              <Popconfirm
+              title={`确定启用么？`}
+              okText="确定"
+              cancelText="取消"
+              onConfirm={() => updateStatus(record.id as string, true)}
               >
-                编辑
-              </a>
-              {!record.status ? (
-                <Popconfirm
-                title={`确定启用么？`}
+              <a href="#">启用</a>
+            </Popconfirm>
+            )
+            :
+            (
+              <Popconfirm
+              title={`确定停用么？`}
+              okText="确定"
+              cancelText="取消"
+              onConfirm={() => updateStatus(record.id as string, false)}
+              >
+              <a href="#">停用</a>
+            </Popconfirm>
+            )}
+            {!record.status && (
+              <Popconfirm
+                title="确定删除么？"
                 okText="确定"
                 cancelText="取消"
-                onConfirm={() => updateStatus(record.id as string, true)}
-                >
-                <a href="#">启用</a>
+                onConfirm={() => remove(record.id as string)}
+              >
+                <a href="#">删除</a>
               </Popconfirm>
-              )
-              :
-              (
-                <Popconfirm
-                title={`确定停用么？`}
-                okText="确定"
-                cancelText="取消"
-                onConfirm={() => updateStatus(record.id as string, false)}
-                >
-                <a href="#">停用</a>
-              </Popconfirm>
-              )}
-              {!record.status && (
-                <Popconfirm
-                  title="确定删除么？"
-                  okText="确定"
-                  cancelText="取消"
-                  onConfirm={() => remove(record.id as string)}
-                >
-                  <a href="#">删除</a>
-                </Popconfirm>
-              )}
-            </Access>
+            )}
           </Space>
         );
       },
     },
-  ];
+  ].filter(p => p);
 
   useEffect(() => {
     getPages();
@@ -305,8 +305,6 @@ export default () => {
       </Modal>
     );
   };
-
-  const access = useAccess()
 
   return (
     <PageContainer className={sc('container')}>

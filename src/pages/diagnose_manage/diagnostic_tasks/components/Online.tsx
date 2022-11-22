@@ -288,7 +288,7 @@ export default () => {
                 <DatePicker.RangePicker allowClear showTime />
               </Form.Item>
             </Col>
-            <Col span={3} offset={13}>
+            <Col span={4} offset={12}>
               <Button
                 style={{ marginRight: 20 }}
                 type="primary"

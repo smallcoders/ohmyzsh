@@ -11,10 +11,10 @@ import { PageContainer } from '@ant-design/pro-layout';
 import SelfTable from '@/components/self_table';
 import { getDemandContacts, getDemandContactUpdate } from '@/services/demand-contacts';
 import scopedClasses from '@/utils/scopedClasses';
+import { Access, useAccess } from 'umi';
 import './supply-demand-setting-demand-contacts.less';
 
 const sc = scopedClasses('service-config-demand-contacts');
-
 export default () => {
   const [dataSource, setDataSource] = useState<any>([]);
   const [form] = Form.useForm();
@@ -23,6 +23,9 @@ export default () => {
   const [loading, setLoading] = useState<boolean>(false);
   // 当前的值
   const [currentData, setCurrentData] = useState<any>({})
+
+  // 拿到当前角色的access权限兑现
+  const access = useAccess()
 
   const getDemandContactList = async () => {
     try {
@@ -60,7 +63,7 @@ export default () => {
       width: 300,
       align: 'center'
     },
-    {
+    access['PU_SD_XQLXR'] && {
       title: '操作',
       width: 200,
       fixed: 'right',
@@ -68,22 +71,24 @@ export default () => {
       align: 'center',
       render: (_: any, record: any) => {
         return (
-          <Space size="middle">
-            <a
-              href="#"
-              onClick={() => {
-                setCurrentData(record);
-                setEditModalVisible(true);
-                form.setFieldsValue({ contactName: record.contactName || '', phone: record.phone || ''  });
-              }}
-            >
-              编辑
-            </a>
-          </Space>
+          <Access accessible={access['PU_SD_XQLXR']}>
+            <Space size="middle">
+              <a
+                href="#"
+                onClick={() => {
+                  setCurrentData(record);
+                  setEditModalVisible(true);
+                  form.setFieldsValue({ contactName: record.contactName || '', phone: record.phone || ''  });
+                }}
+              >
+                编辑
+              </a>
+            </Space>
+          </Access>
         );
       },
     },
-  ];
+  ].filter(p => p);
 
   const handleOk = () => {
     form
