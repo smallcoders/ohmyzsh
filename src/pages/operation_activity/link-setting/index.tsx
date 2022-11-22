@@ -446,20 +446,6 @@ export default () => {
     setModalVisible(false)
   }
 
-  //新增链接按钮
-  function handleButtonClick() {
-    setCurrent(0)
-    if(edge==2){
-      setTypes('新建H5链接')
-    }
-   else if(edge==3){
-      setTypes('新建小程序码')
-    }
-   else if(edge==4){
-      setTypes('新建分享码')
-    }
-    setModalVisible(true);
-  }
 
   //新增链接按钮下拉
   const handleMenuClick=(e: any)=> {
