@@ -651,30 +651,30 @@ export default [
     routes: [
       {
         path: '/banking',
-        redirect: routeName.BANKING_SERVICE,
+        redirect: routeName.LOAN_RECORD,
       },
-      {
-        path: routeName.BANKING_SERVICE,
-        name: '金融需求管理',
-        hideChildrenInMenu: true,
-        routes: [
-          {
-            path: routeName.BANKING_SERVICE,
-            redirect: routeName.BANKING_SERVICE_INDEX,
-          },
-          {
-            path: routeName.BANKING_SERVICE_INDEX,
-            hideInBreadcrumb: true,
-            name: '金融需求管理',
-            component: './banking/banking_service_manage/index',
-          },
-          {
-            path: routeName.BANKING_SERVICE_DETAIL,
-            name: '需求详情',
-            component: './banking/banking_service_manage/detail/detail',
-          },
-        ],
-      },
+      // {
+      //   path: routeName.BANKING_SERVICE,
+      //   name: '金融需求管理',
+      //   hideChildrenInMenu: true,
+      //   routes: [
+      //     {
+      //       path: routeName.BANKING_SERVICE,
+      //       redirect: routeName.BANKING_SERVICE_INDEX,
+      //     },
+      //     {
+      //       path: routeName.BANKING_SERVICE_INDEX,
+      //       hideInBreadcrumb: true,
+      //       name: '金融需求管理',
+      //       component: './banking/banking_service_manage/index',
+      //     },
+      //     {
+      //       path: routeName.BANKING_SERVICE_DETAIL,
+      //       name: '需求详情',
+      //       component: './banking/banking_service_manage/detail/detail',
+      //     },
+      //   ],
+      // },
       {
         path: routeName.LOAN_RECORD,
         name: '贷款记录',
