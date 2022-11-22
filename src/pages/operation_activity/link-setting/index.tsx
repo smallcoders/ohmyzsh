@@ -331,10 +331,12 @@ export default () => {
         setBtnValue('发布并复制分享链接')
         console.log(value)
         value.activeType = 'H5'
-           const res=await  getUrlById(value.activeImageId)
+        if(value.activeImageId){
+          const res=await  getUrlById(value.activeImageId)
           if(res.code==0){
             value.url=res?.result
           }
+        }
         value.activeUrl= window.location.protocol + '//' + window.location.host.split(':')[0] +`/antelope-activity-h5/share-code/index.html?preview=true&targetLinkType=${value.targetLinkType}&buttonText=${value.buttonText}&targetLink=${value.targetLink}&url=${value.url}`
         setCurrent(1)
         setFormData(value)
