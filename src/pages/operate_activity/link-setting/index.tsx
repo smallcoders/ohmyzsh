@@ -565,7 +565,7 @@ export default () => {
               <Form.Item name="activeChannelId" label="渠道值">
                 <Select placeholder="请选择" allowClear>
                 {selectChannelListAll.map((item ) => (
-                  <Select.Option key={item.channelName} value={item.id}>
+                  <Select.Option key={ item.id } value={ item.id }>
                     {item.channelName}
                   </Select.Option>
                 ))}
@@ -576,7 +576,7 @@ export default () => {
               <Form.Item name="activeSceneId" label="场景值">
                 <Select placeholder="请选择" allowClear>
                 {selectSceneListAll.map((item ) => (
-                  <Select.Option key={item.sceneName} value={item.id}>
+                  <Select.Option key={ item.id } value={ item.id }>
                     {item.sceneName}
                   </Select.Option>
                 ))}
@@ -999,7 +999,7 @@ export default () => {
               <Form.Item name="activeChannelId" label="渠道值"  rules={[{ required: true, message: '请输入渠道值！' }]}>
                 <Select placeholder="请选择" allowClear disabled={activeStatusData=='DOWN'&&types.indexOf("新建") == -1}>
                   {selectChannelList.map((item ) => (
-                    <Select.Option key={item.channelName} value={item.id}>
+                    <Select.Option key={ item.id } value={ item.id }>
                       {item.channelName}
                     </Select.Option>
                   ))}
@@ -1009,7 +1009,7 @@ export default () => {
               <Form.Item name="activeSceneId" label="场景值"  rules={[{ required: true, message: '请输入场景值！' }]}>
                 <Select placeholder="请选择" allowClear disabled={activeStatusData=='DOWN'&&types.indexOf("新建") == -1}>
                   {selectSceneList.map((item ) => (
-                    <Select.Option key={item.sceneName} value={item.id}>
+                    <Select.Option key={ item.id } value={ item.id }>
                       {item.sceneName}
                     </Select.Option>
                   ))}
