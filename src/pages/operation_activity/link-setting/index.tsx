@@ -920,6 +920,7 @@ export default () => {
   ];
   const selectButton = (): React.ReactNode => {
     const handleEdgeChange = (e: RadioChangeEvent) => {
+      console.log(typeof  e.target.value)
       setEdge(e.target.value);
     };
     return (
