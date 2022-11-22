@@ -195,7 +195,7 @@ export default () => {
       width: 200,
       render: (_: string) => moment(_).format('YYYY-MM-DD HH:mm:ss'),
     },
-    {
+    access['P_UM_KCGLY'] && {
       title: '操作',
       width: 200,
       fixed: 'right',
@@ -239,7 +239,7 @@ export default () => {
         );
       },
     },
-  ];
+  ].filter(p => p);
 
   useEffect(() => {
     getPages();

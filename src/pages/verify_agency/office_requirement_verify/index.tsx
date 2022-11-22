@@ -41,6 +41,8 @@ export default () => {
     type?: number; // 行业类型id 三级类型
   }>({});
 
+  const access = useAccess()
+
   const formLayout = {
     labelCol: { span: 6 },
     wrapperCol: { span: 16 },
@@ -211,13 +213,12 @@ export default () => {
         );
       },
     },
-  ];
+  ].filter(p => p);
 
   useEffect(() => {
     getPage();
   }, [searchContent]);
 
-  const access = useAccess()
 
   const useSearchNode = (): React.ReactNode => {
     const [searchForm] = Form.useForm();

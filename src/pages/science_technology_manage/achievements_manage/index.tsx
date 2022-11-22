@@ -271,7 +271,7 @@ export default () => {
         );
       },
     },
-    {
+    access['P_SM_CGGL'] && {
       title: '操作',
       width: 180,
       fixed: 'right',
@@ -313,7 +313,7 @@ export default () => {
         );
       },
     },
-  ];
+  ].filter(p => p);
 
   const handleMultiUpload = () => {
     history.push(`/science-technology-manage/achievements-manage/multi-upload`);

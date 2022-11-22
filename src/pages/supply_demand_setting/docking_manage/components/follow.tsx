@@ -228,7 +228,7 @@ export default (props: { gid: any; demandTypes: any[], area: any[] }) => {
       isEllipsis: true,
       width: 300,
     },
-    {
+    tabState && {
       title: '操作',
       width: 400,
       dataIndex: 'option',
@@ -253,7 +253,7 @@ export default (props: { gid: any; demandTypes: any[], area: any[] }) => {
         );
       },
     },
-  ];
+  ].filter(p => p);
 
   useEffect(() => {
     if (gid) {

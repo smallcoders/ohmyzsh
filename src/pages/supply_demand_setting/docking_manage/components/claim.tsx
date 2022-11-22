@@ -179,8 +179,7 @@ export default ({ demandTypes, area }: { demandTypes: any[], area: any[] }) => {
       render: (_: string) => _ || '--',
       width: 150,
     },
-
-    {
+    access['P_SD_XQRL'] && {
       title: '操作',
       width: 200,
       fixed: 'right',
@@ -204,7 +203,7 @@ export default ({ demandTypes, area }: { demandTypes: any[], area: any[] }) => {
         </div>
       },
     },
-  ];
+  ].filter(p => p);
 
   useEffect(() => {
     getPage();

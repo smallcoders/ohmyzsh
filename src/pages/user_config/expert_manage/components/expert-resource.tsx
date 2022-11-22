@@ -346,16 +346,16 @@ export default () => {
         const accessible = access?.[permissions?.[edge].replace(new RegExp("Q"), "")]
         return (
           <div style={{ textAlign: 'center' }}>
-            <Access accessible={accessible}>
-              <Space size={1}>
-                <Button
-                  type="link"
-                  onClick={() => {
-                    window.open(`/user-config/expert-manage/detail?id=${record.id}`);
-                  }}
-                >
-                  详情
-                </Button>
+            <Space size={1}>
+              <Button
+                type="link"
+                onClick={() => {
+                  window.open(`/user-config/expert-manage/detail?id=${record.id}`);
+                }}
+              >
+                详情
+              </Button>
+              <Access accessible={accessible}>
                 <Button
                   type="link"
                   onClick={() => {
@@ -437,8 +437,8 @@ export default () => {
                 >
                   所属行业编辑
                 </Button>
-              </Space>
-            </Access>
+              </Access>
+            </Space>
           </div>
         );
       },

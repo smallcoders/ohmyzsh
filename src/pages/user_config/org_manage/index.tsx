@@ -133,7 +133,7 @@ export default () => {
       isEllipsis: true,
       width: 450,
     },
-    {
+    access['P_UM_ZZGL'] && {
       title: '操作',
       width: 200,
       fixed: 'right',
@@ -188,7 +188,7 @@ export default () => {
         </Access>
       },
     },
-  ];
+  ].filter(p => p);
 
   useEffect(() => {
     prepare()

@@ -191,7 +191,7 @@ export default () => {
         );
       },
     },
-  ];
+  ].filter(p => p);
 
   const getEnterpriseInfoVerifyPage = async (pageSize = 10, pageIndex = 1) => {
     try {

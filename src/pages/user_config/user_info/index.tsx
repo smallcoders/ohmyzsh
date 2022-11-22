@@ -134,9 +134,7 @@ export default () => {
       fixed: 'right',
       dataIndex: 'option',
       render: (_: any, record: any) => {
-        const accessible = access?.[permissions?.[edge].replace(new RegExp("Q"), "")]
         return (
-          <Access accessible={accessible}>
             <Space>
               <Button
                 key="1"
@@ -149,7 +147,6 @@ export default () => {
                 详情
               </Button>
             </Space>
-          </Access>
         )
       }
     },
