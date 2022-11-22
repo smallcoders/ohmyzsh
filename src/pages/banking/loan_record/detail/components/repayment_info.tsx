@@ -6,6 +6,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
 import { getBackMoneyDetail, addBackMoney, delBackMoney } from '@/services/banking-loan';
 import type Common from '@/types/common';
+import { FooterToolbar } from '@ant-design/pro-components';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import {
@@ -362,7 +363,7 @@ export default ({ isDetail, id }: Props) => {
                       record?.actualRepaymentDate && moment(record?.actualRepaymentDate),
                     backMoney: regFenToYuan(record?.backMoney, 1),
                     workProve: record?.workProves
-                      ? record.workProves.map((p: any) => {
+                      ? record.workProves.map((p: BankingLoan.workProves) => {
                           return {
                             uid: p.id,
                             name: p.name + '.' + p.format,
@@ -461,6 +462,9 @@ export default ({ isDetail, id }: Props) => {
               }
         }
       />
+      <FooterToolbar>
+        <Button onClick={() => history.goBack()}>返回</Button>
+      </FooterToolbar>
       {useModal()}
     </>
   );

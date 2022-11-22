@@ -1,45 +1,19 @@
-import { Row, Col, Anchor, Button, Form, Image, Space, Table, Tag, message } from 'antd';
+import { Row, Col, Button, Image, message } from 'antd';
 import './application_info.less';
 import VerifyStepsDetail from '@/components/verify_steps';
 import CommonTitle from '@/components/verify_steps/common_title';
 import { useEffect, useState } from 'react';
 import ProCard from '@ant-design/pro-card';
+import { FooterToolbar } from '@ant-design/pro-components';
 import { useHistory } from 'umi';
 import type { Props } from './authorization_info';
 import { getApplicationInfo } from '@/services/banking-loan';
-import { number } from 'echarts';
 import { regFenToYuan } from '@/utils/util';
+import type BankingLoan from '@/types/banking-loan.d';
 export default ({ id }: Props) => {
   const history = useHistory();
   const [list, setList] = useState<any>([]);
-  const [detail, setDetail] = useState<any>({});
-  const [Isinsurance, setIsinsurance] = useState<boolean>(false);
-  const prepare = () => {
-    setIsinsurance(true);
-    setList([
-      {
-        title: (
-          <CommonTitle
-            title={'王质保'}
-            detail={'授信失败'}
-            time={'2022-10-24 18:10:37'}
-            special={true}
-            reason={'失败原因描述失败原因描述失败原因描述失败原因描述'}
-          />
-        ),
-      },
-      {
-        title: (
-          <CommonTitle
-            title={'系统生成'}
-            detail={'待授信'}
-            time={'2022-10-24 18:10:37'}
-            special={false}
-          />
-        ),
-      },
-    ]);
-  };
+  const [detail, setDetail] = useState<BankingLoan.ApplicationInfoContent>({});
   const getInfo = async () => {
     try {
       const { result, code } = await getApplicationInfo({ id });
@@ -47,7 +21,7 @@ export default ({ id }: Props) => {
         const { handleRecords } = result;
         setDetail(result);
         setList(
-          handleRecords.map((item: any) => {
+          handleRecords.map((item: BankingLoan.handleRecords) => {
             return {
               title: (
                 <CommonTitle
@@ -69,7 +43,6 @@ export default ({ id }: Props) => {
     }
   };
   useEffect(() => {
-    prepare();
     getInfo();
   }, []);
 
@@ -86,11 +59,14 @@ export default ({ id }: Props) => {
             <Col span={6}>
               <span>法定代表人:{detail.legalPersonName || '--'}</span>
             </Col>
-            <Col span={7}>
+            <Col span={8}>
               <span>注册地址：{detail.registerAddress || '--'}</span>
             </Col>
-            <Col span={11}>
-              <span>经营所在地：{detail.manageAddress || '--'}</span>
+            <Col span={10}>
+              <span>
+                经营所在地：{detail.manageAddress || '--'}
+                {/* {detail.address || '--'} */}
+              </span>
             </Col>
           </Row>
           <span className="application-state">{detail.applyStatus || '--'}</span>
@@ -143,9 +119,12 @@ export default ({ id }: Props) => {
         <h2>平台响应信息</h2>
         <VerifyStepsDetail list={list} />
       </div>
-      <ProCard layout="center">
+      {/* <ProCard layout="center">
         <Button onClick={() => history.goBack()}>返回</Button>
-      </ProCard>
+      </ProCard> */}
+      <FooterToolbar>
+        <Button onClick={() => history.goBack()}>返回</Button>
+      </FooterToolbar>
     </div>
   );
 };

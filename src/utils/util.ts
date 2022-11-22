@@ -105,6 +105,7 @@ export const toDecimal2 = (x: any | number) => {
 };
 // 元转分 yuan:要转换的钱，单位元； digit：转换倍数默认万元（10000）
 export function regYuanToFen(yuan: number, digit: number = 1000000): any {
+  if (yuan === undefined) return null;
   let m = 0;
   const s1 = yuan.toString(),
     s2 = digit.toString();

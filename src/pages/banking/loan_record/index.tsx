@@ -42,7 +42,7 @@ const sc = scopedClasses('loan-record');
 const { DataSourcesTrans, creditStatusTrans } = BankingLoan;
 
 export default () => {
-  const [dataSource, setDataSource] = useState<any[]>([]);
+  const [dataSource, setDataSource] = useState<BankingLoan.Content[]>([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [searchContent, setSearChContent] = useState<{
     applyNo?: string; // 业务申请编号
@@ -73,13 +73,13 @@ export default () => {
   // };
   const [form] = Form.useForm();
   const [createModalVisible, setModalVisible] = useState<boolean>(false);
-  const [editingItem, setEditingItem] = useState<any>({});
+  const [editingItem, setEditingItem] = useState<BankingLoan.Content>({});
   const clearForm = () => {
     form.resetFields();
-    if (editingItem.photoId || editingItem.id) setEditingItem({});
+    if (editingItem.id) setEditingItem({});
   };
-  const [totalAmount, setTotalAmount] = useState<any>({});
-  const [bankList, setBankList] = useState<any[]>([]);
+  const [totalAmount, setTotalAmount] = useState<BankingLoan.totalAmountContent>({});
+  const [bankList, setBankList] = useState<{ bank: string }[]>([]);
   const [isMore, setIsMore] = useState<boolean>(false);
 
   const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
@@ -212,8 +212,13 @@ export default () => {
       console.log(error);
     }
   };
-  const getStep = async ({ id, creditStatus }: any) => {
+  const getStep = async (p: BankingLoan.Content, type: number): Promise<any> => {
+    const { id, creditStatus } = p;
     if (creditStatus === '已授信') {
+      // 供应链e贷产品没有还款信息
+      if (!type) {
+        return 3;
+      }
       try {
         const { result, code } = await getTakeMoneyDetail({
           pageIndex: 1,
@@ -221,7 +226,11 @@ export default () => {
           creditId: id,
         });
         if (code === 0) {
-          if (result?.takeMoneyInfo?.some((item: any) => item.status == '放款成功')) {
+          if (
+            result?.takeMoneyInfo?.some(
+              (item: BankingLoan.TakeMoneyInfoContent) => item.status == '放款成功',
+            )
+          ) {
             return 4;
           } else {
             return 3;
@@ -231,6 +240,7 @@ export default () => {
         }
       } catch (error) {
         console.log(error);
+        return 0;
       }
     } else {
       return 2;
@@ -241,7 +251,7 @@ export default () => {
       title: '序号',
       dataIndex: 'sort',
       width: 50,
-      render: (_: any, _record: any, index: number) =>
+      render: (_: any, _record: BankingLoan.Content, index: number) =>
         pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
@@ -280,7 +290,7 @@ export default () => {
       title: '授信状态',
       dataIndex: 'creditStatus',
       width: 100,
-      render: (_: string, record: any) => {
+      render: (_: string, record: BankingLoan.Content) => {
         return (
           <div className={`state${_}`}>
             {_ || '--'}
@@ -324,7 +334,7 @@ export default () => {
       width: 140,
       fixed: 'right',
       dataIndex: 'option',
-      render: (_: any, record: any) => {
+      render: (_: any, record: BankingLoan.Content) => {
         const isApiType = record.productId === 1662285468000019;
         const type = isApiType ? 0 : 1;
         return (
@@ -333,7 +343,7 @@ export default () => {
               size="small"
               type="link"
               onClick={async () => {
-                const step = await getStep(record);
+                const step = await getStep(record, type);
                 history.push(
                   `${routeName.LOAN_RECORD_DETAIL}?id=${record.id}&isDetail=1&type=${type}&step=${step}`,
                 );
@@ -347,7 +357,7 @@ export default () => {
                   size="small"
                   type="link"
                   onClick={async () => {
-                    const step = await getStep(record);
+                    const step = await getStep(record, type);
                     history.push(
                       `${routeName.LOAN_RECORD_ENTER}?id=${record.id}&type=${type}&step=${step}`,
                     );
@@ -421,7 +431,7 @@ export default () => {
                 <Col span={8}>
                   <Form.Item name="bank" label="金融机构">
                     <Select placeholder="请选择" allowClear>
-                      {bankList?.map((item: any) => (
+                      {bankList?.map((item: { bank: string }) => (
                         <Select.Option key={item.bank} value={item.bank}>
                           {item.bank}
                         </Select.Option>
@@ -457,6 +467,7 @@ export default () => {
                     name="takeMoney"
                     fieldProps={{
                       min: 0,
+                      precision: 2,
                     }}
                     addonAfter={<div style={{ width: '30px' }}>万元</div>}
                   />
@@ -467,6 +478,7 @@ export default () => {
                     separator="-"
                     fieldProps={{
                       min: 0,
+                      precision: 2,
                     }}
                     separatorWidth={30}
                     name="creditAmount"
@@ -494,12 +506,20 @@ export default () => {
                     search.applyTimeEnd = moment(search.time[1]).format('YYYY-MM-DD');
                   }
                   if (search.takeMoney) {
-                    search.takeMoneyMin = regYuanToFen(search.takeMoney[0]);
-                    search.takeMoneyMax = regYuanToFen(search.takeMoney[1]);
+                    search.takeMoneyMin = search.takeMoney[0]
+                      ? regYuanToFen(search.takeMoney[0])
+                      : null;
+                    search.takeMoneyMax = search.takeMoney[1]
+                      ? regYuanToFen(search.takeMoney[1])
+                      : null;
                   }
                   if (search.creditAmount) {
-                    search.creditAmountMin = regYuanToFen(search.creditAmount[0]);
-                    search.creditAmountMax = regYuanToFen(search.creditAmount[1]);
+                    search.creditAmountMin = search.creditAmount[0]
+                      ? regYuanToFen(search.creditAmount[0])
+                      : null;
+                    search.creditAmountMax = search.creditAmount[1]
+                      ? regYuanToFen(search.creditAmount[1])
+                      : null;
                   }
                   console.log('search', search);
                   setSearChContent(search);
@@ -579,11 +599,6 @@ export default () => {
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
     setSelectedRowKeys(newSelectedRowKeys);
   };
-  const rowSelection: TableRowSelection<any> = {
-    fixed: true,
-    selectedRowKeys,
-    onChange: onSelectChange,
-  };
   return (
     <PageContainer className={sc('container')}>
       {useSearchNode()}
@@ -615,14 +630,11 @@ export default () => {
           columns={columns}
           dataSource={dataSource}
           rowKey={'id'}
-          // expandable={{
-          //   expandedRowRender: (record: any) => <p style={{ margin: 0 }}>{record.content}</p>,
-          //   // rowExpandable: () => true,
-          //   expandIcon: () => <></>,
-          //   defaultExpandAllRows: true,
-          //   expandedRowKeys: dataSource.map((p) => p.id),
-          // }}
-          rowSelection={rowSelection}
+          rowSelection={{
+            fixed: true,
+            selectedRowKeys,
+            onChange: onSelectChange,
+          }}
           pagination={
             pageInfo.totalCount === 0
               ? false

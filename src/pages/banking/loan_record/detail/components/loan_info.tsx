@@ -28,6 +28,7 @@ import moment from 'moment';
 import { history } from 'umi';
 import { routeName } from '@/../config/routes';
 import SelfTable from '@/components/self_table';
+import { FooterToolbar } from '@ant-design/pro-components';
 // import type LiveTypesMaintain from '@/types/live-types-maintain.d';
 import { getTakeMoneyDetail, addOrUpdateTakeMoney, deleteTakeMoney } from '@/services/banking-loan';
 import { getOrgTypeOptions } from '@/services/org-type-manage';
@@ -534,6 +535,9 @@ export default ({ isDetail, type, id, step }: Props) => {
           数据来源：{BankingLoan.DataSourcesTrans[type || '']}
         </div>
       )}
+      <FooterToolbar>
+        <Button onClick={() => history.goBack()}>返回</Button>
+      </FooterToolbar>
       {useModal()}
     </>
   );

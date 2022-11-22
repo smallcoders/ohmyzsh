@@ -11,14 +11,16 @@ import {
   message,
   Modal,
 } from 'antd';
-import { UploadOutlined, CheckCircleTwoTone } from '@ant-design/icons';
+import { UploadOutlined, CheckCircleTwoTone, ExclamationCircleOutlined } from '@ant-design/icons';
+import { FooterToolbar } from '@ant-design/pro-components';
 import UploadFormFile from '@/components/upload_form/upload-form-file';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useImperativeHandle, forwardRef } from 'react';
 import { routeName } from '@/../config/routes';
 import { history } from 'umi';
 import { getCreditDetail, updateCreditInfo } from '@/services/banking-loan';
 import { regFenToYuan, regYuanToFen } from '@/utils/util';
 import patchDownloadFile from '@/utils/patch-download-file';
+import type BankingLoan from '@/types/banking-loan.d';
 import moment from 'moment';
 export type Props = {
   isDetail?: boolean; //详情展示
@@ -28,18 +30,18 @@ export type Props = {
   toTab?: any; //跳转的tab函数
 };
 const { confirm } = Modal;
-export default ({ isDetail, type, step, id, toTab }: Props) => {
+export default forwardRef((props: Props, ref) => {
+  const { isDetail, type, step, id, toTab } = props;
   const previewType = ['png', 'jpg', 'jpeg', 'jpeg2000', 'pdf'];
   const [form] = Form.useForm();
   const busiStatus = Form.useWatch('busiStatus', form);
-  const [detail, setDetail] = useState<any>(null);
-  const onCancel = () => {
-    history.goBack();
-  };
+  const [detail, setDetail] = useState<BankingLoan.CreditInfoContent>({});
+  const [formIsChange, setFormIsChange] = useState<boolean>(false);
+  const [afterSaveVisible, setAfterSaveVisible] = useState<boolean>(false);
   const toCreditApply = () => {
     history.push(`${routeName.LOAN_RECORD_ENTER}?id=${id}&type=${type}&step=${step}`);
   };
-  const onOk = async () => {
+  const onOk = async (cb: any) => {
     form
       .validateFields()
       .then(async (values) => {
@@ -57,27 +59,27 @@ export default ({ isDetail, type, step, id, toTab }: Props) => {
 
         const res = await updateCreditInfo(data);
         if (res?.code == 0) {
-          if (busiStatus === 2) {
-            confirm({
-              closable: true,
-              title: '保存成功',
-              icon: <CheckCircleTwoTone />,
-              content: '授信信息录入成功。是否继续录入放款信息？',
-              okText: '录入放款信息',
-              cancelText: '返回列表',
-              onOk() {
-                toTab('3');
-                // history.push(`${routeName.LOAN_RECORD_ENTER}?id=${id}&type=${type}&step=3`);
-              },
-              onCancel() {
-                history.push(`${routeName.LOAN_RECORD}`);
-              },
-              afterClose() {
-                console.log('afterClose');
+          setFormIsChange(false);
+          if (cb) {
+            message.success({
+              content: `保存成功`,
+              duration: 1,
+              onClose: () => {
+                cb();
               },
             });
           } else {
-            history.push(`${routeName.LOAN_RECORD}`);
+            if (busiStatus === 2) {
+              setAfterSaveVisible(true);
+            } else {
+              message.success({
+                content: `保存成功`,
+                duration: 2,
+                onClose: () => {
+                  history.push(`${routeName.LOAN_RECORD}`);
+                },
+              });
+            }
           }
         } else {
           message.error(res?.message || '授权信息保存失败');
@@ -86,6 +88,57 @@ export default ({ isDetail, type, step, id, toTab }: Props) => {
       .catch((err) => {
         console.log(err);
       });
+  };
+  const onCancel = (cb: any) => {
+    if (formIsChange) {
+      confirm({
+        title: '要在离开之前对填写的信息进行保存吗?',
+        icon: <ExclamationCircleOutlined />,
+        cancelText: '放弃修改并离开',
+        okText: '保存',
+        onCancel() {
+          if (cb) {
+            cb();
+          } else {
+            history.goBack();
+          }
+        },
+        onOk() {
+          onOk(cb);
+        },
+      });
+    } else {
+      history.goBack();
+    }
+  };
+  useImperativeHandle(ref, () => ({
+    formIsChange: formIsChange,
+    cancelEdit: onCancel,
+  }));
+  const afterSaveModel = () => {
+    return (
+      <Modal
+        visible={afterSaveVisible}
+        title={
+          <>
+            <CheckCircleTwoTone style={{ marginRight: '10px' }} />
+            保存成功
+          </>
+        }
+        onCancel={() => setAfterSaveVisible(false)}
+        // icon={<CheckCircleTwoTone />}
+        footer={[
+          <Button key="back" onClick={() => history.push(`${routeName.LOAN_RECORD}`)}>
+            返回列表
+          </Button>,
+          <Button key="submit" type="primary" onClick={() => toTab('3')}>
+            录入放款信息
+          </Button>,
+        ]}
+      >
+        <p>授信信息录入成功。是否继续录入放款信息？</p>
+      </Modal>
+    );
   };
   const getDetail = async () => {
     try {
@@ -96,9 +149,9 @@ export default ({ isDetail, type, step, id, toTab }: Props) => {
           if (!isDetail) {
             const { startDate, endDate, creditAmount, contractNo, rate, workProves, ...rest } =
               result;
-            const creditTime = [moment(startDate), moment(endDate)];
+            const creditTime = startDate ? [moment(startDate), moment(endDate)] : [];
             form.setFieldsValue({
-              fileIds: workProves?.map((item: any) => {
+              fileIds: workProves?.map((item: BankingLoan.workProves) => {
                 return {
                   name: item.name + '.' + item.format,
                   path: item.path,
@@ -109,7 +162,7 @@ export default ({ isDetail, type, step, id, toTab }: Props) => {
               busiStatus: rest.busiStatus,
               rate,
               creditTime,
-              creditAmount: Number(regFenToYuan(creditAmount)),
+              creditAmount: creditAmount === null ? null : Number(regFenToYuan(creditAmount)),
               contractNo,
             });
           }
@@ -126,7 +179,7 @@ export default ({ isDetail, type, step, id, toTab }: Props) => {
     getDetail();
   }, []);
   const showfile = () => {
-    return detail?.workProves?.map((file: any) => {
+    return detail?.workProves?.map((file: BankingLoan.workProves) => {
       console.log('file', file);
       return (
         <div key={file.uid} className="file-show">
@@ -148,27 +201,23 @@ export default ({ isDetail, type, step, id, toTab }: Props) => {
       );
     });
   };
-  const renderFooter: any = () => {
+  const renderFooter = () => {
     if (!isDetail) {
       return (
-        <div className="authorization-footer">
-          <Space size={'middle'}>
-            <Button key="cancel" onClick={onCancel}>
-              返回
-            </Button>
-            <Button key="ensure" type="primary" onClick={onOk}>
-              保存
-            </Button>
-          </Space>
-        </div>
+        <Space size={'middle'}>
+          <Button key="cancel" onClick={() => onCancel(null)}>
+            返回
+          </Button>
+          <Button key="ensure" type="primary" onClick={() => onOk()}>
+            保存
+          </Button>
+        </Space>
       );
     }
     return (
-      <div className="authorization-footer">
-        <Button key="cancel" onClick={onCancel}>
-          返回
-        </Button>
-      </div>
+      <Button key="cancel" onClick={() => onCancel(null)}>
+        返回
+      </Button>
     );
   };
   return isDetail && !detail ? (
@@ -182,7 +231,15 @@ export default ({ isDetail, type, step, id, toTab }: Props) => {
     </div>
   ) : (
     <div className="authorization">
-      <Form name="basic" labelCol={{ span: 4 }} wrapperCol={{ span: 8 }} form={form}>
+      <Form
+        name="basic"
+        labelCol={{ span: 4 }}
+        wrapperCol={{ span: 8 }}
+        form={form}
+        onValuesChange={() => {
+          setFormIsChange(true);
+        }}
+      >
         <Form.Item
           name="busiStatus"
           label="授信状态"
@@ -312,7 +369,8 @@ export default ({ isDetail, type, step, id, toTab }: Props) => {
           </Form.Item>
         )}
       </Form>
-      {renderFooter()}
+      <FooterToolbar>{renderFooter()}</FooterToolbar>
+      {afterSaveModel()}
     </div>
   );
-};
+});

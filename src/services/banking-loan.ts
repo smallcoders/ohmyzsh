@@ -56,13 +56,13 @@ export async function loanRecordExport(data?: { [key: string]: any }) {
  * @param data
  * @returns
  */
-export async function getApplicationInfo(params: { id: string }) {
+export async function getApplicationInfo(params: { id?: string }) {
   return request<any>('/antelope-finance/loanRecord/mng/getApplicationInfo', {
     method: 'get',
     params,
-    // headers: {
-    //   'rpc-tag': 'jianwang44',
-    // },
+    headers: {
+      'rpc-tag': 'jianwang44',
+    },
   });
 }
 /**

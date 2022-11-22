@@ -1,6 +1,6 @@
 import { PageContainer } from '@ant-design/pro-layout';
 import { Button } from 'antd';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { history } from 'umi';
 import BankingLoan from '@/types/banking-loan.d';
 import ApplicationInfo from './components/application_info';
@@ -12,6 +12,7 @@ export default () => {
   const [tabList, setTabList] = useState<any>([]);
   const { type, step, isDetail, id } = history.location.query as any;
   const [steps, setSteps] = useState<string>(step);
+  const AuthorizationRef = useRef(null) as React.MutableRefObject<any>;
   // const [isDetail, setIsDetail] = useState<boolean>(false);
   const tabLists = [
     {
@@ -61,11 +62,21 @@ export default () => {
     <PageContainer
       tabList={tabList}
       tabActiveKey={activeKey}
-      onTabChange={(key: string) => setActiveKey(key)}
+      onTabChange={async (key: string) => {
+        if (activeKey === '2' && AuthorizationRef.current.formIsChange) {
+          AuthorizationRef.current.cancelEdit(() => {
+            setActiveKey(key);
+          });
+          // setActiveKey(key);
+        } else {
+          setActiveKey(key);
+        }
+      }}
     >
       {activeKey === '1' && <ApplicationInfo id={id} />}
       {activeKey === '2' && (
         <AuthorizationInfo
+          ref={AuthorizationRef}
           isDetail={isDetail}
           type={Number(type)}
           step={steps}
