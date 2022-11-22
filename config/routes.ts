@@ -1,4 +1,4 @@
-export const routeName = {
+﻿export const routeName = {
   DATA_COLUMN: '/service-config/data-column', // 数据栏
   DIAGNOSTIC_TASKS: '/service-config/diagnostic-tasks/index', // 诊断任务
   DIAGNOSTIC_TASKS_DETAIL: '/service-config/diagnostic-tasks/detail', // 诊断记录
@@ -25,8 +25,8 @@ export const routeName = {
   DEMAND_MANAGEMENT_INDEX: '/supply-demand-setting/demand-manage/index', // 需求管理
   DEMAND_MANAGEMENT_DETAIL: '/supply-demand-setting/demand-manage/detail', // 需求管理详情
 
-  OPERATION_ACTIVITY_PARAMETER:'/operation-activity/parameter-setting/index',//运营活动参数设置
-  OPERATION_ACTIVITY_LINK:'/operation-activity/link-setting/index',//运营活动链接设置
+  OPERATION_ACTIVITY_PARAMETER:'/operate-activity/parameter-setting/index',//运营活动参数设置
+  OPERATION_ACTIVITY_LINK:'/operate-activity/link-setting/index',//运营活动链接设置
 
   DEMAND_MANAGEMENT_FEEDBACK: '/supply-demand-setting/demand-manage/feedback', // 需求管理详情
   ACCOUNT: '/system-config/account', // 账号管理
@@ -104,10 +104,10 @@ export const routeName = {
   SALES_STATISTICS: '/purchase-manage/sales-statistics', // 商品数据统计
   SALES_STATISTICS_DETAIL: '/purchase-manage/sales-statistics/detail', // 活动数据-活动详情
 
-  PROPAGANDA_CONFIG: '/local-propaganda/propaganda-config/index', // 地市宣传页管理
-  ADD_PROPAGANDA_CONFIG: '/local-propaganda/propaganda-config/add-management', // 新增地市宣传页管理
-  DETAIL_PROPAGANDA_CONFIG: '/local-propaganda/propaganda-config/detail-management', // 新增地市宣传页管理
-  MANAGEMENT_ACTIVITIES: '/local-propaganda/management_activities', // 地市活动管理
+  PROPAGANDA_CONFIG: '/operate-activity/local-propaganda/propaganda-config/index', // 地市宣传页管理
+  ADD_PROPAGANDA_CONFIG: '/operate-activity/local-propaganda/propaganda-config/add-management', // 新增地市宣传页管理
+  DETAIL_PROPAGANDA_CONFIG: '/operate-activity/local-propaganda/propaganda-config/detail-management', // 新增地市宣传页管理
+  MANAGEMENT_ACTIVITIES: '/operate-activity/local-propaganda/management_activities', // 地市活动管理
 
   //金融服务管理
   BANKING_SERVICE: '/banking/banking_service_manage',
@@ -425,35 +425,7 @@ export default [
   //       path: routeName.INDUSTRY_TOPIC,
   //       name: '产业专题',
   //       component: './service_config/industry_topic',
-  //     },
-  //     {
-  //       path: '/service-config/diagnose',
-  //       name: '企业诊断管理',
-  //       // component: './service_config/diagnose_manage',
-  //       hideChildrenInMenu: true,
-  //       routes: [
-  //         // {
-  //         //   path: '/service-config/diagnose',
-  //         //   redirect: './service_config/diagnose_manage',
-  //         // },
-  //         {
-  //           path: '/service-config/diagnose',
-  //           // hideInBreadcrumb: true,
-  //           name: '企业诊断管理',
-  //           component: './service_config/diagnose_manage',
-  //         },
-  //         {
-  //           path: '/service-config/diagnose/add',
-  //           name: '新建诊断',
-  //           component: './service_config/diagnose_manage/add_diagnose',
-  //         },
-  //         {
-  //           path: '/service-config/diagnose/history',
-  //           name: '历史版本查看',
-  //           component: './service_config/diagnose_manage/history_diagnose',
-  //         },
-  //       ],
-  //     },
+  //     }
   //   ],
   // },
   // {
@@ -491,30 +463,6 @@ export default [
   //           path: '/diagnose-manage/diagnostic-tasks/report',
   //           name: '诊断报告',
   //           component: './diagnose_manage/diagnostic_tasks_report',
-  //         },
-  //       ],
-  //     },
-  //     {
-  //       path: '/diagnose-manage/diagnose',
-  //       name: '企业诊断管理',
-  //       // component: './service_config/diagnose_manage',
-  //       hideChildrenInMenu: true,
-  //       routes: [
-  //         {
-  //           path: '/diagnose-manage/diagnose',
-  //           // hideInBreadcrumb: true,
-  //           name: '企业诊断管理',
-  //           component: './diagnose_manage/diagnose_manage',
-  //         },
-  //         {
-  //           path: '/diagnose-manage/diagnose/add',
-  //           name: '新建诊断',
-  //           component: './diagnose_manage/diagnose_manage/add_diagnose',
-  //         },
-  //         {
-  //           path: '/diagnose-manage/diagnose/history',
-  //           name: '历史版本查看',
-  //           component: './diagnose_manage/diagnose_manage/history_diagnose',
   //         },
   //       ],
   //     },
@@ -611,50 +559,6 @@ export default [
   //       path: routeName.DEMAND_CONTACTS,
   //       name: '需求联系人管理',
   //       component: './supply_demand_setting/demand_contacts/index',
-  //     },
-  //   ],
-  // },
-  // {
-  //   path: '/local-propaganda',
-  //   name: '地市专题管理',
-  //   icon: 'unordered-list',
-  //   access: 'LOCAL-PROPAGANDA',
-  //   routes: [
-  //     {
-  //       path: '/local-propaganda',
-  //       redirect: '/local-propaganda/propaganda-config',
-  //     },
-  //     {
-  //       path: '/local-propaganda/propaganda-config',
-  //       name: '地市宣传页管理',
-  //       hideChildrenInMenu: true,
-  //       routes: [
-  //         {
-  //           path: '/local-propaganda/propaganda-config',
-  //           redirect: routeName.PROPAGANDA_CONFIG,
-  //         },
-  //         {
-  //           path: routeName.PROPAGANDA_CONFIG,
-  //           hideInBreadcrumb: true,
-  //           name: '地市宣传页管理',
-  //           component: './local_propaganda/propaganda_config',
-  //         },
-  //         {
-  //           path: routeName.ADD_PROPAGANDA_CONFIG,
-  //           name: '新增地市宣传页',
-  //           component: './local_propaganda/add_management',
-  //         },
-  //         {
-  //           path: routeName.DETAIL_PROPAGANDA_CONFIG,
-  //           name: '地市宣传页详情',
-  //           component: './local_propaganda/detail_management',
-  //         },
-  //       ],
-  //     },
-  //     {
-  //       path: routeName.MANAGEMENT_ACTIVITIES,
-  //       name: '地市活动管理',
-  //       component: './local_propaganda/management_activities',
   //     },
   //   ],
   // },

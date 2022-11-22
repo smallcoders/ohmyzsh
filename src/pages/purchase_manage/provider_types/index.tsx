@@ -120,6 +120,8 @@ export default () => {
     }
   };
 
+  const access = useAccess()
+
   const columns = [
     {
       title: '序号',
@@ -144,7 +146,7 @@ export default () => {
       dataIndex: 'createTime',
       width: 100,
     },
-    {
+    access['P_PM_GYSLX'] && {
       title: '操作',
       width: 80,
       fixed: 'right',
@@ -152,31 +154,29 @@ export default () => {
       render: (_: any, record: LiveTypesMaintain.Content) => {
         return (
           <Space size="middle">
-            <Access accessible={access['P_PM_GYSLX']}>
-              <a
-                href="#"
-                onClick={() => {
-                  setEditingItem(record);
-                  setModalVisible(true);
-                  form.setFieldsValue({ providerTypeName: record?.providerTypeName, weight: record?.weight });
-                }}
-              >
-                编辑
-              </a>
-              <Popconfirm
-                title="确定删除么？"
-                okText="确定"
-                cancelText="取消"
-                onConfirm={() => remove(record.id as string)}
-              >
-                <a href="#">删除</a>
-              </Popconfirm>
-            </Access>
+            <a
+              href="#"
+              onClick={() => {
+                setEditingItem(record);
+                setModalVisible(true);
+                form.setFieldsValue({ providerTypeName: record?.providerTypeName, weight: record?.weight });
+              }}
+            >
+              编辑
+            </a>
+            <Popconfirm
+              title="确定删除么？"
+              okText="确定"
+              cancelText="取消"
+              onConfirm={() => remove(record.id as string)}
+            >
+              <a href="#">删除</a>
+            </Popconfirm>
           </Space>
         );
       },
     },
-  ];
+  ].filter(p => p);
 
   useEffect(() => {
     getPages();
@@ -245,8 +245,6 @@ export default () => {
       </Modal>
     );
   };
-
-  const access = useAccess()
 
   return (
     <PageContainer className={sc('container')}>

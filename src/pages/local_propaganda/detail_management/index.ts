@@ -1,1 +1,0 @@
-export { default } from './local-propaganda-detail-management'

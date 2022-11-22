@@ -171,6 +171,8 @@ export default () => {
     }
   };
 
+  const access = useAccess()
+
   const columns = [
     {
       title: '排序',
@@ -269,7 +271,7 @@ export default () => {
         )
       },
     },
-    {
+    access['P_LM_SPGL'] && {
       title: '操作',
       width: 260,
       fixed: 'right',
@@ -277,7 +279,7 @@ export default () => {
       render: (_: any, record: any) => {
         return (
           <Space size="middle">
-            <Access accessible={access['P_LM_SPGL']}>
+            {/* <Access accessible={access['P_LM_SPGL']}> */}
             <Button
               type="link"
               onClick={() => {
@@ -350,12 +352,12 @@ export default () => {
                 </Popconfirm>
               )
             }
-            </Access>
+            {/* </Access> */}
           </Space>
         );
       },
     },
-  ];
+  ].filter(p => p);
 
   useEffect(() => {
     getPages();
@@ -690,8 +692,6 @@ export default () => {
       </Modal>
     );
   };
-
-  const access = useAccess()
 
   return (
     <PageContainer className={sc('container')}>
