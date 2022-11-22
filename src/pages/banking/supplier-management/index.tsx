@@ -153,6 +153,9 @@ export default () => {
       dataIndex: 'code',
       align: 'center',
       width: 200,
+      render: (code: string) => {
+        return code === '' ? '--' : code;
+      },
     },
     {
       title: '供应商名称',
@@ -207,7 +210,7 @@ export default () => {
       align: 'center',
       width: 200,
       render: (cityName: string) => {
-        return cityName === null ? '--' : cityName.split(',')[0];
+        return cityName === null ? '--' : cityName.split(',')[0].split('-').join('/');
       },
     },
     {
@@ -294,12 +297,16 @@ export default () => {
         <Form {...formLayout} form={searchForm} onFinish={onFinish}>
           <Row>
             <Col span={7}>
-              <Form.Item name="supplier" label="供应商">
+              <Form.Item name="supplier" label="供应商" wrapperCol={{ span: 18 }}>
                 <Input placeholder="请输入供应商编码、名称或统一社会信用代码" />
               </Form.Item>
             </Col>
             <Col span={7}>
-              <Form.Item name="applyFlag" label="允许申请供应链e贷" labelCol={{ span: 8 }}>
+              <Form.Item
+                name="applyFlag"
+                label="允许申请供应链e贷"
+                labelCol={{ span: 8, offset: 1 }}
+              >
                 <Select placeholder="请选择" allowClear>
                   <Select.Option value={0}>是</Select.Option>
                   <Select.Option value={1}>否</Select.Option>
@@ -501,7 +508,7 @@ export default () => {
 
                       const { result } = await queryGyl({ name: value });
                       drawerForm.setFieldsValue({
-                        code: result === null ? '' : result,
+                        code: result === null ? null : result.code,
                         creditCode: queryOrgInfo.creditCode,
                         estiblishTime: queryOrgInfo.estiblishTime.split(' ')[0],
                         legalName: queryOrgInfo.legalPersonName,
