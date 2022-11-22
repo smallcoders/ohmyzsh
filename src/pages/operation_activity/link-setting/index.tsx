@@ -335,7 +335,7 @@ export default () => {
           if(res.code==0){
             value.url=res?.result
           }
-        value.activeUrl= `https://www.lingyangplat.com/antelope-activity-h5/share-code/index.html?preview=true&targetLinkType=${value.targetLinkType}&buttonText=${value.buttonText}&targetLink=${value.targetLink}&url=${value.url}`
+        value.activeUrl= window.location.protocol + '//' + window.location.host.split(':')[0] +`/antelope-activity-h5/share-code/index.html?preview=true&targetLinkType=${value.targetLinkType}&buttonText=${value.buttonText}&targetLink=${value.targetLink}&url=${value.url}`
         setCurrent(1)
         setFormData(value)
       }else if(edge==3){
@@ -384,12 +384,12 @@ export default () => {
     console.log(e)
     if(e.id){
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      copy(`https://www.lingyangplat.com/antelope-activity-h5/share-code/index.html?preview=false&targetLinkType=${e.targetLinkType}&id=${e.id}`)
+      copy(window.location.protocol + '//' + window.location.host.split(':')[0] +`/antelope-activity-h5/share-code/index.html?preview=false&targetLinkType=${e.targetLinkType}&id=${e.id}`)
         message.success('链接复制成功');
 
     }else{
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      copy(`https://www.lingyangplat.com/antelope-activity-h5/share-code/index.html?preview=true&targetLinkType=${e.targetLinkType}&buttonText=${e.buttonText}&targetLink=${e.targetLink}&url=${e.url}`)
+      copy(window.location.protocol + '//' + window.location.host.split(':')[0] +`/antelope-activity-h5/share-code/index.html?preview=true&targetLinkType=${e.targetLinkType}&buttonText=${e.buttonText}&targetLink=${e.targetLink}&url=${e.url}`)
         message.success('链接复制成功');
     }
   };
@@ -1133,7 +1133,7 @@ export default () => {
             <h2 >以下链接用于预览效果用，不计入数据统计</h2>
             {formData&&(
               <div>
-            <h2 className={sc('modelWord-link')}>{ `https://www.lingyangplat.com/antelope-activity-h5/share-code/index.html?preview=true&targetLinkType=${formData.targetLinkType}&buttonText=${formData.buttonText}&targetLink=${formData.targetLink}&url=${formData.url}`}
+            <h2 className={sc('modelWord-link')}>{ window.location.protocol + '//' + window.location.host.split(':')[0] +`/antelope-activity-h5/share-code/index.html?preview=true&targetLinkType=${formData.targetLinkType}&buttonText=${formData.buttonText}&targetLink=${formData.targetLink}&url=${formData.url}`}
             </h2>
             <Button
               type="primary"
@@ -1156,7 +1156,7 @@ export default () => {
               <div className={sc('modelWord-bk-invite')}>邀请人：{shardCodeMaster}</div>
               <div className="qr-anhui-pf">
                 <QRCode
-                  value={(`https://www.lingyangplat.com/antelope-activity-h5/antelope-download/index.html?shardCodeMaster=${shardCodeMaster}&preview=true`) }
+                  value={(window.location.protocol + '//' + window.location.host.split(':')[0] +`/antelope-activity-h5/antelope-download/index.html?shardCodeMaster=${shardCodeMaster}&preview=true`) }
                   renderAs={'canvas'}
                   size={113}
                   bgColor={'#FFFFFF'}
@@ -1170,7 +1170,7 @@ export default () => {
               <div className={sc('modelWord-bk1-invite')}>邀请人：{shardCodeMaster}</div>
               <div className="qr-anhui-pf">
                 <QRCode
-                  value={(`https://www.lingyangplat.com/antelope-activity-h5/antelope-download/index.html?shardCodeMaster=${shardCodeMaster}&preview=false`)}
+                  value={(window.location.protocol + '//' + window.location.host.split(':')[0] +`/antelope-activity-h5/antelope-download/index.html?shardCodeMaster=${shardCodeMaster}&preview=false`)}
                   renderAs={'canvas'}
                   size={113}
                   bgColor={'#FFFFFF'}
