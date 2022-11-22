@@ -1493,7 +1493,7 @@ export default [
     code: 'M_PC',
     access: 'M_PC',
     name: '平台设置',
-    icon: 'unordered-list',
+    icon: 'build',
     routes: [
       {
         path: '/solution-properties',
@@ -1606,7 +1606,7 @@ export default [
     code: 'M_OA',
     access: 'M_OA',
     name: '运营活动管理',
-    icon: 'unordered-list',
+    icon: 'bell',
     routes: [
       {
         path: '/operate-activity',
@@ -1704,7 +1704,7 @@ export default [
     code: 'M_OA',
     access: 'M_OA',
     name: '诊断管理',
-    icon: 'unordered-list',
+    icon: 'bug',
     routes: [
       {
         path: '/diagnose-manage',
@@ -1775,7 +1775,7 @@ export default [
     code: 'M_SM',
     access: 'M_SM',
     name: '科产管理',
-    icon: 'unordered-list',
+    icon: 'experiment',
     routes: [
       {
         path: '/science-technology-manage',
@@ -1843,7 +1843,7 @@ export default [
     code: 'M_AM',
     access: 'M_AM',
     name: '应用管理',
-    icon: 'unordered-list',
+    icon: 'eye',
     routes: [
       {
         path: '/apply-manage',
@@ -2031,7 +2031,7 @@ export default [
     code: 'M_PM',
     access: 'M_PM',
     name: '采购管理',
-    icon: 'account-book',
+    icon: 'shopping-cart',
     routes: [
       {
         path: '/purchase-manage',
