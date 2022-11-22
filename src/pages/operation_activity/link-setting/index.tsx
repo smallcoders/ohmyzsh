@@ -937,6 +937,7 @@ export default () => {
         width="600px"
         maskClosable={false}
         visible={createModalVisible}
+        className={sc('formModel')}
         onCancel={() => {
           clearForm();
           setCurrent(0)
