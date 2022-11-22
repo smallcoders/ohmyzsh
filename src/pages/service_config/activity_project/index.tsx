@@ -96,10 +96,10 @@ export default () => {
 
       const { message: msg, code } = await updateMark(params);
       if (code === 0) {
-        message.success(msg);
+        message.success('标注成功');
         getPage();
       } else {
-        message.error(`标注失败`);
+        message.error(msg || `标注失败`);
       }
     } catch (error) {
       console.log(error);

@@ -8,10 +8,15 @@ import './index.less'
 import { getBizGroup } from '@/services/creative-demand';
 import TabMenu from '@/components/TabMenu';
 import { Access, useAccess } from 'umi';
+import { getDictionayTree } from '@/services/common';
+import { getAhArea } from '@/services/area';
+
+
 
 export default () => {
   const [activeKey, setActiveKey] = useState<string>('1');
   const [activeGroup, setActiveGroup] = useState<number>();
+  const [group, setGroup] = useState<any[]>([])
   const [dataKey, setDataKey] = useState<number>(1)
   // 拿到当前角色的access权限兑现
   const access = useAccess()
@@ -54,11 +59,23 @@ export default () => {
     },
   ]
 
+  const [demandTypes, setDemandTypes] = useState<any[]>([])
+  const [area, setArea] = useState<any[]>([])
   useEffect(() => {
     prepare()
   }, [])
 
-  const prepare = () => {
+  const prepare = async () => {
+    try {
+      const res = await Promise.all([getDictionayTree('DEMAND_TYPE'), getBizGroup(), getAhArea()])
+      setDemandTypes(res?.[0]?.result)
+      setGroup(res[1]?.result?.filter((p: { gid: number; }) => p.gid < 6))
+      setActiveGroup(res[1]?.result?.[0]?.gid)
+      console.log('res===>', res)
+      setArea(res?.[2])
+    } catch (error) {
+      message.error('服务器错误')
+    }
     // 初始化tab
     let activeIndex = 0
     let textIndex = 0
@@ -166,9 +183,9 @@ export default () => {
       tabActiveKey={activeKey}
       onTabChange={(key: string) => setActiveKey(key)}
     >
-      {activeKey === '1' && access['M_SD_XQRL'] && <Claim />}
-      {activeKey === '2' && access['M_SD_XQRL'] && <ClaimMy/>}
-      {activeKey === '3' && access['M_SD_GXDJ'] && <Follow gid={activeGroup}/>}
+      {activeKey === '1' && access['M_SD_XQRL'] && <Claim demandTypes={demandTypes} area={area}/>}
+      {activeKey === '2' && access['M_SD_XQRL'] && <ClaimMy demandTypes={demandTypes} area={area}/>}
+      {activeKey === '3' && access['M_SD_GXDJ'] && <Follow gid={activeGroup} demandTypes={demandTypes} area={area}/>}
     </PageContainer>
   );
 };

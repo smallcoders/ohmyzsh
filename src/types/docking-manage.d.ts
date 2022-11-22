@@ -45,6 +45,10 @@ namespace DockingManage {
             text: "撤回指派",
             method: 'cancelAssign'
         },
+        11: {
+            text: "需求跟进",
+            method: 'follow'
+        },
         99: { text: "--" }
     }
     export const specifyType = {

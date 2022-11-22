@@ -1,4 +1,4 @@
-import { message, Image, Timeline, Form, Button, DatePicker, Input, Space, Rate, Breadcrumb, Empty } from 'antd';
+import { message, Image, Timeline, Form, Button, DatePicker, Input, Space, Rate, Breadcrumb, Empty, Modal } from 'antd';
 import { MinusCircleOutlined, DeleteOutlined } from '@ant-design/icons';
 import { history, Link } from 'umi';
 import moment from 'moment';
@@ -6,7 +6,6 @@ import { useState, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
-import { routeName } from '../../../../../config/routes';
 import {
   getOfficeRequirementVerifyDetail,
   addConnectRecord,
@@ -436,6 +435,8 @@ export default () => {
     ],
   }
 
+  const [visible, setVisible] = useState<boolean>(false)
+
   return (
     <PageContainer
       header={{
@@ -461,11 +462,11 @@ export default () => {
           }}>
             提交
           </Button> : '',
-        <Button onClick={() => {
-          history.goBack();
-        }}>
-          返回
-        </Button>
+        // <Button onClick={() => {
+        //   history.goBack();
+        // }}>
+        //   返回
+        // </Button>
       ]}
     >
       <div style={{ display: 'flex', gap: 20 }}>
@@ -550,27 +551,35 @@ export default () => {
 
           <div className={sc('container')}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}> <div className={sc('container-title')}>需求反馈</div>
-              {detail?.demandFeedback && <div className={sc('container-title')}>反馈来自：{detail?.demandFeedback?.feedbackFrom || '--'}</div>}
+              {detail?.demandFeedback && <div className={sc('container-title')}>反馈来自：{detail?.demandFeedback?.feedbackPerson || '--'}</div>}
             </div>
-            {detail?.demandFeedback ? <><div className={sc('container-desc')}>
-              <span>交付物内容描述：</span>
-              <span>{detail?.demandFeedback?.content || '--'}</span>
-            </div>
-              <div className={sc('container-desc')}>
+            {detail?.demandFeedback?.feedbackList?.length > 0 ? <div style={{ padding: '10px 20px' }}>
+
+              <div>
+                <span>交付物内容描述：</span>
+                <div>{detail?.demandFeedback?.feedbackList?.[0]?.content || '--'}</div>
+              </div>
+              <div>
                 <span>交付物文件：</span>
                 <div>
-                  {detail?.demandFeedback?.fileInfo &&
-                    detail?.demandFeedback?.fileInfo?.map((p: any) => {
+                  {detail?.demandFeedback?.feedbackList?.[0]?.fileList &&
+                    detail?.demandFeedback?.feedbackList?.[0]?.fileList?.map((p: any) => {
                       return (
                         <div>
                           <a target="_blank" rel="noreferrer" href={p.path}>
-                            {p.fileName}
+                            {p.name + '.' + p.format}
                           </a>
                         </div>
                       );
                     })}
                 </div>
-              </div></> : <Empty description="未到当前步骤" />}
+              </div>
+              {detail?.demandFeedback?.feedbackList?.length > 2 && <div style={{ textAlign: 'center' }}>
+                <Button type='link' onClick={() => {
+                  setVisible(true)
+                }}>查看完整反馈记录{'>'}</Button>
+              </div>}
+            </div> : <Empty description="未到当前步骤" />}
           </div>
           <div className={sc('container')}>
             <div className={sc('container-title')}>企业评价</div>
@@ -697,6 +706,49 @@ export default () => {
           </Space> */}
         </div>
       </div>
+
+      <Modal
+        title={'反馈记录'}
+        visible={visible}
+        onCancel={() => {
+          setVisible(false)
+        }}
+        width={800}
+        centered
+        maskClosable={false}
+        destroyOnClose={true}
+        footer={null}
+      >
+        {detail?.demandFeedback?.feedbackList?.map((p) => {
+          return <div className={sc('container')}>
+            <div className={sc('container-desc')}>
+              <span></span>
+              <span>{p?.createTime || '--'}</span>
+            </div>
+            <div className={sc('container-desc')}>
+              <span></span>
+              <span>{p?.content || '--'}</span>
+            </div>
+            <div className={sc('container-desc')}>
+              <span></span>
+              <div>
+                {p?.fileList &&
+                  p?.fileList?.map((f: any) => {
+                    return (
+                      <div>
+                        <a target="_blank" rel="noreferrer" href={f.path}>
+                          {f.name + '.' + f.format}
+                        </a>
+                      </div>
+                    );
+                  })}
+              </div>
+            </div>
+            <div>
+            </div>
+          </div>
+        })}
+      </Modal>
     </PageContainer>
   );
 };
