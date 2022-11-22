@@ -17,17 +17,17 @@ import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import type Common from '@/types/common';
 import type BankingSerivce from '@/types/banking-service';
-
-import moment from 'moment';
-import SelfTable from '@/components/self_table';
-import type LogoutVerify from '@/types/user-config-logout-verify';
-
-import { routeName } from '@/../config/routes';
 import {
   getBankingServicePage,
   getProductList,
   updateVerityStatus,
 } from '@/services/banking-service';
+import { customToFixed } from '@/utils/util';
+import moment from 'moment';
+import SelfTable from '@/components/self_table';
+import type LogoutVerify from '@/types/user-config-logout-verify';
+
+import { routeName } from '@/../config/routes';
 const sc = scopedClasses('user-config-logout-verify');
 
 const verityStatusOptions: { label: string; value: number; disabled: boolean }[] = [
@@ -144,16 +144,15 @@ export default () => {
       width: 200,
     },
     {
-      title: '申请金额（元）',
+      title: '申请金额(万元)',
       dataIndex: 'amount',
       isEllipsis: true,
       width: 200,
-      render: (_: number, record: any) => {
+      render: (amount: number, record: any) => {
         if(record.type === 2){
-
           return '/'
         }
-        return (_ / 100).toFixed(2)
+        return customToFixed(`${amount / 1000000}`)
       },
     },
     {

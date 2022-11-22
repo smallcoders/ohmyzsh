@@ -24,6 +24,8 @@ export const routeName = {
   DEMAND_MANAGEMENT: '/service-config/requirement-management', // 需求管理
   DEMAND_MANAGEMENT_INDEX: '/supply-demand-setting/demand-manage/index', // 需求管理
   DEMAND_MANAGEMENT_DETAIL: '/supply-demand-setting/demand-manage/detail', // 需求管理详情
+  OPERATION_ACTIVITY_PARAMETER: '/operation-activity/parameter-setting/index', //运营活动参数设置
+  OPERATION_ACTIVITY_LINK: '/operation-activity/link-setting/index', //运营活动链接设置
   ACCOUNT: '/system-config/account', // 账号管理
   DEMAND_CONTACTS: '/supply-demand-setting/demand_contacts/index', // 需求联系人
 
@@ -114,6 +116,10 @@ export const routeName = {
   LOAN_RECORD_DETAIL: '/banking/loan_record/detail',
   LOAN_RECORD_ENTER: '/banking/loan_record/enter',
   LOAN_RECORD_WITHDRAWANDLOAN: '/banking/loan_record/withdrawAndLoan',
+  FINANCIAL_CUSTOMERS_MANAGE: '/banking/financial_customers_manage',
+  FINANCIAL_CUSTOMERS_MANAGE_INDEX: '/banking/financial_customers_manage/index',
+  FINANCIAL_CUSTOMERS_MANAGE_DETAIL: '/banking/financial_customers_manage/detail',
+  FINANCIAL_CUSTOMERS_MANAGE_EDIT: '/banking/financial_customers_manage/edit',
   // 推荐管理
   RECOMMENDED_HOT_WORDS: '/recommended/hot_words',
   RECOMMENDED_HOT_WORDS_INDEX: '/recommended/hot_words/index',
@@ -133,6 +139,11 @@ export const routeName = {
   ORDER_MESSAGE: '/goods-manage/order_manage',
   ORDER_MESSAGE_INDEX: '/goods-manage/order_manage/index',
   ORDER_MESSAGE_DETAIL: '/goods-manage/order_manage/detail',
+
+  //活动专题
+  ACTIVITY_PROJECT: '/service-config/activity_project',
+  ACTIVITY_PROJECT_INDEX: '/service-config/activity_project/index',
+  ACTIVITY_PROJECT_DETAIL: '/service-config/activity_project/detail',
 };
 
 export default [
@@ -448,6 +459,28 @@ export default [
           },
         ],
       },
+      {
+        path: routeName.ACTIVITY_PROJECT,
+        name: '活动专题',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.ACTIVITY_PROJECT,
+            redirect: routeName.ACTIVITY_PROJECT_INDEX,
+          },
+          {
+            path: routeName.ACTIVITY_PROJECT_INDEX,
+            name: '活动专题',
+            hideInBreadcrumb: true,
+            component: './service_config/activity_project',
+          },
+          {
+            path: routeName.ACTIVITY_PROJECT_DETAIL,
+            name: '活动专题详情',
+            component: './service_config/activity_project/detail',
+          },
+        ],
+      },
     ],
   },
   {
@@ -541,6 +574,28 @@ export default [
         path: routeName.DEMAND_CONTACTS,
         name: '需求联系人管理',
         component: './supply_demand_setting/demand_contacts/index',
+      },
+    ],
+  },
+  {
+    path: '/operation-activity',
+    name: '运营活动管理',
+    icon: 'unordered-list',
+    access: 'OPERATION_ACTIVITY',
+    routes: [
+      {
+        path: '/operation-activity',
+        redirect: routeName.OPERATION_ACTIVITY_PARAMETER,
+      },
+      {
+        path: routeName.OPERATION_ACTIVITY_PARAMETER,
+        name: '参数配置',
+        component: './operation_activity/parameter-setting/index',
+      },
+      {
+        path: routeName.OPERATION_ACTIVITY_LINK,
+        name: '链接配置',
+        component: './operation_activity/link-setting/index',
       },
     ],
   },
@@ -649,6 +704,33 @@ export default [
             path: routeName.LOAN_RECORD_WITHDRAWANDLOAN,
             name: '提款及放款详情',
             component: './banking/loan_record/detail/withdrawAndLoan',
+          },
+        ],
+      },
+      {
+        path: routeName.FINANCIAL_CUSTOMERS_MANAGE,
+        name: '金融客户管理',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.FINANCIAL_CUSTOMERS_MANAGE,
+            redirect: routeName.FINANCIAL_CUSTOMERS_MANAGE_INDEX,
+          },
+          {
+            path: routeName.FINANCIAL_CUSTOMERS_MANAGE_INDEX,
+            hideInBreadcrumb: true,
+            name: '金融客户管理',
+            component: './banking/financial_customers_manage/index',
+          },
+          {
+            path: routeName.FINANCIAL_CUSTOMERS_MANAGE_DETAIL,
+            name: '金融客户信息',
+            component: './banking/financial_customers_manage/detail/detail',
+          },
+          {
+            path: routeName.FINANCIAL_CUSTOMERS_MANAGE_EDIT,
+            name: '编辑',
+            component: './banking/financial_customers_manage/edit/index',
           },
         ],
       },

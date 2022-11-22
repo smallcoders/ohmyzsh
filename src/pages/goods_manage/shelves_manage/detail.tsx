@@ -25,7 +25,7 @@ export default () => {
       title: '商品名称',
       dataIndex: 'productName',
       isEllipsis: true,
-      render: (_: string) => <span>{_}1dasfsdfsdafasdfasdfsadfafa</span>,
+      render: (_: string) => <span>{_}</span>,
       width: 120,
     },
     {

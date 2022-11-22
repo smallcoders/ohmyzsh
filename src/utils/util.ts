@@ -217,3 +217,21 @@ export function priceUppercase(money: any) {
         } */
   return ChineseStr;
 }
+
+// 默认保留两位小数 不进行四舍五入
+export const customToFixed = (num: string, len = 2) => {
+  if (typeof num === 'undefined') {
+    return num;
+  }
+  if (num === null) {
+    return num;
+  }
+  let newNum = num.toString();
+  const index = newNum.indexOf('.');
+  if (index !== -1) {
+    newNum = newNum.substring(0, index + 1 + len);
+  } else {
+    newNum = newNum.substring(0);
+  }
+  return parseFloat(newNum).toFixed(len);
+};
