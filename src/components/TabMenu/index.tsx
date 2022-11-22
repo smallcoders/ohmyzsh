@@ -29,7 +29,7 @@ import './index.less';
 const sc = scopedClasses('tab-menu');
 export default (props: { tabs?: string[];}) => {
   const [contentHtml, setContentHtml] = useState<string | undefined>();
-  const [activeKey, setActiveKey] = useState<string>('M_DM_XSZD');
+  const [activeKey, setActiveKey] = useState<string>('');
   const [showTabList, setShowTabList] = useState<any>([]);
 
   const { initialState } = useModel('@@initialState');
