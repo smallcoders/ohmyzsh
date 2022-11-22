@@ -1,0 +1,47 @@
+@prefix: apply-manage-data-analysis;
+
+.@{prefix}-container {
+  &-table-header {
+    padding: 20px;
+    background-color: #fff;
+    .title {
+      margin-bottom: 20px;
+      color: rgba(0, 0, 0, 0.85);
+      font-weight: 600;
+      font-size: 16px;
+      line-height: 22px;
+    }
+    .ant-form-item {
+      margin-bottom: 0;
+    }
+  }
+  &-table-body {
+    padding: 0 20px;
+    background-color: #fff;
+  }
+  &-indexs {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding: 20px;
+    background-color: #fff;
+    .title {
+      color: rgba(0, 0, 0, 0.85);
+      font-weight: 600;
+      font-size: 16px;
+      line-height: 22px;
+    }
+    :last-child {
+      display: flex;
+      > div {
+        display: grid;
+        margin-right: 50px;
+        :last-child {
+          color: rgba(0, 0, 0, 0.85);
+          font-weight: 600;
+          font-size: 24px;
+        }
+      }
+    }
+  }
+}

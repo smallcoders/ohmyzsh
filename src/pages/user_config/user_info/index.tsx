@@ -11,7 +11,7 @@ import {
   Space,
 
 } from 'antd';
-import { history } from 'umi';
+import { Access, useAccess } from 'umi';
 import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
@@ -31,12 +31,33 @@ const sc = scopedClasses('service-config-requirement-manage');
 const registerSource = {
   WEB: 'web端注册', WECHAT: '微信小程序注册', APP: 'APP', OTHER: '其他'
 }
+enum Edge {
+  HOME = 0,
+}
 
 export default () => {
   const [dataSource, setDataSource] = useState<any[]>([]);
   const [selectChannelListAll,setSelectChannelAll] = useState<Activity.Content[]>([])
   const [selectSceneListAll,setSelectSceneAll] = useState<Activity.Content[]>([])
   const [searchContent, setSearChContent] = useState<User.SearchBody>({});
+  // 拿到当前角色的access权限兑现
+  const access = useAccess()
+  // 当前页面的对应权限key
+  const [edge, setEdge] = useState<Edge.HOME>(Edge.HOME);
+  // 页面权限
+  const permissions = {
+    [Edge.HOME]: 'PQ_UM_YHXX', // 用户管理-用户信息
+  }
+
+  useEffect(() => {
+    for (const key in permissions) {
+      const permission = permissions[key]
+      if (Object.prototype.hasOwnProperty.call(access, permission)) {
+        setEdge(key as any)
+        break
+      }
+    }
+  },[])
 
   const formLayout = {
     labelCol: { span: 6 },
@@ -154,19 +175,22 @@ export default () => {
       fixed: 'right',
       dataIndex: 'option',
       render: (_: any, record: any) => {
+        const accessible = access?.[permissions?.[edge].replace(new RegExp("Q"), "")]
         return (
-          <Space>
-            <Button
-              key="1"
-              size="small"
-              type="link"
-              onClick={() => {
-                window.open(`${routeName.USER_INFO_DETAIL}?id=${record.id}`);
-              }}
-            >
-              详情
-            </Button>
-          </Space>
+          <Access accessible={accessible}>
+            <Space>
+              <Button
+                key="1"
+                size="small"
+                type="link"
+                onClick={() => {
+                  window.open(`${routeName.USER_INFO_DETAIL}?id=${record.id}`);
+                }}
+              >
+                详情
+              </Button>
+            </Space>
+          </Access>
         )
       }
     },
@@ -387,9 +411,11 @@ export default () => {
         >
           导出
         </Button> */}
-        <Button icon={<UploadOutlined />} onClick={exportList}>
-          导出
-        </Button>
+        <Access accessible={access['PX_UM_YHXX']}>
+          <Button icon={<UploadOutlined />} onClick={exportList}>
+            导出
+          </Button>
+        </Access>
       </div>
       <div className={sc('container-table-body')}>
         <SelfTable

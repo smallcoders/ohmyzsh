@@ -28,7 +28,7 @@ import DebounceSelect from './DebounceSelect';
 import { Link } from 'umi';
 import { routeName } from '../../../../../config/routes';
 import SelfTable from '@/components/self_table';
-const sc = scopedClasses('service-config-diagnostic-tasks');
+const sc = scopedClasses('tab-menu');
 const stateObj = {
   1: '待诊断',
   2: '诊断中',

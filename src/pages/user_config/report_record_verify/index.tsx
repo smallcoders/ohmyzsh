@@ -4,16 +4,18 @@ import { PageContainer } from '@ant-design/pro-layout';
 import scopedClasses from '@/utils/scopedClasses';
 import Common from '@/types/common.d';
 import moment from 'moment';
-import { history, useModel } from 'umi';
+import { history, useModel, Access, useAccess } from 'umi';
 import { routeName } from '@/../config/routes';
 import SelfTable from '@/components/self_table';
 import SearchBar from '@/components/search_bar';
-// ⭐ 未处理
 import { getReportPage } from '@/services/report-record-verify';
 import './index.less';
 
 import ReportRecordVerify from '@/types/enterprise-admin-verify';
 const sc = scopedClasses('report-record-audit');
+enum Edge {
+  HOME = 0,
+}
 
 export interface SearchInfo {
   reportType: string | null;
@@ -102,6 +104,25 @@ export default () => {
   const { pageInfo, setPageInfo, searchInfo, setSearchInfo, resetModel } =
     useModel('useLeaveWordVerify');
 
+  // 拿到当前角色的access权限兑现
+  const access = useAccess()
+  // 当前页面的对应权限key
+  const [edge, setEdge] = useState<Edge.HOME>(Edge.HOME);
+  // 页面权限
+  const permissions = {
+    [Edge.HOME]: 'PQ_UM_JBJL', // 用户管理-举报记录
+  }
+
+  useEffect(() => {
+    for (const key in permissions) {
+      const permission = permissions[key]
+      if (Object.prototype.hasOwnProperty.call(access, permission)) {
+        setEdge(key as any)
+        break
+      }
+    }
+  },[])
+
   useEffect(() => {
     // 初始化searchInfo
     form?.setFieldsValue({ ...searchInfo });
@@ -172,16 +193,19 @@ export default () => {
       fixed: 'right',
       dataIndex: 'option', // 列数据在数据项中对应的路径，支持通过数组查询嵌套路径
       render: (_: any, _record: ReportRecordVerify.Content) => {
+        const accessible = access?.[permissions?.[edge].replace(new RegExp("Q"), "")]
         return (
           <div>
-            <Button
-              type="link"
-              onClick={() => {
-                history.push(`${routeName.REPORT_RECORD_VERIFY_DETAIL}?id=${_record.id }&type=${_record.module}&bizId=${_record?.bizId}`);
-              }}
-            >
-              {_record?.processed ? '详情' : '处理'}
-            </Button>
+            <Access accessible={accessible}>
+              <Button
+                type="link"
+                onClick={() => {
+                  history.push(`${routeName.REPORT_RECORD_VERIFY_DETAIL}?id=${_record.id }&type=${_record.module}&bizId=${_record?.bizId}`);
+                }}
+              >
+                {_record?.processed ? '详情' : '处理'}
+              </Button>
+            </Access>
           </div>
         );
       },
