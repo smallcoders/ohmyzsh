@@ -1,0 +1,59 @@
+@prefix: apply-manage-app-resource;
+
+.@{prefix}-container {
+  &-table-header {
+    padding: 20px;
+    background-color: #fff;
+    .title {
+      display: flex;
+      justify-content: space-between;
+      > span {
+        color: rgba(0, 0, 0, 0.85);
+        font-weight: 600;
+        font-size: 16px;
+        line-height: 22px;
+      }
+    }
+  }
+  &-table-body {
+    padding: 0 20px;
+    background-color: #fff;
+  }
+  &-search {
+    margin-bottom: 20px;
+    padding: 20px 0;
+    background-color: #fff;
+    .ant-form-item {
+      margin-bottom: 0;
+    }
+  }
+
+  .state0 {
+    position: relative;
+    padding-left: 15px;
+    &::before {
+      position: absolute;
+      top: 8px;
+      left: 0;
+      width: 8px;
+      height: 8px;
+      background-color: #ff4d4f;
+      border-radius: 4px;
+      content: ' ';
+    }
+  }
+  .state1 {
+    position: relative;
+    padding-left: 15px;
+    &::before {
+      position: absolute;
+      top: 8px;
+      left: 0;
+      width: 8px;
+      height: 8px;
+      background-color: #52c41a;
+      border-radius: 4px;
+      content: ' ';
+    }
+  }
+}

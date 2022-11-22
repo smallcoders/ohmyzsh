@@ -1,5 +1,5 @@
 import { message, Image, Button, Radio, Space, Breadcrumb } from 'antd';
-import { history, Link } from 'umi';
+import { history, Link, Access, useAccess } from 'umi';
 import React, { useState, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import scopedClasses from '@/utils/scopedClasses';
@@ -79,6 +79,8 @@ export default () => {
         message.success('复制成功');
       });
   };
+
+  const access = useAccess()
 
   return (
     <PageContainer
@@ -172,15 +174,17 @@ export default () => {
             )}
           </div>
         </div>
-        <Button
-          href={`/antelope-pay/mng/order/detail/export?orderNo=${detail?.orderNo}`}
-          icon={<UploadOutlined />}
-        // onClick={() => {
-        //   onExport();
-        // }}
-        >
-          导出
-        </Button>
+        <Access accessible={access['PX_PM_DD']}>
+          <Button
+            href={`/antelope-pay/mng/order/detail/export?orderNo=${detail?.orderNo}`}
+            icon={<UploadOutlined />}
+          // onClick={() => {
+          //   onExport();
+          // }}
+          >
+            导出
+          </Button>
+        </Access>
       </div>
 
       <div className={sc('container-info')}>

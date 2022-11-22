@@ -2,7 +2,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { Button, Input, Form, Select, Row, Col, message, Space, Popconfirm, DatePicker, Image } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
-import { history } from 'umi';
+import { history, Access, useAccess } from 'umi';
 import { routeName } from '@/../config/routes';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
@@ -206,65 +206,67 @@ export default () => {
       render: (_: any, record: AdminAccountDistributor.Content) => {
         return (
           <Space size="middle">
-            <a
-              href="#"
-              onClick={(e) => {
-                e.preventDefault(); 
-                history.push(`${routeName.ANTELOPE_LIVE_MANAGEMENT_ADD}?id=${record.id}`);
-              }}
-            >
-              编辑
-            </a>
-            { 
-              record.lineStatus ? (
-                <Popconfirm
-                  title="确定下架么？"
-                  okText="确定"
-                  cancelText="取消"
-                  onConfirm={() => updateOnlineStatus(record.id as string, false)}
-                >
-                  <a href="#">下架</a>
-                </Popconfirm>
-              ) : (
-                <Popconfirm
-                  title="确定上架么？"
-                  okText="确定"
-                  cancelText="取消"
-                  onConfirm={() => updateOnlineStatus(record.id as string, true)}
-                >
-                  <a href="#">上架</a>
-                </Popconfirm>
-              )
-            }
-            <Popconfirm
-              title="确定删除么？"
-              okText="确定"
-              cancelText="取消"
-              onConfirm={() => remove(record.id as string)}
-            >
-              <a href="#">删除</a>
-            </Popconfirm>
-            {
-              record.isTop ? (
-                <Popconfirm
-                  title={`确定取消置顶么？`}
-                  okText="确定"
-                  cancelText="取消"
-                  onConfirm={() => updateTopStatus(record.id as string, false,)}
-                >
-                  <a href="#">取消置顶</a>
-                </Popconfirm>
-              ) : (
-                <Popconfirm
-                  title={`确定置顶么？`}
-                  okText="确定"
-                  cancelText="取消"
-                  onConfirm={() => updateTopStatus(record.id as string, true,)}
-                >
-                  <a href="#">置顶</a>
-                </Popconfirm>
-              )
-            }
+            <Access accessible={access['P_LM_ZBGL']}>
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault(); 
+                  history.push(`${routeName.ANTELOPE_LIVE_MANAGEMENT_ADD}?id=${record.id}`);
+                }}
+              >
+                编辑
+              </a>
+              { 
+                record.lineStatus ? (
+                  <Popconfirm
+                    title="确定下架么？"
+                    okText="确定"
+                    cancelText="取消"
+                    onConfirm={() => updateOnlineStatus(record.id as string, false)}
+                  >
+                    <a href="#">下架</a>
+                  </Popconfirm>
+                ) : (
+                  <Popconfirm
+                    title="确定上架么？"
+                    okText="确定"
+                    cancelText="取消"
+                    onConfirm={() => updateOnlineStatus(record.id as string, true)}
+                  >
+                    <a href="#">上架</a>
+                  </Popconfirm>
+                )
+              }
+              <Popconfirm
+                title="确定删除么？"
+                okText="确定"
+                cancelText="取消"
+                onConfirm={() => remove(record.id as string)}
+              >
+                <a href="#">删除</a>
+              </Popconfirm>
+              {
+                record.isTop ? (
+                  <Popconfirm
+                    title={`确定取消置顶么？`}
+                    okText="确定"
+                    cancelText="取消"
+                    onConfirm={() => updateTopStatus(record.id as string, false,)}
+                  >
+                    <a href="#">取消置顶</a>
+                  </Popconfirm>
+                ) : (
+                  <Popconfirm
+                    title={`确定置顶么？`}
+                    okText="确定"
+                    cancelText="取消"
+                    onConfirm={() => updateTopStatus(record.id as string, true,)}
+                  >
+                    <a href="#">置顶</a>
+                  </Popconfirm>
+                )
+              }
+            </Access>
           </Space>
         );
       },
@@ -339,21 +341,25 @@ export default () => {
     );
   };
 
+  const access = useAccess()
+
   return (
     <PageContainer className={sc('container')}>
       {useSearchNode()}
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>直播列表(共{pageInfo.totalCount || 0}个)</span>
-          <Button
-            type="primary"
-            key="pushRoute"
-            onClick={() => {
-              history.push(`${routeName.ANTELOPE_LIVE_MANAGEMENT_ADD}?isAdd=1`)
-            }}
-          >
-            <PlusOutlined /> 新增直播
-          </Button>
+          <Access accessible={access['P_LM_ZBGL']}>
+            <Button
+              type="primary"
+              key="pushRoute"
+              onClick={() => {
+                history.push(`${routeName.ANTELOPE_LIVE_MANAGEMENT_ADD}?isAdd=1`)
+              }}
+            >
+              <PlusOutlined /> 新增直播
+            </Button>
+          </Access>
         </div>
       </div>
       <div className={sc('container-table-body')}>

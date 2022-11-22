@@ -8,12 +8,15 @@ import moment from 'moment';
 import SelfTable from '@/components/self_table';
 import CommissionerService from '@/types/commissioner-service.d';
 import { routeName } from '../../../../config/routes';
-import { history } from 'umi';
+import { history, Access, useAccess } from 'umi';
 import {
   getCommissionerServicePage,
   removeCommissionerService,
 } from '@/services/commissioner-service';
 const sc = scopedClasses('user-config-commissioner-service');
+enum Edge {
+  HOME = 0,
+}
 export default () => {
   const [dataSource, setDataSource] = useState<CommissionerService.Content[]>([]);
   const [searchContent, setSearChContent] = useState<{
@@ -21,6 +24,24 @@ export default () => {
     publishTime?: string; // 发布时间
     state?: number; // 状态：0发布中、1待发布、2已下架
   }>({});
+  // 拿到当前角色的access权限兑现
+  const access = useAccess()
+  // 当前页面的对应权限key
+  const [edge, setEdge] = useState<Edge.HOME>(Edge.HOME);
+  // 页面权限
+  const permissions = {
+    [Edge.HOME]: 'PQ_UM_FWZY', // 用户管理-用户信息
+  }
+
+  useEffect(() => {
+    for (const key in permissions) {
+      const permission = permissions[key]
+      if (Object.prototype.hasOwnProperty.call(access, permission)) {
+        setEdge(key as any)
+        break
+      }
+    }
+  },[])
 
   const formLayout = {
     labelCol: { span: 6 },
@@ -140,15 +161,18 @@ export default () => {
       fixed: 'right',
       dataIndex: 'option',
       render: (_: any, record: CommissionerService.Content) => {
+        const accessible = access?.[permissions?.[edge].replace(new RegExp("Q"), "D")]
         return (
-          <Popconfirm
-            title="确定删除么？"
-            okText="确定"
-            cancelText="取消"
-            onConfirm={() => remove(record.id as string)}
-          >
-            <a href="#">删除</a>
-          </Popconfirm>
+          <Access accessible={accessible}>
+            <Popconfirm
+              title="确定删除么？"
+              okText="确定"
+              cancelText="取消"
+              onConfirm={() => remove(record.id as string)}
+            >
+              <a href="#">删除</a>
+            </Popconfirm>
+          </Access>
         );
       },
     },

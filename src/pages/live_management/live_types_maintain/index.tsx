@@ -7,6 +7,7 @@ import React, { useEffect, useState } from 'react';
 import Common from '@/types/common';
 import moment from 'moment';
 import SelfTable from '@/components/self_table';
+import { Access, useAccess } from 'umi';
 import LiveTypesMaintain from '@/types/live-types-maintain.d';
 import {
   addLiveType,
@@ -184,47 +185,49 @@ export default () => {
       render: (_: any, record: LiveTypesMaintain.Content) => {
         return (
           <Space size="middle">
-            <a
-              href="#"
-              onClick={() => {
-                setEditingItem(record);
-                setModalVisible(true);
-                form.setFieldsValue({ name: record?.name, status: record?.status });
-              }}
-            >
-              编辑
-            </a>
-            {!record.status ? (
-              <Popconfirm
-              title={`确定启用么？`}
-              okText="确定"
-              cancelText="取消"
-              onConfirm={() => updateStatus(record.id as string, true)}
+            <Access accessible={access['P_LM_JBLX']}>
+              <a
+                href="#"
+                onClick={() => {
+                  setEditingItem(record);
+                  setModalVisible(true);
+                  form.setFieldsValue({ name: record?.name, status: record?.status });
+                }}
               >
-              <a href="#">启用</a>
-            </Popconfirm>
-            )
-            :
-            (
-              <Popconfirm
-              title={`确定停用么？`}
-              okText="确定"
-              cancelText="取消"
-              onConfirm={() => updateStatus(record.id as string, false)}
-              >
-              <a href="#">停用</a>
-            </Popconfirm>
-            )}
-            {!record.status && (
-              <Popconfirm
-                title="确定删除么？"
+                编辑
+              </a>
+              {!record.status ? (
+                <Popconfirm
+                title={`确定启用么？`}
                 okText="确定"
                 cancelText="取消"
-                onConfirm={() => remove(record.id as string)}
-              >
-                <a href="#">删除</a>
+                onConfirm={() => updateStatus(record.id as string, true)}
+                >
+                <a href="#">启用</a>
               </Popconfirm>
-            )}
+              )
+              :
+              (
+                <Popconfirm
+                title={`确定停用么？`}
+                okText="确定"
+                cancelText="取消"
+                onConfirm={() => updateStatus(record.id as string, false)}
+                >
+                <a href="#">停用</a>
+              </Popconfirm>
+              )}
+              {!record.status && (
+                <Popconfirm
+                  title="确定删除么？"
+                  okText="确定"
+                  cancelText="取消"
+                  onConfirm={() => remove(record.id as string)}
+                >
+                  <a href="#">删除</a>
+                </Popconfirm>
+              )}
+            </Access>
           </Space>
         );
       },
@@ -303,20 +306,24 @@ export default () => {
     );
   };
 
+  const access = useAccess()
+
   return (
     <PageContainer className={sc('container')}>
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>类型列表(共{pageInfo.totalCount || 0}个)</span>
-          <Button
-            type="primary"
-            key="addStyle"
-            onClick={() => {
-              setModalVisible(true);
-            }}
-          >
-            <PlusOutlined /> 新增类型
-          </Button>
+          <Access accessible={access['P_LM_JBLX']}>
+            <Button
+              type="primary"
+              key="addStyle"
+              onClick={() => {
+                setModalVisible(true);
+              }}
+            >
+              <PlusOutlined /> 新增类型
+            </Button>
+          </Access>
         </div>
       </div>
       <div className={sc('container-table-body')}>
