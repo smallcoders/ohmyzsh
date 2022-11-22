@@ -216,9 +216,9 @@ export default () => {
       canvas.height = 1920;
       const context = canvas.getContext("2d");
       // @ts-ignore
-      if(idName==='#imgWechat'&& context){
+      if(idName=='#imgWechat'&& context){
         context.drawImage(image, 0, 0,0,0);
-      }else if(idName==='#imgShare1'&& context){
+      }else if(idName=='#imgShare1'&& context){
         context.drawImage(image, 0, 0,1080, 1920,);
       }
       const urlName = canvas.toDataURL("image/png"); //得到图片的base64编码数据
@@ -1028,7 +1028,7 @@ export default () => {
                 </Select>
               </Form.Item>
 
-              {edge === 2&&
+              {edge == 2&&
                 <Form.Item
                   label='目标链接类型'
                   name="targetLinkType"
@@ -1040,7 +1040,7 @@ export default () => {
                   </Select>
                 </Form.Item>}
 
-              {edge !== 4&&
+              {edge != 4&&
               <Form.Item
                 label='跳转目标链接'
                 name="targetLink"
@@ -1049,7 +1049,7 @@ export default () => {
                 <Input placeholder="请输入" maxLength={2000}/>
               </Form.Item>}
 
-              {edge === 2 &&
+              {edge == 2 &&
                 <Form.Item
                   label="活动配图"
                   labelCol={{span: 8}}
@@ -1069,7 +1069,7 @@ export default () => {
                   />
                 </Form.Item>}
 
-              {edge === 2&&
+              {edge == 2&&
                 <Form.Item
                   label='按钮文案'
                   name="buttonText"
@@ -1079,7 +1079,7 @@ export default () => {
                 </Form.Item>
               }
 
-              {edge === 4 &&(types.indexOf("新建") !== -1)&&
+              {edge == 4 &&(types.indexOf("新建") !== -1)&&
                 <Form.Item
                   label='分享码主人'
                   name="shardCodeMaster"
@@ -1121,7 +1121,7 @@ export default () => {
                   <Input placeholder="请输入" maxLength={35} disabled={activeStatusData=='DOWN'&&types.indexOf("新建") == -1}/>
                 </Form.Item>
               }
-              {edge === 4 &&activeStatusData =='DOWN'&&(types.indexOf("新建") == -1)&&
+              {edge == 4 &&activeStatusData =='DOWN'&&(types.indexOf("新建") == -1)&&
                 <Form.Item
                   label='分享码主人'
                   name="shardCodeMaster"
@@ -1209,7 +1209,7 @@ export default () => {
           dataSource={dataSource}
           rowKey={'id'}
           pagination={
-            pageInfo.total === 0
+            pageInfo.total == 0
               ? false
               : {
                 onChange: getOperationActivity,
