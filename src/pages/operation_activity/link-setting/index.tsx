@@ -1024,6 +1024,7 @@ export default () => {
                   ))}
                 </Select>
               </Form.Item>
+
               {edge === 2&&
                 <Form.Item
                   label='目标链接类型'
