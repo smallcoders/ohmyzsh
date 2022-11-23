@@ -180,6 +180,8 @@ export default () => {
     setModalVisible(true)
   }
 
+  const access = useAccess()
+
   const columns = [
     {
       title: '序号',
@@ -212,7 +214,7 @@ export default () => {
       isEllipsis: true,
       width: 320,
     },
-    {
+    access['P_RM_ZHBQ']&&{
       title: '操作',
       width: 80,
       dataIndex: 'option',
@@ -220,7 +222,7 @@ export default () => {
       render: (_: any, record: any) => {
         return (
           <div style={{ textAlign: 'center' }}>
-            <Access accessible={access['P_RM_ZHBQ']}>
+            {/* <Access accessible={access['P_RM_ZHBQ']}> */}
               <Button
                 type="link"
                 onClick={() => {
@@ -229,12 +231,12 @@ export default () => {
               >
                 编辑
               </Button>
-            </Access>
+            {/* </Access> */}
           </div>
         );
       },
     },
-  ];
+  ].filter(p => p);
 
   useEffect(() => {
     getTags(),
@@ -725,8 +727,6 @@ export default () => {
       </Modal>
     ) 
   }
-
-  const access = useAccess()
 
   return (
     <>

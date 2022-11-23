@@ -126,6 +126,8 @@ export default () => {
     }
   }
 
+  const access = useAccess()
+
   const columns = [
     {
       title: '排序',
@@ -198,7 +200,7 @@ export default () => {
         );
       },
     },
-    {
+    access['P_LM_ZBGL'] && {
       title: '操作',
       width: 200,
       fixed: 'right',
@@ -206,7 +208,7 @@ export default () => {
       render: (_: any, record: AdminAccountDistributor.Content) => {
         return (
           <Space size="middle">
-            <Access accessible={access['P_LM_ZBGL']}>
+            {/* <Access accessible={access['P_LM_ZBGL']}> */}
               <a
                 href="#"
                 onClick={(e) => {
@@ -266,12 +268,12 @@ export default () => {
                   </Popconfirm>
                 )
               }
-            </Access>
+            {/* </Access> */}
           </Space>
         );
       },
     },
-  ];
+  ].filter(p => p);
 
   useEffect(() => {
     getPages();
@@ -340,8 +342,6 @@ export default () => {
       </div>
     );
   };
-
-  const access = useAccess()
 
   return (
     <PageContainer className={sc('container')}>
