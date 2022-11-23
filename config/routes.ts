@@ -1708,17 +1708,21 @@ export default [
     routes: [
       {
         path: '/operate-activity',
+        code: 'M_OA_CSPZ',
+        access: 'M_OA_CSPZ',
         redirect: routeName.OPERATION_ACTIVITY_PARAMETER,
       },
       {
         path: routeName.OPERATION_ACTIVITY_PARAMETER,
         name: '参数配置',
+        code: 'M_OA_CSPZ',
         access: 'M_OA_CSPZ',
         component: './operate_activity/parameter-setting/index',
       },
       {
         path: routeName.OPERATION_ACTIVITY_LINK,
         name: '链接配置',
+        code: 'M_OA_LJ',
         access: 'M_OA_LJ',
         component: './operate_activity/link-setting/index',
       },
@@ -1773,47 +1777,47 @@ export default [
           },
         ],
       },
-      {
-        path: routeName.ACTIVITY_PROJECT,
-        name: '活动专题',
-        hideChildrenInMenu: true,
-        routes: [
-          {
-            path: routeName.ACTIVITY_PROJECT,
-            redirect: routeName.ACTIVITY_PROJECT_INDEX,
-          },
-          {
-            path: routeName.ACTIVITY_PROJECT_INDEX,
-            name: '活动专题',
-            hideInBreadcrumb: true,
-            component: './service_config/activity_project',
-          },
-          {
-            path: routeName.ACTIVITY_PROJECT_DETAIL,
-            name: '活动专题详情',
-            component: './service_config/activity_project/detail',
-          },
-        ],
-      },
+      // {
+      //   path: routeName.ACTIVITY_PROJECT,
+      //   name: '活动专题',
+      //   hideChildrenInMenu: true,
+      //   routes: [
+      //     {
+      //       path: routeName.ACTIVITY_PROJECT,
+      //       redirect: routeName.ACTIVITY_PROJECT_INDEX,
+      //     },
+      //     {
+      //       path: routeName.ACTIVITY_PROJECT_INDEX,
+      //       name: '活动专题',
+      //       hideInBreadcrumb: true,
+      //       component: './service_config/activity_project',
+      //     },
+      //     {
+      //       path: routeName.ACTIVITY_PROJECT_DETAIL,
+      //       name: '活动专题详情',
+      //       component: './service_config/activity_project/detail',
+      //     },
+      //   ],
+      // },
     ]
   },
   {
     path: '/diagnose-manage',
-    code: 'M_OA',
-    access: 'M_OA',
+    code: 'M_DM',
+    access: 'M_DM',
     name: '诊断管理',
     icon: 'bug',
     routes: [
       {
         path: '/diagnose-manage',
-        code: 'M_OA', // 未处理tap
-        access: 'M_OA',
+        code: 'M_DM_ZDT', 
+        access: 'M_DM_ZDT',
         redirect: '/diagnose-manage/diagnostic-tasks',
       },
       {
         path: '/diagnose-manage/diagnostic-tasks',
-        code: 'M_OA', // 未处理tap
-        access: 'M_OA',
+        code: 'M_DM_ZDT', 
+        access: 'M_DM_ZDT',
         name: '诊断通',
         hideChildrenInMenu: true,
         routes: [
