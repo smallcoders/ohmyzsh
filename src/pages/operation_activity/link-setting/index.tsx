@@ -453,15 +453,15 @@ export default () => {
     setCurrent(0)
     if(e.key=='H5'){
       setTypes('新建H5链接')
-      setEdge(2)
+      setEdge(Activity.Edge.H5)
     }
     else if(e.key=='WECHAT'){
       setTypes('新建小程序码')
-      setEdge(3)
+      setEdge(Activity.Edge.WECHAT)
     }
     else if(e.key=='SHARE'){
       setTypes('新建分享码')
-      setEdge(4)
+      setEdge(Activity.Edge.SHARE)
     }
     setModalVisible(true);
   }
