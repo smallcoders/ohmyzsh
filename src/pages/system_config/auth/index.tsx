@@ -106,7 +106,7 @@ export default () => {
 
       const { result } = await getMembersByRoleId(id as string);
 
-      if(result?.length>0){
+      if (result?.length > 0) {
         Modal.info({
           title: '提示',
           content: '请先移除当前角色下的成员'
@@ -114,13 +114,27 @@ export default () => {
         return
       }
 
-      const rolesRes = await deleteRole(id);
-      if (rolesRes.code === 0) {
-        message.success(`删除成功`);
-        prepare()
-      } else {
-        message.error(`删除失败，原因:{${rolesRes.message}}`);
-      }
+      Modal.confirm({
+        title: '提示',
+        icon: <ExclamationCircleOutlined />,
+        content: '确定删除',
+        okText: '删除',
+        okButtonProps: {
+          disabled: !isManage
+        },
+        onOk: async () => {
+          const rolesRes = await deleteRole(id);
+          if (rolesRes.code === 0) {
+            message.success(`删除成功`);
+            prepare()
+          } else {
+            message.error(`删除失败，原因:{${rolesRes.message}}`);
+          }
+        },
+        cancelText: '取消',
+      });
+
+
     } catch (error) {
       console.log('error', error);
       message.error('删除失败');
@@ -208,17 +222,8 @@ export default () => {
                     />
                     <DeleteOutlined
                       onClick={() => {
-                        Modal.confirm({
-                          title: '提示',
-                          icon: <ExclamationCircleOutlined />,
-                          content: '确定删除',
-                          okText: '删除',
-                          okButtonProps: {
-                            disabled: !isManage
-                          },
-                          onOk: () => remove(p?.id),
-                          cancelText: '取消',
-                        });
+                        remove(p?.id)
+
                       }}
                       className="icon-option"
                     />
