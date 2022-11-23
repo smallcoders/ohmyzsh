@@ -53,7 +53,6 @@ export default () => {
   const [dataSource, setDataSource] = useState<supplierManagement.Content[]>([]);
   const [searchContent, setSearChContent] = useState<supplierManagement.SearchContent>({});
   const [drawerContent, setDrawerContent] = useState<supplierManagement.DrawerContent>({});
-  // const [addOrUpdateLoading, setAddOrUpdateLoading] = useState<boolean>(false);
   const [areaOptions, setAreaOptions] = useState<any>([]);
   const [drawerForm] = Form.useForm();
 
@@ -123,7 +122,7 @@ export default () => {
   const onChangeCity = (value: any, selectedOptions: any) => {
     if (value && selectedOptions) {
       const cityCode = value.join('-');
-      const cityName = selectedOptions.map((item) => item.name).join('-');
+      const cityName = selectedOptions.map((item: any) => item.name).join('-');
       cityInfo.current = cityName + ',' + cityCode;
     }
     return;
@@ -154,6 +153,9 @@ export default () => {
       dataIndex: 'code',
       align: 'center',
       width: 200,
+      render: (code: string) => {
+        return code === '' ? '--' : code;
+      },
     },
     {
       title: '供应商名称',
@@ -208,7 +210,7 @@ export default () => {
       align: 'center',
       width: 200,
       render: (cityName: string) => {
-        return cityName === null ? '--' : cityName.split(',')[0];
+        return cityName === null ? '--' : cityName.split(',')[0].split('-').join('/');
       },
     },
     {
@@ -295,12 +297,16 @@ export default () => {
         <Form {...formLayout} form={searchForm} onFinish={onFinish}>
           <Row>
             <Col span={7}>
-              <Form.Item name="supplier" label="供应商">
+              <Form.Item name="supplier" label="供应商" wrapperCol={{ span: 18 }}>
                 <Input placeholder="请输入供应商编码、名称或统一社会信用代码" />
               </Form.Item>
             </Col>
             <Col span={7}>
-              <Form.Item name="applyFlag" label="允许申请供应链e贷" labelCol={{ span: 8 }}>
+              <Form.Item
+                name="applyFlag"
+                label="允许申请供应链e贷"
+                labelCol={{ span: 8, offset: 1 }}
+              >
                 <Select placeholder="请选择" allowClear>
                   <Select.Option value={0}>是</Select.Option>
                   <Select.Option value={1}>否</Select.Option>
@@ -358,12 +364,11 @@ export default () => {
       console.log(error);
     }
   }, 200);
-
   // 新增/编辑
   const addOrUpdate = async () => {
     drawerForm
       .validateFields()
-      .then(async (value) => {
+      .then(async (value: any) => {
         const addOrUpdateRes = await (drawerContent.id
           ? saveOrUpdateSupplier({
               ...value,
@@ -387,8 +392,8 @@ export default () => {
           message.error(drawerContent.id ? '编辑失败' : '新增失败，原因:' + addOrUpdateRes.message);
         }
       })
-      .catch((errorInfo) => {
-        console.log(errorInfo);
+      .catch((error: any) => {
+        console.log(error);
       });
   };
 
@@ -500,9 +505,10 @@ export default () => {
                         creditCode: string;
                         legalPersonName: string;
                       } = list.find((item: { name: string }) => item.name === value);
+
                       const { result } = await queryGyl({ name: value });
                       drawerForm.setFieldsValue({
-                        code: result === null ? '' : result,
+                        code: result === null ? null : result.code,
                         creditCode: queryOrgInfo.creditCode,
                         estiblishTime: queryOrgInfo.estiblishTime.split(' ')[0],
                         legalName: queryOrgInfo.legalPersonName,
@@ -567,7 +573,7 @@ export default () => {
               rules={[{ required: true, message: '请输入经营所在地' }]}
             >
               <Cascader
-                getPopupContainer={(trigger) => trigger as HTMLElement}
+                getPopupContainer={(trigger: HTMLElement) => trigger as HTMLElement}
                 placeholder={'请选择'}
                 allowClear={true}
                 options={areaOptions}
@@ -651,11 +657,12 @@ export default () => {
         message.error(`上传失败，原因:{${info.file.response.message}}`);
       }
     }
+    // this.setState(info)
   };
   const accept = '.xlsx';
   const handleBeforeUpload = (file: RcFile) => {
-    const isLt2M = file.size / 1024 / 1024 < 20;
-    if (!isLt2M) {
+    const isLt20M = file.size / 1024 / 1024 < 20;
+    if (!isLt20M) {
       message.error('上传的文件大小不得超过20M');
       return Upload.LIST_IGNORE;
     }
@@ -689,12 +696,11 @@ export default () => {
         '100%': 'rgba(26, 102, 255)',
       },
       strokeWidth: 8,
-      format: (percent) => percent && `${parseFloat(percent.toFixed(2))}%`,
+      format: (percent: number) => percent && `${parseFloat(percent.toFixed(2))}%`,
       showInfo: true,
     },
     showUploadList: {
       showRemoveIcon: false,
-      showPreviewIcon: true,
     },
   };
 
@@ -707,6 +713,7 @@ export default () => {
         width={600}
         footer={false}
         maskClosable={false}
+        destroyOnClose
         onCancel={() => {
           setModalVisible(false);
           setUploadNum({
@@ -744,10 +751,6 @@ export default () => {
                 ，按要求填写后上传
               </div>
             </div>
-            {/* <FileSyncOutlined
-             style={{ color: 'rgba(26, 102, 255)', fontSize: '38px',marginTop:'40px' }}
-             className={uploadNum.progress === 'true' ? '' : 'staus'}
-           /> */}
             <Dragger {...props} className={uploadNum.progress === 'true' ? 'staus' : ''}>
               <p className="ant-upload-text">
                 <CloudUploadOutlined />
@@ -761,7 +764,7 @@ export default () => {
             <div className="icon">
               <FileTextOutlined />
             </div>
-            <div className="text1">导入成功,共{uploadNum.failNum + uploadNum.successNum}条</div>
+            <div className="text1">导入成功,共{uploadNum.successNum}条</div>
             <div>
               <Button
                 type="primary"
@@ -781,7 +784,9 @@ export default () => {
               <FileExclamationOutlined />
             </div>
             <div className="text1">
-              共导入 {uploadNum.failNum + uploadNum?.successNum} 条，成功 {uploadNum.successNum}
+              共导入
+              {uploadNum.successNum !== undefined && uploadNum.failNum + uploadNum.successNum}
+              条，成功 {uploadNum.successNum}
               条，失败 {uploadNum.failNum} 条
             </div>
             <div className="text2">
