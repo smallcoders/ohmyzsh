@@ -9,7 +9,7 @@ import type BankingLoan from '@/types/banking-loan.d';
 import { getTakeDetail } from '@/services/banking-loan';
 import { history } from 'umi';
 import { regFenToYuan, priceUppercase } from '@/utils/util';
-import exportFile from '@/utils/export-util';
+import patchDownloadFile from '@/utils/patch-download-file';
 export default () => {
   const { id } = history.location.query as any;
   const [dataSource, setDataSource] = useState<BankingLoan.LoanContent[]>([]);
@@ -47,7 +47,8 @@ export default () => {
     {
       title: '文件名称',
       dataIndex: 'realName',
-      width: 100,
+      width: 110,
+      isEllipsis: true,
       render: (_: string) => {
         return <div>{_ || '--'}</div>;
       },
@@ -55,6 +56,7 @@ export default () => {
     {
       title: '校验不通过原因',
       dataIndex: 'errorReason',
+      isEllipsis: true,
       width: 130,
       render: (_: string) => {
         return <div>{_ || '--'}</div>;
@@ -124,6 +126,23 @@ export default () => {
         return <div>{_ || '--'}</div>;
       },
     },
+    {
+      title: '操作',
+      hideInSearch: true,
+      width: 75,
+      fixed: 'right',
+      render: (_: any, item: any) => (
+        <Button
+          size="small"
+          type="link"
+          onClick={() => {
+            window.open(item.jysFile);
+          }}
+        >
+          预览
+        </Button>
+      ),
+    },
   ];
   return (
     <PageContainer
@@ -136,7 +155,7 @@ export default () => {
           <Row>
             <Col span={8}>
               <label className={sc('contain-label')}>提款申请编号：</label>
-              <div className={sc('contain-wrap')}>{detail?.loanBatchNo}</div>
+              <div className={sc('contain-wrap')}>{detail?.loanBatchNo || '--'}</div>
             </Col>
             <Col span={8}>
               <label className={sc('contain-label')}>提款申请状态：</label>
@@ -144,7 +163,7 @@ export default () => {
             </Col>
             <Col span={8}>
               <label className={sc('contain-label')}>融资天数：</label>
-              <div className={sc('contain-wrap')}>{detail?.loanBatchNo}天</div>
+              <div className={sc('contain-wrap')}>{detail?.duration}天</div>
             </Col>
             <Col span={8}>
               <label className={sc('contain-label')}>提款金额：</label>
@@ -153,7 +172,7 @@ export default () => {
             <Col span={8}>
               <label className={sc('contain-label')}>提款金额（大写）：</label>
               <div className={sc('contain-wrap')}>
-                {priceUppercase(regFenToYuan(detail?.takeMoney, 100))}
+                {priceUppercase(regFenToYuan(detail?.takeMoney, 1))}
               </div>
             </Col>
             <Col span={8}>
@@ -164,26 +183,23 @@ export default () => {
               <label className={sc('contain-label')}>股东会决议：</label>
               <div className={sc('contain-wrap')}>
                 <Image width={30} src={detail?.jysFile} />
-                <Button
+                {/* <Button
                   className={sc('contain-wrap-button')}
                   type="primary"
                   onClick={() => {
-                    window.open(detail?.jysFile);
-                    // exportFile(detail?.jysFile);
                   }}
-                  // href={`/antelope-manage/common/download/f4946c25acb94ae0aa224fe253afb433`}
                   ghost
                   size="small"
                 >
                   下载
-                </Button>
+                </Button> */}
               </div>
             </Col>
             <Col span={8}>
               <label className={sc('contain-label')}>应收账款合同：</label>
               <div className={sc('contain-wrap')}>
-                <Image width={30} src={detail?.jysFile} />
-                <Button
+                <Image width={30} src={detail?.contractFile} />
+                {/* <Button
                   className={sc('contain-wrap-button')}
                   type="primary"
                   onClick={() => {
@@ -193,7 +209,7 @@ export default () => {
                   size="small"
                 >
                   下载
-                </Button>
+                </Button> */}
               </div>
             </Col>
             <Col span={8}>
@@ -206,7 +222,7 @@ export default () => {
             </Col>
             <Col span={8}>
               <label className={sc('contain-label')}>邮编：</label>
-              <div className={sc('contain-wrap')}>{detail?.postal}</div>
+              <div className={sc('contain-wrap')}>{detail?.postal || '--'}</div>
             </Col>
             <Col span={8}>
               <label className={sc('contain-label')}>地址：</label>

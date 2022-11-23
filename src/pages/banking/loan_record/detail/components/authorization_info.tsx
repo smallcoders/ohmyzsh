@@ -10,6 +10,7 @@ import {
   Empty,
   message,
   Modal,
+  Spin,
 } from 'antd';
 import { UploadOutlined, CheckCircleTwoTone, ExclamationCircleOutlined } from '@ant-design/icons';
 import { FooterToolbar } from '@ant-design/pro-components';
@@ -31,11 +32,12 @@ export type Props = {
 };
 const { confirm } = Modal;
 export default forwardRef((props: Props, ref) => {
+  const [detailLoading, setDetailLoading] = useState<boolean>(false);
   const { isDetail, type, step, id, toTab } = props;
   const previewType = ['png', 'jpg', 'jpeg', 'jpeg2000', 'pdf'];
   const [form] = Form.useForm();
   const busiStatus = Form.useWatch('busiStatus', form);
-  const [detail, setDetail] = useState<BankingLoan.CreditInfoContent>({});
+  const [detail, setDetail] = useState<BankingLoan.CreditInfoContent>();
   const [formIsChange, setFormIsChange] = useState<boolean>(false);
   const [afterSaveVisible, setAfterSaveVisible] = useState<boolean>(false);
   const toCreditApply = () => {
@@ -142,10 +144,11 @@ export default forwardRef((props: Props, ref) => {
   };
   const getDetail = async () => {
     try {
+      setDetailLoading(true);
       const { result, code } = await getCreditDetail({ id });
       if (code === 0) {
+        setDetail(result);
         if (result) {
-          setDetail(result);
           if (!isDetail) {
             const { startDate, endDate, creditAmount, contractNo, rate, workProves, ...rest } =
               result;
@@ -165,13 +168,19 @@ export default forwardRef((props: Props, ref) => {
               creditAmount: creditAmount === null ? null : Number(regFenToYuan(creditAmount)),
               contractNo,
             });
+          } else {
+            form.setFieldsValue({
+              busiStatus: result.busiStatus,
+            });
           }
         }
       } else {
         message.error(`获取授信信息失败`);
       }
+      setDetailLoading(false);
     } catch (error) {
       console.log(error);
+      setDetailLoading(false);
     }
   };
   useEffect(() => {
@@ -221,156 +230,160 @@ export default forwardRef((props: Props, ref) => {
     );
   };
   return isDetail && !detail ? (
-    <div className="empty">
-      <Empty description="暂无数据" />
-      {type === 1 && (
-        <Button className="empty-button" type="primary" onClick={toCreditApply}>
-          去录入授信信息
-        </Button>
-      )}
-    </div>
-  ) : (
-    <div className="authorization">
-      <Form
-        name="basic"
-        labelCol={{ span: 4 }}
-        wrapperCol={{ span: 8 }}
-        form={form}
-        onValuesChange={() => {
-          setFormIsChange(true);
-        }}
-      >
-        <Form.Item
-          name="busiStatus"
-          label="授信状态"
-          initialValue={2}
-          rules={[{ required: !isDetail, message: '请选择授信状态' }]}
-        >
-          {isDetail ? (
-            <span>{detail?.busiStatus || '--'}</span>
-          ) : (
-            <Radio.Group>
-              <Radio value={2}>已授信</Radio>
-              <Radio value={3} disabled={detail?.busiStatus === 2}>
-                授信失败
-              </Radio>
-            </Radio.Group>
-          )}
-        </Form.Item>
-        {busiStatus === 2 && (
-          <>
-            <Form.Item
-              label="授信金额"
-              name="creditAmount"
-              rules={[{ required: !isDetail, message: '请输入授信金额' }]}
-            >
-              {isDetail ? (
-                <span>{regFenToYuan(detail?.creditAmount) || '--'}万元</span>
-              ) : (
-                <InputNumber
-                  placeholder="请输入"
-                  addonAfter="万元"
-                  precision={2}
-                  style={{ width: '100%' }}
-                />
-              )}
-            </Form.Item>
-            <Form.Item
-              label="授信有效期"
-              name="creditTime"
-              rules={[{ required: !isDetail, message: '请选择授信有效期' }]}
-            >
-              {isDetail ? (
-                <span>
-                  {detail?.startDate} 至 {detail?.endDate}
-                </span>
-              ) : (
-                <DatePicker.RangePicker allowClear style={{ width: '100%' }} />
-              )}
-            </Form.Item>
-            <Form.Item name="contractNo" label="合同编号">
-              {isDetail ? (
-                <span>{detail?.contractNo || '--'}</span>
-              ) : (
-                <Input placeholder="请输入授信环节合同编号" />
-              )}
-            </Form.Item>
-            <Form.Item name="rate" label="参考年利率">
-              {isDetail ? (
-                <span>{detail?.rate || '--'}%</span>
-              ) : (
-                <InputNumber
-                  placeholder="请输入"
-                  precision={2}
-                  addonAfter="%"
-                  style={{ width: '100%' }}
-                />
-              )}
-            </Form.Item>
-          </>
-        )}
-        {busiStatus === 3 && (
-          <>
-            <Form.Item name="refuseReason" label="失败原因">
-              {isDetail ? (
-                <span>{detail?.refuseReason || '--'}</span>
-              ) : (
-                <Input.TextArea rows={4} placeholder="请输入" showCount maxLength={300} />
-              )}
-            </Form.Item>
-          </>
-        )}
-        {/* 人工录入有业务凭证 */}
+    <Spin spinning={detailLoading}>
+      <div className="empty">
+        <Empty description="暂无数据" />
         {type === 1 && (
+          <Button className="empty-button" type="primary" onClick={toCreditApply}>
+            去录入授信信息
+          </Button>
+        )}
+      </div>
+    </Spin>
+  ) : (
+    <Spin spinning={detailLoading}>
+      <div className="authorization">
+        <Form
+          name="basic"
+          labelCol={{ span: 4 }}
+          wrapperCol={{ span: 8 }}
+          form={form}
+          onValuesChange={() => {
+            setFormIsChange(true);
+          }}
+        >
           <Form.Item
-            name="fileIds"
-            label="业务凭证"
-            rules={[{ required: !isDetail, message: '请上传业务凭证' }]}
-            // extra="上传金融机构授信反馈，支持30M以内的图片、word、Excel或pdf文件"
+            name="busiStatus"
+            label="授信状态"
+            initialValue={2}
+            rules={[{ required: !isDetail, message: '请选择授信状态' }]}
           >
             {isDetail ? (
-              <>
-                <Button
-                  type="link"
-                  style={{ padding: 0, height: '32px' }}
-                  onClick={() => {
-                    patchDownloadFile(
-                      detail.workProves,
-                      `授信信息凭证${moment().format('YYYYMMDD')}`,
-                    );
-                  }}
-                >
-                  下载凭证
-                </Button>
-                {showfile()}
-              </>
+              <span>{detail?.busiStatus === 2 ? '已授信' : '授信失败'}</span>
             ) : (
-              <UploadFormFile
-                multiple
-                accept=".png,.jpg,.pdf,.xlsx,.xls,.doc"
-                showUploadList={true}
-                maxSize={30}
-              >
-                <Button icon={<UploadOutlined />}>上传文件</Button>
-                <div style={{ fontSize: '12px' }}>
-                  上传金融机构授信反馈，支持30M以内的图片、word、Excel或pdf文件
-                </div>
-              </UploadFormFile>
+              <Radio.Group>
+                <Radio value={2}>已授信</Radio>
+                <Radio value={3} disabled={detail?.busiStatus === 2}>
+                  授信失败
+                </Radio>
+              </Radio.Group>
             )}
           </Form.Item>
-        )}
-        {isDetail && (
-          <Form.Item
-            name="bisDataSource"
-            label="数据来源"
-            // extra="上传金融机构授信反馈，支持30M以内的图片、word、Excel或pdf文件"
-          >
-            <span>{detail?.bisDataSource}</span>
-          </Form.Item>
-        )}
-      </Form>
-      <FooterToolbar>{renderFooter()}</FooterToolbar>
-      {afterSaveModel()}
-    </div>
+          {busiStatus === 2 && (
+            <>
+              <Form.Item
+                label="授信金额"
+                name="creditAmount"
+                rules={[{ required: !isDetail, message: '请输入授信金额' }]}
+              >
+                {isDetail ? (
+                  <span>{regFenToYuan(detail?.creditAmount) || '--'}万元</span>
+                ) : (
+                  <InputNumber
+                    placeholder="请输入"
+                    addonAfter="万元"
+                    precision={2}
+                    style={{ width: '100%' }}
+                  />
+                )}
+              </Form.Item>
+              <Form.Item
+                label="授信有效期"
+                name="creditTime"
+                rules={[{ required: !isDetail, message: '请选择授信有效期' }]}
+              >
+                {isDetail ? (
+                  <span>
+                    {detail?.startDate} 至 {detail?.endDate}
+                  </span>
+                ) : (
+                  <DatePicker.RangePicker allowClear style={{ width: '100%' }} />
+                )}
+              </Form.Item>
+              <Form.Item name="contractNo" label="合同编号">
+                {isDetail ? (
+                  <span>{detail?.contractNo || '--'}</span>
+                ) : (
+                  <Input placeholder="请输入授信环节合同编号" />
+                )}
+              </Form.Item>
+              <Form.Item name="rate" label="参考年利率">
+                {isDetail ? (
+                  <span>{detail?.rate || '--'}%</span>
+                ) : (
+                  <InputNumber
+                    placeholder="请输入"
+                    precision={2}
+                    addonAfter="%"
+                    style={{ width: '100%' }}
+                  />
+                )}
+              </Form.Item>
+            </>
+          )}
+          {busiStatus === 3 && (
+            <>
+              <Form.Item name="refuseReason" label="失败原因">
+                {isDetail ? (
+                  <span>{detail?.refuseReason || '--'}</span>
+                ) : (
+                  <Input.TextArea rows={4} placeholder="请输入" showCount maxLength={300} />
+                )}
+              </Form.Item>
+            </>
+          )}
+          {/* 人工录入有业务凭证 */}
+          {type === 1 && (
+            <Form.Item
+              name="fileIds"
+              label="业务凭证"
+              rules={[{ required: !isDetail, message: '请上传业务凭证' }]}
+              // extra="上传金融机构授信反馈，支持30M以内的图片、word、Excel或pdf文件"
+            >
+              {isDetail ? (
+                <>
+                  <Button
+                    type="link"
+                    style={{ padding: 0, height: '32px' }}
+                    onClick={() => {
+                      patchDownloadFile(
+                        detail.workProves,
+                        `授信信息凭证${moment().format('YYYYMMDD')}`,
+                      );
+                    }}
+                  >
+                    下载凭证
+                  </Button>
+                  {showfile()}
+                </>
+              ) : (
+                <UploadFormFile
+                  multiple
+                  accept=".png,.jpg,.pdf,.xlsx,.xls,.doc"
+                  showUploadList={true}
+                  maxSize={30}
+                >
+                  <Button icon={<UploadOutlined />}>上传文件</Button>
+                  <div style={{ fontSize: '12px' }}>
+                    上传金融机构授信反馈，支持30M以内的图片、word、Excel或pdf文件
+                  </div>
+                </UploadFormFile>
+              )}
+            </Form.Item>
+          )}
+          {isDetail && (
+            <Form.Item
+              name="bisDataSource"
+              label="数据来源"
+              // extra="上传金融机构授信反馈，支持30M以内的图片、word、Excel或pdf文件"
+            >
+              <span>{detail?.bisDataSource}</span>
+            </Form.Item>
+          )}
+        </Form>
+        <FooterToolbar>{renderFooter()}</FooterToolbar>
+        {afterSaveModel()}
+      </div>
+    </Spin>
   );
 });

@@ -4,12 +4,24 @@
     padding: 10px;
     background: #fff;
     h2 {
+      position: relative;
       margin: 10px 0 15px;
-      padding-left: 15px;
-      font-weight: 500;
+      padding-left: 10px;
+      color: #1e232a;
+      font-weight: bold;
       font-size: 18px;
       line-height: 18px;
-      border-left: 3px solid #0068ff;
+      &::before {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        width: 4px;
+        height: 18px;
+        background: #2d5cf6;
+        border-radius: 2px;
+        transform: translateY(-50%);
+        content: '';
+      }
     }
   }
   .orgName {

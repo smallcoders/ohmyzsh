@@ -42,17 +42,7 @@ export default () => {
     }
     setActiveKey(ste || '1');
   };
-  const unlisten = () => {
-    console.log('unlisten');
-    history.listen(() => {
-      const query = history.location.query as any;
-      console.log('unlisten-query', query);
-      // setSteps(query.step);
-      prepare(query.step);
-    });
-  };
   useEffect(() => {
-    // unlisten();
     prepare(step);
   }, []);
   const toTab = (tostep: string) => {

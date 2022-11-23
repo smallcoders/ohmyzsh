@@ -259,7 +259,7 @@ export default ({ isDetail, type, id, step }: Props) => {
             <Space size="middle">
               <a
                 onClick={() => {
-                  window.open(`${routeName.LOAN_RECORD_WITHDRAWANDLOAN}?id=${record?.id}`);
+                  history.push(`${routeName.LOAN_RECORD_WITHDRAWANDLOAN}?id=${record?.id}`);
                 }}
               >
                 详情

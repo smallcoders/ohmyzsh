@@ -129,13 +129,16 @@ export default () => {
       } = SearChContentJsonParse;
       searchForm.setFieldsValue({
         ...rest,
-        time: applyTimeStart && applyTimeEnd ? [moment(applyTimeStart), moment(applyTimeEnd)] : [],
+        time:
+          applyTimeStart && applyTimeEnd ? [moment(applyTimeStart), moment(applyTimeEnd)] : null,
       });
       setSearChContent(SearChContentJsonParse);
     }
   };
   useEffect(() => {
-    backParamSet();
+    setTimeout(() => {
+      backParamSet();
+    }, 1000);
     prepare();
   }, []);
   const getPage = async (pageIndex = pageInfo.pageIndex, pageSize = pageInfo.pageSize) => {
