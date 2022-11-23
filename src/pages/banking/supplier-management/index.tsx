@@ -360,10 +360,9 @@ export default () => {
   // 模糊搜索
   const [options, setOptions] = useState([]);
   const [list, setList] = useState([]);
+  const [codeGyl, setCodeGyl] = useState('');
   const handleSearch = debounce(async (value: string) => {
     if (value === '' || value.length <= 2) return;
-    setList([]);
-    setOptions([]);
     try {
       const { result } = await queryOrg({ word: value });
       setList(result);
@@ -379,6 +378,13 @@ export default () => {
       console.log(error);
     }
   }, 200);
+
+  // 供应商校验
+  const nameValidator = (_: any, value: string) => {
+    if (value && codeGyl === null) return Promise.reject(new Error('该供应商不存在'));
+    return Promise.resolve();
+  };
+
   // 新增/编辑
   const addOrUpdate = async () => {
     drawerForm
@@ -417,6 +423,7 @@ export default () => {
     setDrawerVisible(false);
     setDrawerContent({});
     drawerForm.resetFields();
+    setOptions([]);
   };
   const useDrawer = (): React.ReactNode => {
     return (
@@ -464,7 +471,7 @@ export default () => {
             <div className="text">
               <div className="name">身份证号：</div>
               <div className="text2">
-                {drawerContent.cardNo === null
+                {drawerContent.cardNo === '' || drawerContent.cardNo === null
                   ? '--'
                   : drawerContent?.cardNo?.replace(/^(.{4})(?:\d+)(.{4})$/, '$1******$2')}
               </div>
@@ -495,19 +502,27 @@ export default () => {
             </div>
           </div>
         ) : (
-          <Form form={drawerForm} name="basic" labelCol={{ span: 6 }} style={{ width: '600px' }}>
+          <Form
+            form={drawerForm}
+            name="basic"
+            labelCol={{ span: 6 }}
+            style={{ width: '600px' }}
+            validateTrigger={['onBlur']}
+          >
             <Form.Item
               label="供应商名称"
               name="name"
               required
-              rules={[{ required: true, message: '请输入供应商名称' }]}
+              rules={[
+                { required: true, message: '请输入供应商名称' },
+                { validator: nameValidator },
+              ]}
             >
               {drawerContent.id && drawerContent.creditCode !== null ? (
                 <Input readOnly style={{ backgroundColor: 'rgba(245, 245, 245)' }} />
               ) : (
                 <Select
                   onSearch={handleSearch}
-                  allowClear
                   showSearch
                   filterOption={false}
                   options={options}
@@ -522,23 +537,33 @@ export default () => {
                       } = list.find((item: { name: string }) => item.name === value);
 
                       const { result } = await queryGyl({ name: value });
-                      drawerForm.setFieldsValue({
-                        code: result === null ? null : result.code,
-                        creditCode: queryOrgInfo.creditCode,
-                        estiblishTime: queryOrgInfo.estiblishTime.split(' ')[0],
-                        legalName: queryOrgInfo.legalPersonName,
-                      });
+                      setCodeGyl(result === null ? null : result.code);
+                      if (result === null) {
+                        drawerForm.setFieldsValue({
+                          code: null,
+                          creditCode: null,
+                          estiblishTime: null,
+                          legalName: null,
+                        });
+                      } else {
+                        drawerForm.setFieldsValue({
+                          code: result.code,
+                          creditCode: queryOrgInfo.creditCode,
+                          estiblishTime: queryOrgInfo.estiblishTime.split(' ')[0],
+                          legalName: queryOrgInfo.legalPersonName,
+                        });
+                      }
                     }
                   }}
                 />
               )}
             </Form.Item>
 
-            <Form.Item label="供应商编码" name="code" rules={[{ required: true, message: '该供应商不存在' }]}>
+            <Form.Item label="供应商编码" name="code">
               <Input
-                placeholder="回显不可修改"
                 readOnly
                 style={{ backgroundColor: 'rgba(245, 245, 245)' }}
+                placeholder="输入供应商名称后显示该字段内容"
               />
             </Form.Item>
 
@@ -546,8 +571,8 @@ export default () => {
               <Input
                 maxLength={18}
                 readOnly
-                placeholder="回显不可修改"
                 style={{ backgroundColor: 'rgba(245, 245, 245)' }}
+                placeholder="输入供应商名称后显示该字段内容"
               />
             </Form.Item>
 
@@ -555,7 +580,7 @@ export default () => {
               <Input
                 style={{ backgroundColor: 'rgba(245, 245, 245)' }}
                 readOnly
-                placeholder="回显不可修改"
+                placeholder="输入供应商名称后显示该字段内容"
               />
             </Form.Item>
 
@@ -563,8 +588,8 @@ export default () => {
               <Input
                 readOnly
                 maxLength={35}
-                placeholder="回显不可修改"
                 style={{ backgroundColor: 'rgba(245, 245, 245)' }}
+                placeholder="输入供应商名称后显示该字段内容"
               />
             </Form.Item>
 
