@@ -168,6 +168,9 @@ export default ({ current }: { current?: EditType }) => {
         }
     }
 
+    const filterOption = (inputValue: string, option: any) =>
+    (option.name.indexOf(inputValue) > -1 ||option.loginName.indexOf(inputValue) > -1);
+
     return (
         <div>
             <div className={sc('container-table-header')}>
@@ -216,6 +219,7 @@ export default ({ current }: { current?: EditType }) => {
                         height: 460,
                         width: 260
                     }}
+                    filterOption={filterOption}
                     // columns={transferColumns}
                     showSearch
                     rowKey={record => record.id}
