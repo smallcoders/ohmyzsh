@@ -4,7 +4,7 @@ import {
 } from '@/services/financial_customers_manage';
 import { useEffect, useState } from 'react';
 import { customToFixed } from '@/utils/util';
-import { Button } from 'antd';
+import { Button, message as antdMessage } from 'antd';
 import ProCard from '@ant-design/pro-card';
 import { history } from 'umi';
 import {
@@ -26,8 +26,11 @@ export default () => {
 
   useEffect(() => {
     getCustomersDetail({id}).then((res) => {
-      if (res?.result){
+      const { code, message: resultMsg } =  res || {}
+      if (code === 0){
         setDetail(res.result)
+      } else {
+        antdMessage.error(`请求失败，原因:{${resultMsg}}`);
       }
     })
   }, []);
@@ -45,15 +48,15 @@ export default () => {
             <div className="right-bottom-content">
               <div>
                 <div className="item"><label>法定代表人：</label>{detail?.legalPersonName || '--'}</div>
-                <div className="item"><label>实缴资本：</label>{detail?.actualCapital > 0 ? `${customToFixed(`${detail?.actualCapital / 1000000}`)}万元` : '--'}</div>
+                <div className="item"><label>实缴资本：</label>{detail?.actualCapital >= 0 ? `${customToFixed(`${detail?.actualCapital / 1000000}`)}万元` : '--'}</div>
               </div>
               <div>
                 <div className="item"><label>注册地址：</label>{detail?.regAddress || '--'}</div>
-                <div className="item"><label>注册资本：</label>{detail?.regCapital > 0 ? `${customToFixed(`${detail?.regCapital / 1000000}`)}万元` : '--'}</div>
+                <div className="item"><label>注册资本：</label>{detail?.regCapital >= 0 ? `${customToFixed(`${detail?.regCapital / 1000000}`)}万元` : '--'}</div>
               </div>
               <div>
                 <div className="item"><label>成立日期：</label>{detail?.formedDate || '--'}</div>
-                <div className="item"><label>经营所在地：</label>{detail?.address || '--'}</div>
+                <div className="item"><label>经营所在地：</label>{detail?.busAddress || '--'}</div>
               </div>
             </div>
           </div>
@@ -63,18 +66,18 @@ export default () => {
           <div className="flex-box">
             <div>
               <div className="item">
-                <label>企业规模：</label>{detail?.scale ? `${detail?.scale}人` : '--'}
+                <label>企业规模：</label>{detail?.scale ? `${detail?.scale}` : '--'}
               </div>
               <div className="item">
                 <label>组织形式：</label>{detail?.orgForm ? orgFormMap[detail?.orgForm] : '--'}
               </div>
               <div className="item">
-                <label>总资产：</label>{detail?.totalAssets ? `${customToFixed(`${detail?.totalAssets / 1000000}`)}万元` : '--'}
+                <label>总资产：</label>{detail?.totalAssets >= 0 ? `${customToFixed(`${detail?.totalAssets / 1000000}`)}万元` : '--'}
               </div>
             </div>
             <div>
               <div className="item">
-                <label>上年营收：</label>{detail?.revenueLastYear ? `${customToFixed(`${detail?.revenueLastYear / 1000000}`)}万元` : '--'}
+                <label>上年营收：</label>{detail?.revenueLastYear >= 0? `${customToFixed(`${detail?.revenueLastYear / 1000000}`)}万元` : '--'}
               </div>
               <div className="item">
                 <label>法人资格：</label>{detail?.legalQualification ? legalQualificationMap[detail?.legalQualification] : '--'}
@@ -85,7 +88,7 @@ export default () => {
             </div>
             <div>
               <div className="item">
-                <label>上年利润：</label>{detail?.profitLastYear ? `${customToFixed(`${detail?.profitLastYear / 1000000}`)}万元` : '--'}
+                <label>上年利润：</label>{detail?.profitLastYear >= 0 ? `${customToFixed(`${detail?.profitLastYear / 1000000}`)}万元` : '--'}
               </div>
               <div className="item">
                 <label>经营成分：</label>{detail?.economyType ? economyTypeMap[detail?.economyType] : '--'}
