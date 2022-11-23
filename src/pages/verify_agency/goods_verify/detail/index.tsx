@@ -294,7 +294,7 @@ export default () => {
                   }}
                 />
               </Form.Item>
-              <Form.Item label="商品价值">
+              <Form.Item label="商品应用场景">
                 <div
                   dangerouslySetInnerHTML={{
                     __html: detail?.payProduct?.productScene || '/',

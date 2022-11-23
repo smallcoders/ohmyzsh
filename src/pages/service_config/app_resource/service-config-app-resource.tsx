@@ -1,7 +1,20 @@
 // @ts-ignore
 /* eslint-disable */
 import { PlusOutlined } from '@ant-design/icons';
-import { Button, Input, Table, Form, Select, Row, Col, message, Space, Popconfirm, Modal, InputNumber } from 'antd';
+import {
+  Button,
+  Input,
+  Table,
+  Form,
+  Select,
+  Row,
+  Col,
+  message,
+  Space,
+  Popconfirm,
+  Modal,
+  InputNumber,
+} from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import './service-config-app-resource.less';
 import scopedClasses from '@/utils/scopedClasses';
@@ -209,37 +222,36 @@ export default () => {
     );
   };
 
-
-    /**
+  /**
    * 权重Modal
    */
 
-    const [weightVisible, setWeightVistble] = useState(false);
-    const [currentId, setCurrentId] = useState<string>('');
-    const [weightForm] = Form.useForm();
-    const handleWeightOk = async () => {
-      try {
-        weightForm.validateFields().then(async (value) => {
-          const res = await getHttpAppSort({
-            id: currentId,
-            sort: value.sort
-          })
-          if (res?.code === 0) {
-            message.success(`权重设置成功！`);
-            setWeightVistble(false);
-            weightForm.resetFields();
-            //  重新获取列表数据
-            const search = searchForm.getFieldsValue();
-            setSearChContent(search);
-          } else {
-            message.error(`权重设置失败，原因:{${res?.message}}`);
-          }
+  const [weightVisible, setWeightVistble] = useState(false);
+  const [currentId, setCurrentId] = useState<string>('');
+  const [weightForm] = Form.useForm();
+  const handleWeightOk = async () => {
+    try {
+      weightForm.validateFields().then(async (value) => {
+        const res = await getHttpAppSort({
+          id: currentId,
+          sort: value.sort,
         });
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    const weightModal = (): React.ReactNode => {
+        if (res?.code === 0) {
+          message.success(`权重设置成功！`);
+          setWeightVistble(false);
+          weightForm.resetFields();
+          //  重新获取列表数据
+          const search = searchForm.getFieldsValue();
+          setSearChContent(search);
+        } else {
+          message.error(`权重设置失败，原因:{${res?.message}}`);
+        }
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const weightModal = (): React.ReactNode => {
     return (
       <Modal
         title="请输入权重"
@@ -336,15 +348,16 @@ export default () => {
       render: (_: any, record: AppResource.Content) => {
         return (
           <Space size="middle">
-            <a
-              href="javascript:void(0)"
+            <Button
+              type="link"
               onClick={() => {
                 history.push(`${routeName.ADD_APP_RESOURCE}?id=${record.id}`);
               }}
+              disabled={record.releaseStatus === 0 && record.appId !== null}
             >
               编辑
-            </a>
-            {(
+            </Button>
+            {
               <Popconfirm
                 title="确定删除么？"
                 okText="确定"
@@ -353,7 +366,7 @@ export default () => {
               >
                 <a href="#">删除</a>
               </Popconfirm>
-            )}
+            }
             {record.releaseStatus === 1 && (
               <Popconfirm
                 title="确定下架么？"
@@ -370,7 +383,7 @@ export default () => {
                 onClick={() => {
                   setWeightVistble(true);
                   setCurrentId(record.id as string);
-                  weightForm.setFieldsValue({ sort: record.sort  || [] });
+                  weightForm.setFieldsValue({ sort: record.sort || [] });
                 }}
               >
                 权重
