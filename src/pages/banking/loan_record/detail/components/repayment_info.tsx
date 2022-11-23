@@ -112,6 +112,14 @@ export default ({ isDetail, id }: Props) => {
         return <div>{_ || '--'}</div>;
       },
     },
+    {
+      title: '剩余还款金额(元)',
+      dataIndex: 'backMoney',
+      width: 100,
+      renderText: (_: number, _record: BankingLoan.LoanContent) => {
+        return <div>{regFenToYuan(_record.takeMoney - _, 1)}</div>;
+      },
+    },
   ];
   const columDeal = () => {
     const column = [...columnsOrg];
