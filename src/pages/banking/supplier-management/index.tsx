@@ -128,6 +128,21 @@ export default () => {
     return;
   };
 
+  // 文件回显
+  const commitLetterFn = async (commitLetter: string) => {
+    const { result } = await getFileInfo(commitLetter);
+    const fileInfo = result
+      ? [
+          {
+            uid: result[0].id,
+            name: result[0].name + '.' + result[0].format,
+            status: 'done',
+          },
+        ]
+      : [];
+    return fileInfo;
+  };
+
   useEffect(() => {
     getPages();
   }, [searchContent]);
@@ -154,7 +169,7 @@ export default () => {
       align: 'center',
       width: 200,
       render: (code: string) => {
-        return code === '' ? '--' : code;
+        return code === null ? '--' : code;
       },
     },
     {
@@ -247,13 +262,13 @@ export default () => {
               onClick={async () => {
                 setDrawerContent({ ...record });
                 setDrawerVisible(true);
-                console.log(record);
                 drawerForm.setFieldsValue({
                   ...record,
-                  city: record.city?.split(',')[0].split('-') || '',
+                  city: record.city === null ? '' : record.city?.split(',')[0].split('-'),
                   startDate: record.startDate === null ? '' : moment(record.startDate),
-                  cardNo: '',
-                  commitLetter: [],
+                  cardNo: record.cardNo === null ? '' : record.cardNo,
+                  commitLetter:
+                    record.commitLetter === null ? [] : await commitLetterFn(record.commitLetter),
                 });
               }}
             >
@@ -519,7 +534,7 @@ export default () => {
               )}
             </Form.Item>
 
-            <Form.Item label="供应商编码" name="code">
+            <Form.Item label="供应商编码" name="code" rules={[{ required: true, message: '该供应商不存在' }]}>
               <Input
                 placeholder="回显不可修改"
                 readOnly
@@ -696,7 +711,7 @@ export default () => {
         '100%': 'rgba(26, 102, 255)',
       },
       strokeWidth: 8,
-      format: (percent: number) => percent && `${parseFloat(percent.toFixed(2))}%`,
+      format: (percent: number | undefined) => percent && `${parseFloat(percent.toFixed(2))}%`,
       showInfo: true,
     },
     showUploadList: {
@@ -773,6 +788,12 @@ export default () => {
                 onClick={() => {
                   setModalVisible(false);
                   getPages();
+                  setUploadNum({
+                    successNum: undefined,
+                    failNum: undefined,
+                    filePath: '',
+                    progress: 'false',
+                  });
                 }}
               >
                 完成
