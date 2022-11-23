@@ -19,12 +19,34 @@ import SelfTable from '@/components/self_table';
 import type LogoutVerify from '@/types/user-config-logout-verify';
 import { confirmUserDelete, getLogoutPage } from '@/services/logout-verify';
 import User from '@/types/user.d';
+import { Access, useAccess } from 'umi';
 const sc = scopedClasses('user-config-logout-verify');
+enum Edge {
+  HOME = 0,
+}
 
 export default () => {
   const [dataSource, setDataSource] = useState<LogoutVerify.Content[]>([]);
   // const [types, setTypes] = useState<any[]>([]);
   const [searchContent, setSearChContent] = useState<LogoutVerify.SearchContent>({});
+  // 拿到当前角色的access权限兑现
+  const access = useAccess()
+  // 当前页面的对应权限key
+  const [edge, setEdge] = useState<Edge.HOME>(Edge.HOME);
+  // 页面权限
+  const permissions = {
+    [Edge.HOME]: 'PQ_UM_ZXJL', // 用户管理-用户信息
+  }
+
+  useEffect(() => {
+    for (const key in permissions) {
+      const permission = permissions[key]
+      if (Object.prototype.hasOwnProperty.call(access, permission)) {
+        setEdge(key as any)
+        break
+      }
+    }
+  },[])
 
   const formLayout = {
     labelCol: { span: 6 },

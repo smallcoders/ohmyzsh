@@ -7,8 +7,10 @@ import {
   message as antdMessage,
   Space,
   Popconfirm,
+  TreeSelect,
 } from 'antd';
 import './index.less';
+import { history } from 'umi';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
 import { routeName } from '@/../config/routes';
@@ -18,13 +20,16 @@ import SelfTable from '@/components/self_table';
 import type ConsultRecord from '@/types/expert_manage/consult-record';
 import { cancelDistributeDemand, distributeDemand, getDemandPage } from '@/services/creative-demand';
 import RefineModal from './refine';
-import { history } from 'umi';
+import { Access, useAccess } from 'umi';
 import DockingManage from '@/types/docking-manage.d';
 const sc = scopedClasses('user-config-logout-verify');
 
 const group = Object.entries(DockingManage.specifyType)?.filter(p => p[0] != '6')
+enum Edge {
+  HOME = 0, // 新闻咨询首页
+}
 
-export default () => {
+export default ({ demandTypes, area }: { demandTypes: any[], area: any[] }) => {
   const [dataSource, setDataSource] = useState<ConsultRecord.Content[]>([]);
   const [searchContent, setSearChContent] = useState<ConsultRecord.SearchBody>({});
   const [refineVisible, setRefineVisible] = useState<boolean>(false);
@@ -34,6 +39,24 @@ export default () => {
   }>({
     visible: false, id: ''
   });
+  // 拿到当前角色的access权限兑现
+  const access = useAccess();
+  // 当前页面的对应权限key
+  const [edge, setEdge] = useState<Edge.HOME>(Edge.HOME);
+  // 页面权限
+  const permissions = {
+    [Edge.HOME]: 'PQ_SD_XQRL', // 供需对接管理-我的认领
+  };
+
+  useEffect(() => {
+    for (const key in permissions) {
+      const permission = permissions[key];
+      if (Object.prototype.hasOwnProperty.call(access, permission)) {
+        setEdge(key as any);
+        break;
+      }
+    }
+  }, []);
 
   const formLayout = {
     labelCol: { span: 6 },
@@ -119,7 +142,7 @@ export default () => {
     {
       title: '需求名称',
       dataIndex: 'name',
-      width: 150,
+      width: 200,
       render: (_: string, _record: any) => (
         <a
           onClick={() => {
@@ -132,10 +155,17 @@ export default () => {
       isEllipsis: true,
     },
     {
+      title: '需求类型',
+      dataIndex: 'typeNameList',
+      isEllipsis: true,
+      render: (item?: string[]) => item ? item.join('、') : '--',
+      width: 300,
+    },
+    {
       title: '所属企业',
       dataIndex: 'orgName',
       isEllipsis: true,
-      width: 100,
+      width: 200,
     },
     {
       title: '联系人',
@@ -150,6 +180,13 @@ export default () => {
       width: 150,
     },
     {
+      title: '需求地区',
+      dataIndex: 'areaNameList',
+      isEllipsis: true,
+      render: (item?: string[]) => item ? item.join('、') : '--',
+      width: 200,
+    },
+    {
       title: '需求状态',
       dataIndex: 'claimState',
       isEllipsis: true,
@@ -157,75 +194,85 @@ export default () => {
       width: 150,
     },
     {
+      title: '需求认领人',
+      dataIndex: 'claimName',
+      isEllipsis: true,
+      width: 150,
+    },  
+
+    {
       title: '分发情况',
       dataIndex: 'specifyType',
       isEllipsis: true,
       render: (_: string) => DockingManage.specifyType[_] || '--',
       width: 150,
     },
-    {
+    access['P_SD_XQRL'] && {
       title: '操作',
-      width: 200,
+      width: 300,
       fixed: 'right',
       dataIndex: 'option',
       render: (_: any, record: any) => {
+        const accessible = access?.[permissions?.[edge].replace(new RegExp("Q"), "")]
         return <div style={{ textAlign: 'center' }}>
-          <Space size={20}>
-            {record?.btnList?.map(p => DockingManage.btnList?.[p]?.render ? <Popconfirm
-              visible={popVisible.visible && record?.id == popVisible?.id}
-              icon={null}
-              title={
-                <>
-                  <span>
-                    请选择此条需求要分发的业务组：
-                  </span>
-                  <div>
-                    {group?.map(p => {
-                      const [value, title] = p
-                      return <div
-                        onClick={() => {
-                          activeTag != value && methodObj.distribute(record, value)
-                        }}
-                        style={{ textAlign: 'center', padding: '5px 30px', cursor: 'pointer', marginTop: 10, borderRadius: '4px', backgroundColor: '#E6E6E6' }}>
-                        {title}
-                      </div>
-                    })}
-                  </div>
-                </>
-              }
-              onCancel={() => {
-                setPopVisible({
-                  visible: false, id: ''
-                })
-              }}
-              okButtonProps={{ style: { display: 'none' } }}
-            >
-              <Button
-                type="link"
-                onClick={() => {
-                  setActiveTag(record?.specifyType || '')
+          <Access accessible={accessible}>
+            <Space size={20}>
+              {record?.btnList?.map(p => DockingManage.btnList?.[p]?.render ? <Popconfirm
+                visible={popVisible.visible && record?.id == popVisible?.id}
+                icon={null}
+                title={
+                  <>
+                    <span>
+                      请选择此条需求要分发的业务组：
+                    </span>
+                    <div>
+                      {group?.map(p => {
+                        const [value, title] = p
+                        return <div
+                          onClick={() => {
+                            activeTag != value && methodObj.distribute(record, value)
+                          }}
+                          style={{ textAlign: 'center', padding: '5px 30px', cursor: 'pointer', marginTop: 10, borderRadius: '4px', backgroundColor: '#E6E6E6' }}>
+                          {title}
+                        </div>
+                      })}
+                    </div>
+                  </>
+                }
+                onCancel={() => {
                   setPopVisible({
-                    visible: true,
-                    id: record?.id
+                    visible: false, id: ''
                   })
                 }}
+                okButtonProps={{ style: { display: 'none' } }}
               >
-                分发
-              </Button>
-            </Popconfirm> : DockingManage.btnList[p]?.method ?
-              <Button
-                type="link"
-                onClick={() => {
-                  methodObj?.[DockingManage.btnList[p]?.method](record)
-                }}
-              >
-                {DockingManage.btnList[p]?.text}
-              </Button> : DockingManage.btnList[p]?.text)}
-          </Space>
+                <Button
+                  type="link"
+                  onClick={() => {
+                    setActiveTag(record?.specifyType || '')
+                    setPopVisible({
+                      visible: true,
+                      id: record?.id
+                    })
+                  }}
+                >
+                  分发
+                </Button>
+              </Popconfirm> : DockingManage.btnList[p]?.method ?
+                <Button
+                  type="link"
+                  onClick={() => {
+                    methodObj?.[DockingManage.btnList[p]?.method](record)
+                  }}
+                >
+                  {DockingManage.btnList[p]?.text}
+                </Button> : DockingManage.btnList[p]?.text)}
+            </Space>
+          </Access>
         </div>
       },
     },
-  ];
+  ].filter(p => p);
 
   useEffect(() => {
     getPage();
@@ -249,6 +296,35 @@ export default () => {
               </Form.Item>
             </Col>
             <Col span={8}>
+              <Form.Item name="type" label="需求类型">
+                <TreeSelect
+                  style={{ width: '100%' }}
+                  dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                  treeData={demandTypes}
+                  placeholder="请选择"
+                  treeDefaultExpandAll
+                  showSearch
+                  treeNodeFilterProp="name"
+                  fieldNames={{ label: 'name', value: 'id', children: 'nodes' }}
+                />
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              <Form.Item name="areaCode" label="需求地区">
+                <TreeSelect
+                  treeNodeFilterProp={'name'}
+                  showSearch
+                  style={{ width: '100%' }}
+                  dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                  placeholder="请选择"
+                  allowClear
+                  treeDefaultExpandAll
+                  treeData={area}
+                  fieldNames={{ children: 'nodes', value: 'code', label: 'name' }}
+                />
+              </Form.Item>
+            </Col>
+            <Col span={8}>
               <Form.Item name="specifyType" label="需求分发情况">
                 <Select placeholder="请选择" allowClear>
                   <Select.Option value={6}>待分发</Select.Option>
@@ -260,7 +336,11 @@ export default () => {
                 </Select>
               </Form.Item>
             </Col>
-            <Col offset={4} span={4}>
+
+          
+
+
+            <Col offset={12} span={4}>
               <Button
                 style={{ marginRight: 20 }}
                 type="primary"
@@ -276,9 +356,6 @@ export default () => {
                   if (search.time) {
                     search.startCreateTime = moment(search.time[0]).format('YYYY-MM-DD HH:mm:ss');
                     search.endCreateTime = moment(search.time[1]).format('YYYY-MM-DD HH:mm:ss');
-                  }
-                  if (search.contacted) {
-                    search.contacted = !!(search.contacted - 1);
                   }
                   setSearChContent(search);
                 }}
@@ -308,7 +385,7 @@ export default () => {
       <div className={sc('container-table-body')}>
         <SelfTable
           bordered
-          scroll={{ x: 1280 }}
+          scroll={{ x: 2030 }}
           columns={columns}
           rowKey={'id'}
           dataSource={dataSource}

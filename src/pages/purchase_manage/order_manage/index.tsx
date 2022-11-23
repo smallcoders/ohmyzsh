@@ -16,6 +16,7 @@ import { PageContainer } from '@ant-design/pro-layout';
 import React, { useEffect, useState } from 'react';
 import type Common from '@/types/common';
 import moment from 'moment';
+import { Access, useAccess } from 'umi';
 import OrderList from './components/order-list';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
@@ -185,6 +186,8 @@ export default () => {
     );
   };
 
+  const access = useAccess()
+
   return (
     <PageContainer className={sc('container')}>
       {selectButton()}
@@ -192,19 +195,21 @@ export default () => {
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>订单列表(共{pageInfo.totalCount || 0}个)</span>
-          <Button
-            href={getUrl('/antelope-pay/mng/order/exportOrderList', {
-              ...searchContent,
-              pageIndex: 1,
-              pageSize: 10000,
-            })}
-            icon={<UploadOutlined />}
-            // onClick={() => {
-            //   onExport();
-            // }}
-          >
-            导出
-          </Button>
+          <Access accessible={access['PX_PM_DD']}>
+            <Button
+              href={getUrl('/antelope-pay/mng/order/exportOrderList', {
+                ...searchContent,
+                pageIndex: 1,
+                pageSize: 10000,
+              })}
+              icon={<UploadOutlined />}
+              // onClick={() => {
+              //   onExport();
+              // }}
+            >
+              导出
+            </Button>
+          </Access>
         </div>
       </div>
       <div className={sc('container-table-body')}>

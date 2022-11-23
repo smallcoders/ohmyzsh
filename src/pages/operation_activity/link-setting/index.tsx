@@ -18,6 +18,7 @@ import {
 } from "antd";
 import html2canvas from 'html2canvas'
 import QRCode from 'qrcode.react'
+import { Access, useAccess } from 'umi';
 import {PageContainer} from "@ant-design/pro-layout";
 import {DownOutlined} from "@ant-design/icons";
 import type {ColumnsType} from "antd/es/table";
@@ -684,29 +685,12 @@ export default () => {
       width: 250,
       render: (_record: any) => (
         <Space size="middle">
-          {edge == 2 &&
-          <a
-            href="#"
-            onClick={() => copyLink(_record as any)}
-          >复制链接</a>
-          }
-          {edge == 3 &&
+          <Access accessible={access['P_OA_H5LJ']}>
             <a
-              type="primary"
-              onClick={downWechatCode}
-              href={`/antelope-manage/manage/active/download/${_record?.activeImageId}`}
-              download={`/antelope-manage/manage/active/download/${_record?.activeImageId}`}
-            >
-              下载二维码
-            </a>
-          }
-          {edge == 4 &&
-            <a
-              download={`/antelope-manage/common/download/${_record?.activeImageId}`}
-             href={`/antelope-manage/common/download/${_record?.activeImageId}`}
-              onClick={downShareCode}
-            >下载分享码</a>
-          }
+              href="#"
+              onClick={() => copyLink(_record as any)}
+            >复制链接</a>
+          </Access>
           <Popover content={content} trigger="click" >
             <a
               href="#"
@@ -715,11 +699,13 @@ export default () => {
               }}
             >操作记录</a>
           </Popover>
-          <Dropdown overlay={moreMenu} trigger={['click']}>
-            <a className="ant-dropdown-link" onClick={()=>{handleMoreMenuClick(_record as any)}}>
-              更多 <DownOutlined />
-            </a>
-          </Dropdown>
+          <Access accessible={access['P_OA_H5LJ']}>
+            <Dropdown overlay={moreMenu} trigger={['click']}>
+              <a className="ant-dropdown-link" onClick={()=>{handleMoreMenuClick(_record as any)}}>
+                更多 <DownOutlined />
+              </a>
+            </Dropdown>
+          </Access>
         </Space>
       ),
     },
@@ -777,13 +763,7 @@ export default () => {
       width: 250,
       render: (_record: any) => (
         <Space size="middle">
-          {edge == 2 &&
-            <a
-              href="#"
-              onClick={() => copyLink(_record as any)}
-            >复制链接</a>
-          }
-          {edge == 3 &&
+          <Access accessible={access['PX_OA_XCXLJ']}>
             <a
               type="primary"
               onClick={downWechatCode}
@@ -792,14 +772,7 @@ export default () => {
             >
               下载二维码
             </a>
-          }
-          {edge == 4 &&
-            <a
-              download={`/antelope-manage/common/download/${_record?.activeImageId}`}
-              href={`/antelope-manage/common/download/${_record?.activeImageId}`}
-              onClick={downShareCode}
-            >下载分享码</a>
-          }
+          </Access>
           <Popover content={content} trigger="click">
             <a
               href="#"
@@ -808,11 +781,13 @@ export default () => {
               }}
             >操作记录</a>
           </Popover>
-          <Dropdown overlay={moreMenu} trigger={['click']}>
-            <a className="ant-dropdown-link" onClick={()=>{handleMoreMenuClick(_record as any)}}>
-              更多 <DownOutlined />
-            </a>
-          </Dropdown>
+          <Access accessible={access['P_OA_XCXLJ']}>
+            <Dropdown overlay={moreMenu} trigger={['click']}>
+              <a className="ant-dropdown-link" onClick={()=>{handleMoreMenuClick(_record as any)}}>
+                更多 <DownOutlined />
+              </a>
+            </Dropdown>
+          </Access>
         </Space>
       ),
     },
@@ -875,29 +850,13 @@ export default () => {
       width: 250,
       render: (_record: any) => (
         <Space size="middle">
-          {edge == 2 &&
-            <a
-              href="#"
-              onClick={() => copyLink(_record as any)}
-            >复制链接</a>
-          }
-          {edge == 3 &&
-            <a
-              type="primary"
-              onClick={downWechatCode}
-              href={`/antelope-manage/manage/active/download/${_record?.activeImageId}`}
-              download={`/antelope-manage/manage/active/download/${_record?.activeImageId}`}
-            >
-              下载二维码
-            </a>
-          }
-          {edge == 4 &&
+          <Access accessible={access['PX_OA_FXMLJ']}>
             <a
               download={`/antelope-manage/common/download/${_record?.activeImageId}`}
               href={`/antelope-manage/common/download/${_record?.activeImageId}`}
               onClick={downShareCode}
             >下载分享码</a>
-          }
+          </Access>
           <Popover content={content} trigger="click">
             <a
               href="#"
@@ -906,24 +865,56 @@ export default () => {
               }}
             >操作记录</a>
           </Popover>
-          <Dropdown overlay={moreMenu} trigger={['click']}>
-            <a className="ant-dropdown-link" onClick={()=>{handleMoreMenuClick(_record as any)}}>
-              更多 <DownOutlined />
-            </a>
-          </Dropdown>
+          <Access accessible={access['P_OA_FXMLJ']}>
+            <Dropdown overlay={moreMenu} trigger={['click']}>
+              <a className="ant-dropdown-link" onClick={()=>{handleMoreMenuClick(_record as any)}}>
+                更多 <DownOutlined />
+              </a>
+            </Dropdown>
+          </Access>
         </Space>
       ),
     },
   ];
+
+  const edges = {
+    [Activity.Edge.H5]: 'H5链接', // H5链接
+    [Activity.Edge.WECHAT]: '小程序码', // 小程序码
+    [Activity.Edge.SHARE]: '分享码', // 分享码
+  }
+
+  useEffect(() => {
+    for (const key in permissions) {
+      const permission = permissions[key]
+      console.log('access', access)
+      // permission 看这个属性，是否再access中存在，存在为true
+      if (Object.prototype.hasOwnProperty.call(access, permission)) {
+        console.log('key',key)
+        setEdge(key as any)
+        break
+      }
+    }
+  }, [])
+
+  const permissions = {
+    [Activity.Edge.H5]: 'PQ_OA_H5LJ', // H5链接
+    [Activity.Edge.WECHAT]: 'PQ_OA_XCXLJ', // 小程序码
+    [Activity.Edge.SHARE]: 'PQ_OA_FXMLJ', // 分享码
+  }
   const selectButton = (): React.ReactNode => {
     const handleEdgeChange = (e: RadioChangeEvent) => {
       setEdge(e.target.value);
     };
     return (
       <Radio.Group value={edge} onChange={handleEdgeChange}>
-        <Radio.Button value={Activity.Edge.H5}>H5链接</Radio.Button>
+        {
+          Object.keys(edges).map((p, index) => {
+            return <Access accessible={access?.[permissions[p]]}><Radio.Button value={p}>{edges[p]}</Radio.Button></Access>
+          })
+        }
+        {/* <Radio.Button value={Activity.Edge.H5}>H5链接</Radio.Button>
         <Radio.Button value={Activity.Edge.WECHAT}>小程序码</Radio.Button>
-        <Radio.Button value={Activity.Edge.SHARE}>分享码</Radio.Button>
+        <Radio.Button value={Activity.Edge.SHARE}>分享码</Radio.Button> */}
       </Radio.Group>
     );
   };
@@ -1186,16 +1177,20 @@ export default () => {
     );
   };
 
+  const access = useAccess()
+
   return (
     <PageContainer className={sc('container')}>
       {useSearchNode()}
       <div className={sc('container-header')}>
           {selectButton()}
-          <div className={sc('container-header-select')}>
-            <Dropdown overlay={menu} placement="bottomLeft">
-              <Button style={{background:'#6680FF',color:'#fff'}}>新增  ···</Button>
-            </Dropdown>
-          </div>
+          <Access accessible={access['PA_OA_LJ']}>
+            <div className={sc('container-header-select')}>
+              <Dropdown overlay={menu} placement="bottomLeft">
+                <Button style={{background:'#6680FF',color:'#fff'}}>新增  ···</Button>
+              </Dropdown>
+            </div>
+          </Access>
         </div>
       <div className={sc('container-body')}>
         {edge==2&&

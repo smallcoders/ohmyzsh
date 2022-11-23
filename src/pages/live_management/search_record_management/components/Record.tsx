@@ -30,7 +30,7 @@ import type DiagnosticTasks from '@/types/service-config-diagnostic-tasks';
 import UploadFormFile from '@/components/upload_form/upload-form-file';
 import { getAreaTree } from '@/services/area';
 import { stringify } from 'rc-field-form/es/useWatch';
-const sc = scopedClasses('service-config-diagnostic-tasks');
+const sc = scopedClasses('tab-menu');
 export default () => {
   const [dataSource, setDataSource] = useState<DiagnosticTasks.OnlineRecord[]>([]);
   // 外层列表查询条件

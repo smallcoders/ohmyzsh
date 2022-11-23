@@ -1,6 +1,7 @@
 import { Button, message } from 'antd';
 import React, { useRef } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
+import { Access, useAccess } from 'umi';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import {
@@ -70,19 +71,25 @@ const IntentionTable: React.FC = () => {
         (<div>
           <p>{ record.operationTime }</p>
             <p>操作人: { record.operationUserName }</p>
-        </div> ) : (<Button
-          key="2"
-          size="small"
-          type="link"
-          onClick={() => {
-            postIntentionSign(record.id)
-          }}
-        >
-          标记为已沟通
-        </Button>)
+        </div> ) : (
+          <Access accessible={access['P_LM_ZBYX']}>
+            <Button
+              key="2"
+              size="small"
+              type="link"
+              onClick={() => {
+                postIntentionSign(record.id)
+              }}
+            >
+              标记为已沟通
+            </Button>
+          </Access>
+        )
       ],
     },
   ];
+
+  const access = useAccess()
 
   return (
     <PageContainer>

@@ -4,6 +4,7 @@ import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
+import { Access, useAccess } from 'umi';
 import Common from '@/types/common';
 import moment from 'moment';
 import SelfTable from '@/components/self_table';
@@ -119,6 +120,8 @@ export default () => {
     }
   };
 
+  const access = useAccess()
+
   const columns = [
     {
       title: '序号',
@@ -143,7 +146,7 @@ export default () => {
       dataIndex: 'createTime',
       width: 100,
     },
-    {
+    access['P_PM_GYSLX'] && {
       title: '操作',
       width: 80,
       fixed: 'right',
@@ -173,7 +176,7 @@ export default () => {
         );
       },
     },
-  ];
+  ].filter(p => p);
 
   useEffect(() => {
     getPages();
@@ -248,15 +251,17 @@ export default () => {
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>类型列表(共{pageInfo.totalCount || 0}个)</span>
-          <Button
-            type="primary"
-            key="addStyle"
-            onClick={() => {
-              setModalVisible(true);
-            }}
-          >
-            <PlusOutlined /> 新增供应商类型
-          </Button>
+          <Access accessible={access['P_PM_GYSLX']}>
+            <Button
+              type="primary"
+              key="addStyle"
+              onClick={() => {
+                setModalVisible(true);
+              }}
+            >
+              <PlusOutlined /> 新增供应商类型
+            </Button>
+          </Access>
         </div>
       </div>
       <div className={sc('container-table-body')}>

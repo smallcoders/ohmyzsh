@@ -7,6 +7,8 @@ namespace Account {
     name: string;
     phone: string;
     type: string;
+    menuShowMap: { [key]: string };
+    permissionCodes: string[]
   };
 
   export interface CurrentUserResult extends Common.ResultCode {
@@ -23,6 +25,7 @@ namespace Account {
     type: string;
     uapUserId: string;
     creator?: Account;
+    roles?: number[];
   };
 
   export type SaveAccountRequest = {
@@ -30,6 +33,7 @@ namespace Account {
     loginName?: string;
     name: string;
     phone: string;
+    roleIds?: number[];
   };
 }
 export default Account;

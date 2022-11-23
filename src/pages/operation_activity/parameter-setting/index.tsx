@@ -12,6 +12,7 @@ import {
   Button,
   Popconfirm, message,
 } from 'antd';
+import { Access, useAccess } from 'umi';
 import type { ColumnsType } from 'antd/es/table';
 import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
@@ -246,6 +247,30 @@ const Tablist: React.FC = () => {
       </Modal>
     );
   };
+
+  const edges = {
+    [Activity.Edge.CHANNEL]: '渠道值', // 渠道
+    [Activity.Edge.SCENE]: '场景值', // 场景
+  }
+
+  console.log('Object.entries(edges)', edges, Object.keys(edges))
+
+  useEffect(() => {
+    for (const key in permissions) {
+      const permission = permissions[key]
+      console.log('access', access)
+      // permission 看这个属性，是否再access中存在，存在为true
+      if (Object.prototype.hasOwnProperty.call(access, permission)) {
+        console.log('key',key)
+        setEdge(key as any)
+        break
+      }
+    }
+  }, [])
+  const permissions = {
+    [Activity.Edge.CHANNEL]: 'PQ_OA_QD', // 渠道
+    [Activity.Edge.SCENE]: 'PQ_OA_CJ', // 场景
+  }
   //选择渠道/场景值
   const selectButton = (): React.ReactNode => {
     const handleEdgeChange = (e: RadioChangeEvent) => {
@@ -253,8 +278,13 @@ const Tablist: React.FC = () => {
     };
     return (
       <Radio.Group value={edge} onChange={handleEdgeChange}>
-        <Radio.Button value={Activity.Edge.CHANNEL}>渠道值</Radio.Button>
-        <Radio.Button value={Activity.Edge.SCENE}>场景值</Radio.Button>
+        {
+          Object.keys(edges).map((p, index) => {
+            return <Access accessible={access?.[permissions[p]]}><Radio.Button value={p}>{edges[p]}</Radio.Button></Access>
+          })
+        }
+        {/* <Radio.Button value={Activity.Edge.CHANNEL}>渠道值</Radio.Button>
+        <Radio.Button value={Activity.Edge.SCENE}>场景值</Radio.Button> */}
       </Radio.Group>
     );
   };
@@ -317,6 +347,9 @@ const Tablist: React.FC = () => {
 
 
   //定义行
+  const access = useAccess()
+  const accessible = access?.[permissions?.[edge].replace(new RegExp("Q"), "")]
+
   const columns: ColumnsType<Activity.Content> = [
     {
       title: '序号',
@@ -349,75 +382,82 @@ const Tablist: React.FC = () => {
       key: 'started',
       dataIndex: 'started',
       width:100,
-      render: (started: boolean, record: Activity.Content) => (
-        <>
-          <Popconfirm
-            title={
-              (started&&
-              <div className="className">
-                <div>提示</div>
-                <div>停用后，新配置{edge == 0? '渠道值' : '场景值'}时不可
-                  <br/>再选择此项内容</div>
-              </div>)||  (!started&&
+      render: (started: boolean, record: Activity.Content) => {
+        return (
+          <Access accessible={accessible}>
+            <Popconfirm
+              title={
+                (started&&
                 <div className="className">
                   <div>提示</div>
-                  <div>启用的数据，在进行活动配置时，
-                    <br/>可以作为{edge == 0? '渠道值' : '场景值'}被选择</div>
-                </div>)
-            }
-            okText="确定"
-            cancelText="取消"
-            onConfirm={()=>confirm(record as any)}
-            onCancel={()=>cancel(record as any)}
-          >
-           <Switch  style={{ marginRight: 20 }} checked={started}  />
-          </Popconfirm>
-        </>
-      ),
+                  <div>停用后，新配置{edge == 0? '渠道值' : '场景值'}时不可
+                    <br/>再选择此项内容</div>
+                </div>)||  (!started&&
+                  <div className="className">
+                    <div>提示</div>
+                    <div>启用的数据，在进行活动配置时，
+                      <br/>可以作为{edge == 0? '渠道值' : '场景值'}被选择</div>
+                  </div>)
+              }
+              okText="确定"
+              cancelText="取消"
+              onConfirm={()=>confirm(record as any)}
+              onCancel={()=>cancel(record as any)}
+            >
+            <Switch  style={{ marginRight: 20 }} checked={started}  />
+            </Popconfirm>
+          </Access>
+        )
+      }
     },
-    {
+    accessible && {
       title: '操作',
       key: 'action',
-      render: (_: any, record: Activity.Content) => (
-        <Space size="middle">
-          <a
-            href="#"
-            onClick={() => {
-              console.log(record)
-              form.setFieldsValue({ ...record });
-              setEditingItem(record);
-              setBtnType('编辑')
-              setModalVisible(true);
-            }}
-          >编辑</a>
-          <Popconfirm
-            title="确定删除？"
-            okText="确定"
-            cancelText="取消"
-            onConfirm={() => remove(record.id as string)}
-          >
-            <a href="#">删除</a>
-          </Popconfirm>
-        </Space>
-      ),
+      render: (_: any, record: Activity.Content) => {
+        return (
+          <Space size="middle">
+            <a
+              href="#"
+              onClick={() => {
+                console.log(record)
+                form.setFieldsValue({ ...record });
+                setEditingItem(record);
+                setBtnType('编辑')
+                setModalVisible(true);
+              }}
+            >编辑</a>
+            <Popconfirm
+              title="确定删除？"
+              okText="确定"
+              cancelText="取消"
+              onConfirm={() => remove(record.id as string)}
+            >
+              <a href="#">删除</a>
+            </Popconfirm>
+          </Space>
+        )
+      }
     },
-  ];
+  ].filter(p => p);
+
   return(
     <PageContainer className={sc('container')} >
       <>
         <div style={{ backgroundColor: '#fff', padding: 20 }}>
           <div className={sc('container-header')}>
             {selectButton()}
-            <Button
-              type="primary"
-              key="newAdd"
-              onClick={() => {
-                setBtnType('新增')
-                setModalVisible(true);
-              }}
-            >
-              <PlusOutlined /> 新增
-            </Button>
+            <Access accessible={accessible}>
+              <Button
+                type="primary"
+                key="newAdd"
+                onClick={() => {
+                  setBtnType('新增')
+                  setModalVisible(true);
+                }}
+              >
+                <PlusOutlined /> 新增
+              </Button>
+            </Access>
           </div>
           <div className={sc('container-body')}>
           <Table

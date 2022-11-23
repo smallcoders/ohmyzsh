@@ -4,6 +4,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
+import { Access, useAccess } from 'umi';
 import { Button } from 'antd';
 import { useCallback, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -125,15 +126,17 @@ export default () => {
           </Button>
 
           {record.saleStatus === 0 && (
-            <Button size="small" type="link" onClick={() => goEdit(record)}>
-              编辑
-            </Button>
+            <Access accessible={access['P_PM_SP']}>
+              <Button size="small" type="link" onClick={() => goEdit(record)}>
+                编辑
+              </Button>
+            </Access>
           )}
         </>
       ),
     },
   ];
-
+  const access = useAccess()
   return (
     <PageContainer>
       <ProTable
@@ -147,9 +150,11 @@ export default () => {
         actionRef={actionRef}
         toolBarRender={() => [
           <div>商品列表（共{total}个）</div>,
-          <Button type="primary" key="addStore" onClick={goCreate}>
-            <PlusOutlined /> 新增商品
-          </Button>,
+          <Access accessible={access['P_PM_SP']}>
+            <Button type="primary" key="addStore" onClick={goCreate}>
+              <PlusOutlined /> 新增商品
+            </Button>,
+          </Access>
         ]}
         request={async (pagination) => {
           const timer = pagination.updateTime

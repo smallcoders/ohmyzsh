@@ -19,7 +19,7 @@ import moment from 'moment';
 import { routeName } from '@/../config/routes';
 import SelfTable from '@/components/self_table';
 import type DiagnosticTasks from '@/types/service-config-diagnostic-tasks';
-import { history } from 'umi';
+import { Access, history, useAccess } from 'umi';
 import { getDictionay } from '@/services/common';
 import { getAreaTree } from '@/services/area';
 import { getOfficeRequirementVerifyList } from '@/services/office-requirement-verify';
@@ -40,6 +40,8 @@ export default () => {
     endDateTime?: string; // 提交结束时间
     type?: number; // 行业类型id 三级类型
   }>({});
+
+  const access = useAccess()
 
   const formLayout = {
     labelCol: { span: 6 },
@@ -157,7 +159,7 @@ export default () => {
       title: '是否隐藏',
       dataIndex: 'hide',
       isEllipsis: true,
-      render: (_: string, _record: any) => _record.hide ? '是':'否',
+      render: (_: string, _record: any) => _record.hide ? '是' : '否',
       width: 300,
     },
     {
@@ -186,14 +188,18 @@ export default () => {
       render: (_: any, record: any) => {
         return record.auditState === 'AUDITING' ? (
           <Space size={20}>
-            <a
-              href="javascript:void(0)"
-              onClick={() => {
-                history.push(`${routeName.OFFICE_REQUIREMENT_VERIFY_DETAIL}?id=${record.demandId}`);
-              }}
-            >
-              审核
-            </a>
+            <Access accessible={access?.['P_AT_QYXQ']}>
+              <a
+                href="javascript:void(0)"
+                onClick={() => {
+                  history.push(`${routeName.OFFICE_REQUIREMENT_VERIFY_DETAIL}?id=${record.demandId}`);
+                }}
+              >
+                审核
+              </a>
+            </Access>
+
+
           </Space>
         ) : (
           <div style={{ display: 'grid' }}>
@@ -207,11 +213,12 @@ export default () => {
         );
       },
     },
-  ];
+  ].filter(p => p);
 
   useEffect(() => {
     getPage();
   }, [searchContent]);
+
 
   const useSearchNode = (): React.ReactNode => {
     const [searchForm] = Form.useForm();
@@ -308,13 +315,13 @@ export default () => {
             pageInfo.totalCount === 0
               ? false
               : {
-                  onChange: getPage,
-                  total: pageInfo.totalCount,
-                  current: pageInfo.pageIndex,
-                  pageSize: pageInfo.pageSize,
-                  showTotal: (total: number) =>
-                    `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
-                }
+                onChange: getPage,
+                total: pageInfo.totalCount,
+                current: pageInfo.pageIndex,
+                pageSize: pageInfo.pageSize,
+                showTotal: (total: number) =>
+                  `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
+              }
           }
         />
       </div>
