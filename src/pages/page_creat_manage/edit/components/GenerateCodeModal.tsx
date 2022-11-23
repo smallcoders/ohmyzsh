@@ -1,4 +1,4 @@
-import React, { FC, useContext, useState } from 'react'
+import { FC, useContext, useState } from 'react'
 import { Modal, ModalProps, message, Tabs } from 'antd'
 import MonacoEditor from './MonacoEditor'
 import { DesignContext } from '../store'

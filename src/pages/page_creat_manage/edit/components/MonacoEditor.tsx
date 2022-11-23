@@ -1,4 +1,4 @@
-import React, { memo, FC, useRef } from 'react'
+import { memo, FC, useRef } from 'react'
 import MonacoEditor from 'react-monaco-editor';
 
 interface Props {

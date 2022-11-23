@@ -4,14 +4,14 @@ import type { Component } from '../config'
 export const initState: State = {
   selectWidgetItem: undefined,
   widgetFormList: [],
-  iconSrc: undefined,
   globalConfig: {
     pageName: "未命名表单",
     pageDesc: "",
-    pageBg: '',
+    pageBg: '1669095307000001',
     showPageName: true,
     showDesc: true,
     btnText: "提交",
+    paramsList: [],
   },
   formConfig: {
     colon: true,
@@ -25,6 +25,6 @@ export interface State {
   widgetFormList: Component[]
   iconSrc?: string
   globalConfig: any
-  formConfig: FormProps
+  formConfig: FormProps,
   [key: string]: any
 }

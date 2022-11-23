@@ -1,5 +1,5 @@
-import React, { FC, useContext } from 'react'
-import { Modal, ModalProps, message } from 'antd'
+import { FC, useContext } from 'react'
+import { Modal, ModalProps } from 'antd'
 import MonacoEditor from './MonacoEditor'
 import { DesignContext } from '../store'
 import { copy } from '../utils'
@@ -10,7 +10,6 @@ const GenerateJsonModal: FC<ModalProps> = (props) => {
 
   const handleCopy = () => {
     copy(monacoValue)
-    message.success('Copy成功')
   }
 
   return (

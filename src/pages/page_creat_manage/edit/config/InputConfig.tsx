@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import { useState } from 'react';
 import {
   Checkbox,
   Form,
@@ -6,7 +6,6 @@ import {
   InputNumber,
   Tooltip
 } from 'antd';
-import { InfoCircleOutlined } from '@ant-design/icons';
 import { useConfig } from '../hooks/hooks'
 
 const InputConfig = () => {
@@ -63,17 +62,6 @@ const InputConfig = () => {
             onChange={(e) => handleChange(e.target.checked, 'config.required')}
           >
             该项为必填项
-          </Checkbox>
-        </Form.Item>
-        <Form.Item>
-          <Checkbox
-            checked={selectWidgetItem?.config?.unRepeat}
-            onChange={(e) => handleChange(e.target.checked, 'config.unRepeat')}
-          >
-            不允许重复
-            <Tooltip title="填写者提交重复值时，将出现异常提示，无法提交成功">
-              <img className="question-icon" src={require('../image/question_icon.png')} alt='' />
-            </Tooltip>
           </Checkbox>
         </Form.Item>
         <Checkbox

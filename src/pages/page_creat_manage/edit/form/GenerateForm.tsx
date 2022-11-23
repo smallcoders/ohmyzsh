@@ -1,4 +1,4 @@
-import React, { useEffect, useImperativeHandle, forwardRef } from 'react'
+import { useEffect, useImperativeHandle, forwardRef } from 'react'
 import { Button, Form } from 'antd';
 import { cloneDeep } from 'lodash-es'
 import { State } from '../store/state'
@@ -14,6 +14,7 @@ export interface GenerateFormRef {
   getData: () => Promise<Record<string, any>>
   reset: () => void
 }
+const height = window.screen.availHeight
 const GenerateForm = forwardRef<GenerateFormRef, GenerateFormProps>((props, ref) => {
   const { widgetInfoJson, formValue, isMobile } = props
   const [formInstance] = Form.useForm()
@@ -33,17 +34,27 @@ const GenerateForm = forwardRef<GenerateFormRef, GenerateFormProps>((props, ref)
   }, [])
 
   return (
-    <div className={`preview-modal-box ${isMobile? ' mobile' : ''}`}>
+    <div style={{height: `${height - 315}px`}} className={`preview-modal-box ${isMobile? ' mobile' : ''}`}>
       <div className="preview-body">
         <div  className="body-title-box">
           {
-            widgetInfo?.globalConfig?.showPageName &&
-            <div className="preview-page-title">{ widgetInfo?.globalConfig?.pageName}</div>
+            widgetInfo?.globalConfig?.pageBg &&
+            <img
+              src={`/antelope-manage/common/download/${widgetInfo?.globalConfig?.pageBg}`}
+              alt=''
+              className="page-bg"
+            />
           }
-          {
-            widgetInfo?.globalConfig?.showDesc &&
-            <div className="preview-page-desc">{ widgetInfo?.globalConfig?.pageDesc}</div>
-          }
+          <div className="text-box">
+            {
+             !isMobile && widgetInfo?.globalConfig?.showPageName &&
+              <div className="preview-page-title">{ widgetInfo?.globalConfig?.pageName}</div>
+            }
+            {
+              widgetInfo?.globalConfig?.showDesc &&
+              <div className="preview-page-desc">{ widgetInfo?.globalConfig?.pageDesc}</div>
+            }
+          </div>
         </div>
         <div className="preview-form">
           <Form {...widgetInfo.formConfig} form={formInstance}>
@@ -51,9 +62,8 @@ const GenerateForm = forwardRef<GenerateFormRef, GenerateFormProps>((props, ref)
               <GenerateFormItem key={widgetFormItem.key} item={widgetFormItem} formInstance={formInstance} />
             ))}
           </Form>
-          <Button type={"primary"} onClick={async () => {
-            const validateResult = await formInstance.validateFields()
-            console.log(validateResult)
+          <Button type="primary" onClick={async () => {
+            await formInstance.validateFields()
           }}>{widgetInfo?.globalConfig?.btnText}</Button>
         </div>
       </div>

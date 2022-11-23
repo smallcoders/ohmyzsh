@@ -1115,7 +1115,7 @@ export const componentsGroup: ComponentGroup[] = [
 ]
 
 export const componentsGroupList: ComponentGroup[] = [{
-  title: "组件",
+  title: "基础字段",
   components: [
     {
       label: '输入框',
@@ -1131,7 +1131,6 @@ export const componentsGroupList: ComponentGroup[] = [{
         paramDesc: '',
         paramType: "string",
         showLabel: true,
-        unRepeat: false,
       },
     },
     {

@@ -1,15 +1,25 @@
-import React, { useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { Form, Modal, Radio } from 'antd';
 import GenerateForm, { GenerateFormRef } from '../form/GenerateForm'
 import '../style/previewModal.less'
 import { previewTypeOption } from '../utils/options';
+
+const height = window.screen.availHeight
 
 const PreviewModal = (props: any) => {
   const ref = useRef<GenerateFormRef>(null)
   const [previewType, setPreviewType] = useState('web端预览')
   return (
     <>
-      <Modal {...props} destroyOnClose>
+      <Modal
+        width={814}
+        destroyOnClose
+        centered
+        bodyStyle={{
+          height: `${height - 215}px`,
+        }}
+        {...props}
+      >
         <Form.Item>
           <Radio.Group
             optionType="button"

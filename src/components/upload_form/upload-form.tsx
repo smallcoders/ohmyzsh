@@ -15,7 +15,7 @@ const UploadForm = (
       maxSizeKb?: number;
     },
 ) => {
-  const [fileId, setFileId] = useState<string | undefined>();
+  const [fileId, setFileId] = useState<string | undefined | any>();
   const [uploadLoading, setUploadLoading] = useState<boolean>(false);
 
   const uploadButton = (
@@ -26,7 +26,7 @@ const UploadForm = (
   );
   const reUpload = (
     <div className={'reupload'}>
-      <img src={`/antelope-manage/common/download/${fileId || props.value}`} alt="图片损坏" />
+      <img src={`/antelope-manage/common/download/${fileId?.id || fileId || props.value}`} alt="图片损坏" />
       <div>重新上传</div>
     </div>
   );

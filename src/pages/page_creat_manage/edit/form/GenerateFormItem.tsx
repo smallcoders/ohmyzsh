@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import { FC, useState } from 'react';
 import {
   Form,
   FormInstance,
@@ -29,7 +29,7 @@ const GenerateFormItem: FC<Props> = (props) => {
     name: key,
     label,
   }
-  const [checkBoxValue, setCheckBoxValue] = useState(config?.defaultValue)
+  const [checkBoxValue] = useState(config?.defaultValue)
   if (['DatePicker', 'RangePicker', 'TimePicker'].includes(type) && formItemConfig?.initialValue) {
     if (isString(formItemConfig?.initialValue)) {
       commonFormItemProps.initialValue = moment(formItemConfig.initialValue, config?.format)
@@ -111,7 +111,8 @@ const GenerateFormItem: FC<Props> = (props) => {
               rules={config?.required ? [{ required: true, message: '请输入内容'}] : []}
             >
               <Input.TextArea
-                autoSize={config?.autoSize}
+                rows={4}
+                // autoSize={config?.autoSize}
                 maxLength={config?.maxLength}
                 placeholder={config?.placeholder}
               />

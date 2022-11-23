@@ -1,4 +1,4 @@
-import React, { FC, useContext, useMemo } from 'react'
+import { FC, useContext, useMemo } from 'react'
 import { Form, Input, Checkbox } from 'antd';
 import UploadForm from '@/components/upload_form';
 import { DesignContext } from '../store'
@@ -20,17 +20,6 @@ const GlobalConfig: FC = () => {
       }
     }
 
-    dispatch(action)
-  }
-
-  const handleFormConfigChange = <T extends keyof typeof formConfig>(fieldName: T, value: typeof formConfig[T]) => {
-    const action = {
-      type: ActionType.SET_FORM_CONFIG,
-      payload: {
-        ...formConfig,
-        [fieldName]: value
-      }
-    }
     dispatch(action)
   }
 
@@ -61,11 +50,12 @@ const GlobalConfig: FC = () => {
                 listType="picture-card"
                 className="avatar-uploader"
                 maxSize={1}
+                action={'/antelope-common/common/file/upload/record'}
                 showUploadList={false}
                 accept=".bmp,.gif,.png,.jpeg,.jpg"
                 value={globalConfig?.pageBg}
-                onChange={(value) => {
-                  handleGlobalConfigChange('pageBg', value)
+                onChange={(value: any) => {
+                  handleGlobalConfigChange('pageBg', value?.path || value)
                 }}
               />
             </Form.Item>

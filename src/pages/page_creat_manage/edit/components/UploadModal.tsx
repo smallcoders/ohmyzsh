@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import { useRef } from 'react'
 import { Modal, message } from 'antd'
 import MonacoEditor from './MonacoEditor'
 import { useConfig } from '../hooks/hooks'

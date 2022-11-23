@@ -1,6 +1,7 @@
-import React, { useContext, useMemo, useState, forwardRef, useImperativeHandle } from 'react'
+import { useContext, useMemo, useState, forwardRef, useImperativeHandle, useEffect } from 'react'
 import { Layout, Form, message } from 'antd';
 import GlobalHeaderRight from '@/components/RightContent'
+import {getTemplatePageInfo} from '@/services/page-creat-manage'
 import ComponentsGroup from './ComponentsGroup'
 import Header from './Header'
 import WidgetForm from './WidgetForm'
@@ -34,6 +35,12 @@ const DesignForm = forwardRef<DesignFormRef, DesignFormProps>((props, ref) => {
   const [formInstance] = Form.useForm()
 
   const [currentTab, setCurrentTab] = useState<'Global' | 'Local'>('Global')
+
+  useEffect(() => {
+    getTemplatePageInfo({
+      id: '637dcf65d933bf0e8349d1f8'
+    })
+  }, [])
 
   useImperativeHandle(ref, () => ({
     getJson: () => JSON.stringify(state),
@@ -75,7 +82,7 @@ const DesignForm = forwardRef<DesignFormRef, DesignFormProps>((props, ref) => {
               () => (
                 <div className="components">
                   {componentsGroupList.map((componentGroup) => (
-                    <ComponentsGroup key="组件" componentGroup={componentGroup} />
+                    <ComponentsGroup key="基础字段" componentGroup={componentGroup} />
                   ))}
                 </div>
               ),

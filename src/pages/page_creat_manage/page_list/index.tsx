@@ -8,108 +8,64 @@ import {
   DatePicker,
   message as antdMessage,
   Dropdown,
+  Menu,
+  Modal,
 } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
-
 import { useHistory } from 'react-router-dom';
+import {getPageList} from '@/services/page-creat-manage'
 import type Common from '@/types/common';
-import type BankingSerivce from '@/types/banking-service';
-
 import moment from 'moment';
 import SelfTable from '@/components/self_table';
-import type LogoutVerify from '@/types/user-config-logout-verify';
-
 import { routeName } from '@/../config/routes';
-import {
-  getBankingServicePage,
-  getProductList,
-  updateVerityStatus,
-} from '@/services/banking-service';
-const sc = scopedClasses('user-config-logout-verify');
+const sc = scopedClasses('page-creat-list');
+const statusMap = {
+  0: '未发布',
+  1:  '已发布'
+}
+const statusOptions = [
+  {
+    label: '未发布',
+    value: '0'
+  },
+  {
+    label: '已发布',
+    value: '1'
+  }
+]
 
-const verityStatusOptions: { label: string; value: number; disabled: boolean }[] = [
-  {
-    label: '待平台处理',
-    value: 1,
-    disabled: false,
-  },
-  {
-    label: '需求已确认',
-    value: 2,
-    disabled: false,
-  },
-  {
-    label: '匹配金融机构产品服务中',
-    value: 3,
-    disabled: false,
-  },
-  {
-    label: '已提供金融解决方案',
-    value: 4,
-    disabled: false,
-  },
-  {
-    label: '暂无适宜的金融解决方案',
-    value: 5,
-    disabled: false,
-  },
-];
-const serialize = function (obj: any): string {
-  const str = [];
-  for (const p in obj)
-    if (obj.hasOwnProperty(p) && obj[p]) {
-      str.push(encodeURIComponent(p) + '=' + encodeURIComponent(obj[p]));
-    }
-  return str.join('&');
-};
+interface record {
+  id: number;
+  pageName: string;
+  pageDesc: string;
+  status: string | number,
+  updateTime: string
+}
 
-const downloadLink = (url: string): void => {
-  const link = document.createElement('a');
-  link.style.display = 'none';
-  link.href = url;
 
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-};
 export default () => {
-  const [dataSource, setDataSource] = useState<BankingSerivce.Content[]>([]);
-  const [searchContent, setSearChContent] = useState<BankingSerivce.SearchContent>({});
+  const [dataSource, setDataSource] = useState<any>([{
+    pageName: '问卷调查',
+    pageDesc: '个人信息调查表',
+    status: '1',
+    updateTime: '2022-11-22 09:24:23'
+  }]);
+  const [searchContent, setSearChContent] = useState<any>({});
   const history = useHistory();
   const [searchForm] = Form.useForm();
-  const formLayout = {
-    labelCol: { span: 6 },
-    wrapperCol: { span: 16 },
-  };
-
   const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
     pageIndex: 1,
     pageSize: 10,
     totalCount: 0,
     pageTotal: 0,
   });
-
-  const [productOptions, setProductOptions] = useState<any[]>([]);
-
-  const getProductOptions = async () => {
-    try {
-      const { result, code, message } = await getProductList();
-      if (code === 0) {
-        setProductOptions(result);
-      } else {
-        throw new Error(message);
-      }
-    } catch (error) {
-      antdMessage.error(`请求失败，原因:{${error}}`);
-    }
-  };
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     try {
-      const { result, totalCount, pageTotal, code, message } = await getBankingServicePage({
+      const { result, totalCount, pageTotal, code, message } = await getPageList({
         pageIndex,
         pageSize,
         ...searchContent,
@@ -125,116 +81,225 @@ export default () => {
     }
   };
 
+
+  const handlePublish = (record: record) => {
+    // todo 发布接口
+    history.push(`${routeName.PAGE_CREAT_MANAGE_PUBLISH}?id=${record.id}`);
+  }
+  const checkLink = (record: any) => {
+    history.push(`${routeName.PAGE_CREAT_MANAGE_PUBLISH}?id=${record.id}`);
+  }
+  const checkData = (record: any) => {
+    history.push(`${routeName.PAGE_CREAT_MANAGE_PUBLISH}?id=${record.id}`);
+  }
+
+  const handleDelete = (record: record) => {
+    Modal.confirm({
+      title: '提示',
+      content: '删除后用户将不能填写，表单及其数据也将无法恢复，确认删除？',
+      okText: '删除',
+      onOk: () => {
+        // todo 删除接口
+        console.log(record)
+      },
+    })
+  }
+
+  const handleEdit = (record: record) => {
+    // todo 编辑的记录接口
+    history.push(`${routeName.PAGE_CREAT_MANAGE_EDIT}?id=${record.id}`);
+  }
+
+  const handleDrop = (record: record) => {
+    Modal.confirm({
+      title: '提示',
+      content: '下架后用户将不能填写，确认下架？若重新发布，之前的分享链接还可继续使用？',
+      okText: '下架',
+      onOk: () => {
+        // todo 下架接口
+        console.log(record)
+      },
+    })
+  }
+
+
+  const menuItemClick = (type: string, record: record) => {
+    if (type === '下架'){
+      handleDrop(record)
+    }
+    if (type === '删除'){
+      handleDelete(record)
+    }
+    if (type === '编辑'){
+      handleEdit(record)
+    }
+  }
+
+  const getButtonList = (record: record) => {
+    const buttonTypeList = record.status === 0 ?
+      [{type: 'publish'},{type: 'data_manage'}, {type: 'more', children: [{type: 'delete', text: '删除'}, {text: '编辑', type: 'edit'}]}]
+      :[{type: 'link'},{type: 'data_manage'}, {type: 'more', children: [{type: 'drop', text: '下架'}, {text: '删除', type: 'delete'}]}]
+    return buttonTypeList.map((item: any) => {
+      if (item.type === 'publish'){
+        return (
+          <Button
+            size="small"
+            type="link"
+            onClick={() => {
+              handlePublish(record)
+            }}
+          >
+            发布
+          </Button>
+        )
+      }
+      if (item.type === 'link'){
+        return (
+          <Button
+            size="small"
+            type="link"
+            onClick={() => {
+              checkLink(record)
+            }}
+          >
+            查看链接
+          </Button>
+        )
+      }
+      if (item.type === 'data_manage'){
+        return (
+          <Button
+            size="small"
+            type="link"
+            onClick={() => {
+              // todo 判断是否有数据
+              Modal.info({
+                title: '提示',
+                content: '此表单暂时还没有答卷',
+                okText: '我知道了',
+              })
+              checkData(record)
+            }}
+          >
+            数据管理
+          </Button>
+        )
+      }
+      if (item.type === 'more'){
+        const { children } = item
+        const menu = (
+          <Menu>
+            {
+              children.map((child: {type: string, text: string}) => {
+                return (
+                  <Menu.Item
+                    onClick={() => {
+                      menuItemClick(child.type, record)
+                    }}
+                  >
+                    {child.text}
+                  </Menu.Item>
+                )
+              })
+            }
+          </Menu>
+        )
+        return (
+            <Dropdown overlay={menu}>
+              <a>
+                更多 <DownOutlined />
+              </a>
+            </Dropdown>
+        )
+      }
+      return null
+    })
+  }
+
   const columns = [
     {
       title: '序号',
       dataIndex: 'sort',
       width: 80,
-      render: (_: any, _record: LogoutVerify.Content, index: number) =>
+      render: (_: any, _record: any, index: number) =>
         pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
       title: '模板名称',
       dataIndex: 'pageName',
-      width: 200,
+      width: 150,
     },
     {
       title: '描述信息',
       dataIndex: 'pageDesc',
       isEllipsis: true,
-      width: 200,
-      render: (_: number, record: any) => {
-        if(record.type === 2){
-
-          return '/'
-        }
-        return (_ / 100).toFixed(2)
-      },
+      width: 250,
     },
     {
       title: '模板状态',
       dataIndex: 'status',
-      width: 200,
+      width: 100,
+      render: (status: string) => {
+        return <span>{statusMap[status]}</span>
+      }
     },
 
     {
       title: '最新操作时间',
       dataIndex: 'createTime',
       width: 200,
-      render: (_: string) => moment(_).format('YYYY-MM-DD HH:mm:ss'),
+      render: (creatTime: string) => {
+        return (
+          <>
+            {moment(creatTime).format('YYYY-MM-DD HH:mm:ss')}
+            <Dropdown overlay={() => {
+              return (
+                <Menu>
+                  {
+                    [1,2,3,4].map(() => {
+                      return (
+                        <Menu.Item>
+                           <div className="operation-list">
+                             <div className="title">编辑菜单</div>
+                             <div className="menu-right">
+                               <div className='operation-time'>2022-06-14  12:32:23</div>
+                               <div>操作人：顾小满</div>
+                             </div>
+                           </div>
+                        </Menu.Item>
+                      )
+                    })
+                  }
+                </Menu>
+              )
+            }}>
+              <a className="drop-menu">
+                <DownOutlined />
+              </a>
+            </Dropdown>
+          </>
+        )
+      },
     },
     {
       title: '操作',
       hideInSearch: true,
       width: 200,
-      fixed: 'right',
       render: (_: any, record: any) => {
-        return (
-          <>
-            <Button
-              size="small"
-              type="link"
-              onClick={() => {
-                history.push(`${routeName.PAGE_CREAT_MANAGE_PUBLISH}`);
-              }}
-            >
-              查看链接
-            </Button>
-            <Button
-              size="small"
-              type="link"
-              onClick={() => {
-                history.push(`${routeName.PAGE_CREAT_MANAGE_PAGE_DATA}`);
-              }}
-            >
-              数据管理
-            </Button>
-            {/*<Dropdown menu={{ items }}>*/}
-            {/*  <a>*/}
-            {/*    More <DownOutlined />*/}
-            {/*  </a>*/}
-            {/*</Dropdown>*/}
-            <Button
-              size="small"
-              type="link"
-              onClick={() => {
-              }}
-            >
-              下架
-            </Button>
-            <Button
-              size="small"
-              type="link"
-              onClick={() => {
-                history.push(`${routeName.PAGE_CREAT_MANAGE_EDIT}`);
-              }}
-            >
-              编辑
-            </Button>
-          </>
-        )
+        return getButtonList(record)
       },
     },
   ];
 
-  const getSearchQuery = (): {
-    orgName?: string;
-    productId?: number;
-    verityStatus?: number;
-    dateStart?: string;
-    dateEnd?: string;
-  } => {
+  const getSearchQuery = () => {
     const search = searchForm.getFieldsValue();
-    if (search.time) {
-      search.dateStart = moment(search.time[0]).format('YYYY-MM-DDTHH:mm:ss');
-      search.dateEnd = moment(search.time[1]).format('YYYY-MM-DDTHH:mm:ss');
+    if (search.updateTime) {
+      search.startTime = moment(search.time[0]).format('YYYY-MM-DD');
+      search.endTime = moment(search.time[1]).format('YYYY-MM-DD');
     }
-    delete search.time;
+    delete search.updateTime;
     return search;
   };
-  useEffect(() => {
-    getProductOptions();
-  }, []);
   useEffect(() => {
     getPage();
   }, [searchContent]);
@@ -242,30 +307,33 @@ export default () => {
   const useSearchNode = (): React.ReactNode => {
     return (
       <div className={sc('container-search')}>
-        <Form {...formLayout} form={searchForm}>
+        <Form form={searchForm}>
           <Row>
-            <Col span={8}>
+            <Col span={4} offset={1}>
               <Form.Item name="pageName" label="模板名称">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
-            <Col span={8}>
+            <Col span={4} offset={1}>
               <Form.Item name="status" label="模板状态">
-                <Select placeholder="请选择" allowClear>
-                  {productOptions.map((item) => (
-                    <Select.Option value={item.productId}>{item.productName}</Select.Option>
-                  ))}
-                </Select>
+                <Select
+                  placeholder="请选择"
+                  allowClear
+                  options={statusOptions}
+                />
               </Form.Item>
             </Col>
-            <Col span={8}>
+            <Col span={7} offset={1}>
               <Form.Item name="updateTime" label="最新操作时间">
-                <DatePicker.RangePicker allowClear showTime />
+                <DatePicker.RangePicker
+                  allowClear
+                  disabledDate={(current) => {
+                    return current > moment().endOf('day');
+                  }}
+                />
               </Form.Item>
             </Col>
-          </Row>
-          <Row>
-            <Col offset={12} span={4}>
+            <Col offset={1} span={5}>
               <Button
                 style={{ marginRight: 20 }}
                 type="primary"
@@ -315,7 +383,7 @@ export default () => {
         <SelfTable
           rowKey="id"
           bordered
-          scroll={{ x: 1480 }}
+          // scroll={{ x: 1480 }}
           columns={columns}
           dataSource={dataSource}
           pagination={

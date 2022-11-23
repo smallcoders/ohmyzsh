@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import {useState} from 'react';
 import GlobalHeaderRight from '@/components/RightContent';
 import PreviewModal from '@/pages/page_creat_manage/edit/components/PreviewModal';
 import successIcon from './img/success.png'
@@ -175,7 +175,7 @@ export default () => {
           <div className="link-info">
             <div className="title">移动端</div>
             <div className="link-content">
-              <div className="link">https:www.baidu.com</div>
+              <div className="link">http://172.30.33.222/template-page?id=1</div>
               <div className="btn">打开</div>
               <div className="line" />
               <div className="btn">复制</div>
@@ -186,7 +186,7 @@ export default () => {
           <div className="link-info">
             <div className="title">web端</div>
             <div className="link-content">
-              <div className="link">https:www.baidu.com</div>
+              <div className="link">http://172.30.33.222/template-page?id=1</div>
               <div className="btn">打开</div>
               <div className="line" />
               <div className="btn">复制</div>

@@ -82,7 +82,8 @@
     "sortablejs": "^1.14.0",
     "uuid": "^8.3.2",
     "lodash-es": "^4.17.21",
-    "react-color": "^2.19.3"
+    "react-color": "^2.19.3",
+    "react-monaco-editor": "^0.50.1"
   },
   "devDependencies": {
     "@ant-design/pro-cli": "^2.0.2",
@@ -118,6 +119,7 @@
     "jsdom-global": "^3.0.2",
     "lint-staged": "^10.0.0",
     "mockjs": "^1.0.1-beta3",
+    "monaco-editor": "^0.34.1",
     "prettier": "^2.3.2",
     "puppeteer-core": "^8.0.0",
     "stylelint": "^13.0.0",

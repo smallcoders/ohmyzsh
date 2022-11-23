@@ -1,69 +1,103 @@
 .preview-modal-box {
-  height: 100%;
   &.mobile {
     width: 375px;
     margin: 0 auto;
     .body-title-box {
-      padding: 0 10px;
-      text-align: center;
-    }
-    .preview-form {
-      padding: 0 10px;
-      .ant-form-item .ant-form-item .ant-form-item-control {
-        width: 100%
+      min-height: 120px;
+      position: relative;
+      .page-bg {
+        display: block;
+        width: 100%;
+      }
+      .text-box {
+        position: absolute;
+        left: 16px;
+        top: 20px;
+        right: 122px;
+        color: #fff;
+        font-size: 13px;
       }
     }
-    .preview-body {
-      .ant-btn-primary {
-        margin: 0 auto;
-        display: block;
+    .preview-form {
+      margin: -24px 16px 0;
+      position: relative;
+      .ant-form > .ant-form-item {
+        padding: 16px 16px 16px 10px;
+        border-radius: 2px;
+        background: #fff;
+        .ant-form-item-control-input-content {
+          padding-left: 8px;
+        }
+      }
+      .ant-radio-group{
+        display: flex;
+        flex-direction: column;
+        .ant-radio-wrapper {
+          margin-top: 8px;
+        }
+      }
+      .ant-checkbox-group {
+        display: flex;
+        flex-direction: column;
+        .ant-checkbox-wrapper {
+          margin-top: 8px;
+        }
       }
     }
   }
   .preview-body {
-    background: #f4f3f3;
-    height: 667px;
+    background: #EBEFF7;
     overflow-y: auto;
-    padding-bottom: 20px;
+    height: 100%;
   }
   .body-title-box {
-    background: #e8e8e8;
-    padding: 0 20%;
-    .preview-page-title {
-      padding-top: 10px;
-      padding-bottom: 10px;
-      font-weight: bold;
-      color: #1b1b1b;
-      font-size: 18px;
+    min-height: 240px;
+    position: relative;
+    .page-bg {
+      display: block;
+      width: 100%;
     }
-    .preview-page-desc {
+    .text-box {
+      position: absolute;
+      left: 24px;
+      top: 68px;
+      right: 248px;
+      color: #fff;
       font-size: 14px;
-      color: #59677a;
-      padding-bottom: 10px;
+      .preview-page-title {
+        font-size: 24px;
+        font-weight: bold;
+      }
+      .preview-page-desc {
+        margin-top: 16px;
+      }
     }
   }
   .preview-form {
-    padding: 0 20%;
-    .ant-form-item .ant-form-item .ant-form-item-control {
-      width: 55%
-    }
-    .ant-form-item {
-      margin-top: 10px;
-      margin-bottom: 12px;
+    margin: -48px 24px 0;
+    position: relative;
+    .ant-form > .ant-form-item {
+      padding: 24px;
+      border-radius: 2px;
+      background: #fff;
     }
     .ant-radio-group{
       display: flex;
       flex-direction: column;
       .ant-radio-wrapper {
-        margin: 8px 0 0 8px;
+        margin-top: 8px;
       }
     }
     .ant-checkbox-group {
       display: flex;
       flex-direction: column;
       .ant-checkbox-wrapper {
-        margin: 8px 0 0 8px;
+        margin-top: 8px;
       }
     }
+  }
+  .ant-btn-primary {
+    display: block;
+    margin: 16px auto 20px;
   }
 }
