@@ -1679,28 +1679,28 @@ export default [
           },
         ],
       },
-      // {
-      //   path: routeName.ACTIVITY_PROJECT,
-      //   name: '活动专题',
-      //   hideChildrenInMenu: true,
-      //   routes: [
-      //     {
-      //       path: routeName.ACTIVITY_PROJECT,
-      //       redirect: routeName.ACTIVITY_PROJECT_INDEX,
-      //     },
-      //     {
-      //       path: routeName.ACTIVITY_PROJECT_INDEX,
-      //       name: '活动专题',
-      //       hideInBreadcrumb: true,
-      //       component: './service_config/activity_project',
-      //     },
-      //     {
-      //       path: routeName.ACTIVITY_PROJECT_DETAIL,
-      //       name: '活动专题详情',
-      //       component: './service_config/activity_project/detail',
-      //     },
-      //   ],
-      // },
+      {
+        path: routeName.ACTIVITY_PROJECT,
+        name: '活动专题',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.ACTIVITY_PROJECT,
+            redirect: routeName.ACTIVITY_PROJECT_INDEX,
+          },
+          {
+            path: routeName.ACTIVITY_PROJECT_INDEX,
+            name: '活动专题',
+            hideInBreadcrumb: true,
+            component: './service_config/activity_project',
+          },
+          {
+            path: routeName.ACTIVITY_PROJECT_DETAIL,
+            name: '活动专题详情',
+            component: './service_config/activity_project/detail',
+          },
+        ],
+      },
     ]
   },
   {
