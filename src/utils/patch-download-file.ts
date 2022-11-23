@@ -1,4 +1,4 @@
-import JSZip from 'JSZip';
+import JSZip from 'jszip';
 import FileSaver from 'file-saver';
 import { downloadFile } from '@/services/common';
 export default async (data: any, zipFileName: string) => {
