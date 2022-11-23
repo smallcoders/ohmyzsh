@@ -915,7 +915,10 @@ export default () => {
         width="600px"
         maskClosable={false}
         visible={createModalVisible}
-        className={sc('formModel')}
+        bodyStyle={{
+          height: '500px',
+          overflow: 'auto'
+        }}
         onCancel={() => {
           clearForm();
           setCurrent(0)
