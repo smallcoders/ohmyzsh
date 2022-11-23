@@ -174,7 +174,7 @@ export default ({ isDetail, id }: Props) => {
         const { code } = await (editId
           ? addBackMoney({
               ...value,
-              applyId: record.id,
+              // applyId: record.id,
               id: editId,
             })
           : addBackMoney({
@@ -186,7 +186,7 @@ export default ({ isDetail, id }: Props) => {
             setModalVisible(false);
           }
           getPages();
-          setExpandedRowKeys([...expandedRowKeys, record.id]);
+          if (record?.id) setExpandedRowKeys([...expandedRowKeys, record.id]);
           clearForm();
           setFormIsChange(false);
           message.success(`${tooltipMessage}成功！`);
@@ -215,7 +215,7 @@ export default ({ isDetail, id }: Props) => {
     return (
       <Drawer
         title={'录入还款信息'}
-        width={600}
+        width={500}
         placement="right"
         onClose={beforeCloseDrawer}
         visible={createModalVisible}

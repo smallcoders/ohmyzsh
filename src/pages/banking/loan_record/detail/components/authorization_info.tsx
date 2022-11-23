@@ -18,7 +18,7 @@ import UploadFormFile from '@/components/upload_form/upload-form-file';
 import React, { useState, useEffect, useImperativeHandle, forwardRef } from 'react';
 import { routeName } from '@/../config/routes';
 import { history } from 'umi';
-import { getCreditDetail, updateCreditInfo } from '@/services/banking-loan';
+import { getCreditDetail, updateCreditInfo, getTakeMoneyDetail } from '@/services/banking-loan';
 import { regFenToYuan, regYuanToFen } from '@/utils/util';
 import patchDownloadFile from '@/utils/patch-download-file';
 import type BankingLoan from '@/types/banking-loan.d';
@@ -33,6 +33,7 @@ export type Props = {
 const { confirm } = Modal;
 export default forwardRef((props: Props, ref) => {
   const [detailLoading, setDetailLoading] = useState<boolean>(false);
+  const [hasSuccessLoad, setHasSuccessLoad] = useState<boolean>(false);
   const { isDetail, type, step, id, toTab } = props;
   const previewType = ['png', 'jpg', 'jpeg', 'jpeg2000', 'pdf'];
   const [form] = Form.useForm();
@@ -168,6 +169,8 @@ export default forwardRef((props: Props, ref) => {
               creditAmount: creditAmount === null ? null : Number(regFenToYuan(creditAmount)),
               contractNo,
             });
+            // 获取放款成功信息
+            getLoanInfo()
           } else {
             form.setFieldsValue({
               busiStatus: result.busiStatus,
@@ -183,6 +186,30 @@ export default forwardRef((props: Props, ref) => {
       setDetailLoading(false);
     }
   };
+  const getLoanInfo = async() => {
+    try {
+      const { result, code } = await getTakeMoneyDetail({
+        pageIndex: 1,
+        pageSize: 10,
+        creditId: id,
+      });
+      if (code === 0) {
+        if (
+          result?.takeMoneyInfo?.some(
+            (item: BankingLoan.TakeMoneyInfoContent) => item.status == '放款成功',
+          )
+        ) {
+          setHasSuccessLoad(true)
+        } else {
+          setHasSuccessLoad(false)
+        }
+      } else {
+        message.error(`放款判断失败`);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
   useEffect(() => {
     // prepare();
     getDetail();
@@ -263,7 +290,7 @@ export default forwardRef((props: Props, ref) => {
             ) : (
               <Radio.Group>
                 <Radio value={2}>已授信</Radio>
-                <Radio value={3} disabled={detail?.busiStatus === 2}>
+                <Radio value={3} disabled={hasSuccessLoad}>
                   授信失败
                 </Radio>
               </Radio.Group>

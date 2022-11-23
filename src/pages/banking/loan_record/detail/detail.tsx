@@ -11,7 +11,6 @@ export default () => {
   const [activeKey, setActiveKey] = useState<string>('');
   const [tabList, setTabList] = useState<any>([]);
   const { type, step, isDetail, id } = history.location.query as any;
-  const [steps, setSteps] = useState<string>(step);
   const AuthorizationRef = useRef(null) as React.MutableRefObject<any>;
   // const [isDetail, setIsDetail] = useState<boolean>(false);
   const tabLists = [
@@ -33,12 +32,10 @@ export default () => {
     },
   ];
   const prepare = (ste: string) => {
-    setSteps(ste);
-    console.log('steps', ste, steps);
     if (Number(type) === 1) {
-      setTabList(tabLists.filter((item) => item.key <= ste));
+      setTabList(tabLists.filter((item) => item.key <= step));
     } else {
-      setTabList(tabLists.filter((item) => item.key !== '4' && item.key <= ste));
+      setTabList(tabLists.filter((item) => item.key !== '4' && item.key <= step));
     }
     setActiveKey(ste || '1');
   };
@@ -69,16 +66,16 @@ export default () => {
           ref={AuthorizationRef}
           isDetail={isDetail}
           type={Number(type)}
-          step={steps}
+          step={step}
           id={id}
           toTab={toTab}
         />
       )}
       {activeKey === '3' && (
-        <LoanInfo isDetail={isDetail} type={Number(type)} step={steps} id={id} />
+        <LoanInfo isDetail={isDetail} type={Number(type)} step={step} id={id} />
       )}
       {activeKey === '4' && (
-        <RepaymentInfo isDetail={isDetail} type={Number(type)} id={id} step={steps} />
+        <RepaymentInfo isDetail={isDetail} type={Number(type)} id={id} step={step} />
       )}
     </PageContainer>
   );

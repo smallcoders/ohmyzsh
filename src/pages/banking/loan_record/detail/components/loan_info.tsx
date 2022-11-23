@@ -344,7 +344,7 @@ export default ({ isDetail, type, id, step }: Props) => {
     return (
       <Drawer
         title={editItem.id ? '编辑信息' : '新增信息'}
-        width={600}
+        width={500}
         placement="right"
         onClose={beforeCloseDrawer}
         visible={createModalVisible}
