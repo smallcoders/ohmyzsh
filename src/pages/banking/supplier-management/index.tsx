@@ -708,6 +708,7 @@ export default () => {
   const useModal = (): React.ReactNode => {
     return (
       <Modal
+        className="uploads-file"
         title="导入"
         visible={createModalVisible}
         width={600}

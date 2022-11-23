@@ -136,7 +136,7 @@ export default () => {
           size="small"
           type="link"
           onClick={() => {
-            window.open(item.jysFile);
+            window.open(item.name);
           }}
         >
           预览

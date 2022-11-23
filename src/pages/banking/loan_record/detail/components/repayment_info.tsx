@@ -173,7 +173,6 @@ export default ({ isDetail, id }: Props) => {
               ...value,
               applyId: record.id,
             }));
-        debugger;
         if (code === 0) {
           if (isSave) {
             setModalVisible(false);

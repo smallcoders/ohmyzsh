@@ -40,9 +40,10 @@ export default ({ isDetail, type, id, step }: Props) => {
   const [createModalVisible, setModalVisible] = useState<boolean>(false);
   const [dataSource, setDataSource] = useState<BankingLoan.LoanContent[]>([]);
   const [editId, setEditId] = useState<number>(0);
+  const [editItem, setEditItem] = useState<BankingLoan.LoanContent>({});
   const [columns, setColumns] = useState<any[]>([]);
   const [formIsChange, setFormIsChange] = useState<boolean>(false);
-  const [availAmounts, setAvailAmounts] = useState<number>([]);
+  const [availAmounts, setAvailAmounts] = useState<number>(0);
   const [addOrUpdateLoading, setAddOrUpdateLoading] = useState<boolean>(false);
   const [options, setOptions] = useState<any>([]);
   const toCreditApply = () => {
@@ -93,12 +94,12 @@ export default ({ isDetail, type, id, step }: Props) => {
 
   const clearForm = () => {
     form.resetFields();
-    setEditId(0);
+    setEditItem({});
   };
 
   // 新增/编辑 flag false:保存并继续录入， true:保存
   const addOrUpdate = async (flag: boolean) => {
-    const tooltipMessage = editId ? '编辑信息' : '新增信息';
+    const tooltipMessage = editItem.id ? '编辑信息' : '新增信息';
     form
       .validateFields()
       .then(async (value) => {
@@ -112,11 +113,11 @@ export default ({ isDetail, type, id, step }: Props) => {
         if (value.takeMoney) {
           value.takeMoney = regYuanToFen(value.takeMoney);
         }
-        const addorUpdateRes = await (editId
+        const addorUpdateRes = await (editItem?.id
           ? addOrUpdateTakeMoney({
               ...value,
               creditId: id,
-              id: editId,
+              id: editItem?.id,
             })
           : addOrUpdateTakeMoney({
               ...value,
@@ -271,7 +272,7 @@ export default ({ isDetail, type, id, step }: Props) => {
             <a
               href="#"
               onClick={() => {
-                setEditId(record.id);
+                setEditItem(record);
                 setModalVisible(true);
                 form.setFieldsValue({
                   busiStatus: record?.busiStatus,
@@ -342,7 +343,7 @@ export default ({ isDetail, type, id, step }: Props) => {
   const useModal = (): React.ReactNode => {
     return (
       <Drawer
-        title={editId ? '编辑信息' : '新增信息'}
+        title={editItem.id ? '编辑信息' : '新增信息'}
         width={600}
         placement="right"
         onClose={beforeCloseDrawer}
@@ -433,7 +434,13 @@ export default ({ isDetail, type, id, step }: Props) => {
                 name="takeMoney"
                 rules={[
                   { required: true, message: '请输入放款金额' },
-                  { type: 'number', min: 0, max: availAmounts },
+                  {
+                    type: 'number',
+                    min: 0,
+                    max:
+                      availAmounts +
+                      (editItem?.takeMoney ? Number(regFenToYuan(editItem?.takeMoney)) : 0),
+                  },
                 ]}
               >
                 <InputNumber
