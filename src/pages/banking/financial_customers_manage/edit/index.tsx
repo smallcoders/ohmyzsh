@@ -3,7 +3,7 @@ import {
   Form,
   Select,
   Cascader, Button,
-  message,
+  message, message as antdMessage,
 } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import scopedClasses from '@/utils/scopedClasses';
@@ -36,8 +36,8 @@ export default () => {
   const [areaCodeOptions, setAreaCodeOptions] = useState<any>([])
   useEffect(() => {
     getCustomersDetail({id}).then((res) => {
-      const { result } =  res || {}
-      if (result){
+      const { result, code, message: resultMsg } =  res || {}
+      if (code === 0){
         const {
           name,
           logoImageId,
@@ -76,6 +76,8 @@ export default () => {
           busRange,
           address: [provinceCode, cityCode, countyCode]
         })
+      } else {
+        antdMessage.error(`请求失败，原因:{${resultMsg}}`);
       }
     })
 
@@ -325,7 +327,7 @@ export default () => {
           />
         </Form.Item>
         <Form.Item name="busRange" label="经营范围" required>
-          <Input disabled />
+          <Input.TextArea rows={4} disabled />
         </Form.Item>
         <Form.Item label={<span className="title">经营范围</span>} colon={false} />
         <Form.Item
