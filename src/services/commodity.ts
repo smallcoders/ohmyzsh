@@ -8,7 +8,7 @@ import { request } from 'umi';
  */
 export async function pageQuery(data: any) {
   return request<Common.ResultCode & Common.ResultPage & { result: DataCommodity.Commodity[] }>(
-    '/antelope-pay/product/queryProductList',
+    '/antelope-pay/mng/product/queryProductList',
     {
       method: 'POST',
       data: { ...data, pageIndex: data.current },
@@ -26,12 +26,12 @@ export async function queryProductDetail(id: string | number) {
         payProductParamList: DataCommodity.ParamInfo[];
       };
     }
-  >(`/antelope-pay/product/queryProductDetail/${id}`);
+  >(`/antelope-pay/mng/product/queryProductDetail/${id}`);
 }
 
 export async function queryProduct(id: string | number) {
   return request<Common.ResultCode & { result: DataCommodity.ProductInfo }>(
-    `/antelope-pay/product/queryProduct/${id}`,
+    `/antelope-pay/mng/product/queryProduct/${id}`,
   );
 }
 
@@ -61,7 +61,7 @@ export async function addSpecs(data: any) {
 
 export async function querySpecs(productId: number | string) {
   return request<Common.ResultCode & { result: DataCommodity.SpecInfo[] }>(
-    `/antelope-pay/product/querySpecs/${productId}`,
+    `/antelope-pay/mng/product/querySpecs/${productId}`,
   );
 }
 
@@ -97,7 +97,7 @@ export async function addSpecsPrice(data: any) {
 }
 export async function queryParam(productId: number | string) {
   return request<Common.ResultCode & { result: DataCommodity.ParamInfo[] }>(
-    `/antelope-pay/product/queryParam/${productId}`,
+    `/antelope-pay/mng/product/queryParam/${productId}`,
   );
 }
 
