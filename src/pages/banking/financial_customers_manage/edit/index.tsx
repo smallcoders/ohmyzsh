@@ -156,7 +156,7 @@ export default () => {
         <Form.Item name="legalPersonName" label="法定代表人" required>
           <Input disabled />
         </Form.Item>
-        <Form.Item name="regStatus" label="经营状态" required>
+        <Form.Item name="regStatus" label="经营状态" required validateTrigger="onBlur">
           <Select
             options={getOptions(regStatusMap)}
             placeholder="请选择"
@@ -200,6 +200,7 @@ export default () => {
               message: `必选`,
             },
           ]}
+          validateTrigger="onBlur"
         >
           <Input.TextArea  placeholder="请输入" />
         </Form.Item>
@@ -217,6 +218,7 @@ export default () => {
               message: `必填`,
             },
           ]}
+          validateTrigger="onBlur"
         >
           <Input suffix="万元"  placeholder="请输入" />
         </Form.Item>
@@ -230,6 +232,7 @@ export default () => {
               message: `必填`,
             },
           ]}
+          validateTrigger="onBlur"
         >
           <Input suffix="万元"  placeholder="请输入" />
         </Form.Item>
@@ -243,6 +246,7 @@ export default () => {
               message: `必填`,
             },
           ]}
+          validateTrigger="onBlur"
         >
           <Input  placeholder="请输入" suffix="万元" />
         </Form.Item>
@@ -389,6 +393,7 @@ export default () => {
               message: `必填`,
             },
           ]}
+          validateTrigger="onBlur"
         >
           <Input  placeholder="请输入" />
         </Form.Item>
@@ -402,6 +407,7 @@ export default () => {
               message: `必填`,
             },
           ]}
+          validateTrigger="onBlur"
         >
           <Input  placeholder="请输入" />
         </Form.Item>
@@ -416,6 +422,7 @@ export default () => {
               message: `必选`,
             },
           ]}
+          validateTrigger="onBlur"
         >
           <Select
             options={getOptions(banksMap)}

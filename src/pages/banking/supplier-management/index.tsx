@@ -45,7 +45,7 @@ import {
 import { getFileInfo } from '@/services/common';
 import UploadFormFile from '@/components/upload_form/upload-form-file';
 import { debounce } from 'lodash';
-const sc = scopedClasses('user-config-admin-account-distributor');
+const sc = scopedClasses('supplier-management');
 
 export default () => {
   const [createDrawerVisible, setDrawerVisible] = useState<boolean>(false);
@@ -262,6 +262,7 @@ export default () => {
               onClick={async () => {
                 setDrawerContent({ ...record });
                 setDrawerVisible(true);
+                if (record.city !== null) cityInfo.current = record.city;
                 drawerForm.setFieldsValue({
                   ...record,
                   city: record.city === null ? '' : record.city?.split(',')[0].split('-'),
@@ -748,7 +749,7 @@ export default () => {
   const useModal = (): React.ReactNode => {
     return (
       <Modal
-        className="uploads-file"
+        className="supplier-uploads-file"
         title="导入"
         visible={createModalVisible}
         width={600}
@@ -767,7 +768,7 @@ export default () => {
       >
         {uploadNum.failNum === undefined ? (
           <div style={{ height: '180px' }}>
-            <div className={uploadNum.progress === 'true' ? 'staus' : ''}>
+            <div className={uploadNum.progress === 'true' ? 'supplierStaus' : ''}>
               <div style={{ marginBottom: '24px' }}>
                 请先下载
                 <span
@@ -792,7 +793,7 @@ export default () => {
                 ，按要求填写后上传
               </div>
             </div>
-            <Dragger {...props} className={uploadNum.progress === 'true' ? 'staus' : ''}>
+            <Dragger {...props} className={uploadNum.progress === 'true' ? 'supplierStaus' : ''}>
               <p className="ant-upload-text">
                 <CloudUploadOutlined />
                 将文件拖拽到此处，或<span style={{ color: 'rgba(143, 165, 255)' }}>点击上传</span>
