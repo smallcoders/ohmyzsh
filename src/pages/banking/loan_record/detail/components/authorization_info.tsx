@@ -151,7 +151,7 @@ export default forwardRef((props: Props, ref) => {
         setDetail(result);
         if (result) {
           if (!isDetail) {
-            const { startDate, endDate, creditAmount, contractNo, rate, workProves, ...rest } =
+            const { startDate, endDate, creditAmount, contractNo, rate, workProves, refuseReason, ...rest } =
               result;
             const creditTime = startDate ? [moment(startDate), moment(endDate)] : [];
             form.setFieldsValue({
@@ -168,6 +168,7 @@ export default forwardRef((props: Props, ref) => {
               creditTime,
               creditAmount: creditAmount === null ? null : Number(regFenToYuan(creditAmount)),
               contractNo,
+              refuseReason
             });
             // 获取放款成功信息
             getLoanInfo()
