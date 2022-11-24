@@ -120,8 +120,6 @@ export default () => {
   };
   const cityInfo = useRef<string>('');
   const onChangeCity = (value: any, selectedOptions: any) => {
-    console.log(value);
-    console.log(selectedOptions);
     if (value && selectedOptions) {
       const cityCode = value.join('-');
       const cityName = selectedOptions.map((item: any) => item.name).join('-');
