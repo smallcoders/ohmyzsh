@@ -85,7 +85,7 @@ export default forwardRef((props: Props, ref) => {
             }
           }
         } else {
-          message.error(res?.message || '授权信息保存失败');
+          message.error(res?.message || '授信信息保存失败');
         }
       })
       .catch((err) => {
