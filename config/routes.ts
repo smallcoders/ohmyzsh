@@ -2370,22 +2370,22 @@ export default [
       },
     ],
   },
-  {
-    path: '/banking',
-    code: 'M_FM',
-    access: 'M_FM',
-    name: '金融服务管理',
-    icon: 'dollar',
-    component: './banking/banking_service_manage/index',
-    routes: [
-      {
-        path: routeName.BANKING_SERVICE_DETAIL,
-        name: '需求详情',
-        hideInMenu: true,
-        component: './banking/banking_service_manage/detail/detail',
-      },
-    ],
-  },
+  // {
+  //   path: '/banking',
+  //   code: 'M_FM',
+  //   access: 'M_FM',
+  //   name: '金融服务管理',
+  //   icon: 'dollar',
+  //   component: './banking/banking_service_manage/index',
+  //   routes: [
+  //     {
+  //       path: routeName.BANKING_SERVICE_DETAIL,
+  //       name: '需求详情',
+  //       hideInMenu: true,
+  //       component: './banking/banking_service_manage/detail/detail',
+  //     },
+  //   ],
+  // },
   {
     path: '/recommend-manage',
     code: 'M_RM',
