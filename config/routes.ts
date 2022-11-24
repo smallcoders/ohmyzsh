@@ -1095,6 +1095,7 @@ export default [
       {
         path: "/system-config/page_creat_manage/edit",
         name: '页面编辑',
+        hideInMenu: true,
         component: './page_creat_manage/edit/index',
         layout: false,
       },
