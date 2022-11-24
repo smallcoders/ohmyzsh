@@ -52,7 +52,7 @@ export default () => {
     applyTimeEnd?: string; // 申请截至时间 yyyy-MM-dd
     dataSource?: number; // 数据来源，0-人工录入，1-API获取，2-邮箱解析
     bank?: string; // 金融机构
-    creditStatus?: number; // 授信状态，2-已授信 3-授信失败 6-待授信
+    creditStatus?: number[]; // 授信状态，2-已授信 3-授信失败 6-待授信
     productName?: string; // 产品名称
     takeMoneyMin?: number; // 放款金额最小值
     takeMoneyMax?: number; // 放款金额最大值
@@ -117,6 +117,7 @@ export default () => {
   const backParamSet = () => {
     if (history.action === 'POP') {
       const SearChContentJson: any = localStorage.getItem('load_record_params');
+      if (!SearChContentJson) return
       const SearChContentJsonParse: any = JSON.parse(SearChContentJson);
       const {
         applyTimeStart,
@@ -471,7 +472,7 @@ export default () => {
                 </Col>
                 <Col span={8}>
                   <Form.Item name="bank" label="金融机构">
-                    <Select placeholder="请选择" allowClear>
+                    <Select placeholder="请选择" allowClear >
                       {bankList?.map((item: { bank: string }) => (
                         <Select.Option key={item.bank} value={item.bank}>
                           {item.bank}
@@ -481,8 +482,8 @@ export default () => {
                   </Form.Item>
                 </Col>
                 <Col span={8}>
-                  <Form.Item name="creditStatus" label="授信状态">
-                    <Select placeholder="请选择" allowClear>
+                  <Form.Item name="creditStatus" label="授信状态" >
+                    <Select placeholder="请选择" allowClear mode="multiple">
                       {Object.entries(creditStatusTrans).map((p) => {
                         return (
                           <Select.Option key={p[0]} value={p[0]}>
