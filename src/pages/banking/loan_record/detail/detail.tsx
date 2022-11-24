@@ -19,7 +19,7 @@ export default () => {
       key: '1',
     },
     {
-      tab: '授权信息',
+      tab: '授信信息',
       key: '2',
     },
     {
