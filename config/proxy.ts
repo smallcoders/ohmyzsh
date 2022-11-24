@@ -57,8 +57,10 @@ export default {
     },
     '/antelope-user/': {
       target: 'http://172.30.33.222:10086',
+      // target: 'http://10.8.7.33:8090',
       changeOrigin: true,
       pathRewrite: { '^': '' },
+      // pathRewrite: { '^/antelope-user': '' },
     },
     '/antelope-science/': {
       target: 'http://172.30.35.217:10086',

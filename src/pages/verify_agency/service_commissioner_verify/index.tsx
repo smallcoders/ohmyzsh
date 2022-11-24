@@ -145,7 +145,7 @@ export default () => {
         <a
           onClick={() => {
             window.open(
-              `/user-config/expert-manage/detail?id=${_record.expertShowId}&auditId=${_record.auditId}`,
+              `/user-config/expert-manage/detail?id=${_record.expertShowId}&auditId=${_record.auditId}&state=${_record.state}`,
             );
           }}
         >

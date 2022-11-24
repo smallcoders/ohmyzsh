@@ -2,7 +2,7 @@ import { Fragment, useEffect, useState } from 'react';
 import './expert-detail.less';
 import type ExpertResource from '@/types/expert_manage/expert-resource';
 import { getExpertDetail } from '@/services/expert_manage/expert-resource';
-import { history } from 'umi';
+import { history, useAccess } from 'umi';
 import { message, Space, Typography, Image, Divider, Rate, Table, Popconfirm } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import ProDescriptions from '@ant-design/pro-descriptions';
@@ -130,7 +130,9 @@ export default () => {
     typeNames,
     diagnosisRecordList,
   } = detail || {};
-  const { id = '', auditId = '' } = history.location.query as any;
+  const { id = '', auditId = '', state = '' } = history.location.query as any;
+  // 拿到当前角色的access权限兑现
+  const access = useAccess()
 
   const prepare = async () => {
     if (id) {
@@ -149,6 +151,17 @@ export default () => {
       }
     }
   };
+
+  const [checkState, setCheckState] = useState<boolean>(false)
+
+  useEffect(()=>{
+    if (!state) return
+    if (state === 'AUDIT_PASSED' || state === 'AUDIT_REJECTED') {
+      setCheckState(true)
+    } else {
+      setCheckState(false)
+    }
+  },[state]);
 
   useEffect(() => {
     prepare();
@@ -268,7 +281,7 @@ export default () => {
           </div>
         </div>
       </div>
-      {auditId && (
+      {(checkState || access['P_AT_FWZY']) && (
         <div style={{ background: '#fff', marginTop: 20, paddingTop: 20 }}>
           <VerifyInfoDetail
             auditId={auditId as string}

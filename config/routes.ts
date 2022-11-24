@@ -1620,19 +1620,23 @@ export default [
     routes: [
       {
         path: '/operation-activity',
-        redirect: routeName.OPERATION_ACTIVITY_PARAMETER,
+        code: 'M_OA_CSPZ',
+        access: 'M_OA_CSPZ',
+        redirect: '/operation-activity/parameter-setting',
       },
       {
-        path: routeName.OPERATION_ACTIVITY_PARAMETER,
+        path: '/operation-activity/parameter-setting',
         name: '参数配置',
+        code: 'M_OA_CSPZ',
         access: 'M_OA_CSPZ',
-        component: './operation_activity/parameter-setting/index',
+        component: './operation_activity/parameter_setting/index',
       },
       {
         path: routeName.OPERATION_ACTIVITY_LINK,
         name: '链接配置',
+        code: 'M_OA_LJ',
         access: 'M_OA_LJ',
-        component: './operation_activity/link-setting/index',
+        component: './operation_activity/link_setting/index',
       },
       {
         path: '/operation-activity/local-propaganda',
@@ -1686,24 +1690,30 @@ export default [
         ],
       },
       {
-        path: routeName.ACTIVITY_PROJECT,
+        path: '/operation-activity/activity-project',
+        code: 'M_OA_HDZT',
+        access: 'M_OA_HDZT',
         name: '活动专题',
         hideChildrenInMenu: true,
         routes: [
           {
-            path: routeName.ACTIVITY_PROJECT,
-            redirect: routeName.ACTIVITY_PROJECT_INDEX,
+            path: '/operation-activity/activity-project',
+            code: 'M_OA_HDZT',
+            access: 'M_OA_HDZT',
+            redirect: '/operation-activity/activity-project/index',
           },
           {
-            path: routeName.ACTIVITY_PROJECT_INDEX,
+            path: '/operation-activity/activity-project/index',
+            code: 'M_OA_HDZT',
+            access: 'M_OA_HDZT',
             name: '活动专题',
             hideInBreadcrumb: true,
-            component: './service_config/activity_project',
+            component: './operation_activity/activity_project',
           },
           {
-            path: routeName.ACTIVITY_PROJECT_DETAIL,
+            path: '/operation-activity/activity-project/detail',
             name: '活动专题详情',
-            component: './service_config/activity_project/detail',
+            component: './operation_activity/activity_project/detail',
           },
         ],
       },
@@ -1711,21 +1721,21 @@ export default [
   },
   {
     path: '/diagnose-manage',
-    code: 'M_OA',
-    access: 'M_OA',
+    code: 'M_DM',
+    access: 'M_DM',
     name: '诊断管理',
     icon: 'bug',
     routes: [
       {
         path: '/diagnose-manage',
-        code: 'M_OA', // 未处理tap
-        access: 'M_OA',
+        code: 'M_DM_ZDT', 
+        access: 'M_DM_ZDT',
         redirect: '/diagnose-manage/diagnostic-tasks',
       },
       {
         path: '/diagnose-manage/diagnostic-tasks',
-        code: 'M_OA', // 未处理tap
-        access: 'M_OA',
+        code: 'M_DM_ZDT', 
+        access: 'M_DM_ZDT',
         name: '诊断通',
         hideChildrenInMenu: true,
         routes: [
