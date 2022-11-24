@@ -25,6 +25,7 @@ export default {
   dev: {
     '/antelope-manage/': {
       target: 'http://172.30.33.222:10086',
+      // target: 'http://10.8.7.227:9093',
       // target: 'http://10.8.5.110:9093',
       // target: 'http://172.30.35.217:9095',
       // target: 'http://172.30.35.217:8089',
@@ -55,10 +56,9 @@ export default {
       pathRewrite: { '^': '' },
     },
     '/antelope-user/': {
-      // target: 'http://172.30.33.222:10086',
-      target: 'http://10.8.7.33:8090',
+      target: 'http://172.30.33.222:10086',
       changeOrigin: true,
-      pathRewrite: { '^/antelope-user': '' },
+      pathRewrite: { '^': '' },
     },
     '/antelope-science/': {
       target: 'http://172.30.35.217:10086',
@@ -74,7 +74,9 @@ export default {
     },
     '/antelope-finance/': {
       target: 'http://172.30.33.222:10086',
+      // target: 'http://10.8.7.112:9102',
       changeOrigin: true,
+      // pathRewrite: { '^/antelope-finance': '' },
       pathRewrite: { '^': '' },
     },
     '/antelope-recommend/': {

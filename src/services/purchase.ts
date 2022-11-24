@@ -54,7 +54,7 @@ export async function getActivityAppProducts(options?: Record<string, any>) {
  * @param params
  */
 export async function getProductPriceList(id: string) {
-  return request<LogoutVerify.ResultList>(`/antelope-pay/product/queryPrice/${id}`, {
+  return request<LogoutVerify.ResultList>(`/antelope-pay/mng/product/queryPrice/${id}`, {
     method: 'get',
   });
 }
