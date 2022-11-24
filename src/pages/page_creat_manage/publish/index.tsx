@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import GlobalHeaderRight from '@/components/RightContent';
 import PreviewModal from '@/pages/page_creat_manage/edit/components/PreviewModal';
+import QRCode from 'qrcode.react'
+import { Form, message, Radio, Popover } from 'antd';
+import logo2 from '@/assets/page_creat_manage/logo2.png'
 import successIcon from './img/success.png'
 import previewIcon from './img/preview-icon.png'
 import './index.less'
-import { Form, message, Radio } from 'antd';
 import { history } from '@@/core/history';
 import { getTemplatePageInfo } from '@/services/page-creat-manage';
 
@@ -40,6 +42,22 @@ export default () => {
       })
     }
   }, [])
+
+  const code = <QRCode
+    value={`http://172.30.33.222/template-page?id=${id}&login=${publishType === '公开发布' ? '' : '1'}`}
+    renderAs={'canvas'}
+    size={122}
+    bgColor={'#FFFFFF'}
+    fgColor={'#000000'}
+    level="H"
+    includeMargin={true}
+    imageSettings={{
+      src: logo2,
+      width: 25,
+      height: 25,
+      excavate: true,
+    }}
+  />
   return (
     <div className="publish-page">
       <div className="top-header">
@@ -84,23 +102,53 @@ export default () => {
           <div className="link-info">
             <div className="title">移动端</div>
             <div className="link-content">
-              <div className="link">http://172.30.33.222/template-page?id=1</div>
-              <div className="btn">打开</div>
+              <div className="link">{`http://172.30.33.222/template-page?id=${id}&login=${publishType === '公开发布' ? '' : '1'}`}</div>
+              <div className="btn" onClick={() => {
+                window.open(`http://172.30.33.222/template-page?id=${id}&login=${publishType === '公开发布' ? '' : '1'}`)
+              }}>打开</div>
               <div className="line" />
-              <div className="btn">复制</div>
+              <div className="btn" onClick={() => {
+                // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+                navigator &&
+                navigator.clipboard &&
+                navigator.clipboard.writeText(`http://172.30.33.222/template-page?id=${id}&login=${publishType === '公开发布' ? '' : '1'}`).then(() => {
+                  message.success('复制成功');
+                });
+              }}>复制</div>
               <div className="line" />
-              <div className="btn">二维码</div>
+              <div className="btn">
+                <Popover content={code} placement="bottomRight">
+                  二维码
+                </Popover>
+              </div>
             </div>
           </div>
           <div className="link-info">
             <div className="title">web端</div>
             <div className="link-content">
-              <div className="link">http://172.30.33.222/template-page?id=1</div>
-              <div className="btn">打开</div>
+              <div className="link">{`http://172.30.33.222/template-page?id=${id}&login=${publishType === '公开发布' ? '' : '1'}`}</div>
+              <div className="btn"
+                onClick={() => {
+                  window.open(`http://172.30.33.222/template-page?id=${id}&login=${publishType === '公开发布' ? '' : '1'}`)
+                }}
+              >
+                打开
+              </div>
               <div className="line" />
-              <div className="btn">复制</div>
+              <div className="btn" onClick={() => {
+                // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+                navigator &&
+                navigator.clipboard &&
+                navigator.clipboard.writeText(`http://172.30.33.222/template-page?id=${id}&login=${publishType === '公开发布' ? '' : '1'}`).then(() => {
+                  message.success('复制成功');
+                });
+              }}>复制</div>
               <div className="line" />
-              <div className="btn">二维码</div>
+              <div className="btn">
+                <Popover content={code} placement="bottomRight">
+                  二维码
+                </Popover>
+              </div>
             </div>
           </div>
         </div>

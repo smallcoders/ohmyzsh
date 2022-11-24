@@ -17,7 +17,13 @@ import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import {getPageList, modifyTemplateState, getTemplateData, getTemplateOperationList} from '@/services/page-creat-manage'
+import {
+  getPageList,
+  modifyTemplateState,
+  getTemplateData,
+  getTemplateOperationList,
+  addOperationLog,
+} from '@/services/page-creat-manage'
 import type Common from '@/types/common';
 import moment from 'moment';
 import SelfTable from '@/components/self_table';
@@ -80,6 +86,10 @@ export default () => {
 
 
   const handlePublish = (record: record) => {
+    addOperationLog({
+      tmpId: record.tmpId,
+      type: 1,
+    })
     modifyTemplateState({
       tmpId: record.tmpId,
       state: 1,
@@ -143,8 +153,12 @@ export default () => {
   }
 
   const handleEdit = (record: record) => {
-    // todo 编辑的记录接口
-    history.push(`${routeName.PAGE_CREAT_MANAGE_EDIT}?id=${record.tmpId}`);
+    addOperationLog({
+      tmpId: record.tmpId,
+      type:0,
+    }).then(() => {
+      history.push(`${routeName.PAGE_CREAT_MANAGE_EDIT}?id=${record.tmpId}`);
+    })
   }
 
   const handleDrop = (record: record) => {
@@ -153,6 +167,10 @@ export default () => {
       content: '下架后用户将不能填写，确认下架？若重新发布，之前的分享链接还可继续使用？',
       okText: '下架',
       onOk: () => {
+        addOperationLog({
+          tmpId: record.tmpId,
+          type: 1,
+        })
         modifyTemplateState({
           tmpId: record.tmpId,
           state: 0,

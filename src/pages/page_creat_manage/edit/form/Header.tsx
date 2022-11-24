@@ -1,32 +1,28 @@
-import { useState, MouseEvent, FC, useContext } from 'react';
-import { Layout, message, Space } from 'antd';
-import {saveTemplate} from '@/services/page-creat-manage'
+import { useState, FC, useContext } from 'react';
+import { Layout, message as antdMessage, message, Space } from 'antd';
+import { useHistory } from 'react-router-dom';
+import { modifyTemplateState, saveTemplate } from '@/services/page-creat-manage';
 import PreviewModal from '../components/PreviewModal'
-import GenerateJsonModal from '../components/GenerateJsonModal'
 import { useConfig } from '../hooks/hooks'
 import { ActionType } from '../store/action'
 import type { DesignFormProps } from './index'
 import { DesignContext } from '../store'
+import { routeName } from '../../../../../config/routes';
+
 const Header: FC<DesignFormProps> = (props) => {
   const { preview } = props
   const { state } = useContext(DesignContext)
   const { handlerSetVisible, dispatch } = useConfig()
   const [previewVisible, setPreviewVisible] = useState(false)
-  const [generateJsonVisible, setGenerateJsonVisible] = useState(false)
-
-  const handleClear = (event: MouseEvent) => {
-    event.preventDefault()
-    dispatch({
-      type: ActionType.SET_WIDGET_FORM_LIST,
-      payload: []
-    })
-  }
-
-  //  m
+  const history = useHistory();
   const handleSave = () => {
     const { widgetFormList, globalConfig, id } =  state;
     const paramsList: any = []
     const paramsKeyList: string[] = []
+    if (!widgetFormList.length){
+      message.warn('请先设置题目', 2)
+      return;
+    }
     if (widgetFormList.length){
       widgetFormList.forEach((item) => {
         if (item?.config?.paramKey){
@@ -74,6 +70,26 @@ const Header: FC<DesignFormProps> = (props) => {
     })
   }
 
+  const handlePublish = () => {
+    const { id } =  state;
+    if (!id){
+      antdMessage.warn(`请先保存之后,再进行发布`);
+      return
+    }
+    modifyTemplateState({
+      tmpId: id,
+      state: 1,
+    }).then((res) => {
+      if (res.code === 0){
+        antdMessage.success(`发布成功`);
+        history.replace(`${routeName.PAGE_CREAT_MANAGE_PUBLISH}?id=${id}`);
+      } else {
+        antdMessage.error(`${res.message}`);
+      }
+    })
+
+  }
+
   return (
     <>
       <Layout.Header className="btn-bar">
@@ -92,7 +108,7 @@ const Header: FC<DesignFormProps> = (props) => {
             <img src={require('../image/save-icon.png')} alt='' />
             <span>保存</span>
           </div>
-          <div className="btn" onClick={handleClear}>
+          <div className="btn" onClick={handlePublish}>
             <img src={require('../image/publish-icon.png')} alt='' />
             <span>发布</span>
           </div>
@@ -105,7 +121,6 @@ const Header: FC<DesignFormProps> = (props) => {
         json={state}
         onCancel={handlerSetVisible(setPreviewVisible, false)}
       />
-      <GenerateJsonModal title="生成Json" width="50%" visible={generateJsonVisible} onCancel={handlerSetVisible(setGenerateJsonVisible, false)} />
     </>
   )
 }

@@ -68,3 +68,14 @@ export async function getTemplateOperationList(data?: { [key: string]: any }) {
     params: data,
   });
 }
+
+/**
+ * 查询模版操作记录
+ * @returns
+ */
+export async function addOperationLog(data?: { [key: string]: any }) {
+  return request<any>(`/antelope-common/mng/template/add/operate/log`, {
+    method: 'post',
+    data,
+  });
+}
