@@ -32,10 +32,11 @@ export default () => {
     },
   ];
   const prepare = (ste: string) => {
+    const maxstep = (Math.max(step,Number(ste))).toString()
     if (Number(type) === 1) {
-      setTabList(tabLists.filter((item) => item.key <= step));
+      setTabList(tabLists.filter((item) => item.key <= maxstep));
     } else {
-      setTabList(tabLists.filter((item) => item.key !== '4' && item.key <= step));
+      setTabList(tabLists.filter((item) => item.key !== '4' && item.key <= maxstep));
     }
     setActiveKey(ste || '1');
   };
