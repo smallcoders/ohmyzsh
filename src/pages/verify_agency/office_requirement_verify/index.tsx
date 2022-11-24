@@ -113,7 +113,7 @@ export default () => {
       render: (_: string, _record: any) => (
         <a
           onClick={() => {
-            history.push(`${routeName.OFFICE_REQUIREMENT_VERIFY_DETAIL}?id=${_record.demandId}&auditId=${_record.id}`);
+            history.push(`${routeName.OFFICE_REQUIREMENT_VERIFY_DETAIL}?id=${_record.demandId}&auditId=${_record.id}&state=${_record.auditState}`);
           }}
         >
           {_}

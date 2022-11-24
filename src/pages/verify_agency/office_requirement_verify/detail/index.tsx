@@ -1,5 +1,5 @@
 import { message, Image } from 'antd';
-import { history } from 'umi';
+import { history, useAccess } from 'umi';
 import React, { useState, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import scopedClasses from '@/utils/scopedClasses';
@@ -14,6 +14,9 @@ export default () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [detail, setDetail] = useState<any>({});
   const [enums, setEnums] = useState<any>({});
+  // 拿到当前角色的access权限兑现
+  const access = useAccess()
+  const { state = '' } = history.location.query as any;
 
   const getDictionary = async () => {
     try {
@@ -64,6 +67,17 @@ export default () => {
       return '--';
     }
   };
+
+  const [checkState, setCheckState] = useState<boolean>(false)
+
+  useEffect(() => {
+    if (!state) return
+    if (state === 'AUDIT_PASSED' || state === 'AUDIT_REJECTED') {
+      setCheckState(true)
+    } else {
+      setCheckState(false)
+    }
+  },[state]);
 
   useEffect(() => {
     prepare();
@@ -146,9 +160,12 @@ export default () => {
           <span>{detail?.phone}</span>
         </div>
       </div>
-      <div style={{ background: '#fff', marginTop: 20, paddingTop: 20 }}>
-        <VerifyInfoDetail auditId={detail?.auditId} reset={prepare} />
-      </div>
+      {
+        (checkState || access['P_AT_QYXQ']) && 
+        <div style={{ background: '#fff', marginTop: 20, paddingTop: 20 }}>
+          <VerifyInfoDetail auditId={detail?.auditId} reset={prepare} />
+        </div>
+      }
     </PageContainer>
   );
 };
