@@ -124,7 +124,7 @@ export function regFenToYuan(fen: any | number, digit: number = 10000): any {
   num += '';
   const reg = num.indexOf('.') > -1 ? /(\d{1,3})(?=(?:\d{3})+\.)/g : /(\d{1,3})(?=(?:\d{3})+$)/g;
   num = num.replace(reg, '$1');
-  num = toDecimal2(num);
+  num = customToFixed(num);
   return num;
 }
 // 金额转为大写汉字
