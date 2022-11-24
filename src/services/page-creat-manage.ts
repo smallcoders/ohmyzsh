@@ -19,8 +19,8 @@ export async function saveTemplate(data?: { [key: string]: any }) {
  */
 export async function getPageList(data?: { [key: string]: any }) {
   return request<any>(`/antelope-common/mng/template/page/query`, {
-    method: 'get',
-    params: data,
+    method: 'post',
+    data,
   });
 }
 
@@ -30,6 +30,40 @@ export async function getPageList(data?: { [key: string]: any }) {
  */
 export async function getTemplatePageInfo(data?: { [key: string]: any }) {
   return request<any>(`/antelope-common/mng/template/info`, {
+    method: 'get',
+    params: data,
+  });
+}
+
+/**
+ * 修改模版状态
+ * @returns
+ */
+export async function modifyTemplateState(data?: { [key: string]: any }) {
+  return request<any>(`/antelope-common/mng/template/modify/state`, {
+    method: 'post',
+    data,
+  });
+}
+
+/**
+ * 查询模版数据
+ * @returns
+ */
+export async function getTemplateData(data?: { [key: string]: any }) {
+  return request<any>(`/antelope-common/mng/template/ans/data`, {
+    method: 'post',
+    data,
+  });
+}
+
+
+/**
+ * 查询模版操作记录
+ * @returns
+ */
+export async function getTemplateOperationList(data?: { [key: string]: any }) {
+  return request<any>(`/antelope-common/mng/template/log/list`, {
     method: 'get',
     params: data,
   });

@@ -18,6 +18,7 @@ export const initState: State = {
     labelAlign: 'right',
     layout: 'vertical',
   },
+  id: '',
 }
 
 export interface State {

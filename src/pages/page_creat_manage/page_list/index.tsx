@@ -17,7 +17,7 @@ import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import {getPageList} from '@/services/page-creat-manage'
+import {getPageList, modifyTemplateState, getTemplateData, getTemplateOperationList} from '@/services/page-creat-manage'
 import type Common from '@/types/common';
 import moment from 'moment';
 import SelfTable from '@/components/self_table';
@@ -39,22 +39,19 @@ const statusOptions = [
 ]
 
 interface record {
-  id: number;
-  pageName: string;
-  pageDesc: string;
-  status: string | number,
+  tmpId: string;
+  tmpName: string;
+  tmpDesc: string;
+  state: string | number,
   updateTime: string
 }
 
 
 export default () => {
-  const [dataSource, setDataSource] = useState<any>([{
-    pageName: '问卷调查',
-    pageDesc: '个人信息调查表',
-    status: '1',
-    updateTime: '2022-11-22 09:24:23'
-  }]);
+  const [dataSource, setDataSource] = useState<any>([]);
   const [searchContent, setSearChContent] = useState<any>({});
+  const [openMenuId, setMenuOpen] = useState<any>('')
+  const [menuData, setMenuData] = useState<any>([])
   const history = useHistory();
   const [searchForm] = Form.useForm();
   const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
@@ -83,14 +80,42 @@ export default () => {
 
 
   const handlePublish = (record: record) => {
-    // todo 发布接口
-    history.push(`${routeName.PAGE_CREAT_MANAGE_PUBLISH}?id=${record.id}`);
+    modifyTemplateState({
+      tmpId: record.tmpId,
+      state: 1,
+    }).then((res) => {
+      if (res.code === 0){
+        antdMessage.success(`发布成功`);
+        history.push(`${routeName.PAGE_CREAT_MANAGE_PUBLISH}?id=${record.tmpId}`);
+      } else {
+        antdMessage.error(`${res.message}`);
+      }
+    })
   }
-  const checkLink = (record: any) => {
-    history.push(`${routeName.PAGE_CREAT_MANAGE_PUBLISH}?id=${record.id}`);
+  const checkLink = (record: record) => {
+    history.push(`${routeName.PAGE_CREAT_MANAGE_PUBLISH}?id=${record.tmpId}`);
   }
-  const checkData = (record: any) => {
-    history.push(`${routeName.PAGE_CREAT_MANAGE_PUBLISH}?id=${record.id}`);
+  const checkData = (record: record) => {
+    getTemplateData({
+      pageSize: 1,
+      pageIndex: 1,
+      tmpId: record.tmpId
+    }).then((res) => {
+      const { result } = res
+      if (res.code === 0){
+        if (!result.data){
+          Modal.info({
+            title: '提示',
+            content: '此表单暂时还没有答卷',
+            okText: '我知道了',
+          })
+        } else {
+          history.push(`${routeName.PAGE_CREAT_MANAGE_PUBLISH}?id=${record.tmpId}`);
+        }
+      } else {
+        antdMessage.error(`${res.message}`);
+      }
+    })
   }
 
   const handleDelete = (record: record) => {
@@ -99,15 +124,27 @@ export default () => {
       content: '删除后用户将不能填写，表单及其数据也将无法恢复，确认删除？',
       okText: '删除',
       onOk: () => {
-        // todo 删除接口
-        console.log(record)
+        modifyTemplateState({
+          tmpId: record.tmpId,
+          state: 2,
+        }).then((res) => {
+          if (res.code === 0){
+            antdMessage.success(`删除成功`);
+            const { totalCount, pageIndex, pageSize } = pageInfo
+            const newTotal = totalCount - 1;
+            const newPageTotal = Math.ceil(newTotal / pageSize)
+            getPage(pageIndex >  newPageTotal ? newPageTotal : pageIndex)
+          } else {
+            antdMessage.error(`${res.message}`);
+          }
+        })
       },
     })
   }
 
   const handleEdit = (record: record) => {
     // todo 编辑的记录接口
-    history.push(`${routeName.PAGE_CREAT_MANAGE_EDIT}?id=${record.id}`);
+    history.push(`${routeName.PAGE_CREAT_MANAGE_EDIT}?id=${record.tmpId}`);
   }
 
   const handleDrop = (record: record) => {
@@ -116,27 +153,35 @@ export default () => {
       content: '下架后用户将不能填写，确认下架？若重新发布，之前的分享链接还可继续使用？',
       okText: '下架',
       onOk: () => {
-        // todo 下架接口
-        console.log(record)
+        modifyTemplateState({
+          tmpId: record.tmpId,
+          state: 0,
+        }).then((res) => {
+          if (res.code === 0){
+            antdMessage.success(`下架成功`);
+            getPage(pageInfo.pageIndex)
+          } else {
+            antdMessage.error(`${res.message}`);
+          }
+        })
       },
     })
   }
 
-
   const menuItemClick = (type: string, record: record) => {
-    if (type === '下架'){
+    if (type === 'drop'){
       handleDrop(record)
     }
-    if (type === '删除'){
+    if (type === 'delete'){
       handleDelete(record)
     }
-    if (type === '编辑'){
+    if (type === 'edit'){
       handleEdit(record)
     }
   }
 
   const getButtonList = (record: record) => {
-    const buttonTypeList = record.status === 0 ?
+    const buttonTypeList = record.state === 0 ?
       [{type: 'publish'},{type: 'data_manage'}, {type: 'more', children: [{type: 'delete', text: '删除'}, {text: '编辑', type: 'edit'}]}]
       :[{type: 'link'},{type: 'data_manage'}, {type: 'more', children: [{type: 'drop', text: '下架'}, {text: '删除', type: 'delete'}]}]
     return buttonTypeList.map((item: any) => {
@@ -172,12 +217,6 @@ export default () => {
             size="small"
             type="link"
             onClick={() => {
-              // todo 判断是否有数据
-              Modal.info({
-                title: '提示',
-                content: '此表单暂时还没有答卷',
-                okText: '我知道了',
-              })
               checkData(record)
             }}
           >
@@ -226,18 +265,18 @@ export default () => {
     },
     {
       title: '模板名称',
-      dataIndex: 'pageName',
+      dataIndex: 'tmpName',
       width: 150,
     },
     {
       title: '描述信息',
-      dataIndex: 'pageDesc',
+      dataIndex: 'tmpDesc',
       isEllipsis: true,
       width: 250,
     },
     {
       title: '模板状态',
-      dataIndex: 'status',
+      dataIndex: 'state',
       width: 100,
       render: (status: string) => {
         return <span>{statusMap[status]}</span>
@@ -246,24 +285,41 @@ export default () => {
 
     {
       title: '最新操作时间',
-      dataIndex: 'createTime',
+      dataIndex: 'updateTime',
       width: 200,
-      render: (creatTime: string) => {
+      render: (creatTime: string, record: record) => {
         return (
           <>
             {moment(creatTime).format('YYYY-MM-DD HH:mm:ss')}
-            <Dropdown overlay={() => {
+            <Dropdown
+              visible={record.tmpId === openMenuId}
+              onVisibleChange={(visible) => {
+                if (visible){
+                  getTemplateOperationList({tmpId: record.tmpId}).then((res) => {
+                    if (res.code === 0){
+                      setMenuData(res?.result || [])
+                      setMenuOpen(record.tmpId)
+                    } else {
+                      antdMessage.error(`获取操作记录失败`);
+                    }
+                  })
+                } else {
+                  setMenuOpen('')
+                  setMenuData([])
+                }
+              }}
+              trigger={['click']} overlay={() => {
               return (
                 <Menu>
                   {
-                    [1,2,3,4].map(() => {
+                    menuData.map((item: {opTypeDesc: string, opTime: string, opUserName: string}, index: number) => {
                       return (
-                        <Menu.Item>
+                        <Menu.Item key={index}>
                            <div className="operation-list">
-                             <div className="title">编辑菜单</div>
+                             <div className="title">{item.opTypeDesc}</div>
                              <div className="menu-right">
-                               <div className='operation-time'>2022-06-14  12:32:23</div>
-                               <div>操作人：顾小满</div>
+                               <div className='operation-time'>{item.opTime}</div>
+                               <div>操作人：{item.opUserName}</div>
                              </div>
                            </div>
                         </Menu.Item>
@@ -294,8 +350,11 @@ export default () => {
   const getSearchQuery = () => {
     const search = searchForm.getFieldsValue();
     if (search.updateTime) {
-      search.startTime = moment(search.time[0]).format('YYYY-MM-DD');
-      search.endTime = moment(search.time[1]).format('YYYY-MM-DD');
+      search.updateTimeStart = moment(search.time[0]).format('YYYY-MM-DD');
+      search.updateTimeEnd = moment(search.time[1]).format('YYYY-MM-DD');
+    }
+    if (search.state){
+      search.state = search.state * 1
     }
     delete search.updateTime;
     return search;
@@ -315,7 +374,7 @@ export default () => {
               </Form.Item>
             </Col>
             <Col span={4} offset={1}>
-              <Form.Item name="status" label="模板状态">
+              <Form.Item name="state" label="模板状态">
                 <Select
                   placeholder="请选择"
                   allowClear
@@ -383,7 +442,6 @@ export default () => {
         <SelfTable
           rowKey="id"
           bordered
-          // scroll={{ x: 1480 }}
           columns={columns}
           dataSource={dataSource}
           pagination={

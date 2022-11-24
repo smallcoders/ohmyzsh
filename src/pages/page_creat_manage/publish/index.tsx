@@ -1,10 +1,12 @@
-import {useState} from 'react';
+import { useEffect, useState } from 'react';
 import GlobalHeaderRight from '@/components/RightContent';
 import PreviewModal from '@/pages/page_creat_manage/edit/components/PreviewModal';
 import successIcon from './img/success.png'
 import previewIcon from './img/preview-icon.png'
 import './index.less'
-import { Form, Radio } from 'antd';
+import { Form, message, Radio } from 'antd';
+import { history } from '@@/core/history';
+import { getTemplatePageInfo } from '@/services/page-creat-manage';
 
 const publishOptions = [
   {
@@ -17,122 +19,27 @@ const publishOptions = [
   },
 ]
 
-
-const mock = {
-  "selectWidgetItem": {
-    "label": "多选框组",
-    "type": "CheckboxGroup",
-    "config": {
-      "options": [
-        {
-          "label": "选项1",
-          "value": "选项1"
-        },
-        {
-          "label": "选项2",
-          "value": "选项2"
-        },
-        {
-          "label": "选项3",
-          "value": "选项3"
-        }
-      ],
-      "required": false,
-      "maxLength": 3,
-      "defaultValue": [],
-      "desc": "",
-      "paramsKey": "",
-      "isParam": true,
-      "paramDesc": "",
-      "paramType": "",
-      "showLabel": true
-    },
-    "key": "CheckboxGroup_27c5b4fd6876429d8a249cf82a0c3686"
-  },
-  "widgetFormList": [
-    {
-      "label": "输入框",
-      "type": "Input",
-      "config": {
-        "allowClear": true,
-        "maxLength": 35,
-        "required": false,
-        "paramKey": "",
-        "desc": "",
-        "isParam": true,
-        "paramDesc": "",
-        "paramType": "string",
-        "showLabel": true,
-        "unRepeat": false
-      },
-      "key": "Input_eba35b713b4d4068881fd4109615482a"
-    },
-    {
-      "label": "输入框",
-      "type": "Input",
-      "config": {
-        "allowClear": true,
-        "maxLength": 35,
-        "required": false,
-        "paramKey": "",
-        "desc": "",
-        "isParam": true,
-        "paramDesc": "",
-        "paramType": "string",
-        "showLabel": true,
-        "unRepeat": false
-      },
-      "key": "Input_f26e4446680a4d3898006126d803e5ef"
-    },
-    {
-      "label": "多选框组",
-      "type": "CheckboxGroup",
-      "config": {
-        "options": [
-          {
-            "label": "选项1",
-            "value": "选项1"
-          },
-          {
-            "label": "选项2",
-            "value": "选项2"
-          },
-          {
-            "label": "选项3",
-            "value": "选项3"
-          }
-        ],
-        "required": false,
-        "maxLength": 3,
-        "defaultValue": [],
-        "desc": "",
-        "paramsKey": "",
-        "isParam": true,
-        "paramDesc": "",
-        "paramType": "",
-        "showLabel": true
-      },
-      "key": "CheckboxGroup_27c5b4fd6876429d8a249cf82a0c3686"
-    }
-  ],
-  "globalConfig": {
-    "pageName": "未命名表单",
-    "pageDesc": "",
-    "pageBg": "",
-    "showPageName": true,
-    "showDesc": true,
-    "btnText": "提交"
-  },
-  "formConfig": {
-    "colon": true,
-    "labelAlign": "right",
-    "layout": "vertical"
-  }
-}
-
 export default () => {
+  const id = history.location.query?.id as string;
   const [publishType, setPublishType] = useState<string>("公开发布")
+  const [templateJson, setTemplateJson] = useState<any>({})
+  const [templateName, setTemplateName] = useState<string>('')
   const [previewVisible, setPreviewVisible] = useState(false)
+
+  useEffect(() => {
+    if (id){
+      getTemplatePageInfo({
+        id
+      }).then((res) => {
+        if (res?.code === 0 && res?.result?.tmpJson){
+          setTemplateJson(JSON.parse(res?.result?.tmpJson))
+          setTemplateName(res?.result?.tmpName)
+        } else {
+          message.error(res?.message)
+        }
+      })
+    }
+  }, [])
   return (
     <div className="publish-page">
       <div className="top-header">
@@ -143,9 +50,11 @@ export default () => {
       </div>
       <div className="middle-header">
         <div className="left">
-          <div className="page-name">表单名称</div>
+          <div className="page-name">{templateName}</div>
           <div className="preview-btn" onClick={() => {
-            setPreviewVisible(true)
+            if(Object.keys(templateJson).length){
+              setPreviewVisible(true)
+            }
           }}>
             <img src={previewIcon} alt='' />预览
           </div>
@@ -198,19 +107,9 @@ export default () => {
       </div>
       <PreviewModal
         title="预览"
-        width="100%"
-        style={{
-          height: '100%',
-          maxWidth: '100%',
-          top: 0,
-          padding: 0
-        }}
-        bodyStyle={{
-          minHeight: 'calc(100vh - 48px)',
-        }}
         footer={null}
         visible={previewVisible}
-        json={mock}
+        json={templateJson}
         onCancel={() => {
           setPreviewVisible(false)
         }}

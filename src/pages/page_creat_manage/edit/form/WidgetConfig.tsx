@@ -23,7 +23,7 @@ import { useConfig } from '../hooks/hooks'
 const WidgetConfig: FC = () => {
   const { selectWidgetItem } = useConfig()
   if (!selectWidgetItem){
-    return <div>点击选择字段来设置属性</div>
+    return <div className="empty-config">点击选择字段来设置属性</div>
   }
   return (
     <>

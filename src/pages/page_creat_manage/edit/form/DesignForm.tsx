@@ -1,6 +1,7 @@
 import { useContext, useMemo, useState, forwardRef, useImperativeHandle, useEffect } from 'react'
 import { Layout, Form, message } from 'antd';
 import GlobalHeaderRight from '@/components/RightContent'
+import { history } from 'umi';
 import {getTemplatePageInfo} from '@/services/page-creat-manage'
 import ComponentsGroup from './ComponentsGroup'
 import Header from './Header'
@@ -33,13 +34,31 @@ export interface DesignFormRef {
 const DesignForm = forwardRef<DesignFormRef, DesignFormProps>((props, ref) => {
   const { state, dispatch } = useContext(DesignContext)
   const [formInstance] = Form.useForm()
+  const id = history.location.query?.id as string;
 
   const [currentTab, setCurrentTab] = useState<'Global' | 'Local'>('Global')
 
   useEffect(() => {
-    getTemplatePageInfo({
-      id: '637dcf65d933bf0e8349d1f8'
-    })
+    if (id){
+      dispatch({
+        type: ActionType.SET_GLOBAL,
+        payload: {
+          id,
+        }
+      })
+      getTemplatePageInfo({
+        id
+      }).then((res) => {
+        if (res?.code === 0 && res?.result?.tmpJson){
+          dispatch({
+            type: ActionType.SET_GLOBAL,
+            payload: JSON.parse(res?.result?.tmpJson)
+          })
+        } else {
+          message.error(res?.message)
+        }
+      })
+    }
   }, [])
 
   useImperativeHandle(ref, () => ({

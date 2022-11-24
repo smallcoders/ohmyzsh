@@ -22,8 +22,9 @@ const Header: FC<DesignFormProps> = (props) => {
     })
   }
 
+  //  m
   const handleSave = () => {
-    const { widgetFormList, globalConfig } =  state;
+    const { widgetFormList, globalConfig, id } =  state;
     const paramsList: any = []
     const paramsKeyList: string[] = []
     if (widgetFormList.length){
@@ -49,11 +50,27 @@ const Header: FC<DesignFormProps> = (props) => {
         tmpJson: JSON.stringify(state),
         repeatAble: 1,
         tmpType: 0,
+        state: 0,
       },
       params: paramsList
     }
+    if (id){
+      data.config['tmpId'] = id
+    }
     saveTemplate(data).then((res) => {
-      console.log(res)
+      if (res.code === 0){
+        message.success('保存成功')
+        if (res.result){
+          dispatch({
+            type: ActionType.SET_GLOBAL,
+            payload: {
+              id: res.result,
+            }
+          })
+        }
+      } else {
+        message.error(res?.message)
+      }
     })
   }
 
