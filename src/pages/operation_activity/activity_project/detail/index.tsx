@@ -38,9 +38,9 @@ export default () => {
             </Form>
           </ProCard>
 
-          <ProCard layout="center">
+          {/* <ProCard layout="center">
             <Button onClick={() => history.goBack()}>返回</Button>
-          </ProCard>
+          </ProCard> */}
         </ProCard>
       </ProCard>
     </PageContainer>

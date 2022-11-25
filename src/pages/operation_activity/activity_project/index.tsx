@@ -171,7 +171,7 @@ export default () => {
               type="link"
               onClick={() => {
                 localStorage.setItem('activity_detail', JSON.stringify(record));
-                history.push(`operation-activity/activity-project/detail`);
+                window.open(`/operation-activity/activity-project/detail`);
               }}
             >
               详情
