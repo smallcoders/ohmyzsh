@@ -24,6 +24,8 @@ import { UploadOutlined } from '@ant-design/icons';
 import { exportUserList } from '@/services/export';
 import { exportUsers, getUserPage } from '@/services/user';
 import User from '@/types/user.d';
+import {getAllChannel, getAllScene} from "@/services/opration-activity";
+import Activity from "@/types/operation-activity";
 const sc = scopedClasses('service-config-requirement-manage');
 
 const registerSource = {
@@ -32,6 +34,8 @@ const registerSource = {
 
 export default () => {
   const [dataSource, setDataSource] = useState<any[]>([]);
+  const [selectChannelListAll,setSelectChannelAll] = useState<Activity.Content[]>([])
+  const [selectSceneListAll,setSelectSceneAll] = useState<Activity.Content[]>([])
   const [searchContent, setSearChContent] = useState<User.SearchBody>({});
 
   const formLayout = {
@@ -47,6 +51,33 @@ export default () => {
   });
 
   useEffect(() => {
+  }, []);
+
+  //获取全部场景值
+  const getSceneList =async () =>{
+    try {
+      const res =await getAllScene({flag:false})
+      if(res.code === 0){
+        setSelectSceneAll(res.result)
+      }
+    }catch (e) {
+      console.log(e)
+    }
+  }
+  //获取全部渠道值
+  const getChannelList =async () =>{
+    try {
+      const res =await getAllChannel({flag:false})
+      if(res.code === 0){
+        setSelectChannelAll(res.result)
+      }
+    }catch (e) {
+      console.log(e)
+    }
+  }
+  useEffect(() => {
+    getSceneList();
+    getChannelList();
   }, []);
 
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
@@ -94,6 +125,16 @@ export default () => {
       title: '注册端',
       dataIndex: 'registerSource',
       render: (text: any, record: any) => text?.desc,
+      width: 100,
+    },
+    {
+      title: '渠道值',
+      dataIndex: 'channelName',
+      width: 100,
+    },
+    {
+      title: '场景值',
+      dataIndex: 'sceneName',
       width: 100,
     },
     {
@@ -167,28 +208,28 @@ export default () => {
                 </Select>
               </Form.Item>
             </Col>
-            {/* <Col span={6}>
-              <Form.Item name="type" label="渠道值">
+            <Col span={6}>
+              <Form.Item name="activeChannelId" label="渠道值">
                 <Select placeholder="请选择" allowClear>
-                  {typeOptions?.map((p) => (
-                    <Select.Option key={p.id} value={p.id}>
-                      {p.name}
+                  {selectChannelListAll.map((item ) => (
+                    <Select.Option key={item.id} value={item.id}>
+                      {item.channelName}
                     </Select.Option>
                   ))}
                 </Select>
               </Form.Item>
             </Col>
             <Col span={6}>
-              <Form.Item name="type" label="场景值">
+              <Form.Item name="activeSceneId" label="场景值">
                 <Select placeholder="请选择" allowClear>
-                  {typeOptions?.map((p) => (
-                    <Select.Option key={p.id} value={p.id}>
-                      {p.name}
+                  {selectSceneListAll.map((item ) => (
+                    <Select.Option key={item.id} value={item.id}>
+                      {item.sceneName}
                     </Select.Option>
                   ))}
                 </Select>
               </Form.Item>
-            </Col> */}
+            </Col>
             <Col span={6}>
               <Form.Item name="userIdentity" label="身份">
                 <Select placeholder="请选择" allowClear>
@@ -205,9 +246,9 @@ export default () => {
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
-            <Col offset={8} span={4}>
+            <Col offset={20} span={4}>
               <Button
-                style={{ marginRight: 20 }}
+                style={{ marginRight: 20,marginBottom:20}}
                 type="primary"
                 key="search"
                 onClick={() => {
@@ -298,8 +339,8 @@ export default () => {
   //   //       cancelable: false
   //   //     });
   //   //     linkElement.dispatchEvent(event);
-  //   //   }  
-  //   //   window.URL.revokeObjectURL(linkElement.href); 
+  //   //   }
+  //   //   window.URL.revokeObjectURL(linkElement.href);
   // }
   const exportList = async () => {
     const { name, phone, registerSource, orgName, userIdentity, createTimeStart, createTimeEnd } = searchContent;

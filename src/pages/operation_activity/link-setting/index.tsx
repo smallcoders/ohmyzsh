@@ -216,9 +216,9 @@ export default () => {
       canvas.height = 1920;
       const context = canvas.getContext("2d");
       // @ts-ignore
-      if(idName==='#imgWechat'&& context){
+      if(idName=='#imgWechat'&& context){
         context.drawImage(image, 0, 0,0,0);
-      }else if(idName==='#imgShare1'&& context){
+      }else if(idName=='#imgShare1'&& context){
         context.drawImage(image, 0, 0,1080, 1920,);
       }
       const urlName = canvas.toDataURL("image/png"); //得到图片的base64编码数据
@@ -331,10 +331,12 @@ export default () => {
         setBtnValue('发布并复制分享链接')
         console.log(value)
         value.activeType = 'H5'
-           const res=await  getUrlById(value.activeImageId)
+        if(value.activeImageId){
+          const res=await  getUrlById(value.activeImageId)
           if(res.code==0){
             value.url=res?.result
           }
+        }
         value.activeUrl= `https://www.lingyangplat.com/antelope-activity-h5/share-code/index.html?preview=true&targetLinkType=${value.targetLinkType}&buttonText=${value.buttonText}&targetLink=${value.targetLink}&url=${value.url}`
         setCurrent(1)
         setFormData(value)
@@ -464,15 +466,15 @@ export default () => {
     setCurrent(0)
     if(e.key=='H5'){
       setTypes('新建H5链接')
-      setEdge(2)
+      setEdge(Activity.Edge.H5)
     }
     else if(e.key=='WECHAT'){
       setTypes('新建小程序码')
-      setEdge(3)
+      setEdge(Activity.Edge.WECHAT)
     }
     else if(e.key=='SHARE'){
       setTypes('新建分享码')
-      setEdge(4)
+      setEdge(Activity.Edge.SHARE)
     }
     setModalVisible(true);
   }
@@ -564,7 +566,7 @@ export default () => {
               <Form.Item name="activeChannelId" label="渠道值">
                 <Select placeholder="请选择" allowClear>
                 {selectChannelListAll.map((item ) => (
-                  <Select.Option key={item.channelName} value={item.id}>
+                  <Select.Option key={ item.id } value={ item.id }>
                     {item.channelName}
                   </Select.Option>
                 ))}
@@ -575,13 +577,14 @@ export default () => {
               <Form.Item name="activeSceneId" label="场景值">
                 <Select placeholder="请选择" allowClear>
                 {selectSceneListAll.map((item ) => (
-                  <Select.Option key={item.sceneName} value={item.id}>
+                  <Select.Option key={ item.id } value={ item.id }>
                     {item.sceneName}
                   </Select.Option>
                 ))}
                 </Select>
               </Form.Item>
             </Col>
+
             <Col offset={12} span={4}>
               <Button
                 style={{ marginRight: 20 }}
@@ -917,6 +920,7 @@ export default () => {
   ];
   const selectButton = (): React.ReactNode => {
     const handleEdgeChange = (e: RadioChangeEvent) => {
+      console.log(typeof  e.target.value)
       setEdge(e.target.value);
     };
     return (
@@ -934,6 +938,10 @@ export default () => {
         width="600px"
         maskClosable={false}
         visible={createModalVisible}
+        bodyStyle={{
+          height: '500px',
+          overflow: 'auto'
+        }}
         onCancel={() => {
           clearForm();
           setCurrent(0)
@@ -1008,7 +1016,7 @@ export default () => {
               <Form.Item name="activeChannelId" label="渠道值"  rules={[{ required: true, message: '请输入渠道值！' }]}>
                 <Select placeholder="请选择" allowClear disabled={activeStatusData=='DOWN'&&types.indexOf("新建") == -1}>
                   {selectChannelList.map((item ) => (
-                    <Select.Option key={item.channelName} value={item.id}>
+                    <Select.Option key={ item.id } value={ item.id }>
                       {item.channelName}
                     </Select.Option>
                   ))}
@@ -1018,13 +1026,14 @@ export default () => {
               <Form.Item name="activeSceneId" label="场景值"  rules={[{ required: true, message: '请输入场景值！' }]}>
                 <Select placeholder="请选择" allowClear disabled={activeStatusData=='DOWN'&&types.indexOf("新建") == -1}>
                   {selectSceneList.map((item ) => (
-                    <Select.Option key={item.sceneName} value={item.id}>
+                    <Select.Option key={ item.id } value={ item.id }>
                       {item.sceneName}
                     </Select.Option>
                   ))}
                 </Select>
               </Form.Item>
-              {edge === 2&&
+
+              {edge == 2&&
                 <Form.Item
                   label='目标链接类型'
                   name="targetLinkType"
@@ -1036,7 +1045,7 @@ export default () => {
                   </Select>
                 </Form.Item>}
 
-              {edge !== 4&&
+              {edge != 4&&
               <Form.Item
                 label='跳转目标链接'
                 name="targetLink"
@@ -1045,7 +1054,7 @@ export default () => {
                 <Input placeholder="请输入" maxLength={2000}/>
               </Form.Item>}
 
-              {edge === 2 &&
+              {edge == 2 &&
                 <Form.Item
                   label="活动配图"
                   labelCol={{span: 8}}
@@ -1065,7 +1074,7 @@ export default () => {
                   />
                 </Form.Item>}
 
-              {edge === 2&&
+              {edge == 2&&
                 <Form.Item
                   label='按钮文案'
                   name="buttonText"
@@ -1075,7 +1084,7 @@ export default () => {
                 </Form.Item>
               }
 
-              {edge === 4 &&(types.indexOf("新建") !== -1)&&
+              {edge == 4 &&(types.indexOf("新建") !== -1)&&
                 <Form.Item
                   label='分享码主人'
                   name="shardCodeMaster"
@@ -1117,7 +1126,7 @@ export default () => {
                   <Input placeholder="请输入" maxLength={35} disabled={activeStatusData=='DOWN'&&types.indexOf("新建") == -1}/>
                 </Form.Item>
               }
-              {edge === 4 &&activeStatusData =='DOWN'&&(types.indexOf("新建") == -1)&&
+              {edge == 4 &&activeStatusData =='DOWN'&&(types.indexOf("新建") == -1)&&
                 <Form.Item
                   label='分享码主人'
                   name="shardCodeMaster"
@@ -1205,7 +1214,7 @@ export default () => {
           dataSource={dataSource}
           rowKey={'id'}
           pagination={
-            pageInfo.total === 0
+            pageInfo.total == 0
               ? false
               : {
                 onChange: getOperationActivity,
