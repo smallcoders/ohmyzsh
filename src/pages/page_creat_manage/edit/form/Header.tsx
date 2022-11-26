@@ -1,21 +1,23 @@
-import { useState, FC, useContext } from 'react';
+import { useState, useContext } from 'react';
 import { Layout, message as antdMessage, message, Space } from 'antd';
 import { useHistory } from 'react-router-dom';
-import { modifyTemplateState, saveTemplate } from '@/services/page-creat-manage';
+import { saveTemplate, addOperationLog } from '@/services/page-creat-manage';
+import preViewIcon from '@/assets/page_creat_manage/preview-icon.png'
+import saveIcon from '@/assets/page_creat_manage/save-icon.png'
+import publishIcon from '@/assets/page_creat_manage/publish-icon.png'
 import PreviewModal from '../components/PreviewModal'
 import { useConfig } from '../hooks/hooks'
 import { ActionType } from '../store/action'
-import type { DesignFormProps } from './index'
 import { DesignContext } from '../store'
 import { routeName } from '../../../../../config/routes';
 
-const Header: FC<DesignFormProps> = (props) => {
-  const { preview } = props
+const Header = (props: any) => {
+  const { preview, callback } = props
   const { state } = useContext(DesignContext)
   const { handlerSetVisible, dispatch } = useConfig()
   const [previewVisible, setPreviewVisible] = useState(false)
   const history = useHistory();
-  const handleSave = () => {
+  const checkParams = () => {
     const { widgetFormList, globalConfig, id } =  state;
     const paramsList: any = []
     const paramsKeyList: string[] = []
@@ -53,9 +55,21 @@ const Header: FC<DesignFormProps> = (props) => {
     if (id){
       data.config['tmpId'] = id
     }
+    return data
+  }
+
+
+  const handleSave = () => {
+    const data: any = checkParams()
+    if (!data){
+      return
+    }
     saveTemplate(data).then((res) => {
       if (res.code === 0){
         message.success('保存成功')
+        if (callback){
+          callback(data.config.tmpJson, 'save')
+        }
         if (res.result){
           dispatch({
             type: ActionType.SET_GLOBAL,
@@ -72,17 +86,22 @@ const Header: FC<DesignFormProps> = (props) => {
 
   const handlePublish = () => {
     const { id } =  state;
-    if (!id){
-      antdMessage.warn(`请先保存之后,再进行发布`);
+    const data: any = checkParams()
+    if (!data){
       return
     }
-    modifyTemplateState({
+    data.config.state = 1;
+    addOperationLog({
       tmpId: id,
-      state: 1,
-    }).then((res) => {
+      type: 2,
+    })
+    saveTemplate(data).then((res) => {
       if (res.code === 0){
+        if (callback){
+          callback(data.config.tmpJson, 'publish')
+        }
         antdMessage.success(`发布成功`);
-        history.replace(`${routeName.PAGE_CREAT_MANAGE_PUBLISH}?id=${id}`);
+        history.replace(`${routeName.PAGE_CREAT_MANAGE_PUBLISH}?id=${id || res.result}`);
       } else {
         antdMessage.error(`${res.message}`);
       }
@@ -100,16 +119,16 @@ const Header: FC<DesignFormProps> = (props) => {
         <Space>
           {preview && (
             <div className="btn" onClick={handlerSetVisible(setPreviewVisible, true)}>
-              <img src={require('../image/preview-icon.png')} alt='' />
+              <img src={preViewIcon} alt='' />
               <span>预览</span>
             </div>
           )}
           <div className="btn save" onClick={handleSave}>
-            <img src={require('../image/save-icon.png')} alt='' />
+            <img src={saveIcon} alt='' />
             <span>保存</span>
           </div>
           <div className="btn" onClick={handlePublish}>
-            <img src={require('../image/publish-icon.png')} alt='' />
+            <img src={publishIcon} alt='' />
             <span>发布</span>
           </div>
         </Space>

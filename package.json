@@ -80,7 +80,6 @@
     "umi-serve": "^1.9.10",
     "wordcloud": "^1.2.2",
     "sortablejs": "^1.14.0",
-    "uuid": "^8.3.2",
     "lodash-es": "^4.17.21",
     "react-monaco-editor": "^0.50.1",
     "qrcode.react": "^1.0.1",

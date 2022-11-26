@@ -11,8 +11,9 @@ import {
 } from 'antd';
 import Sortable from 'sortablejs'
 import { cloneDeep, isArray, isString } from 'lodash-es'
-import { v4 } from 'uuid'
 import moment from 'moment'
+import deleteIcon from '@/assets/page_creat_manage/delete.png'
+import copyIcon from '@/assets/page_creat_manage/copy.png'
 import { DesignContext } from '../store'
 import { ActionType } from '../store/action'
 import { Component } from '../config'
@@ -84,7 +85,7 @@ const WidgetFormItem: FC<Props> = (props) => {
         },
         onAdd: (event: any) => {
           const { newIndex } = event
-          const uuid = v4().replaceAll('-', '')
+          const uuid = `${+new Date()}`
           const newChildNodes = cloneDeep(childNodes ?? [])
           const SortableDataClone = event.originalEvent.dataTransfer.getData('SortableDataClone')
           const SortableDataMove = event.originalEvent.dataTransfer.getData('SortableDataMove')
@@ -154,7 +155,7 @@ const WidgetFormItem: FC<Props> = (props) => {
     const handleWidgetFormItem = (list: Component[]) => {
       const newList = cloneDeep(list)
       for (let index = 0; index < newList.length; index++) {
-        newList[index].key = `${newList[index].type}_${v4().replaceAll('-', '')}`
+        newList[index].key = `${newList[index].type}_${+new Date()}`
         if (newList[index].childNodes) {
           newList[index].childNodes = handleWidgetFormItem(newList[index].childNodes!)
         }
@@ -166,7 +167,7 @@ const WidgetFormItem: FC<Props> = (props) => {
       for (let index = 0; index < newList.length; index++) {
         if (newList[index].key === currentKey) {
           newItem = cloneDeep(newList[index])
-          newItem.key = `${item.type}_${v4().replaceAll('-', '')}`
+          newItem.key = `${item.type}_${+new Date()}`
           newList.splice(index, 0, newItem)
           if (newList[index].childNodes) {
             newList[index].childNodes = handleWidgetFormItem(newList[index].childNodes!)
@@ -232,11 +233,11 @@ const WidgetFormItem: FC<Props> = (props) => {
                   },
                 });
               }}>
-                <img className="img-icon" src={require('../image/delete.png')} alt='' />
+                <img className="img-icon" src={deleteIcon} alt='' />
                 <span>删除</span>
               </div>
               <div onClick={handleCopyClick}>
-                <img className="img-icon" src={require('../image/copy.png')} alt='' />
+                <img className="img-icon" src={copyIcon} alt='' />
                 <span>复制</span>
               </div>
             </div>

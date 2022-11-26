@@ -1,8 +1,8 @@
 import { FC, useContext, useEffect, useMemo, useRef } from 'react'
 import { Form, FormInstance } from 'antd'
 import Sortable from 'sortablejs'
-import { v4 } from 'uuid'
 import { cloneDeep } from 'lodash-es'
+import emptyIcon from '@/assets/page_creat_manage/empty.png'
 import WidgetFormItem from '../form/WidgetFormItem'
 import { DesignContext } from '../store'
 import { ActionType } from '../store/action'
@@ -39,7 +39,7 @@ const WidgetForm: FC<Props> = (props) => {
         },
         onAdd: (event: any) => {
           const { newIndex } = event
-          const key = v4().replaceAll('-', '')
+          const key = `${+new Date()}`
           const widgetFormList = cloneDeep(state.widgetFormList)
           const SortableDataClone = event.originalEvent.dataTransfer.getData('SortableDataClone')
           const SortableDataMove = event.originalEvent.dataTransfer.getData('SortableDataMove')
@@ -147,7 +147,7 @@ const WidgetForm: FC<Props> = (props) => {
               <div ref={sortableGroupDecorator} className="widget-form-list">
                 {!state.widgetFormList.length &&
                 <div className="form-empty">
-                  <img src={require('../image/empty.png')} alt='' />
+                  <img src={emptyIcon} alt='' />
                   从左侧拖拽来添加字段
                 </div>}
                 {state.widgetFormList.map((widgetFormItem) => (

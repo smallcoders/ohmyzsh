@@ -1,10 +1,8 @@
-import React from 'react';
-import { DesignForm } from './form/index'
+import DesignForm from './form/DesignForm'
+import './style/index.less'
 
-const FormCreat: React.FC = () => {
+export default () => {
   return (
     <DesignForm />
   )
-};
-
-export default FormCreat;
+}

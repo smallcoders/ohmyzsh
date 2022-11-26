@@ -2,6 +2,7 @@ import { FC, useState } from 'react'
 import { Form, Input, Button, message } from 'antd'
 import Sortable from 'sortablejs'
 import { clone } from 'lodash-es'
+import dragIcon from '@/assets/page_creat_manage/drag-item.png'
 import { useConfig } from '../hooks/hooks'
 interface Props {
   multiple?: boolean
@@ -57,7 +58,7 @@ const OptionSourceTypeConfig: FC<Props> = (props) => {
               {selectWidgetItem?.config?.options?.map((option: { label: string; value: string }, index: number) => (
                 <li key={index}>
                   <div className="option-item">
-                    <img className="drag-item" src={require('../image/drag-item.png')} alt='' />
+                    <img className="drag-item" src={dragIcon} alt='' />
                     <Input
                       value={option.value}
                       size="small"
@@ -108,7 +109,7 @@ const OptionSourceTypeConfig: FC<Props> = (props) => {
               {selectWidgetItem?.config?.options?.map((option: { label: string; value: string }, index: number) => (
                 <li key={index}>
                   <div className="option-item">
-                    <img className="drag-item" src={require('../image/drag-item.png')} alt='' />
+                    <img className="drag-item" src={dragIcon} alt='' />
                     <Input
                       value={option.value}
                       size="small"

@@ -7,7 +7,7 @@ export const initState: State = {
   globalConfig: {
     pageName: "未命名表单",
     pageDesc: "",
-    pageBg: '1669095307000001',
+    pageBg: 'https://oss.lingyangplat.com/iiep-dev/3e056c6745534b06a782283756666126.png',
     showPageName: true,
     showDesc: true,
     btnText: "提交",

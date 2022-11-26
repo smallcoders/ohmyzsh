@@ -36,11 +36,14 @@ const GenerateForm = forwardRef<GenerateFormRef, GenerateFormProps>((props, ref)
   return (
     <div style={{height: `${height - 315}px`}} className={`preview-modal-box ${isMobile? ' mobile' : ''}`}>
       <div className="preview-body">
+        {
+          isMobile && widgetInfo?.globalConfig?.showPageName && <div className="mobile-title">{ widgetInfo?.globalConfig?.pageName}</div>
+        }
         <div  className="body-title-box">
           {
             widgetInfo?.globalConfig?.pageBg &&
             <img
-              src={`/antelope-manage/common/download/${widgetInfo?.globalConfig?.pageBg}`}
+              src={`${widgetInfo?.globalConfig?.pageBg}`}
               alt=''
               className="page-bg"
             />

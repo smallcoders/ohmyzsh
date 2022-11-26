@@ -1120,6 +1120,7 @@ export const componentsGroupList: ComponentGroup[] = [{
     {
       label: '输入框',
       type: 'Input',
+      errorMsg: '',
       config: {
         allowClear: true,
         maxLength: 35,
@@ -1128,7 +1129,7 @@ export const componentsGroupList: ComponentGroup[] = [{
         paramKey: '',
         desc: '',
         isParam: true,
-        paramDesc: '',
+        paramDesc: '输入框',
         paramType: "string",
         showLabel: true,
       },
@@ -1136,6 +1137,7 @@ export const componentsGroupList: ComponentGroup[] = [{
     {
       label: '多行文本',
       type: 'TextArea',
+      errorMsg: '',
       config: {
         autoSize: true,
         maxLength: 200,
@@ -1144,7 +1146,7 @@ export const componentsGroupList: ComponentGroup[] = [{
         paramKey: '',
         desc: '',
         isParam: true,
-        paramDesc: '',
+        paramDesc: '多行文本',
         paramType: "string",
         showLabel: true,
       },
@@ -1152,6 +1154,7 @@ export const componentsGroupList: ComponentGroup[] = [{
     {
       label: '单选框组',
       type: 'RadioGroup',
+      errorMsg: '',
       config: {
         options: [
           { label: '选项1', value: '选项1' },
@@ -1163,7 +1166,7 @@ export const componentsGroupList: ComponentGroup[] = [{
         paramsKey: '',
         desc: '',
         isParam: true,
-        paramDesc: '',
+        paramDesc: '单选框组',
         paramType: '',
         showLabel: true,
       },
@@ -1171,6 +1174,7 @@ export const componentsGroupList: ComponentGroup[] = [{
     {
       label: '多选框组',
       type: 'CheckboxGroup',
+      errorMsg: '',
       config: {
         options: [
           { label: '选项1', value: '选项1' },
@@ -1183,7 +1187,7 @@ export const componentsGroupList: ComponentGroup[] = [{
         desc: '',
         paramsKey: '',
         isParam: true,
-        paramDesc: '',
+        paramDesc: '多选框组',
         paramType: '',
         showLabel: true,
       },
@@ -1385,6 +1389,7 @@ export const componentsGroupList: ComponentGroup[] = [{
 export type Component = {
   key?: string
   label: string
+  errorMsg?: string
   type: string
   config?: Record<string, any>
   remoteConfig?: Record<string, any>

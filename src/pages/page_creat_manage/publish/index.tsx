@@ -4,8 +4,8 @@ import PreviewModal from '@/pages/page_creat_manage/edit/components/PreviewModal
 import QRCode from 'qrcode.react'
 import { Form, message, Radio, Popover } from 'antd';
 import logo2 from '@/assets/page_creat_manage/logo2.png'
-import successIcon from './img/success.png'
-import previewIcon from './img/preview-icon.png'
+import successIcon from '@/assets/page_creat_manage/success.png'
+import previewIcon from '@/assets/page_creat_manage/preview-icon.png'
 import './index.less'
 import { history } from '@@/core/history';
 import { getTemplatePageInfo } from '@/services/page-creat-manage';
@@ -20,6 +20,14 @@ const publishOptions = [
     value: "对平台成员发布"
   },
 ]
+
+const hostMap = {
+  'http://172.30.33.222': 'http://172.30.33.222',
+  'http://172.30.33.212': 'http://172.30.33.212',
+  'http://10.103.142.216': 'https://preprod.lingyangplat.com',
+  'http://manage.lingyangplat.com': 'https://www.lingyangplat.com',
+  'http://localhost:8000': 'http://172.30.33.222'
+}
 
 export default () => {
   const id = history.location.query?.id as string;
@@ -43,21 +51,32 @@ export default () => {
     }
   }, [])
 
-  const code = <QRCode
-    value={`http://172.30.33.222/template-page?id=${id}&login=${publishType === '公开发布' ? '' : '1'}`}
-    renderAs={'canvas'}
-    size={122}
-    bgColor={'#FFFFFF'}
-    fgColor={'#000000'}
-    level="H"
-    includeMargin={true}
-    imageSettings={{
-      src: logo2,
-      width: 25,
-      height: 25,
-      excavate: true,
-    }}
-  />
+  const getLink = (isMobile: boolean) => {
+    const { origin } = window.location
+    if (isMobile){
+      return `${hostMap[origin]}/antelope/template-page?id=${id}&login=${publishType === '公开发布' ? '' : '1'}`
+    } else {
+      return `${hostMap[origin]}/template-page?id=${id}&login=${publishType === '公开发布' ? '' : '1'}`
+    }
+  }
+
+  const getCode = (isMobile: boolean) => {
+    return <QRCode
+      value={getLink(isMobile)}
+      renderAs={'canvas'}
+      size={122}
+      bgColor={'#FFFFFF'}
+      fgColor={'#000000'}
+      level="H"
+      includeMargin={true}
+      imageSettings={{
+        src: logo2,
+        width: 25,
+        height: 25,
+        excavate: true,
+      }}
+    />
+  }
   return (
     <div className="publish-page">
       <div className="top-header">
@@ -74,7 +93,7 @@ export default () => {
               setPreviewVisible(true)
             }
           }}>
-            <img src={previewIcon} alt='' />预览
+            <img src={previewIcon} alt='' /><span>预览</span>
           </div>
         </div>
         <div className="title">表单发布</div>
@@ -102,22 +121,18 @@ export default () => {
           <div className="link-info">
             <div className="title">移动端</div>
             <div className="link-content">
-              <div className="link">{`http://172.30.33.222/template-page?id=${id}&login=${publishType === '公开发布' ? '' : '1'}`}</div>
-              <div className="btn" onClick={() => {
-                window.open(`http://172.30.33.222/template-page?id=${id}&login=${publishType === '公开发布' ? '' : '1'}`)
-              }}>打开</div>
-              <div className="line" />
+              <div className="link">{getLink(true)}</div>
               <div className="btn" onClick={() => {
                 // eslint-disable-next-line @typescript-eslint/no-unused-expressions
                 navigator &&
                 navigator.clipboard &&
-                navigator.clipboard.writeText(`http://172.30.33.222/template-page?id=${id}&login=${publishType === '公开发布' ? '' : '1'}`).then(() => {
+                navigator.clipboard.writeText(getLink(true)).then(() => {
                   message.success('复制成功');
                 });
               }}>复制</div>
               <div className="line" />
               <div className="btn">
-                <Popover content={code} placement="bottomRight">
+                <Popover trigger="click" content={getCode(true)} placement="bottomRight">
                   二维码
                 </Popover>
               </div>
@@ -126,10 +141,10 @@ export default () => {
           <div className="link-info">
             <div className="title">web端</div>
             <div className="link-content">
-              <div className="link">{`http://172.30.33.222/template-page?id=${id}&login=${publishType === '公开发布' ? '' : '1'}`}</div>
+              <div className="link">{getLink(false)}</div>
               <div className="btn"
                 onClick={() => {
-                  window.open(`http://172.30.33.222/template-page?id=${id}&login=${publishType === '公开发布' ? '' : '1'}`)
+                  window.open(getLink(false))
                 }}
               >
                 打开
@@ -139,13 +154,13 @@ export default () => {
                 // eslint-disable-next-line @typescript-eslint/no-unused-expressions
                 navigator &&
                 navigator.clipboard &&
-                navigator.clipboard.writeText(`http://172.30.33.222/template-page?id=${id}&login=${publishType === '公开发布' ? '' : '1'}`).then(() => {
+                navigator.clipboard.writeText(getLink(false)).then(() => {
                   message.success('复制成功');
                 });
               }}>复制</div>
               <div className="line" />
               <div className="btn">
-                <Popover content={code} placement="bottomRight">
+                <Popover trigger="click" content={getCode(false)} placement="bottomRight">
                   二维码
                 </Popover>
               </div>

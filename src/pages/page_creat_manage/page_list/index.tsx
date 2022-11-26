@@ -120,7 +120,7 @@ export default () => {
             okText: '我知道了',
           })
         } else {
-          history.push(`${routeName.PAGE_CREAT_MANAGE_PUBLISH}?id=${record.tmpId}`);
+          history.push(`${routeName.PAGE_CREAT_MANAGE_PAGE_DATA}?tmpName=${encodeURIComponent(record.tmpName)}&id=${record.tmpId}`);
         }
       } else {
         antdMessage.error(`${res.message}`);

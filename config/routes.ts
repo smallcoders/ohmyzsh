@@ -112,10 +112,10 @@
   RECOMMENDED_HOT_WORDS_INDEX: '/recommended/hot_words/index',
 
   // 运营模板
-  PAGE_CREAT_MANAGE_EDIT: "/system-config/page_creat_manage/edit",
-  PAGE_CREAT_MANAGE_PUBLISH: "/system-config/page_creat_manage/publish",
-  PAGE_CREAT_MANAGE_PAGE_LIST: "/system-config/page_creat_manage/page_list",
-  PAGE_CREAT_MANAGE_PAGE_DATA: "/system-config/page_creat_manage/page_data"
+  PAGE_CREAT_MANAGE_EDIT: "/system-config/page_creat_manage/manage/edit",
+  PAGE_CREAT_MANAGE_PUBLISH: "/system-config/page_creat_manage/manage/publish",
+  PAGE_CREAT_MANAGE_PAGE_LIST: "/system-config/page_creat_manage/manage",
+  PAGE_CREAT_MANAGE_PAGE_DATA: "/system-config/page_creat_manage/manage/page_data"
 };
 
 export default [
@@ -1093,24 +1093,37 @@ export default [
         component: './account',
       },
       {
-        path: "/system-config/page_creat_manage/edit",
-        name: '页面编辑',
-        hideInMenu: true,
-        component: './page_creat_manage/edit/index',
-        layout: false,
-      },
-      {
-        path: "/system-config/page_creat_manage/publish",
-        name: '发布',
-        hideInMenu: true,
-        component: './page_creat_manage/publish/index',
-        layout: false,
-      },
-      {
-        path: "/system-config/page_creat_manage/page_list",
+        path: routeName.PAGE_CREAT_MANAGE_PAGE_LIST,
         name: '运营模版配置',
-        component: './page_creat_manage/page_list/index',
-      }
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.PAGE_CREAT_MANAGE_PAGE_LIST,
+            name: '运营模版配置',
+            component: './page_creat_manage/page_list/index',
+          },
+          {
+            path: routeName.PAGE_CREAT_MANAGE_PUBLISH,
+            name: '发布',
+            hideInMenu: true,
+            component: './page_creat_manage/publish/index',
+            layout: false,
+          },
+          {
+            path: routeName.PAGE_CREAT_MANAGE_PAGE_DATA,
+            name: '数据管理',
+            hideInMenu: true,
+            component: './page_creat_manage/page_data/index',
+          },
+          {
+            path: routeName.PAGE_CREAT_MANAGE_EDIT,
+            name: '页面编辑',
+            hideInMenu: true,
+            component: './page_creat_manage/edit/index',
+            layout: false,
+          },
+        ]
+      },
     ],
   },
   // {
