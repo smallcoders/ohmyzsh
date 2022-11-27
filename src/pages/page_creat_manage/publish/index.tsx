@@ -55,29 +55,50 @@ export default () => {
   const getLink = (isMobile: boolean) => {
     const { origin } = window.location
     if (isMobile){
-      return `${hostMap[origin]}/antelope/template-page?id=${id}&login=${publishType === '公开发布' ? '' : '1'}`
+      return `${hostMap[origin]}/antelope/template-page?isApp=false&id=${id}&login=${publishType === '公开发布' ? '' : '1'}`
     } else {
       return `${hostMap[origin]}/template-page?id=${id}&login=${publishType === '公开发布' ? '' : '1'}`
     }
   }
 
   const getCode = (isMobile: boolean) => {
-    return <QRCode
-      value={getLink(isMobile)}
-      renderAs={'canvas'}
-      size={122}
-      bgColor={'#FFFFFF'}
-      fgColor={'#000000'}
-      level="H"
-      includeMargin={true}
-      imageSettings={{
-        src: logo2,
-        width: 25,
-        height: 25,
-        excavate: true,
-      }}
-    />
+    return (
+      <div>
+        <QRCode
+          value={getLink(isMobile)}
+          renderAs={'canvas'}
+          size={122}
+          bgColor={'#FFFFFF'}
+          fgColor={'#000000'}
+          level="H"
+          id="canvas"
+          includeMargin={true}
+          imageSettings={{
+            src: logo2,
+            width: 25,
+            height: 25,
+            excavate: true,
+          }}
+        />
+        <div className="download-btn"
+             onClick={() => {
+               const canvas: any = document.querySelector('#canvas');
+               // 创建一个 a 标签，并设置 href 和 download 属性
+               const el = document.createElement('a');
+               // 设置 href 为图片经过 base64 编码后的字符串，默认为 png 格式
+               el.href = canvas.toDataURL();
+               el.download = `${templateName}-${publishType}-${isMobile? '移动端': 'web端'}`;
+               // 创建一个点击事件并对 a 标签进行触发
+               const event = new MouseEvent('click');
+               el.dispatchEvent(event);
+             }}
+        >
+          下载
+        </div>
+      </div>
+    )
   }
+
   return (
     <div className="publish-page">
       <div className="top-header">
@@ -146,9 +167,9 @@ export default () => {
             <div className="link-content">
               <div className="link" id="pc-link">{getLink(false)}</div>
               <div className="btn"
-                onClick={() => {
-                  window.open(getLink(false))
-                }}
+                   onClick={() => {
+                     window.open(getLink(false))
+                   }}
               >
                 打开
               </div>
