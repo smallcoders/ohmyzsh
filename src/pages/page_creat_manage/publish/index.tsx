@@ -26,6 +26,7 @@ const hostMap = {
   'http://172.30.33.212': 'http://172.30.33.212',
   'http://10.103.142.216': 'https://preprod.lingyangplat.com',
   'http://manage.lingyangplat.com': 'https://www.lingyangplat.com',
+  'https://manage.lingyangplat.com': 'https://www.lingyangplat.com',
   'http://localhost:8000': 'http://172.30.33.222'
 }
 

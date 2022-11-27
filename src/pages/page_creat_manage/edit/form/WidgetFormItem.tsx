@@ -289,7 +289,9 @@ const WidgetFormItem: FC<Props> = (props) => {
             }
             <Form.Item>
               <Checkbox.Group
-                options={config?.options}
+                options={config?.options.map((optionItem: {label: string, value: string}, index: number) => {
+                  return {label: optionItem.label, value: `${optionItem.value}_${index}`}
+                })}
                 value={config?.defaultValue}
               />
             </Form.Item>
@@ -330,7 +332,9 @@ const WidgetFormItem: FC<Props> = (props) => {
             }
             <Form.Item>
               <Radio.Group
-                options={config?.options}
+                options={config?.options.map((optionItem: {label: string, value: string}, index: number) => {
+                  return {label: optionItem.label, value: `${optionItem.value}_${index}`}
+                })}
                 optionType={config?.optionType}
                 value={config?.defaultValue}
               />
