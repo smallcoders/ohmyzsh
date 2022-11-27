@@ -144,7 +144,6 @@ export default () => {
             <div className="title">移动端</div>
             <div className="link-content">
               <div className="link" id="mobile-link">{getLink(true)}</div>
-              <a></a>
               <div className="btn" onClick={() => {
                 const range = document.createRange();
                 range.selectNode(document.getElementById('mobile-link')!);
