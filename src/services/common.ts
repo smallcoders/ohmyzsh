@@ -19,6 +19,15 @@ export const httpUploadWithDetail = (
   });
 };
 
+export const httpUpload = (
+  data: FormData,
+) => {
+  return request(`/antelope-manage/common/upload`, {
+    method: 'post',
+    data,
+  });
+};
+
 /**
  * 下载
  */
@@ -88,7 +97,7 @@ export async function listAllAreaCode() {
  * @param data FormData
  * @returns
  */
-export async function uploadFile(data) {
+export async function uploadFile(data:any) {
   return request<Common.ResultCode & { result: { path: string } }>(
     `/antelope-manage/common/upload/record`,
     {

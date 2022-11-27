@@ -24,7 +24,13 @@
   DEMAND_MANAGEMENT: '/service-config/requirement-management', // 需求管理
   DEMAND_MANAGEMENT_INDEX: '/supply-demand-setting/demand-manage/index', // 需求管理
   DEMAND_MANAGEMENT_DETAIL: '/supply-demand-setting/demand-manage/detail', // 需求管理详情
+
+  OPERATION_ACTIVITY_PARAMETER:'/operation-activity/parameter-setting/index',//运营活动参数设置
+  OPERATION_ACTIVITY_LINK:'/operation-activity/link-setting/index',//运营活动链接设置
+
+  DEMAND_MANAGEMENT_FEEDBACK: '/supply-demand-setting/demand-manage/feedback', // 需求管理详情
   ACCOUNT: '/system-config/account', // 账号管理
+  DEMAND_CONTACTS: '/supply-demand-setting/demand_contacts/index', // 需求联系人
 
   CREATIVE_VERIFY: '/verify-agency/creative-verify', // 科技成果审核
   CREATIVE_VERIFY_INDEX: '/verify-agency/creative-verify/index', // 科技成果审核
@@ -110,6 +116,27 @@
   // 推荐管理
   RECOMMENDED_HOT_WORDS: '/recommended/hot_words',
   RECOMMENDED_HOT_WORDS_INDEX: '/recommended/hot_words/index',
+
+  // 商品审核
+  GOODS_VERIFY: '/verify-agency/goods_verify',
+  GOODS_VERIFY_INDEX: '/verify-agency/goods_verify/index',
+  GOODS_VERIFY_DETAIL: '/verify-agency/goods_verify/detail',
+
+  // 商品管理---上架管理
+  SHELVES_MANAGE: '/goods-manage/shelves_manage',
+  SHELVES_MANAGE_INDEX: '/goods-manage/shelves_manage/index',
+  SHELVES_MANAGE_CREATE: '/goods-manage/shelves_manage/create',
+  SHELVES_MANAGE_DETAIL: '/goods-manage/shelves_manage/detail',
+
+  //商品管理---订单信息
+  ORDER_MESSAGE: '/goods-manage/order_manage',
+  ORDER_MESSAGE_INDEX: '/goods-manage/order_manage/index',
+  ORDER_MESSAGE_DETAIL: '/goods-manage/order_manage/detail',
+
+  //活动专题
+  ACTIVITY_PROJECT: '/service-config/activity_project',
+  ACTIVITY_PROJECT_INDEX: '/service-config/activity_project/index',
+  ACTIVITY_PROJECT_DETAIL: '/service-config/activity_project/detail',
 
   // 运营模板
   PAGE_CREAT_MANAGE_EDIT: "/system-config/page_creat_manage/manage/edit",
@@ -431,6 +458,89 @@ export default [
           },
         ],
       },
+      {
+        path: routeName.ACTIVITY_PROJECT,
+        name: '活动专题',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.ACTIVITY_PROJECT,
+            redirect: routeName.ACTIVITY_PROJECT_INDEX,
+          },
+          {
+            path: routeName.ACTIVITY_PROJECT_INDEX,
+            name: '活动专题',
+            hideInBreadcrumb: true,
+            component: './service_config/activity_project',
+          },
+          {
+            path: routeName.ACTIVITY_PROJECT_DETAIL,
+            name: '活动专题详情',
+            component: './service_config/activity_project/detail',
+          },
+        ],
+      },
+    ],
+  },
+  {
+    path: '/goods-manage',
+    name: '数字化商品管理',
+    icon: 'account-book',
+    access: 'goodsManage',
+    routes: [
+      {
+        path: '/goods-manage',
+        redirect: routeName.SHELVES_MANAGE,
+      },
+      {
+        path: routeName.SHELVES_MANAGE,
+        name: '上架管理',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.SHELVES_MANAGE,
+            redirect: routeName.SHELVES_MANAGE_INDEX,
+          },
+          {
+            path: routeName.SHELVES_MANAGE_INDEX,
+            hideInBreadcrumb: true,
+            name: '上架管理',
+            component: './goods_manage/shelves_manage/index',
+          },
+          {
+            path: routeName.SHELVES_MANAGE_CREATE,
+            name: '活动新增',
+            component: './goods_manage/shelves_manage/create',
+          },
+          {
+            path: routeName.SHELVES_MANAGE_DETAIL,
+            name: '活动详情',
+            component: './goods_manage/shelves_manage/detail',
+          },
+        ],
+      },
+      {
+        path: routeName.ORDER_MESSAGE,
+        name: '订单信息',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.ORDER_MESSAGE,
+            redirect: routeName.ORDER_MESSAGE_INDEX,
+          },
+          {
+            path: routeName.ORDER_MESSAGE_INDEX,
+            name: '订单信息',
+            hideInBreadcrumb: true,
+            component: './goods_manage/order_message/index',
+          },
+          {
+            path: routeName.ORDER_MESSAGE_DETAIL,
+            name: '订单详情',
+            component: './goods_manage/order_message/detail',
+          },
+        ],
+      },
     ],
   },
   {
@@ -455,9 +565,42 @@ export default [
         component: './supply_demand_setting/demand_manage/detail/index',
       },
       {
+        path: routeName.DEMAND_MANAGEMENT_FEEDBACK,
+        hideInMenu: true,
+        name: '需求反馈',
+        component: './supply_demand_setting/docking_manage/components/feedback',
+      },
+      {
         path: '/supply-demand-setting/docking-manage/index',
         name: '供需对接管理',
         component: './supply_demand_setting/docking_manage/index',
+      },
+      {
+        path: routeName.DEMAND_CONTACTS,
+        name: '需求联系人管理',
+        component: './supply_demand_setting/demand_contacts/index',
+      },
+    ],
+  },
+  {
+    path: '/operation-activity',
+    name: '运营活动管理',
+    icon: 'unordered-list',
+    access: 'OPERATION_ACTIVITY',
+    routes: [
+      {
+        path: '/operation-activity',
+        redirect: routeName.OPERATION_ACTIVITY_PARAMETER,
+      },
+      {
+        path: routeName.OPERATION_ACTIVITY_PARAMETER,
+        name: '参数配置',
+        component: './operation_activity/parameter-setting/index',
+      },
+      {
+        path: routeName.OPERATION_ACTIVITY_LINK,
+        name: '链接配置',
+        component: './operation_activity/link-setting/index',
       },
     ],
   },
@@ -998,6 +1141,28 @@ export default [
             path: routeName.LEAVE_WORD_VERIFY_DETAIL,
             name: '留言审核详情',
             component: './verify_agency/leave_word_verify/components/detail',
+          },
+        ],
+      },
+      {
+        path: routeName.GOODS_VERIFY,
+        name: '数字化商品审核',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.GOODS_VERIFY,
+            redirect: routeName.GOODS_VERIFY_INDEX,
+          },
+          {
+            path: routeName.GOODS_VERIFY_INDEX,
+            name: '数字化商品审核',
+            hideInBreadcrumb: true,
+            component: './verify_agency/goods_verify',
+          },
+          {
+            path: routeName.GOODS_VERIFY_DETAIL,
+            name: '数字化商品详情',
+            component: './verify_agency/goods_verify/detail',
           },
         ],
       },

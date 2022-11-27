@@ -109,8 +109,8 @@ export default (props: {
     <div style={{ paddingLeft: 100 }}>
       {props.before && props.before(list && list.length > 0 && list[0].state)}
       <VerifyStepsDetail list={list} />
-      <div style={{ display: 'flex', gap: 20, padding: 20 }}>
-        {list && list.length > 0 && list[0].state === Common.AuditStatus.AUDITING && (
+      {list && list.length > 0 && list[0].state === Common.AuditStatus.AUDITING && (
+        <div style={{ display: 'flex', gap: 20, padding: 20 }}>
           <Button
             loading={loading}
             type="primary"
@@ -119,11 +119,11 @@ export default (props: {
           >
             提交
           </Button>
-        )}
-        <Button className={'content-btns-back-btn'} onClick={onBack}>
-          返回
-        </Button>
-      </div>
+          <Button className={'content-btns-back-btn'} onClick={onBack}>
+            返回
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

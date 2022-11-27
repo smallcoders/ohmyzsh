@@ -7,15 +7,16 @@ import { useEffect, useState } from 'react';
 
 type Props = {
   form?: any;
+  mustFillIn?: boolean; //拒绝理由是否必填
 };
 
-export default ({ form }: Props) => {
+export default ({ form, mustFillIn = false }: Props) => {
   const [checkNick, setCheckNick] = useState(false);
   useEffect(() => {
     form.validateFields(['reason']);
   }, [checkNick, form]);
   const onRadioChange = (e: any) => {
-    console.log(e.target, '<-----e.target');
+    // console.log(e.target, '<-----e.target');
     setCheckNick(!e.target.value);
   };
   return (
@@ -41,14 +42,15 @@ export default ({ form }: Props) => {
       </Form.Item>
 
       <Form.Item
-        name={'reason'} 
-        // rules={[
-        //   {
-        //     required: checkNick,
-        //     message: '请输入意见说明',
-        //   },
-        // ]}
-        label="意见说明">
+        name={'reason'}
+        rules={[
+          {
+            required: mustFillIn && checkNick,
+            message: '请输入意见说明',
+          },
+        ]}
+        label="意见说明"
+      >
         <Input.TextArea
           autoSize={false}
           className="message-modal-textarea"

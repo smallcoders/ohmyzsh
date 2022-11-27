@@ -21,3 +21,67 @@ export const getUrl = (prefixUrl: string, params: any) => {
   //看原始url地址中开头是否带?，然后拼接处理好的参数
   return prefixUrl + (prefixUrl.indexOf('?') < 0 ? '?' : '') + getParam(params);
 };
+// 两数相加
+export function numadd(a: any, b: any | number): any {
+  let c, d, e;
+  try {
+    c = a.toString().split('.')[1].length;
+  } catch (f) {
+    c = 0;
+  }
+  try {
+    d = b.toString().split('.')[1].length;
+  } catch (f) {
+    d = 0;
+  }
+  return (e = Math.pow(10, Math.max(c, d))), (nummul(a, e) + nummul(b, e)) / e;
+}
+
+//两数相减
+export function numsub(a: any, b: any | number): any {
+  let c, d, e;
+  try {
+    c = a.toString().split('.')[1].length;
+  } catch (f) {
+    c = 0;
+  }
+  try {
+    d = b.toString().split('.')[1].length;
+  } catch (f) {
+    d = 0;
+  }
+  return (e = Math.pow(10, Math.max(c, d))), (nummul(a, e) - nummul(b, e)) / e;
+}
+
+//两数相乘
+export function nummul(a: any, b: any | number): any {
+  let c = 0;
+  const d = a.toString(),
+    e = b.toString();
+  try {
+    c += d.split('.')[1].length;
+  } catch (f) {}
+  try {
+    c += e.split('.')[1].length;
+  } catch (f) {}
+  return (Number(d.replace('.', '')) * Number(e.replace('.', ''))) / Math.pow(10, c);
+}
+
+//两数除
+export function numdiv(a: any, b: any | number): any {
+  let c,
+    d,
+    e = 0,
+    f = 0;
+  try {
+    e = a.toString().split('.')[1].length;
+  } catch (g) {}
+  try {
+    f = b.toString().split('.')[1].length;
+  } catch (g) {}
+  return (
+    (c = Number(a.toString().replace('.', ''))),
+    (d = Number(b.toString().replace('.', ''))),
+    nummul(c / d, Math.pow(10, f - e))
+  );
+}

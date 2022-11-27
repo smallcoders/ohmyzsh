@@ -34,13 +34,20 @@ const UploadForm = (
 
   const beforeUpload = (file: RcFile, files: RcFile[]) => {
     if (props.beforeUpload) {
-      props.beforeUpload(file, files);
-      return;
+      return props.beforeUpload(file, files);
+    }
+    if (props.maxCount) {
+      const index = files?.indexOf(file) + 1
+
+      if ((index + (props?.value?.length || 0)) > props.maxCount) {
+        message.error(`上传文件数目不得超过${props.maxCount}个`);
+        return false;
+      }
     }
     if (props.maxSize) {
       const isLtLimit = file.size / 1024 / 1024 < props.maxSize;
       if (!isLtLimit) {
-        message.error(`上传的图片大小不得超过${props.maxSize}M`);
+        message.error(`上传的文件大小不得超过${props.maxSize}M`);
         return Upload.LIST_IGNORE;
       }
     }
@@ -65,6 +72,8 @@ const UploadForm = (
     props.onChange?.(list as any);
   };
 
+
+  const isOpen = props?.maxCount ? (props.value?.length || 0) < props?.maxCount : true
   return (
     <>
       {props.tooltip}
@@ -76,6 +85,7 @@ const UploadForm = (
         onChange={handleChange}
         beforeUpload={beforeUpload}
         onRemove={onRemove}
+        openFileDialogOnClick={isOpen}
       >
         {props.children}
       </Upload>

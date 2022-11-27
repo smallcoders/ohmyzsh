@@ -7,6 +7,7 @@ import {
   Col,
   message as antdMessage,
   Space,
+  TreeSelect,
 } from 'antd';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
@@ -18,18 +19,18 @@ import { history } from 'umi';
 import { routeName } from '@/../config/routes';
 import {
   cancelAppoint,
+  getClaimFollow,
   getDemandPage,
 } from '@/services/creative-demand';
 import RefineModal from './refine';
 import AssignModal from './assign';
-import FeedBackModal from './feedback';
 import DockingManage from '@/types/docking-manage.d';
 const sc = scopedClasses('user-config-logout-verify');
 
 
 
-export default (props: { gid: any; }) => {
-  const { gid } = props
+export default (props: { gid: any; demandTypes: any[], area: any[] }) => {
+  const { gid, demandTypes, area } = props
   const [dataSource, setDataSource] = useState<any[]>([]);
   const [searchContent, setSearChContent] = useState<any>({});
   const formLayout = {
@@ -43,7 +44,7 @@ export default (props: { gid: any; }) => {
     totalCount: 0,
     pageTotal: 0,
   });
-  const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
+  const getPage = async (pageIndex = pageInfo.pageIndex, pageSize = pageInfo.pageSize) => {
     try {
       const { result, totalCount, pageTotal, code, message } = await getDemandPage({
         pageIndex,
@@ -66,14 +67,13 @@ export default (props: { gid: any; }) => {
 
   const [refineVisible, setRefineVisible] = useState<boolean>(false);
   const [assignVisible, setAssignVisible] = useState<boolean>(false);
-  const [feedbackVisible, setFeedbackVisible] = useState<boolean>(false);
   const [record, setRecord] = useState<any>({})
   const useModal = (): React.ReactNode => {
     return (<>
       <RefineModal record={record} visible={refineVisible} setVisible={(b, isRefresh) => {
         setRefineVisible(b)
         setRecord({})
-        isRefresh&&getPage()
+        isRefresh && getPage()
       }} />
       <AssignModal record={record} visible={assignVisible}
         setVisible={(b, isRefresh) => {
@@ -82,16 +82,16 @@ export default (props: { gid: any; }) => {
           isRefresh && getPage()
         }}
       />
-      <FeedBackModal record={record} visible={feedbackVisible} setVisible={(b, isRefresh) => {
-        setFeedbackVisible(b)
-        setRecord({})
-        isRefresh&&getPage()
-      }} />
     </>
     );
   };
 
   const methodObj = {
+    follow: (record: any) => {
+      window.open(
+        `${routeName.DEMAND_MANAGEMENT_DETAIL}?id=${record.id}&isEdit=1`,
+      );
+    },
     refine: async (record: any) => {
       setRefineVisible(true)
       setRecord({ ...record, editType: 'add' })
@@ -101,12 +101,10 @@ export default (props: { gid: any; }) => {
       setRecord({ ...record, editType: 'edit' })
     },
     feedback: async (record: any) => {
-      setRecord(record)
-      setFeedbackVisible(true)
+      window.open(`${routeName.DEMAND_MANAGEMENT_FEEDBACK}?id=${record.id}&name=${record.name}`);
     },
     editFeedback: async (record: any) => {
-      setRecord(record)
-      setFeedbackVisible(true)
+      window.open(`${routeName.DEMAND_MANAGEMENT_FEEDBACK}?id=${record.id}&name=${record.name}`);
     },
     assign: async (record: any) => {
       setRecord(record)
@@ -143,13 +141,20 @@ export default (props: { gid: any; }) => {
       render: (_: string, _record: any) => (
         <a
           onClick={() => {
-            history.push(`${routeName.DEMAND_MANAGEMENT_DETAIL}?id=${_record.id}`);
+            window.open(`${routeName.DEMAND_MANAGEMENT_DETAIL}?id=${_record.id}`);
           }}
         >
           {_}
         </a>
       ),
       isEllipsis: true,
+    },
+    {
+      title: '需求类型',
+      dataIndex: 'typeNameList',
+      isEllipsis: true,
+      render: (item?: string[]) => item ? item.join('、') : '--',
+      width: 300,
     },
     {
       title: '所属企业',
@@ -170,17 +175,44 @@ export default (props: { gid: any; }) => {
       width: 150,
     },
     {
-      title: '需求状态',
-      dataIndex: 'claimState',
-      render: (_: string) => DockingManage.demandType[_] || '--',
+      title: '需求地区',
+      dataIndex: 'areaNameList',
+      isEllipsis: true,
+      render: (item?: string[]) => item ? item.join('、') : '--',
       width: 150,
     },
+    {
+      title: '需求状态',
+      dataIndex: 'claimState',
+      render: (item: string) => DockingManage.demandType[item] || '--',
+      width: 150,
+    },
+    {
+      title: '需求认领人',
+      dataIndex: 'claimName',
+      isEllipsis: true,
+      width: 150,
+    },
+
     {
       title: '指派情况',
       dataIndex: 'appointOrgName',
       render: (appointOrgName: string) => appointOrgName || '--',
 
-      width: 80,
+      width: 180,
+    },
+    {
+      title: '跟进次数',
+      dataIndex: 'demandConnectNum',
+      isEllipsis: true,
+      width: 150,
+    },
+    {
+      title: '最近跟进时间',
+      dataIndex: 'demandConnectTime',
+      render: (item: string) => item || '--',
+      isEllipsis: true,
+      width: 300,
     },
     {
       title: '操作',
@@ -208,8 +240,27 @@ export default (props: { gid: any; }) => {
   ];
 
   useEffect(() => {
-    gid && getPage();
+    if (gid) {
+      getPage()
+      getClaimUser()
+    }
   }, [searchContent, gid]);
+
+  const [users, setUsers] = useState<any[]>([])
+
+  const getClaimUser = async () => {
+    try {
+      const res = await getClaimFollow(gid)
+      if (res?.code === 0) {
+        setUsers(res?.result);
+      } else {
+        throw new Error(res?.message);
+      }
+    } catch (error) {
+      antdMessage.error(`请求失败，原因:{${error}}`);
+    }
+
+  }
 
   const useSearchNode = (): React.ReactNode => {
     const [searchForm] = Form.useForm();
@@ -230,8 +281,51 @@ export default (props: { gid: any; }) => {
               </Form.Item>
             </Col>
             <Col span={8}>
+              <Form.Item name="type" label="需求类型">
+                <TreeSelect
+                  treeNodeFilterProp={'name'}
+                  showSearch
+                  style={{ width: '100%' }}
+                  dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                  placeholder="请选择"
+                  allowClear
+                  treeDefaultExpandAll
+                  treeData={demandTypes}
+                  fieldNames={{ children: 'nodes', value: 'id', label: 'name' }}
+                />
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              <Form.Item name="areaCode" label="需求地区">
+                <TreeSelect
+                  treeNodeFilterProp={'name'}
+                  showSearch
+                  style={{ width: '100%' }}
+                  dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                  placeholder="请选择"
+                  allowClear
+                  treeDefaultExpandAll
+                  treeData={area}
+                  fieldNames={{ children: 'nodes', value: 'code', label: 'name' }}
+                />
+              </Form.Item>
+            </Col>
+            <Col span={8}>
               <Form.Item name="appointOrgName" label="需求指派情况">
                 <Input placeholder="请输入" />
+              </Form.Item>
+            </Col>
+
+
+            <Col span={8}>
+              <Form.Item name="claimId" label="需求认领人">
+                <Select placeholder="请选择" allowClear>
+                  {
+                    users?.map(p => {
+                      return <Select.Option value={p?.claimUserId}>{p?.claimName}</Select.Option>
+                    })
+                  }
+                </Select>
               </Form.Item>
             </Col>
             <Col offset={4} span={4}>
@@ -240,6 +334,12 @@ export default (props: { gid: any; }) => {
                 type="primary"
                 key="primary1"
                 onClick={() => {
+                  setPageInfo({
+                    pageIndex: 1,
+                    pageSize: 10,
+                    totalCount: 0,
+                    pageTotal: 0
+                  });
                   const search = searchForm.getFieldsValue();
                   setSearChContent(search);
                 }}
@@ -269,7 +369,7 @@ export default (props: { gid: any; }) => {
       <div className={sc('container-table-body')}>
         <SelfTable
           bordered
-          scroll={{ x: 1480 }}
+          scroll={{ x: 2510 }}
           columns={columns}
           rowKey={'id'}
           dataSource={dataSource}

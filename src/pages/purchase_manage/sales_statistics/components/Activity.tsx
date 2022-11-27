@@ -120,7 +120,7 @@ export default () => {
             href="#"
             onClick={(e) => {
               e.preventDefault(); 
-              history.push(`${routeName.SALES_STATISTICS_DETAIL}?id=${_record.id}`)
+              window.open(`${routeName.SALES_STATISTICS_DETAIL}?id=${_record.id}`)
             }}
           >
             查看详情

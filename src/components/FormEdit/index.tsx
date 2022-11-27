@@ -5,7 +5,11 @@ import { CKEditor } from '@ckeditor/ckeditor5-react';
 import { message } from 'antd';
 import { useState } from 'react';
 
-export default (props: { value?: string; width?: number; onChange?: (value: string) => void }) => {
+export default (props: {
+  value?: string;
+  width?: number | string;
+  onChange?: (value: string) => void;
+}) => {
   const [contentHtml, setContentHtml] = useState<string | undefined>();
 
   const [editor, setEditor] = useState<any>(null);

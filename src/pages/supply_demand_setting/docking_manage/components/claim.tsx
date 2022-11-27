@@ -8,8 +8,7 @@ import {
   DatePicker,
   message as antdMessage,
   Space,
-  Popconfirm,
-  Tooltip,
+  TreeSelect,
 } from 'antd';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
@@ -17,16 +16,16 @@ import React, { useEffect, useState } from 'react';
 import type Common from '@/types/common';
 import moment from 'moment';
 import SelfTable from '@/components/self_table';
-import { history } from 'umi';
 import { routeName } from '@/../config/routes';
 import type ConsultRecord from '@/types/expert_manage/consult-record';
 import { cancelClaimDemand, claimDemand, getClaimUsers, getDemandPage } from '@/services/creative-demand';
 import DockingManage from '@/types/docking-manage.d';
+import { history } from 'umi';
 const { RangePicker } = DatePicker
 
 const sc = scopedClasses('user-config-logout-verify');
 
-export default () => {
+export default ({ demandTypes, area }: { demandTypes: any[], area: any[] }) => {
   const [dataSource, setDataSource] = useState<DockingManage.Content[]>([]);
   const [searchContent, setSearChContent] = useState<DockingManage.searchContent>({});
 
@@ -42,7 +41,7 @@ export default () => {
     pageTotal: 0,
   });
 
-  const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
+  const getPage = async (pageIndex = pageInfo.pageIndex, pageSize = pageInfo.pageSize) => {
     try {
       const { result, totalCount, pageTotal, code, message } = await getDemandPage({
         pageIndex,
@@ -105,11 +104,11 @@ export default () => {
     {
       title: '需求名称',
       dataIndex: 'name',
-      width: 150,
+      width: 200,
       render: (_: string, _record: any) => (
         <a
           onClick={() => {
-            history.push(`${routeName.DEMAND_MANAGEMENT_DETAIL}?id=${_record.id}`);
+            window.open(`${routeName.DEMAND_MANAGEMENT_DETAIL}?id=${_record.id}`);
           }}
         >
           {_}
@@ -118,10 +117,24 @@ export default () => {
       isEllipsis: true,
     },
     {
+      title: '需求类型',
+      isEllipsis: true,
+      dataIndex: 'typeNameList',
+      render: (item?: string[]) => item ? item.join('、') : '--',
+      width: 300,
+    },
+    {
       title: '所属企业',
       dataIndex: 'orgName',
       isEllipsis: true,
       width: 200,
+    },
+    {
+      title: '需求地区',
+      dataIndex: 'areaNameList',
+      isEllipsis: true,
+      render: (item?: string[]) => item ? item.join('、') : '--',
+      width: 150,
     },
     {
       title: '需求状态',
@@ -142,9 +155,9 @@ export default () => {
       title: '需求认领人',
       dataIndex: 'claimName',
       render: (_: string) => _ || '--',
-      width: 100,
-
+      width: 150,
     },
+
     {
       title: '操作',
       width: 200,
@@ -197,8 +210,39 @@ export default () => {
               </Form.Item>
             </Col>
             <Col span={8}>
+              <Form.Item name="type" label="需求类型">
+                <TreeSelect
+                  treeNodeFilterProp={'name'}
+                  showSearch
+                  style={{ width: '100%' }}
+                  dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                  placeholder="请选择"
+                  allowClear
+                  treeDefaultExpandAll
+                  treeData={demandTypes}
+                  fieldNames={{ children: 'nodes', value: 'id', label: 'name' }}
+                />
+              </Form.Item>
+            </Col>
+
+            <Col span={8}>
               <Form.Item name="orgName" label="所属企业">
                 <Input placeholder="请输入" />
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              <Form.Item name="areaCode" label="需求地区">
+                <TreeSelect
+                  treeNodeFilterProp={'name'}
+                  showSearch
+                  style={{ width: '100%' }}
+                  dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                  placeholder="请选择"
+                  allowClear
+                  treeDefaultExpandAll
+                  treeData={area}
+                  fieldNames={{ children: 'nodes', value: 'code', label: 'name' }}
+                />
               </Form.Item>
             </Col>
             <Col span={8}>
@@ -209,8 +253,7 @@ export default () => {
                 </Select>
               </Form.Item>
             </Col>
-          </Row>
-          <Row>
+
             <Col span={8}>
               <Form.Item name="time" label="需求发布时间">
                 <RangePicker allowClear showTime />
@@ -230,12 +273,20 @@ export default () => {
                 </Select>
               </Form.Item>
             </Col>
-            <Col offset={4} span={4}>
+    
+
+            <Col offset={12} span={4} >
               <Button
                 style={{ marginRight: 20 }}
                 type="primary"
                 key="search"
                 onClick={() => {
+                  setPageInfo({
+                    pageIndex: 1,
+                    pageSize: 10,
+                    totalCount: 0,
+                    pageTotal: 0
+                  });
                   const search = searchForm.getFieldsValue();
                   if (search.time) {
                     search.publishStartTime = moment(search.time[0]).format('YYYY-MM-DD HH:mm:ss');
@@ -269,7 +320,7 @@ export default () => {
       <div className={sc('container-table-body')}>
         <SelfTable
           bordered
-          scroll={{ x: 1280 }}
+          scroll={{ x: 1530 }}
           columns={columns}
           rowKey={'id'}
           dataSource={dataSource}
