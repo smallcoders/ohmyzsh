@@ -22,8 +22,8 @@ const publishOptions = [
 ]
 
 const hostMap = {
-  'http://172.30.33.222': 'http://172.30.33.222',
-  'http://172.30.33.212': 'http://172.30.33.212',
+  'http://172.30.33.222:10086': 'http://172.30.33.222',
+  'http://172.30.33.212:10086': 'http://172.30.33.212',
   'http://10.103.142.216': 'https://preprod.lingyangplat.com',
   'http://manage.lingyangplat.com': 'https://www.lingyangplat.com',
   'https://manage.lingyangplat.com': 'https://www.lingyangplat.com',
