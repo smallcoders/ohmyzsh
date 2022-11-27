@@ -16,7 +16,10 @@ import {
   updateAdminAccount,
 } from '@/services/admin-account-distributor';
 import { getOrgTypeOptions } from '@/services/org-type-manage';
-const sc = scopedClasses('user-config-admin-account-distributor');
+import { Access, useAccess } from 'umi';
+const sc = scopedClasses('user-config-admin-account-distributor');enum Edge {
+  HOME = 0,
+}
 export default () => {
   const [createModalVisible, setModalVisible] = useState<boolean>(false);
   const [dataSource, setDataSource] = useState<AdminAccountDistributor.Content[]>([]);
@@ -27,7 +30,24 @@ export default () => {
     publishTime?: string; // 发布时间
     state?: number; // 状态：0发布中、1待发布、2已下架
   }>({});
+  // 拿到当前角色的access权限兑现
+  const access = useAccess()
+  // 当前页面的对应权限key
+  const [edge, setEdge] = useState<Edge.HOME>(Edge.HOME);
+  // 页面权限
+  const permissions = {
+    [Edge.HOME]: 'PQ_UM_KCGLY', // 用户管理-科产管理员配置
+  }
 
+  useEffect(() => {
+    for (const key in permissions) {
+      const permission = permissions[key]
+      if (Object.prototype.hasOwnProperty.call(access, permission)) {
+        setEdge(key as any)
+        break
+      }
+    }
+  },[])
   const [options, setOptions] = useState<any>([]);
 
   const getDictionary = async () => {
@@ -175,48 +195,51 @@ export default () => {
       width: 200,
       render: (_: string) => moment(_).format('YYYY-MM-DD HH:mm:ss'),
     },
-    {
+    access['P_UM_KCGLY'] && {
       title: '操作',
       width: 200,
       fixed: 'right',
       dataIndex: 'option',
       render: (_: any, record: AdminAccountDistributor.Content) => {
+        const accessible = access?.[permissions?.[edge].replace(new RegExp("Q"), "")]
         return (
-          <Space size="middle">
-            {record.isEdit && (
-              <a
-                href="#"
-                onClick={() => {
-                  setEditingItem(record);
-                  setModalVisible(true);
-                  form.setFieldsValue({ name: record?.userName, typeIds: record?.viewRangeIds });
-                }}
+          <Access accessible={accessible}>
+            <Space size="middle">
+              {record.isEdit && (
+                <a
+                  href="#"
+                  onClick={() => {
+                    setEditingItem(record);
+                    setModalVisible(true);
+                    form.setFieldsValue({ name: record?.userName, typeIds: record?.viewRangeIds });
+                  }}
+                >
+                  编辑
+                </a>
+              )}
+              <Popconfirm
+                title="确定删除么？"
+                okText="确定"
+                cancelText="取消"
+                onConfirm={() => remove(record.id as string)}
               >
-                编辑
-              </a>
-            )}
-            <Popconfirm
-              title="确定删除么？"
-              okText="确定"
-              cancelText="取消"
-              onConfirm={() => remove(record.id as string)}
-            >
-              <a href="#">删除</a>
-            </Popconfirm>
+                <a href="#">删除</a>
+              </Popconfirm>
 
-            <Popconfirm
-              title={`确定重置该账号密码为ly@${moment().format('YYYYMMDD')}？`}
-              okText="确定"
-              cancelText="取消"
-              onConfirm={() => reset(record.id as string)}
-            >
-              <a href="#">重置密码</a>
-            </Popconfirm>
-          </Space>
+              <Popconfirm
+                title={`确定重置该账号密码为ly@${moment().format('YYYYMMDD')}？`}
+                okText="确定"
+                cancelText="取消"
+                onConfirm={() => reset(record.id as string)}
+              >
+                <a href="#">重置密码</a>
+              </Popconfirm>
+            </Space>
+          </Access>
         );
       },
     },
-  ];
+  ].filter(p => p);
 
   useEffect(() => {
     getPages();
@@ -369,15 +392,17 @@ export default () => {
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>账号列表(共{pageInfo.totalCount || 0}个)</span>
-          <Button
-            type="primary"
-            key="addAutor"
-            onClick={() => {
-              setModalVisible(true);
-            }}
-          >
-            <PlusOutlined /> 新增管理员
-          </Button>
+          <Access accessible={access['P_UM_KCGLY']}>
+            <Button
+              type="primary"
+              key="addAutor"
+              onClick={() => {
+                setModalVisible(true);
+              }}
+            >
+              <PlusOutlined /> 新增管理员
+            </Button>
+          </Access>
         </div>
       </div>
       <div className={sc('container-table-body')}>

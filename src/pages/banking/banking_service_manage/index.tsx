@@ -13,6 +13,7 @@ import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
+import { Access, useAccess } from 'umi';
 
 import { useHistory } from 'react-router-dom';
 import type Common from '@/types/common';
@@ -218,16 +219,18 @@ export default () => {
             详情
           </Button>
           {record.verityStatus !== 4 && record.verityStatus !== 5 && (
-            <Button
-              size="small"
-              type="link"
-              onClick={() => {
-                setSelectRow(record);
-                setModalVisible(true);
-              }}
-            >
-              更新处理状态
-            </Button>
+            <Access accessible={access['P_FM_XQGL']}>
+              <Button
+                size="small"
+                type="link"
+                onClick={() => {
+                  setSelectRow(record);
+                  setModalVisible(true);
+                }}
+              >
+                更新处理状态
+              </Button>
+            </Access>
           )}
         </>
       ),
@@ -398,20 +401,24 @@ export default () => {
     );
   };
 
+  const access = useAccess()
+
   return (
     <PageContainer className={sc('container')}>
       {useSearchNode()}
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>金融需求列表(共{pageInfo.totalCount || 0}个)</span>
-          <Button
-            type="primary"
-            onClick={() => {
-              downloadLink(getExportUrl());
-            }}
-          >
-            导出
-          </Button>
+          <Access accessible={access['PX_FM_XQGL']}>
+            <Button
+              type="primary"
+              onClick={() => {
+                downloadLink(getExportUrl());
+              }}
+            >
+              导出
+            </Button>
+          </Access>
         </div>
       </div>
 

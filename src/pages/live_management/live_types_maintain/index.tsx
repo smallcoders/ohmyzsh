@@ -7,6 +7,7 @@ import React, { useEffect, useState } from 'react';
 import Common from '@/types/common';
 import moment from 'moment';
 import SelfTable from '@/components/self_table';
+import { Access, useAccess } from 'umi';
 import LiveTypesMaintain from '@/types/live-types-maintain.d';
 import {
   addLiveType,
@@ -145,6 +146,8 @@ export default () => {
     }
   };
 
+  const access = useAccess()
+
   const columns = [
     {
       title: '排序',
@@ -176,7 +179,7 @@ export default () => {
       dataIndex: 'createTime',
       width: 80
     },
-    {
+    access['P_LM_JBLX'] && {
       title: '操作',
       width: 120,
       fixed: 'right',
@@ -229,7 +232,7 @@ export default () => {
         );
       },
     },
-  ];
+  ].filter(p => p);
 
   useEffect(() => {
     getPages();
@@ -308,15 +311,17 @@ export default () => {
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>类型列表(共{pageInfo.totalCount || 0}个)</span>
-          <Button
-            type="primary"
-            key="addStyle"
-            onClick={() => {
-              setModalVisible(true);
-            }}
-          >
-            <PlusOutlined /> 新增类型
-          </Button>
+          <Access accessible={access['P_LM_JBLX']}>
+            <Button
+              type="primary"
+              key="addStyle"
+              onClick={() => {
+                setModalVisible(true);
+              }}
+            >
+              <PlusOutlined /> 新增类型
+            </Button>
+          </Access>
         </div>
       </div>
       <div className={sc('container-table-body')}>

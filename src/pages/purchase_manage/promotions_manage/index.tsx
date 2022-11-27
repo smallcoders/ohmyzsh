@@ -7,7 +7,7 @@ import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import { Button, Image, Popconfirm, message, Space } from 'antd';
 import { useRef, useState } from 'react';
-import { useHistory } from 'umi';
+import { useHistory, Access, useAccess } from 'umi';
 
 export default () => {
   const history = useHistory();
@@ -150,25 +150,29 @@ export default () => {
             </Popconfirm>
           )}
           {record.actState === 1 && (// 进行中的可提前结束
-            <Popconfirm
-              title="确定提前结束么？"
-              okText="提前结束"
-              cancelText="取消"
-              onConfirm={() => addOrUpdate({id: record.id, actState: 2})}
-            >
-              <a href="#">提前结束</a>
-            </Popconfirm>
+            <Access accessible={access['P_PM_HD']}>
+              <Popconfirm
+                title="确定提前结束么？"
+                okText="提前结束"
+                cancelText="取消"
+                onConfirm={() => addOrUpdate({id: record.id, actState: 2})}
+              >
+                <a href="#">提前结束</a>
+              </Popconfirm>
+            </Access>
           )}
 
           {record.addedState == 0 && (
-            <Popconfirm
-              title="确定下架么？"
-              okText="下架"
-              cancelText="取消"
-              onConfirm={() => addOrUpdate({id: record.id, addedState: 1})}
-            >
-              <a href="#">下架</a>
-            </Popconfirm>
+            <Access accessible={access['P_PM_HD']}>
+              <Popconfirm
+                title="确定下架么？"
+                okText="下架"
+                cancelText="取消"
+                onConfirm={() => addOrUpdate({id: record.id, addedState: 1})}
+              >
+                <a href="#">下架</a>
+              </Popconfirm>
+            </Access>
           )}
           
           {(record.addedState != 0 && record.actState != 2) && ( // 上架及活动结束的都不能编辑
@@ -286,6 +290,8 @@ export default () => {
     queryExpandedData(record, key);
   }
 
+  const access = useAccess()
+
   return (
     <PageContainer>
       <ProTable
@@ -307,11 +313,13 @@ export default () => {
         }}
         actionRef={actionRef}
         toolBarRender={() => [
-          <Button type="primary" key="addActivity" onClick={() => {
-            history.push('/purchase-manage/promotions-create');
-          }}>
-            <PlusOutlined /> 新增活动
-          </Button>,
+          <Access accessible={access['P_PM_HD']}>
+            <Button type="primary" key="addActivity" onClick={() => {
+              history.push('/purchase-manage/promotions-create');
+            }}>
+              <PlusOutlined /> 新增活动
+            </Button>,
+          </Access>
         ]}
         request={async (pagination) => {
           const result = await getActivityManageList({

@@ -2,7 +2,7 @@ import OrderManage from '@/types/order/order-manage';
 import { EditTwoTone, QuestionCircleOutlined } from '@ant-design/icons';
 import { Button, Empty, Input, InputNumber, message, Popconfirm, Radio, Tooltip } from 'antd';
 import { useCallback, useRef, useState } from 'react';
-import { history } from 'umi';
+import { Access, useAccess } from 'umi';
 import { routeName } from '@/../config/routes';
 import './index.less';
 import {
@@ -144,121 +144,131 @@ export const ButtonManage = ({
     }
   };
 
+  const access = useAccess()
+
   return (
     {
       1: (
-        <Popconfirm
-          icon={null}
-          title={
-            <div style={{ display: 'grid', gap: 10, marginBottom: 10 }}>
-              <span>请选择交易关闭原因</span>
-              <Radio.Group
-                onChange={(e) => {
-                  setCloseType(e.target.value);
-                }}
-                value={closeType}
-              >
-                <Radio value={0}>退货/退款完成</Radio>
-                <Radio value={1}>其他</Radio>
-              </Radio.Group>
-              {closeType == 1 && (
-                <Input.TextArea
-                  onChange={(e) => setCloseContent(e.target.value)}
-                  value={closeContent}
-                  showCount
-                  maxLength={20}
-                />
-              )}
-            </div>
-          }
-          okText="确定"
-          cancelText="取消"
-          onConfirm={() => cancel()}
-        >
-          <Button type="link">交易关闭</Button>
-        </Popconfirm>
-      ),
-      6: (
-        <Popconfirm
-          title={
-            <>
-              <span>确认用户已收到货了吗</span>
-              <span>共{record?.totalShipNum}件商品</span>
-            </>
-          }
-          okText="确定"
-          cancelText="取消"
-          onConfirm={() => receiveGoods()}
-        >
-          <Button type="link">确认收货</Button>
-        </Popconfirm>
-      ),
-      7: (
-        <Popconfirm
-          title={`确认收到该订单¥${(record?.totalPrice || 0) / 100}转账货款`}
-          okText="确定"
-          cancelText="取消"
-          onConfirm={() => collection()}
-        >
-          <Button type="link">确认收到货款</Button>
-        </Popconfirm>
-      ),
-      8: (
-        <Popconfirm
-          icon={null}
-          title={
-            <div
-              style={{
-                display: 'flex',
-                padding: 10,
-              }}
-            >
-              <div
-                style={{
-                  display: 'grid',
-                  gap: 10,
-                }}
-              >
-                <span>请选择发货情况</span>
+        <Access accessible={access['P_PM_DD']}>
+          <Popconfirm
+            icon={null}
+            title={
+              <div style={{ display: 'grid', gap: 10, marginBottom: 10 }}>
+                <span>请选择交易关闭原因</span>
                 <Radio.Group
                   onChange={(e) => {
-                    setSendType(e.target.value);
+                    setCloseType(e.target.value);
                   }}
-                  value={sendType}
+                  value={closeType}
                 >
-                  <Radio value={0}>
-                    {(record?.shipNum || 0) > 0 ? '剩余全部发货' : '全部发货'}
-                  </Radio>
-                  <Radio value={1}>部分发货</Radio>
+                  <Radio value={0}>退货/退款完成</Radio>
+                  <Radio value={1}>其他</Radio>
                 </Radio.Group>
-                {sendType == 1 && (
-                  <InputNumber
-                    onChange={(e) => setSendContent(e)}
-                    value={sendContent}
-                    min={1}
-                    max={record?.unShipNum}
+                {closeType == 1 && (
+                  <Input.TextArea
+                    onChange={(e) => setCloseContent(e.target.value)}
+                    value={closeContent}
+                    showCount
+                    maxLength={20}
                   />
                 )}
               </div>
-
-              <div style={{ wordBreak: 'keep-all' }}>
-                <div>
-                  <span style={{ color: '#999' }}>已发货数量：</span>
-                  <span style={{ color: '#000' }}>{record?.shipNum}</span>
+            }
+            okText="确定"
+            cancelText="取消"
+            onConfirm={() => cancel()}
+          >
+            <Button type="link">交易关闭</Button>
+          </Popconfirm>
+        </Access>
+      ),
+      6: (
+        <Access accessible={access['P_PM_DD']}>
+          <Popconfirm
+            title={
+              <>
+                <span>确认用户已收到货了吗</span>
+                <span>共{record?.totalShipNum}件商品</span>
+              </>
+            }
+            okText="确定"
+            cancelText="取消"
+            onConfirm={() => receiveGoods()}
+          >
+            <Button type="link">确认收货</Button>
+          </Popconfirm>
+        </Access>
+      ),
+      7: (
+        <Access accessible={access['P_PM_DD']}>
+          <Popconfirm
+            title={`确认收到该订单¥${(record?.totalPrice || 0) / 100}转账货款`}
+            okText="确定"
+            cancelText="取消"
+            onConfirm={() => collection()}
+          >
+            <Button type="link">确认收到货款</Button>
+          </Popconfirm>
+        </Access>
+      ),
+      8: (
+        <Access accessible={access['P_PM_DD']}>
+          <Popconfirm
+            icon={null}
+            title={
+              <div
+                style={{
+                  display: 'flex',
+                  padding: 10,
+                }}
+              >
+                <div
+                  style={{
+                    display: 'grid',
+                    gap: 10,
+                  }}
+                >
+                  <span>请选择发货情况</span>
+                  <Radio.Group
+                    onChange={(e) => {
+                      setSendType(e.target.value);
+                    }}
+                    value={sendType}
+                  >
+                    <Radio value={0}>
+                      {(record?.shipNum || 0) > 0 ? '剩余全部发货' : '全部发货'}
+                    </Radio>
+                    <Radio value={1}>部分发货</Radio>
+                  </Radio.Group>
+                  {sendType == 1 && (
+                    <InputNumber
+                      onChange={(e) => setSendContent(e)}
+                      value={sendContent}
+                      min={1}
+                      max={record?.unShipNum}
+                    />
+                  )}
                 </div>
-                <div>
-                  <span style={{ color: '#999' }}>未发货数量：</span>
-                  <span style={{ color: '#FF6680' }}>{record?.unShipNum}</span>
+
+                <div style={{ wordBreak: 'keep-all' }}>
+                  <div>
+                    <span style={{ color: '#999' }}>已发货数量：</span>
+                    <span style={{ color: '#000' }}>{record?.shipNum}</span>
+                  </div>
+                  <div>
+                    <span style={{ color: '#999' }}>未发货数量：</span>
+                    <span style={{ color: '#FF6680' }}>{record?.unShipNum}</span>
+                  </div>
                 </div>
               </div>
-            </div>
-          }
-          okText="确定"
-          cancelText="取消"
-          onConfirm={() => deliverGoods()}
-        >
-          <Button type="link">发货</Button>
-        </Popconfirm>
+            }
+            okText="确定"
+            cancelText="取消"
+            onConfirm={() => deliverGoods()}
+          >
+            <Button type="link">发货</Button>
+          </Popconfirm>
+        </Access>
       ),
     }[type] || <span />
   );
@@ -303,6 +313,8 @@ export const OrderItem = ({
     }
   };
 
+  const access = useAccess()
+
   return (
     <div className="order-item">
       {type === 'ORDER' && (
@@ -315,30 +327,32 @@ export const OrderItem = ({
           </div>
           <div style={{ display: 'flex', gap: 10 }}>
             <span>{record.mngRemark}</span>
-            <Popconfirm
-              icon={null}
-              title={
-                <>
-                  <Input.TextArea
-                    placeholder="可在此填写备注内容，备注非必填"
-                    onChange={(e) => setRemark(e.target.value)}
-                    value={remark}
-                    showCount
-                    maxLength={30}
-                  />
-                </>
-              }
-              okText="确定"
-              cancelText="取消"
-              onConfirm={() => updRemark()}
-            >
-              <EditTwoTone
-                onClick={() => {
-                  setRemark(record.mngRemark || '');
-                }}
-              />
-              <a href="javascript:void(0)">备注</a>
-            </Popconfirm>
+            <Access accessible={access['P_PM_DD']}>
+              <Popconfirm
+                icon={null}
+                title={
+                  <>
+                    <Input.TextArea
+                      placeholder="可在此填写备注内容，备注非必填"
+                      onChange={(e) => setRemark(e.target.value)}
+                      value={remark}
+                      showCount
+                      maxLength={30}
+                    />
+                  </>
+                }
+                okText="确定"
+                cancelText="取消"
+                onConfirm={() => updRemark()}
+              >
+                <EditTwoTone
+                  onClick={() => {
+                    setRemark(record.mngRemark || '');
+                  }}
+                />
+                <a href="javascript:void(0)">备注</a>
+              </Popconfirm>
+            </Access>
           </div>
         </div>
       )}

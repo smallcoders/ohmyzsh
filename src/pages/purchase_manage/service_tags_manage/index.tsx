@@ -4,6 +4,7 @@ import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
+import { Access, useAccess } from 'umi';
 import Common from '@/types/common';
 import SelfTable from '@/components/self_table';
 import LiveTypesMaintain from '@/types/live-types-maintain.d';
@@ -103,6 +104,8 @@ export default () => {
     }
   };
 
+  const access = useAccess()
+
   const columns = [
     {
       title: '序号',
@@ -122,7 +125,7 @@ export default () => {
       dataIndex: 'labelContent',
       width: 200,
     },
-    {
+    access['P_PM_FWBQ'] && {
       title: '操作',
       width: 120,
       // fixed: 'right',
@@ -152,7 +155,7 @@ export default () => {
         );
       },
     },
-  ];
+  ].filter(p => p);
 
   useEffect(() => {
     getPages();
@@ -267,15 +270,17 @@ export default () => {
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>服务标签列表(共{pageInfo.totalCount || 0}个)</span>
-          <Button
-            type="primary"
-            key="primary3"
-            onClick={() => {
-              setModalVisible(true);
-            }}
-          >
-            <PlusOutlined /> 新增标签
-          </Button>
+          <Access accessible={access['P_PM_FWBQ']}>
+            <Button
+              type="primary"
+              key="primary3"
+              onClick={() => {
+                setModalVisible(true);
+              }}
+            >
+              <PlusOutlined /> 新增标签
+            </Button>
+          </Access>
         </div>
       </div>
       <div className={sc('container-table-body')}>

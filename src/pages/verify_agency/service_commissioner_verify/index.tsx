@@ -19,7 +19,7 @@ import ServiceCommissionerVerify from '@/types/service-config-ServiceCommissione
 import moment from 'moment';
 import { routeName } from '@/../config/routes';
 import SelfTable from '@/components/self_table';
-import { history } from 'umi';
+import { Access, useAccess } from 'umi';
 import { handleAuditCommissioner } from '@/services/audit';
 import SelfSelect from '@/components/self_select';
 import { getDictionay } from '@/services/common';
@@ -30,6 +30,9 @@ const stateObj = {
   AUDIT_PASSED: '已通过',
   AUDIT_REJECTED: '已拒绝',
 };
+enum Edge {
+  HOME = 0, // 新闻咨询首页
+}
 export default () => {
   const [dataSource, setDataSource] = useState<ServiceCommissionerVerify.Content[]>([]);
   const [refuseContent, setRefuseContent] = useState<string>('');
@@ -41,6 +44,24 @@ export default () => {
     endDateTime?: string; // 提交结束时间
     typeId?: number; // 行业类型id 三级类型
   }>({});
+  // 拿到当前角色的access权限兑现
+  const access = useAccess()
+  // 当前页面的对应权限key
+  const [edge, setEdge] = useState<Edge.HOME>(Edge.HOME);
+  // 页面权限
+  const permissions = {
+    [Edge.HOME]: 'PQ_AT_FWZY', // 服务专员-页面查询
+  }
+
+  useEffect(() => {
+    for (const key in permissions) {
+      const permission = permissions[key]
+      if (Object.prototype.hasOwnProperty.call(access, permission)) {
+        setEdge(key as any)
+        break
+      }
+    }
+  },[])
 
   const formLayout = {
     labelCol: { span: 6 },
@@ -124,7 +145,7 @@ export default () => {
         <a
           onClick={() => {
             window.open(
-              `${routeName.EXPERT_MANAGE_DETAIL}?id=${_record.expertShowId}&auditId=${_record.auditId}`,
+              `/user-config/expert-manage/detail?id=${_record.expertShowId}&auditId=${_record.auditId}&state=${_record.state}`,
             );
           }}
         >
@@ -170,66 +191,69 @@ export default () => {
       fixed: 'right',
       dataIndex: 'option',
       render: (_: any, record: any) => {
+        const accessible = access?.[permissions?.[edge].replace(new RegExp("Q"), "")]
         return record.state === 'AUDITING' ? (
-          <Space size={20}>
-            <Popconfirm
-              icon={<span style={{ fontSize: 18 }}>请确认专员服务类型是否选择正确</span>}
-              title={
-                <div style={{ width: 500 }}>
-                  <SelfSelect
-                    dictionary={serviceTypes}
-                    fieldNames={{
-                      label: 'name',
-                      value: 'id',
-                    }}
-                    value={selectTypes}
-                    onChange={(values) => {
-                      setSelectTypes(values);
-                    }}
-                  />
-                </div>
-              }
-              okButtonProps={{
-                disabled: selectTypes?.length === 0,
-              }}
-              okText="确定"
-              cancelText="取消"
-              onConfirm={() => editState(record, { result: true, ids: selectTypes })}
-              onCancel={() => {
-                setSelectTypes([]);
-              }}
-            >
-              <Button
-                type="link"
-                onClick={() => {
-                  setSelectTypes(
-                    record.serviceTypeIds?.split(',')?.map((p: string) => Number(p)) || [],
-                  );
+          <Access accessible={accessible}>
+            <Space size={20}>
+              <Popconfirm
+                icon={<span style={{ fontSize: 18 }}>请确认专员服务类型是否选择正确</span>}
+                title={
+                  <div style={{ width: 500 }}>
+                    <SelfSelect
+                      dictionary={serviceTypes}
+                      fieldNames={{
+                        label: 'name',
+                        value: 'id',
+                      }}
+                      value={selectTypes}
+                      onChange={(values) => {
+                        setSelectTypes(values);
+                      }}
+                    />
+                  </div>
+                }
+                okButtonProps={{
+                  disabled: selectTypes?.length === 0,
+                }}
+                okText="确定"
+                cancelText="取消"
+                onConfirm={() => editState(record, { result: true, ids: selectTypes })}
+                onCancel={() => {
+                  setSelectTypes([]);
                 }}
               >
-                通过
-              </Button>
-            </Popconfirm>
-            <Popconfirm
-              icon={null}
-              title={
-                <>
-                  请输入拒绝原因（非必填）
-                  <Input.TextArea
-                    onChange={(e) => setRefuseContent(e.target.value)}
-                    value={refuseContent}
-                    showCount
-                    maxLength={200}
-                  />
-                </>
-              }
-              okText="确定"
-              cancelText="取消"
-              onConfirm={() => editState(record, { result: false, reason: refuseContent })}
-            >
-              <Button type="link">拒绝</Button>
-            </Popconfirm>
-          </Space>
+                <Button
+                  type="link"
+                  onClick={() => {
+                    setSelectTypes(
+                      record.serviceTypeIds?.split(',')?.map((p: string) => Number(p)) || [],
+                    );
+                  }}
+                >
+                  通过
+                </Button>
+              </Popconfirm>
+              <Popconfirm
+                icon={null}
+                title={
+                  <>
+                    请输入拒绝原因（非必填）
+                    <Input.TextArea
+                      onChange={(e) => setRefuseContent(e.target.value)}
+                      value={refuseContent}
+                      showCount
+                      maxLength={200}
+                    />
+                  </>
+                }
+                okText="确定"
+                cancelText="取消"
+                onConfirm={() => editState(record, { result: false, reason: refuseContent })}
+              >
+                <Button type="link">拒绝</Button>
+              </Popconfirm>
+            </Space>
+          </Access>
         ) : (
           <div style={{ display: 'grid' }}>
             <span>
@@ -242,7 +266,7 @@ export default () => {
         );
       },
     },
-  ];
+  ].filter(p => p);
 
   useEffect(() => {
     getPage();
