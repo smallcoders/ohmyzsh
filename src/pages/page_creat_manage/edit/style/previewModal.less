@@ -1,0 +1,112 @@
+.preview-modal-box {
+  &.mobile {
+    width: 375px;
+    margin: 0 auto;
+    .mobile-title {
+      height: 44px;
+      line-height: 44px;
+      text-align: center;
+      color: #000;
+      font-size: 17px;
+      background: #fff;
+      font-weight: bold;
+    }
+    .body-title-box {
+      min-height: 120px;
+      position: relative;
+      .page-bg {
+        display: block;
+        width: 100%;
+      }
+      .text-box {
+        position: absolute;
+        left: 16px;
+        top: 20px;
+        right: 122px;
+        color: #fff;
+        font-size: 13px;
+      }
+    }
+    .preview-form {
+      margin: -24px 16px 0;
+      position: relative;
+      .ant-form > .ant-form-item {
+        padding: 16px 16px 16px 10px;
+        border-radius: 2px;
+        background: #fff;
+        .ant-form-item-control-input-content {
+          padding-left: 8px;
+        }
+      }
+      .ant-radio-group{
+        display: flex;
+        flex-direction: column;
+        .ant-radio-wrapper {
+          margin-top: 8px;
+        }
+      }
+      .ant-checkbox-group {
+        display: flex;
+        flex-direction: column;
+        .ant-checkbox-wrapper {
+          margin-top: 8px;
+        }
+      }
+    }
+  }
+  .preview-body {
+    background: #EBEFF7;
+    overflow-y: auto;
+    height: 100%;
+  }
+  .body-title-box {
+    min-height: 240px;
+    position: relative;
+    .page-bg {
+      display: block;
+      width: 100%;
+    }
+    .text-box {
+      position: absolute;
+      left: 24px;
+      top: 68px;
+      right: 248px;
+      color: #fff;
+      font-size: 14px;
+      .preview-page-title {
+        font-size: 24px;
+        font-weight: bold;
+      }
+      .preview-page-desc {
+        margin-top: 16px;
+      }
+    }
+  }
+  .preview-form {
+    margin: -48px 24px 0;
+    position: relative;
+    .ant-form > .ant-form-item {
+      padding: 24px;
+      border-radius: 2px;
+      background: #fff;
+    }
+    .ant-radio-group{
+      display: flex;
+      flex-direction: column;
+      .ant-radio-wrapper {
+        margin-top: 8px;
+      }
+    }
+    .ant-checkbox-group {
+      display: flex;
+      flex-direction: column;
+      .ant-checkbox-wrapper {
+        margin-top: 8px;
+      }
+    }
+  }
+  .ant-btn-primary {
+    display: block;
+    margin: 16px auto 20px;
+  }
+}
