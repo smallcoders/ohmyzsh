@@ -6,7 +6,7 @@ import {
   Row,
   Col,
   DatePicker,
-
+  Popconfirm,
   message,
   Space,
 
@@ -22,10 +22,11 @@ import { routeName } from '@/../config/routes';
 import SelfTable from '@/components/self_table';
 import { UploadOutlined } from '@ant-design/icons';
 import { exportUserList } from '@/services/export';
-import { exportUsers, getUserPage } from '@/services/user';
+import { exportUsers, getUserPage, getQueryUserManageRisky } from '@/services/user';
 import User from '@/types/user.d';
 import {getAllChannel, getAllScene} from "@/services/opration-activity";
 import Activity from "@/types/operation-activity";
+import { handleAudit } from '@/services/audit';
 const sc = scopedClasses('service-config-requirement-manage');
 
 const registerSource = {
@@ -109,6 +110,19 @@ export default () => {
       title: '姓名',
       dataIndex: 'name',
       width: 100,
+      render: (_: any, _record: any) => {
+        return (
+          <div>
+            {_ || '--'}
+            {
+              _record?.risky &&
+              <div className={sc('container-table-body-table-name')}>
+                风险
+              </div>
+            }
+          </div>
+        )
+      }
     },
     {
       title: '手机号',
@@ -153,6 +167,7 @@ export default () => {
       width: 100,
       fixed: 'right',
       dataIndex: 'option',
+      align: 'center',
       render: (_: any, record: any) => {
         return (
           <Space>
@@ -166,14 +181,57 @@ export default () => {
             >
               详情
             </Button>
+            {
+              record?.risky && 
+              <Popconfirm
+                placement="topRight"
+                title={
+                  <>
+                    <div>复审</div>
+                    <div>姓名：{record?.name || '--'}</div>
+                    <div>系统不通过原因：{record?.systemRejectReason || '--'}</div>
+                  </>
+                }
+                onConfirm={() => {handleRecheckBtn(record,true)}}
+                onCancel={() => {handleRecheckBtn(record,false)}}
+                okText="复审正常"
+                cancelText="确定异常"
+              >
+                <Button 
+                  size="small"
+                  type="link"
+                >复审</Button>
+              </Popconfirm>
+            }
           </Space>
         )
       }
     },
   ];
 
+  // 姓名风险用户数
+  const [userCount, setUserCount] = useState<number>(0)
+
+  const _getQueryUserManageRisky = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
+    try {
+      const { result, code } = await getQueryUserManageRisky({
+        pageIndex,
+        pageSize,
+        ...searchContent,
+      });
+      if (code === 0) {
+        setUserCount(result || 0)
+      } else {
+        message.error(`请求姓名风险用户数失败`);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     getPage();
+    _getQueryUserManageRisky();
   }, [searchContent]);
   const [searchForm] = Form.useForm();
   const useSearchNode = (): React.ReactNode => {
@@ -246,6 +304,17 @@ export default () => {
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
+            <Col span={6}>
+              <Form.Item name="risky" label="报警标识">
+              <Select placeholder="请选择" allowClear>
+                  {Object.entries(User.RiskyState).map((p) => (
+                    <Select.Option key={p[0] + p[1]} value={p[0]}>
+                      {p[1]}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
             <Col offset={20} span={4}>
               <Button
                 style={{ marginRight: 20,marginBottom:20}}
@@ -256,6 +325,13 @@ export default () => {
                   if (search.time) {
                     search.createTimeStart = moment(search.time[0]).format('YYYY-MM-DD HH:mm:ss');
                     search.createTimeEnd = moment(search.time[1]).format('YYYY-MM-DD HH:mm:ss');
+                  }
+                  if (search?.risky) {
+                    if (search?.risky === 'RISK') {
+                      Object.assign(search,{risky: true})
+                    } else {
+                      Object.assign(search,{risky: false})
+                    }
                   }
                   setSearChContent(search);
                 }}
@@ -344,7 +420,6 @@ export default () => {
   // }
   const exportList = async () => {
     const { name, phone, registerSource, orgName, userIdentity, createTimeStart, createTimeEnd } = searchContent;
-    console.log('@searchContent',searchContent)
 
     try {
       const res = await exportUserList({
@@ -372,12 +447,41 @@ export default () => {
     }
   };
 
+  const handleRecheckBtn = async (record: any, state: boolean) => {
+    console.log('state', state)
+    const text = state ? '复审正常' : '确定异常'
+    console.log('确定',record)
+    try {
+      const res = await handleAudit({
+        auditId: record?.id, // 审核id
+        result: state, // 通过/拒绝
+      })
+      if (res?.code === 0) {
+        message.success(`${text}完成`);
+      } else {
+        throw new Error("");
+      }
+    } catch (error) {
+      message.error(`${text}失败，请稍后重试`);
+    }
+  }
+
+  const handleRecheckCancelBtn = (record: any) => {
+    console.log('取消')
+  }
+
   return (
     <PageContainer className={sc('container')}>
       {useSearchNode()}
       <div className={sc('container-table-header')} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div className="title">
-          <span>用户信息列表(共{pageInfo.totalCount || 0}个)</span>
+          <span>用户信息列表(共{pageInfo.totalCount || 0}个,
+            姓名风险用户
+            <span style={{color: 'red'}}>
+              {userCount}
+            </span>
+            个)
+          </span>
         </div>
         {/* <Button
           type="primary"

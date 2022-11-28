@@ -21,6 +21,11 @@ namespace User {
         INDIVIDUAL: '普通用户'
     }
 
+    export const RiskyState = {
+        RISK: '风险',
+        NORMAL: '正常',
+    }
+
     export type Content = {
         id: number	//用户id
         loginName: string	//登录名
