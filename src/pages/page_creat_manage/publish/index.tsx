@@ -55,7 +55,7 @@ export default () => {
   const getLink = (isMobile: boolean) => {
     const { origin } = window.location
     if (isMobile){
-      return `${hostMap[origin]}/antelope/template-page?isApp=false&id=${id}&login=${publishType === '公开发布' ? '' : '1'}`
+      return `${hostMap[origin]}/antelope-activity-h5/template-page/index.html#/?isApp=false&id=${id}&login=${publishType === '公开发布' ? '' : '1'}`
     } else {
       return `${hostMap[origin]}/template-page?id=${id}&login=${publishType === '公开发布' ? '' : '1'}`
     }
