@@ -448,26 +448,22 @@ export default () => {
   };
 
   const handleRecheckBtn = async (record: any, state: boolean) => {
-    console.log('state', state)
     const text = state ? '复审正常' : '确定异常'
-    console.log('确定',record)
     try {
       const res = await handleAudit({
-        auditId: record?.id, // 审核id
+        auditId: record?.auditId || '', // 审核id
         result: state, // 通过/拒绝
       })
       if (res?.code === 0) {
         message.success(`${text}完成`);
+        getPage();
+        _getQueryUserManageRisky();
       } else {
         throw new Error("");
       }
     } catch (error) {
       message.error(`${text}失败，请稍后重试`);
     }
-  }
-
-  const handleRecheckCancelBtn = (record: any) => {
-    console.log('取消')
   }
 
   return (
