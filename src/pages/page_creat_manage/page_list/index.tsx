@@ -28,6 +28,7 @@ import type Common from '@/types/common';
 import moment from 'moment';
 import SelfTable from '@/components/self_table';
 import { routeName } from '@/../config/routes';
+import PreviewModal from '../edit/components/PreviewModal';
 const sc = scopedClasses('page-creat-list');
 const statusMap = {
   0: '未发布',
@@ -49,7 +50,8 @@ interface record {
   tmpName: string;
   tmpDesc: string;
   state: string | number,
-  updateTime: string
+  updateTime: string,
+  tmpJson: string,
 }
 
 
@@ -57,6 +59,8 @@ export default () => {
   const [dataSource, setDataSource] = useState<any>([]);
   const [searchContent, setSearChContent] = useState<any>({});
   const [openMenuId, setMenuOpen] = useState<any>('')
+  const [templateJson, setTemplateJson] = useState<any>({})
+  const [previewVisible, setPreviewVisible] = useState(false)
   const [menuData, setMenuData] = useState<any>([])
   const history = useHistory();
   const [searchForm] = Form.useForm();
@@ -285,6 +289,14 @@ export default () => {
       title: '模板名称',
       dataIndex: 'tmpName',
       width: 150,
+      render: (tmpName: string, record: record) => {
+        return <span onClick={() => {
+          if (record.tmpJson){
+            setTemplateJson(JSON.parse(record.tmpJson || '{}'))
+            setPreviewVisible(true)
+          }
+        }} style={{cursor: 'pointer'}}>{tmpName}</span>
+      }
     },
     {
       title: '描述信息',
@@ -474,6 +486,15 @@ export default () => {
                   `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
               }
           }
+        />
+        <PreviewModal
+          title="预览"
+          footer={null}
+          visible={previewVisible}
+          json={templateJson}
+          onCancel={() => {
+            setPreviewVisible(false)
+          }}
         />
       </div>
     </PageContainer>

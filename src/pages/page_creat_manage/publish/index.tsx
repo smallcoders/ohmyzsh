@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import GlobalHeaderRight from '@/components/RightContent';
-import PreviewModal from '@/pages/page_creat_manage/edit/components/PreviewModal';
 import QRCode from 'qrcode.react'
 import { Form, message, Radio, Popover } from 'antd';
 import logo2 from '@/assets/page_creat_manage/logo2.png'
@@ -9,6 +8,7 @@ import previewIcon from '@/assets/page_creat_manage/preview-icon.png'
 import './index.less'
 import { history } from '@@/core/history';
 import { getTemplatePageInfo } from '@/services/page-creat-manage';
+import PreviewModal from '../edit/components/PreviewModal';
 
 const publishOptions = [
   {
