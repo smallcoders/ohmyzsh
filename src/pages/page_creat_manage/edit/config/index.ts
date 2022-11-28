@@ -1118,7 +1118,7 @@ export const componentsGroupList: ComponentGroup[] = [{
   title: "基础字段",
   components: [
     {
-      label: '输入框',
+      label: '单行文本框',
       type: 'Input',
       errorMsg: '',
       config: {
@@ -1129,7 +1129,7 @@ export const componentsGroupList: ComponentGroup[] = [{
         paramKey: '',
         desc: '',
         isParam: true,
-        paramDesc: '输入框',
+        paramDesc: '单行文本框',
         paramType: "string",
         showLabel: true,
       },
@@ -1152,7 +1152,7 @@ export const componentsGroupList: ComponentGroup[] = [{
       },
     },
     {
-      label: '单选框组',
+      label: '单选按钮组',
       type: 'RadioGroup',
       errorMsg: '',
       config: {
@@ -1166,13 +1166,13 @@ export const componentsGroupList: ComponentGroup[] = [{
         paramsKey: '',
         desc: '',
         isParam: true,
-        paramDesc: '单选框组',
+        paramDesc: '单选按钮组',
         paramType: '',
         showLabel: true,
       },
     },
     {
-      label: '多选框组',
+      label: '多选按钮组',
       type: 'CheckboxGroup',
       errorMsg: '',
       config: {
@@ -1187,7 +1187,7 @@ export const componentsGroupList: ComponentGroup[] = [{
         desc: '',
         paramsKey: '',
         isParam: true,
-        paramDesc: '多选框组',
+        paramDesc: '多选按钮组',
         paramType: '',
         showLabel: true,
       },
