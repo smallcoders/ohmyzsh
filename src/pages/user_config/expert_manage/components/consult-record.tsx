@@ -336,7 +336,7 @@ export default () => {
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>咨询记录列表(共{pageInfo.totalCount || 0}个)</span>
-          <Access accessible={access['PX_UM_ZJZY']}>
+          <Access accessible={access['PX_UM_ZJZX']}>
             <Button icon={<UploadOutlined />} onClick={exportList}>
               导出
             </Button>

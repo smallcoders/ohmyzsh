@@ -260,7 +260,7 @@ export default () => {
           href="#!"
           onClick={(e) => {
             e.preventDefault();
-            window.open(`/service-config/creative-need-manage/detail?id=${_record.id}`);
+            window.open(`/science-technology-manage/creative-need-manage/detail?id=${_record.id}`);
           }}
         >
           {_}
