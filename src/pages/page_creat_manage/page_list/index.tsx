@@ -368,8 +368,8 @@ export default () => {
   const getSearchQuery = () => {
     const search = searchForm.getFieldsValue();
     if (search.updateTime) {
-      search.updateTimeStart = moment(search.time[0]).format('YYYY-MM-DD');
-      search.updateTimeEnd = moment(search.time[1]).format('YYYY-MM-DD');
+      search.updateTimeStart = moment(search.updateTime[0]).format('YYYY-MM-DD HH:mm:ss');
+      search.updateTimeEnd = moment(search.updateTime[1]).format('YYYY-MM-DD HH:mm:ss');
     }
     if (search.state){
       search.state = search.state * 1
@@ -387,7 +387,7 @@ export default () => {
         <Form form={searchForm}>
           <Row>
             <Col span={4} offset={1}>
-              <Form.Item name="pageName" label="模板名称">
+              <Form.Item name="tmpName" label="模板名称">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
@@ -448,7 +448,7 @@ export default () => {
           <Button
             type="primary"
             onClick={() => {
-              history.push(`${routeName.PAGE_CREAT_MANAGE_EDIT}`);
+              window.open(`${routeName.PAGE_CREAT_MANAGE_EDIT}`);
             }}
           >
             新建模版
