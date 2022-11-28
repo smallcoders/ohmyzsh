@@ -1118,7 +1118,7 @@ export const componentsGroupList: ComponentGroup[] = [{
   title: "基础字段",
   components: [
     {
-      label: '单行文本框',
+      label: '单行文本',
       type: 'Input',
       errorMsg: '',
       config: {
@@ -1129,7 +1129,7 @@ export const componentsGroupList: ComponentGroup[] = [{
         paramKey: '',
         desc: '',
         isParam: true,
-        paramDesc: '单行文本框',
+        paramDesc: '单行文本',
         paramType: "string",
         showLabel: true,
       },
