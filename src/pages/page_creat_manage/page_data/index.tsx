@@ -117,22 +117,21 @@ export default () => {
     setIsExporting(true)
     exportData({tmpId: id,...getSearchQuery()}).then((res) => {
       setIsExporting(false)
-      console.log(res)
+      const content = res?.data;
+      const blob  = new Blob([content], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"});
+      const fileName = `${tmpName}.xlsx`
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a')
+      link.style.display = 'none'
+      link.href = url;
+      link.setAttribute('download', fileName)
+      document.body.appendChild(link);
+      link.click();
+      return res
     }).catch(() => {
       setIsExporting(false)
     })
   }
-
-
-  const downloadLink = (url: string): void => {
-    const link = document.createElement('a');
-    link.style.display = 'none';
-    link.href = url;
-
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
 
   const useSearchNode = (): React.ReactNode => {
     return (
