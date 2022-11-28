@@ -62,7 +62,7 @@ export default ({ id }: Props) => {
             <Row className="creditCode">{detail.creditCode}</Row>
             <Row>
               <Col span={6}>
-                <span>法定代表人:{detail.legalPersonName || '--'}</span>
+                <span>法定代表人：{detail.legalPersonName || '--'}</span>
               </Col>
               <Col span={8}>
                 <span>注册地址：{detail.registerAddress || '--'}</span>
