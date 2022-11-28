@@ -92,9 +92,8 @@ export default () => {
     }
   };
 
-  const showDrawer = async (id: string, record: any, searchTime: any, pageIndex: number = 1, pageSize = userPageInfo.pageSize) => {
+  const showDrawer = async (id: string, record: any, searchTime?: any, pageIndex: number = 1, pageSize = userPageInfo.pageSize) => {
     setEditingItem(record);
-    console.log(searchTime, 'shijian');
     try {
       const { result, totalCount, pageTotal, code } = await getPersonalSearchRecords({
         userId: id,
@@ -105,11 +104,12 @@ export default () => {
       if (code === 0) {
         setUserPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
         setUserDataSource(result);
+        setVisible(true);
       } else {
         message.error(`请求分页数据失败`);
       }
-      setDrawerSize('large');
-      setVisible(true);
+      // setDrawerSize('large');
+      
     } catch (error) {
       message.error('服务器报错');
     }
@@ -118,7 +118,7 @@ export default () => {
   const [form] = Form.useForm();
 
   const [visible, setVisible] = useState(false);
-  const [drawerSize, setDrawerSize] = useState();
+  const [drawerSize, setDrawerSize] = useState('large');
 
   const onClose = () => {
     setVisible(false);
@@ -139,7 +139,6 @@ export default () => {
       render: (_: string, _record: any) => {
         return _record.operateUserId ? (
           <a
-            href="#!"
             onClick={() => {
               showDrawer(`${_record.operateUserId}`, _record);
             }}

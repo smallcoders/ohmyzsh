@@ -104,7 +104,7 @@ export default () => {
             href="#!"
             onClick={(e) => {
               e.preventDefault(); 
-              history.push(`${routeName.EXPERT_MANAGE_DETAIL}?id=${record?.expertId}`);
+              window.open(`/user-config/expert-manage/detail?id=${record?.expertId}`);
             }}
           >
             {_}
