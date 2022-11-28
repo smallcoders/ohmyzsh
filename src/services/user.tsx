@@ -44,3 +44,13 @@ export async function exportUsers(data?: { [key: string]: any }) {
         data,
     });
 }
+
+/**
+ * 查询用户姓名风险总数
+ */
+export function getQueryUserManageRisky(data?: { [key: string]: any }) {
+    return request<any>('/antelope-user/mng/user/queryUserManageRisky', {
+        method: 'post',
+        data,
+    })
+}

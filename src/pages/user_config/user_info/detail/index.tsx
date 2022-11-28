@@ -1,20 +1,32 @@
 import { message, Image, Button, Descriptions, Radio, Row, Col, Empty } from 'antd';
 import { history } from 'umi';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import scopedClasses, { labelStyle, contentStyle } from '@/utils/scopedClasses';
 import './index.less';
+import Common from '@/types/common.d';
 import { getExpertAuthDetail, getOrgInfoAuthDetail, getUserDetail } from '@/services/user';
 import SelfTable from '@/components/self_table';
+import CommonTitle from '@/components/verify_steps/common_title';
+import VerifyStepsDetail from '@/components/verify_steps';
+import VerifyInfoDetail from '@/components/verify_info_detail/verify-info-detail';
 const sc = scopedClasses('user-config-user-detail');
+
 const scaleText = { 1: '0~50人', 2: '50~100人', 3: '100~200人', 4: '200~500人', 5: '500人以上' }
 const businessTypeText = { 1: '国营', 2: '民营', 3: '三资', 4: '其他（事业单位、科研院所等）' }
+export const VerifyListText = {
+  [Common.AuditStatus.AUDIT_PASSED]: '审核通过',
+  [Common.AuditStatus.AUDIT_REJECTED]: '审核拒绝',
+  [Common.AuditStatus.AUDIT_SUBMIT]: '审核提交',
+};
+
 export const previewType = ['png', 'jpg', 'jpeg', 'jpeg2000', 'pdf'] // 可预览的格式
 export default () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [orgDetail, setOrgDetail] = useState<any>({});
   const [expertDetail, setExpertDetail] = useState<any>({});
   const [detail, setDetail] = useState<any>({});
+  const [auditList, setAuditList] = useState<any>([]);
 
   const [contentType, setContentType] = useState<number>(1)
   const {
@@ -40,6 +52,7 @@ export default () => {
     profitLastYear,
     creditRating,
     businessScope,
+    auditItemList,
   } = orgDetail || {};
   const {
     personalPhotoFile,
@@ -67,6 +80,27 @@ export default () => {
       try {
         const userRes = await getUserDetail(id)
         setDetail(userRes?.result)
+        setAuditList(
+          userRes?.result?.auditItemList?.map((item: any) => {
+            return {
+              title: (
+                <CommonTitle
+                  title={item.userName}
+                  detail={VerifyListText[item.state] || ''}
+                  time={item.operationTime}
+                  special={
+                    item.state === Common.AuditStatus.AUDIT_PASSED ||
+                    item.state === Common.AuditStatus.AUDIT_REJECTED
+                  }
+                  reason={item.description}
+                  color={item.state === Common.AuditStatus.AUDIT_REJECTED ? '#FF65B3' : ''}
+                />
+              ),
+              description: null,
+              state: item.state,
+            }
+          })
+        );
 
         if (userRes?.result?.expertId) {
           getExpertAuthVerifyDetail(userRes?.result?.expertId)
@@ -244,6 +278,7 @@ export default () => {
     { title: '组织基本信息', content: basicContent1 },
     { title: '其他信息', content: basicContent2 },
   ];
+
   return (
     <PageContainer
       loading={loading}
@@ -346,6 +381,12 @@ export default () => {
             </div>
           )}
         </div> : <Empty description={'当前用户暂未完成专家认证'} />)
+      }
+      {
+        auditList && auditList?.length > 0 &&
+        <div style={{ background: '#fff', marginTop: 20, paddingTop: 20, paddingLeft: 100 }}>
+          <VerifyStepsDetail list={auditList} />
+        </div>
       }
     </PageContainer>
   );
