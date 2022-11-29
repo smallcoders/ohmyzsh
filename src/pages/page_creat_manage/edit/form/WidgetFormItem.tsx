@@ -318,7 +318,8 @@ const WidgetFormItem: FC<Props> = (props) => {
             }
             <Form.Item>
               <Input.TextArea
-                autoSize={config?.autoSize}
+                // autoSize={config?.autoSize}
+                rows={4}
                 maxLength={config?.maxLength}
                 placeholder={config?.placeholder}
               />
