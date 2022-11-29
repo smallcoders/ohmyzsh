@@ -385,6 +385,18 @@ export default () => {
     if (value && codeGyl === null) return Promise.reject(new Error('该供应商不存在'));
     return Promise.resolve();
   };
+  // 身份证校验
+  const cardNoValidator = (_: any, value: string) => {
+    const reg1 =
+      /^[1-9]\d{5}(((1[89]|20)\d{2}(((0[13578]|1[0-2])(0[1-9]|[12][0-9]|3[01]))|((0[469]|11)(0[1-9]|[12][0-9]|30))|(02(0[1-9]|[1][0-9]|2[0-8]))))|((((1[89]|20)(0[48]|[2468][048]|[13579][26]))|((19|20)00))0229))\d{3}(\d|X|x)$/;
+    const reg2 =
+      /^[1-9]\d{5}((\d{2}(((0[13578]|1[02])(0[1-9]|[12][0-9]|3[01]))|((0[13456789]|1[012])(0[1-9]|[12][0-9]|30))|(02(0[1-9]|1[0-9]|2[0-8]))))|(((0[48]|[2468][048]|[13579][26])|(00))0229))\d{2}[0-9Xx]$/;
+    if (value && !reg1.test(value) && !reg2.test(value)) {
+      console.log(reg1.test(value));
+      return Promise.reject(new Error('请输入正确的身份证号'));
+    }
+    return Promise.resolve();
+  };
 
   // 新增/编辑
   const addOrUpdate = async () => {
@@ -599,10 +611,7 @@ export default () => {
               name="cardNo"
               rules={[
                 { required: true, message: '请输入身份证号' },
-                {
-                  pattern: /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/,
-                  message: '请输入正确的身份证号',
-                },
+                { validator: cardNoValidator },
               ]}
             >
               <Input placeholder="请输入" maxLength={18} />
@@ -627,7 +636,7 @@ export default () => {
               name="detailArea"
               rules={[{ required: true, message: '请输入详细地址' }]}
             >
-              <Input placeholder="请输入" />
+              <Input maxLength={200} placeholder="请输入" />
             </Form.Item>
             <Form.Item
               label="合作时间"
@@ -758,6 +767,7 @@ export default () => {
         destroyOnClose
         onCancel={() => {
           setModalVisible(false);
+          getPages();
           setUploadNum({
             successNum: undefined,
             failNum: undefined,
@@ -847,6 +857,7 @@ export default () => {
                   size="large"
                   onClick={() => {
                     setModalVisible(false);
+                    getPages();
                     setUploadNum({ successNum: undefined, failNum: undefined, filePath: '' });
                   }}
                 >
