@@ -73,7 +73,7 @@ export default () => {
         />
       )}
       {activeKey === '3' && (
-        <LoanInfo isDetail={isDetail} type={Number(type)} step={step} id={id} />
+        <LoanInfo isDetail={isDetail} type={Number(type)} step={step} id={id} toTab={toTab} />
       )}
       {activeKey === '4' && (
         <RepaymentInfo isDetail={isDetail} type={Number(type)} id={id} step={step} />

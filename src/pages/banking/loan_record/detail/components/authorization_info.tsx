@@ -17,7 +17,7 @@ import { FooterToolbar } from '@ant-design/pro-components';
 import UploadFormFile from '@/components/upload_form/upload-form-file';
 import React, { useState, useEffect, useImperativeHandle, forwardRef } from 'react';
 import { routeName } from '@/../config/routes';
-import { history } from 'umi';
+import { history, Prompt } from 'umi';
 import { getCreditDetail, updateCreditInfo, getTakeMoneyDetail } from '@/services/banking-loan';
 import { regFenToYuan, regYuanToFen } from '@/utils/util';
 import patchDownloadFile from '@/utils/patch-download-file';
@@ -411,6 +411,35 @@ export default forwardRef((props: Props, ref) => {
         </Form>
         <FooterToolbar>{renderFooter()}</FooterToolbar>
         {afterSaveModel()}
+        <Prompt
+        when={formIsChange}
+        // when={isClosejumpTooltip && topApps.length > 0}
+        message={(location) => {
+          confirm({
+            title: '要在离开之前对填写的信息进行保存吗?',
+            icon: <ExclamationCircleOutlined />,
+            cancelText: '放弃修改并离开',
+            okText: '保存',
+            onCancel() {
+              console.log(location)
+              setFormIsChange(false)
+              setTimeout(() => {
+                history.push(location.pathname)
+              }, 1000);
+            },
+            onOk() {
+              onOk(() => {
+                setFormIsChange(false)
+                setTimeout(() => {
+                  history.push(location.pathname)
+                }, 1000);
+                });
+              },
+          });
+          return false
+        }
+        }
+      />
       </div>
     </Spin>
   );
