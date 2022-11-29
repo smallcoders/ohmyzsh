@@ -89,13 +89,15 @@ export default (props: { gid: any; demandTypes: any[], area: any[] }) => {
         setRecord({})
         isRefresh && getPage()
       }} />
-      <AssignModal record={record} visible={assignVisible}
-        setVisible={(b, isRefresh) => {
-          setAssignVisible(b)
-          setRecord({})
-          isRefresh && getPage()
-        }}
-      />
+      <Access accessible={tabState}>
+        <AssignModal record={record} visible={assignVisible}
+          setVisible={(b, isRefresh) => {
+            setAssignVisible(b)
+            setRecord({})
+            isRefresh && getPage()
+          }}
+        />
+      </Access>
     </>
     );
   };
