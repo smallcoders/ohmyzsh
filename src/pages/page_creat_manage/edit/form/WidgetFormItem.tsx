@@ -283,7 +283,7 @@ const WidgetFormItem: FC<Props> = (props) => {
     return (
       <div className={`${className}`} onClick={(event) => handleItemClick(event)}>
         {type === 'CheckboxGroup' && (
-          <Form.Item label={label} required={config?.required}>
+          <Form.Item label={config?.showLabel ? label : ''} required={config?.required}>
             {
               config?.desc && <div className="question-desc">{config.desc}</div>
             }
@@ -298,7 +298,7 @@ const WidgetFormItem: FC<Props> = (props) => {
           </Form.Item>
         )}
         {type === 'Input' && (
-          <Form.Item label={label} required={config?.required}>
+          <Form.Item label={config?.showLabel ? label : ''} required={config?.required}>
             {
               config?.desc && <div className="question-desc">{config.desc}</div>
             }
@@ -312,7 +312,7 @@ const WidgetFormItem: FC<Props> = (props) => {
           </Form.Item>
         )}
         {type === 'TextArea' && (
-          <Form.Item label={label} required={config?.required}>
+          <Form.Item label={config?.showLabel ? label : ''} required={config?.required}>
             {
               config?.desc && <div className="question-desc">{config.desc}</div>
             }
@@ -327,7 +327,7 @@ const WidgetFormItem: FC<Props> = (props) => {
           </Form.Item>
         )}
         {type === 'RadioGroup' && (
-          <Form.Item label={label} required={config?.required}>
+          <Form.Item label={config?.showLabel ? label : ''} required={config?.required}>
             {
               config?.desc && <div className="question-desc">{config.desc}</div>
             }

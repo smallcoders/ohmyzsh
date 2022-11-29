@@ -47,7 +47,7 @@ const GenerateFormItem: FC<Props> = (props) => {
       <>
         {type === 'CheckboxGroup' && (
           <Form.Item
-            label={label}
+            label={config?.showLabel ? label : ''}
             required={config?.required}
           >
             {config?.desc && <div className="question-desc">{config.desc}</div>}
@@ -80,7 +80,7 @@ const GenerateFormItem: FC<Props> = (props) => {
         )}
         {type === 'Input' && (
           <Form.Item
-            label={label}
+            label={config?.showLabel ? label : ''}
             required={config?.required}
           >
             {
@@ -100,7 +100,7 @@ const GenerateFormItem: FC<Props> = (props) => {
         )}
         {type === 'TextArea' && (
           <Form.Item
-            label={label}
+            label={config?.showLabel ? label : ''}
             required={config?.required}
           >
             {
@@ -121,7 +121,7 @@ const GenerateFormItem: FC<Props> = (props) => {
         )}
         {type === 'RadioGroup' && (
           <Form.Item
-            label={label}
+            label={config?.showLabel ? label : ''}
             required={config?.required}
           >
             {
