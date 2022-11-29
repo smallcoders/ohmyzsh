@@ -89,5 +89,7 @@ export async function exportData(data?: { [key: string]: any }) {
   return request<any>(`/antelope-common/mng/template/export/data`, {
     method: 'post',
     data,
+    responseType: 'blob',
+    getResponse: true,
   });
 }
