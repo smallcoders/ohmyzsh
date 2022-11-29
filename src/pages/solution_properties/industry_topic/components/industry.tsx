@@ -395,6 +395,7 @@ export default (props: { currentTab: any }) => {
             getOptions({
               ...searchContent,
               ...page,
+              detailIdList: modalInfo.detailIdList || []
             });
           }}
         />
