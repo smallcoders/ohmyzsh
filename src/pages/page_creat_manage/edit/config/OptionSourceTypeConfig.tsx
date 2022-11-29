@@ -16,11 +16,7 @@ const OptionSourceTypeConfig = (props: Props) => {
   const { multiple } = props
 
   const { selectWidgetItem, handleChange } = useConfig()
-  // const [renderOptions, setOptions] = useState(selectWidgetItem?.config?.options)
   const [errorMsg, setErrorMsg] = useState<string>('')
-  // useEffect(() => {
-  //   setOptions(selectWidgetItem?.config?.options)
-  // }, [selectWidgetItem?.config?.options])
 
   const sortableGroupDecorator = (instance: HTMLUListElement | null) => {
     if (instance) {
@@ -35,8 +31,6 @@ const OptionSourceTypeConfig = (props: Props) => {
           const configOptions: [] = clone(selectWidgetItem!.config!.options)
           const oldOption = configOptions.splice(oldIndex!, 1)
           configOptions.splice(newIndex!, 0, ...oldOption)
-          console.log(configOptions, '000000')
-          // setOptions(configOptions)
           handleChange(clone(configOptions), 'config.options')
         }
       }
@@ -52,7 +46,6 @@ const OptionSourceTypeConfig = (props: Props) => {
     setErrorMsg([...new Set(valueList)].length < valueList.length ? '选项重复，请修改' : "")
   }
   const options = selectWidgetItem?.config?.options
-  console.log(options, '000000')
   return (
     <Form.Item label="选项">
       {
