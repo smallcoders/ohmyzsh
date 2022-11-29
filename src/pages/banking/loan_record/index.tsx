@@ -626,11 +626,11 @@ export default () => {
       document.body.appendChild(link);
       link.click();
       setTimeout(() => {
-        message.success(`下载成功!`)
+        message.success(`导出成功`)
       }, 1000);
     } catch (error) {
       console.log(error);
-      message.error(`下载失败!`)
+      message.error(`导出失败`)
     }
   };
   const menuProps = (
