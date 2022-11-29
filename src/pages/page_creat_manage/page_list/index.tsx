@@ -92,7 +92,7 @@ export default () => {
   const handlePublish = (record: record) => {
     addOperationLog({
       tmpId: record.tmpId,
-      type: 1,
+      type: 2,
     })
     modifyTemplateState({
       tmpId: record.tmpId,
