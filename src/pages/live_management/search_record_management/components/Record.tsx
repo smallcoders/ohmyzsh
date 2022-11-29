@@ -92,11 +92,11 @@ export default () => {
     }
   };
 
-  const showDrawer = async (id: string, record: any, searchTime?: any, pageIndex: number = 1, pageSize = userPageInfo.pageSize) => {
-    setEditingItem(record);
+  const showDrawer = async (pageIndex: number = 1, searchTime?: any, pageSize = userPageInfo.pageSize) => {
+    
     try {
       const { result, totalCount, pageTotal, code } = await getPersonalSearchRecords({
-        userId: id,
+        userId: editingItem.operateUserId,
         pageIndex,
         pageSize,
         ...searchTime
@@ -108,7 +108,6 @@ export default () => {
       } else {
         message.error(`请求分页数据失败`);
       }
-      // setDrawerSize('large');
       
     } catch (error) {
       message.error('服务器报错');
@@ -140,7 +139,9 @@ export default () => {
         return _record.operateUserId ? (
           <a
             onClick={() => {
-              showDrawer(`${_record.operateUserId}`, _record);
+              setEditingItem(_record);
+              // showDrawer(`${_record.operateUserId}`, _record);
+              // setVisible(true);
             }}
           >
           {_}
@@ -186,6 +187,13 @@ export default () => {
       width: 200,
     }
   ];
+
+  useEffect(() => {
+    if(editingItem && editingItem.operateUserId) {
+      showDrawer(1);
+    }
+    
+  }, [editingItem]);
 
   useEffect(() => {
     getDiagnosticTasks();
@@ -278,7 +286,7 @@ export default () => {
                   }
                   // setDrawerSearChContent(rest);
                   console.log(rest, '查询时间');
-                  showDrawer(editingItem.operateUserId, editingItem, rest);
+                  showDrawer(1, rest);
                 }}
               >
                 查询
@@ -288,7 +296,7 @@ export default () => {
                 key="primary2"
                 onClick={() => {
                   searchForm.resetFields();
-                  showDrawer(editingItem.operateUserId, editingItem);
+                  showDrawer(1);
                 }}
               >
                 重置
@@ -342,7 +350,9 @@ export default () => {
               userPageInfo.totalCount === 0
                 ? false
                 : {
-                    onChange: showDrawer,
+                    onChange: (pageIndex) => {
+                      showDrawer(pageIndex)
+                    },
                     total: userPageInfo.totalCount,
                     current: userPageInfo.pageIndex,
                     pageSize: userPageInfo.pageSize,
