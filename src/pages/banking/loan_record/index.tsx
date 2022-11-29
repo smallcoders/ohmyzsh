@@ -452,7 +452,9 @@ export default () => {
             </Col>
             <Col span={8}>
               <Form.Item name="time" label="申请时间">
-                <DatePicker.RangePicker allowClear />
+                <DatePicker.RangePicker allowClear
+                disabledDate={(current) => current && current > moment().endOf('day')}
+                />
               </Form.Item>
             </Col>
             {isMore && (
@@ -530,7 +532,7 @@ export default () => {
               </>
             )}
 
-            <Col offset={18} span={7}>
+            <Col offset={18} span={6}>
               <Button
                 style={{ marginRight: 10 }}
                 type="primary"
@@ -623,8 +625,12 @@ export default () => {
       link.setAttribute('download', fileName);
       document.body.appendChild(link);
       link.click();
+      setTimeout(() => {
+        message.success(`下载成功!`)
+      }, 1000);
     } catch (error) {
       console.log(error);
+      message.error(`下载失败!`)
     }
   };
   const menuProps = (

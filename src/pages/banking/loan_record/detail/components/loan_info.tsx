@@ -18,7 +18,7 @@ import {
 } from 'antd';
 const { confirm } = Modal;
 import UploadFormFile from '@/components/upload_form/upload-form-file';
-import { UploadOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { UploadOutlined, ExclamationCircleOutlined, CheckCircleTwoTone } from '@ant-design/icons';
 import BankingLoan from '@/types/banking-loan.d';
 import './loan_info.less';
 import scopedClasses from '@/utils/scopedClasses';
@@ -36,7 +36,7 @@ import { regFenToYuan, regYuanToFen } from '@/utils/util';
 import patchDownloadFile from '@/utils/patch-download-file';
 import type { Props } from './authorization_info';
 const sc = scopedClasses('banking-loan-info');
-export default ({ isDetail, type, id, step }: Props) => {
+export default ({ isDetail, type, id, step,toTab }: Props) => {
   const [createModalVisible, setModalVisible] = useState<boolean>(false);
   const [dataSource, setDataSource] = useState<BankingLoan.LoanContent[]>([]);
   const [editId, setEditId] = useState<number>(0);
@@ -44,6 +44,7 @@ export default ({ isDetail, type, id, step }: Props) => {
   const [columns, setColumns] = useState<any[]>([]);
   const [formIsChange, setFormIsChange] = useState<boolean>(false);
   const [availAmounts, setAvailAmounts] = useState<number>(0);
+  const [afterSaveVisible, setAfterSaveVisible] = useState<boolean>(false);
   const [addOrUpdateLoading, setAddOrUpdateLoading] = useState<boolean>(false);
   const [options, setOptions] = useState<any>([]);
   const toCreditApply = () => {
@@ -127,7 +128,12 @@ export default ({ isDetail, type, id, step }: Props) => {
           if (flag) {
             setModalVisible(false);
           }
-          message.success(`${tooltipMessage}成功！`);
+          console.log('loanStatus', flag, loanStatus)
+          if (flag && loanStatus === 3) {
+            setAfterSaveVisible(true);
+          } else {
+            message.success(`${tooltipMessage}成功！`);
+          }
           clearForm();
           setFormIsChange(false);
           getPages();
@@ -340,6 +346,31 @@ export default ({ isDetail, type, id, step }: Props) => {
       setModalVisible(false);
     }
   };
+  const afterSaveModel = () => {
+    return (
+      <Modal
+        visible={afterSaveVisible}
+        title={
+          <>
+            <CheckCircleTwoTone style={{ marginRight: '10px' }} />
+            保存成功
+          </>
+        }
+        onCancel={() => setAfterSaveVisible(false)}
+        // icon={<CheckCircleTwoTone />}
+        footer={[
+          <Button key="back" onClick={() => history.push(`${routeName.LOAN_RECORD}`)}>
+            返回列表
+          </Button>,
+          <Button key="submit" type="primary" onClick={() => toTab('4')}>
+            录入还款信息
+          </Button>,
+        ]}
+      >
+        <p>放款信息录入成功。是否继续录入还款信息？</p>
+      </Modal>
+    );
+  };
   const useModal = (): React.ReactNode => {
     return (
       <Drawer
@@ -546,6 +577,7 @@ export default ({ isDetail, type, id, step }: Props) => {
         <Button onClick={() => history.goBack()}>返回</Button>
       </FooterToolbar>
       {useModal()}
+      {afterSaveModel()}
     </>
   );
 };

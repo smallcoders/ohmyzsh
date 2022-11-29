@@ -26,6 +26,9 @@ export async function getTotalAmount(data?: { [key: string]: any }) {
   return request<any>('/antelope-finance/loanRecord/mng/getTotalAmount', {
     method: 'post',
     data,
+    headers: {
+      'rpc-tag': 'jianwang44',
+    },
   });
 }
 /**
@@ -36,6 +39,9 @@ export async function getTotalAmount(data?: { [key: string]: any }) {
 export async function queryBankList(data?: { [key: string]: any }) {
   return request<any>('/antelope-finance/demand/queryBankList', {
     method: 'get',
+    headers: {
+      'rpc-tag': 'jianwang44',
+    },
   });
 }
 /**
@@ -74,6 +80,9 @@ export async function getCreditDetail(params: { id: string }) {
   return request<any>('/antelope-finance/loanRecord/mng/getCreditDetail', {
     method: 'get',
     params,
+    headers: {
+      'rpc-tag': 'jianwang44',
+    },
   });
 }
 
@@ -86,6 +95,9 @@ export async function updateCreditInfo(data: { [key: string]: any }) {
   return request<any>('/antelope-finance/loanRecord/mng/updateCreditInfo', {
     method: 'post',
     data,
+    headers: {
+      'rpc-tag': 'jianwang44',
+    },
   });
 }
 
@@ -98,6 +110,7 @@ export async function takeNotes(data: { [key: string]: any }) {
   return request<any>('/antelope-finance/loanRecord/mng/takeNotes', {
     method: 'post',
     data,
+    
   });
 }
 
@@ -110,6 +123,9 @@ export async function getAvailAmount(data: { [key: string]: any }) {
   return request<any>('/antelope-finance/loanRecord/mng/getAvailAmount', {
     method: 'post',
     data,
+    headers: {
+      'rpc-tag': 'jianwang44',
+    },
   });
 }
 
@@ -122,6 +138,9 @@ export async function addOrUpdateTakeMoney(data: { [key: string]: any }) {
   return request<any>('/antelope-finance/loanRecord/mng/addOrUpdateTakeMoney', {
     method: 'post',
     data,
+    headers: {
+      'rpc-tag': 'jianwang44',
+    },
   });
 }
 
@@ -146,6 +165,9 @@ export async function getTakeMoneyDetail(data: { [key: string]: any }) {
   return request<any>('/antelope-finance/loanRecord/mng/getTakeMoneyDetail', {
     method: 'post',
     data,
+    headers: {
+      'rpc-tag': 'jianwang44',
+    },
   });
 }
 
