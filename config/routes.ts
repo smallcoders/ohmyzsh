@@ -1259,12 +1259,12 @@ export default [
       },
       {
         path: routeName.PAGE_CREAT_MANAGE_PAGE_LIST,
-        name: '运营模版配置',
+        name: '运营模板配置',
         hideChildrenInMenu: true,
         routes: [
           {
             path: routeName.PAGE_CREAT_MANAGE_PAGE_LIST,
-            name: '运营模版配置',
+            name: '运营模板配置',
             component: './page_creat_manage/page_list/index',
           },
           {
