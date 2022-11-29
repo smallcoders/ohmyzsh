@@ -456,14 +456,14 @@ export default () => {
       {useSearchNode()}
       <div className={sc('container-table-header')}>
         <div className="title">
-          <span>模版列表</span>
+          <span>模板列表</span>
           <Button
             type="primary"
             onClick={() => {
               window.open(`${routeName.PAGE_CREAT_MANAGE_EDIT}`);
             }}
           >
-            新建模版
+            新建模板
           </Button>
         </div>
       </div>

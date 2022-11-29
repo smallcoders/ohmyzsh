@@ -24,12 +24,17 @@ const GenerateFormItem: FC<Props> = (props) => {
   const commonProps: Record<string, any> = {
     ...config
   }
+  if (config?.defaultValue){
+    formInstance.setFieldsValue({
+      [key!]: config.defaultValue
+    })
+  }
   const commonFormItemProps: Record<string, any> = {
     ...formItemConfig,
     name: key,
     label,
   }
-  const [checkBoxValue] = useState(config?.defaultValue)
+  const [checkBoxValue, setCheckBoxValue] = useState<string[]>(config?.defaultValue)
   if (['DatePicker', 'RangePicker', 'TimePicker'].includes(type) && formItemConfig?.initialValue) {
     if (isString(formItemConfig?.initialValue)) {
       commonFormItemProps.initialValue = moment(formItemConfig.initialValue, config?.format)
@@ -55,16 +60,17 @@ const GenerateFormItem: FC<Props> = (props) => {
               rules={config?.required ? [{ required: true, message: '请选择选项'}] : []}
               name={key}
               getValueFromEvent={(value) => {
-                const newValue = value.length > config?.maxLength ? value.slice(0, value.length - 1) : value
+                const newValue = value.length > config?.maxLength ? value.filter((checkItem: string) => {
+                  return checkBoxValue.indexOf(checkItem) !== -1
+                }): value
+                setCheckBoxValue(newValue)
                 formInstance.setFieldsValue({key: newValue})
-                formInstance.validateFields([key || ''])
                 return newValue
               }}
             >
               <Checkbox.Group
                 options={config?.options}
                 defaultValue={config?.defaultValue}
-                value={checkBoxValue}
                 onChange={(value)=>{
                   if (value.length > config?.maxLength){
                     Modal.info({

@@ -123,7 +123,7 @@ export default () => {
       <div className="content">
         <div className="result-content">
           <div className="status"><img src={successIcon} alt='' />表单已发布</div>
-          <div className="desc">可在运营模版配置列表对表单进行管理</div>
+          <div className="desc">可在运营模板配置列表对表单进行管理</div>
         </div>
         <div className="main-content">
           <Form.Item>
