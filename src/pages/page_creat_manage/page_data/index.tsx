@@ -66,9 +66,12 @@ export default () => {
                  title: paramDesc,
                  dataIndex: paramName,
                  render: (text: string) => {
-                   return(
-                     <span>{text.split('&&@#@').join(';')}</span>
-                   )
+                   if (text){
+                     return(
+                       <span>{text.split('&&@#@').join(';')}</span>
+                     )
+                   }
+                   return <span></span>
                  }
                })
             }

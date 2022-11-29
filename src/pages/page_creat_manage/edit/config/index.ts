@@ -1157,8 +1157,8 @@ export const componentsGroupList: ComponentGroup[] = [{
       errorMsg: '',
       config: {
         options: [
-          { label: '选项1', value: '选项1' },
-          { label: '选项2', value: '选项2' }
+          { label: '选项1', value: '选项1', index: 0 },
+          { label: '选项2', value: '选项2', index: 1 }
         ],
         optionType: 'default',
         required: false,
@@ -1177,9 +1177,9 @@ export const componentsGroupList: ComponentGroup[] = [{
       errorMsg: '',
       config: {
         options: [
-          { label: '选项1', value: '选项1' },
-          { label: '选项2', value: '选项2' },
-          { label: '选项3', value: '选项3' }
+          { label: '选项1', value: '选项1', index: 0 },
+          { label: '选项2', value: '选项2', index: 1 },
+          { label: '选项3', value: '选项3', index: 2 }
         ],
         required: false,
         maxLength: 3,

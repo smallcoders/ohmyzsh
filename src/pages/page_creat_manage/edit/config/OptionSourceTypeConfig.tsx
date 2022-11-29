@@ -16,7 +16,11 @@ const OptionSourceTypeConfig = (props: Props) => {
   const { multiple } = props
 
   const { selectWidgetItem, handleChange } = useConfig()
+  // const [renderOptions, setOptions] = useState(selectWidgetItem?.config?.options)
   const [errorMsg, setErrorMsg] = useState<string>('')
+  // useEffect(() => {
+  //   setOptions(selectWidgetItem?.config?.options)
+  // }, [selectWidgetItem?.config?.options])
 
   const sortableGroupDecorator = (instance: HTMLUListElement | null) => {
     if (instance) {
@@ -31,7 +35,9 @@ const OptionSourceTypeConfig = (props: Props) => {
           const configOptions: [] = clone(selectWidgetItem!.config!.options)
           const oldOption = configOptions.splice(oldIndex!, 1)
           configOptions.splice(newIndex!, 0, ...oldOption)
-          handleChange(configOptions, 'config.options')
+          console.log(configOptions, '000000')
+          // setOptions(configOptions)
+          handleChange(clone(configOptions), 'config.options')
         }
       }
       Sortable.create(instance, options)
@@ -45,6 +51,8 @@ const OptionSourceTypeConfig = (props: Props) => {
     })
     setErrorMsg([...new Set(valueList)].length < valueList.length ? '选项重复，请修改' : "")
   }
+  const options = selectWidgetItem?.config?.options
+  console.log(options, '000000')
   return (
     <Form.Item label="选项">
       {
@@ -54,19 +62,33 @@ const OptionSourceTypeConfig = (props: Props) => {
         {multiple ? (
           <div>
             <ul ref={sortableGroupDecorator}>
-              {selectWidgetItem?.config?.options?.map((option: { label: string; value: string }, index: number) => (
-                <li key={option.value}>
+              {options?.map((option: { label: string; value: string, index: number }, id: number) => (
+                <li key={`${option.index}`}>
                   <div className="option-item">
                     <img className="drag-item" src={dragIcon} alt='' />
                     <Input
-                      value={option.value}
+                      value={option.label}
                       size="small"
                       onChange={(event) => {
                         const configOptions = clone(selectWidgetItem!.config!.options)
-                        configOptions[index].value = event.target.value
-                        configOptions[index].label = event.target.value
+                        configOptions[id].value = event.target.value
+                        configOptions[id].label = event.target.value
                         handleChange(configOptions, 'config.options')
                         getErrorMsg(configOptions)
+                      }}
+                      onBlur={(e) => {
+                        if (!e.target.value){
+                          const configOptions = clone(selectWidgetItem!.config!.options)
+                          const indexList: number[] = configOptions.map((item: {label: string, value: string}) => {
+                            return item.value.replace('选项', '')
+                          })
+                          const max = Math.max(...indexList)
+                          const value = `选项${max + 1}`
+                          configOptions[id].value = value
+                          configOptions[id].label = value
+                          configOptions[id].index = max + 1
+                          handleChange(configOptions, 'config.options')
+                        }
                       }}
                     />
                     <Button
@@ -79,14 +101,14 @@ const OptionSourceTypeConfig = (props: Props) => {
                           return
                         }
                         const configOptions = clone(selectWidgetItem!.config!.options)
-                        const findIndex = selectWidgetItem?.config?.defaultValue?.indexOf(configOptions[index].value)
+                        const findIndex = selectWidgetItem?.config?.defaultValue?.indexOf(configOptions[id].value)
                         if(findIndex !== -1){
                           const defaultValue = clone(selectWidgetItem!.config!.defaultValue)
                           defaultValue.splice(findIndex, 1)
                           handleChange(defaultValue, 'config.defaultValue')
                         }
 
-                        configOptions.splice(index, 1)
+                        configOptions.splice(id, 1)
 
                         if(configOptions.length < selectWidgetItem?.config?.maxLength){
                           handleChange(configOptions.length, 'config.maxLength')
@@ -105,20 +127,34 @@ const OptionSourceTypeConfig = (props: Props) => {
         ) : (
           <div>
             <ul ref={sortableGroupDecorator}>
-              {selectWidgetItem?.config?.options?.map((option: { label: string; value: string }, index: number) => {
+              {options?.map((option: { label: string; value: string, index: number }, id: number) => {
                 return (
-                  <li key={option.value}>
+                  <li key={`${option.index}`}>
                     <div className="option-item">
                       <img className="drag-item" src={dragIcon} alt='' />
                       <Input
-                        value={option.value}
+                        value={option.label}
                         size="small"
                         onChange={(event) => {
                           const configOptions = clone(selectWidgetItem!.config!.options)
-                          configOptions[index].value = event.target.value
-                          configOptions[index].label = event.target.value
+                          configOptions[id].value = event.target.value
+                          configOptions[id].label = event.target.value
                           handleChange(configOptions, 'config.options')
                           getErrorMsg(configOptions)
+                        }}
+                        onBlur={(e) => {
+                          if (!e.target.value){
+                            const configOptions = clone(selectWidgetItem!.config!.options)
+                            const indexList: number[] = configOptions.map((item: {label: string, value: string}) => {
+                              return item.label.replace('选项', '')
+                            })
+                            const max = Math.max(...indexList)
+                            const value = `选项${max + 1}`
+                            configOptions[id].value = value
+                            configOptions[id].label = value
+                            configOptions[id].index = max + 1
+                            handleChange(configOptions, 'config.options')
+                          }
                         }}
                         maxLength={50}
                       />
@@ -132,10 +168,10 @@ const OptionSourceTypeConfig = (props: Props) => {
                             return
                           }
                           const configOptions = clone(selectWidgetItem?.config?.options)
-                          if(configOptions[index].value === selectWidgetItem?.config?.defaultValue){
+                          if(configOptions[id].value === selectWidgetItem?.config?.defaultValue){
                             handleChange('', 'config.defaultValue')
                           }
-                          configOptions.splice(index, 1)
+                          configOptions.splice(id, 1)
                           handleChange(configOptions, 'config.options')
                           getErrorMsg(configOptions)
                         }}
@@ -156,11 +192,11 @@ const OptionSourceTypeConfig = (props: Props) => {
           onClick={() => {
             const configOptions = clone(selectWidgetItem!.config!.options)
             const indexList: number[] = configOptions.map((item: {label: string, value: string}) => {
-              return item.value.replace('选项', '')
+              return item.label.replace('选项', '')
             })
             const max = Math.max(...indexList)
-            const value = `选项${max + 1}`
-            configOptions.push({ label: value, value })
+            const label = `选项${max + 1}`
+            configOptions.push({ label: label, value: label, index: max + 1 })
             handleChange(configOptions, 'config.options')
           }}
         >
