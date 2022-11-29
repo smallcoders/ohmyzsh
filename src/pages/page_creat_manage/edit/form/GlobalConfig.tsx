@@ -42,7 +42,7 @@ const GlobalConfig: FC = () => {
               <Checkbox checked={globalConfig?.showPageName} onChange={(e) => handleGlobalConfigChange('showPageName',e.target.checked)}>显示表单名称</Checkbox>
             </Form.Item>
             <Form.Item label="描述信息" >
-              <Input value={globalConfig?.pageDesc} onChange={(event) => handleGlobalConfigChange('pageDesc',event.target.value)} />
+              <Input maxLength={50} value={globalConfig?.pageDesc} onChange={(event) => handleGlobalConfigChange('pageDesc',event.target.value)} />
               <Checkbox checked={globalConfig?.showDesc} onChange={(e) => handleGlobalConfigChange('showDesc',e.target.checked)}>显示表单名称</Checkbox>
             </Form.Item>
             <Form.Item label="表单背景" >

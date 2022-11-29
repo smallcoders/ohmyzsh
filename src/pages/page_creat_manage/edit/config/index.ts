@@ -1118,7 +1118,7 @@ export const componentsGroupList: ComponentGroup[] = [{
   title: "基础字段",
   components: [
     {
-      label: '输入框',
+      label: '单行文本',
       type: 'Input',
       errorMsg: '',
       config: {
@@ -1129,7 +1129,7 @@ export const componentsGroupList: ComponentGroup[] = [{
         paramKey: '',
         desc: '',
         isParam: true,
-        paramDesc: '输入框',
+        paramDesc: '单行文本',
         paramType: "string",
         showLabel: true,
       },
@@ -1152,13 +1152,13 @@ export const componentsGroupList: ComponentGroup[] = [{
       },
     },
     {
-      label: '单选框组',
+      label: '单选按钮组',
       type: 'RadioGroup',
       errorMsg: '',
       config: {
         options: [
-          { label: '选项1', value: '选项1' },
-          { label: '选项2', value: '选项2' }
+          { label: '选项1', value: '选项1', index: 0 },
+          { label: '选项2', value: '选项2', index: 1 }
         ],
         optionType: 'default',
         required: false,
@@ -1166,20 +1166,20 @@ export const componentsGroupList: ComponentGroup[] = [{
         paramsKey: '',
         desc: '',
         isParam: true,
-        paramDesc: '单选框组',
+        paramDesc: '单选按钮组',
         paramType: '',
         showLabel: true,
       },
     },
     {
-      label: '多选框组',
+      label: '多选按钮组',
       type: 'CheckboxGroup',
       errorMsg: '',
       config: {
         options: [
-          { label: '选项1', value: '选项1' },
-          { label: '选项2', value: '选项2' },
-          { label: '选项3', value: '选项3' }
+          { label: '选项1', value: '选项1', index: 0 },
+          { label: '选项2', value: '选项2', index: 1 },
+          { label: '选项3', value: '选项3', index: 2 }
         ],
         required: false,
         maxLength: 3,
@@ -1187,7 +1187,7 @@ export const componentsGroupList: ComponentGroup[] = [{
         desc: '',
         paramsKey: '',
         isParam: true,
-        paramDesc: '多选框组',
+        paramDesc: '多选按钮组',
         paramType: '',
         showLabel: true,
       },

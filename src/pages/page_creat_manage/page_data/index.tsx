@@ -66,9 +66,12 @@ export default () => {
                  title: paramDesc,
                  dataIndex: paramName,
                  render: (text: string) => {
-                   return(
-                     <span>{text.split('&&@#@').join(';')}</span>
-                   )
+                   if (text){
+                     return(
+                       <span>{text.split('&&@#@').join(';')}</span>
+                     )
+                   }
+                   return <span></span>
                  }
                })
             }
@@ -117,22 +120,22 @@ export default () => {
     setIsExporting(true)
     exportData({tmpId: id,...getSearchQuery()}).then((res) => {
       setIsExporting(false)
-      console.log(res)
+      if (res?.data.size == 51) return antdMessage.warning('操作太过频繁，请稍后再试')
+      const content = res?.data;
+      const blob  = new Blob([content], {type: "application/vnd.ms-excel;charset=utf-8"});
+      const fileName = `${tmpName}.xlsx`
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a')
+      link.style.display = 'none'
+      link.href = url;
+      link.setAttribute('download', fileName)
+      document.body.appendChild(link);
+      link.click();
+      return res
     }).catch(() => {
       setIsExporting(false)
     })
   }
-
-
-  const downloadLink = (url: string): void => {
-    const link = document.createElement('a');
-    link.style.display = 'none';
-    link.href = url;
-
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
 
   const useSearchNode = (): React.ReactNode => {
     return (
@@ -186,11 +189,9 @@ export default () => {
           <span>{tmpName}</span>
           <Button
             type="primary"
-            onClick={() => {
-              exportDataClick()
-            }}
+            onClick={exportDataClick}
           >
-            导出数据
+              导出
           </Button>
         </div>
       </div>

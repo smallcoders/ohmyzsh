@@ -1,4 +1,4 @@
-import { FC, MouseEvent, useContext, useEffect, memo, useMemo, useRef } from 'react'
+import { FC, MouseEvent, useContext, useEffect, memo, useMemo, useRef, useState } from 'react';
 import {
   Col,
   Row,
@@ -46,6 +46,8 @@ const WidgetFormItem: FC<Props> = (props) => {
     () => `widget-item-container ${selectWidgetItem?.key === key ? 'active' : ''} ${['Row', 'Col', 'Space'].includes(type) ? 'child-nodes' : ''}`,
     [selectWidgetItem]
   )
+
+  const [checkBoxValue, setCheckBoxValue] = useState<string[]>([])
 
   const commonProps: Record<string, any> = {
     ...config,
@@ -215,8 +217,6 @@ const WidgetFormItem: FC<Props> = (props) => {
       payload: undefined
     })
   }
-  useEffect(() => formInstance.resetFields([key!]), [selectWidgetItem?.formItemConfig?.initialValue])
-
   const renderActionIcon = () => {
     return (
       <>
@@ -283,26 +283,44 @@ const WidgetFormItem: FC<Props> = (props) => {
     return (
       <div className={`${className}`} onClick={(event) => handleItemClick(event)}>
         {type === 'CheckboxGroup' && (
-          <Form.Item label={label} required={config?.required}>
+          <Form.Item label={config?.showLabel ? label : ''} required={config?.required}>
             {
               config?.desc && <div className="question-desc">{config.desc}</div>
             }
-            <Form.Item>
+            <Form.Item
+              name={key}
+              getValueFromEvent={(value) => {
+                const newValue = value.length > config?.maxLength ? value.filter((checkItem: string) => {
+                  return checkBoxValue.indexOf(checkItem) !== -1
+                }): value
+                setCheckBoxValue(newValue)
+                formInstance.setFieldsValue({key: newValue})
+                return newValue
+              }}
+            >
               <Checkbox.Group
                 options={config?.options.map((optionItem: {label: string, value: string}, index: number) => {
                   return {label: optionItem.label, value: `${optionItem.value}_${index}`}
                 })}
-                value={config?.defaultValue}
+                onChange={(value)=>{
+                  if (value.length > config?.maxLength){
+                    Modal.info({
+                      title: '提示',
+                      content: `此题最多只能选择${config?.maxLength}项`,
+                      okText: '我知道了',
+                    });
+                  }
+                }}
               />
             </Form.Item>
           </Form.Item>
         )}
         {type === 'Input' && (
-          <Form.Item label={label} required={config?.required}>
+          <Form.Item label={config?.showLabel ? label : ''} required={config?.required}>
             {
               config?.desc && <div className="question-desc">{config.desc}</div>
             }
-            <Form.Item>
+            <Form.Item name={key}>
               <Input
                 allowClear={config?.allowClear}
                 maxLength={config?.maxLength}
@@ -312,13 +330,14 @@ const WidgetFormItem: FC<Props> = (props) => {
           </Form.Item>
         )}
         {type === 'TextArea' && (
-          <Form.Item label={label} required={config?.required}>
+          <Form.Item label={config?.showLabel ? label : ''} required={config?.required}>
             {
               config?.desc && <div className="question-desc">{config.desc}</div>
             }
-            <Form.Item>
+            <Form.Item name={key}>
               <Input.TextArea
-                autoSize={config?.autoSize}
+                // autoSize={config?.autoSize}
+                rows={4}
                 maxLength={config?.maxLength}
                 placeholder={config?.placeholder}
               />
@@ -326,17 +345,16 @@ const WidgetFormItem: FC<Props> = (props) => {
           </Form.Item>
         )}
         {type === 'RadioGroup' && (
-          <Form.Item label={label} required={config?.required}>
+          <Form.Item label={config?.showLabel ? label : ''} required={config?.required}>
             {
               config?.desc && <div className="question-desc">{config.desc}</div>
             }
-            <Form.Item>
+            <Form.Item name={key}>
               <Radio.Group
                 options={config?.options.map((optionItem: {label: string, value: string}, index: number) => {
                   return {label: optionItem.label, value: `${optionItem.value}_${index}`}
                 })}
                 optionType={config?.optionType}
-                value={config?.defaultValue}
               />
             </Form.Item>
           </Form.Item>

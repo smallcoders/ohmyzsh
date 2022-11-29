@@ -28,6 +28,7 @@ import type Common from '@/types/common';
 import moment from 'moment';
 import SelfTable from '@/components/self_table';
 import { routeName } from '@/../config/routes';
+import PreviewModal from '../edit/components/PreviewModal';
 const sc = scopedClasses('page-creat-list');
 const statusMap = {
   0: '未发布',
@@ -49,7 +50,8 @@ interface record {
   tmpName: string;
   tmpDesc: string;
   state: string | number,
-  updateTime: string
+  updateTime: string,
+  tmpJson: string,
 }
 
 
@@ -57,6 +59,8 @@ export default () => {
   const [dataSource, setDataSource] = useState<any>([]);
   const [searchContent, setSearChContent] = useState<any>({});
   const [openMenuId, setMenuOpen] = useState<any>('')
+  const [templateJson, setTemplateJson] = useState<any>({})
+  const [previewVisible, setPreviewVisible] = useState(false)
   const [menuData, setMenuData] = useState<any>([])
   const history = useHistory();
   const [searchForm] = Form.useForm();
@@ -88,7 +92,7 @@ export default () => {
   const handlePublish = (record: record) => {
     addOperationLog({
       tmpId: record.tmpId,
-      type: 1,
+      type: 2,
     })
     modifyTemplateState({
       tmpId: record.tmpId,
@@ -285,6 +289,14 @@ export default () => {
       title: '模板名称',
       dataIndex: 'tmpName',
       width: 150,
+      render: (tmpName: string, record: record) => {
+        return <span onClick={() => {
+          if (record.tmpJson){
+            setTemplateJson(JSON.parse(record.tmpJson || '{}'))
+            setPreviewVisible(true)
+          }
+        }} style={{cursor: 'pointer'}}>{tmpName}</span>
+      }
     },
     {
       title: '描述信息',
@@ -368,8 +380,8 @@ export default () => {
   const getSearchQuery = () => {
     const search = searchForm.getFieldsValue();
     if (search.updateTime) {
-      search.updateTimeStart = moment(search.time[0]).format('YYYY-MM-DD');
-      search.updateTimeEnd = moment(search.time[1]).format('YYYY-MM-DD');
+      search.updateTimeStart = moment(search.updateTime[0]).format('YYYY-MM-DD HH:mm:ss');
+      search.updateTimeEnd = moment(search.updateTime[1]).format('YYYY-MM-DD HH:mm:ss');
     }
     if (search.state){
       search.state = search.state * 1
@@ -387,7 +399,7 @@ export default () => {
         <Form form={searchForm}>
           <Row>
             <Col span={4} offset={1}>
-              <Form.Item name="pageName" label="模板名称">
+              <Form.Item name="tmpName" label="模板名称">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
@@ -444,14 +456,14 @@ export default () => {
       {useSearchNode()}
       <div className={sc('container-table-header')}>
         <div className="title">
-          <span>模版列表</span>
+          <span>模板列表</span>
           <Button
             type="primary"
             onClick={() => {
-              history.push(`${routeName.PAGE_CREAT_MANAGE_EDIT}`);
+              window.open(`${routeName.PAGE_CREAT_MANAGE_EDIT}`);
             }}
           >
-            新建模版
+            新建模板
           </Button>
         </div>
       </div>
@@ -474,6 +486,15 @@ export default () => {
                   `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
               }
           }
+        />
+        <PreviewModal
+          title="预览"
+          footer={null}
+          visible={previewVisible}
+          json={templateJson}
+          onCancel={() => {
+            setPreviewVisible(false)
+          }}
         />
       </div>
     </PageContainer>

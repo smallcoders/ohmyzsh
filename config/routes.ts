@@ -24,6 +24,7 @@
   DEMAND_MANAGEMENT: '/service-config/requirement-management', // 需求管理
   DEMAND_MANAGEMENT_INDEX: '/supply-demand-setting/demand-manage/index', // 需求管理
   DEMAND_MANAGEMENT_DETAIL: '/supply-demand-setting/demand-manage/detail', // 需求管理详情
+
   OPERATION_ACTIVITY_PARAMETER:'/operation-activity/parameter-setting/index',//运营活动参数设置
   OPERATION_ACTIVITY_LINK:'/operation-activity/link-setting/index',//运营活动链接设置
 
@@ -1716,14 +1717,14 @@ export default [
       },
       {
         path: routeName.PAGE_CREAT_MANAGE_PAGE_LIST,
-        name: '运营模版配置',
+        name: '运营模板配置',
         hideChildrenInMenu: true,
         code: 'M_OA_YYMB',
         access: 'M_OA_YYMB',
         routes: [
           {
             path: routeName.PAGE_CREAT_MANAGE_PAGE_LIST,
-            name: '运营模版配置',
+            name: '运营模板配置',
             component: './page_creat_manage/page_list/index',
           },
           {
