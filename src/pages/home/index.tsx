@@ -1,5 +1,5 @@
 import type { RadioChangeEvent } from 'antd';
-import { Col, Row, Radio, DatePicker, Input, message } from 'antd';
+import { Col, Row, Button, DatePicker, Modal, message } from 'antd';
 import { ArrowUpOutlined, PlusOutlined, MinusOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import type { Moment } from 'moment';
@@ -10,6 +10,8 @@ import './index.less';
 import { getAddedDataYesterday, getStatistics } from '@/services/home';
 import { useHistory } from 'react-router-dom';
 import { routeName } from '@/../config/routes';
+import { divide } from 'lodash';
+import { Access, useAccess } from 'umi';
 
 const sc = scopedClasses('home-page');
 const { RangePicker } = DatePicker;
@@ -50,6 +52,8 @@ export default () => {
   const [dates, setDates] = useState<RangeValue>(null);
   const [hackValue, setHackValue] = useState<RangeValue>(null);
   const [value, setValue] = useState<RangeValue>(null);
+  // 拿到当前角色的access权限兑现
+  const access = useAccess()
   const disabledDate = (current: Moment) => {
     if (!dates) {
       return false;
@@ -157,31 +161,121 @@ export default () => {
     const { type } = item || {}
     switch (type) {
       case 'USER':
+        if (!access['M_UM_YHXX']) {
+          setModalOpen(true)
+          return
+        }
         history.push(`${routeName.USER_INFO_INDEX}`);
         break;
       case 'ENTERPRISE':
         // history.push(`${routeName.LOGOUT_RECORD}`);
         break;
       case 'EXPERT':
-        history.push(`${routeName.EXPERT_MANAGE_INDEX}`);
+        if (!access['M_UM_ZJZY']) {
+          setModalOpen(true)
+          return
+        }
+        history.push(`/user-config/expert-manage/index?type=M_UM_ZJZY`);
         break;
       case 'ENTERPRISE_DEMAND':
+        if (!access['M_SD_XQ']) {
+          setModalOpen(true)
+          return
+        }
         history.push(`${routeName.DEMAND_MANAGEMENT_INDEX}`);
         break;
       case 'CREATIVE_DEMAND':
-        history.push(`/service-config/creative-need-manage/index`);
+        if (!access['M_SM_XQGL']) {
+          setModalOpen(true)
+          return
+        }
+        history.push(`/science-technology-manage/creative-need-manage`);
         break;
       case 'CREATIVE_ACHIEVEMENT':
-        history.push(`/service-config/achievements-manage/index`);
+        if (!access['M_SM_CGGL']) {
+          setModalOpen(true)
+          return
+        }
+        history.push(`/science-technology-manage/achievements-manage`);
         break;
       case 'APP':
-        history.push(`${routeName.APP_MANAGE}`);
+        if (!access['M_AM_YYZY']) {
+          setModalOpen(true)
+          return
+        }
+        history.push(`/apply-manage/app-resource/index`);
         break;
       case 'SOLUTION':
-        history.push(`${routeName.SOLUTION_INDEX}`);
+        if (!access['M_SD_FW']) {
+          setModalOpen(true)
+          return
+        }
+        history.push(`/supply-demand-setting/solution/index?type=M_SD_FW`);
         break;
     
       default:
+        break;
+    }
+  }
+
+  const [modalOpen, setModalOpen] = useState<boolean>(false)
+  const handleModalOk = () => {
+    setModalOpen(false)
+  }
+  const motal = (
+    <Modal 
+      width="300px" 
+      title="提示" 
+      visible={modalOpen} 
+      onOk={handleModalOk}
+      footer={[
+        <Button key="ensure" type="primary" onClick={handleModalOk}>
+          我知道了
+        </Button>
+      ]
+      }
+    >
+      <p>您没有此页面查看权限，若需要查看，</p>
+      <p>请联系权限配置管理员进行权限分配</p>
+    </Modal>
+  )
+
+  const handleAddItem = (item: any) => {
+    switch (item) {
+      case '诊断意向报名':
+        if (!access['M_DM_ZDBM']) {
+          setModalOpen(true)
+          return
+        }
+        history.push(`/diagnose-manage/diagnostic-tasks/index?type=M_DM_ZDBM`);
+        break;
+      case '应用咨询记录':
+        if (!access['M_AM_ZXJL']) {
+          setModalOpen(true)
+          return
+        }
+        history.push(`/apply-manage/consult-record`);
+        break;
+      case '服务意向消息':
+        if (!access['M_SD_FWXX']) {
+          setModalOpen(true)
+          return
+        }
+        history.push(`/supply-demand-setting/solution/index?type=M_SD_FWXX`);
+        break;
+      case '专家咨询记录':
+        if (!access['M_UM_ZJZX']) {
+          setModalOpen(true)
+          return
+        }
+        history.push(`/user-config/expert-manage/index?type=M_UM_ZJZX`);
+        break;
+      case '直播意向管理':
+        if (!access['M_LM_ZBYX']) {
+          setModalOpen(true)
+          return
+        }
+        history.push(`/live-management/intention-collect`);
         break;
     }
   }
@@ -192,48 +286,39 @@ export default () => {
         <h3>业务咨询昨日新增数据</h3>
         <Row gutter={40}>
           <Col span={4} offset={2}>
-            <a
-              className={sc('container-add-item')}
-              href={`/service-config/diagnostic-tasks/index?type=M_DM_ZDBM`}
-            >
+            <div className={sc('container-add-item')} onClick={() => {handleAddItem('诊断意向报名')}}>
               <p>诊断意向报名</p>
               <ArrowUpOutlined style={{ color: 'red' }} />
               <strong>{diagnosisIntentionCount || 0}</strong>
-            </a>
+            </div>
           </Col>
           <Col span={4}>
-            <a
-              className={sc('container-add-item')}
-              href={'/service-config/app-manage/index?type=2'}
-            >
+            <div className={sc('container-add-item')} onClick={() => {handleAddItem('应用咨询记录')}}>
               <p>应用咨询记录</p>
               <ArrowUpOutlined style={{ color: 'red' }} />
               <strong>{appConsultationCount || 0}</strong>
-            </a>
+            </div>
           </Col>
           <Col span={4}>
-            <a className={sc('container-add-item')} href={'/service-config/solution/index?type=2'}>
+            <div className={sc('container-add-item')} onClick={() => {handleAddItem('服务意向消息')}}>
               <p>服务意向消息</p>
               <ArrowUpOutlined style={{ color: 'red' }} />
               <strong>{solutionIntentionCount || 0}</strong>
-            </a>
+            </div>
           </Col>
           <Col span={4}>
-            <a
-              className={sc('container-add-item')}
-              href={'/service-config/expert-manage/index?type=2'}
-            >
+            <div className={sc('container-add-item')} onClick={() => {handleAddItem('专家咨询记录')}}>
               <p>专家咨询记录</p>
               <ArrowUpOutlined style={{ color: 'red' }} />
               <strong>{expertConsultationCount || 0}</strong>
-            </a>
+            </div>
           </Col>
           <Col span={4}>
-            <a className={sc('container-add-item')} href={'/live-management/intention-collect'}>
+            <div className={sc('container-add-item')} onClick={() => {handleAddItem('直播意向管理')}}>
               <p>直播意向管理</p>
               <ArrowUpOutlined style={{ color: 'red' }} />
               <strong>{liveIntentionCount || 0}</strong>
-            </a>
+            </div>
           </Col>
         </Row>
       </div>
@@ -325,6 +410,7 @@ export default () => {
                 </div>
                 <div id='charts' style={{width: '100%', height: 500}}></div>
             </div> */}
+        {motal}
     </>
   );
 };
