@@ -295,7 +295,7 @@ export default () => {
             setTemplateJson(JSON.parse(record.tmpJson || '{}'))
             setPreviewVisible(true)
           }
-        }} style={{cursor: 'pointer'}}>{tmpName}</span>
+        }} style={{cursor: 'pointer', color: '#6680FF'}}>{tmpName}</span>
       }
     },
     {
