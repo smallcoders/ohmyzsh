@@ -12,9 +12,6 @@ export async function getLoanRecordList(data?: { [key: string]: any }) {
   return request<any>('/antelope-finance/loanRecord/mng/records', {
     method: 'post',
     data,
-    headers: {
-      'rpc-tag': 'jianwang44',
-    },
   });
 }
 /**
@@ -26,9 +23,6 @@ export async function getTotalAmount(data?: { [key: string]: any }) {
   return request<any>('/antelope-finance/loanRecord/mng/getTotalAmount', {
     method: 'post',
     data,
-    headers: {
-      'rpc-tag': 'jianwang44',
-    },
   });
 }
 /**
@@ -39,9 +33,6 @@ export async function getTotalAmount(data?: { [key: string]: any }) {
 export async function queryBankList(data?: { [key: string]: any }) {
   return request<any>('/antelope-finance/demand/queryBankList', {
     method: 'get',
-    headers: {
-      'rpc-tag': 'jianwang44',
-    },
   });
 }
 /**
@@ -66,9 +57,6 @@ export async function getApplicationInfo(params: { id?: string }) {
   return request<any>('/antelope-finance/loanRecord/mng/getApplicationInfo', {
     method: 'get',
     params,
-    headers: {
-      'rpc-tag': 'jianwang44',
-    },
   });
 }
 /**
@@ -80,9 +68,6 @@ export async function getCreditDetail(params: { id: string }) {
   return request<any>('/antelope-finance/loanRecord/mng/getCreditDetail', {
     method: 'get',
     params,
-    headers: {
-      'rpc-tag': 'jianwang44',
-    },
   });
 }
 
@@ -95,9 +80,6 @@ export async function updateCreditInfo(data: { [key: string]: any }) {
   return request<any>('/antelope-finance/loanRecord/mng/updateCreditInfo', {
     method: 'post',
     data,
-    headers: {
-      'rpc-tag': 'jianwang44',
-    },
   });
 }
 
@@ -123,9 +105,9 @@ export async function getAvailAmount(data: { [key: string]: any }) {
   return request<any>('/antelope-finance/loanRecord/mng/getAvailAmount', {
     method: 'post',
     data,
-    headers: {
-      'rpc-tag': 'jianwang44',
-    },
+    // headers: {
+    //   'rpc-tag': 'jianwang44',
+    // },
   });
 }
 
@@ -138,9 +120,6 @@ export async function addOrUpdateTakeMoney(data: { [key: string]: any }) {
   return request<any>('/antelope-finance/loanRecord/mng/addOrUpdateTakeMoney', {
     method: 'post',
     data,
-    headers: {
-      'rpc-tag': 'jianwang44',
-    },
   });
 }
 
@@ -165,9 +144,6 @@ export async function getTakeMoneyDetail(data: { [key: string]: any }) {
   return request<any>('/antelope-finance/loanRecord/mng/getTakeMoneyDetail', {
     method: 'post',
     data,
-    headers: {
-      'rpc-tag': 'jianwang44',
-    },
   });
 }
 
@@ -180,9 +156,6 @@ export async function addBackMoney(data: { [key: string]: any }) {
   return request<any>('/antelope-finance/loanRecord/mng/addBackMoney', {
     method: 'post',
     data,
-    headers: {
-      'rpc-tag': 'jbxu5',
-    },
   });
 }
 
@@ -207,9 +180,6 @@ export async function getBackMoneyDetail(data: { [key: string]: any }) {
   return request<any>('/antelope-finance/loanRecord/mng/getBackMoneyDetail', {
     method: 'post',
     data,
-    headers: {
-      'rpc-tag': 'jbxu5',
-    },
   });
 }
 
@@ -222,8 +192,5 @@ export async function getTakeDetail(params: { [key: string]: any }) {
   return request<any>('/antelope-finance/loanRecord/mng/getTakeDetail', {
     method: 'get',
     params,
-    headers: {
-      'rpc-tag': 'jianwang44',
-    },
   });
 }
