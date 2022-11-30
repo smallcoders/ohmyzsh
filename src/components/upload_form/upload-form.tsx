@@ -25,7 +25,7 @@ const UploadForm = (
     </div>
   );
   const imgSrc = fileId?.path ? fileId?.path :
-    fileId ? `/antelope-manage/common/download/${fileId}` : props.value?.indexOf('http') !== -1 ?
+    fileId ? `/antelope-manage/common/download/${fileId}` : `${props?.value || ''}`?.indexOf('http') !== -1 ?
       props.value : `/antelope-manage/common/download/${props.value}`
   const reUpload = (
     <div className={'reupload'}>
