@@ -52,12 +52,6 @@ export default () => {
               render: (_: any, _record: any, index: number) =>
                 pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
             },
-            {
-              title: '提交人',
-              dataIndex: 'submit_user_name',
-              isEllipsis: true,
-              width: 200,
-            },
           ];
           columns.forEach((item: {paramDesc: string, paramName: string}) => {
             const {paramName, paramDesc} = item
@@ -76,6 +70,14 @@ export default () => {
                })
             }
           })
+          newColumns.push(
+            {
+              title: '提交人',
+              dataIndex: 'submit_user_name',
+              isEllipsis: true,
+              width: 200,
+            },
+          )
           newColumns.push({
             title: '提交时间',
             dataIndex: 'create_time',
