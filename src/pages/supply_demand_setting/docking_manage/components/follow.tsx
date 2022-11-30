@@ -11,11 +11,11 @@ import {
 } from 'antd';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import type Common from '@/types/common';
 import SelfTable from '@/components/self_table';
 import type ExpertResource from '@/types/expert_manage/expert-resource';
-import { history } from 'umi';
+import { Access, useAccess } from 'umi';
 import { routeName } from '@/../config/routes';
 import {
   cancelAppoint,
@@ -37,6 +37,20 @@ export default (props: { gid: any; demandTypes: any[], area: any[] }) => {
     labelCol: { span: 6 },
     wrapperCol: { span: 16 },
   };
+  // 拿到当前角色的access权限兑现
+  const access = useAccess();
+
+  // 操作按钮权限
+  const tabState =  useMemo(() => {
+    const activePower = {
+      1: 'P_SD_XQGJ_SZH', // 数字化应用业务中
+      2: 'P_SD_XQGJ_CG', // 工品采购业务组
+      3: 'P_SD_XQGJ_KC', // 科产业务中
+      4: 'P_SD_XQGJ_JR', // 羚羊金融业务组
+      5: 'P_SD_XQGJ_JLR', // 技术经理人
+    }[gid]
+    return access[activePower]
+  },[gid, access])
 
   const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
     pageIndex: 1,
@@ -75,13 +89,15 @@ export default (props: { gid: any; demandTypes: any[], area: any[] }) => {
         setRecord({})
         isRefresh && getPage()
       }} />
-      <AssignModal record={record} visible={assignVisible}
-        setVisible={(b, isRefresh) => {
-          setAssignVisible(b)
-          setRecord({})
-          isRefresh && getPage()
-        }}
-      />
+      <Access accessible={tabState}>
+        <AssignModal record={record} visible={assignVisible}
+          setVisible={(b, isRefresh) => {
+            setAssignVisible(b)
+            setRecord({})
+            isRefresh && getPage()
+          }}
+        />
+      </Access>
     </>
     );
   };
@@ -214,7 +230,7 @@ export default (props: { gid: any; demandTypes: any[], area: any[] }) => {
       isEllipsis: true,
       width: 300,
     },
-    {
+    tabState && {
       title: '操作',
       width: 400,
       dataIndex: 'option',
@@ -222,22 +238,24 @@ export default (props: { gid: any; demandTypes: any[], area: any[] }) => {
       render: (_: any, record: any) => {
         return (
           <div>
-            <Space size={1}>
-              {record?.btnList?.map(p => <Button
-                type="link"
-                onClick={() => {
-                  // setRemark(record.remark || '');
-                  DockingManage.btnList[p]?.method && methodObj?.[DockingManage.btnList[p]?.method](record)
-                }}
-              >
-                {DockingManage.btnList[p]?.text}
-              </Button>)}
-            </Space>
+            <Access accessible={tabState}>
+              <Space size={1}>
+                {record?.btnList?.map(p => <Button
+                  type="link"
+                  onClick={() => {
+                    // setRemark(record.remark || '');
+                    DockingManage.btnList[p]?.method && methodObj?.[DockingManage.btnList[p]?.method](record)
+                  }}
+                >
+                  {DockingManage.btnList[p]?.text}
+                </Button>)}
+              </Space>
+            </Access>
           </div>
         );
       },
     },
-  ];
+  ].filter(p => p);
 
   useEffect(() => {
     if (gid) {

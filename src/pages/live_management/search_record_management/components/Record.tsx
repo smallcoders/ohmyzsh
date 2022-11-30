@@ -30,7 +30,7 @@ import type DiagnosticTasks from '@/types/service-config-diagnostic-tasks';
 import UploadFormFile from '@/components/upload_form/upload-form-file';
 import { getAreaTree } from '@/services/area';
 import { stringify } from 'rc-field-form/es/useWatch';
-const sc = scopedClasses('service-config-diagnostic-tasks');
+const sc = scopedClasses('tab-menu');
 export default () => {
   const [dataSource, setDataSource] = useState<DiagnosticTasks.OnlineRecord[]>([]);
   // 外层列表查询条件
@@ -92,12 +92,11 @@ export default () => {
     }
   };
 
-  const showDrawer = async (id: string, record: any, searchTime: any, pageIndex: number = 1, pageSize = userPageInfo.pageSize) => {
-    setEditingItem(record);
-    console.log(searchTime, 'shijian');
+  const showDrawer = async (pageIndex: number = 1, searchTime?: any, pageSize = userPageInfo.pageSize) => {
+    
     try {
       const { result, totalCount, pageTotal, code } = await getPersonalSearchRecords({
-        userId: id,
+        userId: editingItem.operateUserId,
         pageIndex,
         pageSize,
         ...searchTime
@@ -105,11 +104,11 @@ export default () => {
       if (code === 0) {
         setUserPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
         setUserDataSource(result);
+        setVisible(true);
       } else {
         message.error(`请求分页数据失败`);
       }
-      setDrawerSize('large');
-      setVisible(true);
+      
     } catch (error) {
       message.error('服务器报错');
     }
@@ -118,7 +117,7 @@ export default () => {
   const [form] = Form.useForm();
 
   const [visible, setVisible] = useState(false);
-  const [drawerSize, setDrawerSize] = useState();
+  const [drawerSize, setDrawerSize] = useState('large');
 
   const onClose = () => {
     setVisible(false);
@@ -139,9 +138,10 @@ export default () => {
       render: (_: string, _record: any) => {
         return _record.operateUserId ? (
           <a
-            href="#!"
             onClick={() => {
-              showDrawer(`${_record.operateUserId}`, _record);
+              setEditingItem(_record);
+              // showDrawer(`${_record.operateUserId}`, _record);
+              // setVisible(true);
             }}
           >
           {_}
@@ -187,6 +187,13 @@ export default () => {
       width: 200,
     }
   ];
+
+  useEffect(() => {
+    if(editingItem && editingItem.operateUserId) {
+      showDrawer(1);
+    }
+    
+  }, [editingItem]);
 
   useEffect(() => {
     getDiagnosticTasks();
@@ -279,7 +286,7 @@ export default () => {
                   }
                   // setDrawerSearChContent(rest);
                   console.log(rest, '查询时间');
-                  showDrawer(editingItem.operateUserId, editingItem, rest);
+                  showDrawer(1, rest);
                 }}
               >
                 查询
@@ -289,7 +296,7 @@ export default () => {
                 key="primary2"
                 onClick={() => {
                   searchForm.resetFields();
-                  showDrawer(editingItem.operateUserId, editingItem);
+                  showDrawer(1);
                 }}
               >
                 重置
@@ -343,7 +350,9 @@ export default () => {
               userPageInfo.totalCount === 0
                 ? false
                 : {
-                    onChange: showDrawer,
+                    onChange: (pageIndex) => {
+                      showDrawer(pageIndex)
+                    },
                     total: userPageInfo.totalCount,
                     current: userPageInfo.pageIndex,
                     pageSize: userPageInfo.pageSize,

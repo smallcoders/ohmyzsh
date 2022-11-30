@@ -15,7 +15,12 @@ export async function getActivityManageList(params: {
 }) {
   return request('/antelope-pay/mng/activity/pageQuery', {
     method: 'POST',
-    data: { ...params, pageIndex: params.current },
+    data: { 
+      ...params, 
+      pageIndex: params.current,
+      startDate: params.updateTime ? params.updateTime[0] : '',
+      endDate: params.updateTime ? params.updateTime[1] : ''
+    },
     // headers: {
     //   'rpc-tag': 'jbxu5',
     // },
@@ -54,7 +59,7 @@ export async function getActivityAppProducts(options?: Record<string, any>) {
  * @param params
  */
 export async function getProductPriceList(id: string) {
-  return request<LogoutVerify.ResultList>(`/antelope-pay/product/queryPrice/${id}`, {
+  return request<LogoutVerify.ResultList>(`/antelope-pay/mng/product/queryPrice/${id}`, {
     method: 'get',
   });
 }

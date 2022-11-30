@@ -1,0 +1,49 @@
+@import '../../../global.less';
+
+.service-config-digital-app-audit {
+  &-container {
+    background: #fff;
+    padding: 20px;
+
+    .title {
+      font-size: 16px;
+      color: #333;
+      font-weight: bold;
+    }
+
+    .table-app-row {
+      display: flex;
+      align-items: center;
+
+      img {
+        width: 60px;
+        height: 60px;
+        margin-right: 20px;
+      }
+
+      .info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+
+        span {
+          max-width: 600px;
+          .textoverflow(1);
+        }
+
+        span:first-child {
+          font-size: 16px;
+          font-weight: 600;
+          margin-bottom: .5em;
+          color: blue;
+          cursor: pointer;
+        }
+      }
+    }
+  }
+
+  &-ellipsis2 {
+    .textoverflow(2);
+  }
+}
