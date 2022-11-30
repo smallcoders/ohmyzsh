@@ -35,10 +35,12 @@ import { getOrgTypeOptions } from '@/services/org-type-manage';
 import { regFenToYuan, regYuanToFen } from '@/utils/util';
 import patchDownloadFile from '@/utils/patch-download-file';
 import type { Props } from './authorization_info';
+import detail from '@/pages/banking/banking_service_manage/detail/detail';
 const sc = scopedClasses('banking-loan-info');
 export default ({ isDetail, type, id, step,toTab }: Props) => {
   const [createModalVisible, setModalVisible] = useState<boolean>(false);
   const [dataSource, setDataSource] = useState<BankingLoan.LoanContent[]>([]);
+  const [dataSourceType, setdataSourceType] = useState<string>('');
   const [editId, setEditId] = useState<number>(0);
   const [editItem, setEditItem] = useState<BankingLoan.LoanContent>({});
   const [columns, setColumns] = useState<any[]>([]);
@@ -84,6 +86,7 @@ export default ({ isDetail, type, id, step,toTab }: Props) => {
         const { count, takeMoneyInfo, total, availAmount } = result;
         setPageInfo({ totalCount: count, pageTotal: total, pageIndex, pageSize });
         setDataSource(takeMoneyInfo);
+        setdataSourceType(result.dataSource)
         setAvailAmounts(Number(regFenToYuan(availAmount)));
       } else {
         message.error(`请求分页数据失败`);
@@ -570,7 +573,7 @@ export default ({ isDetail, type, id, step,toTab }: Props) => {
       </div>
       {isDetail && (
         <div className={sc('container-table-footer')}>
-          数据来源：{BankingLoan.DataSourcesTrans[type || '']}
+          数据来源：{dataSourceType}
         </div>
       )}
       <FooterToolbar>
