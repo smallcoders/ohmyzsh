@@ -77,7 +77,7 @@ export default () => {
   //获取全部场景值
   const getSceneList =async () =>{
     try {
-      const res =await getAllScene({flag:false})
+      const res =await getAllScene({flag:true})
       if(res.code === 0){
         setSelectSceneAll(res.result)
       }
@@ -88,7 +88,7 @@ export default () => {
   //获取全部渠道值
   const getChannelList =async () =>{
     try {
-      const res =await getAllChannel({flag:false})
+      const res =await getAllChannel({flag:true})
       if(res.code === 0){
         setSelectChannelAll(res.result)
       }
