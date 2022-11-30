@@ -72,8 +72,8 @@ const OptionSourceTypeConfig = (props: Props) => {
                       onBlur={(e) => {
                         if (!e.target.value){
                           const configOptions = clone(selectWidgetItem!.config!.options)
-                          const indexList: number[] = configOptions.map((item: {label: string, value: string}) => {
-                            return item.value.replace('选项', '')
+                          const indexList: number[] = configOptions.map((item: {label: string, value: string, index: number}) => {
+                            return  Number(item.label.replace('选项', '')) || item.index
                           })
                           const max = Math.max(...indexList)
                           const value = `选项${max + 1}`
@@ -138,8 +138,8 @@ const OptionSourceTypeConfig = (props: Props) => {
                         onBlur={(e) => {
                           if (!e.target.value){
                             const configOptions = clone(selectWidgetItem!.config!.options)
-                            const indexList: number[] = configOptions.map((item: {label: string, value: string}) => {
-                              return item.label.replace('选项', '')
+                            const indexList: number[] = configOptions.map((item: {label: string, value: string, index: number}) => {
+                              return  Number(item.label.replace('选项', '')) || item.index
                             })
                             const max = Math.max(...indexList)
                             const value = `选项${max + 1}`
@@ -184,9 +184,10 @@ const OptionSourceTypeConfig = (props: Props) => {
           size="small"
           onClick={() => {
             const configOptions = clone(selectWidgetItem!.config!.options)
-            const indexList: number[] = configOptions.map((item: {label: string, value: string}) => {
-              return item.label.replace('选项', '')
+            const indexList: number[] = configOptions.map((item: {label: string, value: string, index: number}) => {
+              return Number(item.label.replace('选项', '')) || item.index
             })
+            console.log(indexList)
             const max = Math.max(...indexList)
             const label = `选项${max + 1}`
             configOptions.push({ label: label, value: label, index: max + 1 })
