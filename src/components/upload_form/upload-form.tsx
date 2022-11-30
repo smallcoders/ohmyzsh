@@ -104,12 +104,13 @@ const UploadForm = (
     }
     return true;
   };
-
+const p = {...props}
+delete p.value
   return (
     <>
       {props.tooltip}
       <Upload
-        {...props}
+        {...p}
         name="file"
         action={props.action || '/antelope-manage/common/upload'}
         onChange={handleChange}

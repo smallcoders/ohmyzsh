@@ -37,6 +37,7 @@ export default ({ isDetail, id }: Props) => {
   const [dataSource, setDataSource] = useState<BankingLoan.LoanContent[]>([]);
   const [record, setRecord] = useState<BankingLoan.LoanContent>(null);
   const [editId, setEditId] = useState<number>(0);
+  const [editItem, setEditItem] = useState<BankingLoan.LoanContent>({});
   const [formIsChange, setFormIsChange] = useState<boolean>(false);
   const [expandedRowKeys, setExpandedRowKeys] = useState<any[]>([]);
   const [columns, setColumns] = useState<any[]>([]);
@@ -53,7 +54,7 @@ export default ({ isDetail, id }: Props) => {
   const [form] = Form.useForm();
   const clearForm = () => {
     form.resetFields();
-    setEditId(0);
+    setEditItem({});
   };
   const getPages = async (pageIndex = pageInfo.pageIndex, pageSize = pageInfo.pageSize) => {
     try {
@@ -154,7 +155,7 @@ export default ({ isDetail, id }: Props) => {
 
   // 新增/编辑 isSave false:保存并继续录入， true:保存
   const addOrUpdate = async (isSave: boolean) => {
-    const tooltipMessage = editId ? '编辑还款信息' : '新增还款信息';
+    const tooltipMessage = editItem.id ? '编辑还款信息' : '新增还款信息';
     form
       .validateFields()
       .then(async (value) => {
@@ -171,11 +172,11 @@ export default ({ isDetail, id }: Props) => {
         if (value.backMoney) {
           value.backMoney = regYuanToFen(value.backMoney, 100);
         }
-        const { code } = await (editId
+        const { code } = await (editItem.id
           ? addBackMoney({
               ...value,
               // applyId: record.id,
-              id: editId,
+              id: editItem.id,
             })
           : addBackMoney({
               ...value,
@@ -184,6 +185,8 @@ export default ({ isDetail, id }: Props) => {
         if (code === 0) {
           if (isSave) {
             setModalVisible(false);
+          } else {
+            setRecord({...record,backMoney: record.backMoney + value.backMoney - (editItem?.backMoney||0)})
           }
           getPages();
           if (record?.id) setExpandedRowKeys([...expandedRowKeys, record.id]);
@@ -266,7 +269,11 @@ export default ({ isDetail, id }: Props) => {
           <Form.Item
             label="放款金额"
             name="backMoney"
-            rules={[{ required: true, message: '请输入放款金额' }]}
+            rules={[{ required: true, message: '请输入放款金额' },{
+              type: 'number',
+              min: 0,
+              max: Number(regFenToYuan((record?.takeMoney||0) - (record?.backMoney||0), 1)) + (editItem?.backMoney ? Number(regFenToYuan(editItem?.backMoney, 1)) : 0),
+            }]}
           >
             <InputNumber
               placeholder="请输入"
@@ -313,7 +320,7 @@ export default ({ isDetail, id }: Props) => {
       console.log(error);
     }
   };
-  const expandedRowRender = (record: any) => {
+  const expandedRowRender = (_record: any) => {
     const _columns: ProColumns<DataCommodity.Commodity>[] = [
       {
         title: '序号',
@@ -339,13 +346,13 @@ export default ({ isDetail, id }: Props) => {
         title: '操作',
         width: 120,
         fixed: 'right',
-        render: (_: any, record: any, index: integer) => {
+        render: (_: any, records: any, index: integer) => {
           return isDetail ? (
             <Space size="middle">
               <a
                 onClick={() => {
                   patchDownloadFile(
-                    record.workProves,
+                    records.workProves,
                     `还款信息凭证${moment().format('YYYYMMDD')}`,
                   );
                 }}
@@ -357,16 +364,17 @@ export default ({ isDetail, id }: Props) => {
             <Space size="middle">
               <a
                 onClick={() => {
-                  setEditId(record.id);
+                  setEditItem(records);
                   setModalVisible(true);
+                  setRecord(_record)
                   form.setFieldsValue({
                     planRepaymentDate:
-                      record?.planRepaymentDate && moment(record?.planRepaymentDate),
+                      records?.planRepaymentDate && moment(records?.planRepaymentDate),
                     actualRepaymentDate:
-                      record?.actualRepaymentDate && moment(record?.actualRepaymentDate),
-                    backMoney: regFenToYuan(record?.backMoney, 1),
-                    workProve: record?.workProves
-                      ? record.workProves.map((p: BankingLoan.workProves) => {
+                      records?.actualRepaymentDate && moment(records?.actualRepaymentDate),
+                    backMoney: regFenToYuan(records?.backMoney, 1),
+                    workProve: records?.workProves
+                      ? records.workProves.map((p: BankingLoan.workProves) => {
                           return {
                             uid: p.id,
                             name: p.name + '.' + p.format,
@@ -384,7 +392,7 @@ export default ({ isDetail, id }: Props) => {
                 title="确定删除么？"
                 okText="确定"
                 cancelText="取消"
-                onConfirm={() => remove(record.id)}
+                onConfirm={() => remove(records.id)}
               >
                 <a href="#">删除</a>
               </Popconfirm>
@@ -400,7 +408,7 @@ export default ({ isDetail, id }: Props) => {
         headerTitle={false}
         search={false}
         options={false}
-        dataSource={record.backMoneyInfoVO}
+        dataSource={_record?.backMoneyInfoVO||[]}
         pagination={false}
       />
     );
