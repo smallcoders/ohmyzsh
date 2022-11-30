@@ -33,10 +33,10 @@ import './index.less';
 const sc = scopedClasses('system-config-auth');
 
 export type EditType = {
-  id?: string | number	// 主键自增id	
-  name?: string	// 角色名称	
-  description?: string	// 角色描述	
-  enable?: boolean	// 是否启用 true启用 false不启用	
+  id?: string | number	// 主键自增id
+  name?: string	// 角色名称
+  description?: string	// 角色描述
+  enable?: boolean	// 是否启用 true启用 false不启用
   createTime?: string	// 创建时间
 };
 
