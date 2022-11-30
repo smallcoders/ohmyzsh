@@ -1,27 +1,27 @@
 // import { PageContainer } from '@ant-design/pro-layout';
-// import React, { useState, useEffect } from 'react';
-// import { history } from 'umi';
+import React, { useState, useEffect } from 'react';
+import { history } from 'umi';
 // import Solution from './solution';
 // import Intention from './intention_message/index';
 import TabMenu from '@/components/TabMenu';
 export default () => {
-  // const [activeKey, setActiveKey] = useState<string>('1');
+  const [activeKey, setActiveKey] = useState<string>('1');
 
-  // const { type } = history.location.query as any;
+  const { type } = history.location.query as any;
 
-  // const prepare = async () => {
-  //   if (type) {
-  //     setActiveKey(type);
-  //   }
-  // };
+  const prepare = async () => {
+    if (type) {
+      setActiveKey(type);
+    }
+  };
 
-  // useEffect(() => {
-  //   prepare();
-  // }, []);
+  useEffect(() => {
+    prepare();
+  }, []);
 
 
   return (
-    <TabMenu tabs={['M_SD_FW', 'M_SD_FWXX']} />
+    <TabMenu tabs={['M_SD_FW', 'M_SD_FWXX']} activeState={activeKey} />
     // <PageContainer
     //   tabList={[
     //     {

@@ -1,27 +1,27 @@
 // import { PageContainer } from '@ant-design/pro-layout';
-// import React, { useState, useEffect } from 'react';
-// import { history } from 'umi';
+import { useState, useEffect } from 'react';
+import { history } from 'umi';
 // import ExpertResource from './components/expert-resource';
 // import ConsultRecord from './components/consult-record';
 // import ApplyRecord from './components/apply-record';
 import TabMenu from '@/components/TabMenu';
 export default () => {
-  // const [activeKey, setActiveKey] = useState<string>('1');
+  const [activeKey, setActiveKey] = useState<string>('1');
 
-  // const { type } = history.location.query as any;
+  const { type } = history.location.query as any;
 
-  // const prepare = async () => {
-  //   if (type) {
-  //     setActiveKey(type);
-  //   }
-  // };
+  const prepare = async () => {
+    if (type) {
+      setActiveKey(type);
+    }
+  };
 
-  // useEffect(() => {
-  //   prepare();
-  // }, []);
+  useEffect(() => {
+    prepare();
+  }, []);
 
   return (
-    <TabMenu tabs={['M_UM_ZJZY', 'M_UM_ZJZX', 'M_UM_SQJL']} />
+    <TabMenu tabs={['M_UM_ZJZY', 'M_UM_ZJZX', 'M_UM_SQJL']} activeState={activeKey} />
     // <PageContainer
     //   tabList={[
     //     {
