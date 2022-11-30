@@ -59,6 +59,8 @@ namespace BankingLoan {
     takeMoney?: float; // 放款金额
     rate?: string; // 执行年利率
     workProves?: workProves[];
+    backMoney?: number;//还款金额
+    backMoneyInfoVO?: any[];
   };
   // 审核状态列表
   export interface StatusResultList extends Common.ResultCode {

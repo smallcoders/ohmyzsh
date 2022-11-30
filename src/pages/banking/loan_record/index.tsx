@@ -181,7 +181,6 @@ export default () => {
         }
       })
       .catch((err) => {
-        message.error('服务器错误');
         console.log(err);
       });
   };
