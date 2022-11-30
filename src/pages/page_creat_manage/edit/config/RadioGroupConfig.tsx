@@ -42,7 +42,10 @@ const RadioGroupConfig = () => {
           onBlur={(e) => {
             if(!e.target.value){
               handleChange('参数名不得为空', 'errorMsg')
-            } else {
+            } else if(/[^\w]/g.test(e.target.value)){
+              handleChange('只允许输入大小写字母、下划线及数字', 'errorMsg')
+              return
+            } {
               const repeatParam = widgetFormList.filter((item: any) => {
                 return item.key !== selectWidgetItem!.key && item.config.paramKey === selectWidgetItem!.config!.paramKey
               })
@@ -54,8 +57,7 @@ const RadioGroupConfig = () => {
             }
           }}
           onChange={(event) =>{
-            const value = event.target.value.replace(/[^\w]/g,'')
-            handleChange(value, 'config.paramKey')
+            handleChange(event.target.value, 'config.paramKey')
           }}
         />
       </Form.Item>
