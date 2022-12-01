@@ -267,9 +267,9 @@ export default ({ isDetail, id }: Props) => {
             <DatePicker allowClear style={{ width: '100%' }} />
           </Form.Item>
           <Form.Item
-            label="放款金额"
+            label="还款金额"
             name="backMoney"
-            rules={[{ required: true, message: '请输入放款金额' },{
+            rules={[{ required: true, message: '请输入还款金额' },{
               type: 'number',
               min: 0,
               max: Number(regFenToYuan((record?.takeMoney||0) - (record?.backMoney||0), 1)) + (editItem?.backMoney ? Number(regFenToYuan(editItem?.backMoney, 1)) : 0),

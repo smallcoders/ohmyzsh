@@ -19,10 +19,11 @@ import React, { useState, useEffect, useImperativeHandle, forwardRef } from 'rea
 import { routeName } from '@/../config/routes';
 import { history, Prompt } from 'umi';
 import { getCreditDetail, updateCreditInfo, getTakeMoneyDetail } from '@/services/banking-loan';
-import { regFenToYuan, regYuanToFen } from '@/utils/util';
+import { regFenToYuan, regYuanToFen,customToFixed } from '@/utils/util';
 import patchDownloadFile from '@/utils/patch-download-file';
 import type BankingLoan from '@/types/banking-loan.d';
 import moment from 'moment';
+import { isNull } from 'lodash';
 export type Props = {
   isDetail?: boolean; //详情展示
   type?: number; // 数据来源
@@ -342,6 +343,8 @@ export default forwardRef((props: Props, ref) => {
                   <InputNumber
                     placeholder="请输入"
                     precision={2}
+                    // formatter={value => value && (Math.floor(value * 100) / 100).toFixed(2) || null}
+                    // parser={value=> Number(value)}
                     addonAfter="%"
                     style={{ width: '100%' }}
                   />
