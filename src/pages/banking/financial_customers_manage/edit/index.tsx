@@ -66,11 +66,11 @@ export default () => {
           legalPersonName,
           regAddress,
           detailAddress,
-          actualCapital: customToFixed(`${actualCapital / 1000000}`),
-          regCapital: customToFixed(`${regCapital / 1000000}`),
-          revenueLastYear: customToFixed(`${revenueLastYear / 1000000}`),
-          profitLastYear: customToFixed(`${profitLastYear / 1000000}`),
-          totalAssets: customToFixed(`${totalAssets / 1000000}`),
+          actualCapital,
+          regCapital,
+          revenueLastYear: typeof revenueLastYear === 'number' ? customToFixed(`${revenueLastYear / 1000000}`) : '',
+          profitLastYear: typeof revenueLastYear === 'number' ? customToFixed(`${profitLastYear / 1000000}`) : '',
+          totalAssets: typeof revenueLastYear === 'number' ? customToFixed(`${totalAssets / 1000000}`) : '',
           regStatus,
           scale,
           busRange,
@@ -101,8 +101,8 @@ export default () => {
   const handleSubmit = async () => {
     await form.validateFields()
     const valueList = form.getFieldsValue()
-    valueList.actualCapital = valueList.actualCapital ? valueList.actualCapital * 1000000 : valueList.actualCapital
-    valueList.regCapital = valueList.regCapital ? valueList.regCapital * 1000000 : valueList.regCapital
+    valueList.actualCapital = valueList.actualCapital
+    valueList.regCapital = valueList.regCapital
     valueList.revenueLastYear = valueList.revenueLastYear ? valueList.revenueLastYear * 1000000 : valueList.revenueLastYear
     valueList.profitLastYear = valueList.profitLastYear ? valueList.profitLastYear * 1000000 : valueList.profitLastYear
     valueList.totalAssets = valueList.totalAssets ? valueList.totalAssets * 1000000 : valueList.totalAssets
@@ -164,10 +164,10 @@ export default () => {
           />
         </Form.Item>
         <Form.Item name="regCapital" label="注册资本" required>
-          <Input disabled suffix="万元" />
+          <Input disabled />
         </Form.Item>
         <Form.Item name="actualCapital" label="实缴资本" required>
-          <Input disabled suffix="万元" />
+          <Input disabled/>
         </Form.Item>
         <Form.Item name="regAddress" label="注册地址" required>
           <Input disabled />

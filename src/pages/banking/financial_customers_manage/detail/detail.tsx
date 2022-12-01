@@ -48,11 +48,11 @@ export default () => {
             <div className="right-bottom-content">
               <div>
                 <div className="item"><label>法定代表人：</label>{detail?.legalPersonName || '--'}</div>
-                <div className="item"><label>实缴资本：</label>{detail?.actualCapital >= 0 ? `${customToFixed(`${detail?.actualCapital / 1000000}`)}万元` : '--'}</div>
+                <div className="item"><label>实缴资本：</label>{detail?.actualCapital ? `${ detail?.actualCapital}` : '--'}</div>
               </div>
               <div>
                 <div className="item"><label>注册地址：</label>{detail?.regAddress || '--'}</div>
-                <div className="item"><label>注册资本：</label>{detail?.regCapital >= 0 ? `${customToFixed(`${detail?.regCapital / 1000000}`)}万元` : '--'}</div>
+                <div className="item"><label>注册资本：</label>{detail?.regCapital ? `${ detail?.regCapital}` : '--'}</div>
               </div>
               <div>
                 <div className="item"><label>成立日期：</label>{detail?.formedDate || '--'}</div>
@@ -72,12 +72,12 @@ export default () => {
                 <label>组织形式：</label>{detail?.orgForm ? orgFormMap[detail?.orgForm] : '--'}
               </div>
               <div className="item">
-                <label>总资产：</label>{detail?.totalAssets >= 0 ? `${customToFixed(`${detail?.totalAssets / 1000000}`)}万元` : '--'}
+                <label>总资产：</label>{typeof detail?.totalAssets === 'number' ? `${customToFixed(`${detail?.totalAssets / 1000000}`)}万元` : '--'}
               </div>
             </div>
             <div>
               <div className="item">
-                <label>上年营收：</label>{detail?.revenueLastYear >= 0? `${customToFixed(`${detail?.revenueLastYear / 1000000}`)}万元` : '--'}
+                <label>上年营收：</label>{typeof detail?.revenueLastYear === 'number'? `${customToFixed(`${detail?.revenueLastYear / 1000000}`)}万元` : '--'}
               </div>
               <div className="item">
                 <label>法人资格：</label>{detail?.legalQualification ? legalQualificationMap[detail?.legalQualification] : '--'}
@@ -88,7 +88,7 @@ export default () => {
             </div>
             <div>
               <div className="item">
-                <label>上年利润：</label>{detail?.profitLastYear >= 0 ? `${customToFixed(`${detail?.profitLastYear / 1000000}`)}万元` : '--'}
+                <label>上年利润：</label>{typeof detail?.profitLastYear === 'number' ? `${customToFixed(`${detail?.profitLastYear / 1000000}`)}万元` : '--'}
               </div>
               <div className="item">
                 <label>经营成分：</label>{detail?.economyType ? economyTypeMap[detail?.economyType] : '--'}
