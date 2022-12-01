@@ -32,6 +32,7 @@ import {
   getAllChannel,
   postDeleteActivity,
   postAddActivity,
+  getChannelAndScene,
   postDownActivity,
   postAppletCode,
   postOperationRecord,
@@ -135,9 +136,10 @@ export default () => {
   }
   const getChannelListAll =async () =>{
     try {
-      const res =await getAllChannel({flag:false})
+      const res =await getChannelAndScene()
       if(res.code === 0){
-        setSelectChannelAll(res.result)
+        setSelectChannelAll(Array.from(new Set(res?.result?.channelList)))
+        setSelectSceneAll(Array.from(new Set(res?.result?.sceneList)))
       }
     }catch (e) {
       console.log(e)
@@ -159,19 +161,9 @@ export default () => {
       console.log(e)
     }
   }
-  const getSceneListAll =async () =>{
-    try {
-      const res =await getAllScene({flag:false})
-      if(res.code === 0){
-          setSelectSceneAll(res.result)
-      }
-    }catch (e) {
-      console.log(e)
-    }
-  }
+
   useEffect(() => {
     getSceneList();
-    getSceneListAll();
   }, []);
 
   //获取活动的小程序码
