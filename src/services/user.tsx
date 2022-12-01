@@ -54,3 +54,15 @@ export function getQueryUserManageRisky(data?: { [key: string]: any }) {
         data,
     })
 }
+
+/**
+ * 用户注册来源
+ */
+export function getListEnumsByKey(params: {
+    key: string
+}) {
+    return request<any>('/antelope-user/enum/listEnumsByKey',{
+        method: 'GET',
+        params,
+    })
+}
