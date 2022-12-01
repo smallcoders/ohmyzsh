@@ -81,6 +81,9 @@ export default () => {
     {
       title: '成立时间',
       dataIndex: 'formedDate',
+      render: (formedDate: string) => {
+        return <span>{formedDate ? formedDate.split(' ')[0] : '--'}</span>
+      }
     },
     {
       title: '法定代表人',
