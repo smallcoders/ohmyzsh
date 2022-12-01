@@ -58,7 +58,6 @@ const Header = (props: any) => {
         type: ActionType.SET_GLOBAL,
         payload: newState
       })
-      console.log(state, '0000')
       message.warn('请检查各题目参数名是否按要求定义', 2)
       return
     }

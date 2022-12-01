@@ -116,7 +116,7 @@ const DesignForm = forwardRef<DesignFormRef, DesignFormProps>((props, ref) => {
       <div className="top-header">
         <img src={logoImg} alt='' />
         <div className="top-header-right">
-          羚羊工业平台
+          羚羊运营平台
         </div>
         <GlobalHeaderRight />
       </div>

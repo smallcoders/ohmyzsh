@@ -11,9 +11,9 @@ import { useConfig } from '../hooks/hooks'
 import { DesignContext } from '../store';
 
 const InputConfig = () => {
+  const { selectWidgetItem, handleChange } = useConfig()
   const { state } = useContext(DesignContext)
   const { widgetFormList } = state
-  const { selectWidgetItem, handleChange } = useConfig()
   const [showLengthInput, setShowLengthInput] = useState<boolean>(false)
   return (
     <>
@@ -50,6 +50,7 @@ const InputConfig = () => {
           onBlur={(e) => {
             if(!e.target.value){
               handleChange('参数名不得为空', 'errorMsg')
+              return
             } else if(/[^\w]/g.test(e.target.value)){
               handleChange('只允许输入大小写字母、下划线及数字', 'errorMsg')
               return
