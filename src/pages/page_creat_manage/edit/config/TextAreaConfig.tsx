@@ -43,6 +43,7 @@ const TextAreaConfig = () => {
           onBlur={(e) => {
             if(!e.target.value){
               handleChange('参数名不得为空', 'errorMsg')
+              return
             } else if(/[^\w]/g.test(e.target.value)){
               handleChange('只允许输入大小写字母、下划线及数字', 'errorMsg')
               return
@@ -114,5 +115,4 @@ const TextAreaConfig = () => {
     </>
   )
 }
-
 export default TextAreaConfig

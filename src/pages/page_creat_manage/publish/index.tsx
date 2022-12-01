@@ -105,7 +105,7 @@ export default () => {
       <div className="top-header">
         <div className="top-header-right">
           <img src={logoImg} alt='' />
-          羚羊工业平台
+          羚羊运营平台
         </div>
         <GlobalHeaderRight />
       </div>

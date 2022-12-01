@@ -1,6 +1,6 @@
 .preview-modal-box {
   .question-desc {
-    font-size: 12px;
+    font-size: 14px;
     line-height: 16px;
     color: #808da1;
     margin: -4px 0 14px 0;
@@ -8,6 +8,14 @@
   &.mobile {
     width: 375px;
     margin: 0 auto;
+    .ant-form > .ant-form-item {
+      .ant-form-item-label {
+        padding-bottom: 4px;
+        >label {
+          font-size: 14px;
+        }
+      }
+    }
     .mobile-title {
       height: 44px;
       line-height: 44px;
@@ -16,6 +24,11 @@
       font-size: 17px;
       background: #fff;
       font-weight: bold;
+    }
+    .ant-btn-primary {
+      display: block;
+      margin: 16px auto 20px;
+      width: 343px;
     }
     .body-title-box {
       min-height: 120px;
@@ -40,9 +53,6 @@
         padding: 16px 16px 16px 10px;
         border-radius: 2px;
         background: #fff;
-        .ant-form-item-control-input-content {
-          padding-left: 4px;
-        }
         .ant-form-item-label {
           font-size: 16px;
         }
@@ -105,6 +115,10 @@
       .ant-radio-wrapper {
         margin-top: 8px;
       }
+    }
+    .ant-form-item-label>label {
+      font-size: 16px;
+      color: #1E232A;
     }
     .ant-checkbox-group {
       display: flex;
