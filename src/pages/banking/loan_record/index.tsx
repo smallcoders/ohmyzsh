@@ -61,7 +61,7 @@ export default () => {
   }>({});
 
   const formLayout = {
-    labelCol: { span: 6 },
+    labelCol: { span: 7 },
     wrapperCol: { span: 16 },
   };
 
@@ -85,7 +85,7 @@ export default () => {
 
   const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
     pageIndex: 1,
-    pageSize: 20,
+    pageSize: 10,
     totalCount: 0,
     pageTotal: 0,
   });
@@ -439,17 +439,17 @@ export default () => {
       <div className={sc('container-search')}>
         <Form {...formLayout} form={searchForm}>
           <Row>
-            <Col span={8}>
+            <Col span={isMore ? 8 : 7}>
               <Form.Item name="applyNo" label="业务申请编号">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
-            <Col span={8}>
+            <Col span={isMore ? 8 : 5}>
               <Form.Item name="orgName" label="企业名称">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
-            <Col span={8}>
+            <Col span={isMore ? 8 :6}>
               <Form.Item name="time" label="申请时间">
                 <DatePicker.RangePicker allowClear
                 disabledDate={(current) => current && current > moment().endOf('day')}
@@ -531,7 +531,7 @@ export default () => {
               </>
             )}
 
-            <Col offset={18} span={6}>
+            <Col offset={isMore ? 18 : 0} span={6}>
               <Button
                 style={{ marginRight: 10 }}
                 type="primary"
@@ -539,7 +539,7 @@ export default () => {
                 onClick={() => {
                   setPageInfo({
                     pageIndex: 1,
-                    pageSize: 20,
+                    pageSize: 10,
                     totalCount: 0,
                     pageTotal: 0,
                   });

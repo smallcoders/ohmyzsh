@@ -55,7 +55,7 @@ export default () => {
                 <div className="item"><label>注册资本：</label>{detail?.regCapital ? `${ detail?.regCapital}` : '--'}</div>
               </div>
               <div>
-                <div className="item"><label>成立日期：</label>{detail?.formedDate || '--'}</div>
+                <div className="item"><label>成立时间：</label>{detail?.formedDate ? detail?.formedDate.split(' ')[0] : '--'}</div>
                 <div className="item"><label>经营所在地：</label>{detail?.busAddress || '--'}</div>
               </div>
             </div>
