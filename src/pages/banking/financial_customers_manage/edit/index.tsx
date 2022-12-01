@@ -7,7 +7,7 @@ import {
 } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import scopedClasses from '@/utils/scopedClasses';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import UploadForm from '@/components/upload_form';
 import { getCustomersDetail, editCustomersDetail } from '@/services/financial_customers_manage';
 import { listAllAreaCode } from '@/services/common';
@@ -25,6 +25,7 @@ import {
 from '../constants';
 import './index.less';
 import ProCard from '@ant-design/pro-card';
+import { FooterToolbar } from '@ant-design/pro-components';
 
 const options = [{'label': '否', value: 0}, {'label': '是', value: 1}]
 
@@ -431,7 +432,7 @@ export default () => {
           />
         </Form.Item>
       </Form>
-      <ProCard layout="center">
+      <FooterToolbar>
         <Button onClick={() => history.goBack()}>返回</Button>
         <Button
           type="primary"
@@ -440,7 +441,7 @@ export default () => {
         >
           保存
         </Button>
-      </ProCard>
+      </FooterToolbar>
 
     </PageContainer>
   );
