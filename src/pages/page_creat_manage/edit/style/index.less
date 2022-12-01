@@ -39,6 +39,7 @@
   .fc-container {
     height: 100%;
     background-color: #fff;
+    padding-top: 45px;
     .ant-layout {
       height: 100%;
       background-color: #fff;
@@ -238,6 +239,10 @@
           color: red;
           margin-bottom: 6px;
         }
+        .upload-suggest {
+          font-size: 14px;
+          color: #ccc;
+        }
         .empty-config {
           text-align: center;
           margin-top: 100px;
@@ -321,6 +326,11 @@
     justify-content: space-between;
     color: #fff;
     align-content: center;
+    img {
+      height: 28px;
+      margin-top: 10px;
+      margin-left: 16px;
+    }
     .top-header-right {
       height: 32px;
       margin: 0 0 0 12px;
@@ -344,7 +354,7 @@
     }
     .page-desc {
       font-size: 16px;
-      color: #ccc;
+      color: rgb(204, 204, 204);
     }
     img {
       height: 50px;
@@ -367,10 +377,15 @@
     background: #fff;
   }
   .btn-bar {
+    position: fixed;
+    top: 48px;
+    left: 0;
+    z-index: 10;
+    height: 48px;
+    width: 100%;
     display: flex;
     justify-content: space-between;
     align-content: center;
-    height: 45px;
     padding: 0 10px;
     line-height: 45px;
     text-align: right;
@@ -378,6 +393,12 @@
     border-bottom: 2px solid #e4e7ed;
     color: #1b1b1b;
     font-weight: bold;
+    .middle-title {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
     .btn{
       border: 1px solid #1296db;
       padding: 0 8px;

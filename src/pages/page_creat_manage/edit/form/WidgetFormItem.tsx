@@ -8,6 +8,7 @@ import {
   Checkbox,
   Input,
   Radio, Modal,
+  Popconfirm
 } from 'antd';
 import Sortable from 'sortablejs'
 import { cloneDeep, isArray, isString } from 'lodash-es'
@@ -223,19 +224,14 @@ const WidgetFormItem: FC<Props> = (props) => {
         {selectWidgetItem?.key === key && (
           <>
             <div className="widget-view-action">
-              <div onClick={(e) => {
-                Modal.confirm({
-                  title: '提示',
-                  content: '确定删除该字段及对应表单数据？',
-                  okText: '删除',
-                  onOk: () => {
-                    handleDeleteClick(e)
-                  },
-                });
-              }}>
-                <img className="img-icon" src={deleteIcon} alt='' />
-                <span>删除</span>
-              </div>
+              <Popconfirm placement="bottomRight" title='确定删除该字段及对应表单数据？' onConfirm={(e) => {
+                handleDeleteClick(e)
+              }} okText="删除" cancelText="取消">
+                <div>
+                  <img className="img-icon" src={deleteIcon} alt='' />
+                  <span>删除</span>
+                </div>
+              </Popconfirm>
               <div onClick={handleCopyClick}>
                 <img className="img-icon" src={copyIcon} alt='' />
                 <span>复制</span>

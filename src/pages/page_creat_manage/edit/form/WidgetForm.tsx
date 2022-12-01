@@ -129,7 +129,7 @@ const WidgetForm: FC<Props> = (props) => {
           }
           {
             state.globalConfig.pageDesc &&
-            <div className="page-name">{state.globalConfig.pageDesc}</div>
+            <div className="page-desc">{state.globalConfig.pageDesc}</div>
           }
           {
             state.globalConfig.pageBg &&

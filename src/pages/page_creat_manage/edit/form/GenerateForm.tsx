@@ -34,7 +34,7 @@ const GenerateForm = forwardRef<GenerateFormRef, GenerateFormProps>((props, ref)
   }, [])
 
   return (
-    <div style={{height: `${height - 315}px`}} className={`preview-modal-box ${isMobile? ' mobile' : ''}`}>
+    <div style={{height: `${height - 385}px`}} className={`preview-modal-box ${isMobile? ' mobile' : ''}`}>
       <div className="preview-body">
         {
           isMobile && widgetInfo?.globalConfig?.showPageName && <div className="mobile-title">{ widgetInfo?.globalConfig?.pageName}</div>

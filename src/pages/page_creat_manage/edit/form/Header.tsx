@@ -1,6 +1,7 @@
 import { useState, useContext } from 'react';
 import { Layout, message as antdMessage, message, Space } from 'antd';
 import { useHistory } from 'react-router-dom';
+import { cloneDeep } from 'lodash-es';
 import { saveTemplate, addOperationLog } from '@/services/page-creat-manage';
 import preViewIcon from '@/assets/page_creat_manage/preview-icon.png'
 import saveIcon from '@/assets/page_creat_manage/save-icon.png'
@@ -19,14 +20,16 @@ const Header = (props: any) => {
   const history = useHistory();
   const checkParams = () => {
     const { widgetFormList, globalConfig, id } =  state;
+    const newState = cloneDeep(state)
     const paramsList: any = []
     const paramsKeyList: string[] = []
     if (!widgetFormList.length){
       message.warn('请先设置题目', 2)
       return;
     }
+    let hasError = false
     if (widgetFormList.length){
-      widgetFormList.forEach((item) => {
+      widgetFormList.forEach((item, index) => {
         if (item?.config?.paramKey){
           paramsKeyList.push(item?.config?.paramKey)
           paramsList.push({
@@ -35,9 +38,27 @@ const Header = (props: any) => {
             paramDesc: item?.config?.paramDesc
           })
         }
+        if (!(item?.config?.paramKey)){
+          hasError = true
+          if (newState.selectWidgetItem?.key === item.key){
+            newState.selectWidgetItem!.errorMsg = '参数名不得为空'
+          }
+          newState.widgetFormList[index].errorMsg = '参数名不得为空'
+        } else if (/[^\w]/g.test(item?.config?.paramKey)){
+          hasError = true
+          if (newState.selectWidgetItem?.key === item.key){
+            newState.selectWidgetItem!.errorMsg = '只允许输入大小写字母、下划线及数字'
+          }
+          newState.widgetFormList[index]!.errorMsg = '只允许输入大小写字母、下划线及数字'
+        }
       })
     }
-    if ([...(new Set(paramsKeyList))].length < paramsKeyList.length || paramsKeyList.length < widgetFormList.length){
+    if (hasError || [...(new Set(paramsKeyList))].length < paramsKeyList.length || paramsKeyList.length < widgetFormList.length){
+      dispatch({
+        type: ActionType.SET_GLOBAL,
+        payload: newState
+      })
+      console.log(state, '0000')
       message.warn('请检查各题目参数名是否按要求定义', 2)
       return
     }
@@ -113,9 +134,9 @@ const Header = (props: any) => {
     <>
       <Layout.Header className="btn-bar">
         <Space>{state.globalConfig?.pageName}</Space>
-        <Space>
+        <div className="middle-title">
           表单设计
-        </Space>
+        </div>
         <Space>
           {preview && (
             <div className="btn" onClick={handlerSetVisible(setPreviewVisible, true)}>

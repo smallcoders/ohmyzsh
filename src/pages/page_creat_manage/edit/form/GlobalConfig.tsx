@@ -43,7 +43,7 @@ const GlobalConfig: FC = () => {
             </Form.Item>
             <Form.Item label="描述信息" >
               <Input maxLength={50} value={globalConfig?.pageDesc} onChange={(event) => handleGlobalConfigChange('pageDesc',event.target.value)} />
-              <Checkbox checked={globalConfig?.showDesc} onChange={(e) => handleGlobalConfigChange('showDesc',e.target.checked)}>显示表单名称</Checkbox>
+              <Checkbox checked={globalConfig?.showDesc} onChange={(e) => handleGlobalConfigChange('showDesc',e.target.checked)}>显示描述信息</Checkbox>
             </Form.Item>
             <Form.Item label="表单背景" >
               <UploadForm
@@ -58,6 +58,7 @@ const GlobalConfig: FC = () => {
                   handleGlobalConfigChange('pageBg', value?.path || value)
                 }}
               />
+              <div className="upload-suggest">建议上传尺寸:1500 * 480</div>
             </Form.Item>
             <Form.Item label="提交按钮" >
               <Input
