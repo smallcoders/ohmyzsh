@@ -16,7 +16,7 @@ const PreviewModal = (props: any) => {
         destroyOnClose
         centered
         bodyStyle={{
-          height: `${height - 215}px`,
+          height: `${height - 285}px`,
         }}
         {...props}
       >

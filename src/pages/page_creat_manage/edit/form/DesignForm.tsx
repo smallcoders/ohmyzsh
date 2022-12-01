@@ -3,6 +3,7 @@ import { Layout, Form, message } from 'antd';
 import GlobalHeaderRight from '@/components/RightContent'
 import { history, Prompt } from 'umi';
 import {getTemplatePageInfo} from '@/services/page-creat-manage'
+import logoImg from '@/assets/page_creat_manage/logo-img.png'
 import ComponentsGroup from './ComponentsGroup'
 import Header from './Header'
 import WidgetForm from './WidgetForm'
@@ -47,6 +48,10 @@ const DesignForm = forwardRef<DesignFormRef, DesignFormProps>((props, ref) => {
       window.removeEventListener('beforeunload', listener);
     };
   }, []);
+  useEffect(() => {
+    // @ts-ignore
+    setCurrentTab(state?.selectWidgetItem?.type ? 'Local' : 'Global')
+  },[state?.selectWidgetItem])
 
   useEffect(() => {
     if (id){
@@ -109,6 +114,7 @@ const DesignForm = forwardRef<DesignFormRef, DesignFormProps>((props, ref) => {
         message={'表单设计有修改，是否直接离开'}
       />
       <div className="top-header">
+        <img src={logoImg} alt='' />
         <div className="top-header-right">
           羚羊工业平台
         </div>
@@ -136,10 +142,10 @@ const DesignForm = forwardRef<DesignFormRef, DesignFormProps>((props, ref) => {
               <>
                 <Layout.Header>
                   <div className={`config-tab ${currentTab === 'Local' && 'active'}`} onClick={() => setCurrentTab('Local')}>
-                    字段设置
+                    字段属性
                   </div>
                   <div className={`config-tab ${currentTab === 'Global' && 'active'}`} onClick={() => setCurrentTab('Global')}>
-                    基本设置
+                    表单属性
                   </div>
                 </Layout.Header>
                 <Content className="config-content">{currentTab === 'Local' ? <WidgetConfig /> : <GlobalConfig />}</Content>

@@ -105,9 +105,9 @@ const TextAreaConfig = () => {
         <Form.Item label="最多可输入字符数" >
           <InputNumber
             value={selectWidgetItem?.config?.maxLength}
-            maxLength={500}
+            max={9999}
             min={1}
-            onChange={(event) => handleChange(event.target.value, 'config.maxLength')}
+            onChange={(value) => handleChange(value, 'config.maxLength')}
           />
         </Form.Item>
       }

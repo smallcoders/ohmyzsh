@@ -4,6 +4,7 @@ import QRCode from 'qrcode.react'
 import { Form, message, Radio, Popover } from 'antd';
 import logo2 from '@/assets/page_creat_manage/logo2.png'
 import successIcon from '@/assets/page_creat_manage/success.png'
+import logoImg from '@/assets/page_creat_manage/logo-img.png'
 import previewIcon from '@/assets/page_creat_manage/preview-icon.png'
 import './index.less'
 import { history } from '@@/core/history';
@@ -103,6 +104,7 @@ export default () => {
     <div className="publish-page">
       <div className="top-header">
         <div className="top-header-right">
+          <img src={logoImg} alt='' />
           羚羊工业平台
         </div>
         <GlobalHeaderRight />
@@ -184,12 +186,12 @@ export default () => {
                 message.success('复制成功');
                 selection.removeRange(range);
               }}>复制</div>
-              <div className="line" />
-              <div className="btn">
-                <Popover trigger="click" content={getCode(false)} placement="bottomRight">
-                  二维码
-                </Popover>
-              </div>
+              {/*<div className="line" />*/}
+              {/*<div className="btn">*/}
+              {/*  <Popover trigger="click" content={getCode(false)} placement="bottomRight">*/}
+              {/*    二维码*/}
+              {/*  </Popover>*/}
+              {/*</div>*/}
             </div>
           </div>
         </div>

@@ -107,7 +107,7 @@ export default () => {
     })
   }
   const checkLink = (record: record) => {
-    history.push(`${routeName.PAGE_CREAT_MANAGE_PUBLISH}?id=${record.tmpId}`);
+    window.open(`${routeName.PAGE_CREAT_MANAGE_PUBLISH}?id=${record.tmpId}`);
   }
   const checkData = (record: record) => {
     getTemplateData({
