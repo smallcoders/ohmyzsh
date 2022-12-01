@@ -35,26 +35,29 @@ export default () => {
         if (code === 0) {
           setDetail(result);
           setAppTypeId(result?.payProduct?.appTypeId);
-          setList([
-            {
-              title: (
-                <CommonTitle
-                  title={result?.payProductApply?.handleUserName}
-                  detail={result?.payProductApply?.handleResult === 1 ? '审核通过' : '拒绝'}
-                  time={result?.payProductApply?.applyTime}
-                  reason={result?.payProductApply?.handleReason}
-                  special={true}
-                  color={
-                    result?.payProductApply?.handleResult === 1
-                      ? 'rgba(0, 0, 0, 0.65)'
-                      : 'rgb(255, 101, 179)'
-                  }
-                />
-              ),
-              description: null,
-              state: null,
-            },
-          ]);
+          const payProductApply = result?.payProductApply;
+          payProductApply.reverse();
+          const List = payProductApply.map((item: any) => ({
+            title: (
+              <CommonTitle
+                title={item.handleUserName}
+                detail={
+                  item.handleType == 1 ? '提交审核' : item.handleResult === 1 ? '审核通过' : '拒绝'
+                }
+                time={item.applyTime}
+                reason={item.handleReason}
+                special={true}
+                color={
+                  item.handleType == 1 || item.handleResult === 1
+                    ? 'rgba(0, 0, 0, 0.65)'
+                    : 'rgb(255, 101, 179)'
+                }
+              />
+            ),
+            description: null,
+            state: null,
+          }));
+          setList(List);
         } else {
           throw new Error(message);
         }
@@ -305,13 +308,13 @@ export default () => {
           </ProCard>
           <ProCard>
             <h2 id="anchor-details">审核</h2>
-            {detail?.payProductApply?.isHandle === 1 ? (
+            {detail?.payProduct?.isExamine === 2 ? (
               <VerifyStepsDetail list={list} />
             ) : (
               <VerifyDescription form={form} mustFillIn />
             )}
 
-            {detail?.payProductApply?.isHandle === 0 && (
+            {detail?.payProduct?.isExamine === 1 && (
               <Button type="primary" style={{ marginRight: '10px' }} onClick={onSave}>
                 提交
               </Button>
