@@ -22,16 +22,16 @@ import { routeName } from '@/../config/routes';
 import SelfTable from '@/components/self_table';
 import { UploadOutlined } from '@ant-design/icons';
 import { exportUserList } from '@/services/export';
-import { exportUsers, getUserPage, getQueryUserManageRisky } from '@/services/user';
+import { exportUsers, getUserPage, getQueryUserManageRisky, getListEnumsByKey } from '@/services/user';
 import User from '@/types/user.d';
 import {getAllChannel, getAllScene} from "@/services/opration-activity";
 import Activity from "@/types/operation-activity";
 import { handleAudit } from '@/services/audit';
 const sc = scopedClasses('service-config-requirement-manage');
 
-const registerSource = {
-  WEB: 'web端注册', WECHAT: '微信小程序注册', APP: 'APP', OTHER: '其他'
-}
+// const registerSource = {
+//   WEB: 'web端注册', WECHAT: '微信小程序注册', APP: 'APP', OTHER: '其他'
+// }
 enum Edge {
   HOME = 0,
 }
@@ -59,6 +59,8 @@ export default () => {
       }
     }
   },[])
+  const [registerSource, setRegisterSource] = useState<any>({});
+  const [platRoleJson, setPlatRoleJson] = useState<any>({});
 
   const formLayout = {
     labelCol: { span: 6 },
@@ -97,7 +99,42 @@ export default () => {
       console.log(e)
     }
   }
+
+  const prepare = async () => {
+    try {
+      const res = await Promise.all([
+        getListEnumsByKey({
+          key: 'USER_REGISTER_SOURCE'
+        }),
+        getListEnumsByKey({
+          key: 'USER_IDENTITY'
+        })
+      ]) 
+      if (res[0]?.code === 0) {
+        let obj = {}
+        res[0]?.result && res[0]?.result?.forEach((item: any) => {
+          obj[item.name] = item.desc
+        })
+        setRegisterSource(obj)
+      } else {
+        throw new Error("");
+      }
+      if (res[1]?.code === 0) {
+        let obj2 = {}
+        res[1]?.result && res[1]?.result?.forEach((item: any) => {
+          obj2[item.name] = item.desc
+        })
+        setPlatRoleJson(obj2)
+      } else {
+        throw new Error("");
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   useEffect(() => {
+    prepare();
     getSceneList();
     getChannelList();
   }, []);
@@ -312,7 +349,7 @@ export default () => {
             <Col span={6}>
               <Form.Item name="userIdentity" label="身份">
                 <Select placeholder="请选择" allowClear>
-                  {Object.entries(User.PlatRoleJson).map((p) => (
+                  {Object.entries(platRoleJson).map((p) => (
                     <Select.Option key={p[0] + p[1]} value={p[0]}>
                       {p[1]}
                     </Select.Option>
