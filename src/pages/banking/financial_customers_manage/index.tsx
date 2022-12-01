@@ -80,7 +80,7 @@ export default () => {
     },
     {
       title: '成立时间',
-      dataIndex: 'buildDate',
+      dataIndex: 'formedDate',
     },
     {
       title: '法定代表人',
@@ -88,7 +88,7 @@ export default () => {
     },
     {
       title: '注册地址',
-      dataIndex: 'registerAddress',
+      dataIndex: 'regAddress',
     },
     {
       title: '联系人',

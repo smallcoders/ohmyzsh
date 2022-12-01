@@ -55,6 +55,7 @@
             display: flex;
             align-items: flex-start;
             label {
+              white-space: nowrap;
               width: 100px;
             }
           }
@@ -100,7 +101,12 @@
       }
     }
     .special-item {
-      padding-left: 40px;
+      display:  flex;
+      align-items: flex-start;
+      padding-left: 84px;
+      .label {
+        white-space: nowrap;
+      }
     }
   }
 }
