@@ -1,10 +1,14 @@
 import { getActivityManageList } from '@/services/diagnose-service';
+import {
+  Image
+} from 'antd';
 import type DataCommodity from '@/types/data-commodity';
 import type DataPromotions from '@/types/data-promotions';
-import { PageContainer } from '@ant-design/pro-layout';
+import './index.less';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import { useRef, useState } from 'react';
+import icon1 from '@/assets/system/empty.png'
 
 export default () => {
   const actionRef = useRef<ActionType>();
@@ -79,6 +83,7 @@ export default () => {
     setLoadingObj(loading);
     queryExpandedData(record, key);
   };
+  const [showTable, setShowTable] = useState(true)
   const expandedRowRender = (record: any) => {
     const _columns: ProColumns<DataCommodity.Commodity>[] = [
       {
@@ -113,26 +118,44 @@ export default () => {
     );
   };
   return (
-    <PageContainer>
-      <ProTable
-        scroll={{ x: 1400 }}
-        options={false}
-        rowKey="id"
-        search={false}
-        expandable={{
-          onExpand,
-          expandedRowRender,
-        }}
-        actionRef={actionRef}
-        request={async (pagination) => {
-          const result = await getActivityManageList({
-            ...pagination
-          });
-          return result;
-        }}
-        columns={columns}
-        pagination={{ size: 'default', showQuickJumper: true, defaultPageSize: 10 }}
-      />
-    </PageContainer>
+    <div className='diagnose-service-report'>
+      <h3 className='title'>诊断项目管理</h3>
+      <div className='content-wrapper'>
+        <h3>诊断服务报表</h3>
+        {showTable && (
+          <ProTable
+            scroll={{ x: 1400 }}
+            options={false}
+            rowKey="id"
+            search={false}
+            expandable={{
+              onExpand,
+              expandedRowRender,
+            }}
+            actionRef={actionRef}
+            request={async (pagination) => {
+              const result = await getActivityManageList({
+                ...pagination
+              });
+              if(result && result.data && result.data.length > 0) {
+                setShowTable(true)
+              }else {
+                setShowTable(false)
+              }
+              return result;
+            }}
+            columns={columns}
+            pagination={{ size: 'default', showQuickJumper: true, defaultPageSize: 10 }}
+          />
+        )}
+        {!showTable && (
+          <div className='empty-status'>
+            <Image src={icon1} width={160}/>
+            <p>点击右上角，添加诊断服务包</p>
+          </div>
+        )}
+      </div>
+      
+    </div>
   );
 };

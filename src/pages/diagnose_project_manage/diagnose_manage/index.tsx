@@ -11,15 +11,14 @@ import {
   Modal,
   DatePicker,
   Checkbox,
-  TreeSelect
+  TreeSelect,
+  Image
 } from 'antd';
 const { Search } = Input;
 const { Option } = Select;
 import { UserOutlined, AudioOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import type { CheckboxValueType } from 'antd/es/checkbox/Group';
-import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
-import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 import SelfTable from '@/components/self_table';
@@ -33,13 +32,13 @@ import {
 } from '@/services/diagnose-service';
 import type Common from '@/types/common';
 import type NeedVerify from '@/types/user-config-need-verify';
-const sc = scopedClasses('diagnose-project-service');
 const stateObj = {
   NOT_CONNECT: '未对接',
   CONNECTING: '对接中',
   CONVERTED: '已转化',
   RESOLVED: '已解决',
 };
+import icon1 from '@/assets/system/empty.png'
 enum Edge {
   HOME = 0, // 新闻咨询首页
 }
@@ -489,130 +488,139 @@ export default () => {
   ].filter(p => p);
 
   return (
-    <PageContainer className={sc('container')}>
-      <div className={sc('container-table-header')}>
-        <div className="title">
-          <span>创新需求列表(共{pageInfo.totalCount || 0}个)</span>
+    <div className="diagnose-service-package">
+      <h3 className='title'>诊断项目管理</h3>
+      <div className='content-wrapper'>
+        <div className='container-table-header'>
+          <h3>诊断服务报表</h3>
           <Access accessible={access['P_SM_XQGL']}>
             <Button type='primary'  onClick={showDrawer}>
               新增诊断服务包
             </Button>
           </Access>
         </div>
-      </div>
-      <div className={sc('container-table-body')}>
-        <SelfTable
-          loading={loading}
-          bordered
-          scroll={{ x: 1400 }}
-          columns={columns}
-          dataSource={dataSource}
-          pagination={
-            pageInfo.totalCount === 0
-              ? false
-              : {
-                  onChange: getPage,
-                  total: pageInfo.totalCount,
-                  current: pageInfo.pageIndex,
-                  pageSize: pageInfo.pageSize,
-                  showTotal: (total: number) =>
-                    `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
-                }
-          }
-        />
-      </div>
-      
-      {useModal()}
-      {useEnterpriseModal()}
-      <Drawer
-        title="新建诊断服务包"
-        onClose={onClose}
-        size={'large'}
-        visible={open}
-        bodyStyle={{
-          paddingBottom: 80,
-        }}
-      >
-        <Form
-          labelCol={{ span: 4 }}
-          wrapperCol={{ span: 14 }}
-          form={editForm}
-        >
-          <div className={sc('container-form-group')}>基础信息</div>
-          <Form.Item
-            name="name"
-            label="服务包名称"
-            rules={[
-              {
-                required: true,
-                message: '请输入服务包名称',
-              },
-            ]}
-          >
-            <Input placeholder="请输入" maxLength={35} />
-          </Form.Item>
-          <Form.Item
-            name="projectName"
-            label="项目名称"
-          >
-            <Input placeholder="请输入" />
-          </Form.Item>
-          <Form.Item 
-            name="serviceTimeSpan" 
-            label="服务时间"
-            rules={[
-              {
-                required: true,
-                message: '请选择服务时间',
-              },
-            ]}
-          >
-            <DatePicker.RangePicker allowClear showTime />
-          </Form.Item>
-          <Form.Item
-            name="diagnoseServicers"
-            label="诊断服务商"
-            rules={[
-              {
-                required: true,
-                message: '请选择服务商',
-              },
-            ]}
-          >
-            <Select
-              mode="multiple"
-              style={{ width: '100%' }}
-              placeholder="请选择"
-              options={[]}
-              maxTagCount='responsive'
-              onClick={() => {
-                setModalVisible(true);
-                onSearch('')
-              }}
+        {dataSource && dataSource.length>0 && (
+          <div className='container-table-body'>
+            <SelfTable
+              loading={loading}
+              bordered
+              scroll={{ x: 1400 }}
+              columns={columns}
+              dataSource={dataSource}
+              pagination={
+                pageInfo.totalCount === 0
+                  ? false
+                  : {
+                      onChange: getPage,
+                      total: pageInfo.totalCount,
+                      current: pageInfo.pageIndex,
+                      pageSize: pageInfo.pageSize,
+                      showTotal: (total: number) =>
+                        `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
+                    }
+              }
             />
-          </Form.Item>
-        </Form>
-        <div className={sc('container-form-group')}>分配诊断任务</div>
-        <div className={sc('container-service-enterprise')}>
-          <ul>
-            {selectedOrgList && selectedOrgList.map((item: any) => {
-              return (
-                <li key={item.id}>
-                  <div>
-                    <span>{item.orgName}</span>
-                    <Button type='text' onClick={() => {
-                      setEnterpriseModal(true)
-                      setEditServiceEnterprise(item)
-                      getAreaData()
-                    }}>分配服务企业</Button>
-                  </div>
-                  <p>展示已分配的服务企业。。。</p>
-                </li>
-              )
-            })}
-          </ul>
-        </div>
-      </Drawer>
-    </PageContainer>
+          </div>
+        )}
+        {dataSource && dataSource.length==0 && (
+          <div className='empty-status'>
+            <Image src={icon1} width={160}/>
+            <p>点击右上角，添加诊断服务包</p>
+          </div>
+          
+        )}
+        {useModal()}
+        {useEnterpriseModal()}
+        <Drawer
+          title="新建诊断服务包"
+          onClose={onClose}
+          size={'large'}
+          visible={open}
+          bodyStyle={{
+            paddingBottom: 80,
+          }}
+        >
+          <Form
+            labelCol={{ span: 4 }}
+            wrapperCol={{ span: 14 }}
+            form={editForm}
+          >
+            <div className='container-form-group'>基础信息</div>
+            <Form.Item
+              name="name"
+              label="服务包名称"
+              rules={[
+                {
+                  required: true,
+                  message: '请输入服务包名称',
+                },
+              ]}
+            >
+              <Input placeholder="请输入" maxLength={35} />
+            </Form.Item>
+            <Form.Item
+              name="projectName"
+              label="项目名称"
+            >
+              <Input placeholder="请输入" />
+            </Form.Item>
+            <Form.Item 
+              name="serviceTimeSpan" 
+              label="服务时间"
+              rules={[
+                {
+                  required: true,
+                  message: '请选择服务时间',
+                },
+              ]}
+            >
+              <DatePicker.RangePicker allowClear showTime />
+            </Form.Item>
+            <Form.Item
+              name="diagnoseServicers"
+              label="诊断服务商"
+              rules={[
+                {
+                  required: true,
+                  message: '请选择服务商',
+                },
+              ]}
+            >
+              <Select
+                mode="multiple"
+                style={{ width: '100%' }}
+                placeholder="请选择"
+                options={[]}
+                maxTagCount='responsive'
+                onClick={() => {
+                  setModalVisible(true);
+                  onSearch('')
+                }}
+              />
+            </Form.Item>
+          </Form>
+          <div className='container-form-group'>分配诊断任务</div>
+          <div className='container-service-enterprise'>
+            <ul>
+              {selectedOrgList && selectedOrgList.map((item: any) => {
+                return (
+                  <li key={item.id}>
+                    <div>
+                      <span>{item.orgName}</span>
+                      <Button type='text' onClick={() => {
+                        setEnterpriseModal(true)
+                        setEditServiceEnterprise(item)
+                        getAreaData()
+                      }}>分配服务企业</Button>
+                    </div>
+                    <p>展示已分配的服务企业。。。</p>
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
+        </Drawer>
+      </div>
+    </div>
   );
 };

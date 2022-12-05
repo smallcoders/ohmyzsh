@@ -1,37 +1,38 @@
-@prefix: diagnose-project-service;
-
-.@{prefix}-container {
-  &-table-header {
-    padding: 20px;
+.diagnose-service-package {
+  h3.title {
+    margin: 16px 0 32px 0;
+    height: 32px;
+    font-size: 24px;
+    font-family: MicrosoftYaHei, MicrosoftYaHei-Bold;
+    font-weight: 700;
+    text-align: left;
+    color: #1e232a;
+    line-height: 32px;
+  }
+  .content-wrapper {
+    padding: 24px 32px;
     background-color: #fff;
-    .title {
-      display: flex;
-      justify-content: space-between;
-      > span {
-        color: rgba(0, 0, 0, 0.85);
-        font-weight: 600;
-        font-size: 16px;
-        line-height: 22px;
-      }
+    h3 {
+      font-size: 20px;
+      font-family: MicrosoftYaHei, MicrosoftYaHei-Bold;
+      font-weight: 700;
+      text-align: left;
+      color: #1e232a;
     }
   }
-  &-table-body {
-    padding: 0 20px;
+  .container-table-header {
     background-color: #fff;
+    display: flex;
+    justify-content: space-between;
   }
-  &-search {
-    margin-bottom: 20px;
-    padding: 20px 0 0 0;
-    background-color: #fff;
-  }
-  &-form-group {
+  .container-form-group {
     height: 48px;
     line-height: 48px;
     font-size: 16px;
     font-weight: 400;
     color: #8290a6;
   }
-  &-service-enterprise {
+  .container-service-enterprise {
     ul {
       padding: 0;
     }
@@ -54,6 +55,15 @@
         text-overflow: ellipsis;
         color: #8290a6;
       }
+    }
+  }
+  .empty-status {
+    margin: auto;
+    text-align: center;
+    padding: 56px 0 200px;
+    p {
+      margin-top: 8px;
+      color: #8290a6;
     }
   }
 }
