@@ -380,8 +380,8 @@ export default () => {
   const getSearchQuery = () => {
     const search = searchForm.getFieldsValue();
     if (search.updateTime) {
-      search.updateTimeStart = moment(search.updateTime[0]).format('YYYY-MM-DD HH:mm:ss');
-      search.updateTimeEnd = moment(search.updateTime[1]).format('YYYY-MM-DD HH:mm:ss');
+      search.updateTimeStart = moment(search.updateTime[0]).startOf('days').format('YYYY-MM-DD HH:mm:ss');
+      search.updateTimeEnd = moment(search.updateTime[1]).endOf('days').format('YYYY-MM-DD HH:mm:ss');
     }
     if (search.state){
       search.state = search.state * 1
