@@ -452,6 +452,7 @@ export default () => {
             <Col span={isMore ? 8 : 6}>
               <Form.Item name="time" label="申请时间">
                 <DatePicker.RangePicker
+                  style={{ width: '100%' }}
                   allowClear
                   disabledDate={(current) => current && current > moment().endOf('day')}
                 />
