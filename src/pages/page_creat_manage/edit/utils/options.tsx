@@ -1,4 +1,4 @@
-import React, { Dispatch } from 'react'
+import { Dispatch } from 'react'
 import { Menu } from 'antd'
 
 const createOptions = (option: string) => ({ label: option, value: option })
@@ -70,6 +70,18 @@ export const paramsTypeOptions =[
     value: "number"
   }
 ]
+
+// 省市区类型
+export const provinceCascadeOption =[
+  {
+    label: "省市区",
+    value: "county"
+  },
+  {
+    label: "省市",
+    value: "city"
+  }
+]
 export const dateTypeOptions =[
   {
     label: "年月",
@@ -84,7 +96,7 @@ export const dateTypeOptions =[
     value: "YYYY-MM-DD HH:mm"
   },
   {
-    label: "年月日时分",
+    label: "年月日时分秒",
     value: "YYYY-MM-DD HH:mm:ss"
   }
 ]

@@ -1,17 +1,13 @@
 import { useContext, useState } from 'react';
 import {
-  Checkbox,
-  Form,
-  Input,
-  InputNumber, Select,
-  Tooltip,
+  Checkbox, Form, Input, InputNumber,
+  Select
 } from 'antd';
-import questionIcon from '@/assets/page_creat_manage/question_icon.png'
 import { useConfig } from '../hooks/hooks'
-import { DesignContext } from '../store';
-import { regOptions } from '../utils/options'
+import OptionSourceTypeConfig from '../config/OptionSourceTypeConfig'
+import { DesignContext } from '@/pages/page_creat_manage/edit/store';
 
-const InputConfig = () => {
+const MultipleSelectConfig = () => {
   const { selectWidgetItem, handleChange } = useConfig()
   const { state } = useContext(DesignContext)
   const { widgetFormList } = state
@@ -28,8 +24,8 @@ const InputConfig = () => {
           }}
           onBlur={(e) => {
             if(!e.target.value){
-              handleChange('单行文本', 'label')
-              handleChange("单行文本", 'config.paramDesc')
+              handleChange('多选按钮组', 'label')
+              handleChange("多选按钮组", 'config.paramDesc')
             }
           }}
         />
@@ -55,7 +51,7 @@ const InputConfig = () => {
             } else if(/[^\w]/g.test(e.target.value)){
               handleChange('只允许输入大小写字母、下划线及数字', 'errorMsg')
               return
-            } {
+            }else {
               const repeatParam = widgetFormList.filter((item: any) => {
                 return item.key !== selectWidgetItem!.key && item.config.paramKey === selectWidgetItem!.config!.paramKey
               })
@@ -78,58 +74,47 @@ const InputConfig = () => {
           onChange={(event) => handleChange(event.target.value, 'config.desc')}
         />
       </Form.Item>
-      <Form.Item label="填写提示" >
-        <Input
-          value={selectWidgetItem?.config?.placeholder}
-          maxLength={20}
-          onChange={(event) => handleChange(event.target.value, 'config.placeholder')}
-        />
-      </Form.Item>
-      <Form.Item label="格式校验">
+      <OptionSourceTypeConfig multiple />
+      <Form.Item label="默认选择">
         <Select
-          allowClear
-          options={regOptions}
-          value={selectWidgetItem?.config?.reg}
-          onChange={(option) => handleChange(option, 'config.reg')}
+          mode="multiple"
+          options={selectWidgetItem?.config?.options}
+          value={selectWidgetItem?.config?.defaultValue}
+          onChange={(option) => handleChange(option, 'config.defaultValue')}
         />
       </Form.Item>
       <Form.Item label="限制条件" >
-        <Form.Item>
-          <Checkbox
-            checked={selectWidgetItem?.config?.required}
-            onChange={(e) => handleChange(e.target.checked, 'config.required')}
-          >
-            该项为必填项
-          </Checkbox>
-        </Form.Item>
         <Checkbox
-          checked={showLengthInput}
-          onChange={(e) => {
-            setShowLengthInput(e.target.checked)
-            if (!e.target.checked){
-              handleChange(35, 'config.maxLength')
-            }
-          }}
+          checked={selectWidgetItem?.config?.required}
+          onChange={(e) => handleChange(e.target.checked, 'config.required')}
         >
-          自定义限制字数
-          <Tooltip title="未勾选时，默认最多支持输入35字符">
-            <img className="question-icon" src={questionIcon} alt='' />
-          </Tooltip>
+          该项为必填项
         </Checkbox>
-      </Form.Item>
-      {
-        showLengthInput &&
-        <Form.Item label="最多可输入字符数" >
-          <InputNumber
-            value={selectWidgetItem?.config?.maxLength}
-            max={500}
-            min={1}
-            onChange={(value) => handleChange(value, 'config.maxLength')}
-          />
+        <Form.Item >
+          <Checkbox
+            checked={showLengthInput}
+            onChange={(e) => {
+              setShowLengthInput(e.target.checked)
+              if (!e.target.checked){
+                handleChange(selectWidgetItem?.config?.options.length, 'config.maxLength')
+              }
+            }}
+          >
+            最多选择几项
+          </Checkbox>
+          {
+            showLengthInput &&
+            <InputNumber
+              max={selectWidgetItem?.config?.options.length}
+              min={2}
+              value={selectWidgetItem?.config?.maxLength}
+              onChange={(value) => handleChange(value, 'config.maxLength')}
+            />
+          }
         </Form.Item>
-      }
+      </Form.Item>
     </>
   )
 }
 
-export default InputConfig
+export default MultipleSelectConfig

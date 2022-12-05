@@ -1132,6 +1132,7 @@ export const componentsGroupList: ComponentGroup[] = [{
         paramDesc: '单行文本',
         paramType: "string",
         showLabel: true,
+        reg: '',
       },
     },
     {
@@ -1149,6 +1150,7 @@ export const componentsGroupList: ComponentGroup[] = [{
         paramDesc: '多行文本',
         paramType: "string",
         showLabel: true,
+        reg: ''
       },
     },
     {
@@ -1167,7 +1169,7 @@ export const componentsGroupList: ComponentGroup[] = [{
         desc: '',
         isParam: true,
         paramDesc: '单选按钮组',
-        paramType: '',
+        paramType: 'string',
         showLabel: true,
       },
     },
@@ -1188,43 +1190,49 @@ export const componentsGroupList: ComponentGroup[] = [{
         paramKey: '',
         isParam: true,
         paramDesc: '多选按钮组',
-        paramType: '',
+        paramType: 'string',
         showLabel: true,
       },
     },
-    // {
-    //   label: '选择器',
-    //   type: 'Select',
-    //   config: {
-    //     paramKey: '',
-    //     isParam: true,
-    //     paramDesc: '',
-    //     paramType: '',
-    //     allowClear: false,
-    //     bordered: true,
-    //     dropdownMatchSelectWidth: true,
-    //     listHeight: 256,
-    //     maxTagCount: undefined,
-    //     placeholder: '',
-    //     showLabel: true,
-    //     mode: undefined,
-    //     options: [
-    //       { label: 'Option1', value: 'Option1' },
-    //       { label: 'Option2', value: 'Option2' }
-    //     ]
-    //   },
-    //   formItemConfig: {
-    //     initialValue: '',
-    //     labelCol: undefined,
-    //     wrapperCol: undefined,
-    //     rules: [
-    //       {
-    //         required: false,
-    //         message: undefined,
-    //       }
-    //     ]
-    //   }
-    // },
+    {
+      label: '下拉单选项',
+      type: 'Select',
+      config: {
+        paramKey: '',
+        isParam: true,
+        paramDesc: '下拉单选项',
+        paramType: 'string',
+        allowClear: false,
+        bordered: true,
+        placeholder: '',
+        showLabel: true,
+        options: [
+          { label: '选项1', value: '选项1', index: 0  },
+          { label: '选项2', value: '选项2', index: 1 }
+        ]
+      },
+    },
+    {
+      label: '下拉多选项',
+      type: 'MultipleSelect',
+      config: {
+        paramKey: '',
+        isParam: true,
+        paramDesc: '下拉多选项',
+        paramType: 'string',
+        allowClear: false,
+        bordered: true,
+        maxLength: 3,
+        placeholder: '',
+        showLabel: true,
+        mode: "multiple",
+        options: [
+          { label: '选项1', value: '选项1', index: 0  },
+          { label: '选项2', value: '选项2', index: 1 },
+          { label: '选项3', value: '选项3', index: 2 }
+        ]
+      },
+    },
     // {
     //   label: '文本',
     //   type: 'Text',
@@ -1237,33 +1245,24 @@ export const componentsGroupList: ComponentGroup[] = [{
     //     textAlign: "left"
     //   }
     // },
-    // {
-    //   label: '日期选择框',
-    //   type: 'DatePicker',
-    //   config: {
-    //     allowClear: true,
-    //     picker: 'date',
-    //     placeholder: undefined,
-    //     format: 'YYYY-MM-DD',
-    //     showTime: false,
-    //     paramKey: '',
-    //     isParams: true,
-    //     paramDesc: '',
-    //     paramType: '',
-    //     showLabel: true,
-    //   },
-    //   formItemConfig: {
-    //     initialValue: '',
-    //     labelCol: undefined,
-    //     wrapperCol: undefined,
-    //     rules: [
-    //       {
-    //         required: false,
-    //         message: undefined,
-    //       }
-    //     ]
-    //   }
-    // },
+    {
+      label: '日期',
+      type: 'DatePicker',
+      errorMsg: '',
+      config: {
+        allowClear: true,
+        picker: 'date',
+        placeholder: undefined,
+        format: 'YYYY-MM-DD',
+        showTime: false,
+        desc: '',
+        paramKey: '',
+        isParam: true,
+        paramDesc: '日期',
+        paramType: 'string',
+        showLabel: true,
+      },
+    },
     // {
     //   label: '起止时间选择',
     //   type: 'RangePicker',
@@ -1355,33 +1354,20 @@ export const componentsGroupList: ComponentGroup[] = [{
     //     ]
     //   }
     // },
-    // {
-    //   label: '省市区选择器',
-    //   type: 'Cascader',
-    //   config: {
-    //     allowClear: true,
-    //     expandTrigger: 'click',
-    //     notFoundContent: 'Not Found',
-    //     placeholder: '请选择',
-    //     placement: 'bottomLeft',
-    //     paramKey: '',
-    //     isParam: true,
-    //     paramDesc: '',
-    //     paramType: '',
-    //     showLabel: true,
-    //   },
-    //   formItemConfig: {
-    //     initialValue: [],
-    //     labelCol: undefined,
-    //     wrapperCol: undefined,
-    //     rules: [
-    //       {
-    //         required: false,
-    //         message: undefined,
-    //       }
-    //     ]
-    //   }
-    // },
+    {
+      label: '省市区',
+      type: 'Cascader',
+      config: {
+        allowClear: true,
+        placeholder: undefined,
+        paramKey: '',
+        isParam: true,
+        paramDesc: '',
+        paramType: '',
+        showLabel: true,
+        selectType: 'county'
+      },
+    },
   ]
 }
 ]

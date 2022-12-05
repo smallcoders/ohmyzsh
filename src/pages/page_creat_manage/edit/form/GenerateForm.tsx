@@ -9,6 +9,10 @@ export interface GenerateFormProps {
   widgetInfoJson: string
   formValue?: Record<string, any>
   isMobile: boolean
+  areaCodeOptions: {
+    countyOptions: any[],
+    cityOptions: any[],
+  }
 }
 export interface GenerateFormRef {
   getData: () => Promise<Record<string, any>>
@@ -16,7 +20,7 @@ export interface GenerateFormRef {
 }
 const height = window.screen.availHeight
 const GenerateForm = forwardRef<GenerateFormRef, GenerateFormProps>((props, ref) => {
-  const { widgetInfoJson, formValue, isMobile } = props
+  const { widgetInfoJson, formValue, isMobile, areaCodeOptions } = props
   const [formInstance] = Form.useForm()
   useImperativeHandle(ref, () => ({
     getData: async () => {
@@ -62,7 +66,7 @@ const GenerateForm = forwardRef<GenerateFormRef, GenerateFormProps>((props, ref)
         <div className="preview-form">
           <Form {...widgetInfo.formConfig} form={formInstance}>
             {widgetInfo.widgetFormList.map((widgetFormItem) => (
-              <GenerateFormItem key={widgetFormItem.key} item={widgetFormItem} formInstance={formInstance} />
+              <GenerateFormItem areaCodeOptions={areaCodeOptions} key={widgetFormItem.key} item={widgetFormItem} formInstance={formInstance} />
             ))}
           </Form>
           <Button type="primary" onClick={async () => {

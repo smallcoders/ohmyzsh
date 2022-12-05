@@ -9,10 +9,14 @@ import { ActionType } from '../store/action'
 import { removeDomNode } from '../utils'
 import { Component } from '../config'
 interface Props {
-  formInstance: FormInstance
+  formInstance: FormInstance,
+  areaCodeOptions: {
+    countyOptions: any[],
+    cityOptions: any[],
+  }
 }
 const WidgetForm: FC<Props> = (props) => {
-  const { formInstance } = props
+  const { formInstance, areaCodeOptions } = props
   const { state, dispatch } = useContext(DesignContext)
   const widgetFormListRef = useRef(state.widgetFormList)
   const selectWidgetItemRef = useRef(state.selectWidgetItem)
@@ -30,7 +34,7 @@ const WidgetForm: FC<Props> = (props) => {
       const options: Sortable.Options = {
         ghostClass: 'ghost',
         handle: '.widget-item-container',
-        animation: 500,
+        animation: 100,
         group: {
           name: 'people'
         },
@@ -149,7 +153,7 @@ const WidgetForm: FC<Props> = (props) => {
               从左侧拖拽来添加字段
             </div>}
             {state.widgetFormList.map((widgetFormItem) => (
-              <WidgetFormItem key={widgetFormItem.key} item={widgetFormItem} formInstance={formInstance} />
+              <WidgetFormItem areaCodeOptions={areaCodeOptions} key={widgetFormItem.key} item={widgetFormItem} formInstance={formInstance} />
             ))}
           </div>
         </Form>

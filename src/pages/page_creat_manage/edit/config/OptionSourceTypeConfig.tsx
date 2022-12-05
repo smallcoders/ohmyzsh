@@ -184,13 +184,17 @@ const OptionSourceTypeConfig = (props: Props) => {
           size="small"
           onClick={() => {
             const configOptions = clone(selectWidgetItem!.config!.options)
+            const len = configOptions.length;
             const indexList: number[] = configOptions.map((item: {label: string, value: string, index: number}) => {
               return Number(item.label.replace('选项', '')) || item.index
             })
-            console.log(indexList)
             const max = Math.max(...indexList)
             const label = `选项${max + 1}`
             configOptions.push({ label: label, value: label, index: max + 1 })
+            handleChange(configOptions, 'config.options')
+            if (len === selectWidgetItem!.config!.maxLength){
+              handleChange(configOptions.length, 'config.maxLength')
+            }
             handleChange(configOptions, 'config.options')
           }}
         >

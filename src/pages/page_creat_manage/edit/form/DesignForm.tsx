@@ -4,6 +4,7 @@ import GlobalHeaderRight from '@/components/RightContent'
 import { history, Prompt } from 'umi';
 import {getTemplatePageInfo} from '@/services/page-creat-manage'
 import logoImg from '@/assets/page_creat_manage/logo-img.png'
+import { listAllAreaCode } from '@/services/common';
 import ComponentsGroup from './ComponentsGroup'
 import Header from './Header'
 import WidgetForm from './WidgetForm'
@@ -36,6 +37,7 @@ const DesignForm = forwardRef<DesignFormRef, DesignFormProps>((props, ref) => {
   const [formInstance] = Form.useForm()
   const id = history.location.query?.id as string;
   const [currentTab, setCurrentTab] = useState<'Global' | 'Local'>('Global')
+  const [areaCodeOptions, setAreaCodeOptions] = useState<any>({countyOptions: [], cityOptions: []})
   const [initJson, setInitJson] = useState<string>('')
   const [publishSuccess, setPublishSuccess] = useState<boolean>(false)
   const listener = (e: any) => {
@@ -43,6 +45,26 @@ const DesignForm = forwardRef<DesignFormRef, DesignFormProps>((props, ref) => {
     e.returnValue = '';
   };
   useEffect(() => {
+    listAllAreaCode().then((res) => {
+      if (res?.result){
+        const {result} = res
+
+        const cityOptions: any = []
+        result.forEach((item: any) => {
+          cityOptions.push({
+            ...item,
+            nodes: item.nodes?.map((node: any) => {
+              const {nodes, ...reset} = node
+              return reset
+            })
+          })
+        })
+        setAreaCodeOptions({
+          countyOptions: result,
+          cityOptions
+        })
+      }
+    })
     window.addEventListener('beforeunload', listener);
     return () => {
       window.removeEventListener('beforeunload', listener);
@@ -121,7 +143,7 @@ const DesignForm = forwardRef<DesignFormRef, DesignFormProps>((props, ref) => {
         <GlobalHeaderRight />
       </div>
       <div>
-        <Header {...props} callback={callback} />
+        <Header {...props} callback={callback} areaCodeOptions={areaCodeOptions} />
         <Layout className="fc-container">
           <Sider theme="light" width={250} style={{ overflow: 'auto' }}>
             <div className="components">
@@ -133,7 +155,7 @@ const DesignForm = forwardRef<DesignFormRef, DesignFormProps>((props, ref) => {
           <Layout className="center-container">
             <Content className="widget-empty">
               <Layout>
-                <WidgetForm formInstance={formInstance} />
+                <WidgetForm areaCodeOptions={areaCodeOptions} formInstance={formInstance} />
               </Layout>
             </Content>
           </Layout>

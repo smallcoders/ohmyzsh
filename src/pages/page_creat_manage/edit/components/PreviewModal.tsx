@@ -29,7 +29,7 @@ const PreviewModal = (props: any) => {
             onChange={(event) => setPreviewType(event.target.value)}
           />
         </Form.Item>
-        <GenerateForm isMobile={previewType !== 'web端预览'} widgetInfoJson={JSON.stringify(props.json)} ref={ref} />
+        <GenerateForm areaCodeOptions={props.areaCodeOptions} isMobile={previewType !== 'web端预览'} widgetInfoJson={JSON.stringify(props.json)} ref={ref} />
       </Modal>
     </>
   )

@@ -14,6 +14,8 @@ import TextAreaConfig from '../config/TextAreaConfig'
 import InputNumberConfig from '../config/InputNumberConfig'
 import RadioGroupConfig from '../config/RadioGroupConfig'
 import TreeSelectConfig from '../config/TreeSelectConfig'
+import SelectConfig from '../config/SelectConfig'
+import MultipleSelectConfig from '../config/MultipleSelectConfig'
 import UploadConfig from '../config/UploadConfig'
 import ImageConfig from '../config/ImageConfig'
 import TableConfig from '../config/TableConfig'
@@ -46,6 +48,8 @@ const WidgetConfig: FC = () => {
         {selectWidgetItem?.type === 'Image' && <ImageConfig />}
         {selectWidgetItem?.type === 'Table' && <TableConfig />}
         {selectWidgetItem?.type === 'Tree' && <TreeConfig />}
+        {selectWidgetItem?.type === 'MultipleSelect' && <MultipleSelectConfig />}
+        {selectWidgetItem?.type === 'Select' && <SelectConfig />}
       </Form>
     </>
   )
