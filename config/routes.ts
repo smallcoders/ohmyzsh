@@ -1217,7 +1217,7 @@ export default [
   {
     path: '/verify-agency',
     name: '审核待办',
-    icon: 'control',
+    icon: 'file-search',
     access: 'M_AT',
     code: 'M_AT',
     routes: [
@@ -1493,7 +1493,7 @@ export default [
     code: 'M_PC',
     access: 'M_PC',
     name: '平台设置',
-    icon: 'build',
+    icon: 'setting',
     routes: [
       {
         path: '/solution-properties',
@@ -1529,7 +1529,7 @@ export default [
     code: 'M_SD',
     access: 'M_SD',
     name: '供需设置',
-    icon: 'desktop',
+    icon: 'shop',
     routes: [
       {
         path: '/supply-demand-setting',
@@ -1606,7 +1606,7 @@ export default [
     code: 'M_OA',
     access: 'M_OA',
     name: '运营活动管理',
-    icon: 'bell',
+    icon: 'tags',
     routes: [
       {
         path: '/operation-activity',
@@ -1714,7 +1714,7 @@ export default [
     code: 'M_DM',
     access: 'M_DM',
     name: '诊断管理',
-    icon: 'bug',
+    icon: 'security-scan',
     routes: [
       {
         path: '/diagnose-manage',
@@ -1784,7 +1784,7 @@ export default [
     path: '/diagnose-project-manage',
     access: 'M_DM',
     name: '诊断项目管理',
-    icon: 'bug',
+    icon: 'folder-open',
     routes: [
       {
         path: '/diagnose-project-manage',
@@ -1828,7 +1828,7 @@ export default [
     code: 'M_SM',
     access: 'M_SM',
     name: '科产管理',
-    icon: 'experiment',
+    icon: 'deployment-unit',
     routes: [
       {
         path: '/science-technology-manage',
@@ -1896,7 +1896,7 @@ export default [
     code: 'M_AM',
     access: 'M_AM',
     name: '应用管理',
-    icon: 'eye',
+    icon: 'appstore',
     routes: [
       {
         path: '/apply-manage',
@@ -1950,7 +1950,7 @@ export default [
     code: 'M_DA',
     access: 'M_DA',
     name: '数字化应用',
-    icon: 'control',
+    icon: 'global',
     routes: [
       {
         path: '/digital-application',
@@ -1996,7 +1996,7 @@ export default [
     code: 'M_DG',
     access: 'M_DG',
     name: '数字化商品管理',
-    icon: 'account-book',
+    icon: 'gift',
     routes: [
       {
         path: '/goods-manage',
@@ -2084,7 +2084,7 @@ export default [
     code: 'M_PM',
     access: 'M_PM',
     name: '采购管理',
-    icon: 'shopping-cart',
+    icon: 'shopping',
     routes: [
       {
         path: '/purchase-manage',
@@ -2222,7 +2222,7 @@ export default [
     code: 'M_LM',
     access: 'M_LM',
     name: '直播管理',
-    icon: 'DesktopOutlined',
+    icon: 'play-square',
     routes: [
       {
         path: '/live-management',
@@ -2311,7 +2311,7 @@ export default [
     code: 'M_FM',
     access: 'M_FM',
     name: '金融服务管理',
-    icon: 'dollar',
+    icon: 'property-safety',
     component: './banking/banking_service_manage/index',
     routes: [
       {
@@ -2327,7 +2327,7 @@ export default [
     code: 'M_RM',
     access: 'M_RM',
     name: '推荐管理',
-    icon: 'unordered-list',
+    icon: 'like',
     routes: [
       {
         path: '/recommend-manage',
@@ -2349,7 +2349,7 @@ export default [
     code: 'M_OD',
     access: 'M_OD',
     name: '运营数据',
-    icon: 'desktop',
+    icon: 'hdd',
     component: './operate_data/data_manage/index',
   },
   {
@@ -2357,7 +2357,7 @@ export default [
     code: 'M_UM',
     access: 'M_UM',
     name: '用户管理',
-    icon: 'user',
+    icon: 'team',
     routes: [
       {
         path: '/user-config',
@@ -2492,7 +2492,7 @@ export default [
     code: 'M_SC',
     access: 'M_SC',
     name: '系统管理',
-    icon: 'setting',
+    icon: 'control',
     routes: [
       {
         path: '/system-config',
