@@ -19,7 +19,7 @@ import React, { useState, useEffect, useImperativeHandle, forwardRef } from 'rea
 import { routeName } from '@/../config/routes';
 import { history, Prompt } from 'umi';
 import { getCreditDetail, updateCreditInfo, getTakeMoneyDetail } from '@/services/banking-loan';
-import { regFenToYuan, regYuanToFen,customToFixed } from '@/utils/util';
+import { regFenToYuan, regYuanToFen, customToFixed } from '@/utils/util';
 import patchDownloadFile from '@/utils/patch-download-file';
 import type BankingLoan from '@/types/banking-loan.d';
 import moment from 'moment';
@@ -152,8 +152,16 @@ export default forwardRef((props: Props, ref) => {
         setDetail(result);
         if (result) {
           if (!isDetail) {
-            const { startDate, endDate, creditAmount, contractNo, rate, workProves, refuseReason, ...rest } =
-              result;
+            const {
+              startDate,
+              endDate,
+              creditAmount,
+              contractNo,
+              rate,
+              workProves,
+              refuseReason,
+              ...rest
+            } = result;
             const creditTime = startDate ? [moment(startDate), moment(endDate)] : [];
             form.setFieldsValue({
               fileIds: workProves?.map((item: BankingLoan.workProves) => {
@@ -169,10 +177,10 @@ export default forwardRef((props: Props, ref) => {
               creditTime,
               creditAmount: creditAmount === null ? null : Number(regFenToYuan(creditAmount)),
               contractNo,
-              refuseReason
+              refuseReason,
             });
             // 获取放款成功信息
-            getLoanInfo()
+            getLoanInfo();
           } else {
             form.setFieldsValue({
               busiStatus: result.busiStatus,
@@ -188,7 +196,7 @@ export default forwardRef((props: Props, ref) => {
       setDetailLoading(false);
     }
   };
-  const getLoanInfo = async() => {
+  const getLoanInfo = async () => {
     try {
       const { result, code } = await getTakeMoneyDetail({
         pageIndex: 1,
@@ -201,9 +209,9 @@ export default forwardRef((props: Props, ref) => {
             (item: BankingLoan.TakeMoneyInfoContent) => item.status == '放款成功',
           )
         ) {
-          setHasSuccessLoad(true)
+          setHasSuccessLoad(true);
         } else {
-          setHasSuccessLoad(false)
+          setHasSuccessLoad(false);
         }
       } else {
         message.error(`放款判断失败`);
@@ -211,7 +219,7 @@ export default forwardRef((props: Props, ref) => {
     } catch (error) {
       console.log(error);
     }
-  }
+  };
   useEffect(() => {
     // prepare();
     getDetail();
@@ -342,9 +350,13 @@ export default forwardRef((props: Props, ref) => {
                 ) : (
                   <InputNumber
                     placeholder="请输入"
-                    precision={2}
-                    // formatter={value => value && (Math.floor(value * 100) / 100).toFixed(2) || null}
-                    // parser={value=> Number(value)}
+                    // precision={2}
+                    formatter={(value: number | string | undefined) => {
+                      return (value && Math.floor(Number(value) * 100) / 100)?.toString() || '';
+                    }}
+                    parser={(value) => {
+                      return Math.floor(Number(value) * 100) / 100;
+                    }}
                     addonAfter="%"
                     style={{ width: '100%' }}
                   />
@@ -413,36 +425,36 @@ export default forwardRef((props: Props, ref) => {
           )}
         </Form>
         <FooterToolbar>{renderFooter()}</FooterToolbar>
+        {/* <div className="loan-footer">{renderFooter()}</div> */}
         {afterSaveModel()}
         <Prompt
-        when={formIsChange}
-        // when={isClosejumpTooltip && topApps.length > 0}
-        message={(location) => {
-          confirm({
-            title: '要在离开之前对填写的信息进行保存吗?',
-            icon: <ExclamationCircleOutlined />,
-            cancelText: '放弃修改并离开',
-            okText: '保存',
-            onCancel() {
-              console.log(location)
-              setFormIsChange(false)
-              setTimeout(() => {
-                history.push(location.pathname)
-              }, 1000);
-            },
-            onOk() {
-              onOk(() => {
-                setFormIsChange(false)
+          when={formIsChange}
+          // when={isClosejumpTooltip && topApps.length > 0}
+          message={(location) => {
+            confirm({
+              title: '要在离开之前对填写的信息进行保存吗?',
+              icon: <ExclamationCircleOutlined />,
+              cancelText: '放弃修改并离开',
+              okText: '保存',
+              onCancel() {
+                console.log(location);
+                setFormIsChange(false);
                 setTimeout(() => {
-                  history.push(location.pathname)
+                  history.push(location.pathname);
                 }, 1000);
+              },
+              onOk() {
+                onOk(() => {
+                  setFormIsChange(false);
+                  setTimeout(() => {
+                    history.push(location.pathname);
+                  }, 1000);
                 });
               },
-          });
-          return false
-        }
-        }
-      />
+            });
+            return false;
+          }}
+        />
       </div>
     </Spin>
   );
