@@ -267,8 +267,12 @@ export default () => {
             <span style={{ fontWeight: 'bold' }}>注册端：</span>
             <span >{detail?.registerSource?.desc}</span>
           </Col>
-          <Col span={6}></Col>
-          <Col span={6}></Col>
+          <Col span={6}>
+            <span style={{ fontWeight: 'bold' }}>渠道值：</span>
+            <span >{detail?.channelName}</span>
+          </Col>
+          <Col span={6}>
+          </Col>
           <Col span={6}>
             <span>{detail?.phone}</span>
           </Col>
@@ -276,7 +280,10 @@ export default () => {
             <span style={{ fontWeight: 'bold' }}>注册时间：</span>
             <span>{detail?.createTime}</span>
           </Col>
-          <Col span={6}></Col>
+          <Col span={6}>
+            <span style={{ fontWeight: 'bold' }}>场景值：</span>
+            <span >{detail?.sceneName}</span>
+          </Col>
           <Col span={6}></Col>
           <div style={{ display: 'flex', gap: 10 }}>{detail?.userIdentities?.map(p => {
             return <span style={{ color: '#F59A23', background: 'rgba(254, 246, 241, 1)', padding: '0 5px', height: 20 }}>
@@ -291,7 +298,7 @@ export default () => {
         {detail?.expertId && <Radio.Button value={2}>专家信息</Radio.Button>}
       </Radio.Group>
       {contentType == 1 && (orgDetail?.auditState == 3 ? <div className={sc('detail-container')} style={{position: 'relative'}}>
-       <div style={{position: 'absolute', right: 20, top: 20}}>认证时间：{orgDetail?.auditPassedTime||"--"}</div> 
+       <div style={{position: 'absolute', right: 20, top: 20}}>认证时间：{orgDetail?.auditPassedTime||"--"}</div>
         {infoAuthContent?.map((item, index) => {
           return (
             <div key={index}>
@@ -311,7 +318,7 @@ export default () => {
       </div> : <Empty description={'当前用户暂未完成组织信息认证'} />)}
       {contentType == 2 && (expertDetail?.auditState == 3 ?
         <div className={sc('detail-container')}  style={{position: 'relative'}}>
-          <div  style={{position: 'absolute', right: 20, top: 20}}>认证时间：{expertDetail?.auditPassedTime|| '--'}</div> 
+          <div  style={{position: 'absolute', right: 20, top: 20}}>认证时间：{expertDetail?.auditPassedTime|| '--'}</div>
           {expertInfoAuthContent?.map((item, index) => {
             return (
               <div key={index}>

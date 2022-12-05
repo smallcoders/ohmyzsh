@@ -1,5 +1,5 @@
 import useManage from '@/hooks/useManage';
-import { addRole, deleteRole, enableRole, getListRoles, updateRole } from '@/services/role';
+import { addRole, deleteRole, enableRole, getListRoles, updateRole, getMembersByRoleId } from '@/services/role';
 import scopedClasses from '@/utils/scopedClasses';
 import {
   DeleteOutlined,
@@ -196,18 +196,31 @@ export default () => {
                       }}
                     />
                     <DeleteOutlined
-                      onClick={() => {
-                        Modal.confirm({
-                          title: '提示',
-                          icon: <ExclamationCircleOutlined />,
-                          content: '确定删除',
-                          okText: '删除',
-                          okButtonProps: {
-                            disabled: !isManage
-                          },
-                          onOk: () => remove(p?.id),
-                          cancelText: '取消',
-                        });
+                      onClick={async() => {
+                        console.log(p, 'p');
+                        const { result, code, message } = await getMembersByRoleId(p?.id as string);
+                        if (code === 0 && result && result.length>0) {
+                          Modal.info({
+                            title: '提示',
+                            content: '请先移除当前角色下的成员',
+                            onOk: () => {
+                            },
+                            okText: '我知道了'
+                          })
+                        } else {
+                          Modal.confirm({
+                            title: '提示',
+                            icon: <ExclamationCircleOutlined />,
+                            content: '确定删除',
+                            okText: '删除',
+                            okButtonProps: {
+                              disabled: !isManage
+                            },
+                            onOk: () => remove(p?.id),
+                            cancelText: '取消',
+                          });
+                        }
+                        
                       }}
                       className="icon-option"
                     />
@@ -366,7 +379,7 @@ export default () => {
         confirmLoading={addOrUpdateLoading}
       >
 
-        <Form form={form} layout={'vertical'}>
+        <Form form={form} layout={'vertical'} autocomplete="off">
           <Form.Item name="name" label="角色名称">
             <Input placeholder="请输入" maxLength={35} />
           </Form.Item>

@@ -212,7 +212,7 @@ export default () => {
           href="#!"
           onClick={(e) => {
             e.preventDefault();
-            window.open(`/service-config/achievements-manage/detail?id=${_record.id}`);
+            window.open(`/science-technology-manage/achievements-manage/detail?id=${_record.id}`);
           }}
         >
           {_}

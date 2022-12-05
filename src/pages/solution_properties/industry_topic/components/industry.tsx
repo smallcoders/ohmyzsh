@@ -34,7 +34,7 @@ import { getApplicationList } from '@/services/digital-application';
 import { getEnumByNameByScience } from '@/services/common';
 import industryTopic from '@/types/solution-properties-industry-topic.d';
 import { Access, useAccess, Prompt } from 'umi';
-const sc = scopedClasses('service-config-app-news');
+const sc = scopedClasses('solution-properties-app-news');
 
 const DragHandle = SortableHandle(() => <MenuOutlined style={{ cursor: 'grab', color: '#999' }} />);
 
@@ -395,6 +395,7 @@ export default (props: { currentTab: any }) => {
             getOptions({
               ...searchContent,
               ...page,
+              detailIdList: modalInfo.detailIdList || []
             });
           }}
         />

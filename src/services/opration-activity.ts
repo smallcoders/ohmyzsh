@@ -50,6 +50,14 @@ export async function getChannelByName(name:string) {
   });
 }
 
+/** 获取被活动引用的渠道值和场景值 */
+export async function getChannelAndScene(options?: { [key: string]: any }) {
+  return request<any>('/antelope-manage/manage/active/query/channel-and-scene', {
+    method: 'GET',
+    params: { ...(options || {}) },
+  });
+}
+
 /** 新增场景值 */
 export async function postAddScene(data?: { [key: string]: any}) {
   return request<any>('/antelope-manage/manage/active/scene/add', {

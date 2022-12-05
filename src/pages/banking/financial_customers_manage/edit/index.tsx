@@ -1,7 +1,7 @@
 import { Input, Form, Select, Cascader, Button, message, message as antdMessage } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import scopedClasses from '@/utils/scopedClasses';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import UploadForm from '@/components/upload_form';
 import { getCustomersDetail, editCustomersDetail } from '@/services/financial_customers_manage';
 import { listAllAreaCode } from '@/services/common';
@@ -18,7 +18,6 @@ import {
   orgSizeMap,
 } from '../constants';
 import './index.less';
-import ProCard from '@ant-design/pro-card';
 import { FooterToolbar } from '@ant-design/pro-components';
 
 const options = [
@@ -54,6 +53,17 @@ export default () => {
           provinceCode,
           cityCode,
           countyCode,
+          orgSize,
+          orgForm,
+          legalQualification,
+          economyType,
+          industry,
+          phone,
+          contacts,
+          isKey,
+          isListed,
+          scienceMark,
+          banks,
         } = result;
         form.setFieldsValue({
           name,
@@ -76,7 +86,18 @@ export default () => {
           regStatus,
           scale,
           busRange,
+          orgSize,
+          orgForm,
+          legalQualification,
           address: [provinceCode, cityCode, countyCode],
+          economyType,
+          industry,
+          phone,
+          isKey,
+          isListed,
+          contacts,
+          banks: banks?.split(',') || [],
+          scienceMark,
         });
       } else {
         antdMessage.error(`请求失败，原因:{${resultMsg}}`);

@@ -15,7 +15,12 @@ export async function getActivityManageList(params: {
 }) {
   return request('/antelope-pay/mng/activity/pageQuery', {
     method: 'POST',
-    data: { ...params, pageIndex: params.current },
+    data: { 
+      ...params, 
+      pageIndex: params.current,
+      startDate: params.updateTime ? params.updateTime[0] : '',
+      endDate: params.updateTime ? params.updateTime[1] : ''
+    },
     // headers: {
     //   'rpc-tag': 'jbxu5',
     // },

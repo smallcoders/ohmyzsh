@@ -27,7 +27,7 @@ import ApplyRecord from '@/pages/user_config/expert_manage/components/apply-reco
 import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
 const sc = scopedClasses('tab-menu');
-export default (props: { tabs?: string[];}) => {
+export default (props: { tabs?: string[]; activeState?: string}) => {
   const [contentHtml, setContentHtml] = useState<string | undefined>();
   const [activeKey, setActiveKey] = useState<string>('');
   const [showTabList, setShowTabList] = useState<any>([]);
@@ -126,6 +126,10 @@ export default (props: { tabs?: string[];}) => {
       setShowTabList(arr2)
       setActiveKey(arr2[0].key)
       console.log(arr2)
+      console.log('props?.activeState',props?.activeState)
+      if (props?.activeState != '1') {
+        setActiveKey(props?.activeState)
+      }
     }
   }, [props.tabs]);
 
