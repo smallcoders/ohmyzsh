@@ -1,0 +1,166 @@
+@prefix: diagnose-project-service;
+
+.@{prefix}-container {
+  &-table-header {
+    padding: 20px;
+    background-color: #fff;
+    .title {
+      display: flex;
+      justify-content: space-between;
+      > span {
+        color: rgba(0, 0, 0, 0.85);
+        font-weight: 600;
+        font-size: 16px;
+        line-height: 22px;
+      }
+    }
+  }
+  &-table-body {
+    padding: 0 20px;
+    background-color: #fff;
+  }
+  &-search {
+    margin-bottom: 20px;
+    padding: 20px 0 0 0;
+    background-color: #fff;
+  }
+  &-form-group {
+    height: 48px;
+    line-height: 48px;
+    font-size: 16px;
+    font-weight: 400;
+    color: #8290a6;
+  }
+  &-service-enterprise {
+    ul {
+      padding: 0;
+    }
+    li {
+      padding-top: 16px;
+      border-bottom: 1px solid #ebeff7;
+      div {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        button.ant-btn {
+          font-weight: 400;
+          color: #6680FF;
+        }
+      }
+      p {
+        width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: #8290a6;
+      }
+    }
+  }
+}
+
+.servicers-modal {
+  .ant-modal-body {
+    padding: 0 24px;
+  }
+  .left-content-wrapper {
+    padding: 24px 24px 24px 0;
+    border-right: 1px solid #eee;
+    .checkbox-wrapper {
+      height: 240px;
+      overflow-y: auto;
+    }
+  }
+  .right-content-wrapper {
+    padding: 24px 0 24px 24px;
+    .selected-servers-length {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      button {
+        padding: 0;
+      }
+      button.ant-btn {
+        color: #6680FF;
+      }
+      button:disabled {
+        color: #ccc;
+      }
+    }
+    .selected-servers-wrap {
+      height: 240px;
+      overflow-y: auto;
+      p {
+        margin-top: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0;
+      }
+      .anticon-close-circle {
+        background: #808da1;
+        color: #fff;
+        border-radius: 50%;
+        font-size: 16px;
+      }
+    }
+  }
+}
+.enterprise-modal {
+  .ant-modal-body {
+    padding: 0 24px;
+  }
+  .left-content-wrapper {
+    padding: 24px 24px 24px 0;
+    border-right: 1px solid #eee;
+    .checkbox-wrapper {
+      height: 192px;
+      overflow-y: auto;
+      border-bottom: 1px solid #ebeff7;
+    }
+    .not-find-title {
+      margin-top: 24px;
+      font-size: 14px;
+      font-family: MicrosoftYaHei, MicrosoftYaHei-Regular;
+      font-weight: 400;
+      text-align: left;
+      color: #8290a6;
+    }
+    .ant-form-item {
+      margin-bottom: 16px;
+    }
+  }
+  .right-content-wrapper {
+    padding: 24px 0 24px 24px;
+    .selected-servers-length {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      button {
+        padding: 0;
+      }
+      button.ant-btn {
+        color: #6680FF;
+      }
+      button:disabled {
+        color: #ccc;
+      }
+    }
+    .selected-servers-wrap {
+      height: 240px;
+      overflow-y: auto;
+      p {
+        margin-top: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0;
+      }
+      .anticon-close-circle {
+        background: #808da1;
+        color: #fff;
+        border-radius: 50%;
+        font-size: 16px;
+      }
+    }
+  }
+}

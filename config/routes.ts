@@ -1781,6 +1781,49 @@ export default [
     ]
   },
   {
+    path: '/diagnose-project-manage',
+    access: 'M_DM',
+    name: '诊断项目管理',
+    icon: 'bug',
+    routes: [
+      {
+        path: '/diagnose-project-manage',
+        access: 'M_DM_ZDT',
+        redirect: '/diagnose-project-manage/diagnose',
+      },
+      {
+        path: '/diagnose-project-manage/diagnose',
+        access: 'M_DM_ZDGL',
+        name: '诊断服务包',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: '/diagnose-project-manage/diagnose',
+            code: 'M_DM_ZDGL',
+            access: 'M_DM_ZDGL',
+            name: '诊断服务包',
+            component: './diagnose_project_manage/diagnose_manage',
+          }
+        ],
+      },
+      {
+        path: '/diagnose-project-manage/diagnose-report',
+        access: 'M_DM_ZDGL',
+        name: '诊断服务报表',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: '/diagnose-project-manage/diagnose-report',
+            code: 'M_DM_ZDGL',
+            access: 'M_DM_ZDGL',
+            name: '诊断服务报表',
+            component: './diagnose_project_manage/diagnose_service_report',
+          }
+        ],
+      },
+    ]
+  },
+  {
     path: '/science-technology-manage',
     code: 'M_SM',
     access: 'M_SM',
