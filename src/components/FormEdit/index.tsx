@@ -4,7 +4,7 @@ import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import { message } from 'antd';
 import { useState } from 'react';
-
+import './index.less';
 export default (props: {
   value?: string;
   width?: number | string;
