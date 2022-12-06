@@ -454,6 +454,24 @@ const WidgetFormItem: FC<Props> = (props) => {
             </Form.Item>
           </Form.Item>
         )}
+        {type === 'ImagePicker' && (
+          <Form.Item label={config?.showLabel ? label : ''} required={config?.required}>
+            {
+              config?.desc && <div className="question-desc">{config.desc}</div>
+            }
+            <Form.Item name={key}>
+              <Checkbox.Group style={{ width: '100%' }}>
+                {
+                  config?.options.map((imgItem: {value: string}, index: number) => {
+                    return (
+                      <Checkbox key={index} value={imgItem.value}><img src={imgItem.value} alt='' /></Checkbox>
+                    )
+                  })
+                }
+              </Checkbox.Group>
+            </Form.Item>
+          </Form.Item>
+        )}
         {renderActionIcon()}
       </div>
     )

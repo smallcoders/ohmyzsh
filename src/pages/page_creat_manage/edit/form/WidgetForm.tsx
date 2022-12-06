@@ -108,17 +108,18 @@ const WidgetForm: FC<Props> = (props) => {
           const widgetFormList = cloneDeep(widgetFormListRef.current)
 
           widgetFormList.splice(newIndex!, 1, ...widgetFormList.splice(oldIndex!, 1, widgetFormList[newIndex!]))
-
           dispatch({
             type: ActionType.SET_WIDGET_FORM_LIST,
             payload: widgetFormList
           })
         }
       }
-
       Sortable.create(instance, options)
     }
   }
+
+
+  console.log(state, 'global-state')
 
   return (
     <div className="widget-form-container">

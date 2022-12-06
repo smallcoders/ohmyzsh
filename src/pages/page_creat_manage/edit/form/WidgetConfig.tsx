@@ -20,6 +20,7 @@ import UploadConfig from '../config/UploadConfig'
 import ImageConfig from '../config/ImageConfig'
 import TableConfig from '../config/TableConfig'
 import TreeConfig from '../config/TreeConfig'
+import ImagePickerConfig from '../config/ImagePickerConfig'
 import { useConfig } from '../hooks/hooks'
 
 const WidgetConfig: FC = () => {
@@ -50,6 +51,7 @@ const WidgetConfig: FC = () => {
         {selectWidgetItem?.type === 'Tree' && <TreeConfig />}
         {selectWidgetItem?.type === 'MultipleSelect' && <MultipleSelectConfig />}
         {selectWidgetItem?.type === 'Select' && <SelectConfig />}
+        {selectWidgetItem?.type === 'ImagePicker' && <ImagePickerConfig />}
       </Form>
     </>
   )

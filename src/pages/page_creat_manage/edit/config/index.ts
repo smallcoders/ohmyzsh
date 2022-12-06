@@ -1121,6 +1121,7 @@ export const componentsGroupList: ComponentGroup[] = [{
       label: '单行文本',
       type: 'Input',
       errorMsg: '',
+      show: true,
       config: {
         allowClear: true,
         maxLength: 35,
@@ -1139,6 +1140,7 @@ export const componentsGroupList: ComponentGroup[] = [{
       label: '多行文本',
       type: 'TextArea',
       errorMsg: '',
+      show: true,
       config: {
         autoSize: true,
         maxLength: 200,
@@ -1157,10 +1159,11 @@ export const componentsGroupList: ComponentGroup[] = [{
       label: '单选按钮组',
       type: 'RadioGroup',
       errorMsg: '',
+      show: true,
       config: {
         options: [
-          { label: '选项1', value: '选项1', index: 0 },
-          { label: '选项2', value: '选项2', index: 1 }
+          { label: '选项1', value: '选项1', index: 0, showList: [] },
+          { label: '选项2', value: '选项2', index: 1, showList: [] }
         ],
         optionType: 'default',
         required: false,
@@ -1177,11 +1180,12 @@ export const componentsGroupList: ComponentGroup[] = [{
       label: '多选按钮组',
       type: 'CheckboxGroup',
       errorMsg: '',
+      show: true,
       config: {
         options: [
-          { label: '选项1', value: '选项1', index: 0 },
-          { label: '选项2', value: '选项2', index: 1 },
-          { label: '选项3', value: '选项3', index: 2 }
+          { label: '选项1', value: '选项1', index: 0, showList: [] },
+          { label: '选项2', value: '选项2', index: 1, showList: [] },
+          { label: '选项3', value: '选项3', index: 2, showList: [] }
         ],
         required: false,
         maxLength: 3,
@@ -1197,6 +1201,7 @@ export const componentsGroupList: ComponentGroup[] = [{
     {
       label: '下拉单选项',
       type: 'Select',
+      show: true,
       config: {
         paramKey: '',
         isParam: true,
@@ -1207,14 +1212,15 @@ export const componentsGroupList: ComponentGroup[] = [{
         placeholder: '',
         showLabel: true,
         options: [
-          { label: '选项1', value: '选项1', index: 0  },
-          { label: '选项2', value: '选项2', index: 1 }
+          { label: '选项1', value: '选项1', index: 0, showList: []  },
+          { label: '选项2', value: '选项2', index: 1, showList: [] }
         ]
       },
     },
     {
       label: '下拉多选项',
       type: 'MultipleSelect',
+      show: true,
       config: {
         paramKey: '',
         isParam: true,
@@ -1227,9 +1233,9 @@ export const componentsGroupList: ComponentGroup[] = [{
         showLabel: true,
         mode: "multiple",
         options: [
-          { label: '选项1', value: '选项1', index: 0  },
-          { label: '选项2', value: '选项2', index: 1 },
-          { label: '选项3', value: '选项3', index: 2 }
+          { label: '选项1', value: '选项1', index: 0, showList: []  },
+          { label: '选项2', value: '选项2', index: 1, showList: [] },
+          { label: '选项3', value: '选项3', index: 2, showList: [] }
         ]
       },
     },
@@ -1249,6 +1255,7 @@ export const componentsGroupList: ComponentGroup[] = [{
       label: '日期',
       type: 'DatePicker',
       errorMsg: '',
+      show: true,
       config: {
         allowClear: true,
         picker: 'date',
@@ -1261,6 +1268,34 @@ export const componentsGroupList: ComponentGroup[] = [{
         paramDesc: '日期',
         paramType: 'string',
         showLabel: true,
+      },
+    },
+    {
+      label: '图片选择',
+      type: 'ImagePicker',
+      errorMsg: '',
+      show: true,
+      config: {
+        desc: '',
+        paramKey: '',
+        isParam: true,
+        paramDesc: '图片选择',
+        paramType: 'string',
+        showLabel: true,
+        maxLength: 2,
+        defaultValue: [],
+        options: [
+          {
+            value: 'https://oss-hefei-a2a.openstorage.cn/iiep-prod/0787a4323d1d430c8bebdd8b2b0ce093.jpg',
+            label: '图片1',
+            index: 0,
+          },
+          {
+            value: 'https://oss-hefei-a2a.openstorage.cn/iiep-prod/0787a4323d1d430c8bebdd8b2b0ce093.jpg',
+            label: '图片2',
+            index: 1,
+          }
+        ]
       },
     },
     // {
@@ -1357,6 +1392,7 @@ export const componentsGroupList: ComponentGroup[] = [{
     {
       label: '省市区',
       type: 'Cascader',
+      show: true,
       config: {
         allowClear: true,
         placeholder: undefined,

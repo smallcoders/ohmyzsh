@@ -1,9 +1,10 @@
 import { useState } from 'react'
-import { Form, Input, Button, message } from 'antd'
+import { Form, Input, Button, message, Select } from 'antd';
 import Sortable from 'sortablejs'
 import { clone } from 'lodash-es'
 import dragIcon from '@/assets/page_creat_manage/drag-item.png'
 import { useConfig } from '../hooks/hooks'
+import { regOptions } from '@/pages/page_creat_manage/edit/utils/options';
 interface Props {
   multiple?: boolean
 }
@@ -83,6 +84,12 @@ const OptionSourceTypeConfig = (props: Props) => {
                           handleChange(configOptions, 'config.options')
                         }
                       }}
+                    />
+                    <Select
+                      allowClear
+                      options={regOptions}
+                      value={selectWidgetItem?.config?.reg}
+                      onChange={(value) => handleChange(value, 'config.reg')}
                     />
                     <Button
                       type="ghost"
