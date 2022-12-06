@@ -25,14 +25,14 @@
   DEMAND_MANAGEMENT_INDEX: '/supply-demand-setting/demand-manage/index', // 需求管理
   DEMAND_MANAGEMENT_DETAIL: '/supply-demand-setting/demand-manage/detail', // 需求管理详情
 
-  OPERATION_ACTIVITY_PARAMETER:'/operation-activity/parameter-setting/index',//运营活动参数设置
-  OPERATION_ACTIVITY_LINK:'/operation-activity/link-setting/index',//运营活动链接设置
+  OPERATION_ACTIVITY_PARAMETER: '/operation-activity/parameter-setting/index', //运营活动参数设置
+  OPERATION_ACTIVITY_LINK: '/operation-activity/link-setting/index', //运营活动链接设置
 
   // 运营模板
-  PAGE_CREAT_MANAGE_EDIT: "/operation-activity/page_creat_manage/manage/edit",
-  PAGE_CREAT_MANAGE_PUBLISH: "/operation-activity/page_creat_manage/manage/publish",
-  PAGE_CREAT_MANAGE_PAGE_LIST: "/operation-activity/page_creat_manage/manage",
-  PAGE_CREAT_MANAGE_PAGE_DATA: "/operation-activity/page_creat_manage/manage/page_data",
+  PAGE_CREAT_MANAGE_EDIT: '/operation-activity/page_creat_manage/manage/edit',
+  PAGE_CREAT_MANAGE_PUBLISH: '/operation-activity/page_creat_manage/manage/publish',
+  PAGE_CREAT_MANAGE_PAGE_LIST: '/operation-activity/page_creat_manage/manage',
+  PAGE_CREAT_MANAGE_PAGE_DATA: '/operation-activity/page_creat_manage/manage/page_data',
 
   DEMAND_MANAGEMENT_FEEDBACK: '/supply-demand-setting/demand-manage/feedback', // 需求管理详情
   ACCOUNT: '/system-config/account', // 账号管理
@@ -112,7 +112,8 @@
 
   PROPAGANDA_CONFIG: '/operation-activity/local-propaganda/propaganda-config/index', // 地市宣传页管理
   ADD_PROPAGANDA_CONFIG: '/operation-activity/local-propaganda/propaganda-config/add-management', // 新增地市宣传页管理
-  DETAIL_PROPAGANDA_CONFIG: '/operation-activity/local-propaganda/propaganda-config/detail-management', // 新增地市宣传页管理
+  DETAIL_PROPAGANDA_CONFIG:
+    '/operation-activity/local-propaganda/propaganda-config/detail-management', // 新增地市宣传页管理
   MANAGEMENT_ACTIVITIES: '/operation-activity/local-propaganda/management_activities', // 地市活动管理
 
   //金融服务管理
@@ -130,6 +131,13 @@
   FINANCIAL_CUSTOMERS_MANAGE_INDEX: '/banking/financial_customers_manage/index',
   FINANCIAL_CUSTOMERS_MANAGE_DETAIL: '/banking/financial_customers_manage/detail',
   FINANCIAL_CUSTOMERS_MANAGE_EDIT: '/banking/financial_customers_manage/edit',
+
+  // 产品管理
+  PRODUCT_MANAGEMENT: '/banking/product_management',
+  PRODUCT_MANAGEMENT_INDEX: '/banking/product_management/index',
+  PRODUCT_MANAGEMENT_CREATE: '/banking/product_management/create',
+  PRODUCT_MANAGEMENT_UPDATE: '/banking/product_management/update',
+
   // 推荐管理
   RECOMMENDED_HOT_WORDS: '/recommended/hot_words',
   RECOMMENDED_HOT_WORDS_INDEX: '/recommended/hot_words/index',
@@ -1595,7 +1603,7 @@ export default [
             name: '服务详情',
             component: './supply_demand_setting/solution/detail/index',
           },
-        ]
+        ],
       },
       {
         path: routeName.DEMAND_MANAGEMENT_FEEDBACK,
@@ -1757,9 +1765,9 @@ export default [
             component: './page_creat_manage/edit/index',
             layout: false,
           },
-        ]
+        ],
       },
-    ]
+    ],
   },
   {
     path: '/diagnose-manage',
@@ -1830,7 +1838,7 @@ export default [
           },
         ],
       },
-    ]
+    ],
   },
   {
     path: '/science-technology-manage',
@@ -1898,7 +1906,7 @@ export default [
           },
         ],
       },
-    ]
+    ],
   },
   {
     path: '/banking',
@@ -1966,6 +1974,35 @@ export default [
             path: routeName.LOAN_RECORD_WITHDRAWANDLOAN,
             name: '提款及放款详情',
             component: './banking/loan_record/detail/withdrawAndLoan',
+          },
+        ],
+      },
+      {
+        path: routeName.PRODUCT_MANAGEMENT,
+        name: '产品管理',
+        code: 'M_FM_CPGL',
+        access: 'M_FM_CPGL',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.PRODUCT_MANAGEMENT,
+            redirect: routeName.PRODUCT_MANAGEMENT_INDEX,
+          },
+          {
+            path: routeName.PRODUCT_MANAGEMENT_INDEX,
+            hideInBreadcrumb: true,
+            name: '产品管理',
+            component: './banking/product-management/index',
+          },
+          {
+            path: routeName.PRODUCT_MANAGEMENT_CREATE,
+            name: '新增产品',
+            component: './banking/product-management/add/index',
+          },
+          {
+            path: routeName.PRODUCT_MANAGEMENT_UPDATE,
+            name: '编辑产品',
+            component: './banking/product-management/add/index',
           },
         ],
       },
@@ -2048,7 +2085,7 @@ export default [
             name: '新增应用',
             component: './apply_manage/add_resource',
           },
-        ]
+        ],
       },
       {
         path: '/apply-manage/consult-record',
@@ -2059,7 +2096,7 @@ export default [
         hideInBreadcrumb: true, // 隐藏面包屑
         component: './apply_manage/consult_record',
       },
-    ]
+    ],
   },
   {
     path: '/digital-application',
@@ -2095,8 +2132,8 @@ export default [
             path: '/digital-application/app-list/detail',
             name: '应用详情',
             component: './digital_application/app_detail/index',
-          }
-        ]
+          },
+        ],
       },
       {
         path: '/digital-application/app-interface',
@@ -2105,7 +2142,7 @@ export default [
         name: '接口规范',
         component: './digital_application/app_interface',
       },
-    ]
+    ],
   },
   {
     path: '/goods-manage',
@@ -2457,8 +2494,8 @@ export default [
         access: 'M_RM_ZHBQ',
         name: '账号标签管理',
         component: './recommend_manage/tags_management',
-      }
-    ]
+      },
+    ],
   },
   {
     path: '/operate-data',
