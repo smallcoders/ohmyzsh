@@ -22,10 +22,10 @@ import { routeName } from '@/../config/routes';
 import SelfTable from '@/components/self_table';
 import { UploadOutlined } from '@ant-design/icons';
 import { exportUserList } from '@/services/export';
-import { exportUsers, getUserPage } from '@/services/user';
+import {exportUsers, getAllChannelAndScene, getUserPage} from '@/services/user';
 import User from '@/types/user.d';
 import {getAllChannel, getAllScene} from "@/services/opration-activity";
-import Activity from "@/types/operation-activity";
+import type Activity from "@/types/operation-activity";
 const sc = scopedClasses('service-config-requirement-manage');
 
 const registerSource = {
@@ -75,30 +75,20 @@ export default () => {
   }, []);
 
   //获取全部场景值
-  const getSceneList =async () =>{
+  const getSceneAndChannelList =async () =>{
     try {
-      const res =await getAllScene({flag:false})
+      const res =await getAllChannelAndScene()
       if(res.code === 0){
-        setSelectSceneAll(res.result)
+        setSelectSceneAll(res?.result.scenes)
+        setSelectChannelAll(res?.result.channels)
       }
     }catch (e) {
       console.log(e)
     }
   }
-  //获取全部渠道值
-  const getChannelList =async () =>{
-    try {
-      const res =await getAllChannel({flag:false})
-      if(res.code === 0){
-        setSelectChannelAll(res.result)
-      }
-    }catch (e) {
-      console.log(e)
-    }
-  }
+
   useEffect(() => {
-    getSceneList();
-    getChannelList();
+    getSceneAndChannelList();
   }, []);
 
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
@@ -230,22 +220,22 @@ export default () => {
               </Form.Item>
             </Col>
             <Col span={6}>
-              <Form.Item name="activeChannelId" label="渠道值">
+              <Form.Item name="channelName" label="渠道值">
                 <Select placeholder="请选择" allowClear>
-                  {selectChannelListAll.map((item ) => (
-                    <Select.Option key={item.id} value={item.id}>
-                      {item.channelName}
+                  {selectChannelListAll.map((item,index ) => (
+                    <Select.Option key={index} value={item}>
+                      {item}
                     </Select.Option>
                   ))}
                 </Select>
               </Form.Item>
             </Col>
             <Col span={6}>
-              <Form.Item name="activeSceneId" label="场景值">
+              <Form.Item name="sceneName" label="场景值">
                 <Select placeholder="请选择" allowClear>
-                  {selectSceneListAll.map((item ) => (
-                    <Select.Option key={item.id} value={item.id}>
-                      {item.sceneName}
+                  {selectSceneListAll.map((item,index ) => (
+                    <Select.Option key={index} value={item}>
+                      {item}
                     </Select.Option>
                   ))}
                 </Select>
@@ -364,7 +354,7 @@ export default () => {
   //   //   window.URL.revokeObjectURL(linkElement.href);
   // }
   const exportList = async () => {
-    const { name, phone, registerSource, orgName, userIdentity, createTimeStart, createTimeEnd } = searchContent;
+    const { name, phone, registerSource, orgName,channelName,sceneName, userIdentity, createTimeStart, createTimeEnd } = searchContent;
     console.log('@searchContent',searchContent)
 
     try {
@@ -376,6 +366,8 @@ export default () => {
         userIdentity,
         createTimeStart,
         createTimeEnd,
+        channelName,
+        sceneName
       });
       if (res?.data.size == 67 || res?.data.type == 'application/json') return message.warning('操作太过频繁，请稍后再试')
       const content = res?.data;
@@ -408,7 +400,7 @@ export default () => {
         >
           导出
         </Button> */}
-        <Access accessible={access['PX_UM_YHXX']}>
+        <Access accessible={access.PX_UM_YHXX}>
           <Button icon={<UploadOutlined />} onClick={exportList}>
             导出
           </Button>
