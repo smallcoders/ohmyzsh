@@ -118,9 +118,6 @@ const WidgetForm: FC<Props> = (props) => {
     }
   }
 
-
-  console.log(state, 'global-state')
-
   return (
     <div className="widget-form-container">
       {

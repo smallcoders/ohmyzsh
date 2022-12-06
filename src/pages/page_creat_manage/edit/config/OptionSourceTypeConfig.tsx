@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useContext, useState } from 'react';
 import { Form, Input, Button, message, Select } from 'antd';
 import Sortable from 'sortablejs'
 import { clone } from 'lodash-es'
 import dragIcon from '@/assets/page_creat_manage/drag-item.png'
 import { useConfig } from '../hooks/hooks'
-import { regOptions } from '@/pages/page_creat_manage/edit/utils/options';
+import { DesignContext } from '../store';
+import { ActionType } from '../store/action';
 interface Props {
   multiple?: boolean
 }
@@ -16,8 +17,18 @@ interface options {
 const OptionSourceTypeConfig = (props: Props) => {
   const { multiple } = props
 
+  const { state, dispatch } = useContext(DesignContext)
+  const { widgetFormList } = state
   const { selectWidgetItem, handleChange } = useConfig()
   const [errorMsg, setErrorMsg] = useState<string>('')
+  const componentsList = widgetFormList.filter((listItem) => {
+    return listItem.key !== selectWidgetItem!.key
+  }).map((formItem) => {
+    return {
+      label: formItem.label,
+      value: formItem.key
+    }
+  }) || []
 
   const sortableGroupDecorator = (instance: HTMLUListElement | null) => {
     if (instance) {
@@ -56,7 +67,7 @@ const OptionSourceTypeConfig = (props: Props) => {
         {multiple ? (
           <div>
             <ul ref={sortableGroupDecorator}>
-              {options?.map((option: { label: string; value: string, index: number }, id: number) => (
+              {options?.map((option: { label: string; value: string, index: number, showList: string[] }, id: number) => (
                 <li key={`${option.index}`}>
                   <div className="option-item">
                     <img className="drag-item" src={dragIcon} alt='' />
@@ -81,15 +92,35 @@ const OptionSourceTypeConfig = (props: Props) => {
                           configOptions[id].value = value
                           configOptions[id].label = value
                           configOptions[id].index = max + 1
+                          configOptions[id].showList = []
                           handleChange(configOptions, 'config.options')
                         }
                       }}
                     />
                     <Select
                       allowClear
-                      options={regOptions}
-                      value={selectWidgetItem?.config?.reg}
-                      onChange={(value) => handleChange(value, 'config.reg')}
+                      options={componentsList}
+                      value={option.showList}
+                      mode="multiple"
+                      onChange={(value) => {
+                        const configOptions = clone(selectWidgetItem!.config!.options)
+                        configOptions[id].showList = value
+                        handleChange(configOptions, 'config.options')
+                        // 当前组件所有选项的控制列表
+                        let controlKeyList: string[] = [];
+                        configOptions.forEach((optionItem: {showList: string[]}) => {
+                          console.log(new Set([...controlKeyList, ...optionItem.showList]), 'new Set(...controlKeyList, ...optionItem.showList)')
+                          controlKeyList = [...new Set([...controlKeyList, ...optionItem.showList])]
+                        })
+                        // 将控制组件显示字段设置为false
+                        state.widgetFormList = widgetFormList.map((it) => {
+                          return {...it, show: [...value].indexOf(it.key!) === -1 ? true : false }
+                        })
+                        dispatch({
+                          type: ActionType.SET_GLOBAL,
+                          payload: {...state}
+                        })
+                      }}
                     />
                     <Button
                       type="ghost"
@@ -127,7 +158,7 @@ const OptionSourceTypeConfig = (props: Props) => {
         ) : (
           <div>
             <ul ref={sortableGroupDecorator}>
-              {options?.map((option: { label: string; value: string, index: number }, id: number) => {
+              {options?.map((option: { label: string; value: string, index: number, showList: string[] }, id: number) => {
                 return (
                   <li key={`${option.index}`}>
                     <div className="option-item">
@@ -153,10 +184,20 @@ const OptionSourceTypeConfig = (props: Props) => {
                             configOptions[id].value = value
                             configOptions[id].label = value
                             configOptions[id].index = max + 1
+                            configOptions[id].showList = []
                             handleChange(configOptions, 'config.options')
                           }
                         }}
                         maxLength={50}
+                      />
+                      <Select
+                        allowClear
+                        options={componentsList}
+                        value={option.showList}
+                        mode="multiple"
+                        onChange={(value) => {
+                          handleChange(value, 'config.reg')
+                        }}
                       />
                       <Button
                         type="ghost"
@@ -197,9 +238,9 @@ const OptionSourceTypeConfig = (props: Props) => {
             })
             const max = Math.max(...indexList)
             const label = `选项${max + 1}`
-            configOptions.push({ label: label, value: label, index: max + 1 })
+            configOptions.push({ label: label, value: label, index: max + 1, showList: [] })
             handleChange(configOptions, 'config.options')
-            if (len === selectWidgetItem!.config!.maxLength){
+            if (multiple && len === selectWidgetItem!.config!.maxLength){
               handleChange(configOptions.length, 'config.maxLength')
             }
             handleChange(configOptions, 'config.options')
@@ -211,7 +252,6 @@ const OptionSourceTypeConfig = (props: Props) => {
     </Form.Item>
   )
 }
-
 OptionSourceTypeConfig.defaultProps = {
   multiple: false
 }

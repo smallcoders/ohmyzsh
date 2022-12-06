@@ -1,8 +1,7 @@
-import { useEffect, useImperativeHandle, forwardRef } from 'react'
+import { useEffect, useImperativeHandle, forwardRef, useState } from 'react'
 import { Button, Form } from 'antd';
 import { cloneDeep } from 'lodash-es'
 import { State } from '../store/state'
-import { loadJsLink } from '../utils'
 import { GenerateProvider } from '../store'
 import GenerateFormItem from '../form/GenerateFormItem'
 export interface GenerateFormProps {
@@ -21,6 +20,7 @@ export interface GenerateFormRef {
 const height = window.screen.availHeight
 const GenerateForm = forwardRef<GenerateFormRef, GenerateFormProps>((props, ref) => {
   const { widgetInfoJson, formValue, isMobile, areaCodeOptions } = props
+  const [widgetInfo, setWidgetInfo] = useState<State>(JSON.parse(widgetInfoJson))
   const [formInstance] = Form.useForm()
   useImperativeHandle(ref, () => ({
     getData: async () => {
@@ -30,12 +30,24 @@ const GenerateForm = forwardRef<GenerateFormRef, GenerateFormProps>((props, ref)
     reset: () => formInstance.resetFields()
   }))
 
-  const widgetInfo: State = JSON.parse(widgetInfoJson)
+
+  const clickCallBack = (showList: string[], controlList: string[]) => {
+    const initWidgetInfo: State = JSON.parse(widgetInfoJson)
+    const { widgetFormList } = initWidgetInfo
+    initWidgetInfo.widgetFormList = widgetFormList.map((widgetFormItem) => {
+      return {...widgetFormItem, show: showList?.indexOf(widgetFormItem.key!) !== -1 ? true : controlList?.indexOf(widgetFormItem.key!) !== -1 ? false : widgetFormItem.show}
+    })
+    setWidgetInfo(initWidgetInfo)
+  }
+
+
+
 
   useEffect(() => {
     formInstance.setFieldsValue(cloneDeep(formValue))
-    loadJsLink(widgetInfo.iconSrc)
   }, [])
+
+  console.log(widgetInfo, '999911111111')
 
   return (
     <div style={{height: `${height - 385}px`}} className={`preview-modal-box ${isMobile? ' mobile' : ''}`}>
@@ -65,8 +77,8 @@ const GenerateForm = forwardRef<GenerateFormRef, GenerateFormProps>((props, ref)
         </div>
         <div className="preview-form">
           <Form {...widgetInfo.formConfig} form={formInstance}>
-            {widgetInfo.widgetFormList.map((widgetFormItem) => (
-              <GenerateFormItem areaCodeOptions={areaCodeOptions} key={widgetFormItem.key} item={widgetFormItem} formInstance={formInstance} />
+            {widgetInfo.widgetFormList.map((widgetFormItem: any) => (
+              <GenerateFormItem clickCallBack={clickCallBack} areaCodeOptions={areaCodeOptions} key={widgetFormItem.key} item={widgetFormItem} formInstance={formInstance} />
             ))}
           </Form>
           <Button type="primary" onClick={async () => {

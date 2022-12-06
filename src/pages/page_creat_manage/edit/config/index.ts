@@ -1175,6 +1175,7 @@ export const componentsGroupList: ComponentGroup[] = [{
         paramType: 'string',
         showLabel: true,
       },
+      controlList: [],
     },
     {
       label: '多选按钮组',
@@ -1197,6 +1198,7 @@ export const componentsGroupList: ComponentGroup[] = [{
         paramType: 'string',
         showLabel: true,
       },
+      controlList: [],
     },
     {
       label: '下拉单选项',
@@ -1216,6 +1218,7 @@ export const componentsGroupList: ComponentGroup[] = [{
           { label: '选项2', value: '选项2', index: 1, showList: [] }
         ]
       },
+      controlList: [],
     },
     {
       label: '下拉多选项',
@@ -1238,6 +1241,7 @@ export const componentsGroupList: ComponentGroup[] = [{
           { label: '选项3', value: '选项3', index: 2, showList: [] }
         ]
       },
+      controlList: [],
     },
     // {
     //   label: '文本',
