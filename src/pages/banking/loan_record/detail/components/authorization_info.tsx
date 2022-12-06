@@ -344,19 +344,28 @@ export default forwardRef((props: Props, ref) => {
                   <Input placeholder="请输入授信环节合同编号" />
                 )}
               </Form.Item>
-              <Form.Item name="rate" label="参考年利率">
+              <Form.Item
+                name="rate"
+                label="参考年利率"
+                rules={[
+                  {
+                    pattern: /^(([1-9]{1}\d{0,7})|(0{1}))(\.\d{1,2})?$/,
+                    message: '仅支持输入2位小数',
+                  },
+                ]}
+              >
                 {isDetail ? (
                   <span>{detail?.rate || '--'}%</span>
                 ) : (
                   <InputNumber
                     placeholder="请输入"
                     // precision={2}
-                    formatter={(value: number | string | undefined) => {
-                      return (value && Math.floor(Number(value) * 100) / 100)?.toString() || '';
-                    }}
-                    parser={(value) => {
-                      return Math.floor(Number(value) * 100) / 100;
-                    }}
+                    // formatter={(value: number | string | undefined) => {
+                    //   return (value && Math.floor(Number(value) * 100) / 100)?.toString() || '';
+                    // }}
+                    // parser={(value) => {
+                    //   return Math.floor(Number(value) * 100) / 100;
+                    // }}
                     addonAfter="%"
                     style={{ width: '100%' }}
                   />

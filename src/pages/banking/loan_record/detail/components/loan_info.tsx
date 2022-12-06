@@ -487,17 +487,23 @@ export default ({ isDetail, type, id, step, toTab }: Props) => {
               <Form.Item
                 name="rate"
                 label="执行年利率"
-                rules={[{ required: true, message: '请输入执行年利率' }]}
+                rules={[
+                  { required: true, message: '请输入执行年利率' },
+                  {
+                    pattern: /^(([1-9]{1}\d{0,7})|(0{1}))(\.\d{1,2})?$/,
+                    message: '仅支持输入2位小数',
+                  },
+                ]}
               >
                 <InputNumber
                   placeholder="请输入"
                   // precision={2}
-                  formatter={(value: number | string | undefined) => {
-                    return (value && Math.floor(Number(value) * 100) / 100)?.toString() || '';
-                  }}
-                  parser={(value) => {
-                    return Math.floor(Number(value) * 100) / 100;
-                  }}
+                  // formatter={(value: number | string | undefined) => {
+                  //   return (value && Math.floor(Number(value) * 100) / 100)?.toString() || '';
+                  // }}
+                  // parser={(value) => {
+                  //   return Math.floor(Number(value) * 100) / 100;
+                  // }}
                   style={{ width: '100%' }}
                   addonAfter="%"
                 />
