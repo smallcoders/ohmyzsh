@@ -61,8 +61,8 @@ export default () => {
   }>({});
 
   const formLayout = {
-    labelCol: { span: 7 },
-    wrapperCol: { span: 16 },
+    labelCol: { span: 6 },
+    wrapperCol: { span: 18 },
   };
 
   /**
@@ -117,7 +117,7 @@ export default () => {
   const backParamSet = () => {
     if (history.action === 'POP') {
       const SearChContentJson: any = localStorage.getItem('load_record_params');
-      if (!SearChContentJson) return
+      if (!SearChContentJson) return;
       const SearChContentJsonParse: any = JSON.parse(SearChContentJson);
       const {
         applyTimeStart,
@@ -439,20 +439,21 @@ export default () => {
       <div className={sc('container-search')}>
         <Form {...formLayout} form={searchForm}>
           <Row>
-            <Col span={isMore ? 8 : 7}>
+            <Col span={8}>
               <Form.Item name="applyNo" label="业务申请编号">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
-            <Col span={isMore ? 8 : 5}>
+            <Col span={8}>
               <Form.Item name="orgName" label="企业名称">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
-            <Col span={isMore ? 8 :6}>
+            <Col span={8}>
               <Form.Item name="time" label="申请时间">
-                <DatePicker.RangePicker allowClear
-                disabledDate={(current) => current && current > moment().endOf('day')}
+                <DatePicker.RangePicker
+                  allowClear
+                  disabledDate={(current) => current && current > moment().endOf('day')}
                 />
               </Form.Item>
             </Col>
@@ -473,7 +474,7 @@ export default () => {
                 </Col>
                 <Col span={8}>
                   <Form.Item name="bank" label="金融机构">
-                    <Select placeholder="请选择" allowClear >
+                    <Select placeholder="请选择" allowClear>
                       {bankList?.map((item: { bank: string }) => (
                         <Select.Option key={item.bank} value={item.bank}>
                           {item.bank}
@@ -483,7 +484,7 @@ export default () => {
                   </Form.Item>
                 </Col>
                 <Col span={8}>
-                  <Form.Item name="creditStatus" label="授信状态" >
+                  <Form.Item name="creditStatus" label="授信状态">
                     <Select placeholder="请选择" allowClear mode="multiple">
                       {Object.entries(creditStatusTrans).map((p) => {
                         return (
@@ -530,71 +531,71 @@ export default () => {
                 </Col>
               </>
             )}
-
-            <Col offset={isMore ? 18 : 0} span={6}>
-              <Button
-                style={{ marginRight: 10 }}
-                type="primary"
-                key="search"
-                onClick={() => {
-                  setPageInfo({
-                    pageIndex: 1,
-                    pageSize: 10,
-                    totalCount: 0,
-                    pageTotal: 0,
-                  });
-                  const search = searchForm.getFieldsValue();
-                  if (search.time) {
-                    search.applyTimeStart = moment(search.time[0]).format('YYYY-MM-DD');
-                    search.applyTimeEnd = moment(search.time[1]).format('YYYY-MM-DD');
-                  }
-                  if (search.takeMoney) {
-                    search.takeMoneyMin = search.takeMoney[0]
-                      ? regYuanToFen(search.takeMoney[0])
-                      : null;
-                    search.takeMoneyMax = search.takeMoney[1]
-                      ? regYuanToFen(search.takeMoney[1])
-                      : null;
-                  }
-                  if (search.creditAmount) {
-                    search.creditAmountMin = search.creditAmount[0]
-                      ? regYuanToFen(search.creditAmount[0])
-                      : null;
-                    search.creditAmountMax = search.creditAmount[1]
-                      ? regYuanToFen(search.creditAmount[1])
-                      : null;
-                  }
-                  console.log('search', search);
-                  setSearChContent(search);
-                }}
-              >
-                查询
-              </Button>
-              <Button
-                style={{ marginRight: 0 }}
-                type="primary"
-                key="reset"
-                onClick={() => {
-                  searchForm.resetFields();
-                  setSearChContent({});
-                }}
-              >
-                重置
-              </Button>
-
-              <Button
-                style={{ marginRight: 0 }}
-                type="link"
-                onClick={() => {
-                  setIsMore(!isMore);
-                }}
-              >
-                {isMore ? '收起筛选' : '展开筛选'}
-                {isMore ? <CaretUpOutlined /> : <CaretDownOutlined />}
-              </Button>
-            </Col>
           </Row>
         </Form>
+        <div className={sc('container-search-opereate')}>
+          <div>
+            <Button
+              style={{ marginRight: 10 }}
+              type="primary"
+              key="search"
+              onClick={() => {
+                setPageInfo({
+                  pageIndex: 1,
+                  pageSize: 10,
+                  totalCount: 0,
+                  pageTotal: 0,
+                });
+                const search = searchForm.getFieldsValue();
+                if (search.time) {
+                  search.applyTimeStart = moment(search.time[0]).format('YYYY-MM-DD');
+                  search.applyTimeEnd = moment(search.time[1]).format('YYYY-MM-DD');
+                }
+                if (search.takeMoney) {
+                  search.takeMoneyMin = search.takeMoney[0]
+                    ? regYuanToFen(search.takeMoney[0])
+                    : null;
+                  search.takeMoneyMax = search.takeMoney[1]
+                    ? regYuanToFen(search.takeMoney[1])
+                    : null;
+                }
+                if (search.creditAmount) {
+                  search.creditAmountMin = search.creditAmount[0]
+                    ? regYuanToFen(search.creditAmount[0])
+                    : null;
+                  search.creditAmountMax = search.creditAmount[1]
+                    ? regYuanToFen(search.creditAmount[1])
+                    : null;
+                }
+                console.log('search', search);
+                setSearChContent(search);
+              }}
+            >
+              查询
+            </Button>
+            <Button
+              style={{ marginRight: 0 }}
+              key="reset"
+              onClick={() => {
+                searchForm.resetFields();
+                setSearChContent({});
+              }}
+            >
+              重置
+            </Button>
+          </div>
+
+          <Button
+            style={{ marginRight: 0 }}
+            type="link"
+            onClick={() => {
+              setIsMore(!isMore);
+            }}
+          >
+            {isMore ? '收起' : '展开'}
+            {isMore ? <CaretUpOutlined /> : <CaretDownOutlined />}
+          </Button>
+        </div>
       </div>
     );
   };
@@ -625,11 +626,11 @@ export default () => {
       document.body.appendChild(link);
       link.click();
       setTimeout(() => {
-        message.success(`导出成功`)
+        message.success(`导出成功`);
       }, 1000);
     } catch (error) {
       console.log(error);
-      message.error(`导出失败`)
+      message.error(`导出失败`);
     }
   };
   const menuProps = (
