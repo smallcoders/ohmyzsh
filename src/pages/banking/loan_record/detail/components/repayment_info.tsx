@@ -372,7 +372,7 @@ export default ({ isDetail, id }: Props) => {
                       records?.planRepaymentDate && moment(records?.planRepaymentDate),
                     actualRepaymentDate:
                       records?.actualRepaymentDate && moment(records?.actualRepaymentDate),
-                    backMoney: regFenToYuan(records?.backMoney, 1),
+                    backMoney: Number(regFenToYuan(records?.backMoney, 1)),
                     workProve: records?.workProves
                       ? records.workProves.map((p: BankingLoan.workProves) => {
                           return {

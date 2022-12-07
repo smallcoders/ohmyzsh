@@ -117,7 +117,7 @@ export default () => {
   const backParamSet = () => {
     if (history.action === 'POP') {
       const SearChContentJson: any = localStorage.getItem('load_record_params');
-      if (!SearChContentJson) return
+      if (!SearChContentJson) return;
       const SearChContentJsonParse: any = JSON.parse(SearChContentJson);
       const {
         applyTimeStart,
@@ -449,10 +449,12 @@ export default () => {
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
-            <Col span={isMore ? 8 :6}>
+            <Col span={isMore ? 8 : 6}>
               <Form.Item name="time" label="申请时间">
-                <DatePicker.RangePicker allowClear
-                disabledDate={(current) => current && current > moment().endOf('day')}
+                <DatePicker.RangePicker
+                  style={{ width: '100%' }}
+                  allowClear
+                  disabledDate={(current) => current && current > moment().endOf('day')}
                 />
               </Form.Item>
             </Col>
@@ -473,7 +475,7 @@ export default () => {
                 </Col>
                 <Col span={8}>
                   <Form.Item name="bank" label="金融机构">
-                    <Select placeholder="请选择" allowClear >
+                    <Select placeholder="请选择" allowClear>
                       {bankList?.map((item: { bank: string }) => (
                         <Select.Option key={item.bank} value={item.bank}>
                           {item.bank}
@@ -483,8 +485,8 @@ export default () => {
                   </Form.Item>
                 </Col>
                 <Col span={8}>
-                  <Form.Item name="creditStatus" label="授信状态" >
-                    <Select placeholder="请选择" allowClear mode="multiple">
+                  <Form.Item name="creditStatus" label="授信状态">
+                    <Select placeholder="请选择" allowClear showArrow mode="multiple">
                       {Object.entries(creditStatusTrans).map((p) => {
                         return (
                           <Select.Option key={p[0]} value={p[0]}>
@@ -625,11 +627,11 @@ export default () => {
       document.body.appendChild(link);
       link.click();
       setTimeout(() => {
-        message.success(`导出成功`)
+        message.success(`导出成功`);
       }, 1000);
     } catch (error) {
       console.log(error);
-      message.error(`导出失败`)
+      message.error(`导出失败`);
     }
   };
   const menuProps = (

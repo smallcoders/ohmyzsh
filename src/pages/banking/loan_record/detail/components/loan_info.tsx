@@ -37,7 +37,7 @@ import patchDownloadFile from '@/utils/patch-download-file';
 import type { Props } from './authorization_info';
 import detail from '@/pages/banking/banking_service_manage/detail/detail';
 const sc = scopedClasses('banking-loan-info');
-export default ({ isDetail, type, id, step,toTab }: Props) => {
+export default ({ isDetail, type, id, step, toTab }: Props) => {
   const [createModalVisible, setModalVisible] = useState<boolean>(false);
   const [dataSource, setDataSource] = useState<BankingLoan.LoanContent[]>([]);
   const [dataSourceType, setdataSourceType] = useState<string>('');
@@ -86,7 +86,7 @@ export default ({ isDetail, type, id, step,toTab }: Props) => {
         const { count, takeMoneyInfo, total, availAmount } = result;
         setPageInfo({ totalCount: count, pageTotal: total, pageIndex, pageSize });
         setDataSource(takeMoneyInfo);
-        setdataSourceType(result.dataSource)
+        setdataSourceType(result.dataSource);
         setAvailAmounts(Number(regFenToYuan(availAmount)));
       } else {
         message.error(`请求分页数据失败`);
@@ -131,7 +131,7 @@ export default ({ isDetail, type, id, step,toTab }: Props) => {
           if (flag) {
             setModalVisible(false);
           }
-          console.log('loanStatus', flag, loanStatus)
+          console.log('loanStatus', flag, loanStatus);
           if (flag && loanStatus === 3) {
             setAfterSaveVisible(true);
           } else {
@@ -487,11 +487,23 @@ export default ({ isDetail, type, id, step,toTab }: Props) => {
               <Form.Item
                 name="rate"
                 label="执行年利率"
-                rules={[{ required: true, message: '请输入执行年利率' }]}
+                rules={[
+                  { required: true, message: '请输入执行年利率' },
+                  {
+                    pattern: /^(([1-9]{1}\d{0,7})|(0{1}))(\.\d{1,2})?$/,
+                    message: '仅支持输入2位小数',
+                  },
+                ]}
               >
                 <InputNumber
                   placeholder="请输入"
-                  precision={2}
+                  // precision={2}
+                  // formatter={(value: number | string | undefined) => {
+                  //   return (value && Math.floor(Number(value) * 100) / 100)?.toString() || '';
+                  // }}
+                  // parser={(value) => {
+                  //   return Math.floor(Number(value) * 100) / 100;
+                  // }}
                   style={{ width: '100%' }}
                   addonAfter="%"
                 />
@@ -571,11 +583,7 @@ export default ({ isDetail, type, id, step,toTab }: Props) => {
           }
         />
       </div>
-      {isDetail && (
-        <div className={sc('container-table-footer')}>
-          数据来源：{dataSourceType}
-        </div>
-      )}
+      {isDetail && <div className={sc('container-table-footer')}>数据来源：{dataSourceType}</div>}
       <FooterToolbar>
         <Button onClick={() => history.goBack()}>返回</Button>
       </FooterToolbar>
