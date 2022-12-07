@@ -1421,7 +1421,7 @@ export type Component = {
   remoteConfig?: Record<string, any>
   formItemConfig?: Record<string, any>
   childNodes?: Component[],
-  params_key?: string
+  controlList?: string[],
   [key: string]: unknown
 }
 

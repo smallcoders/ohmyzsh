@@ -1,6 +1,6 @@
-import { useEffect, useImperativeHandle, forwardRef, useState } from 'react'
+import { useState } from 'react'
 import { Button, Form } from 'antd';
-import { cloneDeep } from 'lodash-es'
+import { clone } from 'lodash-es'
 import { State } from '../store/state'
 import { GenerateProvider } from '../store'
 import GenerateFormItem from '../form/GenerateFormItem'
@@ -18,36 +18,20 @@ export interface GenerateFormRef {
   reset: () => void
 }
 const height = window.screen.availHeight
-const GenerateForm = forwardRef<GenerateFormRef, GenerateFormProps>((props, ref) => {
-  const { widgetInfoJson, formValue, isMobile, areaCodeOptions } = props
+const GenerateForm = (props: GenerateFormProps) => {
+  const { widgetInfoJson, isMobile, areaCodeOptions } = props
   const [widgetInfo, setWidgetInfo] = useState<State>(JSON.parse(widgetInfoJson))
   const [formInstance] = Form.useForm()
-  useImperativeHandle(ref, () => ({
-    getData: async () => {
-      const validateResult = await formInstance.validateFields()
-      return validateResult
-    },
-    reset: () => formInstance.resetFields()
-  }))
 
 
   const clickCallBack = (showList: string[], controlList: string[]) => {
-    const initWidgetInfo: State = JSON.parse(widgetInfoJson)
-    const { widgetFormList } = initWidgetInfo
-    initWidgetInfo.widgetFormList = widgetFormList.map((widgetFormItem) => {
+    const newWidgetInfo = clone(widgetInfo)
+    const { widgetFormList } = newWidgetInfo
+    newWidgetInfo.widgetFormList = widgetFormList.map((widgetFormItem) => {
       return {...widgetFormItem, show: showList?.indexOf(widgetFormItem.key!) !== -1 ? true : controlList?.indexOf(widgetFormItem.key!) !== -1 ? false : widgetFormItem.show}
     })
-    setWidgetInfo(initWidgetInfo)
+    setWidgetInfo(newWidgetInfo)
   }
-
-
-
-
-  useEffect(() => {
-    formInstance.setFieldsValue(cloneDeep(formValue))
-  }, [])
-
-  console.log(widgetInfo, '999911111111')
 
   return (
     <div style={{height: `${height - 385}px`}} className={`preview-modal-box ${isMobile? ' mobile' : ''}`}>
@@ -88,16 +72,12 @@ const GenerateForm = forwardRef<GenerateFormRef, GenerateFormProps>((props, ref)
       </div>
     </div>
   )
-})
-
-GenerateForm.defaultProps = {
-  formValue: {}
 }
 
-export default forwardRef<GenerateFormRef, GenerateFormProps>((props, ref) => {
+export default (props: GenerateFormProps) => {
   return (
     <GenerateProvider>
-      <GenerateForm {...props} ref={ref} />
+      <GenerateForm {...props} />
     </GenerateProvider>
   )
-})
+}

@@ -20,9 +20,10 @@ interface Props {
 
 const GenerateFormItem = (props: Props) => {
   const {
-    item: { type, config, label, key, show },
+    item: { type, config, label, key, show, controlList },
     formInstance,
-    areaCodeOptions
+    areaCodeOptions,
+    clickCallBack
   } = props
   useEffect(() => {
     if (config?.defaultValue){
@@ -33,7 +34,6 @@ const GenerateFormItem = (props: Props) => {
   }, [config?.defaultValue])
   const [checkBoxValue, setCheckBoxValue] = useState<string[]>(config?.defaultValue || [])
   const [mulSelectValue, setMulSelectValue] = useState<string[]>(config?.defaultValue || [])
-
   return (
     <>
       {type === 'CheckboxGroup' && show && (
@@ -46,6 +46,20 @@ const GenerateFormItem = (props: Props) => {
             rules={config?.required ? [{ required: true, message: '请选择选项'}] : []}
             name={key}
             getValueFromEvent={(value) => {
+              if (value.length <= config?.maxLength){
+                // 获取当前点击项
+                const currentOptions = config?.options.filter((option: {value: string}) => {
+                  return value.indexOf(option.value) !== -1
+                })
+                let showList: string[] = []
+                currentOptions.forEach((option: {showList: string[]}) => {
+                  showList = [...new Set([...showList, ...option.showList])]
+                })
+                // 回调点击变更组件显示隐藏
+                if (clickCallBack){
+                  clickCallBack(showList, controlList || [])
+                }
+              }
               const newValue = value.length > config?.maxLength ? value.filter((checkItem: string) => {
                 return checkBoxValue.indexOf(checkItem) !== -1
               }): value
@@ -127,8 +141,16 @@ const GenerateFormItem = (props: Props) => {
               options={config?.options}
               optionType={config?.optionType}
               defaultValue={config?.defaultValue}
-              onChange={(value) => {
-                console.log(value, 'Radio.Group')
+              onChange={(e) => {
+                const { value } = e.target
+                // 获取当前点击项
+                const currentOptions = config?.options.find((option: {value: string}) => {
+                  return value === option.value
+                })
+                // 回调点击变更组件显示隐藏
+                if (clickCallBack){
+                  clickCallBack(currentOptions.showList, controlList || [])
+                }
               }}
             />
           </Form.Item>
@@ -142,6 +164,20 @@ const GenerateFormItem = (props: Props) => {
           <Form.Item
             name={key}
             getValueFromEvent={(value) => {
+              if (value.length <= config?.maxLength){
+                // 获取当前点击项
+                const currentOptions = config?.options.filter((option: {value: string}) => {
+                  return value.indexOf(option.value) !== -1
+                })
+                let showList: string[] = []
+                currentOptions.forEach((option: {showList: string[]}) => {
+                  showList = [...new Set([...showList, ...option.showList])]
+                })
+                // 回调点击变更组件显示隐藏
+                if (clickCallBack){
+                  clickCallBack(showList, controlList || [])
+                }
+              }
               const newValue = value.length > config?.maxLength ? value.filter((checkItem: string) => {
                 return mulSelectValue.indexOf(checkItem) !== -1
               }): value
@@ -196,6 +232,16 @@ const GenerateFormItem = (props: Props) => {
               options={config?.options}
               allowClear
               placeholder={config?.placeholder}
+              onChange={(value) => {
+                // 获取当前点击项
+                const currentOptions = config?.options.find((option: {value: string}) => {
+                  return value === option.value
+                })
+                // 回调点击变更组件显示隐藏
+                if (clickCallBack){
+                  clickCallBack(currentOptions.showList, controlList || [])
+                }
+              }}
             />
           </Form.Item>
         </Form.Item>

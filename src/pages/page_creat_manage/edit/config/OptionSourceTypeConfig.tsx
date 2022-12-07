@@ -107,19 +107,18 @@ const OptionSourceTypeConfig = (props: Props) => {
                         configOptions[id].showList = value
                         handleChange(configOptions, 'config.options')
                         // 当前组件所有选项的控制列表
-                        let controlKeyList: string[] = [];
+                        let controlKeyList: string[] = selectWidgetItem!.controlList || [];
                         configOptions.forEach((optionItem: {showList: string[]}) => {
-                          console.log(new Set([...controlKeyList, ...optionItem.showList]), 'new Set(...controlKeyList, ...optionItem.showList)')
                           controlKeyList = [...new Set([...controlKeyList, ...optionItem.showList])]
                         })
-                        // 将控制组件显示字段设置为false
                         state.widgetFormList = widgetFormList.map((it) => {
-                          return {...it, show: [...value].indexOf(it.key!) === -1 ? true : false }
+                          return {...it, show: controlKeyList.indexOf(it.key!) === -1 ? true : false }
                         })
                         dispatch({
                           type: ActionType.SET_GLOBAL,
                           payload: {...state}
                         })
+                        handleChange(controlKeyList, 'controlList')
                       }}
                     />
                     <Button
@@ -138,12 +137,19 @@ const OptionSourceTypeConfig = (props: Props) => {
                           defaultValue.splice(findIndex, 1)
                           handleChange(defaultValue, 'config.defaultValue')
                         }
-
                         configOptions.splice(id, 1)
 
                         if(configOptions.length < selectWidgetItem?.config?.maxLength){
                           handleChange(configOptions.length, 'config.maxLength')
                         }
+
+                        // 当前组件所有选项的控制列表
+                        let controlKeyList: string[] = selectWidgetItem!.controlList || [];
+                        configOptions.forEach((optionItem: {showList: string[]}) => {
+                          controlKeyList = [...new Set([...controlKeyList, ...optionItem.showList])]
+                        })
+                        handleChange(controlKeyList, 'controlList')
+
                         handleChange(configOptions, 'config.options')
                         getErrorMsg(configOptions)
                       }}
@@ -196,7 +202,23 @@ const OptionSourceTypeConfig = (props: Props) => {
                         value={option.showList}
                         mode="multiple"
                         onChange={(value) => {
-                          handleChange(value, 'config.reg')
+                          const configOptions = clone(selectWidgetItem!.config!.options)
+                          configOptions[id].showList = value
+                          handleChange(configOptions, 'config.options')
+                          // 当前组件所有选项的控制列表
+                          let controlKeyList: string[] = selectWidgetItem!.controlList || [];
+                          configOptions.forEach((optionItem: {showList: string[]}) => {
+                            controlKeyList = [...new Set([...controlKeyList, ...optionItem.showList])]
+                          })
+                          // 将控制组件显示字段设置为false
+                          state.widgetFormList = widgetFormList.map((it) => {
+                            return {...it, show: controlKeyList.indexOf(it.key!) === -1 ? true : false }
+                          })
+                          dispatch({
+                            type: ActionType.SET_GLOBAL,
+                            payload: {...state}
+                          })
+                          handleChange(controlKeyList, 'controlList')
                         }}
                       />
                       <Button
@@ -213,6 +235,14 @@ const OptionSourceTypeConfig = (props: Props) => {
                             handleChange('', 'config.defaultValue')
                           }
                           configOptions.splice(id, 1)
+
+                          // 当前组件所有选项的控制列表
+                          let controlKeyList: string[] = [];
+                          configOptions.forEach((optionItem: {showList: string[]}) => {
+                            controlKeyList = [...new Set([...controlKeyList, ...optionItem.showList])]
+                          })
+                          handleChange(controlKeyList, 'controlList')
+
                           handleChange(configOptions, 'config.options')
                           getErrorMsg(configOptions)
                         }}

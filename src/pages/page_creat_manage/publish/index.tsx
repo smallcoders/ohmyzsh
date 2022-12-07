@@ -58,7 +58,7 @@ export default () => {
     if (isMobile){
       return `${hostMap[origin]}/antelope-activity-h5/template-page/index.html#/?isApp=false&id=${id}&login=${publishType === '公开发布' ? '' : '1'}`
     } else {
-      return `${hostMap[origin]}${hostMap[origin].indexOf('lingyangplat')!== -1 ? '/front' : ''}/template-page?id=${id}&login=${publishType === '公开发布' ? '' : '1'}`
+      return `${hostMap[origin]}/front/template-page?id=${id}&login=${publishType === '公开发布' ? '' : '1'}`
     }
   }
 
@@ -186,12 +186,6 @@ export default () => {
                 message.success('复制成功');
                 selection.removeRange(range);
               }}>复制</div>
-              {/*<div className="line" />*/}
-              {/*<div className="btn">*/}
-              {/*  <Popover trigger="click" content={getCode(false)} placement="bottomRight">*/}
-              {/*    二维码*/}
-              {/*  </Popover>*/}
-              {/*</div>*/}
             </div>
           </div>
         </div>
