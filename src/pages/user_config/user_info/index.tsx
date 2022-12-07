@@ -22,11 +22,11 @@ import { routeName } from '@/../config/routes';
 import SelfTable from '@/components/self_table';
 import { UploadOutlined } from '@ant-design/icons';
 import { exportUserList } from '@/services/export';
-import { exportUsers, getUserPage, getQueryUserManageRisky, getListEnumsByKey } from '@/services/user';
+import {exportUsers, getAllChannelAndScene,getQueryUserManageRisky, getListEnumsByKey, getUserPage} from '@/services/user';
 import User from '@/types/user.d';
 import {getAllChannel, getAllScene} from "@/services/opration-activity";
-import Activity from "@/types/operation-activity";
 import { handleAudit } from '@/services/audit';
+import type Activity from "@/types/operation-activity";
 const sc = scopedClasses('service-config-requirement-manage');
 
 // const registerSource = {
@@ -78,27 +78,18 @@ export default () => {
   }, []);
 
   //获取全部场景值
-  const getSceneList =async () =>{
+  const getSceneAndChannelList =async () =>{
     try {
-      const res =await getAllScene({flag:false})
+      const res =await getAllChannelAndScene()
       if(res.code === 0){
-        setSelectSceneAll(res.result)
+        setSelectSceneAll(res?.result.scenes)
+        setSelectChannelAll(res?.result.channels)
       }
     }catch (e) {
       console.log(e)
     }
   }
-  //获取全部渠道值
-  const getChannelList =async () =>{
-    try {
-      const res =await getAllChannel({flag:false})
-      if(res.code === 0){
-        setSelectChannelAll(res.result)
-      }
-    }catch (e) {
-      console.log(e)
-    }
-  }
+
 
   const prepare = async () => {
     try {
@@ -109,7 +100,7 @@ export default () => {
         getListEnumsByKey({
           key: 'USER_IDENTITY'
         })
-      ]) 
+      ])
       if (res[0]?.code === 0) {
         let obj = {}
         res[0]?.result && res[0]?.result?.forEach((item: any) => {
@@ -134,9 +125,8 @@ export default () => {
   }
 
   useEffect(() => {
+    getSceneAndChannelList();
     prepare();
-    getSceneList();
-    getChannelList();
   }, []);
 
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
@@ -240,7 +230,7 @@ export default () => {
               详情
             </Button>
             {
-              record?.risky && 
+              record?.risky &&
               <Popconfirm
                 placement="topRight"
                 title={
@@ -255,7 +245,7 @@ export default () => {
                 okText="复审正常"
                 cancelText="确定异常"
               >
-                <Button 
+                <Button
                   size="small"
                   type="link"
                 >复审</Button>
@@ -325,22 +315,22 @@ export default () => {
               </Form.Item>
             </Col>
             <Col span={6}>
-              <Form.Item name="activeChannelId" label="渠道值">
+              <Form.Item name="channelName" label="渠道值">
                 <Select placeholder="请选择" allowClear>
-                  {selectChannelListAll.map((item ) => (
-                    <Select.Option key={item.id} value={item.id}>
-                      {item.channelName}
+                  {selectChannelListAll.map((item,index ) => (
+                    <Select.Option key={index} value={item}>
+                      {item}
                     </Select.Option>
                   ))}
                 </Select>
               </Form.Item>
             </Col>
             <Col span={6}>
-              <Form.Item name="activeSceneId" label="场景值">
+              <Form.Item name="sceneName" label="场景值">
                 <Select placeholder="请选择" allowClear>
-                  {selectSceneListAll.map((item ) => (
-                    <Select.Option key={item.id} value={item.id}>
-                      {item.sceneName}
+                  {selectSceneListAll.map((item,index ) => (
+                    <Select.Option key={index} value={item}>
+                      {item}
                     </Select.Option>
                   ))}
                 </Select>
@@ -477,7 +467,8 @@ export default () => {
   //   //   window.URL.revokeObjectURL(linkElement.href);
   // }
   const exportList = async () => {
-    const { name, phone, registerSource, orgName, userIdentity, createTimeStart, createTimeEnd } = searchContent;
+    const { name, phone, registerSource, orgName,channelName,sceneName, userIdentity, createTimeStart, createTimeEnd } = searchContent;
+    console.log('@searchContent',searchContent)
 
     try {
       const res = await exportUserList({
@@ -488,6 +479,8 @@ export default () => {
         userIdentity,
         createTimeStart,
         createTimeEnd,
+        channelName,
+        sceneName
       });
       if (res?.data.size == 67 || res?.data.type == 'application/json') return message.warning('操作太过频繁，请稍后再试')
       const content = res?.data;
