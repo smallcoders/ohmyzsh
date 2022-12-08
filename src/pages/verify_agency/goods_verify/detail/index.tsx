@@ -38,25 +38,28 @@ export default () => {
           const payProductApply = result?.payProductApply
           const list = []
           if (payProductApply) {
-            // 审核人
-            list.push({
-              title: (
-                <CommonTitle
-                  title={payProductApply.handleUserName}
-                  detail={payProductApply.handleResult === 1 ? '审核通过' : '拒绝'}
-                  time={payProductApply.handleTime}
-                  reason={payProductApply.handleReason}
-                  special={true}
-                  color={
-                    payProductApply.handleResult === 1
-                      ? '#25d48f'
-                      : '#e94d4d'
-                  }
-                />
-              ),
-              description: null,
-              state: null,
-            })
+            // 已审核的展示审核人
+            if (payProductApply.isHandle === 1) {
+              list.push({
+                title: (
+                  <CommonTitle
+                    title={payProductApply.handleUserName}
+                    detail={payProductApply.handleResult === 1 ? '审核通过' : '拒绝'}
+                    time={payProductApply.handleTime}
+                    reason={payProductApply.handleReason}
+                    special={true}
+                    color={
+                      payProductApply.handleResult === 1
+                        ? '#25d48f'
+                        : '#e94d4d'
+                    }
+                  />
+                ),
+                description: null,
+                state: null,
+              })
+            }
+            
             // 系统审核
             list.push({
               title: (
@@ -346,7 +349,10 @@ export default () => {
             {detail?.payProductApply?.isHandle === 1 ? (
               <VerifyStepsDetail list={list} />
             ) : (
-              <VerifyDescription form={form} mustFillIn applyDetail={detail?.payProductApply} />
+                <div>
+                  <VerifyDescription form={form} mustFillIn />
+                  <VerifyStepsDetail list={list} />
+                </div>
             )}
 
             <div style={{ marginTop: 20 }}>
