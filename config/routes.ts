@@ -1,4 +1,4 @@
-﻿export const routeName = {
+export const routeName = {
   DATA_COLUMN: '/service-config/data-column', // 数据栏
   DIAGNOSTIC_TASKS: '/service-config/diagnostic-tasks/index', // 诊断任务
   DIAGNOSTIC_TASKS_DETAIL: '/service-config/diagnostic-tasks/detail', // 诊断记录
@@ -120,6 +120,7 @@
   BANKING_SERVICE_INDEX: '/banking/banking_service_manage/index',
   BANKING_SERVICE_DETAIL: '/banking/banking_service_manage/detail',
   ORG_MANAGE: '/user-config/org-manage',
+  ORG_MANAGE_DETAIL: '/user-config/org-manage/detail',
   // 贷款记录
   LOAN_RECORD: '/banking/loan_record',
   LOAN_RECORD_INDEX: '/banking/loan_record/index',
@@ -2506,11 +2507,25 @@ export default [
         ],
       },
       {
-        path: routeName.ORG_MANAGE,
+        path: '/user-config/org-manage',
         code: 'M_UM_ZZGL',
         access: 'M_UM_ZZGL',
         name: '组织管理',
-        component: './user_config/org_manage',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: '/user-config/org-manage',
+            code: 'M_UM_ZZGL',
+            access: 'M_UM_ZZGL',
+            redirect: '/user-config/org-manage',
+          },
+          {
+            path: routeName.ORG_MANAGE_DETAIL,
+            name: '组织成员信息',
+            component: './user_config/org_manage/detail',
+          },
+
+        ],
       },
       {
         path: '/user-config/expert-manage',
