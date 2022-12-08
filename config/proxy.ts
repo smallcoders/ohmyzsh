@@ -45,9 +45,10 @@ export default {
       // pathRewrite: { '^/antelope-pay': '' },
     },
     '/antelope-diagnose/': {
-      target: 'http://172.30.35.217:9103',
+      target: 'http://172.30.33.222:10086',
+      // target: 'http://10.8.5.66:9103', // 张海刚
       changeOrigin: true,
-      pathRewrite: { '^/antelope-diagnose': '' },
+      pathRewrite: { '^': '' },
     },
     '/antelope-common/': {
       target: 'http://172.30.33.222:10086',

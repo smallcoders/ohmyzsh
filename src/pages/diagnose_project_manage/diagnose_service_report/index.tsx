@@ -63,20 +63,20 @@ export default () => {
 
   const queryExpandedData = async (record: any, key: any) => {
     try {
-      const table = { ...tableData };
-      const loading = { ...loadingObj };
-      const data: any = record.product || [];
+      const table = {...tableData};
+      const loading = {...loadingObj};
+      const data:any = record.list || [];
       table[key] = data;
       loading[key] = false;
       setTableData(table);
       setLoadingObj(loading);
-    } catch (err) {
+    } catch(err) {
       console.log(err);
     }
   };
 
   const onExpand = (expanded: any, record: any) => {
-    const key = record?.id;
+    const key = record?.packageNo;
     if (tableData[key]?.length) return;
     const loading = { ...loadingObj };
     loading[key] = true;
@@ -88,22 +88,22 @@ export default () => {
     const _columns: ProColumns<DataCommodity.Commodity>[] = [
       {
         title: '服务商名称',
-        dataIndex: 'productModel',
+        dataIndex: 'providerName',
         valueType: 'textarea',
       },
       {
         title: '服务企业数量',
-        dataIndex: 'purchasePricePart',
+        dataIndex: 'enterpriseNum',
         valueType: 'textarea',
       },
       {
         title: '诊断报告上传数',
-        dataIndex: 'salePricePart',
+        dataIndex: 'reportNum',
         valueType: 'textarea',
       },
       {
         title: '诊断完成率',
-        dataIndex: 'originPricePart',
+        dataIndex: 'finishRate',
       }
     ];
     return (
@@ -112,7 +112,7 @@ export default () => {
         headerTitle={false}
         search={false}
         options={false}
-        dataSource={tableData[record.id]}
+        dataSource={tableData[record.packageNo]}
         pagination={false}
       />
     );
@@ -124,9 +124,8 @@ export default () => {
         <h3>诊断服务报表</h3>
         {showTable && (
           <ProTable
-            scroll={{ x: 1400 }}
             options={false}
-            rowKey="id"
+            rowKey="packageNo"
             search={false}
             expandable={{
               onExpand,

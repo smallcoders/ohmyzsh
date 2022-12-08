@@ -4,29 +4,19 @@ import { request } from 'umi';
  * 分页查询
  * @param params
  */
- export async function getServiceQueryPage(params: {
-  current?: number;
-  pageSize?: number;
-  [key: string]: any;
-}) {
+ export async function getServiceQueryPage(data?: { [key: string]: any }) {
   return request('/antelope-diagnose/mng/service/queryPage', {
     method: 'POST',
-    data: { 
-      ...params, 
-      pageIndex: params.current
-    },
-  }).then((e: { code: number; totalCount: any; result: any }) => ({
-    success: e.code === 0,
-    total: e.totalCount,
-    data: e.result,
-  }));
+    data,
+  });
 }
+
 /**
  * 根据id查询诊断包详情
  * @param options
  */
  export async function getServiceDetail(id: string) {
-  return request(`/antelope-diagnose/mng/service/queryDetail?id=${id}`, {
+  return request(`/antelope-diagnose/mng/service/queryDetail?packageNo=${id}`, {
     method: 'GET',
   });
 }
@@ -51,7 +41,7 @@ export async function getActivityManageList(params: {
   pageSize?: number;
   [key: string]: any;
 }) {
-  return request('/antelope-diagnose/mng/hefei/diagnose/report/list', {
+  return request('/antelope-diagnose/mng/hefei/diagnose/report/statistics', {
     method: 'POST',
     data: { 
       pageSize:  params.pageSize,

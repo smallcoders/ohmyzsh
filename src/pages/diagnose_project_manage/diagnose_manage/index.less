@@ -25,13 +25,6 @@
     display: flex;
     justify-content: space-between;
   }
-  .container-form-group {
-    height: 48px;
-    line-height: 48px;
-    font-size: 16px;
-    font-weight: 400;
-    color: #8290a6;
-  }
   .container-service-enterprise {
     ul {
       padding: 0;
@@ -64,6 +57,49 @@
     p {
       margin-top: 8px;
       color: #8290a6;
+    }
+  }
+}
+// 抽屉样式
+.detail-drawer {
+  .container-form-group {
+    height: 48px;
+    line-height: 48px;
+    font-size: 16px;
+    font-weight: 400;
+    color: #8290a6;
+  }
+  ul {
+    padding: 0;
+    li p {
+      color: #8290a6;
+      width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+  .ant-table-thead .ant-table-cell {
+    background: #f8f9fb;
+    font-size: 16px;
+    font-family: MicrosoftYaHei, MicrosoftYaHei-Regular;
+    font-weight: 400;
+    text-align: left;
+    color: #8290a6;
+  }
+  .org-fenpei {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    button {
+      padding: 0;
+      color: #0068FF;
+    }
+  }
+  .ant-drawer-footer {
+    text-align: right;
+    button {
+      margin-left: 12px;
     }
   }
 }

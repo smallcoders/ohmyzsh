@@ -12,11 +12,11 @@ import {
   DatePicker,
   Checkbox,
   TreeSelect,
-  Image
+  Image,
+  Table
 } from 'antd';
 const { Search } = Input;
-const { Option } = Select;
-import { UserOutlined, AudioOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { AudioOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import type { CheckboxValueType } from 'antd/es/checkbox/Group';
 import './index.less';
 import React, { useEffect, useState } from 'react';
@@ -24,44 +24,23 @@ import moment from 'moment';
 import SelfTable from '@/components/self_table';
 import { Access, useAccess } from 'umi';
 import {
-	getOrgList
+	// getOrgList
+  queryOrgList
 } from '@/services/digital-application';
 import { listAllAreaCode } from '@/services/common';
 import {
-  getServiceQueryPage
+  getServiceQueryPage, //服务包list
+  getServiceDetail, //服务包详情
+  saveServicePackage // 新增、编辑诊断包
 } from '@/services/diagnose-service';
 import type Common from '@/types/common';
 import type NeedVerify from '@/types/user-config-need-verify';
-const stateObj = {
-  NOT_CONNECT: '未对接',
-  CONNECTING: '对接中',
-  CONVERTED: '已转化',
-  RESOLVED: '已解决',
-};
 import icon1 from '@/assets/system/empty.png'
-enum Edge {
-  HOME = 0, // 新闻咨询首页
-}
 export default () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [dataSource, setDataSource] = useState<NeedVerify.Content[]>([]);
   // 拿到当前角色的access权限兑现
   const access = useAccess()
-  // 当前页面的对应权限key
-  const [edge, setEdge] = useState<Edge.HOME>(Edge.HOME);
-  // 页面权限
-  const permissions = {
-    [Edge.HOME]: 'PQ_SM_XQGL', // 科产管理-创新需求管理页面查询
-  }
-  useEffect(() => {
-    for (const key in permissions) {
-      const permission = permissions[key]
-      if (Object.prototype.hasOwnProperty.call(access, permission)) {
-        setEdge(key as any)
-        break
-      }
-    }
-  },[])
 
   // 新建/编辑诊断服务包
   const [open, setOpen] = useState(false);
@@ -70,13 +49,9 @@ export default () => {
   };
   const onClose = () => {
     setOpen(false);
-  };
-
-  const [currentId, setCurrentId] = useState<string>('');
-
-  const formLayout2 = {
-    labelCol: { span: 3 },
-    wrapperCol: { span: 20 },
+    setEditItem({})
+    editForm.resetFields()
+    setSelectedOrgList([])
   };
 
   const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
@@ -85,6 +60,15 @@ export default () => {
     totalCount: 0,
     pageTotal: 0,
   });
+
+  // 诊断服务包详情
+  const [openDetail, setOpenDetail] = useState(false);
+  const showDetailDrawer = () => {
+    setOpenDetail(true);
+  };
+  const onCloseDetail = () => {
+    setOpenDetail(false);
+  };
 
 
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
@@ -109,12 +93,6 @@ export default () => {
   };
 
   const prepare = async () => {
-    // try {
-    //   const res = await Promise.all([getKeywords()]);
-    //   setKeywords(res[0].result || []);
-    // } catch (error) {
-    //   message.error('获取数据失败');
-    // }
     getPage()
   };
   useEffect(() => {
@@ -124,13 +102,12 @@ export default () => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [editItem, setEditItem] = useState<any>({});
   const [editForm] = Form.useForm();
-  // const newKeywords = Form.useWatch('keyword', editForm);
+  // 获取选择的服务商
   const handleOk = async () => {
-    console.log(selectedOrgList, 'selectedOrgList');
     let showSelectedOrg: string[] = []
     if(selectedOrgList && selectedOrgList.length > 0) {
       selectedOrgList.map((item: any) => {
-        showSelectedOrg.push(item.orgName)
+        showSelectedOrg.push(item.serviceProviderName)
       })
     }
     setModalVisible(false);
@@ -140,33 +117,19 @@ export default () => {
         diagnoseServicers: showSelectedOrg
       }
     )
-    // editForm
-    //   .validateFields()
-    //   .then(async (value) => {
-    //     const submitRes = await updateKeyword({
-    //       id: currentId,
-    //       ...value,
-    //     });
-    //     if (submitRes.code === 0) {
-    //       message.success(`所属行业编辑成功！`);
-    //       setModalVisible(false);
-    //       editForm.resetFields();
-    //       getPage();
-    //     } else {
-    //       message.error(`所属行业编辑失败，原因:{${submitRes.message}}`);
-    //     }
-    //   })
-    //   .catch(() => {});
   };
-
   const handleCancel = () => {
     setModalVisible(false);
   };
+
+  /*
+  * 选择服务商
+  */ 
   const [orgList, setOrgList] = useState<any>([])
-	const [selectedOrgList, setSelectedOrgList] = useState<any>([])
+	const [selectedOrgList, setSelectedOrgList] = useState<any>([]) //选中的服务商
   const [servicersForm] = Form.useForm();
   const onSearch = async (value: string) => {
-		const { result, code } = await getOrgList({
+		const { result, code } = await queryOrgList({
 			pageIndex: 1,
 			pageSize: 20,
 			orgName: value
@@ -181,7 +144,7 @@ export default () => {
     let arr: any = []
     if(checkedValues && checkedValues.length > 0) {
       checkedValues.map((item: any) => {
-        arr.push({ orgName: item.split('-')[1], id: item.split('-')[0] })
+        arr.push({ serviceProviderName: item.split('-')[1], serviceProviderId: item.split('-')[0] })
       })
     }
     setSelectedOrgList(arr)
@@ -191,7 +154,7 @@ export default () => {
     // 右侧已选择服务商删除
     const id = idLabel.split('-')[0]
     let arr = [...selectedOrgList]
-    let arr2 = arr.filter(item => item.id != id)
+    let arr2 = arr.filter(item => item.serviceProviderId != id)
     setSelectedOrgList(arr2)
     // 左侧checkbox删除已选中选项
     let formArr = servicersForm.getFieldsValue().servicers
@@ -257,10 +220,10 @@ export default () => {
               <div className='selected-servers-wrap'>
                 {selectedOrgList && selectedOrgList.map(item => {
                   return (
-                    <p key={item.id}>
-                      <span>{item.orgName}</span>
+                    <p key={item.serviceProviderId}>
+                      <span>{item.serviceProviderName}</span>
                       <CloseCircleOutlined onClick={() => {
-                        cancelSelect(item.id + '-' + item.orgName)
+                        cancelSelect(item.serviceProviderId + '-' + item.serviceProviderName)
                       }} />
                     </p>
                   )
@@ -273,11 +236,65 @@ export default () => {
     );
   };
 
-  // 选择服务企业
+  /*
+  * 选择服务企业
+  */
   const [editServiceEnterprise, setEditServiceEnterprise] = useState<any>({})
   const [area, setArea] = useState<any[]>([]);
+  const [selectedArea, setSelectedArea] = useState<any[]>([]);
   const [enterpriseModal, setEnterpriseModal] = useState<boolean>(false);
-  const [inputEnterpriseForm] = Form.useForm()
+  const [inputEnterpriseForm] = Form.useForm()//手动输入服务企业信息
+  const [selectedEnterprise, setSelectedEnterprise] = useState<any>([])//选中的服务企业
+  const [enterpriseForm] = Form.useForm();
+  // 手动输入监听
+	const onValuesChange = (changedValues: any, allValues: any) => {
+		console.log(changedValues, '输入', allValues);
+		// console.log(resultObj);
+		// if(changedValues.defaultDiagnoseResult) {
+		// 	setResultObj({...resultObj, ...allValues, relations: []})
+		// }else {
+		// 	setResultObj({ ...resultObj, ...allValues })
+		// }
+	}
+  const onSearchEnterprise = async (value: string) => {
+		const { result, code } = await queryOrgList({
+			pageIndex: 1,
+			pageSize: 20,
+			orgName: value
+		});
+		if (code === 0 && result.length>0) {
+			setOrgList(result)
+		} else {
+			message.error(`请求公司列表数据失败`);
+		}
+	};
+  const onChangeEnterprise = (checkedValues: CheckboxValueType[]) => {
+    console.log(checkedValues, '选中的服务企业')
+    let arr: any = []
+    if(checkedValues && checkedValues.length > 0) {
+      checkedValues.map((item: any) => {
+        // arr.push({ enterpriseName: item.split('-')[1], enterpriseId: item.split('-')[0] })
+        arr.push({ ...JSON.parse(item), enterpriseName: JSON.parse(item).orgName, enterpriseId: JSON.parse(item).id })
+      })
+    }
+    console.log(arr, 'arr')
+    setSelectedEnterprise(arr)
+  };
+  const cancelSelectEnterprise = (idLabel: string) => {
+    console.log(idLabel)
+    // 右侧已选择服务商删除
+    // const id = idLabel.split('-')[0]
+    const id = JSON.parse(idLabel)
+    let arr = [...selectedEnterprise]
+    let arr2 = arr.filter(item => item.id != id)
+    setSelectedEnterprise(arr2)
+    // 左侧checkbox删除已选中选项
+    let formArr = enterpriseForm.getFieldsValue().servicers
+    console.log(formArr)
+    let arr3 = formArr.filter(item => item.indexOf(JSON.parse(idLabel).id) < 0)
+    console.log(arr3, 'arr3');
+    enterpriseForm.setFieldsValue({servicers: arr3})
+  }
   const getAreaData = async() => {
     try {
       const areaRes = await listAllAreaCode()
@@ -286,25 +303,112 @@ export default () => {
       message.error('获取省市区数据出错')
     }
   }
+
+  // 处理数据
+  const flatTreeAndSetLevel = (tree:any) => {
+    const list = []
+    tree.forEach(item => {
+      const o = JSON.parse(JSON.stringify(item))
+      if(o.nodes) delete o.nodes
+      // o.level = level
+      list.push(o)
+      if(item.nodes && item.nodes.length) {
+        list.push(...flatTreeAndSetLevel(item.nodes))
+      }
+    })
+    return list
+  }
+  const getParentAreas = (pid:number, list:any) => {
+    const target = []
+    const o = list.find(item => item.code == pid) || {}
+    if(JSON.stringify(o) != '{}') {
+      target.push(o)
+    }
+    if(o.parentCode) {
+      target.push(...getParentAreas(o.parentCode, list))
+    }
+    return target
+  }
+  const selectArea = (value:any, node:any, exra:any) => {
+    let arr = getParentAreas(value, flatTreeAndSetLevel(area))
+    console.log(arr, '----->>>')
+    setSelectedArea(arr)
+  }
+  const ensureInput = () => {
+    console.log(selectedEnterprise, '选中的服务企业')
+    let params: any = {}
+    if(inputEnterpriseForm.getFieldValue('enterpriseName')) {
+      params.enterpriseName = inputEnterpriseForm.getFieldValue('enterpriseName')
+    }else {
+      message.error('请输入企业名称')
+      return
+    }
+    if(selectedArea && selectedArea.length > 0) {
+      params.handInput = 0
+      selectedArea.map((item: any) => {
+        if(item.grade == 1) {
+          params.provinceName = item.name
+          params.provinceCode = item.code
+        }
+        if(item.grade == 2) {
+          params.cityName = item.name
+          params.cityCode = item.code
+        }
+        if(item.grade == 3) {
+          params.countyName = item.name
+          params.countyCode = item.code
+        }
+      })
+    }
+    console.log(params, '手动录入数据params')
+    setSelectedEnterprise([params, ...selectedEnterprise])
+    inputEnterpriseForm.resetFields()
+  }
   const handleEnterpriseCancel = () => {
+    setEnterpriseModal(false);
+  };
+  // 获取选择的服务企业
+  const handleEnterpriseOk = async () => {
+    console.log(editServiceEnterprise, '正在编辑的服务商');
+    let showSelectedEnterprise: string[] = []
+    if(selectedEnterprise && selectedEnterprise.length > 0) {
+      selectedEnterprise.map((item: any) => {
+        showSelectedEnterprise.push(item.enterpriseName)
+      })
+    }
+    console.log(selectedEnterprise, '选择的服务企业');
+    setEditServiceEnterprise(
+      {
+        serviceProviderName: editServiceEnterprise.serviceProviderName,
+        serviceProviderId: editServiceEnterprise.serviceProviderId,
+        listEnter: selectedEnterprise
+      }
+    )
+    console.log(selectedOrgList, '所选服务商合集')
+    const newData = [...selectedOrgList];
+    const index = newData.findIndex((item) => editServiceEnterprise.serviceProviderId === item.serviceProviderId);
+    const item = newData[index];
+    newData.splice(index, 1, { ...item, listEnter: selectedEnterprise });
+    console.log(newData, 'handleSave后的数据');
+    setSelectedOrgList(newData);
     setEnterpriseModal(false);
   };
   // 分配服务企业弹框
   const useEnterpriseModal = (): React.ReactNode => {
     return (
       <Modal
-        title={'服务企业-'+editServiceEnterprise.orgName}
-        width="640px"
+        title={'服务企业-'+editServiceEnterprise.serviceProviderName}
+        width="800px"
         visible={enterpriseModal}
         maskClosable={false}
-        onOk={handleOk}
+        onOk={handleEnterpriseOk}
         className="enterprise-modal"
         onCancel={handleEnterpriseCancel}
         footer={[
           <Button key="back" onClick={handleEnterpriseCancel}>
             取消
           </Button>,
-          <Button key="link" type="primary" onClick={handleOk}>
+          <Button key="link" type="primary" onClick={handleEnterpriseOk}>
             确定
           </Button>,
         ]}
@@ -314,21 +418,27 @@ export default () => {
             <div className='left-content-wrapper'>
               <Search 
                 placeholder="请输入搜索内容" 
-                onSearch={onSearch}
+                onSearch={onSearchEnterprise}
                 suffix={<AudioOutlined />} 
               />
               <div className='checkbox-wrapper'>
-                <Form form={servicersForm}>
+                <Form form={enterpriseForm}>
                   <Form.Item
                     name="servicers"
                     label=""
                   >
-                    <Checkbox.Group style={{ width: '100%' }} onChange={onChange}>
+                    <Checkbox.Group style={{ width: '100%' }} onChange={onChangeEnterprise}>
                       <Row>
                         {orgList && orgList.map(item => {
                           return (
                             <Col span={20} style={{marginTop: '8px'}}>
-                              <Checkbox value={item.id + '-' + item.orgName} key={item.id}>{item.orgName}</Checkbox>
+                              {/* <Checkbox value={item.id + '-' + item.orgName} key={item.id}> */}
+                              <Checkbox value={JSON.stringify(item)} key={item.id}>
+                                {item.orgName}
+                                {
+                                  item.provinceName ? `（${item.provinceName}${item.cityName?'/'+item.cityName:''}${item.countyName?'/'+item.countyName:''}）` : ''
+                                }
+                              </Checkbox>
                             </Col>
                           )
                         })}
@@ -342,6 +452,7 @@ export default () => {
                 form={inputEnterpriseForm} 
                 hideRequiredMark
                 layout="vertical"
+                onValuesChange={(newEventName, allValues) => { onValuesChange(newEventName, allValues) }}
               >
                 <Form.Item
                   name="enterpriseName"
@@ -353,7 +464,7 @@ export default () => {
                     },
                   ]}
                 >
-                  <Input placeholder="请输入" />
+                  <Input placeholder="请输入" maxLength={35}/>
                 </Form.Item>
                 <Form.Item 
                   name="areaCode" 
@@ -368,27 +479,38 @@ export default () => {
                   <TreeSelect
                     placeholder="请选择"
                     allowClear
+                    showCheckedStrategy="SHOW_ALL"
+                    onChange={(value:any, node:any, exra:any) => {
+                      selectArea(value, node, exra)
+                    }}
+                    // labelInValue={true}
                     fieldNames={{ 'value': 'code', 'label': 'name', 'children': 'nodes' }}
                     treeData={area}
                   ></TreeSelect>
                 </Form.Item>
               </Form>
-              <Button>录入</Button>
+              <Button onClick={ensureInput}>录入</Button>
             </div>
           </Col>
           <Col span={12}>
             <div className='right-content-wrapper'>
               <div className='selected-servers-length'>
-                已选择服务企业（{selectedOrgList.length}）
-                <Button type='text' disabled={selectedOrgList.length==0}>清空</Button>
+                已选择服务企业（{selectedEnterprise.length}）
+                <Button type='text' disabled={selectedEnterprise.length==0}>清空</Button>
               </div>
               <div className='selected-servers-wrap'>
-                {selectedOrgList && selectedOrgList.map(item => {
+                {selectedEnterprise && selectedEnterprise.map(item => {
                   return (
-                    <p key={item.id}>
-                      <span>{item.orgName}</span>
+                    <p key={item.enterpriseId}>
+                      <span>
+                        {item.enterpriseName}
+                        {
+                          item.provinceName ? `（${item.provinceName}${item.cityName?'/'+item.cityName:''}${item.countyName?'/'+item.countyName:''}）` : ''
+                        }
+                      </span>
                       <CloseCircleOutlined onClick={() => {
-                        cancelSelect(item.id + '-' + item.orgName)
+                        // cancelSelectEnterprise(item.enterpriseId + '-' + item.enterpriseName)
+                        cancelSelectEnterprise(JSON.stringify(item))
                       }} />
                     </p>
                   )
@@ -400,6 +522,98 @@ export default () => {
       </Modal>
     );
   };
+  const editService = async(record: any) => {
+    console.log(record, '编辑record');
+    let detailRes = await getServiceDetail(record.packageNo)
+    if(detailRes.code === 0) {
+      let serviceArr = detailRes.result.list || []
+      // setDetailItem(detailRes.result)
+      let showServiceArr:any = []
+      if(serviceArr && serviceArr.length > 0) {
+        serviceArr.map((item:any) => {
+          showServiceArr.push(item.serviceProviderName)
+        })
+      }
+      setOpen(true);
+      setSelectedOrgList(serviceArr)
+      setEditItem({...record, ...detailRes.result})
+      editForm.setFieldsValue({
+        ...record,
+        serviceTimeSpan: [moment(record.startTime), moment(record.endTime)],
+        diagnoseServicers: showServiceArr
+      });
+    }else {
+      message.error(detailRes.message);
+    }
+    
+  }
+  // 确定新建
+  const ensureAddOrEdit = () => {
+    console.log(selectedOrgList, '服务商信息')
+    editForm
+      .validateFields()
+      .then(async (value) => {
+        // debugger
+        let params:any = {}
+        console.log(value)
+        if (value.serviceTimeSpan) {
+          params.startTime = moment(value.serviceTimeSpan[0]).format('YYYY-MM-DD');
+          params.endTime = moment(value.serviceTimeSpan[1]).format('YYYY-MM-DD');
+        }
+        params.name = value.name
+        if(value.projectName) {
+          params.projectName = value.projectName
+        }
+        params.list = selectedOrgList
+        console.log(editItem, 'editItem')
+        if(editItem && editItem.packageNo) {
+          params.packageNo = editItem.packageNo
+        }
+        const submitRes = await saveServicePackage(params);
+        if (submitRes.code === 0) {
+          message.success(editItem && editItem.id ? '诊断服务包编辑成功！' : `诊断服务包新建成功！`);
+          setOpen(false);
+          editForm.resetFields();
+          setSelectedOrgList([])
+          getPage();
+        } else {
+          message.error(`所属行业编辑失败，原因:{${submitRes.message}}`);
+        }
+      })
+      .catch(() => {});
+  }
+
+
+  // 诊断详情获取
+  const [detailItem, setDetailItem] = useState<any>({});
+  const detailColumns = [
+    {
+      title: '诊断服务商',
+      dataIndex: 'serviceProviderName',
+    },
+    {
+      title: '服务企业',
+      dataIndex: 'list',
+      render: (_: any, record: any) => {
+        return record.listEnter.map((item: any) => {
+          return(
+            <div>{item.enterpriseName}{
+              item.provinceName ? `（${item.provinceName}${item.cityName?'/'+item.cityName:''}${item.countyName?'/'+item.countyName:''}）` : ''
+            }</div>
+          )
+        })
+      }
+    },
+  ];
+  const getServicePackageDetail = async(record: any) => {
+    let detailRes = await getServiceDetail(record.packageNo)
+    if(detailRes.code === 0) {
+      setDetailItem(detailRes.result)
+      showDetailDrawer()
+    }else {
+      message.error(detailRes.message);
+    }
+  }
 
   const columns = [
     {
@@ -411,48 +625,30 @@ export default () => {
     },
     {
       title: '服务包名称',
-      dataIndex: 'sort',
-      width: 300,
+      dataIndex: 'name',
+      width: 200,
     },
     {
       title: '项目名称',
-      dataIndex: 'name',
-      render: (_: string, _record: any) => (
-        <a
-          href="#!"
-          onClick={(e) => {
-            e.preventDefault();
-            window.open(`/science-technology-manage/creative-need-manage/detail?id=${_record.id}`);
-          }}
-        >
-          {_}
-        </a>
-      ),
-      width: 300,
+      dataIndex: 'projectName',
+      width: 200,
     },
     {
       title: '服务时间',
       dataIndex: 'updateTime',
-      width: 200,
-      render: (_: string) => moment(_).format('YYYY-MM-DD HH:mm:ss'),
+      width: 240,
+      render: (_: string, _record: any) => moment(_record?.startTime).format('YYYY-MM-DD') + '~' + moment(_record?.endTime).format('YYYY-MM-DD')
     },
     {
       title: '诊断服务商数',
-      dataIndex: 'state',
-      width: 200,
-      render: (_: string) => {
-        return (
-          <div className={`state${_}`}>
-            {Object.prototype.hasOwnProperty.call(stateObj, _) ? stateObj[_] : '--'}
-          </div>
-        );
-      },
+      dataIndex: 'serviceProviderNum',
+      width: 160
     },
     {
       title: '服务企业数',
-      dataIndex: 'areaName',
+      dataIndex: 'enterpriseNum',
       isEllipsis: true,
-      width: 150,
+      width: 160,
     },
     access['P_SM_XQGL'] && {
       title: '操作',
@@ -460,26 +656,29 @@ export default () => {
       dataIndex: 'option',
       fixed: 'right',
       render: (_: any, record: any) => {
-        const accessible = access?.[permissions?.[edge].replace(new RegExp("Q"), "")]
         return (
-          <Access accessible={accessible}>
+          // <Access accessible={accessible}>
             <Space wrap>
               <Button
                 type="link"
                 style={{ padding: 0 }}
                 onClick={() => {
-                  setModalVisible(true);
-                  setCurrentId(record.id);
-                  editForm.setFieldsValue({
-                    keyword: record.keyword || [],
-                    keywordOther: record.keywordOther || '',
-                  });
+                  getServicePackageDetail(record)
+                }}
+              >
+                详情
+              </Button>
+              <Button
+                type="link"
+                style={{ padding: 0 }}
+                onClick={() => {
+                  editService(record)
                 }}
               >
                 编辑
               </Button>
             </Space>
-          </Access>
+          // </Access>
         )
         
 
@@ -492,7 +691,7 @@ export default () => {
       <h3 className='title'>诊断项目管理</h3>
       <div className='content-wrapper'>
         <div className='container-table-header'>
-          <h3>诊断服务报表</h3>
+          <h3>诊断服务包</h3>
           <Access accessible={access['P_SM_XQGL']}>
             <Button type='primary'  onClick={showDrawer}>
               新增诊断服务包
@@ -527,15 +726,27 @@ export default () => {
             <Image src={icon1} width={160}/>
             <p>点击右上角，添加诊断服务包</p>
           </div>
-          
         )}
         {useModal()}
         {useEnterpriseModal()}
+        {/* 新增、编辑服务包 */}
         <Drawer
-          title="新建诊断服务包"
+          title={editItem && editItem.id ? '编辑诊断服务包' : '新建诊断服务包'}
           onClose={onClose}
           size={'large'}
+          className="detail-drawer"
           visible={open}
+          footer={[
+            <Button key="cancel" onClick={onClose}>
+              取消
+            </Button>,
+            <Button key="ensure" type="primary" onClick={() => {
+              ensureAddOrEdit()
+            }}>
+              确定
+            </Button>
+          ]}
+          closable={false}
           bodyStyle={{
             paddingBottom: 80,
           }}
@@ -574,7 +785,7 @@ export default () => {
                 },
               ]}
             >
-              <DatePicker.RangePicker allowClear showTime />
+              <DatePicker.RangePicker allowClear />
             </Form.Item>
             <Form.Item
               name="diagnoseServicers"
@@ -604,21 +815,52 @@ export default () => {
             <ul>
               {selectedOrgList && selectedOrgList.map((item: any) => {
                 return (
-                  <li key={item.id}>
-                    <div>
-                      <span>{item.orgName}</span>
+                  <li key={item.serviceProviderId}>
+                    <div className='org-fenpei'>
+                      <span>{item.serviceProviderName}</span>
                       <Button type='text' onClick={() => {
                         setEnterpriseModal(true)
                         setEditServiceEnterprise(item)
                         getAreaData()
                       }}>分配服务企业</Button>
                     </div>
-                    <p>展示已分配的服务企业。。。</p>
+                    <p>{
+                      item.listEnter && item.listEnter.length>0 && item.listEnter.map((enter: any) => {
+                        return (
+                          <span>{enter.enterpriseName}{
+                            enter.provinceName ? `（${enter.provinceName}${enter.cityName?'/'+enter.cityName:''}${enter.countyName?'/'+enter.countyName:''}）` : ''
+                          }、</span>
+                        )
+                      })
+                    }</p>
                   </li>
                 )
               })}
             </ul>
           </div>
+          <div>
+            <Button></Button>
+          </div>
+        </Drawer>
+        {/* 服务包详情 */}
+        <Drawer
+          title="诊断详情"
+          onClose={onCloseDetail}
+          size={'large'}
+          className="detail-drawer"
+          visible={openDetail}
+          bodyStyle={{
+            paddingBottom: 80,
+          }}
+        >
+          <div className='container-form-group'>服务包名称</div>
+          <h3>{detailItem.name}</h3>
+          <div className='container-form-group'>诊断任务</div>
+          <Table
+            columns={detailColumns}
+            dataSource={detailItem.list}
+            pagination={false}
+          />
         </Drawer>
       </div>
     </div>
