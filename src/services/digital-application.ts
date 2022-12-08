@@ -22,6 +22,14 @@ export async function getOrgList(data: { pageIndex: number; pageSize: number; or
   });
 }
 
+/** 获取机构列表-带机构省市区信息 */
+export async function queryOrgList(data: { pageIndex: number; pageSize: number; orgName?: string }) {
+  return request<ApplicationManager.CompanyResultList>('/antelope-user/mng/org/queryOrgList', {
+    method: 'post',
+    data,
+  });
+}
+
 /** 回显机构列表 */
 export async function editOrgList(data: { ids?: any }) {
   return request<ApplicationManager.CompanyResultList>(
