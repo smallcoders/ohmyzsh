@@ -20,8 +20,8 @@ const CascaderConfig = () => {
           }}
           onBlur={(e) => {
             if(!e.target.value){
-              handleChange('省市区', 'label')
-              handleChange("省市区", 'config.paramDesc')
+              handleChange('地址', 'label')
+              handleChange("地址", 'config.paramDesc')
             }
           }}
         />

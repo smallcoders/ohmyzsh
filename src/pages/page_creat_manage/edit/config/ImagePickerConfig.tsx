@@ -1,16 +1,117 @@
-import { useState, useContext } from 'react';
-import { Button, Checkbox, Form, Input, InputNumber, message, Select } from 'antd';
+import { useState, useContext, useEffect } from 'react';
+import { Button, Checkbox, Form, Input, InputNumber, message, Modal, Select } from 'antd';
 import { useConfig } from '../hooks/hooks'
 import { DesignContext } from '@/pages/page_creat_manage/edit/store';
-import { clone } from 'lodash-es';
+import { clone, cloneDeep } from 'lodash-es';
+import Sortable from 'sortablejs';
 import UploadForm from '@/components/upload_form';
+import dragIcon from '@/assets/page_creat_manage/drag-item.png';
+import { ActionType } from '@/pages/page_creat_manage/edit/store/action';
 
 const ImagePickerConfig = () => {
   const { selectWidgetItem, handleChange } = useConfig()
-  const { state } = useContext(DesignContext)
+  const { state, dispatch } = useContext(DesignContext)
   const { widgetFormList } = state
   const [showLengthInput, setShowLengthInput] = useState<boolean>(false)
-  // todo 默认图
+  const [errorMsg, setErrorMsg] = useState<string>('')
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
+
+  const sortableGroupDecorator = (instance: HTMLUListElement | null) => {
+    if (instance) {
+      const options: Sortable.Options = {
+        ghostClass: 'ghost',
+        handle: '.drag-item',
+        group: {
+          name: 'options'
+        },
+        onEnd: (event) => {
+          const { newIndex, oldIndex } = event
+          const configOptions: [] = clone(selectWidgetItem!.config!.options)
+          const oldOption = configOptions.splice(oldIndex!, 1)
+          configOptions.splice(newIndex!, 0, ...oldOption)
+          handleChange(clone(configOptions), 'config.options')
+        }
+      }
+      Sortable.create(instance, options)
+    }
+  }
+
+  const getErrorMsg = (options: any) => {
+    const valueList = options.map((item: {label: string}) => {
+      return item.label
+    })
+    setErrorMsg([...new Set(valueList)].length < valueList.length ? '选项重复，请修改' : "")
+  }
+
+  const getDefaultValues = (options: any, defaultLabels: string[]) => {
+   const defaultValues = options.filter((it: any) => {
+      return selectWidgetItem?.config?.defaultValueLabels.indexOf(it.label) !== -1
+    }).map((it: any) => {
+      return it.value
+    })
+    handleChange(defaultLabels || [], 'config.defaultValueLabels')
+    handleChange(defaultValues || [], 'config.defaultValue')
+  }
+
+
+  const componentsList = widgetFormList.filter((listItem) => {
+    return listItem.key !== selectWidgetItem!.key
+  }).map((formItem) => {
+    return {
+      label: formItem.label,
+      value: formItem.key
+    }
+  }) || []
+  const [controlList, setControlList] = useState<string[]>(clone(selectWidgetItem?.controlList) || [])
+  const [configOptions, setConfigOptions] = useState<string[]>(clone(selectWidgetItem?.config?.options) || [])
+  useEffect(() => {
+    setControlList(clone(selectWidgetItem?.controlList) || [])
+  }, [selectWidgetItem?.controlList])
+  useEffect(() => {
+    setConfigOptions(clone(selectWidgetItem?.config?.options) || [])
+  }, [selectWidgetItem?.config?.options])
+
+  const getDefaultShowList = () => {
+    // 获取所有控制组件
+    let controlAllList = controlList
+    const list = widgetFormList.filter((it) => {
+      return it.key !== selectWidgetItem!.key
+    })
+    list.forEach((item) => {
+      controlAllList = [...new Set([...controlAllList, ...(item.controlList || [])])]
+    })
+    // 获取所有默认值 show_list
+    let showList: string[] = []
+    widgetFormList.forEach((item: any) => {
+      const defaultValue = item.config?.defaultValue
+      if(defaultValue?.length &&
+        ['RadioGroup', 'CheckboxGroup', 'MultipleSelect', 'Select', 'ImagePicker'].indexOf(item.type) !== -1)
+      {
+        item.config.options.forEach((optionItem: {value: string, showList: string[]}) => {
+          if (defaultValue instanceof Array &&
+            defaultValue.indexOf(optionItem.value) !== -1
+          ){
+            showList = [...new Set([...showList, ...(optionItem.showList || [])])]
+          }
+          if (typeof defaultValue === 'string' && defaultValue === optionItem.value){
+            showList = [...new Set([...showList, ...(optionItem.showList || [])])]
+          }
+        })
+      }
+    })
+    // 将控制组件显示字段设置为true
+    state.widgetFormList = widgetFormList.map((it) => {
+      return {...it, show: showList.indexOf(it.key!) !== -1 ? true : controlAllList.indexOf(it.key!) !== -1 ? false : true  }
+    })
+    dispatch({
+      type: ActionType.SET_GLOBAL,
+      payload: {...state}
+    })
+  }
+
+
+  console.log(state, '0000001111111111111')
+
   return (
     <>
       <Form.Item required label="标题">
@@ -74,23 +175,63 @@ const ImagePickerConfig = () => {
         />
       </Form.Item>
       <Form.Item label="选项">
-        <ul>
+        {
+          errorMsg && <div className="error-tip">{errorMsg}</div>
+        }
+        <ul ref={sortableGroupDecorator}>
           {selectWidgetItem?.config?.options?.map((option: { label: string, value: string, index: number }, id: number) => (
             <li key={`${option.index}`}>
               <div className="option-item">
+                <img className="drag-item" src={dragIcon} alt='' />
                 <UploadForm
                   listType="picture-card"
                   className="avatar-uploader"
-                  maxSize={1}
+                  maxSize={4}
                   action={'/antelope-common/common/file/upload/record'}
                   showUploadList={false}
                   accept=".bmp,.gif,.png,.jpeg,.jpg"
-                  value={option?.value}
+                  value={typeof option.value === 'number' ? '' : option?.value}
                   onChange={(value: any) => {
-                    const configOptions = clone(selectWidgetItem!.config!.options)
-                    configOptions[id].value = value?.path || value
-                    handleChange(configOptions, 'config.options')
+                    const newConfigOptions = clone(selectWidgetItem!.config!.options)
+                    newConfigOptions[id].value = value?.path || value || ''
+                    handleChange(newConfigOptions, 'config.options')
+                    getDefaultValues(newConfigOptions, selectWidgetItem!.config!.defaultValueLabels)
                   }}
+                />
+                <Input
+                  value={option.label}
+                  size="small"
+                  onChange={(event) => {
+                    const newConfigOptions = clone(selectWidgetItem!.config!.options)
+                    newConfigOptions[id].label = event.target.value
+                    handleChange(configOptions, 'config.options')
+
+                    // 获取新的label列表
+                    const configLabels = newConfigOptions.map((item: any) => {
+                      return item.label
+                    })
+                    // 剔除默认label中的被变更的数据
+                    const newDefaultLabels = selectWidgetItem!.config!.defaultValueLabels.filter((label: string) => {
+                      return configLabels.indexOf(label) !== -1
+                    })
+                    getDefaultValues(newConfigOptions, newDefaultLabels)
+                    getErrorMsg(newConfigOptions)
+                  }}
+                  onBlur={(e) => {
+                    if (!e.target.value){
+                      const newConfigOptions = clone(selectWidgetItem!.config!.options)
+                      const indexList: number[] = newConfigOptions.map((item: {label: string, value: string, index: number}) => {
+                        return  Number(item.label.replace('选项', '')) || item.index
+                      })
+                      const max = Math.max(...indexList)
+                      const value = `选项${max + 1}`
+                      newConfigOptions[id].label = value
+                      newConfigOptions[id].index = max + 1
+                      newConfigOptions[id].showList = []
+                      handleChange(newConfigOptions, 'config.options')
+                    }
+                  }}
+                  maxLength={50}
                 />
                 <Button
                   type="ghost"
@@ -101,18 +242,24 @@ const ImagePickerConfig = () => {
                       message.warn('请至少保留两个选项', 2)
                       return
                     }
-                    const configOptions = clone(selectWidgetItem!.config!.options)
-                    const findIndex = selectWidgetItem?.config?.defaultValue?.indexOf(configOptions[id].value)
+                    const newConfigOptions = clone(selectWidgetItem!.config!.options)
+                    const findIndex = selectWidgetItem?.config?.defaultValueLabels?.indexOf(newConfigOptions[id].label)
                     if(findIndex !== -1){
                       const defaultValue = clone(selectWidgetItem!.config!.defaultValue)
                       defaultValue.splice(findIndex, 1)
+
+                      const defaultValueLabels = clone(selectWidgetItem!.config!.defaultValueLabels)
+                      defaultValueLabels.splice(findIndex, 1)
+
+                      handleChange(defaultValueLabels, 'config.defaultValueLabels')
+
                       handleChange(defaultValue, 'config.defaultValue')
                     }
-                    configOptions.splice(id, 1)
-                    if(configOptions.length < selectWidgetItem?.config?.maxLength){
-                      handleChange(configOptions.length, 'config.maxLength')
+                    newConfigOptions.splice(id, 1)
+                    if(newConfigOptions.length < selectWidgetItem?.config?.maxLength){
+                      handleChange(newConfigOptions.length, 'config.maxLength')
                     }
-                    handleChange(configOptions, 'config.options')
+                    handleChange(newConfigOptions, 'config.options')
                   }}
                 >
                   —
@@ -126,30 +273,56 @@ const ImagePickerConfig = () => {
           type="link"
           size="small"
           onClick={() => {
-            const configOptions = clone(selectWidgetItem!.config!.options)
-            const len = configOptions.length;
-            const indexList: number[] = configOptions.map((item: {label: string, value: string, index: number}) => {
-              return Number(item.label.replace('图片', '')) || item.index
+            const newConfigOptions = clone(selectWidgetItem!.config!.options)
+            const len = newConfigOptions.length;
+            const indexList: number[] = newConfigOptions.map((item: {label: string, value: string, index: number}) => {
+              return Number(item.label.replace('选项', '')) || item.index
             })
             const max = Math.max(...indexList)
-            const label = `图片${max + 1}`
-            configOptions.push({ label: label, value: label, index: max + 1 })
-            handleChange(configOptions, 'config.options')
+            const label = `选项${max + 1}`
+            newConfigOptions.push({ label: label, value: max + 1, index: max + 1 })
+            handleChange(newConfigOptions, 'config.options')
             if (len === selectWidgetItem!.config!.maxLength){
-              handleChange(configOptions.length, 'config.maxLength')
+              handleChange(newConfigOptions.length, 'config.maxLength')
             }
-            handleChange(configOptions, 'config.options')
+            handleChange(newConfigOptions, 'config.options')
           }}
         >
           添加选项
         </Button>
       </Form.Item>
+      <Form.Item label="题目关联">
+        <div className="related-click" onClick={() => {
+          setIsModalOpen(true)
+        }}>点击配置</div>
+      </Form.Item>
       <Form.Item label="默认选择">
         <Select
           mode="multiple"
+          fieldNames={{label: 'label', value: 'label'}}
           options={selectWidgetItem?.config?.options}
-          value={selectWidgetItem?.config?.defaultValue}
-          onChange={(option) => handleChange(option, 'config.defaultValue')}
+          value={selectWidgetItem?.config?.options.filter((it: any) => {
+            return selectWidgetItem?.config?.defaultValueLabels.indexOf(it.label) !== -1
+          }).map((it: any) => {
+            return it.label
+          })}
+          onChange={(option) => {
+            handleChange(option, 'config.defaultValueLabels')
+            const valueList: string[] = [];
+            selectWidgetItem?.config?.options.forEach((optionItem: any) => {
+              if (option.indexOf(optionItem.label) !== -1){
+                valueList.push(optionItem.value)
+              }
+            })
+
+            widgetFormList.forEach((item: any, index) => {
+              if (item.key === selectWidgetItem?.key){
+                widgetFormList[index]!.config!.defaultValue = valueList
+              }
+            })
+            getDefaultShowList()
+            handleChange(valueList, 'config.defaultValue')
+          }}
         />
       </Form.Item>
       <Form.Item label="限制条件" >
@@ -182,7 +355,83 @@ const ImagePickerConfig = () => {
           }
         </Form.Item>
       </Form.Item>
+
+      <Modal
+        title="题目关联"
+        visible={isModalOpen}
+        onOk={() => {
+          handleChange(configOptions, 'config.options')
+          let controlAllList = controlList
+          const list = widgetFormList.filter((it) => {
+            return it.key !== selectWidgetItem!.key
+          })
+          list.forEach((item) => {
+            controlAllList = [...new Set([...controlAllList, ...(item.controlList || [])])]
+          })
+          state.widgetFormList = widgetFormList.map((it) => {
+            return {...it, show: controlAllList.indexOf(it.key!) === -1 ? true : false }
+          })
+
+          // 获取所有默认值 show_list
+          getDefaultShowList()
+
+
+          dispatch({
+            type: ActionType.SET_GLOBAL,
+            payload: {...state}
+          })
+          handleChange(controlList, 'controlList')
+          setIsModalOpen(false)
+        }}
+        onCancel={() => {
+          setIsModalOpen(false)
+        }} >
+        <div className="config-related-modal">
+          <div className="sub-title">
+            选择选项后, 才会显示配置的题目
+          </div>
+          <div className="content-title">
+            <div className="left">
+              选项内容
+            </div>
+            <div className="right">
+              显示字段
+            </div>
+          </div>
+          <div className="config-related-content">
+            {
+              configOptions?.map((item: any, index: number) => {
+                return (
+                  <div key={index}>
+                    <div className="option-title">{item.label}</div>
+                    <Select
+                      allowClear
+                      showArrow
+                      options={componentsList}
+                      value={item.showList}
+                      mode="multiple"
+                      onChange={(value) => {
+                        debugger
+                        const newConfigOptions: any = cloneDeep(configOptions)
+                        newConfigOptions[index].showList = value
+                        setConfigOptions(newConfigOptions)
+                        // 当前组件所有选项的控制列表
+                        let controlKeyList: string[] = clone(controlList) || [];
+                        newConfigOptions.forEach((optionItem: {showList: string[]}) => {
+                          controlKeyList = [...new Set([...controlKeyList, ...optionItem.showList])]
+                        })
+                        setControlList(controlKeyList)
+                      }}
+                    />
+                  </div>
+                )
+              })
+            }
+          </div>
+        </div>
+      </Modal>
     </>
   )
 }
+
 export default ImagePickerConfig

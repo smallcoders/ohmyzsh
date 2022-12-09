@@ -11,8 +11,9 @@ import { Component } from '../config'
 interface Props {
   formInstance: FormInstance,
   areaCodeOptions: {
-    countyOptions: any[],
-    cityOptions: any[],
+    county: any[],
+    city: any[],
+    province: any[]
   }
 }
 const WidgetForm: FC<Props> = (props) => {

@@ -20,8 +20,8 @@ const DatePickerConfig = () => {
           }}
           onBlur={(e) => {
             if(!e.target.value){
-              handleChange('日期', 'label')
-              handleChange("日期", 'config.paramDesc')
+              handleChange('日期时间', 'label')
+              handleChange("日期时间", 'config.paramDesc')
             }
           }}
         />

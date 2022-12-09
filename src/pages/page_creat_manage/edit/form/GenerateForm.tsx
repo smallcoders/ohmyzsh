@@ -9,8 +9,9 @@ export interface GenerateFormProps {
   formValue?: Record<string, any>
   isMobile: boolean
   areaCodeOptions: {
-    countyOptions: any[],
-    cityOptions: any[],
+    county: any[],
+    city: any[],
+    province: any[]
   }
 }
 export interface GenerateFormRef {
@@ -23,7 +24,7 @@ const GenerateForm = (props: GenerateFormProps) => {
   const [widgetInfo, setWidgetInfo] = useState<State>(JSON.parse(widgetInfoJson))
   const [formInstance] = Form.useForm()
 
-
+  // 改变组件显示隐藏
   const clickCallBack = (showList: string[], controlList: string[]) => {
     const newWidgetInfo = clone(widgetInfo)
     const { widgetFormList } = newWidgetInfo
@@ -50,7 +51,7 @@ const GenerateForm = (props: GenerateFormProps) => {
           }
           <div className="text-box">
             {
-             !isMobile && widgetInfo?.globalConfig?.showPageName &&
+              !isMobile && widgetInfo?.globalConfig?.showPageName &&
               <div className="preview-page-title">{ widgetInfo?.globalConfig?.pageName}</div>
             }
             {
@@ -62,7 +63,7 @@ const GenerateForm = (props: GenerateFormProps) => {
         <div className="preview-form">
           <Form {...widgetInfo.formConfig} form={formInstance}>
             {widgetInfo.widgetFormList.map((widgetFormItem: any) => (
-              <GenerateFormItem clickCallBack={clickCallBack} areaCodeOptions={areaCodeOptions} key={widgetFormItem.key} item={widgetFormItem} formInstance={formInstance} />
+              <GenerateFormItem widgetInfo={widgetInfo} clickCallBack={clickCallBack} areaCodeOptions={areaCodeOptions} key={widgetFormItem.key} item={widgetFormItem} formInstance={formInstance} />
             ))}
           </Form>
           <Button type="primary" onClick={async () => {

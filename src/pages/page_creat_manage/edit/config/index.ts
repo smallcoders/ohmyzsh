@@ -1162,8 +1162,8 @@ export const componentsGroupList: ComponentGroup[] = [{
       show: true,
       config: {
         options: [
-          { label: '选项1', value: '选项1', index: 0, showList: [] },
-          { label: '选项2', value: '选项2', index: 1, showList: [] }
+          { label: '选项1', value: '选项1', index: 1, showList: [] },
+          { label: '选项2', value: '选项2', index: 2, showList: [] }
         ],
         optionType: 'default',
         required: false,
@@ -1184,9 +1184,9 @@ export const componentsGroupList: ComponentGroup[] = [{
       show: true,
       config: {
         options: [
-          { label: '选项1', value: '选项1', index: 0, showList: [] },
-          { label: '选项2', value: '选项2', index: 1, showList: [] },
-          { label: '选项3', value: '选项3', index: 2, showList: [] }
+          { label: '选项1', value: '选项1', index: 1, showList: [] },
+          { label: '选项2', value: '选项2', index: 2, showList: [] },
+          { label: '选项3', value: '选项3', index: 3, showList: [] }
         ],
         required: false,
         maxLength: 3,
@@ -1201,33 +1201,33 @@ export const componentsGroupList: ComponentGroup[] = [{
       controlList: [],
     },
     {
-      label: '下拉单选项',
+      label: '下拉框',
       type: 'Select',
       show: true,
       config: {
         paramKey: '',
         isParam: true,
-        paramDesc: '下拉单选项',
+        paramDesc: '下拉框',
         paramType: 'string',
         allowClear: false,
         bordered: true,
         placeholder: '',
         showLabel: true,
         options: [
-          { label: '选项1', value: '选项1', index: 0, showList: []  },
-          { label: '选项2', value: '选项2', index: 1, showList: [] }
+          { label: '选项1', value: '选项1', index: 1, showList: []  },
+          { label: '选项2', value: '选项2', index: 2, showList: [] }
         ]
       },
       controlList: [],
     },
     {
-      label: '下拉多选项',
+      label: '下拉复选框',
       type: 'MultipleSelect',
       show: true,
       config: {
         paramKey: '',
         isParam: true,
-        paramDesc: '下拉多选项',
+        paramDesc: '下拉复选框',
         paramType: 'string',
         allowClear: false,
         bordered: true,
@@ -1236,27 +1236,68 @@ export const componentsGroupList: ComponentGroup[] = [{
         showLabel: true,
         mode: "multiple",
         options: [
-          { label: '选项1', value: '选项1', index: 0, showList: []  },
-          { label: '选项2', value: '选项2', index: 1, showList: [] },
-          { label: '选项3', value: '选项3', index: 2, showList: [] }
+          { label: '选项1', value: '选项1', index: 1, showList: []  },
+          { label: '选项2', value: '选项2', index: 2, showList: [] },
+          { label: '选项3', value: '选项3', index: 3, showList: [] }
         ]
       },
       controlList: [],
     },
-    // {
-    //   label: '文本',
-    //   type: 'Text',
-    //   config: {
-    //     children: 'Text',
-    //     strong: false,
-    //     italic: false,
-    //     underline: false,
-    //     fontSize: 12,
-    //     textAlign: "left"
-    //   }
-    // },
     {
-      label: '日期',
+      label: '图片选择',
+      type: 'ImagePicker',
+      errorMsg: '',
+      show: true,
+      controlList: [],
+      config: {
+        desc: '',
+        paramKey: '',
+        isParam: true,
+        paramDesc: '图片选择',
+        paramType: 'string',
+        showLabel: true,
+        maxLength: 3,
+        defaultValue: [],
+        defaultValueLabels: [],
+        options: [
+          {
+            value: 1,
+            label: '选项1',
+            index: 1,
+            showList: []
+          },
+          {
+            value: 2,
+            label: '选项2',
+            index: 2,
+            showList: []
+          },
+          {
+            value: 3,
+            label: '选项3',
+            index: 3,
+            showList: []
+          }
+        ]
+      },
+    },
+    {
+      label: '地址',
+      type: 'Cascader',
+      show: true,
+      config: {
+        allowClear: true,
+        placeholder: undefined,
+        paramKey: '',
+        isParam: true,
+        paramDesc: '地址',
+        paramType: '',
+        showLabel: true,
+        selectType: 'county'
+      },
+    },
+    {
+      label: '日期时间',
       type: 'DatePicker',
       errorMsg: '',
       show: true,
@@ -1269,37 +1310,9 @@ export const componentsGroupList: ComponentGroup[] = [{
         desc: '',
         paramKey: '',
         isParam: true,
-        paramDesc: '日期',
+        paramDesc: '日期时间',
         paramType: 'string',
         showLabel: true,
-      },
-    },
-    {
-      label: '图片选择',
-      type: 'ImagePicker',
-      errorMsg: '',
-      show: true,
-      config: {
-        desc: '',
-        paramKey: '',
-        isParam: true,
-        paramDesc: '图片选择',
-        paramType: 'string',
-        showLabel: true,
-        maxLength: 2,
-        defaultValue: [],
-        options: [
-          {
-            value: 'https://oss-hefei-a2a.openstorage.cn/iiep-prod/0787a4323d1d430c8bebdd8b2b0ce093.jpg',
-            label: '图片1',
-            index: 0,
-          },
-          {
-            value: 'https://oss-hefei-a2a.openstorage.cn/iiep-prod/0787a4323d1d430c8bebdd8b2b0ce093.jpg',
-            label: '图片2',
-            index: 1,
-          }
-        ]
       },
     },
     // {
@@ -1393,21 +1406,6 @@ export const componentsGroupList: ComponentGroup[] = [{
     //     ]
     //   }
     // },
-    {
-      label: '省市区',
-      type: 'Cascader',
-      show: true,
-      config: {
-        allowClear: true,
-        placeholder: undefined,
-        paramKey: '',
-        isParam: true,
-        paramDesc: '',
-        paramType: '',
-        showLabel: true,
-        selectType: 'county'
-      },
-    },
   ]
 }
 ]

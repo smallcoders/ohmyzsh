@@ -37,7 +37,7 @@ const DesignForm = forwardRef<DesignFormRef, DesignFormProps>((props, ref) => {
   const [formInstance] = Form.useForm()
   const id = history.location.query?.id as string;
   const [currentTab, setCurrentTab] = useState<'Global' | 'Local'>('Global')
-  const [areaCodeOptions, setAreaCodeOptions] = useState<any>({countyOptions: [], cityOptions: []})
+  const [areaCodeOptions, setAreaCodeOptions] = useState<any>({county: [], city: []})
   const [initJson, setInitJson] = useState<string>('')
   const [publishSuccess, setPublishSuccess] = useState<boolean>(false)
   const listener = (e: any) => {
@@ -48,20 +48,23 @@ const DesignForm = forwardRef<DesignFormRef, DesignFormProps>((props, ref) => {
     listAllAreaCode().then((res) => {
       if (res?.result){
         const {result} = res
-
-        const cityOptions: any = []
+        const city: any = []
+        const province: any = []
         result.forEach((item: any) => {
-          cityOptions.push({
+          city.push({
             ...item,
             nodes: item.nodes?.map((node: any) => {
               const {nodes, ...reset} = node
               return reset
             })
           })
+          const {nodes, ...reset} = item
+          province.push(reset)
         })
         setAreaCodeOptions({
-          countyOptions: result,
-          cityOptions
+          county: result,
+          city,
+          province
         })
       }
     })

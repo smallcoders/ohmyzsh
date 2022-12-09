@@ -35,8 +35,9 @@ interface Props {
   item: Component
   formInstance: FormInstance
   areaCodeOptions: {
-    countyOptions: any[],
-    cityOptions: any[],
+    county: any[],
+    city: any[],
+    province: any[]
   }
 }
 
@@ -67,6 +68,8 @@ const WidgetFormItem: FC<Props> = (props) => {
   const [checkBoxValue, setCheckBoxValue] = useState<string[]>([])
 
   const [mulSelectValue, setMulSelectValue] = useState<string[]>([])
+
+  const [imageSelectValue, setImageSelectValue] = useState<string[]>([])
 
   const commonProps: Record<string, any> = {
     ...config,
@@ -448,10 +451,21 @@ const WidgetFormItem: FC<Props> = (props) => {
             <Form.Item name={key}>
               <Cascader
                 fieldNames={{ label: 'name', value: 'code', children: 'nodes' }}
-                options={config?.selectType === 'county' ? areaCodeOptions.countyOptions : areaCodeOptions.cityOptions}
+                options={config?.selectType === 'detailAddress' ? areaCodeOptions.county : areaCodeOptions[config?.selectType || 'county']}
                 allowClear
               />
             </Form.Item>
+            {
+              config?.selectType === 'detailAddress' &&
+              <Form.Item name={key}>
+                <Input.TextArea
+                  rows={4}
+                  maxLength={200}
+                  showCount
+                  placeholder='请填写详细地址'
+                />
+              </Form.Item>
+            }
           </Form.Item>
         )}
         {type === 'ImagePicker' && (
@@ -459,12 +473,39 @@ const WidgetFormItem: FC<Props> = (props) => {
             {
               config?.desc && <div className="question-desc">{config.desc}</div>
             }
-            <Form.Item name={key}>
-              <Checkbox.Group style={{ width: '100%' }}>
+            <Form.Item
+              name={key}
+              getValueFromEvent={(value) => {
+                const newValue = value.length > config?.maxLength ? value.filter((checkItem: string) => {
+                  return imageSelectValue.indexOf(checkItem) !== -1
+                }): value
+                setImageSelectValue(newValue)
+                formInstance.setFieldsValue({key: newValue})
+                return newValue
+              }}
+            >
+              <Checkbox.Group
+                className="image-picker"
+                onChange={(value)=>{
+                  if (value.length > config?.maxLength){
+                    Modal.info({
+                      title: '提示',
+                      content: `此题最多只能选择${config?.maxLength}项`,
+                      okText: '我知道了',
+                    });
+                  }
+                }}
+              >
                 {
-                  config?.options.map((imgItem: {value: string}, index: number) => {
+                  config?.options.map((imgItem: {value: string, label: string}, index: number) => {
                     return (
-                      <Checkbox key={index} value={imgItem.value}><img src={imgItem.value} alt='' /></Checkbox>
+                      <Checkbox key={index} value={imgItem.value}>
+                        {
+                          imgItem.value ? <div className="no-img"><img className="img" src={imgItem.value} alt='' /></div>
+                            : <div className="no-img" />
+                        }
+                        <div className="img-picker-label">{imgItem.label}</div>
+                      </Checkbox>
                     )
                   })
                 }

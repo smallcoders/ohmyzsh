@@ -74,13 +74,21 @@ export const paramsTypeOptions =[
 // 省市区类型
 export const provinceCascadeOption =[
   {
-    label: "省市区",
-    value: "county"
+    label: "省",
+    value: "province"
   },
   {
     label: "省市",
     value: "city"
-  }
+  },
+  {
+    label: "省市区",
+    value: "county"
+  },
+  {
+    label: "省市区-详细地址",
+    value: "detailAddress"
+  },
 ]
 export const dateTypeOptions =[
   {
@@ -94,10 +102,6 @@ export const dateTypeOptions =[
   {
     label: "年月日时分",
     value: "YYYY-MM-DD HH:mm"
-  },
-  {
-    label: "年月日时分秒",
-    value: "YYYY-MM-DD HH:mm:ss"
   }
 ]
 // 正则表达式

@@ -1,11 +1,11 @@
 import { useContext, useState } from 'react';
-import { Form, Input, Button, message, Select } from 'antd';
+import { Form, Input, Button, message } from 'antd';
 import Sortable from 'sortablejs'
 import { clone } from 'lodash-es'
 import dragIcon from '@/assets/page_creat_manage/drag-item.png'
 import { useConfig } from '../hooks/hooks'
-import { DesignContext } from '../store';
-import { ActionType } from '../store/action';
+import { DesignContext } from '@/pages/page_creat_manage/edit/store';
+import { ActionType } from '@/pages/page_creat_manage/edit/store/action';
 interface Props {
   multiple?: boolean
 }
@@ -16,19 +16,10 @@ interface options {
 
 const OptionSourceTypeConfig = (props: Props) => {
   const { multiple } = props
-
   const { state, dispatch } = useContext(DesignContext)
   const { widgetFormList } = state
   const { selectWidgetItem, handleChange } = useConfig()
   const [errorMsg, setErrorMsg] = useState<string>('')
-  const componentsList = widgetFormList.filter((listItem) => {
-    return listItem.key !== selectWidgetItem!.key
-  }).map((formItem) => {
-    return {
-      label: formItem.label,
-      value: formItem.key
-    }
-  }) || []
 
   const sortableGroupDecorator = (instance: HTMLUListElement | null) => {
     if (instance) {
@@ -97,36 +88,12 @@ const OptionSourceTypeConfig = (props: Props) => {
                         }
                       }}
                     />
-                    <Select
-                      allowClear
-                      options={componentsList}
-                      value={option.showList}
-                      mode="multiple"
-                      onChange={(value) => {
-                        const configOptions = clone(selectWidgetItem!.config!.options)
-                        configOptions[id].showList = value
-                        handleChange(configOptions, 'config.options')
-                        // 当前组件所有选项的控制列表
-                        let controlKeyList: string[] = selectWidgetItem!.controlList || [];
-                        configOptions.forEach((optionItem: {showList: string[]}) => {
-                          controlKeyList = [...new Set([...controlKeyList, ...optionItem.showList])]
-                        })
-                        state.widgetFormList = widgetFormList.map((it) => {
-                          return {...it, show: controlKeyList.indexOf(it.key!) === -1 ? true : false }
-                        })
-                        dispatch({
-                          type: ActionType.SET_GLOBAL,
-                          payload: {...state}
-                        })
-                        handleChange(controlKeyList, 'controlList')
-                      }}
-                    />
                     <Button
                       type="ghost"
                       shape="circle"
                       size="small"
                       onClick={() => {
-                        if (selectWidgetItem?.config?.options.length <= 3){
+                        if (selectWidgetItem?.config?.options.length <= 3 && selectWidgetItem?.type === 'CheckboxGroup'){
                           message.warn('请至少保留三个选项', 2)
                           return
                         }
@@ -148,6 +115,25 @@ const OptionSourceTypeConfig = (props: Props) => {
                         configOptions.forEach((optionItem: {showList: string[]}) => {
                           controlKeyList = [...new Set([...controlKeyList, ...optionItem.showList])]
                         })
+
+
+                        // 获取所有控制组件
+                        let controlAllList = controlKeyList
+                        const list = widgetFormList.filter((it) => {
+                          return it.key !== selectWidgetItem!.key
+                        })
+                        list.forEach((item) => {
+                          controlAllList = [...new Set([...controlAllList, ...(item.controlList || [])])]
+                        })
+                        // 将控制组件显示字段设置为false
+                        state.widgetFormList = widgetFormList.map((it) => {
+                          return {...it, show: controlAllList.indexOf(it.key!) === -1 ? true : false }
+                        })
+                        dispatch({
+                          type: ActionType.SET_GLOBAL,
+                          payload: {...state}
+                        })
+
                         handleChange(controlKeyList, 'controlList')
 
                         handleChange(configOptions, 'config.options')
@@ -196,37 +182,12 @@ const OptionSourceTypeConfig = (props: Props) => {
                         }}
                         maxLength={50}
                       />
-                      <Select
-                        allowClear
-                        options={componentsList}
-                        value={option.showList}
-                        mode="multiple"
-                        onChange={(value) => {
-                          const configOptions = clone(selectWidgetItem!.config!.options)
-                          configOptions[id].showList = value
-                          handleChange(configOptions, 'config.options')
-                          // 当前组件所有选项的控制列表
-                          let controlKeyList: string[] = selectWidgetItem!.controlList || [];
-                          configOptions.forEach((optionItem: {showList: string[]}) => {
-                            controlKeyList = [...new Set([...controlKeyList, ...optionItem.showList])]
-                          })
-                          // 将控制组件显示字段设置为false
-                          state.widgetFormList = widgetFormList.map((it) => {
-                            return {...it, show: controlKeyList.indexOf(it.key!) === -1 ? true : false }
-                          })
-                          dispatch({
-                            type: ActionType.SET_GLOBAL,
-                            payload: {...state}
-                          })
-                          handleChange(controlKeyList, 'controlList')
-                        }}
-                      />
                       <Button
                         type="ghost"
                         shape="circle"
                         size="small"
                         onClick={() => {
-                          if (selectWidgetItem?.config?.options.length <= 2){
+                          if (selectWidgetItem?.config?.options.length <= 2 && selectWidgetItem?.type === 'RadioGroup'){
                             message.warn('请至少保留两个选项', 2)
                             return
                           }
@@ -241,6 +202,25 @@ const OptionSourceTypeConfig = (props: Props) => {
                           configOptions.forEach((optionItem: {showList: string[]}) => {
                             controlKeyList = [...new Set([...controlKeyList, ...optionItem.showList])]
                           })
+
+                          // 获取所有控制组件
+                          let controlAllList = controlKeyList
+                          const list = widgetFormList.filter((it) => {
+                            return it.key !== selectWidgetItem!.key
+                          })
+                          list.forEach((item) => {
+                            controlAllList = [...new Set([...controlAllList, ...(item.controlList || [])])]
+                          })
+                          // 将控制组件显示字段设置为false
+                          state.widgetFormList = widgetFormList.map((it) => {
+                            return {...it, show: controlAllList.indexOf(it.key!) === -1 ? true : false }
+                          })
+                          dispatch({
+                            type: ActionType.SET_GLOBAL,
+                            payload: {...state}
+                          })
+
+
                           handleChange(controlKeyList, 'controlList')
 
                           handleChange(configOptions, 'config.options')
@@ -264,9 +244,9 @@ const OptionSourceTypeConfig = (props: Props) => {
             const configOptions = clone(selectWidgetItem!.config!.options)
             const len = configOptions.length;
             const indexList: number[] = configOptions.map((item: {label: string, value: string, index: number}) => {
-              return Number(item.label.replace('选项', '')) || item.index
+              return Number(item.label.replace('选项', '')) || item.index || 0
             })
-            const max = Math.max(...indexList)
+            const max = indexList.length ? Math.max(...indexList) : 0
             const label = `选项${max + 1}`
             configOptions.push({ label: label, value: label, index: max + 1, showList: [] })
             handleChange(configOptions, 'config.options')

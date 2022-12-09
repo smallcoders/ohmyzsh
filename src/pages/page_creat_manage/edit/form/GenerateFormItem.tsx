@@ -11,20 +11,54 @@ import { Component } from '../config'
 interface Props {
   item: Component
   formInstance: FormInstance
+  widgetInfo: any
   areaCodeOptions: {
-    countyOptions: any[],
-    cityOptions: any[],
+    county: any[],
+    city: any[],
+    province: any[]
   }
   clickCallBack: (showList: string[], controlList: string[]) => void
 }
 
 const GenerateFormItem = (props: Props) => {
   const {
-    item: { type, config, label, key, show, controlList },
+    item: { type, config, label, key, show },
     formInstance,
     areaCodeOptions,
-    clickCallBack
+    clickCallBack,
+    widgetInfo: {widgetFormList}
   } = props
+  const handleShowList = (value: string | string[]) => {
+    // 获取当前表单所有输入值
+    const currentValues = formInstance.getFieldsValue();
+    currentValues[key!] = value
+
+    // 获取当前需要显示的所有隐藏组件
+    let showList: string[] = []
+
+    // 获取所有被控制组件
+    let controlAllList: string[] = []
+    widgetFormList.forEach((item: any) => {
+      if(currentValues[item.key] &&
+        ['RadioGroup', 'CheckboxGroup', 'MultipleSelect', 'Select', 'ImagePicker'].indexOf(item.type) !== -1)
+      {
+        item.config.options.forEach((optionItem: {value: string, showList: string[]}) => {
+          if (currentValues[item.key] instanceof Array &&
+            currentValues[item.key].indexOf(optionItem.value) !== -1
+          ){
+            showList = [...new Set([...showList, ...(optionItem.showList || [])])]
+          }
+          if (typeof currentValues[item.key] === 'string' && currentValues[item.key] === optionItem.value){
+            showList = [...new Set([...showList, ...(optionItem.showList || [])])]
+          }
+        })
+      }
+      controlAllList = [...new Set([...controlAllList, ...(item.controlList || [])])]
+    })
+    if (clickCallBack){
+      clickCallBack(showList, controlAllList || [])
+    }
+  }
   useEffect(() => {
     if (config?.defaultValue){
       formInstance.setFieldsValue({
@@ -32,8 +66,10 @@ const GenerateFormItem = (props: Props) => {
       })
     }
   }, [config?.defaultValue])
+
   const [checkBoxValue, setCheckBoxValue] = useState<string[]>(config?.defaultValue || [])
   const [mulSelectValue, setMulSelectValue] = useState<string[]>(config?.defaultValue || [])
+  const [imageSelectValue, setImageSelectValue] = useState<string[]>([])
   return (
     <>
       {type === 'CheckboxGroup' && show && (
@@ -46,24 +82,11 @@ const GenerateFormItem = (props: Props) => {
             rules={config?.required ? [{ required: true, message: '请选择选项'}] : []}
             name={key}
             getValueFromEvent={(value) => {
-              if (value.length <= config?.maxLength){
-                // 获取当前点击项
-                const currentOptions = config?.options.filter((option: {value: string}) => {
-                  return value.indexOf(option.value) !== -1
-                })
-                let showList: string[] = []
-                currentOptions.forEach((option: {showList: string[]}) => {
-                  showList = [...new Set([...showList, ...option.showList])]
-                })
-                // 回调点击变更组件显示隐藏
-                if (clickCallBack){
-                  clickCallBack(showList, controlList || [])
-                }
-              }
               const newValue = value.length > config?.maxLength ? value.filter((checkItem: string) => {
                 return checkBoxValue.indexOf(checkItem) !== -1
               }): value
               formInstance.setFieldsValue({key: newValue})
+              handleShowList(newValue)
               setCheckBoxValue(newValue)
               return newValue
             }}
@@ -142,15 +165,7 @@ const GenerateFormItem = (props: Props) => {
               optionType={config?.optionType}
               defaultValue={config?.defaultValue}
               onChange={(e) => {
-                const { value } = e.target
-                // 获取当前点击项
-                const currentOptions = config?.options.find((option: {value: string}) => {
-                  return value === option.value
-                })
-                // 回调点击变更组件显示隐藏
-                if (clickCallBack){
-                  clickCallBack(currentOptions.showList, controlList || [])
-                }
+                handleShowList(e.target.value)
               }}
             />
           </Form.Item>
@@ -163,26 +178,17 @@ const GenerateFormItem = (props: Props) => {
           }
           <Form.Item
             name={key}
+            rules={config?.required ? [{ required: true, message: '请选择'}] : []}
             getValueFromEvent={(value) => {
-              if (value.length <= config?.maxLength){
-                // 获取当前点击项
-                const currentOptions = config?.options.filter((option: {value: string}) => {
-                  return value.indexOf(option.value) !== -1
-                })
-                let showList: string[] = []
-                currentOptions.forEach((option: {showList: string[]}) => {
-                  showList = [...new Set([...showList, ...option.showList])]
-                })
-                // 回调点击变更组件显示隐藏
-                if (clickCallBack){
-                  clickCallBack(showList, controlList || [])
-                }
-              }
               const newValue = value.length > config?.maxLength ? value.filter((checkItem: string) => {
                 return mulSelectValue.indexOf(checkItem) !== -1
               }): value
-              setMulSelectValue(newValue)
               formInstance.setFieldsValue({key: newValue})
+
+              handleShowList(newValue)
+
+              setMulSelectValue(newValue)
+
               return newValue
             }}
           >
@@ -211,7 +217,10 @@ const GenerateFormItem = (props: Props) => {
           {
             config?.desc && <div className="question-desc">{config.desc}</div>
           }
-          <Form.Item name={key}>
+          <Form.Item
+            name={key}
+            rules={config?.required ? [{ required: true, message: '请选择日期'}] : []}
+          >
             <DatePicker
               showTime={{
                 format: config?.format
@@ -227,20 +236,16 @@ const GenerateFormItem = (props: Props) => {
           {
             config?.desc && <div className="question-desc">{config.desc}</div>
           }
-          <Form.Item name={key}>
+          <Form.Item
+            name={key}
+            rules={config?.required ? [{ required: true, message: '请选择'}] : []}
+          >
             <Select
               options={config?.options}
               allowClear
               placeholder={config?.placeholder}
               onChange={(value) => {
-                // 获取当前点击项
-                const currentOptions = config?.options.find((option: {value: string}) => {
-                  return value === option.value
-                })
-                // 回调点击变更组件显示隐藏
-                if (clickCallBack){
-                  clickCallBack(currentOptions.showList, controlList || [])
-                }
+                handleShowList(value)
               }}
             />
           </Form.Item>
@@ -251,26 +256,72 @@ const GenerateFormItem = (props: Props) => {
           {
             config?.desc && <div className="question-desc">{config.desc}</div>
           }
-          <Form.Item name={key}>
+          <Form.Item
+            name={key}
+            rules={config?.required ? [{ required: true, message: '请选择'}] : []}
+          >
             <Cascader
               fieldNames={{ label: 'name', value: 'code', children: 'nodes' }}
-              options={config?.selectType === 'county' ? areaCodeOptions.countyOptions : areaCodeOptions.cityOptions}
+              options={config?.selectType === 'detailAddress' ? areaCodeOptions.county : areaCodeOptions[config?.selectType || 'county']}
               allowClear
             />
           </Form.Item>
+          {
+            config?.selectType === 'detailAddress' &&
+            <Form.Item
+              name={`${key}_detailAddress`}
+              rules={config?.required ? [{ required: true, message: '请填写'}] : []}
+            >
+              <Input.TextArea
+                rows={4}
+                maxLength={200}
+                showCount
+                placeholder='请填写详细地址'
+              />
+            </Form.Item>
+          }
         </Form.Item>
       )}
-      {type === 'ImagePicker' && show && (
+      {type === 'ImagePicker' && (
         <Form.Item label={config?.showLabel ? label : ''} required={config?.required}>
           {
             config?.desc && <div className="question-desc">{config.desc}</div>
           }
-          <Form.Item name={key}>
-            <Checkbox.Group style={{ width: '100%' }}>
+          <Form.Item
+            name={key}
+            rules={config?.required ? [{ required: true, message: '请选择'}] : []}
+            getValueFromEvent={(value) => {
+              const newValue = value.length > config?.maxLength ? value.filter((checkItem: string) => {
+                return imageSelectValue.indexOf(checkItem) !== -1
+              }): value
+              setImageSelectValue(newValue)
+              formInstance.setFieldsValue({key: newValue})
+              handleShowList(newValue)
+              return newValue
+            }}
+          >
+            <Checkbox.Group
+              className="image-picker"
+              onChange={(value)=>{
+                if (value.length > config?.maxLength){
+                  Modal.info({
+                    title: '提示',
+                    content: `此题最多只能选择${config?.maxLength}项`,
+                    okText: '我知道了',
+                  });
+                }
+              }}
+            >
               {
-                config?.options.map((imgItem: {value: string}, index: number) => {
+                config?.options.map((imgItem: {value: string, label: string}, index: number) => {
                   return (
-                    <Checkbox key={index} value={imgItem.value}><img src={imgItem.value} alt='' /></Checkbox>
+                    <Checkbox key={index} value={imgItem.value}>
+                      {
+                        imgItem.value ? <div className="no-img"><img className="img" src={imgItem.value} alt='' /></div>
+                          : <div className="no-img" />
+                      }
+                      <div className="img-picker-label">{imgItem.label}</div>
+                    </Checkbox>
                   )
                 })
               }
@@ -281,5 +332,6 @@ const GenerateFormItem = (props: Props) => {
     </>
   )
 }
+
 
 export default GenerateFormItem
