@@ -16,7 +16,7 @@ import {
   Table
 } from 'antd';
 const { Search } = Input;
-import { AudioOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { AudioOutlined, CloseCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import type { CheckboxValueType } from 'antd/es/checkbox/Group';
 import './index.less';
 import React, { useEffect, useState } from 'react';
@@ -129,18 +129,19 @@ export default () => {
 	const [selectedOrgList, setSelectedOrgList] = useState<any>([]) //选中的服务商
   const [servicersForm] = Form.useForm();
   const onSearch = async (value: string) => {
+    console.log(value)
 		const { result, code } = await queryOrgList({
 			pageIndex: 1,
 			pageSize: 20,
 			orgName: value
 		});
-		if (code === 0 && result.length>0) {
+		if (code === 0) {
 			setOrgList(result)
 		} else {
 			message.error(`请求公司列表数据失败`);
 		}
 	};
-  const onChange = (checkedValues: CheckboxValueType[]) => {
+  const onChangeCheckbox = (checkedValues: CheckboxValueType[]) => {
     let arr: any = []
     if(checkedValues && checkedValues.length > 0) {
       checkedValues.map((item: any) => {
@@ -148,6 +149,23 @@ export default () => {
       })
     }
     setSelectedOrgList(arr)
+  };
+  const changeServicersForm = (changedValues: any, allValues: any) => {
+    if(changedValues.keyword || changedValues.keyword == '') {
+      onSearch(changedValues.keyword)
+    }
+	}
+  // 表单中删除已选择服务商
+  const handleServersChange = (value: string[]) => {
+    console.log(`selected ${value}`, selectedOrgList);
+    let arr = []
+    arr = selectedOrgList.filter(item => value.indexOf(item.serviceProviderName) > -1) 
+    setSelectedOrgList(arr)
+    let arr2: string[] = []
+    arr.map((item: any) => {
+      arr2.push(item.serviceProviderId+'-'+item.serviceProviderName)
+    })
+    servicersForm.setFieldsValue({servicers: arr2})
   };
   const cancelSelect = (idLabel: string) => {
     console.log(idLabel)
@@ -158,9 +176,12 @@ export default () => {
     setSelectedOrgList(arr2)
     // 左侧checkbox删除已选中选项
     let formArr = servicersForm.getFieldsValue().servicers
-    console.log(formArr)
     let arr3 = formArr.filter(item => item != idLabel)
     servicersForm.setFieldsValue({servicers: arr3})
+  }
+  const emptySelectedServers = () => {
+    servicersForm.setFieldsValue({servicers: []})
+    setSelectedOrgList([])
   }
   const useModal = (): React.ReactNode => {
     return (
@@ -184,18 +205,24 @@ export default () => {
         <Row>
           <Col span={12}>
             <div className='left-content-wrapper'>
-              <Search 
-                placeholder="请输入搜索内容" 
-                onSearch={onSearch}
-                suffix={<AudioOutlined />} 
-              />
               <div className='checkbox-wrapper'>
-                <Form form={servicersForm}>
+                <Form 
+                  form={servicersForm}
+                  onValuesChange={(newEventName, allValues) => { changeServicersForm(newEventName, allValues) }}
+                >
+                  <Form.Item
+                    name="keyword"
+                    label=""
+                  >
+                    <Input  
+                      suffix={<SearchOutlined />} 
+                    />
+                  </Form.Item>
                   <Form.Item
                     name="servicers"
                     label=""
                   >
-                    <Checkbox.Group style={{ width: '100%' }} onChange={onChange}>
+                    <Checkbox.Group style={{ width: '100%' }} onChange={onChangeCheckbox}>
                       <Row>
                         {orgList && orgList.map(item => {
                           return (
@@ -215,7 +242,7 @@ export default () => {
             <div className='right-content-wrapper'>
               <div className='selected-servers-length'>
                 已选择诊断服务商（{selectedOrgList.length}）
-                <Button type='text' disabled={selectedOrgList.length==0}>清空</Button>
+                <Button type='text' disabled={selectedOrgList.length==0} onClick={emptySelectedServers}>清空</Button>
               </div>
               <div className='selected-servers-wrap'>
                 {selectedOrgList && selectedOrgList.map(item => {
@@ -246,15 +273,15 @@ export default () => {
   const [inputEnterpriseForm] = Form.useForm()//手动输入服务企业信息
   const [selectedEnterprise, setSelectedEnterprise] = useState<any>([])//选中的服务企业
   const [enterpriseForm] = Form.useForm();
+  const [inputAble, setInputAble] = useState(true)
   // 手动输入监听
 	const onValuesChange = (changedValues: any, allValues: any) => {
 		console.log(changedValues, '输入', allValues);
-		// console.log(resultObj);
-		// if(changedValues.defaultDiagnoseResult) {
-		// 	setResultObj({...resultObj, ...allValues, relations: []})
-		// }else {
-		// 	setResultObj({ ...resultObj, ...allValues })
-		// }
+    if(allValues.enterpriseName && allValues.areaCode) {
+      setInputAble(false)
+    }else {
+      setInputAble(true)
+    }
 	}
   const onSearchEnterprise = async (value: string) => {
 		const { result, code } = await queryOrgList({
@@ -268,32 +295,34 @@ export default () => {
 			message.error(`请求公司列表数据失败`);
 		}
 	};
+  const changeEnterpriseForm = (changedValues: any, allValues: any) => {
+    if(changedValues.keyword || changedValues.keyword == '') {
+      onSearchEnterprise(changedValues.keyword)
+    }
+	}
   const onChangeEnterprise = (checkedValues: CheckboxValueType[]) => {
-    console.log(checkedValues, '选中的服务企业')
     let arr: any = []
     if(checkedValues && checkedValues.length > 0) {
       checkedValues.map((item: any) => {
-        // arr.push({ enterpriseName: item.split('-')[1], enterpriseId: item.split('-')[0] })
         arr.push({ ...JSON.parse(item), enterpriseName: JSON.parse(item).orgName, enterpriseId: JSON.parse(item).id })
       })
     }
-    console.log(arr, 'arr')
     setSelectedEnterprise(arr)
   };
   const cancelSelectEnterprise = (idLabel: string) => {
-    console.log(idLabel)
     // 右侧已选择服务商删除
-    // const id = idLabel.split('-')[0]
-    const id = JSON.parse(idLabel)
+    const id = JSON.parse(idLabel).id
     let arr = [...selectedEnterprise]
     let arr2 = arr.filter(item => item.id != id)
     setSelectedEnterprise(arr2)
     // 左侧checkbox删除已选中选项
     let formArr = enterpriseForm.getFieldsValue().servicers
-    console.log(formArr)
     let arr3 = formArr.filter(item => item.indexOf(JSON.parse(idLabel).id) < 0)
-    console.log(arr3, 'arr3');
     enterpriseForm.setFieldsValue({servicers: arr3})
+  }
+  const emptySelectedEnterprise = () => {
+    enterpriseForm.setFieldsValue({servicers: []})
+    setSelectedEnterprise([])
   }
   const getAreaData = async() => {
     try {
@@ -416,13 +445,19 @@ export default () => {
         <Row>
           <Col span={12}>
             <div className='left-content-wrapper'>
-              <Search 
-                placeholder="请输入搜索内容" 
-                onSearch={onSearchEnterprise}
-                suffix={<AudioOutlined />} 
-              />
               <div className='checkbox-wrapper'>
-                <Form form={enterpriseForm}>
+                <Form 
+                  form={enterpriseForm}
+                  onValuesChange={(newEventName, allValues) => { changeEnterpriseForm(newEventName, allValues) }}
+                >
+                  <Form.Item
+                    name="keyword"
+                    label=""
+                  >
+                    <Input  
+                      suffix={<SearchOutlined />} 
+                    />
+                  </Form.Item>
                   <Form.Item
                     name="servicers"
                     label=""
@@ -457,24 +492,12 @@ export default () => {
                 <Form.Item
                   name="enterpriseName"
                   label="企业名称"
-                  rules={[
-                    {
-                      required: true,
-                      message: '请输入企业名称',
-                    },
-                  ]}
                 >
                   <Input placeholder="请输入" maxLength={35}/>
                 </Form.Item>
                 <Form.Item 
                   name="areaCode" 
                   label="企业所在地"
-                  rules={[
-                    {
-                      required: true,
-                      message: '请选择企业所在地',
-                    },
-                  ]}
                 >
                   <TreeSelect
                     placeholder="请选择"
@@ -489,14 +512,14 @@ export default () => {
                   ></TreeSelect>
                 </Form.Item>
               </Form>
-              <Button onClick={ensureInput}>录入</Button>
+              <Button onClick={ensureInput} disabled={inputAble} type="primary">录入</Button>
             </div>
           </Col>
           <Col span={12}>
             <div className='right-content-wrapper'>
               <div className='selected-servers-length'>
                 已选择服务企业（{selectedEnterprise.length}）
-                <Button type='text' disabled={selectedEnterprise.length==0}>清空</Button>
+                <Button type='text' disabled={selectedEnterprise.length==0} onClick={emptySelectedEnterprise}>清空</Button>
               </div>
               <div className='selected-servers-wrap'>
                 {selectedEnterprise && selectedEnterprise.map(item => {
@@ -632,6 +655,7 @@ export default () => {
       title: '项目名称',
       dataIndex: 'projectName',
       width: 200,
+      render: (_: any, _record: any) => _record.projectName ? _record.projectName : '--'
     },
     {
       title: '服务时间',
@@ -773,7 +797,7 @@ export default () => {
               name="projectName"
               label="项目名称"
             >
-              <Input placeholder="请输入" />
+              <Input placeholder="请输入" maxLength={35} />
             </Form.Item>
             <Form.Item 
               name="serviceTimeSpan" 
@@ -807,6 +831,7 @@ export default () => {
                   setModalVisible(true);
                   onSearch('')
                 }}
+                onChange={handleServersChange}
               />
             </Form.Item>
           </Form>

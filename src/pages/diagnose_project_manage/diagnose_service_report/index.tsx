@@ -25,6 +25,7 @@ export default () => {
       dataIndex: 'projectName',
       valueType: 'textarea',
       hideInSearch: true,
+      render: (_: any, _record: any) => _record.projectName ? _record.projectName : '--'
     },
     {
       title: '服务时间',
@@ -150,7 +151,7 @@ export default () => {
         {!showTable && (
           <div className='empty-status'>
             <Image src={icon1} width={160}/>
-            <p>点击右上角，添加诊断服务包</p>
+            <p>暂无数据</p>
           </div>
         )}
       </div>
