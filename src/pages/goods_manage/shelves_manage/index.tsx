@@ -283,7 +283,7 @@ export default () => {
       },
       {
         title: '权重',
-        renderText: () => 1,
+        dataIndex: 'sortNo',
       },
     ];
     return (
@@ -297,7 +297,7 @@ export default () => {
       />
     );
   };
-  const access = useAccess()
+  const access = useAccess();
   return (
     <PageContainer>
       <ProTable
@@ -321,16 +321,17 @@ export default () => {
         actionRef={actionRef}
         toolBarRender={() => [
           <Access accessible={access['P_DG_SJGL']}>
-          <Button
-            type="primary"
-            key="addActivity"
-            onClick={() => {
-              history.push(routeName.SHELVES_MANAGE_CREATE);
-            }}
-          >
-            <PlusOutlined /> 新增活动
-          </Button>,
-          </Access>
+            <Button
+              type="primary"
+              key="addActivity"
+              onClick={() => {
+                history.push(routeName.SHELVES_MANAGE_CREATE);
+              }}
+            >
+              <PlusOutlined /> 新增活动
+            </Button>
+            ,
+          </Access>,
         ]}
         request={async (pagination) => {
           const { updateTime = [] } = pagination;
