@@ -12,19 +12,19 @@ import {
   DatePicker,
   Checkbox,
   TreeSelect,
+  List,
   Image,
   Table
 } from 'antd';
-const { Search } = Input;
-import { AudioOutlined, CloseCircleOutlined, SearchOutlined } from '@ant-design/icons';
+import { CloseCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import type { CheckboxValueType } from 'antd/es/checkbox/Group';
 import './index.less';
 import React, { useEffect, useState } from 'react';
+import VirtualList from 'rc-virtual-list';
 import moment from 'moment';
 import SelfTable from '@/components/self_table';
 import { Access, useAccess } from 'umi';
 import {
-	// getOrgList
   queryOrgList
 } from '@/services/digital-application';
 import { listAllAreaCode } from '@/services/common';
@@ -36,6 +36,10 @@ import {
 import type Common from '@/types/common';
 import type NeedVerify from '@/types/user-config-need-verify';
 import icon1 from '@/assets/system/empty.png'
+import type { CheckboxChangeEvent } from 'antd/es/checkbox';
+
+const ContainerHeight = 240;
+const ContainerHeight2 = 190;
 export default () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [dataSource, setDataSource] = useState<NeedVerify.Content[]>([]);
@@ -70,7 +74,6 @@ export default () => {
     setOpenDetail(false);
   };
 
-
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     setLoading(true);
     try {
@@ -102,7 +105,15 @@ export default () => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [editItem, setEditItem] = useState<any>({});
   const [editForm] = Form.useForm();
-  // 获取选择的服务商
+  /*
+  * 选择服务商
+  */ 
+  const closeSelectServers = () => {
+    setModalVisible(false);
+    setOrgList([])
+    setCurrentPage(0)
+    setServerCheckboxValue([])
+  }
   const handleOk = async () => {
     let showSelectedOrg: string[] = []
     if(selectedOrgList && selectedOrgList.length > 0) {
@@ -110,7 +121,7 @@ export default () => {
         showSelectedOrg.push(item.serviceProviderName)
       })
     }
-    setModalVisible(false);
+    closeSelectServers()
     editForm.setFieldsValue(
       {
         ...editItem,
@@ -118,41 +129,57 @@ export default () => {
       }
     )
   };
-  const handleCancel = () => {
-    setModalVisible(false);
-  };
-
-  /*
-  * 选择服务商
-  */ 
   const [orgList, setOrgList] = useState<any>([])
+  const [serverCheckboxValue, setServerCheckboxValue] = useState<any>([])
+  const [currentPage, setCurrentPage] = useState<any>(0)
 	const [selectedOrgList, setSelectedOrgList] = useState<any>([]) //选中的服务商
   const [servicersForm] = Form.useForm();
-  const onSearch = async (value: string) => {
-    console.log(value)
-		const { result, code } = await queryOrgList({
-			pageIndex: 1,
+  const appendData = async() => {
+    let res = await queryOrgList({
+      pageIndex: currentPage,
 			pageSize: 20,
-			orgName: value
-		});
-		if (code === 0) {
-			setOrgList(result)
-		} else {
-			message.error(`请求公司列表数据失败`);
-		}
-	};
-  const onChangeCheckbox = (checkedValues: CheckboxValueType[]) => {
-    let arr: any = []
-    if(checkedValues && checkedValues.length > 0) {
-      checkedValues.map((item: any) => {
-        arr.push({ serviceProviderName: item.split('-')[1], serviceProviderId: item.split('-')[0] })
+			orgName: servicersForm.getFieldValue('keyword')
+    })
+    setCurrentPage(currentPage+1)
+    setOrgList(orgList.concat(res.result));
+  };
+  useEffect(() => {
+    if(currentPage == 1) {
+      appendData()
+    }
+  }, [currentPage])
+  const onScroll = (e: React.UIEvent<HTMLElement, UIEvent>) => {
+    if (e.currentTarget.scrollHeight - e.currentTarget.scrollTop === ContainerHeight) {
+      appendData();
+    }
+  };
+  const onChangeCheckbox = (e: CheckboxChangeEvent) => {
+    // 改变左侧checkbox选中状态
+    let arr1 = [...serverCheckboxValue]
+    const inIndex1 = arr1.indexOf(e.target.value)
+    if(inIndex1 > -1) {
+      arr1.splice(inIndex1, 1)
+    }else {
+      arr1.push(e.target.value)
+    }
+    setServerCheckboxValue(arr1)
+
+    let arr2 = [...selectedOrgList]
+    const inIndex2 = JSON.stringify(arr2).indexOf(e.target.value.split('-')[1])
+    if(inIndex2 > -1) {
+      arr2.splice(inIndex1, 1)
+    }else {
+      arr2.push({
+        serviceProviderName: e.target.value.split('-')[1], 
+        serviceProviderId: e.target.value.split('-')[0] 
       })
     }
-    setSelectedOrgList(arr)
-  };
+    setSelectedOrgList(arr2)
+  }
   const changeServicersForm = (changedValues: any, allValues: any) => {
     if(changedValues.keyword || changedValues.keyword == '') {
-      onSearch(changedValues.keyword)
+      setCurrentPage(1)
+      setOrgList([])
     }
 	}
   // 表单中删除已选择服务商
@@ -165,7 +192,7 @@ export default () => {
     arr.map((item: any) => {
       arr2.push(item.serviceProviderId+'-'+item.serviceProviderName)
     })
-    servicersForm.setFieldsValue({servicers: arr2})
+    setServerCheckboxValue(arr2)
   };
   const cancelSelect = (idLabel: string) => {
     console.log(idLabel)
@@ -175,12 +202,14 @@ export default () => {
     let arr2 = arr.filter(item => item.serviceProviderId != id)
     setSelectedOrgList(arr2)
     // 左侧checkbox删除已选中选项
-    let formArr = servicersForm.getFieldsValue().servicers
-    let arr3 = formArr.filter(item => item != idLabel)
-    servicersForm.setFieldsValue({servicers: arr3})
+    let arr3: string[] = []
+    arr2.map((item) => {
+      arr3.push(item.serviceProviderId+'-'+item.serviceProviderName)
+    })
+    setServerCheckboxValue(arr3)
   }
   const emptySelectedServers = () => {
-    servicersForm.setFieldsValue({servicers: []})
+    setServerCheckboxValue([])
     setSelectedOrgList([])
   }
   const useModal = (): React.ReactNode => {
@@ -192,9 +221,9 @@ export default () => {
         maskClosable={false}
         onOk={handleOk}
         className="servicers-modal"
-        onCancel={handleCancel}
+        onCancel={closeSelectServers}
         footer={[
-          <Button key="back" onClick={handleCancel}>
+          <Button key="back" onClick={closeSelectServers}>
             取消
           </Button>,
           <Button key="link" type="primary" onClick={handleOk}>
@@ -218,23 +247,29 @@ export default () => {
                       suffix={<SearchOutlined />} 
                     />
                   </Form.Item>
-                  <Form.Item
-                    name="servicers"
-                    label=""
-                  >
-                    <Checkbox.Group style={{ width: '100%' }} onChange={onChangeCheckbox}>
-                      <Row>
-                        {orgList && orgList.map(item => {
-                          return (
-                            <Col span={20} style={{marginTop: '8px'}}>
-                              <Checkbox value={item.id + '-' + item.orgName} key={item.id}>{item.orgName}</Checkbox>
-                            </Col>
-                          )
-                        })}
-                      </Row>
-                    </Checkbox.Group>
-                  </Form.Item>
                 </Form>
+                <List>
+                    <VirtualList
+                      data={orgList}
+                      height={ContainerHeight}
+                      itemHeight={40}
+                      itemKey="id"
+                      onScroll={onScroll}
+                    >
+                      {(item: any) => (
+                        <List.Item key={item.id}>
+                          <Checkbox 
+                            checked={serverCheckboxValue.indexOf(item.id + '-' + item.orgName)>-1}
+                            value={item.id + '-' + item.orgName} 
+                            key={item.id}
+                            onChange={onChangeCheckbox}
+                            >
+                            {item.orgName}
+                          </Checkbox>
+                        </List.Item>
+                      )}
+                    </VirtualList>
+                </List>
               </div>
             </div>
           </Col>
@@ -271,58 +306,106 @@ export default () => {
   const [selectedArea, setSelectedArea] = useState<any[]>([]);
   const [enterpriseModal, setEnterpriseModal] = useState<boolean>(false);
   const [inputEnterpriseForm] = Form.useForm()//手动输入服务企业信息
+  const [enterpriseCheckboxValue, setEnterpriseCheckboxValue] = useState<any>([])
   const [selectedEnterprise, setSelectedEnterprise] = useState<any>([])//选中的服务企业
   const [enterpriseForm] = Form.useForm();
   const [inputAble, setInputAble] = useState(true)
+  // 关闭选择服务企业弹框的数据处理
+  const closeSelectEnterprise = () => {
+    setEnterpriseModal(false);
+    setOrgList([])
+    setCurrentPage(0)
+    setEnterpriseCheckboxValue([])
+  }
   // 手动输入监听
 	const onValuesChange = (changedValues: any, allValues: any) => {
-		console.log(changedValues, '输入', allValues);
     if(allValues.enterpriseName && allValues.areaCode) {
       setInputAble(false)
     }else {
       setInputAble(true)
     }
 	}
-  const onSearchEnterprise = async (value: string) => {
-		const { result, code } = await queryOrgList({
-			pageIndex: 1,
-			pageSize: 20,
-			orgName: value
-		});
-		if (code === 0 && result.length>0) {
-			setOrgList(result)
-		} else {
-			message.error(`请求公司列表数据失败`);
-		}
-	};
   const changeEnterpriseForm = (changedValues: any, allValues: any) => {
     if(changedValues.keyword || changedValues.keyword == '') {
-      onSearchEnterprise(changedValues.keyword)
+      setCurrentPage(1)
+      setOrgList([])
     }
 	}
-  const onChangeEnterprise = (checkedValues: CheckboxValueType[]) => {
-    let arr: any = []
-    if(checkedValues && checkedValues.length > 0) {
-      checkedValues.map((item: any) => {
-        arr.push({ ...JSON.parse(item), enterpriseName: JSON.parse(item).orgName, enterpriseId: JSON.parse(item).id })
+  const onScroll2 = (e: React.UIEvent<HTMLElement, UIEvent>) => {
+    if (e.currentTarget.scrollHeight - e.currentTarget.scrollTop === ContainerHeight2) {
+      appendData();
+    }
+  };
+  const onChangeEnterprise = (e: CheckboxChangeEvent) => {
+    // 改变左侧checkbox选中状态
+    let arr1 = [...enterpriseCheckboxValue]
+    const inIndex1 = arr1.indexOf(e.target.value)
+    if(inIndex1 > -1) {
+      arr1.splice(inIndex1, 1)
+    }else {
+      arr1.push(e.target.value)
+    }
+    setEnterpriseCheckboxValue(arr1)
+
+    let arr2 = [...selectedEnterprise]
+    const inIndex2 = JSON.stringify(arr2).indexOf(JSON.parse(e.target.value).id)
+    if(inIndex2 > -1) {
+      arr2.splice(inIndex1, 1)
+    }else {
+      arr2.push({
+        ...JSON.parse(e.target.value), 
+        enterpriseName: JSON.parse(e.target.value).orgName, 
+        enterpriseId: JSON.parse(e.target.value).id 
       })
     }
-    setSelectedEnterprise(arr)
+    setSelectedEnterprise(arr2)
   };
   const cancelSelectEnterprise = (idLabel: string) => {
+    // 右侧已选择服务商删除
+    // const id = JSON.parse(idLabel).id
+    // let arr = [...selectedEnterprise]
+    // let arr2 = arr.filter(item => item.id != id)
+    // setSelectedEnterprise(arr2)
+    // // 左侧checkbox删除已选中选项
+    // let formArr = enterpriseForm.getFieldsValue().servicers
+    // let arr3 = formArr.filter(item => item.indexOf(JSON.parse(idLabel).id) < 0)
+    // enterpriseForm.setFieldsValue({servicers: arr3})
+    console.log(idLabel)
     // 右侧已选择服务商删除
     const id = JSON.parse(idLabel).id
     let arr = [...selectedEnterprise]
     let arr2 = arr.filter(item => item.id != id)
-    setSelectedEnterprise(arr2)
+    console.log(arr2)
+    setSelectedEnterprise(arr2, 'arr2')
     // 左侧checkbox删除已选中选项
-    let formArr = enterpriseForm.getFieldsValue().servicers
-    let arr3 = formArr.filter(item => item.indexOf(JSON.parse(idLabel).id) < 0)
-    enterpriseForm.setFieldsValue({servicers: arr3})
+    let arr3: string[] = []
+    arr2.map((item) => {
+      let { enterpriseName, enterpriseId, ...obj } = item
+      arr3.push(JSON.stringify(obj))
+    })
+    setEnterpriseCheckboxValue(arr3)
   }
   const emptySelectedEnterprise = () => {
-    enterpriseForm.setFieldsValue({servicers: []})
+    setEnterpriseCheckboxValue([])
     setSelectedEnterprise([])
+  }
+  const showSelectEnterprise = (item: any) => {
+    console.log(item, 'showSelectEnterprise')
+    setEnterpriseModal(true)
+    setEditServiceEnterprise(item)
+    getAreaData()
+    setCurrentPage(1)
+    // 需要对已选择的服务企业做回显操作。。。
+    if(item.listEnter && item.listEnter.length > 0) {
+      let arr: any = [...item.listEnter]
+      let arr2: string[] = []
+      setSelectedEnterprise(arr)
+      arr.map((item) => {
+        let { enterpriseName, enterpriseId, ...obj } = item
+        arr2.push(JSON.stringify(obj))
+      })
+      setEnterpriseCheckboxValue(arr2)
+    }
   }
   const getAreaData = async() => {
     try {
@@ -332,7 +415,6 @@ export default () => {
       message.error('获取省市区数据出错')
     }
   }
-
   // 处理数据
   const flatTreeAndSetLevel = (tree:any) => {
     const list = []
@@ -360,7 +442,6 @@ export default () => {
   }
   const selectArea = (value:any, node:any, exra:any) => {
     let arr = getParentAreas(value, flatTreeAndSetLevel(area))
-    console.log(arr, '----->>>')
     setSelectedArea(arr)
   }
   const ensureInput = () => {
@@ -393,9 +474,6 @@ export default () => {
     setSelectedEnterprise([params, ...selectedEnterprise])
     inputEnterpriseForm.resetFields()
   }
-  const handleEnterpriseCancel = () => {
-    setEnterpriseModal(false);
-  };
   // 获取选择的服务企业
   const handleEnterpriseOk = async () => {
     console.log(editServiceEnterprise, '正在编辑的服务商');
@@ -420,7 +498,7 @@ export default () => {
     newData.splice(index, 1, { ...item, listEnter: selectedEnterprise });
     console.log(newData, 'handleSave后的数据');
     setSelectedOrgList(newData);
-    setEnterpriseModal(false);
+    closeSelectEnterprise()
   };
   // 分配服务企业弹框
   const useEnterpriseModal = (): React.ReactNode => {
@@ -432,9 +510,9 @@ export default () => {
         maskClosable={false}
         onOk={handleEnterpriseOk}
         className="enterprise-modal"
-        onCancel={handleEnterpriseCancel}
+        onCancel={closeSelectEnterprise}
         footer={[
-          <Button key="back" onClick={handleEnterpriseCancel}>
+          <Button key="back" onClick={closeSelectEnterprise}>
             取消
           </Button>,
           <Button key="link" type="primary" onClick={handleEnterpriseOk}>
@@ -458,7 +536,7 @@ export default () => {
                       suffix={<SearchOutlined />} 
                     />
                   </Form.Item>
-                  <Form.Item
+                  {/* <Form.Item
                     name="servicers"
                     label=""
                   >
@@ -467,7 +545,6 @@ export default () => {
                         {orgList && orgList.map(item => {
                           return (
                             <Col span={20} style={{marginTop: '8px'}}>
-                              {/* <Checkbox value={item.id + '-' + item.orgName} key={item.id}> */}
                               <Checkbox value={JSON.stringify(item)} key={item.id}>
                                 {item.orgName}
                                 {
@@ -479,8 +556,33 @@ export default () => {
                         })}
                       </Row>
                     </Checkbox.Group>
-                  </Form.Item>
+                  </Form.Item> */}
                 </Form>
+                <List>
+                    <VirtualList
+                      data={orgList}
+                      height={ContainerHeight2}
+                      itemHeight={40}
+                      itemKey="id"
+                      onScroll={onScroll2}
+                    >
+                      {(item: any) => (
+                        <List.Item key={item.id}>
+                          <Checkbox 
+                            checked={enterpriseCheckboxValue.indexOf(JSON.stringify(item))>-1}
+                            value={JSON.stringify(item)} 
+                            key={item.id}
+                            onChange={onChangeEnterprise}
+                            >
+                            {item.orgName}
+                            {
+                              item.provinceName ? `（${item.provinceName}${item.cityName?'/'+item.cityName:''}${item.countyName?'/'+item.countyName:''}）` : ''
+                            }
+                          </Checkbox>
+                        </List.Item>
+                      )}
+                    </VirtualList>
+                </List>
               </div>
               <p className='not-find-title'>未找到企业？可选择手动录入</p>
               <Form 
@@ -506,7 +608,6 @@ export default () => {
                     onChange={(value:any, node:any, exra:any) => {
                       selectArea(value, node, exra)
                     }}
-                    // labelInValue={true}
                     fieldNames={{ 'value': 'code', 'label': 'name', 'children': 'nodes' }}
                     treeData={area}
                   ></TreeSelect>
@@ -532,7 +633,6 @@ export default () => {
                         }
                       </span>
                       <CloseCircleOutlined onClick={() => {
-                        // cancelSelectEnterprise(item.enterpriseId + '-' + item.enterpriseName)
                         cancelSelectEnterprise(JSON.stringify(item))
                       }} />
                     </p>
@@ -552,13 +652,16 @@ export default () => {
       let serviceArr = detailRes.result.list || []
       // setDetailItem(detailRes.result)
       let showServiceArr:any = []
+      let showCheckboxServer: string[] = []
       if(serviceArr && serviceArr.length > 0) {
         serviceArr.map((item:any) => {
           showServiceArr.push(item.serviceProviderName)
+          showCheckboxServer.push(item.serviceProviderId+'-'+item.serviceProviderName)
         })
       }
       setOpen(true);
       setSelectedOrgList(serviceArr)
+      setServerCheckboxValue(showCheckboxServer)
       setEditItem({...record, ...detailRes.result})
       editForm.setFieldsValue({
         ...record,
@@ -605,8 +708,6 @@ export default () => {
       })
       .catch(() => {});
   }
-
-
   // 诊断详情获取
   const [detailItem, setDetailItem] = useState<any>({});
   const detailColumns = [
@@ -828,8 +929,9 @@ export default () => {
                 options={[]}
                 maxTagCount='responsive'
                 onClick={() => {
+                  setOrgList([])
                   setModalVisible(true);
-                  onSearch('')
+                  setCurrentPage(1)
                 }}
                 onChange={handleServersChange}
               />
@@ -843,11 +945,7 @@ export default () => {
                   <li key={item.serviceProviderId}>
                     <div className='org-fenpei'>
                       <span>{item.serviceProviderName}</span>
-                      <Button type='text' onClick={() => {
-                        setEnterpriseModal(true)
-                        setEditServiceEnterprise(item)
-                        getAreaData()
-                      }}>分配服务企业</Button>
+                      <Button type='text' onClick={() => {showSelectEnterprise(item)}}>分配服务企业</Button>
                     </div>
                     <p>{
                       item.listEnter && item.listEnter.length>0 && item.listEnter.map((enter: any) => {
