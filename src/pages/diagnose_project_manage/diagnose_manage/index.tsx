@@ -12,19 +12,19 @@ import {
   DatePicker,
   Checkbox,
   TreeSelect,
+  List,
   Image,
   Table
 } from 'antd';
-const { Search } = Input;
-import { AudioOutlined, CloseCircleOutlined, SearchOutlined } from '@ant-design/icons';
+import { CloseCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import type { CheckboxValueType } from 'antd/es/checkbox/Group';
 import './index.less';
 import React, { useEffect, useState } from 'react';
+import VirtualList from 'rc-virtual-list';
 import moment from 'moment';
 import SelfTable from '@/components/self_table';
 import { Access, useAccess } from 'umi';
 import {
-	// getOrgList
   queryOrgList
 } from '@/services/digital-application';
 import { listAllAreaCode } from '@/services/common';
@@ -36,6 +36,9 @@ import {
 import type Common from '@/types/common';
 import type NeedVerify from '@/types/user-config-need-verify';
 import icon1 from '@/assets/system/empty.png'
+import type { CheckboxChangeEvent } from 'antd/es/checkbox';
+
+const ContainerHeight = 240;
 export default () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [dataSource, setDataSource] = useState<NeedVerify.Content[]>([]);
@@ -69,7 +72,6 @@ export default () => {
   const onCloseDetail = () => {
     setOpenDetail(false);
   };
-
 
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     setLoading(true);
@@ -126,33 +128,56 @@ export default () => {
   * 选择服务商
   */ 
   const [orgList, setOrgList] = useState<any>([])
+  const [serverCheckboxValue, setServerCheckboxValue] = useState<any>([])
+  const [currentPage, setCurrentPage] = useState<any>(0)
 	const [selectedOrgList, setSelectedOrgList] = useState<any>([]) //选中的服务商
   const [servicersForm] = Form.useForm();
-  const onSearch = async (value: string) => {
-    console.log(value)
-		const { result, code } = await queryOrgList({
-			pageIndex: 1,
+  const appendData = async() => {
+    let res = await queryOrgList({
+      pageIndex: currentPage,
 			pageSize: 20,
-			orgName: value
-		});
-		if (code === 0) {
-			setOrgList(result)
-		} else {
-			message.error(`请求公司列表数据失败`);
-		}
-	};
-  const onChangeCheckbox = (checkedValues: CheckboxValueType[]) => {
-    let arr: any = []
-    if(checkedValues && checkedValues.length > 0) {
-      checkedValues.map((item: any) => {
-        arr.push({ serviceProviderName: item.split('-')[1], serviceProviderId: item.split('-')[0] })
+			orgName: servicersForm.getFieldValue('keyword')
+    })
+    setCurrentPage(currentPage+1)
+    setOrgList(orgList.concat(res.result));
+  };
+  useEffect(() => {
+    if(currentPage == 1) {
+      appendData()
+    }
+  }, [currentPage])
+  const onScroll = (e: React.UIEvent<HTMLElement, UIEvent>) => {
+    if (e.currentTarget.scrollHeight - e.currentTarget.scrollTop === ContainerHeight) {
+      appendData();
+    }
+  };
+  const onChangeCheckbox = (e: CheckboxChangeEvent) => {
+    // 改变左侧checkbox选中状态
+    let arr1 = [...serverCheckboxValue]
+    const inIndex1 = arr1.indexOf(e.target.value)
+    if(inIndex1 > -1) {
+      arr1.splice(inIndex1, 1)
+    }else {
+      arr1.push(e.target.value)
+    }
+    setServerCheckboxValue(arr1)
+
+    let arr2 = [...selectedOrgList]
+    const inIndex2 = JSON.stringify(arr2).indexOf(e.target.value.split('-')[1])
+    if(inIndex2 > -1) {
+      arr2.splice(inIndex1, 1)
+    }else {
+      arr2.push({
+        serviceProviderName: e.target.value.split('-')[1], 
+        serviceProviderId: e.target.value.split('-')[0] 
       })
     }
-    setSelectedOrgList(arr)
-  };
+    setSelectedOrgList(arr2)
+  }
   const changeServicersForm = (changedValues: any, allValues: any) => {
     if(changedValues.keyword || changedValues.keyword == '') {
-      onSearch(changedValues.keyword)
+      setCurrentPage(1)
+      setOrgList([])
     }
 	}
   // 表单中删除已选择服务商
@@ -165,7 +190,7 @@ export default () => {
     arr.map((item: any) => {
       arr2.push(item.serviceProviderId+'-'+item.serviceProviderName)
     })
-    servicersForm.setFieldsValue({servicers: arr2})
+    setServerCheckboxValue(arr2)
   };
   const cancelSelect = (idLabel: string) => {
     console.log(idLabel)
@@ -175,12 +200,20 @@ export default () => {
     let arr2 = arr.filter(item => item.serviceProviderId != id)
     setSelectedOrgList(arr2)
     // 左侧checkbox删除已选中选项
-    let formArr = servicersForm.getFieldsValue().servicers
-    let arr3 = formArr.filter(item => item != idLabel)
-    servicersForm.setFieldsValue({servicers: arr3})
+    // debugger
+    // let formArr = servicersForm.getFieldValue('servicers')
+    // let arr3 = formArr.filter(item => item != idLabel)
+    // servicersForm.setFieldsValue({servicers: arr3})
+    let arr3: string[] = []
+    arr2.map((item) => {
+      arr3.push(item.serviceProviderId+'-'+item.serviceProviderName)
+    })
+    console.log(arr3, 'arr3-----')
+    setServerCheckboxValue(arr3)
+    // servicersForm.setFieldsValue({servicers: arr3})
   }
   const emptySelectedServers = () => {
-    servicersForm.setFieldsValue({servicers: []})
+    setServerCheckboxValue([])
     setSelectedOrgList([])
   }
   const useModal = (): React.ReactNode => {
@@ -218,23 +251,29 @@ export default () => {
                       suffix={<SearchOutlined />} 
                     />
                   </Form.Item>
-                  <Form.Item
-                    name="servicers"
-                    label=""
-                  >
-                    <Checkbox.Group style={{ width: '100%' }} onChange={onChangeCheckbox}>
-                      <Row>
-                        {orgList && orgList.map(item => {
-                          return (
-                            <Col span={20} style={{marginTop: '8px'}}>
-                              <Checkbox value={item.id + '-' + item.orgName} key={item.id}>{item.orgName}</Checkbox>
-                            </Col>
-                          )
-                        })}
-                      </Row>
-                    </Checkbox.Group>
-                  </Form.Item>
                 </Form>
+                <List>
+                    <VirtualList
+                      data={orgList}
+                      height={ContainerHeight}
+                      itemHeight={40}
+                      itemKey="id"
+                      onScroll={onScroll}
+                    >
+                      {(item: any) => (
+                        <List.Item key={item.id}>
+                          <Checkbox 
+                            checked={serverCheckboxValue.indexOf(item.id + '-' + item.orgName)>-1}
+                            value={item.id + '-' + item.orgName} 
+                            key={item.id}
+                            onChange={onChangeCheckbox}
+                            >
+                            {item.orgName}
+                          </Checkbox>
+                        </List.Item>
+                      )}
+                    </VirtualList>
+                </List>
               </div>
             </div>
           </Col>
@@ -552,13 +591,16 @@ export default () => {
       let serviceArr = detailRes.result.list || []
       // setDetailItem(detailRes.result)
       let showServiceArr:any = []
+      let showCheckboxServer: string[] = []
       if(serviceArr && serviceArr.length > 0) {
         serviceArr.map((item:any) => {
           showServiceArr.push(item.serviceProviderName)
+          showCheckboxServer.push(item.serviceProviderId+'-'+item.serviceProviderName)
         })
       }
       setOpen(true);
       setSelectedOrgList(serviceArr)
+      setServerCheckboxValue(showCheckboxServer)
       setEditItem({...record, ...detailRes.result})
       editForm.setFieldsValue({
         ...record,
@@ -828,8 +870,9 @@ export default () => {
                 options={[]}
                 maxTagCount='responsive'
                 onClick={() => {
+                  setOrgList([])
                   setModalVisible(true);
-                  onSearch('')
+                  setCurrentPage(1)
                 }}
                 onChange={handleServersChange}
               />
