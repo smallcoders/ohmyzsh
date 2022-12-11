@@ -117,11 +117,37 @@ const GenerateFormItem = (props: Props) => {
           }
           <Form.Item
             name={key}
-            rules={config?.required ? [{ required: true, message: '请输入内容'}] : []}
+            validateTrigger="onBlur"
+            getValueFromEvent={(e) => {
+              let newValue = e.target.value
+              if (newValue && config?.regInfo?.reg){
+                newValue = newValue?.replace(/[^\d+]/g, '')
+                formInstance.setFieldsValue({key: newValue})
+              }
+              return newValue
+            }}
+            rules={
+                [{
+                  validator: (_, value) => {
+                    if (config?.required && !value){
+                      return Promise.reject(new Error('请输入内容'))
+                    }
+                    if (config?.regInfo?.reg && value){
+                      const reg = new RegExp(config?.regInfo?.reg)
+                      const validResult = reg.test(value)
+                      if (!validResult){
+                        return Promise.reject(new Error(config?.regInfo?.errorMsg))
+                      }
+                      return Promise.resolve()
+                    }
+                    return Promise.resolve()
+                  }
+                }]
+            }
           >
             <Input
               allowClear={config?.allowClear}
-              maxLength={config?.maxLength}
+              maxLength={config?.regInfo?.maxLength || config?.maxLength}
               placeholder={config?.placeholder}
             />
           </Form.Item>
@@ -137,12 +163,37 @@ const GenerateFormItem = (props: Props) => {
           }
           <Form.Item
             name={key}
-            rules={config?.required ? [{ required: true, message: '请输入内容'}] : []}
+            validateTrigger="onBlur"
+            getValueFromEvent={(e) => {
+              let newValue = e.target.value
+              if (newValue && config?.regInfo?.reg){
+                newValue = newValue?.replace(/[^\d+]/g, '')
+                formInstance.setFieldsValue({key: newValue})
+              }
+              return newValue
+            }}
+            rules={
+              [{
+                validator: (_, value) => {
+                  if (config?.required && !value){
+                    return Promise.reject(new Error('请输入内容'))
+                  }
+                  if (config?.regInfo?.reg && value){
+                    const reg = new RegExp(config?.regInfo?.reg)
+                    const validResult = reg.test(value)
+                    if (!validResult){
+                      return Promise.reject(new Error(config?.regInfo?.errorMsg))
+                    }
+                    return Promise.resolve()
+                  }
+                  return Promise.resolve()
+                }
+              }]
+            }
           >
             <Input.TextArea
               rows={4}
-              // autoSize={config?.autoSize}
-              maxLength={config?.maxLength}
+              maxLength={config?.regInfo?.maxLength || config?.maxLength}
               placeholder={config?.placeholder}
             />
           </Form.Item>

@@ -78,12 +78,21 @@ const TextAreaConfig = () => {
           onChange={(event) => handleChange(event.target.value, 'config.placeholder')}
         />
       </Form.Item>
-      <Form.Item label="格式校验">
+      <Form.Item label="格式">
         <Select
           allowClear
           options={regOptions}
           value={selectWidgetItem?.config?.reg}
-          onChange={(option) => handleChange(option, 'config.reg')}
+          onChange={(value) => {
+            const currentValues: any = regOptions.find((item) => {
+              return item.value === value
+            })
+            handleChange({
+              reg: currentValues.value,
+              errorMsg: currentValues.errorMsg,
+              maxLength: currentValues.maxLength,
+            }, 'config.regInfo')
+          }}
         />
       </Form.Item>
       <Form.Item label="限制条件" >

@@ -1133,7 +1133,10 @@ export const componentsGroupList: ComponentGroup[] = [{
         paramDesc: '单行文本',
         paramType: "string",
         showLabel: true,
-        reg: '',
+        regInfo: {
+          reg: '',
+          errorMsg: ''
+        }
       },
     },
     {
@@ -1152,7 +1155,10 @@ export const componentsGroupList: ComponentGroup[] = [{
         paramDesc: '多行文本',
         paramType: "string",
         showLabel: true,
-        reg: ''
+        regInfo: {
+          reg: '',
+          errorMsg: ''
+        }
       },
     },
     {
