@@ -59,6 +59,8 @@ export default () => {
                newColumns.push({
                  title: paramDesc,
                  dataIndex: paramName,
+                 width: 150,
+                 isEllipsis: true,
                  render: (text: string) => {
                    if (text){
                      return(
@@ -205,6 +207,7 @@ export default () => {
             bordered
             columns={tableColumns}
             dataSource={dataSource}
+            scroll={tableColumns.length > 8 ? { x: 1000 } : {}}
             pagination={
               pageInfo.totalCount === 0
                 ? false
