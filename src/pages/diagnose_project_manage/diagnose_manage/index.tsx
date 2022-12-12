@@ -155,6 +155,7 @@ export default () => {
   };
   const onChangeCheckbox = (e: CheckboxChangeEvent) => {
     // 改变左侧checkbox选中状态
+    // debugger
     const arr1 = [...serverCheckboxValue];
     const inIndex1 = arr1.indexOf(e.target.value);
     if (inIndex1 > -1) {
@@ -165,7 +166,14 @@ export default () => {
     setServerCheckboxValue(arr1);
 
     const arr2 = [...selectedOrgList];
-    const inIndex2 = JSON.stringify(arr2).indexOf(e.target.value.split('-')[1]);
+    const arr3:any = []
+    arr2.map((item) => {
+      arr3.push({
+        serviceProviderName: item.serviceProviderName,
+        serviceProviderId: item.serviceProviderId,
+      })
+    })
+    const inIndex2 = JSON.stringify(arr3).indexOf(e.target.value.split('-')[1]);
     if (inIndex2 > -1) {
       arr2.splice(inIndex1, 1);
     } else {
@@ -486,7 +494,7 @@ export default () => {
     }
     return target;
   };
-  ensureInput;
+  // ensureInput;
   const selectArea = (value: any, node: any, exra: any) => {
     console.log('arealevelList1', arealevelList);
     const arr = getParentAreas(value, arealevelList);
@@ -582,27 +590,6 @@ export default () => {
                   <Form.Item name="keyword" label="">
                     <Input suffix={<SearchOutlined />} />
                   </Form.Item>
-                  {/* <Form.Item
-                    name="servicers"
-                    label=""
-                  >
-                    <Checkbox.Group style={{ width: '100%' }} onChange={onChangeEnterprise}>
-                      <Row>
-                        {orgList && orgList.map(item => {
-                          return (
-                            <Col span={20} style={{marginTop: '8px'}}>
-                              <Checkbox value={JSON.stringify(item)} key={item.id}>
-                                {item.orgName}
-                                {
-                                  item.provinceName ? `（${item.provinceName}${item.cityName?'/'+item.cityName:''}${item.countyName?'/'+item.countyName:''}）` : ''
-                                }
-                              </Checkbox>
-                            </Col>
-                          )
-                        })}
-                      </Row>
-                    </Checkbox.Group>
-                  </Form.Item> */}
                 </Form>
                 <List>
                   <VirtualList
