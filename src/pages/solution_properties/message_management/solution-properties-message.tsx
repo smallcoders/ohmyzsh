@@ -142,7 +142,7 @@ export default () => {
       width: 300,
     },
     {
-      title: '留言时间',
+      title: '留言发布时间',
       dataIndex: 'publishTime',
       isEllipsis: true,
       width: 200,
@@ -156,7 +156,7 @@ export default () => {
         Object.prototype.hasOwnProperty.call(module, _) ? module[_] : '--',
     },
     {
-      title: '审核状态',
+      title: '留言状态',
       dataIndex: 'operationStatus',
       width: 150,
       render: (_: string) => 
