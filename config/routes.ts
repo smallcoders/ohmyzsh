@@ -1154,7 +1154,7 @@ export default [
           },
           {
             path: '/solution-properties/message-management/detail',
-            name: '审核详情',
+            name: '留言详情',
             component: './solution_properties/message_management/components/detail',
           }
         ]
