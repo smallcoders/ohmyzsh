@@ -1,6 +1,5 @@
 import type { ProFormInstance } from '@ant-design/pro-components';
 import {
-  PageContainer,
   ProFormDateRangePicker,
   ProFormSelect,
   ProFormText,
@@ -10,6 +9,7 @@ import {
   ProFormList,
   ProFormDigitRange,
 } from '@ant-design/pro-components';
+import { PageContainer } from '@ant-design/pro-layout';
 import { Radio, Tooltip, Select, Form, Row, Col, Button } from 'antd';
 import FormEdit from '@/components/FormEdit';
 import { QuestionCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
@@ -18,6 +18,9 @@ import dayjs from 'dayjs';
 import React, { useEffect, useRef, useState } from 'react';
 import { productTypeMap, guaranteeMethodMap } from '../constants';
 import { areaLabel } from '@/services/propaganda-config';
+import scopedClasses from '@/utils/scopedClasses';
+import './index.less';
+const sc = scopedClasses('product-management-create');
 type FormValue = {
   baseInfo: {
     name: string;
@@ -113,8 +116,18 @@ const ProductInfoAddOrEdit = () => {
     _areaLabel();
   }, []);
   return (
-    <PageContainer>
+    <PageContainer
+      className={sc('page')}
+      ghost
+      header={{
+        title: '产品管理',
+        // breadcrumb: {},
+      }}
+    >
       <StepsForm
+        stepsProps={{
+          className: sc('steps-form'),
+        }}
         formMapRef={formMapRef}
         onFinish={(values) => {
           console.log(values);
@@ -122,6 +135,8 @@ const ProductInfoAddOrEdit = () => {
         }}
         formProps={{
           layout: 'horizontal',
+          labelCol: { span: 4 },
+          wrapperCol: { span: 16 },
         }}
         submitter={{
           render: (props) => {
@@ -154,6 +169,7 @@ const ProductInfoAddOrEdit = () => {
         }}
       >
         <StepsForm.StepForm name="step1" title="基本信息">
+          <div className="title">基本信息</div>
           <ProFormText
             label="产品名称"
             name={['baseInfo', 'name']}
@@ -214,6 +230,7 @@ const ProductInfoAddOrEdit = () => {
             <Select
               mode={'multiple'}
               allowClear
+              showArrow
               onChange={(values) => {
                 console.log(values);
                 setOpenAreas(values);
@@ -241,30 +258,35 @@ const ProductInfoAddOrEdit = () => {
               })}
             </Select>
           </Form.Item>
-          <Row>
-            <Col span={16}>
-              {productType !== 'Insurance' && (
-                <Form.Item name={['baseInfo', 'LoanPurpose']} label="贷款用途">
-                  <Radio.Group>
-                    <Radio value={1}>经营周转</Radio>
-                    <Radio value={2}>设备采买</Radio>
-                    <Radio value={0}>其他</Radio>
-                  </Radio.Group>
-                </Form.Item>
-              )}
-            </Col>
-            <Col span={8}>
-              <ProForm.Item noStyle shouldUpdate>
-                {(form) => {
-                  return (
-                    form.getFieldValue('baseInfo')?.LoanPurpose === 0 && (
-                      <ProFormText name={['baseInfo', 'otherLoanPurpose']} />
-                    )
-                  );
-                }}
-              </ProForm.Item>
-            </Col>
-          </Row>
+          <ProForm.Item noStyle labelCol={{ span: 4 }} wrapperCol={{ span: 20 }}>
+            <div className="LoanPurpose">
+              <div className="LoanPurpose-select">
+                {productType !== 'Insurance' && (
+                  <div>
+                    <span>贷款用途：</span>
+                    <Form.Item name={['baseInfo', 'LoanPurpose']}>
+                      <Radio.Group buttonStyle="outline">
+                        <Radio.Button value={1}>经营周转</Radio.Button>
+                        <Radio.Button value={2}>设备采买</Radio.Button>
+                        <Radio.Button value={0}>+自定义用途</Radio.Button>
+                      </Radio.Group>
+                    </Form.Item>
+                  </div>
+                )}
+              </div>
+              <div className="LoanPurpose-input">
+                <ProForm.Item noStyle shouldUpdate>
+                  {(form) => {
+                    return (
+                      form.getFieldValue('baseInfo')?.LoanPurpose === 0 && (
+                        <ProFormText name={['baseInfo', 'otherLoanPurpose']} />
+                      )
+                    );
+                  }}
+                </ProForm.Item>
+              </div>
+            </div>
+          </ProForm.Item>
           <Form.Item
             name={['baseInfo', 'productIntroduction']}
             label="产品简介"

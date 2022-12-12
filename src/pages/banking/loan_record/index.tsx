@@ -38,10 +38,10 @@ import {
   getTakeMoneyDetail,
 } from '@/services/banking-loan';
 
-const sc = scopedClasses('loan-record');
+const sc = scopedClasses('loan-record-list');
 const { DataSourcesTrans, creditStatusTrans } = BankingLoan;
 
-export default () => {
+export default ({ loanType, name }: { loanType: number; name: string }) => {
   const [dataSource, setDataSource] = useState<BankingLoan.Content[]>([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [searchForm] = Form.useForm();
@@ -59,10 +59,9 @@ export default () => {
     creditAmountMin?: number; // 授信金额最小值
     creditAmountMax?: number; // 授信金额最大值
   }>({});
-
   const formLayout = {
-    labelCol: { span: 6 },
-    wrapperCol: { span: 18 },
+    labelCol: { xs: { span: 8 }, xxs: { span: 6 } },
+    wrapperCol: { xs: { span: 16 }, xxs: { span: 18 } },
   };
 
   /**
@@ -103,7 +102,7 @@ export default () => {
   const prepare = async () => {
     console.log(history.action);
     try {
-      const data = await Promise.all([queryBankList()]);
+      const data = await Promise.all([queryBankList({ type: loanType })]);
       setBankList(data?.[0]?.result || []);
     } catch (error) {
       message.error('数据初始化错误');
@@ -148,6 +147,7 @@ export default () => {
         pageIndex,
         pageSize,
         ...searchContent,
+        type: loanType,
       });
       if (code === 0) {
         setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
@@ -187,6 +187,7 @@ export default () => {
   const getModal = () => {
     return (
       <Modal
+        className={sc('model-mark')}
         title="备注"
         width="720px"
         maskClosable={false}
@@ -204,7 +205,7 @@ export default () => {
             <Col span="12">
               <Form.Item
                 name="dealName"
-                labelCol={{ span: 7 }}
+                labelCol={{ span: 8 }}
                 wrapperCol={{ span: 12 }}
                 label="业务申请编号"
               >
@@ -216,7 +217,7 @@ export default () => {
               <Form.Item
                 name="dealName1"
                 labelCol={{ span: 7 }}
-                wrapperCol={{ span: 18 }}
+                wrapperCol={{ span: 17 }}
                 label="企业名称"
               >
                 {/* <Input disabled /> */}
@@ -225,12 +226,12 @@ export default () => {
             </Col>
           </Row>
           <Form.Item
-            labelCol={{ span: 3 }}
-            wrapperCol={{ span: 18 }}
+            labelCol={{ span: 0 }}
+            wrapperCol={{ span: 24 }}
             name="text"
-            label="备注"
             rules={[{ required: true }]}
           >
+            <div className="tips">备注：最长可输入1500字，必填</div>
             <FormEdit />
           </Form.Item>
         </Form>
@@ -242,6 +243,7 @@ export default () => {
     try {
       const { result, code } = await getTotalAmount({
         ...searchContent,
+        type: loanType,
       });
       if (code === 0) {
         setTotalAmount(result);
@@ -337,9 +339,24 @@ export default () => {
             {_ === '授信失败' && (
               <Tooltip
                 placement="topLeft"
+                color="#fff"
                 title={
-                  <div>
-                    <p>失败原因</p>
+                  <div
+                    style={{
+                      color: '#8290A6',
+                      fontSize: '14px',
+                      lineHeight: '22px',
+                      padding: '10px 8px',
+                    }}
+                  >
+                    <p
+                      style={{
+                        fontWeight: 700,
+                        color: '#556377',
+                      }}
+                    >
+                      失败原因
+                    </p>
                     <div>{record.refuseReason}</div>
                   </div>
                 }
@@ -386,7 +403,9 @@ export default () => {
                 const step = await getStep(record, type);
                 setParams();
                 history.push(
-                  `${routeName.LOAN_RECORD_DETAIL}?id=${record.id}&isDetail=1&type=${type}&step=${step}`,
+                  `${routeName[name + '_RECORD_DETAIL']}?id=${
+                    record.id
+                  }&isDetail=1&type=${type}&step=${step}&loanType=${loanType}&name=${name}`,
                 );
               }}
             >
@@ -401,7 +420,9 @@ export default () => {
                     const step = await getStep(record, type);
                     setParams();
                     history.push(
-                      `${routeName.LOAN_RECORD_ENTER}?id=${record.id}&type=${type}&step=${step}`,
+                      `${routeName[name + '_RECORD_ENTER']}?id=${
+                        record.id
+                      }&type=${type}&step=${step}&loanType=${loanType}&name=${name}`,
                     );
                   }}
                 >
@@ -452,6 +473,7 @@ export default () => {
             <Col span={8}>
               <Form.Item name="time" label="申请时间">
                 <DatePicker.RangePicker
+                  style={{ width: '100%' }}
                   allowClear
                   disabledDate={(current) => current && current > moment().endOf('day')}
                 />
@@ -485,7 +507,7 @@ export default () => {
                 </Col>
                 <Col span={8}>
                   <Form.Item name="creditStatus" label="授信状态">
-                    <Select placeholder="请选择" allowClear mode="multiple">
+                    <Select placeholder="请选择" allowClear showArrow mode="multiple">
                       {Object.entries(creditStatusTrans).map((p) => {
                         return (
                           <Select.Option key={p[0]} value={p[0]}>
@@ -513,7 +535,7 @@ export default () => {
                       min: 0,
                       precision: 2,
                     }}
-                    addonAfter={<div style={{ width: '30px' }}>万元</div>}
+                    addonAfter={<div style={{ width: '30px', whiteSpace: 'nowrap' }}>万元</div>}
                   />
                 </Col>
                 <Col span={8}>
@@ -526,7 +548,7 @@ export default () => {
                     }}
                     separatorWidth={30}
                     name="creditAmount"
-                    addonAfter={<div style={{ width: '30px' }}>万元</div>}
+                    addonAfter={<div style={{ width: '30px', whiteSpace: 'nowrap' }}>万元</div>}
                   />
                 </Col>
               </>
@@ -648,54 +670,53 @@ export default () => {
     setSelectedRowKeys(newSelectedRowKeys);
   };
   return (
-    <PageContainer className={sc('container')}>
+    <PageContainer className={sc('container')} ghost>
       {useSearchNode()}
-      <div className={sc('container-table-header')}>
-        <div className="title">
-          <div>
-            <span style={{ marginRight: 10 }}>
-              累计授信金额：{regFenToYuan(totalAmount.creditTotal)}万元
-            </span>
-            <span>累计放款金额：{regFenToYuan(totalAmount.takeTotal)}万元</span>
+      <div className={sc('container-table')}>
+        <div className={sc('container-table-header')}>
+          <div className="title">
+            <Dropdown overlay={menuProps}>
+              <Button size="large">
+                <Space>
+                  导出
+                  <DownOutlined />
+                </Space>
+              </Button>
+            </Dropdown>
+            <div className="tips">
+              <span style={{ marginRight: 20 }}>
+                累计授信金额：{regFenToYuan(totalAmount.creditTotal)}万元
+              </span>
+              <span>累计放款金额：{regFenToYuan(totalAmount.takeTotal)}万元</span>
+            </div>
           </div>
-          <Dropdown overlay={menuProps}>
-            <Button>
-              <Space>
-                导出
-                <DownOutlined />
-              </Space>
-            </Button>
-          </Dropdown>
-          {/* <Button icon={<UploadOutlined />} onClick={exportList}>
-            导出
-          </Button> */}
         </div>
-      </div>
-      <div className={sc('container-table-body')}>
-        <SelfTable
-          bordered
-          scroll={{ x: 2280 }}
-          columns={columns}
-          dataSource={dataSource}
-          rowKey={'id'}
-          rowSelection={{
-            fixed: true,
-            selectedRowKeys,
-            onChange: onSelectChange,
-          }}
-          pagination={
-            pageInfo.totalCount === 0
-              ? false
-              : {
-                  onChange: getPage,
-                  total: pageInfo.totalCount,
-                  current: pageInfo.pageIndex,
-                  pageSize: pageInfo.pageSize,
-                  showTotal: (total: number) =>
-                    `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
-                }
-          }
-        />
+        <div className={sc('container-table-body')}>
+          <SelfTable
+            bordered
+            scroll={{ x: 2280 }}
+            columns={columns}
+            dataSource={dataSource}
+            rowKey={'id'}
+            rowSelection={{
+              fixed: true,
+              selectedRowKeys,
+              onChange: onSelectChange,
+            }}
+            pagination={
+              pageInfo.totalCount === 0
+                ? false
+                : {
+                    onChange: getPage,
+                    total: pageInfo.totalCount,
+                    current: pageInfo.pageIndex,
+                    pageSize: pageInfo.pageSize,
+                    showTotal: (total: number) =>
+                      `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
+                  }
+            }
+          />
+        </div>
       </div>
       {getModal()}
     </PageContainer>

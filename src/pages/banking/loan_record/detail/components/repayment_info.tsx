@@ -19,7 +19,12 @@ import {
 } from 'antd';
 const { confirm } = Modal;
 import { useRef, useState, useEffect } from 'react';
-import { UploadOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import {
+  UploadOutlined,
+  ExclamationCircleOutlined,
+  MinusCircleOutlined,
+  PlusCircleOutlined,
+} from '@ant-design/icons';
 import { useHistory } from 'umi';
 import UploadFormFile from '@/components/upload_form/upload-form-file';
 import type { Props } from './authorization_info';
@@ -27,7 +32,7 @@ import moment from 'moment';
 import './repayment_info.less';
 import { regFenToYuan, regYuanToFen } from '@/utils/util';
 import patchDownloadFile from '@/utils/patch-download-file';
-export default ({ isDetail, id }: Props) => {
+export default ({ isDetail, id, left }: Props) => {
   const history = useHistory();
   const formLayout = {
     labelCol: { span: 6 },
@@ -78,6 +83,7 @@ export default ({ isDetail, id }: Props) => {
     {
       title: '序号',
       dataIndex: 'sort',
+      align: 'center',
       width: 80,
       render: (_: any, _record: BankingLoan.LoanContent, index: number) => index + 1,
     },
@@ -186,7 +192,10 @@ export default ({ isDetail, id }: Props) => {
           if (isSave) {
             setModalVisible(false);
           } else {
-            setRecord({...record,backMoney: record.backMoney + value.backMoney - (editItem?.backMoney||0)})
+            setRecord({
+              ...record,
+              backMoney: record.backMoney + value.backMoney - (editItem?.backMoney || 0),
+            });
           }
           getPages();
           if (record?.id) setExpandedRowKeys([...expandedRowKeys, record.id]);
@@ -218,7 +227,7 @@ export default ({ isDetail, id }: Props) => {
     return (
       <Drawer
         title={'录入还款信息'}
-        width={500}
+        width={700}
         placement="right"
         onClose={beforeCloseDrawer}
         visible={createModalVisible}
@@ -269,11 +278,16 @@ export default ({ isDetail, id }: Props) => {
           <Form.Item
             label="还款金额"
             name="backMoney"
-            rules={[{ required: true, message: '请输入还款金额' },{
-              type: 'number',
-              min: 0,
-              max: Number(regFenToYuan((record?.takeMoney||0) - (record?.backMoney||0), 1)) + (editItem?.backMoney ? Number(regFenToYuan(editItem?.backMoney, 1)) : 0),
-            }]}
+            rules={[
+              { required: true, message: '请输入还款金额' },
+              {
+                type: 'number',
+                min: 0,
+                max:
+                  Number(regFenToYuan((record?.takeMoney || 0) - (record?.backMoney || 0), 1)) +
+                  (editItem?.backMoney ? Number(regFenToYuan(editItem?.backMoney, 1)) : 0),
+              },
+            ]}
           >
             <InputNumber
               placeholder="请输入"
@@ -296,7 +310,14 @@ export default ({ isDetail, id }: Props) => {
               maxCount={10}
             >
               <Button icon={<UploadOutlined />}>上传文件</Button>
-              <div style={{ fontSize: '12px' }}>
+              <div
+                style={{
+                  fontSize: '14px',
+                  color: '#8290A6',
+                  marginTop: '12px',
+                  whiteSpace: 'nowrap',
+                }}
+              >
                 支持30M以内的图片、word、Excel、压缩包zip或pdf文件，最多不超过10个
               </div>
             </UploadFormFile>
@@ -325,6 +346,7 @@ export default ({ isDetail, id }: Props) => {
       {
         title: '序号',
         hideInSearch: true,
+        align: 'center',
         renderText: (_, __, index: number) => index + 1,
       },
       {
@@ -366,13 +388,13 @@ export default ({ isDetail, id }: Props) => {
                 onClick={() => {
                   setEditItem(records);
                   setModalVisible(true);
-                  setRecord(_record)
+                  setRecord(_record);
                   form.setFieldsValue({
                     planRepaymentDate:
                       records?.planRepaymentDate && moment(records?.planRepaymentDate),
                     actualRepaymentDate:
                       records?.actualRepaymentDate && moment(records?.actualRepaymentDate),
-                    backMoney: regFenToYuan(records?.backMoney, 1),
+                    backMoney: Number(regFenToYuan(records?.backMoney, 1)),
                     workProve: records?.workProves
                       ? records.workProves.map((p: BankingLoan.workProves) => {
                           return {
@@ -408,7 +430,7 @@ export default ({ isDetail, id }: Props) => {
         headerTitle={false}
         search={false}
         options={false}
-        dataSource={_record?.backMoneyInfoVO||[]}
+        dataSource={_record?.backMoneyInfoVO || []}
         pagination={false}
       />
     );
@@ -416,9 +438,10 @@ export default ({ isDetail, id }: Props) => {
   return (
     <>
       <ProTable
+        className="repayment-info"
         headerTitle={
           <div>
-            <p>
+            <p className="repayment-tilte">
               还款信息：{!isDetail && <span className="tips">请录入每笔放款对应的还款信息</span>}
             </p>
           </div>
@@ -428,6 +451,19 @@ export default ({ isDetail, id }: Props) => {
         rowKey="id"
         expandable={{
           expandedRowRender,
+          expandIcon: ({ expanded, onExpand, record }) => {
+            return expanded ? (
+              <MinusCircleOutlined
+                style={{ fontSize: '24px', color: '#8290a6' }}
+                onClick={(e) => onExpand(record, e)}
+              />
+            ) : (
+              <PlusCircleOutlined
+                style={{ fontSize: '24px', color: '#8290a6' }}
+                onClick={(e) => onExpand(record, e)}
+              />
+            );
+          },
           expandedRowKeys,
           onExpandedRowsChange: (expandedRows) => {
             // const rowKey = expandedRows[0];
@@ -458,8 +494,16 @@ export default ({ isDetail, id }: Props) => {
               }
         }
       />
-      <FooterToolbar>
-        <Button onClick={() => history.goBack()}>返回</Button>
+      <FooterToolbar
+        style={{
+          height: '88px',
+          left: left + 'px',
+          width: `calc(100% - ${left}px)`,
+        }}
+      >
+        <Button size="large" onClick={() => history.goBack()}>
+          返回
+        </Button>
       </FooterToolbar>
       {useModal()}
     </>

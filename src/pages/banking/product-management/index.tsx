@@ -42,7 +42,7 @@ import {
 import { statusMap, productTypeMap, guaranteeMethodMap } from './constants';
 import type { TablePaginationConfig } from 'antd/es/table';
 import type { FilterValue, SorterResult } from 'antd/es/table/interface';
-const sc = scopedClasses('loan-record');
+const sc = scopedClasses('product-management');
 const { DataSourcesTrans, creditStatusTrans } = BankingLoan;
 
 export default () => {
@@ -477,39 +477,39 @@ export default () => {
                 </Select>
               </Form.Item>
             </Col>
-            <Col offset={1} span={7}>
-              <Button
-                style={{ marginRight: 10 }}
-                type="primary"
-                key="search"
-                onClick={() => {
-                  setPageInfo({
-                    pageIndex: 1,
-                    pageSize: 10,
-                    totalCount: 0,
-                    pageTotal: 0,
-                  });
-                  const search = searchForm.getFieldsValue();
-                  console.log('search', search);
-                  setSearChContent(search);
-                }}
-              >
-                查询
-              </Button>
-              <Button
-                style={{ marginRight: 0 }}
-                type="primary"
-                key="reset"
-                onClick={() => {
-                  searchForm.resetFields();
-                  setSearChContent({});
-                }}
-              >
-                重置
-              </Button>
-            </Col>
           </Row>
         </Form>
+        <div className={sc('container-search-opereate')}>
+          <Button
+            style={{ marginRight: 16 }}
+            type="primary"
+            key="search"
+            onClick={() => {
+              setPageInfo({
+                pageIndex: 1,
+                pageSize: 10,
+                totalCount: 0,
+                pageTotal: 0,
+              });
+              const search = searchForm.getFieldsValue();
+              console.log('search', search);
+              setSearChContent(search);
+            }}
+          >
+            查询
+          </Button>
+          <Button
+            style={{ marginRight: 0 }}
+            type="primary"
+            key="reset"
+            onClick={() => {
+              searchForm.resetFields();
+              setSearChContent({});
+            }}
+          >
+            重置
+          </Button>
+        </div>
       </div>
     );
   };
@@ -560,54 +560,63 @@ export default () => {
     setSelectedRowKeys(newSelectedRowKeys);
   };
   return (
-    <PageContainer className={sc('container')}>
+    <PageContainer
+      className={sc('container')}
+      ghost
+      header={{
+        title: '产品管理',
+        breadcrumb: {},
+      }}
+    >
       {useSearchNode()}
-      <div className={sc('container-table-header')}>
-        <div className="title">
-          <Button
-            type="primary"
-            key="addNew"
-            onClick={() => {
-              setModalVisible(true);
-            }}
-          >
-            <PlusOutlined /> 新增产品
-          </Button>
-          <Button>下架</Button>
+      <div className={sc('container-table')}>
+        <div className={sc('container-table-header')}>
+          <div className="title">
+            <Button
+              type="primary"
+              key="addNew"
+              onClick={() => {
+                setModalVisible(true);
+              }}
+            >
+              <PlusOutlined /> 新增产品
+            </Button>
+            <Button>下架</Button>
+          </div>
         </div>
-      </div>
-      <div className={sc('container-table-body')}>
-        <SelfTable
-          bordered
-          scroll={{ x: 2280 }}
-          columns={columns}
-          dataSource={dataSource}
-          rowKey={'id'}
-          rowSelection={{
-            fixed: true,
-            selectedRowKeys,
-            getCheckboxProps: (record: any) => {
-              return {
-                disabled: record.name === 'Disabled User', // Column configuration not to be checked
-                name: record.name,
-              };
-            },
-            onChange: onSelectChange,
-          }}
-          onChange={handleTableChange}
-          pagination={
-            pageInfo.totalCount === 0
-              ? false
-              : {
-                  onChange: getPage,
-                  total: pageInfo.totalCount,
-                  current: pageInfo.pageIndex,
-                  pageSize: pageInfo.pageSize,
-                  showTotal: (total: number) =>
-                    `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
-                }
-          }
-        />
+        <div className={sc('container-table-body')}>
+          <SelfTable
+            bordered
+            scroll={{ x: 2280 }}
+            columns={columns}
+            dataSource={dataSource}
+            rowKey={'id'}
+            rowSelection={{
+              fixed: true,
+              selectedRowKeys,
+              getCheckboxProps: (record: any) => {
+                return {
+                  disabled: record.name === 'Disabled User', // Column configuration not to be checked
+                  name: record.name,
+                };
+              },
+              onChange: onSelectChange,
+            }}
+            onChange={handleTableChange}
+            pagination={
+              pageInfo.totalCount === 0
+                ? false
+                : {
+                    onChange: getPage,
+                    total: pageInfo.totalCount,
+                    current: pageInfo.pageIndex,
+                    pageSize: pageInfo.pageSize,
+                    showTotal: (total: number) =>
+                      `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
+                  }
+            }
+          />
+        </div>
       </div>
       {getModal()}
     </PageContainer>

@@ -52,14 +52,14 @@ namespace BankingLoan {
   };
   export type LoanContent = {
     id?: integer; // id
-    busiStatus?: string; // 放款状态
+    busiStatus?: number; // 放款状态
     refuseReason?: string; // 失败原因
     debitNo?: string; // 借据编号
     borrowStartDate?: string; // 实际借款日期
     takeMoney?: float; // 放款金额
     rate?: string; // 执行年利率
     workProves?: workProves[];
-    backMoney?: number;//还款金额
+    backMoney?: number; //还款金额
     backMoneyInfoVO?: any[];
   };
   // 审核状态列表

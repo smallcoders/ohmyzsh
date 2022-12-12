@@ -1,43 +1,101 @@
-.anchor-base-info {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: center;
-  padding-bottom: 32px;
-
-  .legend {
-    font-size: 20px;
-    font-weight: bold;
-    color: #4b586c;
-    line-height: 28px;
-    padding-right: 64px;
-  }
-  .status {
-    height: 24px;
-    background: transparent;
-    border-radius: 2px;
-    font-size: 14px;
-    line-height: 24px;
-    padding: 0 8px;
-    &.status1 {
-      color: #ff4f17;
-      background-color: #ffeae5;
+@prefix: loan-record-detail;
+.@{prefix}-page-bak{
+  margin-left: -24px;
+}
+// .ant-pro-footer-bar-left{
+//   flex: auto;
+// }
+.ant-pro-footer-bar-right{
+  flex: 0 100%;
+  text-align: center;
+}
+.ant-pro-basicLayout-content .ant-pro-page-container{
+  &.@{prefix}-page{
+    margin: -24px;
+    padding: 24px 32px 12px;
+    // background-color: #f8f9fb;
+    .ant-pro-page-container-warp, .ant-page-header{
+      // background-color: #f8f9fb;
     }
-    &.status2 {
-      color: #ff8e02;
-      background-color: #ffeed9;
+    .ant-page-header.has-breadcrumb{
+      padding: 0;
     }
-    &.status3 {
-      color: #0068ff;
-      background-color: #e5efff;
+    .ant-page-header-footer .ant-tabs .ant-tabs-tab {
+      padding-top: 16px;
+      padding-bottom: 16px;
     }
-    &.status4 {
-      color: #5ec959;
-      background-color: #def5ec;
+    .ant-page-header-footer {
+      background-color:#fff;
+      padding-left: 40px;
     }
-    &.status5 {
-      color: #808da1;
-      background-color: #ebeff7;
+    .ant-pro-page-container-children-content {
+      margin: 0;
+      padding: 40px;
+      background-color: #fff;
     }
   }
 }
+// 表单样式
+.ant-form-item {
+  margin-bottom: 20px;
+  font-size: 16px;
+  .ant-form-item-label > label {
+    font-size: 16px;
+    color:#1E232A;
+  }
+}
+.detail {
+  .ant-form-large .ant-form-item-control-input {
+    min-height: 24px;
+  }
+  .ant-form-large .ant-form-item-label > label {
+    height: 24px;
+  }
+}
+// 表格样式
+.ant-table.ant-table-middle .ant-table-title, .ant-table.ant-table-middle .ant-table-footer, .ant-table.ant-table-middle .ant-table-thead > tr > th, .ant-table.ant-table-middle .ant-table-tbody > tr > td, .ant-table.ant-table-middle tfoot > tr > th, .ant-table.ant-table-middle tfoot > tr > td{
+  padding: 17px 8px;
+}
+// .anchor-base-info {
+//   display: flex;
+//   flex-direction: row;
+//   justify-content: flex-start;
+//   align-items: center;
+//   padding-bottom: 32px;
+
+//   .legend {
+//     font-size: 20px;
+//     font-weight: bold;
+//     color: #4b586c;
+//     line-height: 28px;
+//     padding-right: 64px;
+//   }
+//   .status {
+//     height: 24px;
+//     background: transparent;
+//     border-radius: 2px;
+//     font-size: 14px;
+//     line-height: 24px;
+//     padding: 0 8px;
+//     &.status1 {
+//       color: #ff4f17;
+//       background-color: #ffeae5;
+//     }
+//     &.status2 {
+//       color: #ff8e02;
+//       background-color: #ffeed9;
+//     }
+//     &.status3 {
+//       color: #0068ff;
+//       background-color: #e5efff;
+//     }
+//     &.status4 {
+//       color: #5ec959;
+//       background-color: #def5ec;
+//     }
+//     &.status5 {
+//       color: #808da1;
+//       background-color: #ebeff7;
+//     }
+//   }
+// }

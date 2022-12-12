@@ -121,12 +121,25 @@
   BANKING_SERVICE_INDEX: '/banking/banking_service_manage/index',
   BANKING_SERVICE_DETAIL: '/banking/banking_service_manage/detail',
   ORG_MANAGE: '/user-config/org-manage',
-  // 贷款记录
+  // 贷款业务
   LOAN_RECORD: '/banking/loan_record',
   LOAN_RECORD_INDEX: '/banking/loan_record/index',
   LOAN_RECORD_DETAIL: '/banking/loan_record/detail',
   LOAN_RECORD_ENTER: '/banking/loan_record/enter',
   LOAN_RECORD_WITHDRAWANDLOAN: '/banking/loan_record/withdrawAndLoan',
+
+  // 租赁业务
+  LEASE_RECORD: '/banking/lease_record',
+  LEASE_RECORD_INDEX: '/banking/lease_record/index',
+  LEASE_RECORD_DETAIL: '/banking/lease_record/detail',
+  LEASE_RECORD_ENTER: '/banking/lease_record/enter',
+  LEASE_RECORD_WITHDRAWANDLOAN: '/banking/lease_record/withdrawAndLoan',
+  // 保险业务
+  INSURANCE_RECORD: '/banking/insurance_record',
+  INSURANCE_RECORD_INDEX: '/banking/insurance_record/index',
+  INSURANCE_RECORD_DETAIL: '/banking/insurance_record/detail',
+  INSURANCE_RECORD_ENTER: '/banking/insurance_record/enter',
+
   FINANCIAL_CUSTOMERS_MANAGE: '/banking/financial_customers_manage',
   FINANCIAL_CUSTOMERS_MANAGE_INDEX: '/banking/financial_customers_manage/index',
   FINANCIAL_CUSTOMERS_MANAGE_DETAIL: '/banking/financial_customers_manage/detail',
@@ -1945,7 +1958,7 @@ export default [
       // },
       {
         path: routeName.LOAN_RECORD,
-        name: '贷款记录',
+        name: '贷款业务',
         code: 'M_FM_DKJL',
         access: 'M_FM_DKJL',
         hideChildrenInMenu: true,
@@ -1957,8 +1970,8 @@ export default [
           {
             path: routeName.LOAN_RECORD_INDEX,
             hideInBreadcrumb: true,
-            name: '贷款记录',
-            component: './banking/loan_record/index',
+            name: '贷款业务',
+            component: './banking/loan_record/loan',
           },
           {
             path: routeName.LOAN_RECORD_DETAIL,
@@ -1978,6 +1991,69 @@ export default [
         ],
       },
       {
+        path: routeName.LEASE_RECORD,
+        name: '租赁业务',
+        code: 'M_FM_DKJL',
+        access: 'M_FM_DKJL',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.LEASE_RECORD,
+            redirect: routeName.LEASE_RECORD_INDEX,
+          },
+          {
+            path: routeName.LEASE_RECORD_INDEX,
+            hideInBreadcrumb: true,
+            name: '租赁业务',
+            component: './banking/loan_record/lease',
+          },
+          {
+            path: routeName.LEASE_RECORD_DETAIL,
+            name: '详情',
+            component: './banking/loan_record/detail/detail',
+          },
+          {
+            path: routeName.LEASE_RECORD_ENTER,
+            name: '信息录入',
+            component: './banking/loan_record/detail/detail',
+          },
+          {
+            path: routeName.LEASE_RECORD_WITHDRAWANDLOAN,
+            name: '提款及放款详情',
+            component: './banking/loan_record/detail/withdrawAndLoan',
+          },
+        ],
+      },
+      {
+        path: routeName.INSURANCE_RECORD,
+        name: '保险业务',
+        code: 'M_FM_DKJL',
+        access: 'M_FM_DKJL',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.INSURANCE_RECORD,
+            redirect: routeName.INSURANCE_RECORD_INDEX,
+          },
+          {
+            path: routeName.INSURANCE_RECORD_INDEX,
+            hideInBreadcrumb: true,
+            name: '保险业务',
+            component: './banking/loan_record/insurance',
+          },
+          {
+            path: routeName.INSURANCE_RECORD_DETAIL,
+            name: '详情',
+            component: './banking/loan_record/detail/detail',
+          },
+          {
+            path: routeName.INSURANCE_RECORD_ENTER,
+            name: '信息录入',
+            component: './banking/loan_record/detail/detail',
+          },
+        ],
+      },
+      {
         path: routeName.PRODUCT_MANAGEMENT,
         name: '产品管理',
         code: 'M_FM_CPGL',
@@ -1990,8 +2066,8 @@ export default [
           },
           {
             path: routeName.PRODUCT_MANAGEMENT_INDEX,
-            hideInBreadcrumb: true,
             name: '产品管理',
+            hideInBreadcrumb: true,
             component: './banking/product-management/index',
           },
           {
