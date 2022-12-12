@@ -24,8 +24,16 @@
   DEMAND_MANAGEMENT: '/service-config/requirement-management', // 需求管理
   DEMAND_MANAGEMENT_INDEX: '/supply-demand-setting/demand-manage/index', // 需求管理
   DEMAND_MANAGEMENT_DETAIL: '/supply-demand-setting/demand-manage/detail', // 需求管理详情
+
   OPERATION_ACTIVITY_PARAMETER:'/operation-activity/parameter-setting/index',//运营活动参数设置
   OPERATION_ACTIVITY_LINK:'/operation-activity/link-setting/index',//运营活动链接设置
+
+  // 运营模板
+  PAGE_CREAT_MANAGE_EDIT: "/operation-activity/page_creat_manage/manage/edit",
+  PAGE_CREAT_MANAGE_PUBLISH: "/operation-activity/page_creat_manage/manage/publish",
+  PAGE_CREAT_MANAGE_PAGE_LIST: "/operation-activity/page_creat_manage/manage",
+  PAGE_CREAT_MANAGE_PAGE_DATA: "/operation-activity/page_creat_manage/manage/page_data",
+
   DEMAND_MANAGEMENT_FEEDBACK: '/supply-demand-setting/demand-manage/feedback', // 需求管理详情
   ACCOUNT: '/system-config/account', // 账号管理
   AUTH: '/system-config/auth', // 权限管理
@@ -112,6 +120,16 @@
   BANKING_SERVICE_INDEX: '/banking/banking_service_manage/index',
   BANKING_SERVICE_DETAIL: '/banking/banking_service_manage/detail',
   ORG_MANAGE: '/user-config/org-manage',
+  // 贷款记录
+  LOAN_RECORD: '/banking/loan_record',
+  LOAN_RECORD_INDEX: '/banking/loan_record/index',
+  LOAN_RECORD_DETAIL: '/banking/loan_record/detail',
+  LOAN_RECORD_ENTER: '/banking/loan_record/enter',
+  LOAN_RECORD_WITHDRAWANDLOAN: '/banking/loan_record/withdrawAndLoan',
+  FINANCIAL_CUSTOMERS_MANAGE: '/banking/financial_customers_manage',
+  FINANCIAL_CUSTOMERS_MANAGE_INDEX: '/banking/financial_customers_manage/index',
+  FINANCIAL_CUSTOMERS_MANAGE_DETAIL: '/banking/financial_customers_manage/detail',
+  FINANCIAL_CUSTOMERS_MANAGE_EDIT: '/banking/financial_customers_manage/edit',
   // 推荐管理
   RECOMMENDED_HOT_WORDS: '/recommended/hot_words',
   RECOMMENDED_HOT_WORDS_INDEX: '/recommended/hot_words/index',
@@ -162,7 +180,7 @@ export default [
     path: '/home',
     name: '首页',
     icon: 'home',
-    component: './home'
+    component: './home',
   },
   // {
   //   path: '/service-config',
@@ -1707,6 +1725,40 @@ export default [
           },
         ],
       },
+      {
+        path: routeName.PAGE_CREAT_MANAGE_PAGE_LIST,
+        name: '运营模板配置',
+        hideChildrenInMenu: true,
+        code: 'M_OA_YYMB',
+        access: 'M_OA_YYMB',
+        routes: [
+          {
+            path: routeName.PAGE_CREAT_MANAGE_PAGE_LIST,
+            name: '运营模板配置',
+            component: './page_creat_manage/page_list/index',
+          },
+          {
+            path: routeName.PAGE_CREAT_MANAGE_PUBLISH,
+            name: '发布',
+            hideInMenu: true,
+            component: './page_creat_manage/publish/index',
+            layout: false,
+          },
+          {
+            path: routeName.PAGE_CREAT_MANAGE_PAGE_DATA,
+            name: '数据管理',
+            hideInMenu: true,
+            component: './page_creat_manage/page_data/index',
+          },
+          {
+            path: routeName.PAGE_CREAT_MANAGE_EDIT,
+            name: '页面编辑',
+            hideInMenu: true,
+            component: './page_creat_manage/edit/index',
+            layout: false,
+          },
+        ]
+      },
     ]
   },
   {
@@ -1718,13 +1770,13 @@ export default [
     routes: [
       {
         path: '/diagnose-manage',
-        code: 'M_DM_ZDT', 
+        code: 'M_DM_ZDT',
         access: 'M_DM_ZDT',
         redirect: '/diagnose-manage/diagnostic-tasks',
       },
       {
         path: '/diagnose-manage/diagnostic-tasks',
-        code: 'M_DM_ZDT', 
+        code: 'M_DM_ZDT',
         access: 'M_DM_ZDT',
         name: '诊断通',
         hideChildrenInMenu: true,
@@ -1847,6 +1899,113 @@ export default [
         ],
       },
     ]
+  },
+  {
+    path: '/banking',
+    name: '金融服务管理',
+    icon: 'dollar',
+    code: 'M_FM',
+    access: 'M_FM',
+    routes: [
+      {
+        path: '/banking',
+        code: 'M_FM_DKJL',
+        access: 'M_FM_DKJL',
+        redirect: routeName.LOAN_RECORD,
+      },
+      // {
+      //   path: routeName.BANKING_SERVICE,
+      //   name: '金融需求管理',
+      //   hideChildrenInMenu: true,
+      //   routes: [
+      //     {
+      //       path: routeName.BANKING_SERVICE,
+      //       redirect: routeName.BANKING_SERVICE_INDEX,
+      //     },
+      //     {
+      //       path: routeName.BANKING_SERVICE_INDEX,
+      //       hideInBreadcrumb: true,
+      //       name: '金融需求管理',
+      //       component: './banking/banking_service_manage/index',
+      //     },
+      //     {
+      //       path: routeName.BANKING_SERVICE_DETAIL,
+      //       name: '需求详情',
+      //       component: './banking/banking_service_manage/detail/detail',
+      //     },
+      //   ],
+      // },
+      {
+        path: routeName.LOAN_RECORD,
+        name: '贷款记录',
+        code: 'M_FM_DKJL',
+        access: 'M_FM_DKJL',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.LOAN_RECORD,
+            redirect: routeName.LOAN_RECORD_INDEX,
+          },
+          {
+            path: routeName.LOAN_RECORD_INDEX,
+            hideInBreadcrumb: true,
+            name: '贷款记录',
+            component: './banking/loan_record/index',
+          },
+          {
+            path: routeName.LOAN_RECORD_DETAIL,
+            name: '详情',
+            component: './banking/loan_record/detail/detail',
+          },
+          {
+            path: routeName.LOAN_RECORD_ENTER,
+            name: '信息录入',
+            component: './banking/loan_record/detail/detail',
+          },
+          {
+            path: routeName.LOAN_RECORD_WITHDRAWANDLOAN,
+            name: '提款及放款详情',
+            component: './banking/loan_record/detail/withdrawAndLoan',
+          },
+        ],
+      },
+      {
+        path: routeName.FINANCIAL_CUSTOMERS_MANAGE,
+        name: '金融客户管理',
+        code: 'M_FM_KHGL',
+        access: 'M_FM_KHGL',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.FINANCIAL_CUSTOMERS_MANAGE,
+            redirect: routeName.FINANCIAL_CUSTOMERS_MANAGE_INDEX,
+          },
+          {
+            path: routeName.FINANCIAL_CUSTOMERS_MANAGE_INDEX,
+            hideInBreadcrumb: true,
+            name: '金融客户管理',
+            component: './banking/financial_customers_manage/index',
+          },
+          {
+            path: routeName.FINANCIAL_CUSTOMERS_MANAGE_DETAIL,
+            name: '金融客户信息',
+            component: './banking/financial_customers_manage/detail/detail',
+          },
+          {
+            path: routeName.FINANCIAL_CUSTOMERS_MANAGE_EDIT,
+            name: '编辑',
+            component: './banking/financial_customers_manage/edit/index',
+          },
+        ],
+      },
+      {
+        path: '/banking/supplier-management',
+        name: '讯飞供应商管理',
+        code: 'M_FM_GYSGL',
+        access: 'M_FM_GYSGL',
+        component: './banking/supplier-management',
+      },
+    ],
   },
   {
     path: '/apply-manage',
@@ -2167,7 +2326,7 @@ export default [
       },
       {
         path: '/purchase-manage/gvm',
-        code: 'M_PM_GMV', 
+        code: 'M_PM_GMV',
         access: 'M_PM_GMV',
         name: 'GVM管理',
         component: './purchase_manage/gvm',
@@ -2263,22 +2422,22 @@ export default [
       },
     ],
   },
-  {
-    path: '/banking',
-    code: 'M_FM',
-    access: 'M_FM',
-    name: '金融服务管理',
-    icon: 'dollar',
-    component: './banking/banking_service_manage/index',
-    routes: [
-      {
-        path: routeName.BANKING_SERVICE_DETAIL,
-        name: '需求详情',
-        hideInMenu: true,
-        component: './banking/banking_service_manage/detail/detail',
-      },
-    ],
-  },
+  // {
+  //   path: '/banking',
+  //   code: 'M_FM',
+  //   access: 'M_FM',
+  //   name: '金融服务管理',
+  //   icon: 'dollar',
+  //   component: './banking/banking_service_manage/index',
+  //   routes: [
+  //     {
+  //       path: routeName.BANKING_SERVICE_DETAIL,
+  //       name: '需求详情',
+  //       hideInMenu: true,
+  //       component: './banking/banking_service_manage/detail/detail',
+  //     },
+  //   ],
+  // },
   {
     path: '/recommend-manage',
     code: 'M_RM',
