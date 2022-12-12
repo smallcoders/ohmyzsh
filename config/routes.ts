@@ -2517,11 +2517,20 @@ export default [
             path: '/user-config/org-manage',
             code: 'M_UM_ZZGL',
             access: 'M_UM_ZZGL',
-            redirect: '/user-config/org-manage',
+            redirect: '/user-config/org-manage/index',
+          },
+          {
+            path: '/user-config/org-manage/index',
+            name: '组织成员信息',
+            code: 'M_UM_ZZGL',
+            access: 'M_UM_ZZGL',
+            hideInMenu: true,
+            component: './user_config/org_manage',
           },
           {
             path: routeName.ORG_MANAGE_DETAIL,
             name: '组织成员信息',
+            hideInMenu: true,
             component: './user_config/org_manage/detail',
           },
 

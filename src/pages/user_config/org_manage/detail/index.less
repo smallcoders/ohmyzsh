@@ -1,180 +1,39 @@
-@prefix: user-config-user-detail;
+.org-manage-info {
+  background-color: #fff;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.org-manage-title{
+  margin-right: 12px;
+  margin-bottom: 0;
+  color: rgba(0, 0, 0, 0.85);
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 32px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.org-manage-list {
+  background-color: #fff;
+  padding: 16px;
+  margin-bottom: 16px;
+}
 
-.@{prefix}-container {
-  padding: 20px;
+.org-manage-log {
+  background-color: #fff;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.search{
+  &-name{
+    width: 60px;
+  }
+}
+.search-list{
+  margin-left: 70px;
+  width: 300px;
+  height: 120px;
   background: #fff;
-
-  &-title {
-    font-weight: bolder;
-    font-size: 18px;
-  }
-
-  &-desc {
-    display: flex;
-    line-height: 30px;
-
-    > :first-child {
-      flex: 1;
-      text-align: right;
-    }
-
-    > :last-child {
-      flex: 5;
-      font-weight: 600;
-      font-size: 16px;
-      margin-left: 12px;
-    }
-
-    .cover-img {
-      text-align: left;
-      margin-left: 10%;
-    }
-  }
-
-  .expert-detail-card {
-    &-header {
-      display: flex;
-      margin-bottom: 20px;
-      padding: 35px;
-      background: #fff;
-
-      .basic-info {
-        flex: 1;
-        margin-left: 30px;
-
-        .expert-name {
-          margin-bottom: 0;
-          font-weight: bold;
-          font-size: 30px;
-          line-height: 42px;
-          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
-        .first-part {
-          margin-bottom: 20px;
-          line-height: 26px;
-
-          &-item {
-            display: flex;
-
-            >label {
-              &::after {
-                position: relative;
-                top: -0.5px;
-                margin: 0 8px 0 2px;
-                content: ':';
-              }
-            }
-          }
-
-          .ant-divider-vertical {
-            margin: 0 10px;
-            border-left-color: #979797;
-          }
-        }
-
-        .second-part {
-          line-height: 26px;
-
-          .ant-descriptions-row {
-            .ant-descriptions-item {
-              padding-bottom: 20px;
-            }
-
-            &:last-of-type {
-              .ant-descriptions-item {
-                padding-bottom: 0;
-              }
-            }
-          }
-        }
-      }
-    }
-
-    &-body {
-      background-color: #fff;
-
-      .expert-skill-info {
-        padding: 50px;
-
-        &-item {
-          &:not(:last-of-type) {
-            margin-bottom: 50px;
-          }
-
-          .title {
-            position: relative;
-            margin-bottom: 20px;
-            color: #333;
-            font-size: 20px;
-            line-height: 28px;
-
-            &::before {
-              position: absolute;
-              top: 50%;
-              left: -10px;
-              width: 4px;
-              height: 16px;
-              background-image: linear-gradient(133deg, #6f747b 0%, #5c5f66 100%);
-              border-radius: 5px;
-              transform: translate(-100%, calc(-50% + 1px));
-              content: '';
-            }
-          }
-
-          .content {
-            margin-bottom: 0;
-            color: #333;
-          }
-        }
-      }
-
-      &-footer {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 79px;
-        border-top: 1px solid #d9d9d9;
-
-        .consult-btn {
-          display: flex;
-          align-items: center;
-          height: auto;
-          font-size: 20px;
-
-          svg {
-            width: 32px;
-            height: 32px;
-            margin-right: 5px;
-            transform: translateY(3px);
-            transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
-            fill: #6680ff;
-          }
-
-          &:hover,
-          &:focus {
-            svg {
-              fill: #8fa5ff;
-            }
-          }
-
-          &:active {
-            svg {
-              fill: #4c5fd9;
-            }
-          }
-        }
-      }
-    }
-  }
-}
-
-.@{prefix}-detail-container {
-  background-color: #fff;
-  padding: 24px;
-}
-
-.user-content {
-  background-color: #fff;
-  padding: 24px;
+  border: 1px solid #d9d9d9;
 }
