@@ -118,7 +118,6 @@ const WidgetForm: FC<Props> = (props) => {
       Sortable.create(instance, options)
     }
   }
-
   return (
     <div className="widget-form-container">
       {

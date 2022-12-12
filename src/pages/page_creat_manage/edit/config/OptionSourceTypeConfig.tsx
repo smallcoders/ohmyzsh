@@ -113,7 +113,7 @@ const OptionSourceTypeConfig = (props: Props) => {
                         // 当前组件所有选项的控制列表
                         let controlKeyList: string[] = selectWidgetItem!.controlList || [];
                         configOptions.forEach((optionItem: {showList: string[]}) => {
-                          controlKeyList = [...new Set([...controlKeyList, ...optionItem.showList])]
+                          controlKeyList = [...new Set([...controlKeyList, ...(optionItem.showList || [])])]
                         })
 
 
@@ -127,7 +127,7 @@ const OptionSourceTypeConfig = (props: Props) => {
                         })
                         // 将控制组件显示字段设置为false
                         state.widgetFormList = widgetFormList.map((it) => {
-                          return {...it, show: controlAllList.indexOf(it.key!) === -1 ? true : false }
+                          return {...it, hide: controlAllList.indexOf(it.key!) === -1 ? false : true }
                         })
                         dispatch({
                           type: ActionType.SET_GLOBAL,
@@ -200,7 +200,7 @@ const OptionSourceTypeConfig = (props: Props) => {
                           // 当前组件所有选项的控制列表
                           let controlKeyList: string[] = [];
                           configOptions.forEach((optionItem: {showList: string[]}) => {
-                            controlKeyList = [...new Set([...controlKeyList, ...optionItem.showList])]
+                            controlKeyList = [...new Set([...controlKeyList, ...(optionItem.showList || [])])]
                           })
 
                           // 获取所有控制组件
@@ -213,7 +213,7 @@ const OptionSourceTypeConfig = (props: Props) => {
                           })
                           // 将控制组件显示字段设置为false
                           state.widgetFormList = widgetFormList.map((it) => {
-                            return {...it, show: controlAllList.indexOf(it.key!) === -1 ? true : false }
+                            return {...it, hide: controlAllList.indexOf(it.key!) === -1 ? false : true }
                           })
                           dispatch({
                             type: ActionType.SET_GLOBAL,

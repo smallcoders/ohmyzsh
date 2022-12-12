@@ -1121,7 +1121,7 @@ export const componentsGroupList: ComponentGroup[] = [{
       label: '单行文本',
       type: 'Input',
       errorMsg: '',
-      show: true,
+      hide: false,
       config: {
         allowClear: true,
         maxLength: 35,
@@ -1143,7 +1143,7 @@ export const componentsGroupList: ComponentGroup[] = [{
       label: '多行文本',
       type: 'TextArea',
       errorMsg: '',
-      show: true,
+      hide: false,
       config: {
         autoSize: true,
         maxLength: 200,
@@ -1165,7 +1165,7 @@ export const componentsGroupList: ComponentGroup[] = [{
       label: '单选按钮组',
       type: 'RadioGroup',
       errorMsg: '',
-      show: true,
+      hide: false,
       config: {
         options: [
           { label: '选项1', value: '选项1', index: 1, showList: [] },
@@ -1187,7 +1187,7 @@ export const componentsGroupList: ComponentGroup[] = [{
       label: '多选按钮组',
       type: 'CheckboxGroup',
       errorMsg: '',
-      show: true,
+      hide: false,
       config: {
         options: [
           { label: '选项1', value: '选项1', index: 1, showList: [] },
@@ -1209,7 +1209,7 @@ export const componentsGroupList: ComponentGroup[] = [{
     {
       label: '下拉框',
       type: 'Select',
-      show: true,
+      hide: false,
       config: {
         paramKey: '',
         isParam: true,
@@ -1218,6 +1218,7 @@ export const componentsGroupList: ComponentGroup[] = [{
         allowClear: false,
         bordered: true,
         placeholder: '',
+        defaultValue: '',
         showLabel: true,
         options: [
           { label: '选项1', value: '选项1', index: 1, showList: []  },
@@ -1229,7 +1230,7 @@ export const componentsGroupList: ComponentGroup[] = [{
     {
       label: '下拉复选框',
       type: 'MultipleSelect',
-      show: true,
+      hide: false,
       config: {
         paramKey: '',
         isParam: true,
@@ -1240,6 +1241,7 @@ export const componentsGroupList: ComponentGroup[] = [{
         maxLength: 3,
         placeholder: '',
         showLabel: true,
+        defaultValue: [],
         mode: "multiple",
         options: [
           { label: '选项1', value: '选项1', index: 1, showList: []  },
@@ -1253,7 +1255,7 @@ export const componentsGroupList: ComponentGroup[] = [{
       label: '图片选择',
       type: 'ImagePicker',
       errorMsg: '',
-      show: true,
+      hide: false,
       controlList: [],
       config: {
         desc: '',
@@ -1290,7 +1292,7 @@ export const componentsGroupList: ComponentGroup[] = [{
     {
       label: '地址',
       type: 'Cascader',
-      show: true,
+      hide: false,
       config: {
         allowClear: true,
         placeholder: undefined,
@@ -1306,7 +1308,7 @@ export const componentsGroupList: ComponentGroup[] = [{
       label: '日期时间',
       type: 'DatePicker',
       errorMsg: '',
-      show: true,
+      hide: false,
       config: {
         allowClear: true,
         picker: 'date',

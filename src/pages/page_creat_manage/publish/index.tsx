@@ -5,6 +5,7 @@ import { Form, message, Radio, Popover } from 'antd';
 import logo2 from '@/assets/page_creat_manage/logo2.png'
 import successIcon from '@/assets/page_creat_manage/success.png'
 import logoImg from '@/assets/page_creat_manage/logo-img.png'
+import { listAllAreaCode } from '@/services/common';
 import previewIcon from '@/assets/page_creat_manage/preview-icon.png'
 import './index.less'
 import { history } from '@@/core/history';
@@ -35,6 +36,7 @@ export default () => {
   const id = history.location.query?.id as string;
   const [publishType, setPublishType] = useState<string>("公开发布")
   const [templateJson, setTemplateJson] = useState<any>({})
+  const [areaCodeOptions, setAreaCodeOptions] = useState<any>({county: [], city: [], province: []})
   const [templateName, setTemplateName] = useState<string>('')
   const [previewVisible, setPreviewVisible] = useState(false)
 
@@ -48,6 +50,29 @@ export default () => {
           setTemplateName(res?.result?.tmpName)
         } else {
           message.error(res?.message)
+        }
+      })
+      listAllAreaCode().then((res) => {
+        if (res?.result){
+          const {result} = res
+          const city: any = []
+          const province: any = []
+          result.forEach((item: any) => {
+            city.push({
+              ...item,
+              nodes: item.nodes?.map((node: any) => {
+                const {nodes, ...reset} = node
+                return reset
+              })
+            })
+            const {nodes, ...reset} = item
+            province.push(reset)
+          })
+          setAreaCodeOptions({
+            county: result,
+            city,
+            province
+          })
         }
       })
     }
@@ -198,6 +223,7 @@ export default () => {
         onCancel={() => {
           setPreviewVisible(false)
         }}
+        areaCodeOptions={areaCodeOptions}
       />
     </div>
   )

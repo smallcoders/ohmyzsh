@@ -37,7 +37,7 @@ const DesignForm = forwardRef<DesignFormRef, DesignFormProps>((props, ref) => {
   const [formInstance] = Form.useForm()
   const id = history.location.query?.id as string;
   const [currentTab, setCurrentTab] = useState<'Global' | 'Local'>('Global')
-  const [areaCodeOptions, setAreaCodeOptions] = useState<any>({county: [], city: []})
+  const [areaCodeOptions, setAreaCodeOptions] = useState<any>({county: [], city: [], province: []})
   const [initJson, setInitJson] = useState<string>('')
   const [publishSuccess, setPublishSuccess] = useState<boolean>(false)
   const listener = (e: any) => {

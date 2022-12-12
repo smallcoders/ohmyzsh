@@ -29,7 +29,7 @@ const GenerateForm = (props: GenerateFormProps) => {
     const newWidgetInfo = clone(widgetInfo)
     const { widgetFormList } = newWidgetInfo
     newWidgetInfo.widgetFormList = widgetFormList.map((widgetFormItem) => {
-      return {...widgetFormItem, show: showList?.indexOf(widgetFormItem.key!) !== -1 ? true : controlList?.indexOf(widgetFormItem.key!) !== -1 ? false : widgetFormItem.show}
+      return {...widgetFormItem, hide: showList?.indexOf(widgetFormItem.key!) !== -1 ? false : controlList?.indexOf(widgetFormItem.key!) !== -1 ? true : widgetFormItem.hide}
     })
     setWidgetInfo(newWidgetInfo)
   }

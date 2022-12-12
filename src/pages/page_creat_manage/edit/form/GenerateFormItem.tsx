@@ -22,7 +22,7 @@ interface Props {
 
 const GenerateFormItem = (props: Props) => {
   const {
-    item: { type, config, label, key, show },
+    item: { type, config, label, key, hide },
     formInstance,
     areaCodeOptions,
     clickCallBack,
@@ -72,7 +72,7 @@ const GenerateFormItem = (props: Props) => {
   const [imageSelectValue, setImageSelectValue] = useState<string[]>([])
   return (
     <>
-      {type === 'CheckboxGroup' && show && (
+      {type === 'CheckboxGroup' && !hide && (
         <Form.Item
           label={config?.showLabel ? label : ''}
           required={config?.required}
@@ -107,7 +107,7 @@ const GenerateFormItem = (props: Props) => {
           </Form.Item>
         </Form.Item>
       )}
-      {type === 'Input' && show && (
+      {type === 'Input' && !hide && (
         <Form.Item
           label={config?.showLabel ? label : ''}
           required={config?.required}
@@ -153,7 +153,7 @@ const GenerateFormItem = (props: Props) => {
           </Form.Item>
         </Form.Item>
       )}
-      {type === 'TextArea' && show && (
+      {type === 'TextArea' && !hide && (
         <Form.Item
           label={config?.showLabel ? label : ''}
           required={config?.required}
@@ -199,7 +199,7 @@ const GenerateFormItem = (props: Props) => {
           </Form.Item>
         </Form.Item>
       )}
-      {type === 'RadioGroup' && show && (
+      {type === 'RadioGroup' && !hide && (
         <Form.Item
           label={config?.showLabel ? label : ''}
           required={config?.required}
@@ -222,7 +222,7 @@ const GenerateFormItem = (props: Props) => {
           </Form.Item>
         </Form.Item>
       )}
-      {type === 'MultipleSelect' && show && (
+      {type === 'MultipleSelect' && !hide && (
         <Form.Item label={config?.showLabel ? label : ''} required={config?.required}>
           {
             config?.desc && <div className="question-desc">{config.desc}</div>
@@ -263,7 +263,7 @@ const GenerateFormItem = (props: Props) => {
           </Form.Item>
         </Form.Item>
       )}
-      {type === 'DatePicker' && show && (
+      {type === 'DatePicker' && !hide && (
         <Form.Item label={config?.showLabel ? label : ''} required={config?.required}>
           {
             config?.desc && <div className="question-desc">{config.desc}</div>
@@ -282,7 +282,7 @@ const GenerateFormItem = (props: Props) => {
           </Form.Item>
         </Form.Item>
       )}
-      {type === 'Select' && show && (
+      {type === 'Select' && !hide && (
         <Form.Item label={config?.showLabel ? label : ''} required={config?.required}>
           {
             config?.desc && <div className="question-desc">{config.desc}</div>
@@ -302,7 +302,7 @@ const GenerateFormItem = (props: Props) => {
           </Form.Item>
         </Form.Item>
       )}
-      {type === 'Cascader' && show && (
+      {type === 'Cascader' && !hide && (
         <Form.Item label={config?.showLabel ? label : ''} required={config?.required}>
           {
             config?.desc && <div className="question-desc">{config.desc}</div>

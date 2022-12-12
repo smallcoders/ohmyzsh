@@ -29,6 +29,7 @@ import moment from 'moment';
 import SelfTable from '@/components/self_table';
 import { routeName } from '@/../config/routes';
 import PreviewModal from '../edit/components/PreviewModal';
+import { listAllAreaCode } from '@/services/common';
 const sc = scopedClasses('page-creat-list');
 const statusMap = {
   0: '未发布',
@@ -59,6 +60,7 @@ export default () => {
   const [dataSource, setDataSource] = useState<any>([]);
   const [searchContent, setSearChContent] = useState<any>({});
   const [openMenuId, setMenuOpen] = useState<any>('')
+  const [areaCodeOptions, setAreaCodeOptions] = useState<any>({county: [], city: [], province: []})
   const [templateJson, setTemplateJson] = useState<any>({})
   const [previewVisible, setPreviewVisible] = useState(false)
   const [menuData, setMenuData] = useState<any>([])
@@ -390,6 +392,31 @@ export default () => {
     return search;
   };
   useEffect(() => {
+    listAllAreaCode().then((res) => {
+      if (res?.result){
+        const {result} = res
+        const city: any = []
+        const province: any = []
+        result.forEach((item: any) => {
+          city.push({
+            ...item,
+            nodes: item.nodes?.map((node: any) => {
+              const {nodes, ...reset} = node
+              return reset
+            })
+          })
+          const {nodes, ...reset} = item
+          province.push(reset)
+        })
+        setAreaCodeOptions({
+          county: result,
+          city,
+          province
+        })
+      }
+    })
+  }, [])
+  useEffect(() => {
     getPage();
   }, [searchContent]);
 
@@ -495,6 +522,7 @@ export default () => {
           onCancel={() => {
             setPreviewVisible(false)
           }}
+          areaCodeOptions={areaCodeOptions}
         />
       </div>
     </PageContainer>

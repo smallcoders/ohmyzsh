@@ -61,7 +61,7 @@ const SelectConfig = () => {
     })
     // 将控制组件显示字段设置为true
     state.widgetFormList = widgetFormList.map((it) => {
-      return {...it, show: showList.indexOf(it.key!) !== -1 ? true : controlAllList.indexOf(it.key!) !== -1 ? false : true  }
+      return {...it, hide: showList.indexOf(it.key!) !== -1 ? false : controlAllList.indexOf(it.key!) !== -1 ? true : false  }
     })
     dispatch({
       type: ActionType.SET_GLOBAL,
@@ -199,7 +199,7 @@ const SelectConfig = () => {
                         // 当前组件所有选项的控制列表
                         let controlKeyList: string[] = clone(controlList) || [];
                         newConfigOptions.forEach((optionItem: {showList: string[]}) => {
-                          controlKeyList = [...new Set([...controlKeyList, ...optionItem.showList])]
+                          controlKeyList = [...new Set([...controlKeyList, ...(optionItem.showList || [])])]
                         })
                         setControlList(controlKeyList)
                       }}
