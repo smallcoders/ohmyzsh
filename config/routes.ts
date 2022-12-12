@@ -1131,6 +1131,34 @@ export default [
         name: '产业专题',
         component: './solution_properties/industry_topic',
       },
+      {
+        path: '/solution-properties/message-management',
+        code: 'M_PC_LYGL',
+        access: 'M_PC_LYGL',
+        name: '留言管理',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: '/solution-properties/message-management',
+            code: 'M_PC_LYGL',
+            access: 'M_PC_LYGL',
+            redirect: '/solution-properties/message-management/index',
+          },
+          {
+            path: '/solution-properties/message-management/index',
+            code: 'M_PC_LYGL',
+            access: 'M_PC_LYGL',
+            name: '留言管理',
+            hideInBreadcrumb: true,
+            component: './solution_properties/message_management',
+          },
+          {
+            path: '/solution-properties/message-management/detail',
+            name: '审核详情',
+            component: './solution_properties/message_management/components/detail',
+          }
+        ]
+      },
     ],
   },
   {
