@@ -108,6 +108,7 @@ export default () => {
    */
   const closeSelectServers = () => {
     setModalVisible(false);
+    servicersForm.resetFields();
     setOrgList([]);
     setCurrentPage(0);
     setServerCheckboxValue([]);
@@ -330,6 +331,7 @@ export default () => {
   const closeSelectEnterprise = () => {
     setEnterpriseModal(false);
     setOrgList([]);
+    enterpriseForm.resetFields()
     setCurrentPage(0);
     setEnterpriseCheckboxValue([]);
   };
