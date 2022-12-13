@@ -120,6 +120,7 @@ export const routeName = {
   BANKING_SERVICE_INDEX: '/banking/banking_service_manage/index',
   BANKING_SERVICE_DETAIL: '/banking/banking_service_manage/detail',
   ORG_MANAGE: '/user-config/org-manage',
+  ORG_MANAGE_INDEX: '/user-config/org-manage/index',
   ORG_MANAGE_DETAIL: '/user-config/org-manage/detail',
   // 贷款记录
   LOAN_RECORD: '/banking/loan_record',
@@ -2507,30 +2508,25 @@ export default [
         ],
       },
       {
-        path: '/user-config/org-manage',
+        path: routeName.ORG_MANAGE,
         code: 'M_UM_ZZGL',
         access: 'M_UM_ZZGL',
         name: '组织管理',
         hideChildrenInMenu: true,
         routes: [
           {
-            path: '/user-config/org-manage',
-            code: 'M_UM_ZZGL',
-            access: 'M_UM_ZZGL',
-            redirect: '/user-config/org-manage/index',
+            path: routeName.ORG_MANAGE,
+            redirect: routeName.ORG_MANAGE_INDEX,
           },
           {
-            path: '/user-config/org-manage/index',
-            name: '组织成员信息',
-            code: 'M_UM_ZZGL',
-            access: 'M_UM_ZZGL',
-            hideInMenu: true,
+            path: routeName.ORG_MANAGE_INDEX,
+            name: '组织管理',
+            hideInBreadcrumb: true,
             component: './user_config/org_manage',
           },
           {
             path: routeName.ORG_MANAGE_DETAIL,
             name: '组织成员信息',
-            hideInMenu: true,
             component: './user_config/org_manage/detail',
           },
 
