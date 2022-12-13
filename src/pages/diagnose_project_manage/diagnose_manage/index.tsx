@@ -17,7 +17,6 @@ import {
   Table,
 } from 'antd';
 import { CloseCircleOutlined, SearchOutlined } from '@ant-design/icons';
-import type { CheckboxValueType } from 'antd/es/checkbox/Group';
 import './index.less';
 import React, { useEffect, useState } from 'react';
 import VirtualList from 'rc-virtual-list';
@@ -255,7 +254,7 @@ export default () => {
                   }}
                 >
                   <Form.Item name="keyword" label="">
-                    <Input suffix={<SearchOutlined />} />
+                    <Input placeholder='请输入搜索内容' suffix={<SearchOutlined />} />
                   </Form.Item>
                 </Form>
                 <List>
@@ -339,8 +338,11 @@ export default () => {
   const closeSelectEnterprise = () => {
     setEnterpriseModal(false);
     setOrgList([]);
+    setEditServiceEnterprise({})
     enterpriseForm.resetFields()
+    inputEnterpriseForm.resetFields()
     setCurrentPage(0);
+    setSelectedEnterprise([])
     setEnterpriseCheckboxValue([]);
   };
   // 手动输入监听
@@ -390,27 +392,17 @@ export default () => {
     setSelectedEnterprise(arr2);
   };
   const cancelSelectEnterprise = (idLabel: string) => {
-    // 右侧已选择服务商删除
-    // const id = JSON.parse(idLabel).id
-    // let arr = [...selectedEnterprise]
-    // let arr2 = arr.filter(item => item.id != id)
-    // setSelectedEnterprise(arr2)
-    // // 左侧checkbox删除已选中选项
-    // let formArr = enterpriseForm.getFieldsValue().servicers
-    // let arr3 = formArr.filter(item => item.indexOf(JSON.parse(idLabel).id) < 0)
-    // enterpriseForm.setFieldsValue({servicers: arr3})
     console.log(idLabel);
     // 右侧已选择服务商删除
-    const id = JSON.parse(idLabel).id;
+    const id = JSON.parse(idLabel).enterpriseId;
     const arr = [...selectedEnterprise];
-    const arr2 = arr.filter((item) => item.id != id);
+    const arr2 = arr.filter((item) => item.enterpriseId != id);
     console.log(arr2);
-    setSelectedEnterprise(arr2, 'arr2');
+    setSelectedEnterprise(arr2);
     // 左侧checkbox删除已选中选项
     const arr3: string[] = [];
     arr2.map((item) => {
-      const { enterpriseName, enterpriseId, ...obj } = item;
-      arr3.push(JSON.stringify(obj));
+      arr3.push(JSON.stringify(item));
     });
     setEnterpriseCheckboxValue(arr3);
   };
@@ -427,12 +419,12 @@ export default () => {
     // 需要对已选择的服务企业做回显操作。。。
     if (item.listEnter && item.listEnter.length > 0) {
       const arr: any = [...item.listEnter];
-      const arr2: string[] = [];
+      const arr2: any = [];
       setSelectedEnterprise(arr);
       arr.map((item: { [x: string]: any; enterpriseName: any; enterpriseId: any }) => {
-        const { enterpriseName, enterpriseId, ...obj } = item;
-        arr2.push(JSON.stringify(obj));
+        arr2.push(JSON.stringify(item));
       });
+      console.log(arr2, 'arr2')
       setEnterpriseCheckboxValue(arr2);
     }
   };
@@ -458,7 +450,7 @@ export default () => {
   const getAreaData = async () => {
     try {
       const areaRes = await listAllAreaCode();
-      const arealevelLists = [];
+      const arealevelLists:any = [];
       setArea(getAreaTreeDate(areaRes && areaRes.result, arealevelLists) || []);
       setArealevelList(arealevelLists);
     } catch (error) {
@@ -588,7 +580,7 @@ export default () => {
                   }}
                 >
                   <Form.Item name="keyword" label="">
-                    <Input suffix={<SearchOutlined />} />
+                    <Input placeholder='请输入搜索内容' suffix={<SearchOutlined />} />
                   </Form.Item>
                 </Form>
                 <List>
@@ -602,7 +594,7 @@ export default () => {
                     {(item: any) => (
                       <List.Item key={item.id}>
                         <Checkbox
-                          checked={enterpriseCheckboxValue.indexOf(JSON.stringify(item)) > -1}
+                          checked={JSON.stringify(enterpriseCheckboxValue).indexOf(item.id) > -1 && JSON.stringify(enterpriseCheckboxValue).indexOf(item.orgName) > -1}
                           value={JSON.stringify(item)}
                           key={item.id}
                           onChange={onChangeEnterprise}
@@ -644,7 +636,7 @@ export default () => {
                   />
                 </Form.Item>
               </Form>
-              <Button onClick={ensureInput} disabled={inputAble} type="primary">
+              <Button style={{marginTop: 8}} onClick={ensureInput} disabled={inputAble} type="primary">
                 录入
               </Button>
             </div>
@@ -972,7 +964,7 @@ export default () => {
                 },
               ]}
             >
-              <DatePicker.RangePicker allowClear />
+              <DatePicker.RangePicker style={{width: '100%'}} allowClear />
             </Form.Item>
             <Form.Item
               name="diagnoseServicers"
@@ -989,6 +981,7 @@ export default () => {
                 style={{ width: '100%' }}
                 placeholder="请选择"
                 options={[]}
+                open={false}
                 maxTagCount="responsive"
                 onClick={() => {
                   setOrgList([]);
