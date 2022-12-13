@@ -1,105 +1,76 @@
 import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
-import {Button, Col, Row, Space, Table, Steps, Modal, Popconfirm, Input, message,List,Select} from "antd";
+import {Button, Col, Row, Space, Table, Steps, Modal, Popconfirm, Input, message,Select} from "antd";
 import  {useEffect, useState} from "react";
 import {history} from "@@/core/history";
-import {getOrgManageInfo, getOrgMemberPage, getOrgOperationLog, putOrgAudit} from "@/services/org-type-manage";
+import {
+  getOrgManageInfo,
+  getOrgMemberPage,
+  getOrgOperationLog,
+  postChangeAdminList, putChangeAdmin,
+  putOrgAudit
+} from "@/services/org-type-manage";
 export default () => {
-    // const [dataSource, setDataSource] = useState<any>([]);
-
-  const dataSource = [
-    {
-      key: '1',
-      name: '胡彦斌',
-      phone: 32,
-      dutyName: '西湖区湖底公园1号',
-      audited:'已下架',
-
-    },
-    {
-      key: '2',
-      name: '胡彦斌',
-      phone: 32,
-      dutyName: '西湖区湖底公园1号',
-      audited:'已上架',
-    },
-  ];
-  const [loading, setLoading] = useState<boolean>(false);
   const [modelShow, setModelShow] = useState<boolean>(false);
-  const [searchListShow,setSearchListShow] = useState<boolean>(false);
   const [changeModelShow, setChangeModelShow] = useState<boolean>(false);
   const [refuseContent, setRefuseContent] = useState<string>('');
-  const [nameValue, setNameValue] = useState<string>('');
   const [orgInfo, setOrgInfo] = useState<any>('');
   const [value, setValue] = useState<string>();
+  const [inputValue, setInputValue] = useState<string>();
   const [orgMemberInfo, setOrgMemberInfo] = useState<any>('');
   const [orgLogList, setOrgLogList] = useState<any>('');
   const [options, setOptions] = useState<any>('');
   const [orgMemberList, setOrgMemberList] = useState<any>('');
   const { Step } = Steps;
-  const info=[{name:'rweq',content:'423142',createTime:'123423'},{name:'rweq',content:'423142',createTime:'123423'},{name:'rweq',content:'423142',createTime:'123423'}]
+  // const info=[{name:'rweq',content:'423142',createTime:'123423'},{name:'rweq',content:'423142',createTime:'123423'},{name:'rweq',content:'423142',createTime:'123423'}]
   const [pageInfo, setPageInfo] = useState({
     pageIndex: 1,
     pageSize: 10,
     total: 0,
+  });
+  const [selectPageInfo, setSelectPageInfo] = useState({
+    pageIndex: 1,
+    pageSize: 10,
+    pageTotal: 0,
+    totalCount: 0,
   });
   const orgId = history.location.query?.id as string;
 
   //方法
   const handleChange = (newValue: string) => {
     setValue(newValue);
+    console.log(newValue)
   };
-  const handleSearch=(e: any)=>{
-    setOptions([
-      {value:134444,
-      label:'32424'},
-      {value:1344443214,
-        label:'1324124'},
-      {value:134444234,
-        label:'1324124'},
-      {value:1344443214,
-        label:'1324124'},
-      {value:1344443214,
-        label:'1324124'},
-      {value:1344443214,
-        label:'1324124'},
-      {value:1344443214,
-        label:'1324124'},
-      {value:1344443214,
-        label:'1324124'},
-      {value:1344443214,
-        label:'1324124'},
-      {value:1344443214,
-        label:'1324124'},
-      {value:1344443214,
-        label:'1324124'},
-
-    ])
-    console.log(e)
-    // if(e.target.value.length>2){
-    //   setSearchListShow(true)
-    // }
-    // else if(e.target.value.length==0){
-    //   setSearchListShow(false)
-    // }
-  }
-  //查询组织成员信息（组织名称、管理员名称）
-  const putAudit = async (e: any) => {
-    try {
-      const {todoId,userId} = orgMemberInfo
-      const data={
-        todoId,userId,orgId,isAgree:e,reason:e?'':refuseContent
-      }
-      const {code,result} =await putOrgAudit(data)
-      if(code===0){
-        setOrgInfo(result)
-      }else{
-        message.error('请求组织成员信息失败')
-      }
-    } catch (error) {
-      console.log(error);
+  const handleSearch = (e: string) => {
+    if(e.length==0){
+      setSelectPageInfo({
+        pageIndex: 1,
+        pageSize: 10,
+        pageTotal: 0,
+        totalCount: 0,
+      })
+    }
+    setInputValue(e)
+    if(e.length>1){
+      try{
+        const data ={
+          pageIndex:selectPageInfo.pageIndex, pageSize:selectPageInfo.pageSize,orgId,nameOrPhone:e
+        }
+        postChangeAdminList(data).then(res=>{
+          if (res.code==0){
+            setOptions(res.result)
+            setSelectPageInfo({
+              pageIndex:res?.pageIndex,
+              pageSize: res?.pageSize,
+              pageTotal: res?.pageTotal,
+              totalCount:  res?.totalCount,
+            })
+          }
+        })
+      }catch (err){}
     }
   };
+  //查询组织成员信息（组织名称、管理员名称）
   const handleAudit=(e: any)=>{
     setModelShow(true)
     setOrgMemberInfo(e)
@@ -121,8 +92,9 @@ export default () => {
   //查询组织成员列表
   const getOrgPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     try {
-      const {code,result} =await getOrgMemberPage({orgId,pageIndex,pageSize})
+      const {code,result,res} =await getOrgMemberPage({orgId,pageIndex,pageSize})
       if(code===0){
+        setPageInfo({total:res?.total,pageIndex:1,pageSize:10})
         setOrgMemberList(result)
       }else{
         message.error('请求组织成员列表数据失败')
@@ -149,6 +121,28 @@ export default () => {
     getOrgPage();
     getOrgLog()
   }, []);
+
+  const putAudit = async (e: any) => {
+    try {
+      const {todoId,userId} = orgMemberInfo
+      const data={
+        todoId,userId,orgId,isAgree:e,reason:e?'':refuseContent
+      }
+      const res =await putOrgAudit(data)
+      if(res?.code===0){
+        setModelShow(false)
+        await getOrgInfo();
+        await getOrgPage();
+        await getOrgLog()
+
+        // setOrgInfo(res?.result)
+      }else{
+        message.error(res.message)
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const columns= [
     {
@@ -180,8 +174,8 @@ export default () => {
       render: (audited: boolean) =>{
         return (
           audited ? (
-            <p>审核通过</p>
-          ):(<p>未审核</p>)
+            <span>审核通过</span>
+          ):(<span>未审核</span>)
         )
       }
     },
@@ -189,33 +183,32 @@ export default () => {
       title: '操作',
       key: 'action',
       render: (_: any, _record: any) => {
-        return (
-          <Space size="middle">
+        return !_record.audited ? (
+              <Space size="middle">
             <a
               href="#"
               onClick={() => {
                 handleAudit(_record as any)
               }}
             >审核</a>
-          </Space>
-        )
+          </Space> ): (<span style={{  color:'#6680FF'}}>/</span>)
+
       }
     }
   ].filter(p => p);
 
   return (
     <PageContainer
-      loading={loading}
     >
       <div className='org-manage-info' >
         <Row>
           <Col span={24}>
             <span style={{  fontWeight: 'bold' }}>企业名称：</span>
-            <span style={{  fontWeight: 'bold' }}>{orgInfo.orgName}</span>
+            <span style={{  fontWeight: 'bold' }}>{orgInfo?.orgName}</span>
           </Col>
           <Col span={6}>
             <span style={{ fontWeight: 'bold' }}>管理员：</span>
-            <span style={{  fontWeight: 'bold'}}>{orgInfo.adminName}</span>
+            <span style={{  fontWeight: 'bold'}}>{orgInfo?.adminName}</span>
           </Col>
           <Col span={6}>
             <Button
@@ -275,7 +268,7 @@ export default () => {
             拒绝
           </Button>
           </Popconfirm>,
-          <Button key="submit" type="primary" loading={loading}  onClick={()=>{
+          <Button key="submit" type="primary"   onClick={()=>{
             putAudit(true)
           }}>
             通过
@@ -291,12 +284,13 @@ export default () => {
         <Table
           bordered
           columns={columns}
-          dataSource={dataSource}
+          dataSource={orgMemberList}
           rowKey={'id'}
           pagination={
             pageInfo.total === 0
               ? false
               : {
+                onChange: getOrgPage,
                 total: pageInfo.total,
                 current: pageInfo.pageIndex,
                 pageSize: pageInfo.pageSize,
@@ -306,55 +300,89 @@ export default () => {
           }
         />
       </div>
-
+      {orgLogList.length>0&&
       <div className="org-manage-log">
         <div className="org-manage-title">操作日志</div>
-        {info.length>0&&
         <Steps progressDot current={1} direction="vertical">
-          { info?.map((item: any)=>(
+          { orgLogList?.map((item: any)=>(
             <Step title={item?.name} subTitle={item?.createTime} description={item?.content} />
           ))}
-        </Steps>}
-      </div>
+        </Steps>
+      </div>}
         <Modal
           visible={changeModelShow}
           onCancel={()=>{
             setChangeModelShow(false)
+            setOptions([])
+            setSelectPageInfo({
+              pageIndex: 1,
+              pageSize: 10,
+              pageTotal: 0,
+              totalCount: 0,
+            })
+            setValue('')
+          }}
+          onOk={async () => {
+            try{
+              const res = await putChangeAdmin({userId:value,orgId})
+              if (res.code==0){
+                setChangeModelShow(false)
+                setOptions([])
+                setSelectPageInfo({
+                  pageIndex: 1,
+                  pageSize: 10,
+                  pageTotal: 0,
+                  totalCount: 0,
+                })
+                setValue('')
+                await getOrgInfo();
+                await getOrgPage();
+                await getOrgLog()
+              }else{
+                message.error(res.message)
+
+              }
+            }catch (e) {
+            }
+
           }}
           title={'更换管理员'}>
-          <div className='search' style={{marginBottom:'20px'}}>
-           选择人员：
+          <div className='search' style={{marginBottom:'20px'}}>选择人员：
             <Select
               showSearch
               value={value}
-              placeholder={'请输入'}
-              style={{width: '300px' }}
+              placeholder={'请输入姓名或手机号'}
+              style={{width:'300px'}}
               defaultActiveFirstOption={false}
               showArrow={false}
               filterOption={false}
               onSearch={handleSearch}
               onChange={handleChange}
               notFoundContent={null}
-              options={options}
+              options={(options || []).map((d: any) => ({
+                value: d.userId,
+                label: `${d.name}__${d.phone}`,
+              }))}
               onPopupScroll={()=>{
-
+                if(selectPageInfo.pageTotal>selectPageInfo.pageIndex ){
+                  const data ={
+                    pageIndex:selectPageInfo.pageIndex+1, pageSize:selectPageInfo.pageSize,orgId,nameOrPhone:inputValue
+                  }
+                  postChangeAdminList(data).then(res=>{
+                    if (res.code==0){
+                      const arr=[...options,...res.result]
+                      setOptions(arr)
+                      setSelectPageInfo({
+                        pageIndex:res?.pageIndex,
+                        pageSize: res?.pageSize,
+                        pageTotal: res?.pageTotal,
+                        totalCount:  res?.totalCount,
+                      })
+                    }
+                  })
+                }
               }}
             />
-          {/*  <Input*/}
-          {/*    style={{ width: '300px' }}*/}
-          {/*    placeholder="请输入"*/}
-          {/*    autoComplete="off"*/}
-          {/*    allowClear*/}
-          {/*    maxLength={35}*/}
-          {/*    onChange={(e)=>{*/}
-          {/*      handleSearch(e)*/}
-          {/*}}*/}
-          {/*  />*/}
-
-            {/*{ searchListShow &&*/}
-            {/*<div className="search-list">*/}
-
-            {/*</div>}*/}
           </div>
           <p>说明:可选择组织内员工或平台内无组织人员</p>
         </Modal>
