@@ -244,9 +244,7 @@ const GenerateFormItem = (props: Props) => {
             }}
           >
             <Select
-              options={config?.options.map((optionItem: {label: string, value: string}, index: number) => {
-                return {label: optionItem.label, value: `${optionItem.value}_${index}`}
-              })}
+              options={config?.options}
               allowClear
               placeholder={config?.placeholder}
               mode="multiple"
@@ -273,9 +271,8 @@ const GenerateFormItem = (props: Props) => {
             rules={config?.required ? [{ required: true, message: '请选择日期'}] : []}
           >
             <DatePicker
-              showTime={{
-                format: config?.format
-              }}
+              showTime={config?.showTime}
+              format={config?.format}
               placeholder={config?.placeholder}
               picker={config?.picker}
             />

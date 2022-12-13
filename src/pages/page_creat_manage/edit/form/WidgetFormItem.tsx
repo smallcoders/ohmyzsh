@@ -476,9 +476,8 @@ const WidgetFormItem: FC<Props> = (props) => {
             }
             <Form.Item name={key}>
               <DatePicker
-                showTime={{
-                  format: config?.format
-                }}
+                showTime={config?.showTime}
+                format={config?.format}
                 placeholder={config?.placeholder}
                 picker={config?.picker}
               />

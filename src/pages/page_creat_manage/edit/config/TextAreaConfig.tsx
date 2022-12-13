@@ -1,13 +1,12 @@
 import { useState, useContext } from 'react';
 import {
   Checkbox,
-  Form, Input, InputNumber, Select,
+  Form, Input, InputNumber,
   Tooltip,
 } from 'antd';
 import questionIcon from '@/assets/page_creat_manage/question_icon.png'
 import { useConfig } from '../hooks/hooks'
 import { DesignContext } from '@/pages/page_creat_manage/edit/store';
-import { regOptions } from '../utils/options';
 const TextAreaConfig = () => {
   const { selectWidgetItem, handleChange } = useConfig()
   const { state } = useContext(DesignContext)
@@ -76,23 +75,6 @@ const TextAreaConfig = () => {
           value={selectWidgetItem?.config?.placeholder}
           maxLength={20}
           onChange={(event) => handleChange(event.target.value, 'config.placeholder')}
-        />
-      </Form.Item>
-      <Form.Item label="格式">
-        <Select
-          allowClear
-          options={regOptions}
-          value={selectWidgetItem?.config?.reg}
-          onChange={(value) => {
-            const currentValues: any = regOptions.find((item) => {
-              return item.value === value
-            })
-            handleChange({
-              reg: currentValues.value,
-              errorMsg: currentValues.errorMsg,
-              maxLength: currentValues.maxLength,
-            }, 'config.regInfo')
-          }}
         />
       </Form.Item>
       <Form.Item label="限制条件" >

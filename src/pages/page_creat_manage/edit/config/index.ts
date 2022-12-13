@@ -1135,7 +1135,8 @@ export const componentsGroupList: ComponentGroup[] = [{
         showLabel: true,
         regInfo: {
           reg: '',
-          errorMsg: ''
+          errorMsg: '',
+          maxLength: undefined,
         }
       },
     },
@@ -1155,10 +1156,6 @@ export const componentsGroupList: ComponentGroup[] = [{
         paramDesc: '多行文本',
         paramType: "string",
         showLabel: true,
-        regInfo: {
-          reg: '',
-          errorMsg: ''
-        }
       },
     },
     {

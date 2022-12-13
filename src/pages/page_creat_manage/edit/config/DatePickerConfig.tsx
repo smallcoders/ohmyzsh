@@ -82,10 +82,12 @@ const DatePickerConfig = () => {
         <Select options={dateTypeOptions} value={selectWidgetItem?.config?.format} onChange={(value) => {
           if (value === 'YYYY-MM'){
             handleChange('month', 'config.picker')
-          } else {
+          } else if (value === 'YYYY'){
+            handleChange('year', 'config.picker')
+          }else {
             handleChange('date', 'config.picker')
           }
-          if (['YYYY-MM', 'YYYY-MM-DD'].indexOf(value) !== -1){
+          if (['YYYY-MM', 'YYYY-MM-DD', 'YYYY'].indexOf(value) !== -1){
             handleChange(false, 'config.showTime')
           } else {
             handleChange(true, 'config.showTime')

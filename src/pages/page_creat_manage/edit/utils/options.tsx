@@ -92,6 +92,10 @@ export const provinceCascadeOption =[
 ]
 export const dateTypeOptions =[
   {
+    label: "年",
+    value: "YYYY"
+  },
+  {
     label: "年月",
     value: "YYYY-MM"
   },
