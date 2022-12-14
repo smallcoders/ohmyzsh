@@ -88,7 +88,7 @@ export async function getDictionayTree(label: string) {
  * @returns
  */
 export async function listAllAreaCode() {
-  return request<CourseManage.ResultList>(`/antelope-common/common/district/listAllAreaCode`, {
+  return request<CourseManage.ResultList>(`/antelope-manage/common/districtTree?endLevel=COUNTY`, {
     method: 'get',
   });
 }
