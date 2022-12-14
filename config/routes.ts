@@ -1,8 +1,8 @@
 ﻿export const routeName = {
   DATA_COLUMN: '/service-config/data-column', // 数据栏
   DIAGNOSTIC_TASKS: '/service-config/diagnostic-tasks/index', // 诊断任务
-  DIAGNOSTIC_TASKS_DETAIL: '/service-config/diagnostic-tasks/detail', // 诊断记录
-  DIAGNOSTIC_TASKS_REPORT: '/service-config/diagnostic-tasks/report', // 诊断报告
+  DIAGNOSTIC_TASKS_DETAIL: '/diagnose-manage/diagnostic-tasks/detail', // 诊断记录
+  DIAGNOSTIC_TASKS_REPORT: '/diagnose-manage/diagnostic-tasks/report', // 诊断报告
   COURSE_MANAGE: '/service-config/course-manage/index', // 课程管理
   ADD_COURSE: '/service-config/course-manage/add', // 新增或编辑课程
   APP_RESOURCE: '/service-config/app-resource/index', // 应用资源
@@ -90,7 +90,6 @@
   LIVE_TYPES_MAINTAIN: '/live-management/live-types-maintain', //直播类型管理
 
   ANTELOPE_LIVE_MANAGEMENT: '/live-management/antelope-live-management', // 羚羊直播管理
-  // ANTELOPE_LIVE_MANAGEMENT_INDEX: '/live-management/antelope-live-management/index', // 羚羊直播管理
   ANTELOPE_LIVE_MANAGEMENT_ADD: '/live-management/antelope-live-management/add-live', // 新增直播
   ANTELOPE_LIVE_MANAGEMENT_DETAIL: '/live-management/antelope-live-management/detail', // 直播详情
 
@@ -202,33 +201,6 @@ export default [
   //       path: routeName.DATA_COLUMN,
   //       name: '数据栏',
   //       component: './service_config/data_column',
-  //     },
-  //     {
-  //       path: '/service-config/diagnostic-tasks',
-  //       name: '诊断通',
-  //       hideChildrenInMenu: true,
-  //       routes: [
-  //         {
-  //           path: '/service-config/diagnostic-tasks',
-  //           redirect: routeName.DIAGNOSTIC_TASKS,
-  //         },
-  //         {
-  //           path: routeName.DIAGNOSTIC_TASKS,
-  //           hideInBreadcrumb: true,
-  //           name: '诊断通',
-  //           component: './service_config/diagnostic_tasks',
-  //         },
-  //         {
-  //           path: routeName.DIAGNOSTIC_TASKS_DETAIL,
-  //           name: '诊断记录',
-  //           component: './service_config/diagnostic_tasks_detail',
-  //         },
-  //         {
-  //           path: routeName.DIAGNOSTIC_TASKS_REPORT,
-  //           name: '诊断报告',
-  //           component: './service_config/diagnostic_tasks_report',
-  //         },
-  //       ],
   //     },
   //     {
   //       path: '/service-config/course-manage',
@@ -445,174 +417,6 @@ export default [
   //   ],
   // },
   // {
-  //   path: '/diagnose-manage',
-  //   name: '诊断管理',
-  //   icon: 'unordered-list',
-  //   access: 'DIAGNOSE_MANAGE',
-  //   routes: [
-  //     {
-  //       path: '/diagnose-manage',
-  //       redirect: '/diagnose-manage/diagnostic-tasks',
-  //     },
-  //     {
-  //       path: '/diagnose-manage/diagnostic-tasks',
-  //       name: '诊断通',
-  //       hideChildrenInMenu: true,
-  //       routes: [
-  //         {
-  //           path: '/diagnose-manage/diagnostic-tasks',
-  //           redirect: '/diagnose-manage/diagnostic-tasks/index',
-  //         },
-  //         {
-  //           path: '/diagnose-manage/diagnostic-tasks/index',
-  //           hideInBreadcrumb: true,
-  //           name: '诊断通',
-  //           access: 'M_DM_XSZD',
-  //           component: './diagnose_manage/diagnostic_tasks',
-  //         },
-  //         {
-  //           path: '/diagnose-manage/diagnostic-tasks/detail',
-  //           name: '诊断记录',
-  //           component: './diagnose_manage/diagnostic_tasks_detail',
-  //         },
-  //         {
-  //           path: '/diagnose-manage/diagnostic-tasks/report',
-  //           name: '诊断报告',
-  //           component: './diagnose_manage/diagnostic_tasks_report',
-  //         },
-  //       ],
-  //     },
-  //   ]
-  // },
-  // {
-  //   path: '/goods-manage',
-  //   name: '数字化商品管理',
-  //   icon: 'account-book',
-  //   access: 'goodsManage',
-  //   routes: [
-  //     {
-  //       path: '/goods-manage',
-  //       redirect: routeName.SHELVES_MANAGE,
-  //     },
-  //     {
-  //       path: routeName.SHELVES_MANAGE,
-  //       name: '上架管理',
-  //       hideChildrenInMenu: true,
-  //       routes: [
-  //         {
-  //           path: routeName.SHELVES_MANAGE,
-  //           redirect: routeName.SHELVES_MANAGE_INDEX,
-  //         },
-  //         {
-  //           path: routeName.SHELVES_MANAGE_INDEX,
-  //           hideInBreadcrumb: true,
-  //           name: '上架管理',
-  //           component: './goods_manage/shelves_manage/index',
-  //         },
-  //         {
-  //           path: routeName.SHELVES_MANAGE_CREATE,
-  //           name: '活动新增',
-  //           component: './goods_manage/shelves_manage/create',
-  //         },
-  //         {
-  //           path: routeName.SHELVES_MANAGE_DETAIL,
-  //           name: '活动详情',
-  //           component: './goods_manage/shelves_manage/detail',
-  //         },
-  //       ],
-  //     },
-  //     {
-  //       path: routeName.ORDER_MESSAGE,
-  //       name: '订单信息',
-  //       hideChildrenInMenu: true,
-  //       routes: [
-  //         {
-  //           path: routeName.ORDER_MESSAGE,
-  //           redirect: routeName.ORDER_MESSAGE_INDEX,
-  //         },
-  //         {
-  //           path: routeName.ORDER_MESSAGE_INDEX,
-  //           name: '订单信息',
-  //           hideInBreadcrumb: true,
-  //           component: './goods_manage/order_message/index',
-  //         },
-  //         {
-  //           path: routeName.ORDER_MESSAGE_DETAIL,
-  //           name: '订单详情',
-  //           component: './goods_manage/order_message/detail',
-  //         },
-  //       ],
-  //     },
-  //   ],
-  // },
-  // {
-  //   path: '/supply-demand-setting',
-  //   name: '供需设置',
-  //   icon: 'desktop',
-  //   access: 'SERVICE_CONFIG',
-  //   routes: [
-  //     {
-  //       path: '/supply-demand-setting',
-  //       redirect: routeName.DEMAND_MANAGEMENT_INDEX,
-  //     },
-  //     {
-  //       path: routeName.DEMAND_MANAGEMENT_INDEX,
-  //       name: '需求管理',
-  //       component: './supply_demand_setting/demand_manage/index',
-  //     },
-  //     {
-  //       path: routeName.DEMAND_MANAGEMENT_DETAIL,
-  //       hideInMenu: true,
-  //       name: '需求详情',
-  //       component: './supply_demand_setting/demand_manage/detail/index',
-  //     },
-  //     {
-  //       path: '/supply-demand-setting/docking-manage/index',
-  //       name: '供需对接管理',
-  //       component: './supply_demand_setting/docking_manage/index',
-  //     },
-  //     {
-  //       path: routeName.DEMAND_CONTACTS,
-  //       name: '需求联系人管理',
-  //       component: './supply_demand_setting/demand_contacts/index',
-  //     },
-  //   ],
-  // },
-  // {
-  //   path: '/banking',
-  //   name: '金融服务管理',
-  //   icon: 'dollar',
-  //   access: 'BANKING',
-  //   routes: [
-  //     {
-  //       path: '/banking',
-  //       redirect: routeName.BANKING_SERVICE,
-  //     },
-  //     {
-  //       path: routeName.BANKING_SERVICE,
-  //       name: '金融需求管理',
-  //       hideChildrenInMenu: true,
-  //       routes: [
-  //         {
-  //           path: routeName.BANKING_SERVICE,
-  //           redirect: routeName.BANKING_SERVICE_INDEX,
-  //         },
-  //         {
-  //           path: routeName.BANKING_SERVICE_INDEX,
-  //           hideInBreadcrumb: true,
-  //           name: '金融需求管理',
-  //           component: './banking/banking_service_manage/index',
-  //         },
-  //         {
-  //           path: routeName.BANKING_SERVICE_DETAIL,
-  //           name: '需求详情',
-  //           component: './banking/banking_service_manage/detail/detail',
-  //         },
-  //       ],
-  //     },
-  //   ],
-  // },
-  // {
   //   path: '/operate-data',
   //   name: '运营数据',
   //   icon: 'desktop',
@@ -649,121 +453,6 @@ export default [
   //           component: './operate_data/data_manage/detail',
   //         },
   //       ],
-  //     },
-  //   ],
-  // },
-  // {
-  //   path: '/purchase-manage',
-  //   name: '采购管理',
-  //   icon: 'account-book',
-  //   access: 'SERVICE_CONFIG',
-  //   routes: [
-  //     {
-  //       path: '/purchase-manage',
-  //       redirect: '/purchase-manage/commodity-manage',
-  //     },
-  //     {
-  //       path: '/purchase-manage/commodity-manage',
-  //       name: '商品管理',
-  //       component: './purchase_manage/commodity_manage',
-  //     },
-  //     {
-  //       path: '/purchase-manage/commodity-create',
-  //       name: '商品新增',
-  //       hideInMenu: true,
-  //       component: './purchase_manage/commodity_manage/create',
-  //     },
-  //     {
-  //       path: '/purchase-manage/commodity-detail',
-  //       name: '商品详情',
-  //       hideInMenu: true,
-  //       component: './purchase_manage/commodity_manage/detail',
-  //     },
-  //     {
-  //       path: '/purchase-manage/promotions-manage',
-  //       name: '活动管理',
-  //       component: './purchase_manage/promotions_manage',
-  //     },
-  //     {
-  //       path: routeName.BILL_MANAGEMENT,
-  //       name: '发票管理',
-  //       component: './purchase_manage/bill_manage',
-  //     },
-  //     {
-  //       path: routeName.SERVICE_TAGS_MANAGE,
-  //       name: '服务标签管理',
-  //       component: './purchase_manage/service_tags_manage',
-  //     },
-  //     {
-  //       path: routeName.SALES_TAGS_MANAGE,
-  //       name: '促销标签管理',
-  //       component: './purchase_manage/sales_tags_manage',
-  //     },
-  //     {
-  //       path: routeName.PROVIDERS_MANAGE,
-  //       name: '供应商管理',
-  //       component: './purchase_manage/providers_manage',
-  //     },
-  //     {
-  //       path: routeName.PROVIDERS_MANAGE_ADD,
-  //       name: '新增供应商',
-  //       hideInMenu: true,
-  //       component: './purchase_manage/add_provider',
-  //     },
-  //     {
-  //       path: routeName.PROVIDER_TYPES,
-  //       name: '供应商类型',
-  //       component: './purchase_manage/provider_types',
-  //     },
-  //     {
-  //       path: routeName.SALES_STATISTICS,
-  //       name: '销售数据统计',
-  //       component: './purchase_manage/sales_statistics',
-  //     },
-  //     {
-  //       path: routeName.SALES_STATISTICS_DETAIL,
-  //       name: '活动详情',
-  //       hideInMenu: true,
-  //       component: './purchase_manage/sales_statistics/detail',
-  //     },
-  //     {
-  //       path: '/purchase-manage/promotions-create',
-  //       name: '活动新增',
-  //       hideInMenu: true,
-  //       component: './purchase_manage/promotions_manage/create',
-  //     },
-  //     {
-  //       path: '/purchase-manage/promotions-detail',
-  //       name: '活动详情',
-  //       hideInMenu: true,
-  //       component: './purchase_manage/promotions_manage/detail',
-  //     },
-  //     {
-  //       path: routeName.PURCHASE_MANAGE,
-  //       name: '订单管理',
-  //       hideChildrenInMenu: true,
-  //       routes: [
-  //         {
-  //           path: routeName.PURCHASE_MANAGE,
-  //           redirect: routeName.PURCHASE_MANAGE_INDEX,
-  //         },
-  //         {
-  //           path: routeName.PURCHASE_MANAGE_INDEX,
-  //           name: '订单管理',
-  //           hideInBreadcrumb: true,
-  //           component: './purchase_manage/order_manage',
-  //         },
-  //         {
-  //           path: routeName.PURCHASE_MANAGE_DETAIL,
-  //           name: '订单详情',
-  //           component: './purchase_manage/order_manage/detail',
-  //         },
-  //       ],
-  //     },
-  //     {
-  //       path: '/purchase-manage/gvm',
-  //       name: 'GVM管理',
-  //       component: './purchase_manage/gvm',
   //     },
   //   ],
   // },
@@ -1106,104 +795,6 @@ export default [
   //   ],
   // },
   // {
-  //   path: '/live-management',
-  //   name: '直播管理',
-  //   icon: 'DesktopOutlined',
-  //   access: 'SERVICE_CONFIG',
-  //   routes: [
-  //     {
-  //       path: '/live-management',
-  //       redirect: routeName.LIVE_TYPES_MAINTAIN,
-  //     },
-  //     {
-  //       path: routeName.LIVE_TYPES_MAINTAIN,
-  //       name: '直播类型维护',
-  //       component: './live_management/live_types_maintain',
-  //     },
-  //     {
-  //       path: routeName.ANTELOPE_LIVE_MANAGEMENT,
-  //       name: '羚羊直播管理',
-  //       hideChildrenInMenu: true,
-  //       routes: [
-  //         // {
-  //         //   path: routeName.ANTELOPE_LIVE_MANAGEMENT,
-  //         //   redirect: routeName.ANTELOPE_LIVE_MANAGEMENT_INDEX
-  //         // },
-  //         {
-  //           path: routeName.ANTELOPE_LIVE_MANAGEMENT,
-  //           name: '羚羊直播管理',
-  //           component: './live_management/antelope_live_management',
-  //         },
-  //         {
-  //           path: routeName.ANTELOPE_LIVE_MANAGEMENT_ADD,
-  //           name: '新增直播',
-  //           component: './live_management/add_live',
-  //         },
-  //         {
-  //           path: routeName.ANTELOPE_LIVE_MANAGEMENT_DETAIL,
-  //           name: '直播详情',
-  //           component: './live_management/antelope_live_management/detail',
-  //         },
-  //       ],
-  //     },
-  //     {
-  //       path: routeName.WONDERFUL_VIDEO_MANAGEMENT,
-  //       name: '精彩视频管理',
-  //       hideChildrenInMenu: true,
-  //       routes: [
-  //         // {
-  //         //   path: routeName.WONDERFUL_VIDEO_MANAGEMENT,
-  //         //   redirect: routeName.WONDERFUL_VIDEO_MANAGEMENT_INDEX
-  //         // },
-  //         {
-  //           path: routeName.WONDERFUL_VIDEO_MANAGEMENT,
-  //           name: '精彩视频管理',
-  //           component: './live_management/wonderful_video_management',
-  //         },
-  //         {
-  //           path: routeName.WONDERFUL_VIDEO_MANAGEMENT_DETAIL,
-  //           name: '视频详情',
-  //           component: './live_management/wonderful_video_management/detail',
-  //         },
-  //       ],
-  //     },
-  //     {
-  //       path: routeName.SEARCH_RECORD_MANAGEMENT,
-  //       name: '搜索记录管理',
-  //       component: './live_management/search_record_management',
-  //     },
-  //     {
-  //       path: routeName.ANTELOPE_LIVE_INTENTION_COLLECT,
-  //       name: '直播意向采集',
-  //       component: './live_management/intention_collect',
-  //     },
-  //   ],
-  // },
-  // {
-  //   path: '/system-config',
-  //   name: '系统管理',
-  //   icon: 'setting',
-  //   access: 'M_SC',
-  //   routes: [
-  //     {
-  //       path: '/system-config',
-  //       redirect: '/system-config/auth',
-  //     },
-  //     {
-  //       path: routeName.ACCOUNT,
-  //       name: '账号管理',
-  //       access: 'M_SC_ZHGL',
-  //       component: './system_config/account',
-  //     },
-  //     {
-  //       path: routeName.AUTH,
-  //       name: '权限管理',
-  //       access: 'M_SC_QXGL',
-  //       component: './system_config/auth',
-  //     },
-  //   ],
-  // },
-  // {
   //   path: '/recommended',
   //   name: '推荐管理',
   //   icon: 'setting',
@@ -1235,7 +826,7 @@ export default [
   {
     path: '/verify-agency',
     name: '审核待办',
-    icon: 'control',
+    icon: 'file-search',
     access: 'M_AT',
     code: 'M_AT',
     routes: [
@@ -1511,7 +1102,7 @@ export default [
     code: 'M_PC',
     access: 'M_PC',
     name: '平台设置',
-    icon: 'build',
+    icon: 'setting',
     routes: [
       {
         path: '/solution-properties',
@@ -1547,7 +1138,7 @@ export default [
     code: 'M_SD',
     access: 'M_SD',
     name: '供需设置',
-    icon: 'desktop',
+    icon: 'shop',
     routes: [
       {
         path: '/supply-demand-setting',
@@ -1624,7 +1215,7 @@ export default [
     code: 'M_OA',
     access: 'M_OA',
     name: '运营活动管理',
-    icon: 'bell',
+    icon: 'tags',
     routes: [
       {
         path: '/operation-activity',
@@ -1766,7 +1357,7 @@ export default [
     code: 'M_DM',
     access: 'M_DM',
     name: '诊断管理',
-    icon: 'bug',
+    icon: 'security-scan',
     routes: [
       {
         path: '/diagnose-manage',
@@ -1833,11 +1424,54 @@ export default [
     ]
   },
   {
+    path: '/diagnose-project-manage',
+    access: 'M_DM',
+    name: '诊断项目管理',
+    icon: 'folder-open',
+    routes: [
+      {
+        path: '/diagnose-project-manage',
+        access: 'M_DM_ZDT',
+        redirect: '/diagnose-project-manage/diagnose',
+      },
+      {
+        path: '/diagnose-project-manage/diagnose',
+        access: 'M_DM_ZDGL',
+        name: '诊断服务包',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: '/diagnose-project-manage/diagnose',
+            code: 'M_DM_ZDGL',
+            access: 'M_DM_ZDGL',
+            name: '诊断服务包',
+            component: './diagnose_project_manage/diagnose_manage',
+          }
+        ],
+      },
+      {
+        path: '/diagnose-project-manage/diagnose-report',
+        access: 'M_DM_ZDGL',
+        name: '诊断服务报表',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: '/diagnose-project-manage/diagnose-report',
+            code: 'M_DM_ZDGL',
+            access: 'M_DM_ZDGL',
+            name: '诊断服务报表',
+            component: './diagnose_project_manage/diagnose_service_report',
+          }
+        ],
+      },
+    ]
+  },
+  {
     path: '/science-technology-manage',
     code: 'M_SM',
     access: 'M_SM',
     name: '科产管理',
-    icon: 'experiment',
+    icon: 'deployment-unit',
     routes: [
       {
         path: '/science-technology-manage',
@@ -2012,7 +1646,7 @@ export default [
     code: 'M_AM',
     access: 'M_AM',
     name: '应用管理',
-    icon: 'eye',
+    icon: 'appstore',
     routes: [
       {
         path: '/apply-manage',
@@ -2066,7 +1700,7 @@ export default [
     code: 'M_DA',
     access: 'M_DA',
     name: '数字化应用',
-    icon: 'control',
+    icon: 'global',
     routes: [
       {
         path: '/digital-application',
@@ -2112,7 +1746,7 @@ export default [
     code: 'M_DG',
     access: 'M_DG',
     name: '数字化商品管理',
-    icon: 'account-book',
+    icon: 'gift',
     routes: [
       {
         path: '/goods-manage',
@@ -2200,7 +1834,7 @@ export default [
     code: 'M_PM',
     access: 'M_PM',
     name: '采购管理',
-    icon: 'shopping-cart',
+    icon: 'shopping',
     routes: [
       {
         path: '/purchase-manage',
@@ -2338,7 +1972,7 @@ export default [
     code: 'M_LM',
     access: 'M_LM',
     name: '直播管理',
-    icon: 'DesktopOutlined',
+    icon: 'play-square',
     routes: [
       {
         path: '/live-management',
@@ -2443,7 +2077,7 @@ export default [
     code: 'M_RM',
     access: 'M_RM',
     name: '推荐管理',
-    icon: 'unordered-list',
+    icon: 'like',
     routes: [
       {
         path: '/recommend-manage',
@@ -2465,7 +2099,7 @@ export default [
     code: 'M_OD',
     access: 'M_OD',
     name: '运营数据',
-    icon: 'desktop',
+    icon: 'hdd',
     component: './operate_data/data_manage/index',
   },
   {
@@ -2473,7 +2107,7 @@ export default [
     code: 'M_UM',
     access: 'M_UM',
     name: '用户管理',
-    icon: 'user',
+    icon: 'team',
     routes: [
       {
         path: '/user-config',
@@ -2608,7 +2242,7 @@ export default [
     code: 'M_SC',
     access: 'M_SC',
     name: '系统管理',
-    icon: 'setting',
+    icon: 'control',
     routes: [
       {
         path: '/system-config',
