@@ -51,7 +51,7 @@ export default () => {
       })
     }
     setInputValue(e)
-    if(e.length>1){
+    if(e.length>0){
       try{
         const data ={
           pageIndex:selectPageInfo.pageIndex, pageSize:selectPageInfo.pageSize,orgId,nameOrPhone:e
