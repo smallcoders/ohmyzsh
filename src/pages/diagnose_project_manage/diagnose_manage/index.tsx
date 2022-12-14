@@ -16,7 +16,7 @@ import {
   Image,
   Table,
 } from 'antd';
-import { CloseCircleOutlined, SearchOutlined } from '@ant-design/icons';
+import { CloseCircleOutlined, SearchOutlined, UserOutlined } from '@ant-design/icons';
 import './index.less';
 import React, { useEffect, useState } from 'react';
 import VirtualList from 'rc-virtual-list';
@@ -979,6 +979,8 @@ export default () => {
               <Select
                 mode="multiple"
                 style={{ width: '100%' }}
+                showArrow={true}
+                suffixIcon={<UserOutlined />}
                 placeholder="请选择"
                 options={[]}
                 open={false}
