@@ -1421,6 +1421,32 @@ export default [
           },
         ],
       },
+      {
+        path: '/diagnose-manage/diagnose-record-report',
+        code: 'M_DM_ZDGL',
+        access: 'M_DM_ZDGL',
+        name: '诊断记录报表',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: '/diagnose-manage/diagnose-record-report',
+            code: 'M_DM_ZDGL',
+            access: 'M_DM_ZDGL',
+            name: '诊断记录报表',
+            component: './diagnose_manage/diagnose_record_report',
+          },
+          // {
+          //   path: '/diagnose-manage/diagnose/add',
+          //   name: '新建诊断',
+          //   component: './diagnose_manage/diagnose_manage/add_diagnose',
+          // },
+          // {
+          //   path: '/diagnose-manage/diagnose/history',
+          //   name: '历史版本查看',
+          //   component: './diagnose_manage/diagnose_manage/history_diagnose',
+          // },
+        ],
+      },
     ]
   },
   {
