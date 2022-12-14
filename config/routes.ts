@@ -1900,7 +1900,7 @@ export default [
       },
       {
         path: '/science-technology-manage/column-manage',
-        name: '创新专栏管理',
+        name: '科产专栏管理',
         hideChildrenInMenu: true,
         routes: [
           {
@@ -1909,14 +1909,19 @@ export default [
           },
           {
             path: '/science-technology-manage/column-manage/index',
-            name: '创新专栏管理',
+            name: '科产专栏管理',
             hideInBreadcrumb: true,
             component: './science_technology_manage/column_manage/index',
           },
           {
+            path: '/science-technology-manage/column-manage/edit',
+            name: '新增专栏',
+            component: './science_technology_manage/column_manage/edit/index',
+          },
+          {
             path: '/science-technology-manage/column-manage/detail',
             name: '详情',
-            component: './science_technology_manage/column_manage/detail',
+            component: './science_technology_manage/column_manage/detail/index',
           },
         ],
       },
