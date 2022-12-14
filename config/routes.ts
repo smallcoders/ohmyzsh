@@ -1373,25 +1373,25 @@ export default [
   },
   {
     path: '/diagnose-project-manage',
-    access: 'M_DM',
+    access: 'M_DN',
     name: '诊断项目管理',
     icon: 'folder-open',
     routes: [
       {
         path: '/diagnose-project-manage',
-        access: 'M_DM_ZDT',
+        access: 'M_DN_BAG',
         redirect: '/diagnose-project-manage/diagnose',
       },
       {
         path: '/diagnose-project-manage/diagnose',
-        access: 'M_DM_ZDGL',
+        access: 'M_DN_BAG',
         name: '诊断服务包',
         hideChildrenInMenu: true,
         routes: [
           {
             path: '/diagnose-project-manage/diagnose',
-            code: 'M_DM_ZDGL',
-            access: 'M_DM_ZDGL',
+            code: 'M_DN_BAG',
+            access: 'M_DN_BAG',
             name: '诊断服务包',
             component: './diagnose_project_manage/diagnose_manage',
           }
@@ -1399,14 +1399,14 @@ export default [
       },
       {
         path: '/diagnose-project-manage/diagnose-report',
-        access: 'M_DM_ZDGL',
+        access: 'M_DN_FORM',
         name: '诊断服务报表',
         hideChildrenInMenu: true,
         routes: [
           {
             path: '/diagnose-project-manage/diagnose-report',
-            code: 'M_DM_ZDGL',
-            access: 'M_DM_ZDGL',
+            code: 'M_DN_FORM',
+            access: 'M_DN_FORM',
             name: '诊断服务报表',
             component: './diagnose_project_manage/diagnose_service_report',
           }
