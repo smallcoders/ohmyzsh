@@ -834,7 +834,7 @@ export default () => {
       isEllipsis: true,
       width: 160,
     },
-    access.P_SM_XQGL && {
+    {
       title: '操作',
       width: 180,
       dataIndex: 'option',
