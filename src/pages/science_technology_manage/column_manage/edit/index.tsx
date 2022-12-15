@@ -28,8 +28,7 @@ export default () => {
           required
           className={'pics'}
         >
-          {/*<div style={{height:'44px'}}></div>*/}
-          <Form.Item name="actualCapital" label="Web端图片" required className={'pic'}>
+·          <Form.Item name="actualCapital" label="Web端图片" required className={'pic'}>
             <UploadForm
               listType="picture-card"
               className="avatar-uploader"
