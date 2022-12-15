@@ -19,6 +19,8 @@ export default () => {
   const [Left, setLeft] = useState<any>([]);
   const { type, step, isDetail, id, loanType, name } = history.location.query as any;
   const AuthorizationRef = useRef(null) as React.MutableRefObject<any>;
+  const AuditRef = useRef(null) as React.MutableRefObject<any>;
+  const DockingRef = useRef(null) as React.MutableRefObject<any>;
   const pageRef = useRef(null);
   // const [isDetail, setIsDetail] = useState<boolean>(false);
   const tabLists = [
@@ -77,10 +79,6 @@ export default () => {
     setLeft(left);
     console.log('pageRef', left);
   }, [left]);
-  // const handleWindowResize = () => {
-  //   debugger;
-  //   console.log('pageRef', pageRef?.current?.offsetWidth, pageRef);
-  // };
   const toTab = (tostep: string) => {
     prepare(tostep);
   };
@@ -97,7 +95,16 @@ export default () => {
             AuthorizationRef.current.cancelEdit(() => {
               setActiveKey(key);
             });
-            // setActiveKey(key);
+          }
+          if (activeKey === '5' && AuditRef.current.formIsChange) {
+            AuditRef.current.cancelEdit(() => {
+              setActiveKey(key);
+            });
+          }
+          if (activeKey === '6' && DockingRef.current.formIsChange) {
+            DockingRef.current.cancelEdit(() => {
+              setActiveKey(key);
+            });
           } else {
             setActiveKey(key);
           }
@@ -119,7 +126,7 @@ export default () => {
         )}
         {activeKey === '5' && (
           <AuditInfo
-            // ref={AuthorizationRef}
+            ref={AuditRef}
             isDetail={isDetail}
             step={step}
             id={id}
@@ -130,7 +137,7 @@ export default () => {
         )}
         {activeKey === '6' && (
           <DockingInfo
-            // ref={AuthorizationRef}
+            ref={DockingRef}
             isDetail={isDetail}
             type={Number(type)}
             step={step}

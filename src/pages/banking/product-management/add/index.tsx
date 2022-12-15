@@ -8,36 +8,68 @@ import {
   ProForm,
   ProFormList,
   ProFormDigitRange,
+  FooterToolbar,
 } from '@ant-design/pro-components';
 import { PageContainer } from '@ant-design/pro-layout';
-import { Radio, Tooltip, Select, Form, Row, Col, Button } from 'antd';
+import { Radio, Tooltip, Select, Form, Row, Col, Button, message, Input, Modal, Spin } from 'antd';
 import FormEdit from '@/components/FormEdit';
-import { QuestionCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
+import { QuestionCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
 import React, { useEffect, useRef, useState } from 'react';
-import { productTypeMap, guaranteeMethodMap } from '../constants';
+import { productTypeMap, guaranteeMethodMap, city } from '../constants';
 import { areaLabel } from '@/services/propaganda-config';
 import scopedClasses from '@/utils/scopedClasses';
+import { getProductType, addProduct, queryBank, getProductInfo } from '@/services/banking-product';
+import { Prompt, history } from 'umi';
 import './index.less';
+import LoanUse from './loan-use/index';
+import { routeName } from '@/../config/routes';
 const sc = scopedClasses('product-management-create');
 type FormValue = {
-  baseInfo: {
-    name: string;
-  };
-  syncTableInfo: {
-    timeRange: [Dayjs, Dayjs];
-    title: string;
-  };
+  // baseInfo: {
+  //   name: string;
+  // };
+  // syncTableInfo: {
+  //   timeRange: [Dayjs, Dayjs];
+  //   title: string;
+  // };
+  id: number; // 主键
+  name: string; // 产品姓名
+  content: string; // 产品简介
+  bankName: string; // 所属金融机构
+  minAmount: number; // 最低额度
+  maxAmount: number; // 最高额度
+  amountDesc: string; // 额度文案
+  minTerm: number; // 最低期限（单位月）
+  maxTerm: number; //最高期限（单位月）
+  termDesc: string; // 期限文案
+  minRate: string; // 最低利率
+  maxRate: string; // 最高利率
+  rateDesc: string; // 利率文案
+  applyCondition: string; // 申请条件
+  openArea: string; // 开放地区
+  productFeature: string; // 产品特点
+  warrantType: string; // 担保方式 1-信用 ，2-抵押，3-质押，4-保证，多个逗号分隔
+  object: string; // 面向对象
+  isCirculationLoan: number; // 是否支持循环贷 0:否，1:是
+  isHot: number; // 是否热门 0:否，1:是
+  loanIds: string; // 贷款用途id
+  productProcessInfoList: ProductProcessInfoList; // 面向对象
+};
+type ProductProcessInfoList = {
+  id: number; // 主键
+  name: string; // 流程名称
+  step: number; // 步骤
 };
 const formValue: FormValue = {
-  baseInfo: {
-    name: 'normal job',
-  },
-  syncTableInfo: {
-    timeRange: [dayjs().subtract(1, 'm'), dayjs()],
-    title: 'example table title',
-  },
+  // baseInfo: {
+  //   name: 'normal job',
+  // },
+  // syncTableInfo: {
+  //   timeRange: [dayjs().subtract(1, 'm'), dayjs()],
+  //   title: 'example table title',
+  // },
 };
 const waitTime = (time: number = 100) => {
   return new Promise((resolve) => {
@@ -46,311 +78,555 @@ const waitTime = (time: number = 100) => {
     }, time);
   });
 };
-const treeData = [
-  {
-    value: 'parent 1',
-    title: 'parent 1',
-    children: [
-      {
-        value: 'parent 1-0',
-        title: 'parent 1-0',
-        children: [
-          {
-            value: 'leaf1',
-            title: 'leaf1',
-          },
-          {
-            value: 'leaf2',
-            title: 'leaf2',
-          },
-        ],
-      },
-      {
-        value: 'parent 1-1',
-        title: 'parent 1-1',
-        children: [
-          {
-            value: 'leaf3',
-            title: <b style={{ color: '#08c' }}>leaf3</b>,
-          },
-        ],
-      },
-    ],
-  },
-];
 const ProductInfoAddOrEdit = () => {
+  const { id } = history.location.query as any;
   const formMapRef = useRef<React.MutableRefObject<ProFormInstance<any> | undefined>[]>([]);
+  const [current, setCurrent] = useState<number>(0);
+  const [currentId, setCurrentId] = useState<number>(id);
   const [productType, setProductType] = useState<string>('');
-  const [serviceTypes, setServiceType] = useState<any>([]);
+  const [formIsChange, setFormIsChange] = useState<boolean>(false);
   const [openAreas, setOpenAreas] = useState<any>([]);
+  const [productTypeList, setProductTypeList] = useState<any[]>([]);
+  const [bankList, setBankList] = useState<any[]>([]);
+  // const onCancel = (cb: any) => {
+  //   if (formIsChange) {
+  //     Modal.confirm({
+  //       title: '要在离开之前对填写的信息进行保存吗?',
+  //       icon: <ExclamationCircleOutlined />,
+  //       cancelText: '放弃修改并离开',
+  //       okText: '保存',
+  //       onCancel() {
+  //         if (cb) {
+  //           cb();
+  //         } else {
+  //           history.goBack();
+  //         }
+  //       },
+  //       onOk() {
+  //         const values = formMapRef.current[current]?.current?.getFieldsFormatValue?.();
+  //         saveProduct(values, 0, cb);
+  //       },
+  //     });
+  //   } else {
+  //     history.goBack();
+  //   }
+  // };
   useEffect(() => {
-    waitTime(1000).then(() => {
-      // 编辑场景下需要使用formMapRef循环设置formData
-      formMapRef?.current?.forEach((formInstanceRef) => {
-        formInstanceRef?.current?.setFieldsValue(formValue);
-      });
+    getProductInfo({ id: currentId }).then((res) => {
+      if (res.code === 0) {
+        const {
+          openArea,
+          productProcessInfoList,
+          minAmount,
+          maxAmount,
+          minRate,
+          maxRate,
+          minTerm,
+          maxTerm,
+          ...rest
+        } = res.result;
+        const Amount = minAmount ? [minAmount, maxAmount] : null;
+        const Rate = minRate ? [minRate, maxRate] : null;
+        const Term = minTerm ? [minTerm, maxTerm] : null;
+        productProcessInfoList?.sort((a, b) => a.step - b.step);
+        // 编辑场景下需要使用formMapRef循环设置formData
+        formMapRef?.current?.forEach((formInstanceRef) => {
+          formInstanceRef?.current?.setFieldsValue({
+            ...rest,
+            openArea: openArea?.split(',') || [],
+            productProcessInfoList,
+            Amount,
+            Rate,
+            Term,
+          });
+        });
+        setFormIsChange(false);
+      }
     });
   }, []);
 
-  const _areaLabel = async () => {
+  const prepare = async () => {
     try {
-      const res = await areaLabel();
-      if (res?.code === 0) {
-        let arr = [];
-        arr =
-          res?.result?.map((item: any) => {
-            return {
-              areaName: item.name,
-              areaCode: item.code.toString(),
-            };
-          }) || [];
-        setServiceType(arr);
-      }
+      const data = await Promise.all([getProductType(), queryBank()]);
+      setProductTypeList(data?.[0]?.result || []);
+      setBankList(data?.[1]?.result?.bank || []);
     } catch (error) {
-      console.log('获取城市下拉error');
+      message.error('数据初始化错误');
     }
   };
-  useEffect(() => {
-    // 城市名称安徽省16地市
-    // 下拉选项为安徽省16地市，列表中存在的城市活动状态为非已结束，则选项中不存在；如果为已结束或未维护的城市，则选项中存在
-    _areaLabel();
-  }, []);
-  return (
-    <PageContainer
-      className={sc('page')}
-      ghost
-      header={{
-        title: '产品管理',
-        // breadcrumb: {},
-      }}
-    >
-      <StepsForm
-        stepsProps={{
-          className: sc('steps-form'),
-        }}
-        formMapRef={formMapRef}
-        onFinish={(values) => {
-          console.log(values);
-          return Promise.resolve(true);
-        }}
-        formProps={{
-          layout: 'horizontal',
-          labelCol: { span: 4 },
-          wrapperCol: { span: 16 },
-        }}
-        submitter={{
-          render: (props) => {
-            if (props.step === 0) {
-              return [
-                <Button key="pre" onClick={() => props.onPre?.()}>
-                  返回
-                </Button>,
-                <Button type="primary" key="goToTree" onClick={() => props.onSubmit?.()}>
-                  暂存
-                </Button>,
-                <Button type="primary" key="goToTree" onClick={() => props.onSubmit?.()}>
-                  下一步
-                </Button>,
-              ];
-            }
+  // 保存产品信息 flag 0:暂存 1:下一步
+  const saveProduct = (values: any, flag: number, cb: any) => {
+    const value = { ...values };
+    if (values.hasOwnProperty('openArea')) {
+      value.openArea = values.openArea?.join(',');
+    }
+    if (values.hasOwnProperty('productProcessInfoList')) {
+      value.productProcessInfoList = values.productProcessInfoList?.map(
+        (item: any, index: number) => {
+          return { ...item, step: index + 1 };
+        },
+      );
+    }
+    if (values.hasOwnProperty('Amount')) {
+      value.minAmount = values.Amount[0];
+      value.maxAmount = values.Amount[1];
+    }
+    if (values.hasOwnProperty('Term')) {
+      value.minTerm = values.Term[0];
+      value.maxTerm = values.Term[1];
+    }
+    if (values.hasOwnProperty('Rate')) {
+      value.minRate = values.Rate[0];
+      value.maxRate = values.Rate[1];
+    }
 
-            return [
-              <Button key="pre" onClick={() => props.onPre?.()}>
-                返回
-              </Button>,
-              <Button type="primary" key="goToTree" onClick={() => props.onSubmit?.()}>
-                暂存
-              </Button>,
-              <Button type="primary" key="goToTree" onClick={() => props.onSubmit?.()}>
-                发布产品
-              </Button>,
-            ];
-          },
-        }}
+    addProduct({ ...value, id: currentId, state: flag }).then((res) => {
+      if (res.code === 0) {
+        setFormIsChange(false);
+        message.success('保存成功');
+        setCurrentId(res.result);
+        // 下一步
+        if (flag === 1 && current === 0) {
+          setCurrent(1);
+        } else {
+          if (cb) {
+            cb();
+          } else {
+            history.push(routeName.PRODUCT_MANAGEMENT);
+          }
+        }
+      } else {
+        message.error('保存失败！');
+      }
+    });
+  };
+  useEffect(() => {
+    prepare();
+  }, []);
+  const formProps2 = {
+    wrapperCol: { span: 18 },
+  };
+  return (
+    // <Spin>
+    <>
+      <PageContainer
+        className={sc('page')}
+        ghost
+        footer={[
+          <Button
+            key="pre"
+            onClick={() => {
+              history.goBack();
+            }}
+          >
+            返回
+          </Button>,
+          <Button
+            key="goToTree2"
+            onClick={() => {
+              const values = formMapRef.current[current]?.current?.getFieldsFormatValue?.();
+              saveProduct(values, 0, null);
+            }}
+          >
+            暂存
+          </Button>,
+          <Button
+            type="primary"
+            key="goToTree"
+            onClick={() => {
+              formMapRef.current[current]?.current
+                ?.validateFieldsReturnFormatValue?.()
+                .then((values) => {
+                  console.log('values', values);
+                  saveProduct(values, 1, null);
+                });
+            }}
+          >
+            {current === 1 ? '完成' : '下一步'}
+          </Button>,
+        ]}
       >
-        <StepsForm.StepForm name="step1" title="基本信息">
-          <div className="title">基本信息</div>
-          <ProFormText
-            label="产品名称"
-            name={['baseInfo', 'name']}
-            fieldProps={{ maxLength: 35 }}
-          />
-          <ProFormSelect
-            label="产品类型"
-            name={['baseInfo', 'type']}
-            fieldProps={{
-              onChange: (value) => {
-                setProductType(value);
-              },
-            }}
-            options={Object.entries(productTypeMap).map((p) => {
-              return {
-                value: p[0],
-                label: p[1],
-              };
-            })}
-          />
-          <ProFormTreeSelect
-            label="金融机构"
-            name={['baseInfo', 'org']}
-            fieldProps={{
-              showSearch: true,
-              treeData,
-            }}
-          />
-          <ProFormSelect
-            label="担保方式"
-            name={['baseInfo', 'guaranteeMethod']}
-            options={Object.entries(guaranteeMethodMap).map((p) => {
-              return {
-                value: p[0],
-                label: p[1],
-              };
-            })}
-          />
-          <ProFormSelect
-            label="面向对象"
-            name={['baseInfo', 'guaranteeMethod']}
-            options={[{ value: 1, label: '企业' }]}
-          />
-          {productType !== 'Insurance' && (
-            <Form.Item name={['baseInfo', 'supportingRevolvingCredit']} label="支持循环贷">
-              <Radio.Group>
-                <Radio value={1}>
-                  是
-                  <Tooltip title="支持循环贷代表此产品过了授信截止时间后，可再次审批此产品">
-                    <QuestionCircleOutlined style={{ marginLeft: '10px' }} />
-                  </Tooltip>
-                </Radio>
-                <Radio value={0}>否</Radio>
-              </Radio.Group>
-            </Form.Item>
-          )}
-          <Form.Item label="开放地区" name={['baseInfo', 'openArea']}>
-            <Select
-              mode={'multiple'}
-              allowClear
-              showArrow
-              onChange={(values) => {
-                console.log(values);
-                setOpenAreas(values);
+        <StepsForm
+          stepsProps={{
+            className: sc('steps-form'),
+          }}
+          current={current}
+          onCurrentChange={(cur) => setCurrent(cur)}
+          formMapRef={formMapRef}
+          onFinish={(values) => {
+            console.log(values);
+            return Promise.resolve(true);
+          }}
+          formProps={{
+            size: 'large',
+            layout: 'horizontal',
+            labelCol: { span: 4 },
+            wrapperCol: { span: 10 },
+            style: { width: '100%' },
+            onValuesChange: () => {
+              console.log('onValuesChange');
+              setFormIsChange(true);
+            },
+          }}
+          submitter={false}
+        >
+          <StepsForm.StepForm name="step1" title="基本信息">
+            <div className="title">基本信息</div>
+            <ProFormText
+              rules={[{ required: true }]}
+              label="产品名称"
+              name="name"
+              fieldProps={{ maxLength: 35 }}
+            />
+            <ProFormSelect
+              rules={[{ required: true }]}
+              label="产品类型"
+              name="typeId"
+              fieldProps={{
+                onChange: (value) => {
+                  productTypeList.forEach((item) => {
+                    if (item.id === value) {
+                      setProductType(item.name);
+                    }
+                  });
+                },
               }}
-            >
-              <Select.Option
-                key={0}
-                disabled={!openAreas.includes(0) && openAreas.length}
-                value={0}
-              >
-                安徽省
-              </Select.Option>
-              {serviceTypes?.map((item: any) => {
-                return (
-                  <>
-                    <Select.Option
-                      key={item?.areaName}
-                      disabled={openAreas.includes(0)}
-                      value={item?.areaCode}
-                    >
-                      {item?.areaName}
-                    </Select.Option>
-                  </>
-                );
+              options={productTypeList.map((p) => {
+                return {
+                  value: p.id,
+                  label: p.name,
+                };
               })}
-            </Select>
-          </Form.Item>
-          <ProForm.Item noStyle labelCol={{ span: 4 }} wrapperCol={{ span: 20 }}>
-            <div className="LoanPurpose">
-              <div className="LoanPurpose-select">
-                {productType !== 'Insurance' && (
-                  <div>
-                    <span>贷款用途：</span>
-                    <Form.Item name={['baseInfo', 'LoanPurpose']}>
-                      <Radio.Group buttonStyle="outline">
-                        <Radio.Button value={1}>经营周转</Radio.Button>
-                        <Radio.Button value={2}>设备采买</Radio.Button>
-                        <Radio.Button value={0}>+自定义用途</Radio.Button>
-                      </Radio.Group>
-                    </Form.Item>
+            />
+            <ProFormSelect
+              rules={[{ required: true }]}
+              label="金融机构"
+              name="bankId"
+              options={bankList.map((p) => {
+                return {
+                  value: p.id,
+                  label: p.name,
+                };
+              })}
+            />
+            <ProFormSelect
+              rules={[{ required: true }]}
+              label="担保方式"
+              name="warrantType"
+              options={Object.entries(guaranteeMethodMap).map((p) => {
+                return {
+                  value: p[0],
+                  label: p[1],
+                };
+              })}
+            />
+            <ProFormSelect
+              rules={[{ required: true }]}
+              label="面向对象"
+              name="object"
+              options={[{ value: 'BUSINESS', label: '企业' }]}
+            />
+            {!productType.includes('保险') && (
+              <Form.Item rules={[{ required: true }]} name="isCirculationLoan" label="支持循环贷">
+                <Radio.Group>
+                  <Radio value={1}>
+                    是
+                    <Tooltip title="支持循环贷代表此产品过了授信截止时间后，可再次审批此产品">
+                      <QuestionCircleOutlined style={{ marginLeft: '10px' }} />
+                    </Tooltip>
+                  </Radio>
+                  <Radio value={0}>否</Radio>
+                </Radio.Group>
+              </Form.Item>
+            )}
+            <Form.Item rules={[{ required: true }]} label="开放地区" name="openArea">
+              <Select
+                mode="multiple"
+                allowClear
+                showArrow
+                onChange={(values) => {
+                  console.log(values);
+                  setOpenAreas(values);
+                }}
+              >
+                <Select.Option
+                  key={0}
+                  disabled={!openAreas.includes('安徽省') && openAreas.length}
+                  value={'安徽省'}
+                >
+                  安徽省
+                </Select.Option>
+                {Object.entries(city)?.map((item: any) => {
+                  return (
+                    <>
+                      <Select.Option
+                        key={item[1]}
+                        disabled={openAreas.includes('安徽省')}
+                        value={item[1]}
+                      >
+                        {item[1]}
+                      </Select.Option>
+                    </>
+                  );
+                })}
+              </Select>
+            </Form.Item>
+            {!productType.includes('保险') && (
+              <Form.Item
+                rules={[{ required: true }]}
+                {...formProps2}
+                name="loanIds"
+                label="贷款用途"
+              >
+                <LoanUse />
+              </Form.Item>
+            )}
+            <Form.Item {...formProps2} rules={[{ required: true }]} name="content" label="产品简介">
+              <FormEdit />
+            </Form.Item>
+            <Form.Item
+              {...formProps2}
+              name="productFeature"
+              label="产品特点"
+              rules={[{ required: true }]}
+            >
+              <FormEdit />
+            </Form.Item>
+            <Form.Item
+              {...formProps2}
+              name="applyCondition"
+              label="申请条件"
+              rules={[{ required: true }]}
+            >
+              <FormEdit />
+            </Form.Item>
+            <ProFormList
+              name="productProcessInfoList"
+              required
+              label="申请流程"
+              copyIconProps={false}
+              deleteIconProps={false}
+              creatorButtonProps={{
+                creatorButtonText: '添加步骤',
+              }}
+              rules={[
+                {
+                  validator(rule, value) {
+                    console.log(rule, value);
+                    if (value?.length) {
+                      return Promise.resolve();
+                    } else {
+                      return Promise.reject('至少有一条数据');
+                    }
+                  },
+                },
+              ]}
+              creatorRecord={() => {
+                return {
+                  name: '',
+                  productId: currentId,
+                };
+              }}
+              min={1}
+            >
+              {(f, index, action) => {
+                console.log(f, index, action);
+                return (
+                  <div className={sc('form-step')}>
+                    <div className={sc('form-step-label')}>第{index + 1}步：</div>
+                    <ProFormText
+                      rules={[{ required: true }]}
+                      className={sc('form-step-wrap')}
+                      name="name"
+                      fieldProps={{ maxLength: 35, size: 'large' }}
+                    />
+                    {!!index && (
+                      <div className={sc('form-step-delete')}>
+                        <img
+                          src={require('@/assets/banking_loan/remove.png')}
+                          className={sc('form-step-delete-img')}
+                          onClick={() => {
+                            action.remove?.(index);
+                          }}
+                        />
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-              <div className="LoanPurpose-input">
-                <ProForm.Item noStyle shouldUpdate>
-                  {(form) => {
-                    return (
-                      form.getFieldValue('baseInfo')?.LoanPurpose === 0 && (
-                        <ProFormText name={['baseInfo', 'otherLoanPurpose']} />
-                      )
-                    );
-                  }}
-                </ProForm.Item>
-              </div>
-            </div>
-          </ProForm.Item>
-          <Form.Item
-            name={['baseInfo', 'productIntroduction']}
-            label="产品简介"
-            rules={[{ required: true }]}
-          >
-            <FormEdit />
-          </Form.Item>
-          <Form.Item
-            name={['baseInfo', 'productFeatures']}
-            label="产品特点"
-            rules={[{ required: true }]}
-          >
-            <FormEdit />
-          </Form.Item>
-          <Form.Item
-            name={['baseInfo', 'applicationConditions']}
-            label="申请条件"
-            rules={[{ required: true }]}
-          >
-            <FormEdit />
-          </Form.Item>
-          <ProFormList
-            name={['baseInfo', 'users']}
-            label="申请流程"
-            copyIconProps={false}
-            deleteIconProps={{ Icon: MinusCircleOutlined }}
-            creatorButtonProps={{
-              creatorButtonText: '添加步骤',
-            }}
-            min={1}
-            initialValue={[
-              {
-                value: '333',
-              },
-            ]}
-          >
-            {(f, index, action) => {
-              console.log(f, index, action);
-              return (
-                <Row>
-                  <Col span={6}>
-                    <div>第{index + 1}步：</div>
-                  </Col>
-                  <Col span={18}>
-                    <ProFormText name="value" fieldProps={{ maxLength: 35 }} />
-                  </Col>
-                </Row>
-              );
-            }}
-          </ProFormList>
-        </StepsForm.StepForm>
-        <StepsForm.StepForm name="step2" title={'额度/利率信息'}>
-          <ProFormDigitRange
-            label="额度"
-            name={['syncTableInfo', 'money']}
-            placeholder={['最低额度', '最高额度']}
-            addonAfter="万元"
-          />
-          <ProFormText label="额度文案" name={['syncTableInfo', 'moneytext']} />
-          <ProFormDateRangePicker label="时间区间" name={['syncTableInfo', 'timeRange']} />
-          <ProFormText label="标题" name={['syncTableInfo', 'title']} />
-        </StepsForm.StepForm>
-      </StepsForm>
-    </PageContainer>
+                );
+              }}
+            </ProFormList>
+          </StepsForm.StepForm>
+          <StepsForm.StepForm name="step2" title={'额度/利率信息'} className={sc('form-input')}>
+            <div className="title">额度/利率信息</div>
+            <ProFormDigitRange
+              rules={[
+                { required: true },
+                {
+                  validator(rule, value) {
+                    console.log(rule, value);
+                    if (value[0] && value[1]) {
+                      return Promise.resolve();
+                    } else {
+                      return Promise.reject('请填写完整');
+                    }
+                  },
+                },
+              ]}
+              {...formProps2}
+              label={productType.includes('保险') ? '保险额度' : '额度'}
+              name="Amount"
+              placeholder={[
+                `最低${productType.includes('保险') ? '保险' : ''}额度`,
+                `最高${productType.includes('保险') ? '保险' : ''}额度`,
+              ]}
+              addonAfter={<div style={{ width: '30px', whiteSpace: 'nowrap' }}>万元</div>}
+            />
+            <Form.Item
+              {...formProps2}
+              label={`${productType.includes('保险') ? '保险' : ''}额度文案`}
+              name="amountDesc"
+              extra={
+                <div className={sc('form-input-tips')}>
+                  将在门户的金融产品{productType.includes('保险') ? '保险' : ''}额度位置展示。
+                  <Tooltip
+                    color="#fff"
+                    title={
+                      <img
+                        src={require('@/assets/banking_loan/remove.png')}
+                        className={sc('form-input-tips-img')}
+                      />
+                    }
+                  >
+                    <span className={sc('form-input-tips-show')}>查看示例</span>
+                  </Tooltip>
+                </div>
+              }
+            >
+              <Input maxLength={35} placeholder="请输入" />
+            </Form.Item>
+            <ProFormDigitRange
+              rules={[
+                { required: true },
+                {
+                  validator(rule, value) {
+                    console.log(rule, value);
+                    if (value[0] && value[1]) {
+                      return Promise.resolve();
+                    } else {
+                      return Promise.reject('请填写完整');
+                    }
+                  },
+                },
+              ]}
+              {...formProps2}
+              label={productType.includes('保险') ? '参考费率' : '年化利率'}
+              name="Term"
+              placeholder={[
+                `最低${productType.includes('保险') ? '费率' : '利率'}`,
+                `最高${productType.includes('保险') ? '费率' : '利率'}`,
+              ]}
+              addonAfter={<div style={{ width: '30px', whiteSpace: 'nowrap' }}>%</div>}
+            />
+            <Form.Item
+              {...formProps2}
+              label={`${productType.includes('保险') ? '参考费率' : '年化利率'}文案`}
+              name="termDesc"
+              extra={
+                <div className={sc('form-input-tips')}>
+                  将在门户的金融产品{productType.includes('保险') ? '费率' : '年化利率'}位置展示。
+                  <Tooltip
+                    color="#fff"
+                    title={
+                      <img
+                        src={require('@/assets/banking_loan/remove.png')}
+                        className={sc('form-input-tips-img')}
+                      />
+                    }
+                  >
+                    <span className={sc('form-input-tips-show')}>查看示例</span>
+                  </Tooltip>
+                </div>
+              }
+            >
+              <Input maxLength={35} placeholder="请输入" />
+            </Form.Item>
+            <ProFormDigitRange
+              rules={[
+                { required: true },
+                {
+                  validator(rule, value) {
+                    console.log(rule, value);
+                    if (value[0] && value[1]) {
+                      return Promise.resolve();
+                    } else {
+                      return Promise.reject('请填写完整');
+                    }
+                  },
+                },
+              ]}
+              {...formProps2}
+              label="期限"
+              name="Rate"
+              placeholder={['最低期限', '最高期限']}
+              addonAfter={<div style={{ width: '30px', whiteSpace: 'nowrap' }}>个月</div>}
+            />
+            <Form.Item
+              {...formProps2}
+              label="期限文案"
+              name="rateDesc"
+              extra={
+                <div className={sc('form-input-tips')}>
+                  将在门户的金融产品额度位置展示。
+                  <Tooltip
+                    color="#fff"
+                    title={
+                      <img
+                        src={require('@/assets/banking_loan/remove.png')}
+                        className={sc('form-input-tips-img')}
+                      />
+                    }
+                  >
+                    <span className={sc('form-input-tips-show')}>查看示例</span>
+                  </Tooltip>
+                </div>
+              }
+            >
+              <Input maxLength={35} placeholder="请输入" />
+            </Form.Item>
+          </StepsForm.StepForm>
+        </StepsForm>
+      </PageContainer>
+      <Prompt
+        when={formIsChange}
+        // when={isClosejumpTooltip && topApps.length > 0}
+        message={(location: any) => {
+          Modal.confirm({
+            title: '要在离开之前对填写的信息进行保存吗?',
+            icon: <ExclamationCircleOutlined />,
+            cancelText: '放弃修改并离开',
+            okText: '保存',
+            onCancel() {
+              console.log(location);
+              setFormIsChange(false);
+              setTimeout(() => {
+                history.push(location.pathname);
+              }, 1000);
+            },
+            onOk() {
+              const values = formMapRef.current[current]?.current?.getFieldsFormatValue?.();
+              saveProduct(values, 0, () => {
+                setTimeout(() => {
+                  history.push(location.pathname);
+                }, 1000);
+              });
+            },
+          });
+          return false;
+        }}
+      />
+
+      {/* </Spin> */}
+    </>
   );
 };
 export default ProductInfoAddOrEdit;

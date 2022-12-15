@@ -10,18 +10,43 @@
     text-align: center;
     background: #fff;
   }
+  .file-img{
+    margin-bottom: 16px;
+    display: flex;
+    &-item{
+      margin-right: 16px;
+      flex: 0 0 80px;
+      .ant-image{
+        width: 80px !important;
+      }
+
+      &-img{
+        width: 80px;
+        height: 80px;
+      }
+      &-name{
+        color: #556377;
+        line-height: 22px;
+        font-size: 14px;
+        margin-top: 6px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
   .file-show {
-    margin-top: 12px;
+    margin-bottom: 8px;
     display: flex;
     flex-wrap: nowrap;
     font-size: 14px;
-    line-height: 22px;
     span {
       margin-right: 10px;
       white-space: nowrap;
+      line-height: 22px;
     }
     button {
-      flex: 0 30px;
+      line-height: 20px;
     }
   }
 }

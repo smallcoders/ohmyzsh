@@ -15,7 +15,7 @@ import {
   Switch,
   Tooltip,
 } from 'antd';
-import { PlusOutlined, CaretUpOutlined, DownOutlined } from '@ant-design/icons';
+import { PlusOutlined, ExclamationCircleOutlined, DownOutlined } from '@ant-design/icons';
 import type { TableRowSelection } from 'antd/es/table/interface';
 import { PageContainer } from '@ant-design/pro-layout';
 import { ProFormDigitRange } from '@ant-design/pro-components';
@@ -39,7 +39,14 @@ import {
   takeNotes,
   getTakeMoneyDetail,
 } from '@/services/banking-loan';
-import { statusMap, productTypeMap, guaranteeMethodMap } from './constants';
+import {
+  getProductList,
+  getProductType,
+  addProduct,
+  updateStateByIds,
+  delProduct,
+} from '@/services/banking-product';
+import { statusMap, ObjectMap, guaranteeMethodMap, sortMap } from './constants';
 import type { TablePaginationConfig } from 'antd/es/table';
 import type { FilterValue, SorterResult } from 'antd/es/table/interface';
 const sc = scopedClasses('product-management');
@@ -84,8 +91,8 @@ export default () => {
     if (editingItem.id) setEditingItem({});
   };
   const [totalAmount, setTotalAmount] = useState<BankingLoan.totalAmountContent>({});
-  const [tableParams, setTableParams] = useState<{ sortField?: string; sortOrder?: string }>({});
-  // const [bankList, setBankList] = useState<{ bank: string }[]>([]);
+  const [tableParams, setTableParams] = useState<{ field?: string; order?: string }>({});
+  const [productType, setProductType] = useState<any[]>([]);
   // const [isMore, setIsMore] = useState<boolean>(false);
 
   const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
@@ -97,12 +104,12 @@ export default () => {
 
   // 参数存储
   const setParams = () => {
-    localStorage.setItem('load_record_params', JSON.stringify(searchContent));
+    localStorage.setItem('product_record_params', JSON.stringify(searchContent));
   };
   // 返回参数回填
   const backParamSet = () => {
     if (history.action === 'POP') {
-      const SearChContentJson: any = localStorage.getItem('load_record_params');
+      const SearChContentJson: any = localStorage.getItem('product_record_params');
       if (!SearChContentJson) return;
       const SearChContentJsonParse: any = JSON.parse(SearChContentJson);
       const {
@@ -122,17 +129,27 @@ export default () => {
       setSearChContent(SearChContentJsonParse);
     }
   };
+  const prepare = async () => {
+    try {
+      const data = await Promise.all([getProductType()]);
+      setProductType(data?.[0]?.result || []);
+    } catch (error) {
+      message.error('数据初始化错误');
+    }
+  };
   useEffect(() => {
+    prepare();
     setTimeout(() => {
       backParamSet();
     }, 1000);
   }, []);
   const getPage = async (pageIndex = pageInfo.pageIndex, pageSize = pageInfo.pageSize) => {
     try {
-      const { result, totalCount, pageTotal, code } = await getLoanRecordList({
+      const { result, totalCount, pageTotal, code } = await getProductList({
         pageIndex,
         pageSize,
         ...searchContent,
+        sort: tableParams?.order ? sortMap[tableParams?.order] : null,
       });
       if (code === 0) {
         setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
@@ -145,134 +162,58 @@ export default () => {
     }
   };
   /**
-   * @zh-CN 需求类型编辑
+   * @zh-CN 热门产品修改
    */
-  const addOrUpdata = () => {
-    form
-      .validateFields()
-      .then(async (value) => {
-        try {
-          const addorUpdateRes = await takeNotes({ ...value, id: editingItem.id });
-          if (addorUpdateRes.code === 0) {
-            setModalVisible(false);
-            message.success(`备注保存成功！`);
-            getPage();
-            clearForm();
-          } else {
-            message.error(`备注保存失败，原因:{${addorUpdateRes.message}}`);
-          }
-        } catch (error) {
-          console.log(error);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-  const getModal = () => {
-    return (
-      <Modal
-        title="备注"
-        width="720px"
-        maskClosable={false}
-        visible={createModalVisible}
-        onCancel={() => {
-          clearForm();
-          setModalVisible(false);
-        }}
-        onOk={async () => {
-          await addOrUpdata();
-        }}
-      >
-        <Form form={form}>
-          <Row>
-            <Col span="12">
-              <Form.Item
-                name="dealName"
-                labelCol={{ span: 7 }}
-                wrapperCol={{ span: 12 }}
-                label="业务申请编号"
-              >
-                <div>{editingItem.id}</div>
-                {/* <Input disabled /> */}
-              </Form.Item>
-            </Col>
-            <Col span="12">
-              <Form.Item
-                name="dealName1"
-                labelCol={{ span: 7 }}
-                wrapperCol={{ span: 18 }}
-                label="企业名称"
-              >
-                {/* <Input disabled /> */}
-                <div>{editingItem.orgName}</div>
-              </Form.Item>
-            </Col>
-          </Row>
-          <Form.Item
-            labelCol={{ span: 3 }}
-            wrapperCol={{ span: 18 }}
-            name="text"
-            label="备注"
-            rules={[{ required: true }]}
-          >
-            <FormEdit />
-          </Form.Item>
-        </Form>
-      </Modal>
-    );
-  };
-
-  const getTotal = async () => {
+  const addOrUpdataIsHot = async (record: any) => {
     try {
-      const { result, code } = await getTotalAmount({
-        ...searchContent,
-      });
-      if (code === 0) {
-        setTotalAmount(result);
+      const addorUpdateRes = await addProduct({ isHot: record.isHot ? 0 : 1, id: record.id });
+      if (addorUpdateRes.code === 0) {
+        setModalVisible(false);
+        message.success(`${record.isHot ? '关闭' : '打开'}热门成功！`);
+        getPage();
       } else {
-        message.error(`请求统计数据失败`);
+        message.error(
+          `${record.isHot ? '关闭' : '打开'}热门失败，原因:{${addorUpdateRes.message}}`,
+        );
       }
     } catch (error) {
       console.log(error);
     }
   };
-  const getStep = async (p: BankingLoan.Content, type: number): Promise<any> => {
-    const { id, creditStatus } = p;
-    if (creditStatus === '已授信') {
-      // 供应链e贷产品没有还款信息
-      if (!type) {
-        return 3;
+  /**
+   * @zh-CN 产品修改-上下架
+   */
+  const addOrUpdataState = async (record: any) => {
+    try {
+      const addorUpdateRes = await addProduct({ state: record.state === 1 ? 2 : 1, id: record.id });
+      if (addorUpdateRes.code === 0) {
+        setModalVisible(false);
+        message.success(`${record.state === 1 ? '上架' : '下架'}成功！`);
+        getPage();
+      } else {
+        message.error(
+          `${record.state === 1 ? '上架' : '下架'}失败，原因:{${addorUpdateRes.message}}`,
+        );
       }
-      try {
-        const { result, code } = await getTakeMoneyDetail({
-          pageIndex: 1,
-          pageSize: 10,
-          creditId: id,
-        });
-        if (code === 0) {
-          if (
-            result?.takeMoneyInfo?.some(
-              (item: BankingLoan.TakeMoneyInfoContent) => item.status == '放款成功',
-            )
-          ) {
-            return 4;
-          } else {
-            return 3;
-          }
-        } else {
-          message.error(`放款判断失败`);
-        }
-      } catch (error) {
-        console.log(error);
-        return 0;
-      }
-    } else {
-      return 2;
+    } catch (error) {
+      console.log(error);
     }
   };
-  const remove = (id: any) => {
-    console.log(id);
+  /**
+   * @zh-CN 产品删除
+   */
+  const remove = async (id: any) => {
+    try {
+      const addorUpdateRes = await delProduct({ id });
+      if (addorUpdateRes.code === 0) {
+        message.success(`删除成功！`);
+        getPage();
+      } else {
+        message.error(`删除失败，原因:{${addorUpdateRes.message}}`);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
   const columns = [
     {
@@ -284,99 +225,94 @@ export default () => {
     },
     {
       title: '产品名称',
-      dataIndex: 'orgName',
+      dataIndex: 'name',
       isEllipsis: true,
-      width: 150,
+      width: 100,
     },
     {
       title: '被申请次数',
-      dataIndex: 'amount',
+      dataIndex: 'count',
       sorter: true,
       width: 100,
-      render: (_: number) => regFenToYuan(_),
     },
     {
       title: '面向对象',
-      dataIndex: 'name',
-      width: 100,
+      dataIndex: 'object',
+      render: (_: string) => {
+        return <div>{ObjectMap[_] || '--'}</div>;
+      },
+      width: 80,
     },
     {
       title: '产品类型',
-      dataIndex: 'phone',
+      dataIndex: 'typeName',
       width: 100,
     },
     {
       title: '担保方式',
-      dataIndex: 'productName',
-      width: 150,
-    },
-    {
-      title: '发布状态',
-      dataIndex: 'creditStatus',
+      dataIndex: 'warrantType',
       width: 100,
-      render: (_: string, record: BankingLoan.Content) => {
+      render: (_: string) => {
         return (
-          <div className={`state${_}`}>
-            {_ || '--'}
-            {_ === '授信失败' && (
-              <Tooltip
-                placement="topLeft"
-                title={
-                  <div>
-                    <p>失败原因</p>
-                    <div>{record.refuseReason}</div>
-                  </div>
-                }
-              >
-                <div className={sc('show-reason')}>查看原因</div>
-              </Tooltip>
-            )}
+          <div>
+            {_?.split(',')
+              .map((i) => guaranteeMethodMap[i])
+              .join('、') || '--'}
           </div>
         );
       },
     },
     {
+      title: '发布状态',
+      dataIndex: 'state',
+      width: 100,
+      render: (_: string) => {
+        return <div>{statusMap[_] || '--'}</div>;
+      },
+    },
+    {
       title: '显示热门',
-      dataIndex: 'creditAmount',
+      dataIndex: 'isHot',
       render: (_: number, record: any) => {
-        return (
+        return record.state === 2 ? (
           <Popconfirm
-            title="确定上架么？"
+            title={`确定${!_ ? '打开' : '关闭'}热门么？`}
             okText="确定"
             cancelText="取消"
-            onConfirm={() => remove(record.id)}
+            onConfirm={() => addOrUpdataIsHot(record)}
           >
-            <Switch disabled={false} checked={false} />
+            <Switch checked={_} />
           </Popconfirm>
+        ) : (
+          <Switch disabled={false} checked={false} />
         );
       },
-      width: 100,
+      width: 80,
     },
     {
       title: '操作',
       width: 140,
       fixed: 'right',
       dataIndex: 'option',
-      render: (_: any, record: BankingLoan.Content) => {
-        const isApiType = record.productId === 1662285468000019;
-        const type = isApiType ? 0 : 1;
+      render: (_: any, record: any) => {
         return (
           <Space>
-            {!isApiType ? (
+            {record.state === 2 && (
               <Popconfirm
                 title="确定下架么？"
                 okText="确定"
                 cancelText="取消"
-                onConfirm={() => remove(record.id)}
+                onConfirm={() => addOrUpdataState(record)}
               >
                 <a href="#">下架</a>
               </Popconfirm>
-            ) : (
+            )}
+            {record.state === 1 && (
               <Popconfirm
                 title="确定上架么？"
                 okText="确定"
                 cancelText="取消"
-                onConfirm={() => remove(record.id)}
+                onConfirm={() => addOrUpdataState(record)}
               >
                 <a href="#">上架</a>
               </Popconfirm>
@@ -385,11 +321,8 @@ export default () => {
               size="small"
               type="link"
               onClick={async () => {
-                const step = await getStep(record, type);
                 setParams();
-                history.push(
-                  `${routeName.LOAN_RECORD_DETAIL}?id=${record.id}&isDetail=1&type=${type}&step=${step}`,
-                );
+                history.push(`${routeName.PRODUCT_MANAGEMENT_UPDATE}?id=${record.id}`);
               }}
             >
               编辑
@@ -398,16 +331,13 @@ export default () => {
               size="small"
               type="link"
               onClick={async () => {
-                const step = await getStep(record, type);
                 setParams();
-                history.push(
-                  `${routeName.LOAN_RECORD_DETAIL}?id=${record.id}&isDetail=1&type=${type}&step=${step}`,
-                );
+                history.push(`${routeName.PRODUCT_MANAGEMENT_DETAIL}?id=${record.id}`);
               }}
             >
               详情
             </Button>
-            {!isApiType && (
+            {record.state !== 2 && (
               <Popconfirm
                 title="确定删除么？"
                 okText="确定"
@@ -425,7 +355,6 @@ export default () => {
 
   useEffect(() => {
     getPage();
-    getTotal();
   }, [searchContent, tableParams]);
 
   const useSearchNode = (): React.ReactNode => {
@@ -434,7 +363,7 @@ export default () => {
         <Form {...formLayout} form={searchForm}>
           <Row>
             <Col span={8}>
-              <Form.Item name="applyNo" label="产品名称">
+              <Form.Item name="name" label="产品名称">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
@@ -452,12 +381,12 @@ export default () => {
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="bank" label="产品类型">
+              <Form.Item name="typeId" label="产品类型">
                 <Select placeholder="请选择" allowClear>
-                  {Object.entries(productTypeMap).map((p) => {
+                  {productType.map((p: any) => {
                     return (
-                      <Select.Option key={p[0]} value={p[0]}>
-                        {p[1]}
+                      <Select.Option key={p.id} value={p.id}>
+                        {p.name}
                       </Select.Option>
                     );
                   })}
@@ -465,7 +394,7 @@ export default () => {
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="creditStatus" label="担保方式">
+              <Form.Item name="warrantType" label="担保方式">
                 <Select placeholder="请选择" allowClear>
                   {Object.entries(guaranteeMethodMap).map((p) => {
                     return (
@@ -513,40 +442,33 @@ export default () => {
       </div>
     );
   };
-
-  const exportList = async (selected: boolean) => {
-    if (selected && !selectedRowKeys.length) {
+  /**
+   * @zh-CN 产品修改-批量下架
+   */
+  const _updateStateByIds = async () => {
+    if (!selectedRowKeys.length) {
       message.warning('请选择数据');
       return;
     }
-    try {
-      let data = {};
-      if (selected) {
-        data = { ids: [...selectedRowKeys] };
-      } else {
-        data = { ...searchContent };
-      }
-      const res = await loanRecordExport(data);
-      const content = res?.data;
-      const blob = new Blob([content], {
-        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8',
-      });
-      const fileName = '贷款记录.xlsx';
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.style.display = 'none';
-      link.href = url;
-      link.setAttribute('download', fileName);
-      document.body.appendChild(link);
-      link.click();
-      setTimeout(() => {
-        message.success(`导出成功`);
-      }, 1000);
-    } catch (error) {
-      console.log(error);
-      message.error(`导出失败`);
-    }
+    Modal.confirm({
+      title: '确定要下架选中的产品吗?',
+      icon: <ExclamationCircleOutlined />,
+      cancelText: '取消',
+      okText: '确定',
+      onOk() {
+        updateStateByIds({ ids: selectedRowKeys.join(','), state: 'DOWN' }).then((res) => {
+          if (res.code === 0) {
+            getPage();
+            setSelectedRowKeys([]);
+            message.success(`批量下架成功！`);
+          } else {
+            message.error(`批量下架失败！`);
+          }
+        });
+      },
+    });
   };
+
   const handleTableChange = (
     pagination: TablePaginationConfig,
     filters: Record<string, FilterValue>,
@@ -576,18 +498,21 @@ export default () => {
               type="primary"
               key="addNew"
               onClick={() => {
-                setModalVisible(true);
+                history.push(routeName.PRODUCT_MANAGEMENT_CREATE);
+              }}
+              style={{
+                marginRight: '16px',
               }}
             >
               <PlusOutlined /> 新增产品
             </Button>
-            <Button>下架</Button>
+            <Button onClick={_updateStateByIds}>下架</Button>
           </div>
         </div>
         <div className={sc('container-table-body')}>
           <SelfTable
             bordered
-            scroll={{ x: 2280 }}
+            // scroll={{ x: 1280 }}
             columns={columns}
             dataSource={dataSource}
             rowKey={'id'}
@@ -596,8 +521,8 @@ export default () => {
               selectedRowKeys,
               getCheckboxProps: (record: any) => {
                 return {
-                  disabled: record.name === 'Disabled User', // Column configuration not to be checked
-                  name: record.name,
+                  disabled: record.state !== 2, // Column configuration not to be checked
+                  name: record.name + '111',
                 };
               },
               onChange: onSelectChange,
@@ -618,7 +543,6 @@ export default () => {
           />
         </div>
       </div>
-      {getModal()}
     </PageContainer>
   );
 };

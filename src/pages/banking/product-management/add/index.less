@@ -1,5 +1,46 @@
 @prefix: product-management-create;
+.@{prefix}-form-input-tips-img{
+  margin: -6px -8px;
+  height: 100px;
+  width: 100px;
+}
 .@{prefix}-page{
+  .ant-pro-footer-bar-right{
+    height: 88px;
+    flex: 0 100%;
+    text-align: center;
+    line-height: 88px;
+  }
+  .@{prefix}-form-step{
+    display: flex;
+    position: relative;
+    &-label{
+      color: #556377;
+      line-height: 40px;
+      font-size: 16px;
+    }
+    &-delete {
+      position: absolute;
+      right: -48px;
+      width: 24px;
+      line-height: 40px;
+      &-img{
+        height: 24px;
+      }
+    }
+  }
+  .@{prefix}-form-input{
+    &-tips{
+      margin-top: 8px;
+      color: #8290a6;
+      font-size: 14px;
+      line-height: 22px;
+      &-show{
+        color: #0068ff;
+      }
+      
+    }
+  }
   .ant-page-header {
     padding: 24px 32px;
   }
@@ -63,8 +104,3 @@
     }
   }
   
-  
-
-.@{prefix}-steps-form{
-
-}

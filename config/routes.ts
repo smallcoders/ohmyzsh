@@ -150,6 +150,7 @@
   PRODUCT_MANAGEMENT_INDEX: '/banking/product_management/index',
   PRODUCT_MANAGEMENT_CREATE: '/banking/product_management/create',
   PRODUCT_MANAGEMENT_UPDATE: '/banking/product_management/update',
+  PRODUCT_MANAGEMENT_DETAIL: '/banking/product_management/detail',
 
   // 推荐管理
   RECOMMENDED_HOT_WORDS: '/recommended/hot_words',
@@ -1959,8 +1960,8 @@ export default [
       {
         path: routeName.LOAN_RECORD,
         name: '贷款业务',
-        code: 'M_FM_DKJL',
-        access: 'M_FM_DKJL',
+        code: 'M_FM_DKYW',
+        access: 'M_FM_DKYW',
         hideChildrenInMenu: true,
         routes: [
           {
@@ -1993,8 +1994,8 @@ export default [
       {
         path: routeName.LEASE_RECORD,
         name: '租赁业务',
-        code: 'M_FM_DKJL',
-        access: 'M_FM_DKJL',
+        code: 'M_FM_ZLYW',
+        access: 'M_FM_ZLYW',
         hideChildrenInMenu: true,
         routes: [
           {
@@ -2027,8 +2028,8 @@ export default [
       {
         path: routeName.INSURANCE_RECORD,
         name: '保险业务',
-        code: 'M_FM_DKJL',
-        access: 'M_FM_DKJL',
+        code: 'M_FM_BXYW',
+        access: 'M_FM_BXYW',
         hideChildrenInMenu: true,
         routes: [
           {
@@ -2079,6 +2080,11 @@ export default [
             path: routeName.PRODUCT_MANAGEMENT_UPDATE,
             name: '编辑产品',
             component: './banking/product-management/add/index',
+          },
+          {
+            path: routeName.PRODUCT_MANAGEMENT_DETAIL,
+            name: '详情',
+            component: './banking/product-management/detail/index',
           },
         ],
       },

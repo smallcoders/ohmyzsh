@@ -11,6 +11,7 @@ import {
   message,
   Modal,
   Spin,
+  Image,
 } from 'antd';
 import { UploadOutlined, CheckCircleTwoTone, ExclamationCircleOutlined } from '@ant-design/icons';
 import { FooterToolbar } from '@ant-design/pro-components';
@@ -24,6 +25,7 @@ import patchDownloadFile from '@/utils/patch-download-file';
 import type BankingLoan from '@/types/banking-loan.d';
 import moment from 'moment';
 import { isNull } from 'lodash';
+import { file } from 'jszip';
 export type Props = {
   isDetail?: boolean; //详情展示
   type?: number; // 供应链e贷产品1-否 0-是(详情跳转去录入，无api不展示录入凭证)
@@ -87,7 +89,7 @@ export default forwardRef((props: Props, ref) => {
                 content: `保存成功`,
                 duration: 2,
                 onClose: () => {
-                  history.push(`${routeName[name + '_RECORD}']}`);
+                  history.push(`${routeName[name + '_RECORD']}`);
                 },
               });
             }
@@ -139,7 +141,7 @@ export default forwardRef((props: Props, ref) => {
         onCancel={() => setAfterSaveVisible(false)}
         // icon={<CheckCircleTwoTone />}
         footer={[
-          <Button key="back" onClick={() => history.push(`${routeName[name + 'LOAN_RECORD']}`)}>
+          <Button key="back" onClick={() => history.push(`${routeName[name + '_RECORD']}`)}>
             返回列表
           </Button>,
           <Button key="submit" type="primary" onClick={() => toTab('3')}>
@@ -232,27 +234,51 @@ export default forwardRef((props: Props, ref) => {
     getDetail();
   }, []);
   const showfile = () => {
-    return detail?.workProves?.map((file: BankingLoan.workProves) => {
-      console.log('file', file);
-      return (
-        <div key={file.uid} className="file-show">
-          <span>
-            {file.name}.{file.format}
-          </span>
-          {previewType.includes(file?.format) && (
-            <Button
-              type="link"
-              style={{ padding: 0, height: 'auto' }}
-              onClick={() => {
-                window.open(file?.path);
-              }}
-            >
-              预览
-            </Button>
-          )}
-        </div>
-      );
-    });
+    const imgList = detail?.workProves?.filter(
+      (item) => previewType.includes(item.format) && item.format !== 'pdf',
+    );
+    const fileList = detail?.workProves?.filter(
+      (item) => !(previewType.includes(item.format) && item.format !== 'pdf'),
+    );
+    return (
+      <>
+        {!!imgList?.length && (
+          <div className="file-img">
+            {imgList?.map((file: BankingLoan.workProves) => {
+              return (
+                <div className="file-img-item">
+                  <Image width={30} src={file?.path} className="file-img-item-img" />
+                  <div className="file-img-item-name">
+                    {file.name}.{file.format}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+        {fileList?.map((file: BankingLoan.workProves) => {
+          return (
+            <div key={file.uid} className="file-show">
+              {file?.format === 'pdf' ? (
+                <Button
+                  type="link"
+                  style={{ padding: 0, height: 'auto' }}
+                  onClick={() => {
+                    window.open(file?.path);
+                  }}
+                >
+                  {file.name}.{file.format}
+                </Button>
+              ) : (
+                <span>
+                  {file.name}.{file.format}
+                </span>
+              )}
+            </div>
+          );
+        })}
+      </>
+    );
   };
   const renderFooter = () => {
     if (!isDetail) {
@@ -404,7 +430,7 @@ export default forwardRef((props: Props, ref) => {
                 <>
                   <Button
                     type="link"
-                    style={{ padding: 0, height: '24px' }}
+                    style={{ padding: 0, height: '24px', marginBottom: '16px' }}
                     onClick={() => {
                       patchDownloadFile(
                         detail.workProves,

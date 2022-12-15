@@ -1,4 +1,4 @@
-import './authorization_info.less';
+import '../authorization_info.less';
 import {
   Button,
   Space,
@@ -76,7 +76,7 @@ export default forwardRef((props: Props, ref) => {
               },
             });
           } else {
-            if (busiStatus === 2) {
+            if (busiStatus === 9) {
               setAfterSaveVisible(true);
             } else {
               message.success({
@@ -175,7 +175,7 @@ export default forwardRef((props: Props, ref) => {
                   format: item.format,
                 };
               }),
-              busiStatus: rest.busiStatus,
+              busiStatus: rest.busiStatus !== 8 && rest.busiStatus !== 7 ? 9 : rest.busiStatus,
               rate,
               creditTime,
               creditAmount: creditAmount === null ? null : Number(regFenToYuan(creditAmount)),
@@ -228,27 +228,51 @@ export default forwardRef((props: Props, ref) => {
     getDetail();
   }, []);
   const showfile = () => {
-    return detail?.workProves?.map((file: BankingLoan.workProves) => {
-      console.log('file', file);
-      return (
-        <div key={file.uid} className="file-show">
-          <span>
-            {file.name}.{file.format}
-          </span>
-          {previewType.includes(file?.format) && (
-            <Button
-              type="link"
-              style={{ padding: 0, height: 'auto' }}
-              onClick={() => {
-                window.open(file?.path);
-              }}
-            >
-              预览
-            </Button>
-          )}
-        </div>
-      );
-    });
+    const imgList = detail?.workProves?.filter(
+      (item) => previewType.includes(item.format) && item.format !== 'pdf',
+    );
+    const fileList = detail?.workProves?.filter(
+      (item) => !(previewType.includes(item.format) && item.format !== 'pdf'),
+    );
+    return (
+      <>
+        {!!imgList?.length && (
+          <div className="file-img">
+            {imgList?.map((file: BankingLoan.workProves) => {
+              return (
+                <div className="file-img-item">
+                  <Image width={30} src={file?.path} className="file-img-item-img" />
+                  <div className="file-img-item-name">
+                    {file.name}.{file.format}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+        {fileList?.map((file: BankingLoan.workProves) => {
+          return (
+            <div key={file.uid} className="file-show">
+              {file?.format === 'pdf' ? (
+                <Button
+                  type="link"
+                  style={{ padding: 0, height: 'auto' }}
+                  onClick={() => {
+                    window.open(file?.path);
+                  }}
+                >
+                  {file.name}.{file.format}
+                </Button>
+              ) : (
+                <span>
+                  {file.name}.{file.format}
+                </span>
+              )}
+            </div>
+          );
+        })}
+      </>
+    );
   };
   const renderFooter = () => {
     if (!isDetail) {
@@ -288,17 +312,18 @@ export default forwardRef((props: Props, ref) => {
           wrapperCol={{ span: 8 }}
           form={form}
           onValuesChange={() => {
+            console.log('onValuesChange');
             setFormIsChange(true);
           }}
         >
           <Form.Item
             name="busiStatus"
             label="审核状态"
-            initialValue={2}
+            initialValue={9}
             rules={[{ required: !isDetail, message: '请选择审核状态' }]}
           >
             {isDetail ? (
-              <span>{detail?.busiStatus === 9 ? '审核成功' : '审核失败'}</span>
+              <span>{detail?.busiStatus === 8 ? '审核失败' : '审核成功'}</span>
             ) : (
               <Radio.Group>
                 <Radio value={9}>审核成功</Radio>
@@ -329,7 +354,7 @@ export default forwardRef((props: Props, ref) => {
               <>
                 <Button
                   type="link"
-                  style={{ padding: 0, height: '24px' }}
+                  style={{ padding: 0, height: '24px', marginBottom: '16px' }}
                   onClick={() => {
                     patchDownloadFile(
                       detail?.workProves,

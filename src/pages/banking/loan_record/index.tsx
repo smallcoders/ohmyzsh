@@ -225,13 +225,13 @@ export default ({ loanType, name }: { loanType: number; name: string }) => {
               </Form.Item>
             </Col>
           </Row>
+          <div className="tips">备注：最长可输入1500字，必填</div>
           <Form.Item
             labelCol={{ span: 0 }}
             wrapperCol={{ span: 24 }}
             name="text"
             rules={[{ required: true }]}
           >
-            <div className="tips">备注：最长可输入1500字，必填</div>
             <FormEdit />
           </Form.Item>
         </Form>
@@ -670,7 +670,14 @@ export default ({ loanType, name }: { loanType: number; name: string }) => {
     setSelectedRowKeys(newSelectedRowKeys);
   };
   return (
-    <PageContainer className={sc('container')} ghost>
+    <PageContainer
+      header={{
+        title: loanType === 1 ? '贷款业务' : '租赁业务',
+        breadcrumb: {},
+      }}
+      className={sc('container')}
+      ghost
+    >
       {useSearchNode()}
       <div className={sc('container-table')}>
         <div className={sc('container-table-header')}>

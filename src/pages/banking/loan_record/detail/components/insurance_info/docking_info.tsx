@@ -1,4 +1,4 @@
-import './authorization_info.less';
+import '../authorization_info.less';
 import {
   Button,
   Space,
@@ -37,7 +37,7 @@ const { confirm } = Modal;
 export default forwardRef((props: Props, ref) => {
   const [detailLoading, setDetailLoading] = useState<boolean>(false);
   const [hasSuccessLoad, setHasSuccessLoad] = useState<boolean>(false);
-  const { isDetail, type, step, id, toTab, left } = props;
+  const { isDetail, type, step, id, toTab, left, loanType } = props;
   const previewType = ['png', 'jpg', 'jpeg', 'jpeg2000', 'pdf'];
   const [form] = Form.useForm();
   const busiStatus = Form.useWatch('busiStatus', form);
@@ -45,7 +45,9 @@ export default forwardRef((props: Props, ref) => {
   const [formIsChange, setFormIsChange] = useState<boolean>(false);
   const [afterSaveVisible, setAfterSaveVisible] = useState<boolean>(false);
   const toCreditApply = () => {
-    history.push(`${routeName.LOAN_RECORD_ENTER}?id=${id}&type=${type}&step=${step}`);
+    history.push(
+      `${routeName.INSURANCE_RECORD_ENTER}?id=${id}&type=${type}&step=${step}&loanType=${loanType}`,
+    );
   };
   const onOk = async (cb: any) => {
     form
@@ -75,17 +77,13 @@ export default forwardRef((props: Props, ref) => {
               },
             });
           } else {
-            if (busiStatus === 2) {
-              setAfterSaveVisible(true);
-            } else {
-              message.success({
-                content: `保存成功`,
-                duration: 2,
-                onClose: () => {
-                  history.push(`${routeName.LOAN_RECORD}`);
-                },
-              });
-            }
+            message.success({
+              content: `保存成功`,
+              duration: 2,
+              onClose: () => {
+                history.push(`${routeName.INSURANCE_RECORD}`);
+              },
+            });
           }
         } else {
           message.error(res?.message || '授信信息保存失败');
@@ -134,7 +132,7 @@ export default forwardRef((props: Props, ref) => {
         onCancel={() => setAfterSaveVisible(false)}
         // icon={<CheckCircleTwoTone />}
         footer={[
-          <Button key="back" onClick={() => history.push(`${routeName.LOAN_RECORD}`)}>
+          <Button key="back" onClick={() => history.push(`${routeName.INSURANCE_RECORD}`)}>
             返回列表
           </Button>,
           <Button key="submit" type="primary" onClick={() => toTab('3')}>
@@ -174,7 +172,7 @@ export default forwardRef((props: Props, ref) => {
                   format: item.format,
                 };
               }),
-              busiStatus: rest.busiStatus,
+              busiStatus: rest.busiStatus !== 10 && rest.busiStatus !== 9 ? 11 : rest.busiStatus,
               rate,
               creditTime,
               creditAmount: creditAmount === null ? null : Number(regFenToYuan(creditAmount)),
@@ -227,27 +225,51 @@ export default forwardRef((props: Props, ref) => {
     getDetail();
   }, []);
   const showfile = () => {
-    return detail?.workProves?.map((file: BankingLoan.workProves) => {
-      console.log('file', file);
-      return (
-        <div key={file.uid} className="file-show">
-          <span>
-            {file.name}.{file.format}
-          </span>
-          {previewType.includes(file?.format) && (
-            <Button
-              type="link"
-              style={{ padding: 0, height: 'auto' }}
-              onClick={() => {
-                window.open(file?.path);
-              }}
-            >
-              预览
-            </Button>
-          )}
-        </div>
-      );
-    });
+    const imgList = detail?.workProves?.filter(
+      (item) => previewType.includes(item.format) && item.format !== 'pdf',
+    );
+    const fileList = detail?.workProves?.filter(
+      (item) => !(previewType.includes(item.format) && item.format !== 'pdf'),
+    );
+    return (
+      <>
+        {!!imgList?.length && (
+          <div className="file-img">
+            {imgList?.map((file: BankingLoan.workProves) => {
+              return (
+                <div className="file-img-item">
+                  <Image width={30} src={file?.path} className="file-img-item-img" />
+                  <div className="file-img-item-name">
+                    {file.name}.{file.format}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+        {fileList?.map((file: BankingLoan.workProves) => {
+          return (
+            <div key={file.uid} className="file-show">
+              {file?.format === 'pdf' ? (
+                <Button
+                  type="link"
+                  style={{ padding: 0, height: 'auto' }}
+                  onClick={() => {
+                    window.open(file?.path);
+                  }}
+                >
+                  {file.name}.{file.format}
+                </Button>
+              ) : (
+                <span>
+                  {file.name}.{file.format}
+                </span>
+              )}
+            </div>
+          );
+        })}
+      </>
+    );
   };
   const renderFooter = () => {
     if (!isDetail) {
@@ -268,7 +290,7 @@ export default forwardRef((props: Props, ref) => {
       </Button>
     );
   };
-  return isDetail && !detail ? (
+  return isDetail && (!detail || detail?.busiStatus === 9) ? (
     <Spin spinning={detailLoading}>
       <div className="empty">
         <Empty description="暂无数据" />
@@ -295,21 +317,21 @@ export default forwardRef((props: Props, ref) => {
           <Form.Item
             name="busiStatus"
             label="对接状态"
-            initialValue={2}
+            initialValue={11}
             rules={[{ required: !isDetail, message: '请选择对接状态' }]}
           >
             {isDetail ? (
-              <span>{detail?.busiStatus === 2 ? '对接成功' : '对接失败'}</span>
+              <span>{detail?.busiStatus === 10 ? '对接失败' : '对接成功'}</span>
             ) : (
               <Radio.Group>
-                <Radio value={2}>对接成功</Radio>
-                <Radio value={3} disabled={hasSuccessLoad}>
+                <Radio value={11}>对接成功</Radio>
+                <Radio value={10} disabled={hasSuccessLoad}>
                   对接失败
                 </Radio>
               </Radio.Group>
             )}
           </Form.Item>
-          {busiStatus === 2 && (
+          {busiStatus === 11 && (
             <>
               <Form.Item
                 label="承保金额"
@@ -366,7 +388,7 @@ export default forwardRef((props: Props, ref) => {
               </Form.Item>
             </>
           )}
-          {busiStatus === 3 && (
+          {busiStatus === 10 && (
             <>
               <Form.Item name="refuseReason" label="失败原因">
                 {isDetail ? (
@@ -387,7 +409,7 @@ export default forwardRef((props: Props, ref) => {
               <>
                 <Button
                   type="link"
-                  style={{ padding: 0, height: '24px' }}
+                  style={{ padding: 0, height: '24px', marginBottom: '16px' }}
                   onClick={() => {
                     patchDownloadFile(
                       detail.workProves,
