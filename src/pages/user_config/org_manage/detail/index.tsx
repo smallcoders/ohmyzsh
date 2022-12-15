@@ -134,7 +134,11 @@ export default () => {
         await getOrgInfo();
         await getOrgPage();
         await getOrgLog()
-
+        if(!e){
+          message.success('已成功拒绝')
+        }else{
+          message.success('用户成功加入组织')
+        }
         // setOrgInfo(res?.result)
       }else{
         message.error(res.message)
