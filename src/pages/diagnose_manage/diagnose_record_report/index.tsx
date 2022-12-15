@@ -14,7 +14,7 @@ import {
   List,
   Image,
 } from 'antd';
-import { CloseCircleOutlined, SearchOutlined } from '@ant-design/icons';
+import { CloseCircleOutlined, SearchOutlined, UploadOutlined } from '@ant-design/icons';
 import './index.less';
 import React, { useEffect, useState } from 'react';
 import VirtualList from 'rc-virtual-list';
@@ -454,7 +454,7 @@ export default () => {
   const useSearchNode = (): React.ReactNode => {
     const [searchForm] = Form.useForm();
     return (
-      <div>
+      <div className='container-search'>
         <Form {...formLayout} form={searchForm}>
           <Row>
             <Col span={6}>
@@ -484,7 +484,7 @@ export default () => {
               <Row>
                 <Col span={8}>
                   <Form.Item name="time" label="诊断时间">
-                    <DatePicker.RangePicker allowClear />
+                    <DatePicker.RangePicker allowClear style={{width: '100%'}} />
                   </Form.Item>
                 </Col>
                 <Col span={8}>
@@ -623,13 +623,45 @@ export default () => {
     },
   ].filter((p) => p);
 
+  const exportList = async () => {
+    console.log('导出')
+    // const { status, orgName, areaCode, startTime, endTime } = searchContent;
+    // try {
+    //   const res = await onlineDiagnosisExport({
+    //     status,
+    //     orgName,
+    //     areaCode,
+    //     startTime,
+    //     endTime,
+    //   });
+    //   if (res?.data.size == 51) return message.warning('操作太过频繁，请稍后再试')
+    //   const content = res?.data;
+    //   const blob  = new Blob([content], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"});
+    //   const fileName = '线上诊断.xlsx'
+    //   const url = window.URL.createObjectURL(blob);
+    //   const link = document.createElement('a')
+    //   link.style.display = 'none'
+    //   link.href = url;
+    //   link.setAttribute('download', fileName)
+    //   document.body.appendChild(link);
+    //   link.click();
+    // } catch (error) {
+    //   console.log(error);
+    // }
+  };
+
   return (
     <div className="diagnose-service-package">
       <h3 className="title">诊断记录报表</h3>
       {useSearchNode()}
       <div className="content-wrapper">
         <div className="container-table-header">
-          <h3>诊断记录列表（共X条）</h3>
+          <h3>诊断记录列表（共{pageInfo.totalCount}条）</h3>
+          <Access accessible={access['PX_DM_XSZD']}>
+            <Button type='primary' icon={<UploadOutlined />} onClick={exportList}>
+              导出数据
+            </Button>
+          </Access>
         </div>
         {dataSource && dataSource.length > 0 && (
           <div className="container-table-body">
