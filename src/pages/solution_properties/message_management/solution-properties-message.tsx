@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { useModel, Access, useAccess } from 'umi'
+import { useModel, Access, useAccess, history } from 'umi'
 import {
   Button,
   message,
@@ -101,6 +101,12 @@ export default () => {
     // 获取列表
     // 需要调整参数
     getMessageList({...searchInfo}, pageInfo?.pageSize, pageInfo?.pageIndex )
+    const unlisten = history.listen((location) => {
+      if (!location.pathname.includes('/solution-properties/message-management')) {
+        resetModel?.()
+        unlisten()
+      }
+    })
   },[])
 
   const confirm = async (record: any) => {
@@ -267,15 +273,15 @@ export default () => {
       name, 
       status, 
       tabEnum,
-      startDateTime: time ? moment(time[0]).format('YYYY-MM-DD HH:mm:ss') : '',
-      endDateTime: time ? moment(time[1]).format('YYYY-MM-DD HH:mm:ss') : '',
+      startDateTime: time ? moment(time[0]).startOf('days').format('YYYY-MM-DD HH:mm:ss') : '',
+      endDateTime: time ? moment(time[1]).endOf('days').format('YYYY-MM-DD HH:mm:ss') : '',
     })
     getMessageList({
       name, 
       status, 
       tabEnum,
-      startDateTime: time ? moment(time[0]).format('YYYY-MM-DD HH:mm:ss') : '',
-      endDateTime: time ? moment(time[1]).format('YYYY-MM-DD HH:mm:ss') : '',
+      startDateTime: time ? moment(time[0]).startOf('days').format('YYYY-MM-DD HH:mm:ss') : '',
+      endDateTime: time ? moment(time[1]).endOf('days').format('YYYY-MM-DD HH:mm:ss') : '',
     }, pageInfo?.pageSize)
   }
 
