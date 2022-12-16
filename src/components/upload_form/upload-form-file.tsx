@@ -1,6 +1,7 @@
 import { message, Upload } from 'antd';
-import { RcFile, UploadChangeParam, UploadFile, UploadProps } from 'antd/lib/upload/interface';
-import { ReactNode, RefAttributes, useEffect } from 'react';
+import type { RcFile, UploadChangeParam, UploadFile, UploadProps } from 'antd/lib/upload/interface';
+import type { ReactNode, RefAttributes } from 'react';
+import { useEffect } from 'react';
 import './upload-form.less';
 
 const UploadForm = (
@@ -37,9 +38,9 @@ const UploadForm = (
       return props.beforeUpload(file, files);
     }
     if (props.maxCount) {
-      const index = files?.indexOf(file) + 1
+      const index = files?.indexOf(file) + 1;
 
-      if ((index + (props?.value?.length || 0)) > props.maxCount) {
+      if (index + (props?.value?.length || 0) > props.maxCount) {
         message.error(`上传文件数目不得超过${props.maxCount}个`);
         return false;
       }
@@ -72,8 +73,7 @@ const UploadForm = (
     props.onChange?.(list as any);
   };
 
-
-  const isOpen = props?.maxCount ? (props.value?.length || 0) < props?.maxCount : true
+  const isOpen = props?.maxCount ? (props.value?.length || 0) < props?.maxCount : true;
   return (
     <>
       {props.tooltip}

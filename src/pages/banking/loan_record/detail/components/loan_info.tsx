@@ -37,7 +37,7 @@ import patchDownloadFile from '@/utils/patch-download-file';
 import type { Props } from './authorization_info';
 import detail from '@/pages/banking/banking_service_manage/detail/detail';
 const sc = scopedClasses('banking-loan-info');
-export default ({ isDetail, type, id, step, toTab }: Props) => {
+export default ({ isDetail, type, id, step, toTab, left, name, loanType }: Props) => {
   const [createModalVisible, setModalVisible] = useState<boolean>(false);
   const [dataSource, setDataSource] = useState<BankingLoan.LoanContent[]>([]);
   const [dataSourceType, setdataSourceType] = useState<string>('');
@@ -50,7 +50,11 @@ export default ({ isDetail, type, id, step, toTab }: Props) => {
   const [addOrUpdateLoading, setAddOrUpdateLoading] = useState<boolean>(false);
   const [options, setOptions] = useState<any>([]);
   const toCreditApply = () => {
-    history.push(`${routeName.LOAN_RECORD_ENTER}?id=${id}&type=${type}&step=${step}`);
+    history.push(
+      `${
+        routeName[name + '_RECORD_ENTER']
+      }?id=${id}&type=${type}&step=${step}&loanType=${loanType}&name=${name}`,
+    );
   };
   const getDictionary = async () => {
     try {
@@ -200,12 +204,35 @@ export default ({ isDetail, type, id, step, toTab }: Props) => {
       title: '放款状态',
       dataIndex: 'status',
       width: 100,
-      render: (_: string) => {
+      render: (_: string, _record: BankingLoan.LoanContent) => {
         return (
           <div className={`state${_}`}>
             {_ || '--'}
-            {LoadStatus.LOAN_FAILURE === _ && (
-              <Tooltip placement="topLeft" title={'失败原因是因为失败乃成功之母'}>
+            {_record.busiStatus === 4 && (
+              <Tooltip
+                placement="topLeft"
+                color="#fff"
+                title={
+                  <div
+                    style={{
+                      color: '#8290A6',
+                      fontSize: '14px',
+                      lineHeight: '22px',
+                      padding: '10px 8px',
+                    }}
+                  >
+                    <p
+                      style={{
+                        fontWeight: 700,
+                        color: '#556377',
+                      }}
+                    >
+                      失败原因
+                    </p>
+                    <div>{_record.refuseReason}</div>
+                  </div>
+                }
+              >
                 <div className={sc('show-reason')}>查看原因</div>
               </Tooltip>
             )}
@@ -234,7 +261,7 @@ export default ({ isDetail, type, id, step, toTab }: Props) => {
       dataIndex: 'takeMoney',
       width: 100,
       render: (_: number) => {
-        return <div>{regFenToYuan(_)}</div>;
+        return <div>{_ === null ? '--' : regFenToYuan(_)}</div>;
       },
     },
     {
@@ -269,7 +296,7 @@ export default ({ isDetail, type, id, step, toTab }: Props) => {
             <Space size="middle">
               <a
                 onClick={() => {
-                  history.push(`${routeName.LOAN_RECORD_WITHDRAWANDLOAN}?id=${record?.id}`);
+                  history.push(`${routeName[name + '_RECORD_WITHDRAWANDLOAN']}?id=${record?.id}`);
                 }}
               >
                 详情
@@ -362,7 +389,7 @@ export default ({ isDetail, type, id, step, toTab }: Props) => {
         onCancel={() => setAfterSaveVisible(false)}
         // icon={<CheckCircleTwoTone />}
         footer={[
-          <Button key="back" onClick={() => history.push(`${routeName.LOAN_RECORD}`)}>
+          <Button key="back" onClick={() => history.push(`${routeName[name + '_RECORD']}`)}>
             返回列表
           </Button>,
           <Button key="submit" type="primary" onClick={() => toTab('4')}>
@@ -378,7 +405,7 @@ export default ({ isDetail, type, id, step, toTab }: Props) => {
     return (
       <Drawer
         title={editItem.id ? '编辑信息' : '新增信息'}
-        width={500}
+        width={700}
         placement="right"
         onClose={beforeCloseDrawer}
         visible={createModalVisible}
@@ -395,6 +422,7 @@ export default ({ isDetail, type, id, step, toTab }: Props) => {
         <Form
           {...formLayout}
           form={form}
+          size="large"
           layout="horizontal"
           labelWrap
           initialValues={{ busiStatus: 3 }}
@@ -524,7 +552,14 @@ export default ({ isDetail, type, id, step, toTab }: Props) => {
               maxCount={10}
             >
               <Button icon={<UploadOutlined />}>上传文件</Button>
-              <div style={{ fontSize: '12px' }}>
+              <div
+                style={{
+                  fontSize: '14px',
+                  color: '#8290A6',
+                  marginTop: '12px',
+                  whiteSpace: 'nowrap',
+                }}
+              >
                 支持30M以内的图片、word、Excel、压缩包zip或pdf文件，最多不超过10个
               </div>
             </UploadFormFile>
@@ -546,21 +581,27 @@ export default ({ isDetail, type, id, step, toTab }: Props) => {
   ) : (
     <>
       <div className={sc('container-table-header')}>
-        <div>剩余可借金额：{availAmounts}万元</div>
+        <div>
+          剩余可借金额：<span className="tips">{availAmounts}万元</span>
+        </div>
         <div className="title">
           <div>放款信息：{!isDetail && <span className="tips">请录入每次放款信息</span>}</div>
-          {!isDetail && (
-            <Button
-              type="primary"
-              key="addStyle"
-              onClick={() => {
-                setModalVisible(true);
-              }}
-            >
-              <PlusOutlined /> 新增信息
-            </Button>
-          )}
         </div>
+        {!isDetail && (
+          <Button
+            style={{
+              marginBottom: '16px',
+              marginLeft: '32px',
+            }}
+            type="primary"
+            key="addStyle"
+            onClick={() => {
+              setModalVisible(true);
+            }}
+          >
+            <PlusOutlined /> 新增信息
+          </Button>
+        )}
       </div>
       <div className={sc('container-table-body')}>
         <SelfTable
@@ -583,9 +624,21 @@ export default ({ isDetail, type, id, step, toTab }: Props) => {
           }
         />
       </div>
-      {isDetail && <div className={sc('container-table-footer')}>数据来源：{dataSourceType}</div>}
-      <FooterToolbar>
-        <Button onClick={() => history.goBack()}>返回</Button>
+      {isDetail && (
+        <div className={sc('container-table-footer')}>
+          数据来源：<span className="tips">{dataSourceType}</span>
+        </div>
+      )}
+      <FooterToolbar
+        style={{
+          height: '88px',
+          left: left + 'px',
+          width: `calc(100% - ${left}px)`,
+        }}
+      >
+        <Button size="large" onClick={() => history.goBack()}>
+          返回
+        </Button>
       </FooterToolbar>
       {useModal()}
       {afterSaveModel()}

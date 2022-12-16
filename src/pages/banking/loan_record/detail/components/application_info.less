@@ -1,47 +1,86 @@
 .application {
   font-size: 16px;
+  .ant-col{
+    color: #556377;
+    display: flex;
+    span:first-child {
+      color: #8290A6;
+      flex: 0 130px;
+      text-align: right;
+    }
+    span:last-child {
+      flex: 1;
+    }
+  }
   &-contain {
-    padding: 10px;
+    // padding: 10px;
     background: #fff;
+    margin-bottom: 40px;
+    display: flex;
+    &.main{
+      display: block;
+    }
     .ant-col{
-      margin-bottom: 10px;
-      color: #333;
+      margin-bottom: 20px;
+      color: #556377;
+    }
+    &-img {
+      padding-right: 24px;
+    }
+    &-right{
+      flex: 1;
     }
     h2 {
       position: relative;
-      margin: 10px 0 15px;
-      padding-left: 10px;
-      color: #1e232a;
-      font-weight: bold;
+      margin-bottom: 24px;
+      // padding-left: 10px;
+      color: #1E232A;
+      font-weight: 700;
       font-size: 18px;
-      line-height: 18px;
-      &::before {
-        position: absolute;
-        top: 50%;
-        left: 0;
-        width: 4px;
-        height: 18px;
-        background: #2d5cf6;
-        border-radius: 2px;
-        transform: translateY(-50%);
-        content: '';
-      }
+      line-height: 26px;
+      // &::before {
+      //   position: absolute;
+      //   top: 50%;
+      //   left: 0;
+      //   width: 4px;
+      //   height: 18px;
+      //   background: #2d5cf6;
+      //   border-radius: 2px;
+      //   transform: translateY(-50%);
+      //   content: '';
+      // }
     }
+  }
+  .orgName-status{
+    display: flex;
+    line-height: 32px;
+    justify-content: space-between;
+    margin-bottom: 12px;
   }
   .orgName {
     color: #1e232a;
-    font-size: 16px;
-    font-weight: 700;
+    font-size: 20px;
+    font-weight: bold;
   }
   .creditCode {
-    font-size: 14px;
+    font-size: 16px;
+    margin-bottom: 32px;
   }
   &-state {
-    display: inline-block;
-    margin-top: 8px;
-    padding: 2px 10px;
-    color: #0068ff;
-    border: 1px solid #0068ff;
+    border-radius: 2px;
+    padding: 4px 8px;
+    color: #25D48F;
+    background: #F0FFF6;
     border-radius: 4px;
+    font-size: 16px;
+    line-height: 24px;
+    &.huang{
+      color:#FF8E02;
+      background: #FFF8E6;
+    }
+    &.cheng{
+      color:#FF4F17;
+      background: #FFF0E6;
+    }
   }
 }
