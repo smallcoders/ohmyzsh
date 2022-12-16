@@ -5,7 +5,7 @@ export async function creativeDemandExport(data: {
   name?: string, // 需求名称
   industryTypeId?: string, // 需求所属行业
   state?: string, // 对接状态
-  createTimeStart?: string, 
+  createTimeStart?: string,
   createTimeEnd?: string,
   areaCode?: string, // 区域
 }) {
@@ -83,8 +83,8 @@ export async function expertExport(data: {
 export async function expertConsultationExport(data: {
   orgName?: string, // 企业、个人名称
   expertName?: string, // 专家名称
-  startCreateTime?: string, 
-  endCreateTime?: string, 
+  startCreateTime?: string,
+  endCreateTime?: string,
   contacted?: boolean, // 联系状态
 }) {
   return request<any>('/antelope-manage/expert/export/consultation',{
@@ -99,8 +99,8 @@ export async function expertConsultationExport(data: {
 export async function expertApplyExport(data: {
   orgName?: string, // 企业、个人名称
   expertName?: string, // 专家名称
-  startCreateTime?: string, 
-  endCreateTime?: string, 
+  startCreateTime?: string,
+  endCreateTime?: string,
   contacted?: boolean, // 联系状态
 }) {
   return request<any>('/antelope-manage/expert/export/apply',{
@@ -116,8 +116,8 @@ export async function demandExport(data: {
   name?: string, // 名称
   type?: number, // 类型
   publisherName?: string, // 发布人姓名
-  publishStartTime?: string, 
-  publishEndTime?: string, 
+  publishStartTime?: string,
+  publishEndTime?: string,
   operationState?: string, // 需求状态
   claimId?: number,
   claimState?: string,
@@ -136,8 +136,8 @@ export async function onlineDiagnosisExport(data: {
   status?: string, // 诊断状态
   orgName?: string, // 企业名称
   areaCode?: number, // 区域
-  startTime?: string, 
-  endTime?: string, 
+  startTime?: string,
+  endTime?: string,
 }) {
   return request<any>('/antelope-manage/onlineDiagnosis/export',{
     method: 'post',
@@ -156,6 +156,8 @@ export async function exportUserList(data: {
   registerSource?: string, // 注册来源
   orgName?: string,
   userIdentity?: string,
+  channelName?: string,
+  sceneName?: string,
 }) {
   return request<any>('/antelope-user/mng/user/exportUser',{
     method: 'post',
