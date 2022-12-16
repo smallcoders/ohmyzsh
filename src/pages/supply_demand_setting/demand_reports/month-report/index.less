@@ -19,6 +19,49 @@
   &-table-body {
     padding: 0 20px;
     background-color: #fff;
+
+    // 移除第3列表头边距
+    .ant-table-cell-fix-left:nth-of-type(3) {
+      padding: 0;
+    }
+    
+    // 上下半边背景
+    .headerCell {
+      border-top: 55px #fafafa solid;
+      width: 0px;
+      height: 0px;
+      border-left: 135px #fafafa solid;
+      position: relative;
+      
+      // 上半边位置
+      .top {
+        position: absolute;
+        top: -48px;
+        left: -50px;
+        width: 50px;
+      }
+
+      // 下半边位置
+      .bottom {
+        position: absolute;
+        top: -26px;
+        left: -126px;
+        width: 60px;
+      }
+      
+      // 分割线
+      &::after {
+        content: '';
+        position: absolute;
+        width: 1px;
+        height: 145px;
+        top: -100px;
+        left: -68px;
+        background-color: #f0f0f0;
+        display: block;
+        transform: rotate(-68deg);
+      }
+    }
   }
 
   &-search {

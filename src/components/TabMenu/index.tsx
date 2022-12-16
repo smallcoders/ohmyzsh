@@ -184,8 +184,8 @@ export default (props: { tabs?: string[]; activeState?: string}) => {
 
       {activeKey === 'M_SD_BBZB' && <SummaryReport />}
       {activeKey === 'M_SD_BBMXB' && <DetailsReport />}
-      {activeKey === 'M_SD_BBZBB' && <MonthReport />}
-      {activeKey === 'M_SD_BBYBB' && <WeeksReport />}
+      {activeKey === 'M_SD_BBZBB' && <WeeksReport />}
+      {activeKey === 'M_SD_BBYBB' && <MonthReport />}
 
       {activeKey === 'M_UM_ZJZY' && <ExpertResource />}
       {activeKey === 'M_UM_ZJZX' && <ConsultRecord />}

@@ -17,6 +17,17 @@ export default () => {
   }, []);
 
   return (
-    <TabMenu tabs={['M_SD_BBZB', 'M_SD_BBMXB', 'M_SD_BBZBB', 'M_SD_BBYBB']} activeState={activeKey} />
+    <div>
+      <TabMenu tabs={['M_SD_BBZB', 'M_SD_BBMXB', 'M_SD_BBZBB', 'M_SD_BBYBB']} activeState={activeKey}></TabMenu>
+      <div style={
+        {
+          position: 'absolute',
+          top: 85,
+          right: 5
+        }
+      }>
+        数据更新时间：2022-09-12 23:00:00
+      </div>
+    </div>
   );
 };
