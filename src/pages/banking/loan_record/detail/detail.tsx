@@ -1,5 +1,4 @@
 import { PageContainer } from '@ant-design/pro-layout';
-import { Button } from 'antd';
 import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { history } from 'umi';
 import BankingLoan from '@/types/banking-loan.d';
