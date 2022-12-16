@@ -18,6 +18,11 @@ import Recommend from '@/pages/live_management/search_record_management/componen
 // 供需设置-服务管理tab页
 import Solution from '@/pages/supply_demand_setting/solution/solution';
 import DemandIntention from '@/pages/supply_demand_setting/solution/intention_message/index';
+// 供需设置-供需对接报表各Tab页
+import SummaryReport from '@/pages/supply_demand_setting/demand_reports/summary-report';
+import DetailsReport from '@/pages/supply_demand_setting/demand_reports/details-report';
+import MonthReport from '@/pages/supply_demand_setting/demand_reports/month-report';
+import WeeksReport from '@/pages/supply_demand_setting/demand_reports/weeks-report';
 
 // 用户管理-专家管理tab页
 import ExpertResource from '@/pages/user_config/expert_manage/components/expert-resource';
@@ -28,7 +33,6 @@ import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
 const sc = scopedClasses('tab-menu');
 export default (props: { tabs?: string[]; activeState?: string}) => {
-  const [contentHtml, setContentHtml] = useState<string | undefined>();
   const [activeKey, setActiveKey] = useState<string>('');
   const [showTabList, setShowTabList] = useState<any>([]);
 
@@ -75,6 +79,23 @@ export default (props: { tabs?: string[]; activeState?: string}) => {
       tab: '意向消息',
       key: 'M_SD_FWXX'
     },
+    // 供需设置-供需对接报表
+    {
+      tab: '总表',
+      key: 'M_SD_BBZB'
+    },
+    {
+      tab: '明细表',
+      key: 'M_SD_BBMXB'
+    },
+    {
+      tab: '周报表',
+      key: 'M_SD_BBZBB'
+    },
+    {
+      tab: '月报表',
+      key: 'M_SD_BBYBB'
+    },
     // 用户管理-专家管理tab页
     {
       tab: '专家资源',
@@ -106,6 +127,11 @@ export default (props: { tabs?: string[]; activeState?: string}) => {
         // {name: 'M_DM_XSZD', value: false},
         // {name: 'M_DM_ZDBM', value: true}
       ]
+
+      currentUser.menuShowMap['M_SD_BBZB'] = true
+      currentUser.menuShowMap['M_SD_BBMXB'] = true
+      currentUser.menuShowMap['M_SD_BBZBB'] = true
+      currentUser.menuShowMap['M_SD_BBYBB'] = true
       Object.keys(currentUser.menuShowMap).forEach((item: any) => {
         // console.log(item, currentUser.menuShowMap[item]);
         if(props.tabs.indexOf(item) > -1) {
@@ -124,7 +150,7 @@ export default (props: { tabs?: string[]; activeState?: string}) => {
         }
       }
       setShowTabList(arr2)
-      setActiveKey(arr2[0].key)
+      if (arr2[0]) setActiveKey(arr2[0].key)
       console.log(arr2)
       console.log('props?.activeState',props?.activeState)
       if (props?.activeState != '1') {
@@ -155,6 +181,11 @@ export default (props: { tabs?: string[]; activeState?: string}) => {
       {activeKey === 'M_LM_SSTJ' && <Recommend />}
       {activeKey === 'M_SD_FW' && <Solution />}
       {activeKey === 'M_SD_FWXX' && <DemandIntention />}
+
+      {activeKey === 'M_SD_BBZB' && <SummaryReport />}
+      {activeKey === 'M_SD_BBMXB' && <DetailsReport />}
+      {activeKey === 'M_SD_BBZBB' && <MonthReport />}
+      {activeKey === 'M_SD_BBYBB' && <WeeksReport />}
 
       {activeKey === 'M_UM_ZJZY' && <ExpertResource />}
       {activeKey === 'M_UM_ZJZX' && <ConsultRecord />}

@@ -304,6 +304,62 @@ export default () => [
                 ],
             },
             {
+              title: '供需对接报表-总表',
+              code: 'M_SD_BBZB',
+              children: [
+                {
+                  title: '页面查看',
+                  code: 'PQ_SD_FW'
+                },
+                {
+                  title: '导出数据',
+                  code: 'PX_SD_FW',
+                },
+              ]
+            },
+            {
+              title: '供需对接报表-明细表',
+              code: 'M_SD_BBMXB',
+              children: [
+                {
+                  title: '页面查看',
+                  code: 'PQ_SD_FW'
+                },
+                {
+                  title: '导出数据',
+                  code: 'PX_SD_FW',
+                },
+              ]
+            },
+            {
+              title: '供需对接报表-周报表',
+              code: 'M_SD_BBZBB',
+              children: [
+                {
+                  title: '页面查看',
+                  code: 'PQ_SD_FW'
+                },
+                {
+                  title: '导出数据',
+                  code: 'PX_SD_FW',
+                },
+              ]
+            },
+            {
+              title: '供需对接报表-月报表',
+              code: 'M_SD_BBYBB',
+              children: [
+                {
+                  title: '页面查看',
+                  code: 'PQ_SD_FW'
+                },
+                {
+                  title: '导出数据',
+                  code: 'PX_SD_FW',
+                },
+              ]
+            },
+            {
                 title: '供需对接管理-需求认领/我的认领',
                 code: 'M_SD_XQRL',
                 children: [
