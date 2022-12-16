@@ -241,7 +241,7 @@ export default forwardRef((props: Props, ref) => {
             {imgList?.map((file: BankingLoan.workProves) => {
               return (
                 <div className="file-img-item">
-                  <Image width={30} src={file?.path} className="file-img-item-img" />
+                  <img width={30} src={file?.path} className="file-img-item-img" />
                   <div className="file-img-item-name">
                     {file.name}.{file.format}
                   </div>
