@@ -1,0 +1,61 @@
+@prefix: product-management;
+
+.@{prefix}-show-reason{
+  color: #6680FF;
+}
+.@{prefix}-model-mark{
+  .ant-form-item {
+    color: #556377;
+    font-size: 16px;
+  }
+  .ant-form-item-label > label{
+    color: #8290a6;
+    font-size: 16px;
+  }
+  .tips {
+    color: #c4cad5;
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+}
+.@{prefix}-container {
+  &-table{
+    border-radius: 2px;
+    background-color: #fff;
+    padding: 24px 32px;
+  }
+  &-table-header {
+    .title {
+      display: flex;
+      margin-bottom: 16px;
+      .tips {
+        color: #8290a6;
+        font-size: 14px;
+        line-height: 40px;
+      }
+    }
+  }
+  &-table-body {
+    background-color: #fff;
+  }
+  &-search {
+    border-radius: 2px;
+    margin-bottom: 20px;
+    padding: 24px 0 0 10px;
+    background-color: #fff;
+    display: flex;
+    align-items: flex-end;
+    .ant-form-item-label > label{
+      color: #556377;
+      font-size: 16px;
+    }
+    .ant-form {
+      flex: 1;
+    }
+    &-opereate{
+      // display: flex;
+      // flex: 0 278px;
+      margin: 0 40px 24px 32px;
+    }
+  }
+}

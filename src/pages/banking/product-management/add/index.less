@@ -1,0 +1,106 @@
+@prefix: product-management-create;
+.@{prefix}-form-input-tips-img{
+  margin: -6px -8px;
+  height: 100px;
+  width: 100px;
+}
+.@{prefix}-page{
+  .ant-pro-footer-bar-right{
+    height: 88px;
+    flex: 0 100%;
+    text-align: center;
+    line-height: 88px;
+  }
+  .@{prefix}-form-step{
+    display: flex;
+    position: relative;
+    &-label{
+      color: #556377;
+      line-height: 40px;
+      font-size: 16px;
+    }
+    &-delete {
+      position: absolute;
+      right: -48px;
+      width: 24px;
+      line-height: 40px;
+      &-img{
+        height: 24px;
+      }
+    }
+  }
+  .@{prefix}-form-input{
+    &-tips{
+      margin-top: 8px;
+      color: #8290a6;
+      font-size: 14px;
+      line-height: 22px;
+      &-show{
+        color: #0068ff;
+      }
+      
+    }
+  }
+  .ant-page-header {
+    padding: 24px 32px;
+  }
+  .ant-breadcrumb + .ant-page-header-heading{
+    margin-top: 16px;
+  }
+  .ant-page-header-heading-left{
+    margin: 0;
+    .ant-page-header-heading-title{
+      font-size: 24px;
+      color: #1E232A;
+    }
+  }
+  .ant-pro-page-container-children-content {
+    margin: 24px 32px 0;
+    .ant-pro-steps-form > .ant-row:first-child{
+        margin: 0 !important;
+        background: #fff;
+        padding: 32px 0;
+        border-radius: 2px;
+        .ant-steps-item-title{
+          color: #556377;
+        }
+        .ant-steps-item-active{
+          .ant-steps-item-title{
+            font-weight: 700;
+            color: #1e232a;
+          }
+        }
+        
+        .ant-steps-item-wait{
+          .ant-steps-item-title{
+            color: #C4CAD5;
+          }
+        }
+        
+      }
+      .ant-pro-steps-form > .ant-row:last-child{
+        margin: 20px 0 0 !important;
+        background: #fff;
+        .ant-pro-steps-form-container {
+          margin: 32px 40px 4px;
+          .title{
+            font-size: 18px;
+            font-weight: 700;
+            color: #1E232A;
+            line-height: 26px;
+            margin-bottom: 24px;
+          }
+          .LoanPurpose{
+            display: flex;
+            &-select{
+              flex: 1;
+            }
+            &-input{
+              flex: 0 100px;
+            }
+          }
+        }
+      }
+    }
+  }
+  

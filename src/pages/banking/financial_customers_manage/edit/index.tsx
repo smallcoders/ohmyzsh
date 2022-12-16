@@ -64,7 +64,10 @@ export default () => {
           isListed,
           scienceMark,
           banks,
+          legalCard,
         } = result;
+        console.log(legalCard);
+        
         form.setFieldsValue({
           name,
           logoImageId,
@@ -98,6 +101,7 @@ export default () => {
           contacts,
           banks: banks?.split(',') || [],
           scienceMark,
+          legalCard: legalCard.replace(/^(.{4})(?:\d+)(.{4})$/, '$1******$2'),
         });
       } else {
         antdMessage.error(`请求失败，原因:{${resultMsg}}`);
@@ -182,6 +186,12 @@ export default () => {
         </Form.Item>
         <Form.Item name="legalPersonName" label="法定代表人" required>
           <Input disabled />
+        </Form.Item>
+        <Form.Item name="legalCard" label="法人证件号码" required>
+          <Input
+            addonBefore={<Select placeholder="居民身份证" style={{ width: 120 }} disabled />}
+            disabled
+          />
         </Form.Item>
         <Form.Item name="regStatus" label="经营状态" required validateTrigger="onBlur">
           <Select options={getOptions(regStatusMap)} placeholder="请选择" disabled />
