@@ -26,9 +26,9 @@ export default () => {
       const { code, result, message } = await getExcCustomer();
       if (code === 0) {
         if (Object.keys(result).length !== 0) {
-          const res = await getFileInfo(String(result[0].wetChatImage));
+          const res = await getFileInfo(String(result.wetChatImage));
           if (res.code === 0) {
-            setCustomerInfo({ ...result[0], path: res.result[0].path });
+            setCustomerInfo({ ...result, path: res.result[0].path });
           }
         } else {
           setCustomerInfo({});

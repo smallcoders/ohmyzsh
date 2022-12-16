@@ -3,11 +3,11 @@ import { request } from 'umi';
 
 /** 查询专属客服信息 */
 export async function getExcCustomer() {
-  return request<FinancialExclusive.ExcCustomerInfo>('/antelope-finance/customer/mng/getExcCustomer', {
+  return request<FinancialExclusive.ExcCustomerInfo>('/antelope-finance/customer/getExcCustomer', {
     method: 'post',
-    headers: {
-      // 'rpc-tag': 'jianwang44',
-    },
+    // headers: {
+    //   'rpc-tag': 'jianwang44',
+    // },
   });
 }
 
@@ -15,9 +15,9 @@ export async function getExcCustomer() {
 export async function saveOrUpdateCustomer(data?: Record<string, any>) {
   return request<any>('/antelope-finance/customer/mng/addOrEditCustomer', {
     method: 'post',
-    headers: {
-      // 'rpc-tag': 'jianwang44',
-    },
+    // headers: {
+    //   'rpc-tag': 'jianwang44',
+    // },
     data,
   });
 }

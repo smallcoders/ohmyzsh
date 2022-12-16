@@ -293,12 +293,15 @@ export default () => {
             onClick={async () => {
               setIsAdd3Info({});
               setDetailInfo({});
+              form.resetFields();
               await getQueryBank2List();
               setCreateModalVisible(true);
               setModalFormInfo(item);
               if (item.node === 1) {
                 modalForm.setFieldsValue({ id: item.id });
+                // await detailBankInfo(item.id, '', item.node);
               }
+              setDetail(false);
             }}
           >
             添加子机构
@@ -317,7 +320,7 @@ export default () => {
               } else {
                 await detailBankInfo(item.id, 'no', item.node);
               }
-              setDetail(false)
+              setDetail(false);
             }}
           >
             编辑信息
@@ -483,7 +486,6 @@ export default () => {
             //   setCreateModalVisible(false)
             //   modalForm.resetFields();
           } else {
-            console.log(changeSelectObj.current);
             if (Object.keys(changeSelectObj.current).length !== 0) {
               await detailBankInfo(changeSelectObj.current.value, 'yes', 1);
             }
@@ -604,6 +606,9 @@ export default () => {
                 className="add"
                 size="large"
                 onClick={async () => {
+                  setIsAdd3Info({});
+                  setDetailInfo({});
+                  form.resetFields();
                   await getQueryBank2List();
                   setCreateModalVisible(true);
                   if (allBankInfo.current.length > 0) {
@@ -619,212 +624,189 @@ export default () => {
                 新增机构
               </Button>
             </Col>
-            {Object.keys(detailInfo).length === 0 ? (
-              <div></div>
-            ) : (
-              <Col span={18} className={sc('container-right')}>
-                <div className="title">
-                  <span>基本信息</span>
-                  {isDetail ? (
-                    <Button
-                      type="primary"
-                      onClick={() => {
-                        if (detailInfo.node === 2) {
-                          setDisabledFlag(true);
-                        }
-                        setDetail(false);
-                      }}
-                    >
-                      编辑
-                    </Button>
-                  ) : (
-                    <></>
-                  )}
-                </div>
-                {isDetail ? (
-                  <div className="detail-form">
-                    <div className="item">
-                      <label>机构名称 :</label>
-                      {detailInfo.name}
-                    </div>
-                    <div className="item">
-                      <label>机构编码 :</label>
-                      {detailInfo.code}
-                    </div>
-                    <div className="item">
-                      <label>机构性质 :</label>
-                      {detailInfo.bankNature === null
-                        ? natureOptions1.find((item) => item.value === detailInfo.nature)?.label
-                        : natureOptions1.find((item) => item.value === detailInfo.nature)?.label +
-                          '-' +
-                          natureOptions2.find((item) => item.value === detailInfo.bankNature)
-                            ?.label}
-                    </div>
-                    {detailInfo.node === 2 ? (
-                      <></>
-                    ) : (
-                      <div className="item">
-                        <label>是否为合作机构 :</label>
-                        {detailInfo.isCoopera === 1 ? '是' : '否'}
-                      </div>
-                    )}
-                    {detailInfo.node === 2 ? (
-                      <></>
-                    ) : (
-                      <div className="item">
-                        <label>机构展示顺序 :</label>
-                        {detailInfo.sort}
-                      </div>
-                    )}
-                    <div className="item">
-                      <label>机构logo :</label>
-                      <img
-                        style={{ width: 80, marginRight: 48 }}
-                        src={detailInfo?.officialLogoImage}
-                        alt=""
-                      />
-                      <img style={{ width: 80 }} src={detailInfo?.productLogoImage} alt="" />
-                    </div>
-                    <div className="item">
-                      <label>经办人 :</label>
-                      {detailInfo.bankUserInfoList && detailInfo.bankUserInfoList.length === 0 ? (
-                        <></>
-                      ) : (
-                        detailInfo?.bankUserInfoList?.map((item: any, k: any) => {
-                          return (
-                            <p key={k} style={{ marginRight: 8 }}>
-                              {item.name} {item.phone}{' '}
-                              {item.position === 1
-                                ? '总经理'
-                                : item.position === 2
-                                ? '部门主管'
-                                : '客户经理'}
-                            </p>
-                          );
-                        })
-                      )}
-                    </div>
-                    <div className="item">
-                      <label>机构介绍 :</label>
-                      <div dangerouslySetInnerHTML={{ __html: detailInfo?.content }} />
-                    </div>
-                  </div>
-                ) : (
-                  <Form
-                    form={form}
-                    name="basic"
-                    labelCol={{ span: 4 }}
-                    validateTrigger={['onBlur']}
-                  >
-                    <Form.Item
-                      label="机构名称"
-                      name="name"
-                      rules={[{ required: true, message: '请输入机构名称' }]}
-                    >
-                      <Input maxLength={35} allowClear />
-                    </Form.Item>
-                    <Form.Item
-                      label="机构编码"
-                      name="code"
-                      rules={[{ required: true, message: '请输入机构编码' }]}
-                    >
-                      <Input maxLength={35} placeholder="请输入" allowClear />
-                    </Form.Item>
 
-                    <Form.Item label="机构性质" required>
+            <Col span={18} className={sc('container-right')}>
+              <div className="title">
+                <span>基本信息</span>
+                {isDetail ? (
+                  <Button
+                    type="primary"
+                    onClick={() => {
+                      if (detailInfo.node === 2) {
+                        setDisabledFlag(true);
+                      }
+                      setDetail(false);
+                    }}
+                  >
+                    编辑
+                  </Button>
+                ) : (
+                  <></>
+                )}
+              </div>
+              {isDetail ? (
+                <div className="detail-form">
+                  <div className="item">
+                    <label>机构名称 :</label>
+                    {detailInfo.name}
+                  </div>
+                  <div className="item">
+                    <label>机构编码 :</label>
+                    {detailInfo.code}
+                  </div>
+                  <div className="item">
+                    <label>机构性质 :</label>
+                    {detailInfo.bankNature === null
+                      ? natureOptions1.find((item) => item.value === detailInfo.nature)?.label
+                      : natureOptions1.find((item) => item.value === detailInfo.nature)?.label +
+                        '-' +
+                        natureOptions2.find((item) => item.value === detailInfo.bankNature)?.label}
+                  </div>
+                  {detailInfo.node === 2 ? (
+                    <></>
+                  ) : (
+                    <div className="item">
+                      <label>是否为合作机构 :</label>
+                      {detailInfo.isCoopera === 1 ? '是' : '否'}
+                    </div>
+                  )}
+                  {detailInfo.node === 2 ? (
+                    <></>
+                  ) : (
+                    <div className="item">
+                      <label>机构展示顺序 :</label>
+                      {detailInfo.sort}
+                    </div>
+                  )}
+                  <div className="item">
+                    <label>机构logo :</label>
+                    <img
+                      style={{ width: 80, marginRight: 48 }}
+                      src={detailInfo?.officialLogoImage}
+                      alt=""
+                    />
+                    <img style={{ width: 80 }} src={detailInfo?.productLogoImage} alt="" />
+                  </div>
+                  <div className="item">
+                    <label>经办人 :</label>
+                    {detailInfo.bankUserInfoList && detailInfo.bankUserInfoList.length === 0 ? (
+                      <></>
+                    ) : (
+                      detailInfo?.bankUserInfoList?.map((item: any, k: any) => {
+                        return (
+                          <p key={k} style={{ marginRight: 8 }}>
+                            {item.name} {item.phone}{' '}
+                            {item.position === 1
+                              ? '总经理'
+                              : item.position === 2
+                              ? '部门主管'
+                              : '客户经理'}
+                          </p>
+                        );
+                      })
+                    )}
+                  </div>
+                  <div className="item">
+                    <label>机构介绍 :</label>
+                    <div dangerouslySetInnerHTML={{ __html: detailInfo?.content }} />
+                  </div>
+                </div>
+              ) : (
+                <Form form={form} name="basic" labelCol={{ span: 4 }} validateTrigger={['onBlur']}>
+                  <Form.Item
+                    label="机构名称"
+                    name="name"
+                    rules={[{ required: true, message: '请输入机构名称' }]}
+                  >
+                    <Input maxLength={35} allowClear />
+                  </Form.Item>
+                  <Form.Item
+                    label="机构编码"
+                    name="code"
+                    rules={[{ required: true, message: '请输入机构编码' }]}
+                  >
+                    <Input maxLength={35} placeholder="请输入" allowClear />
+                  </Form.Item>
+
+                  <Form.Item label="机构性质" required>
+                    <Form.Item
+                      name="nature"
+                      rules={[{ required: true, message: '请选择机构性质' }]}
+                      style={{ display: 'inline-block', marginRight: 12, marginBottom: 0 }}
+                    >
+                      {Object.values(isAdd3Info).length > 0 || detailInfo.node === 2 ? (
+                        <Select
+                          disabled
+                          onChange={changeNature1}
+                          options={natureOptions1}
+                          placeholder="请选择"
+                        />
+                      ) : (
+                        <Select
+                          onChange={changeNature1}
+                          options={natureOptions1}
+                          placeholder="请选择"
+                        />
+                      )}
+                    </Form.Item>
+                    {isBank2Show ? (
                       <Form.Item
-                        name="nature"
+                        name="bankNature"
                         rules={[{ required: true, message: '请选择机构性质' }]}
-                        style={{ display: 'inline-block', marginRight: 12, marginBottom: 0 }}
+                        style={{ display: 'inline-block', marginBottom: 0 }}
                       >
                         {Object.values(isAdd3Info).length > 0 || detailInfo.node === 2 ? (
-                          <Select
-                            disabled
-                            onChange={changeNature1}
-                            options={natureOptions1}
-                            placeholder="请选择"
-                          />
+                          <Select disabled options={natureOptions2} placeholder="请选择" />
                         ) : (
-                          <Select
-                            onChange={changeNature1}
-                            options={natureOptions1}
-                            placeholder="请选择"
-                          />
+                          <Select options={natureOptions2} placeholder="请选择" />
                         )}
                       </Form.Item>
-                      {isBank2Show ? (
-                        <Form.Item
-                          name="bankNature"
-                          rules={[{ required: true, message: '请选择机构性质' }]}
-                          style={{ display: 'inline-block', marginBottom: 0 }}
-                        >
-                          {Object.values(isAdd3Info).length > 0 || detailInfo.node === 2 ? (
-                            <Select disabled options={natureOptions2} placeholder="请选择" />
-                          ) : (
-                            <Select options={natureOptions2} placeholder="请选择" />
-                          )}
-                        </Form.Item>
-                      ) : (
-                        <></>
-                      )}
-                    </Form.Item>
-                    {Object.values(isAdd3Info).length > 0 || detailInfo.node === 2 ? (
-                      <></>
                     ) : (
-                      <Form.Item
-                        label="是否为合作机构"
-                        name="isCoopera"
-                        initialValue={1}
-                        rules={[{ required: true, message: '请选择机构性质' }]}
+                      <></>
+                    )}
+                  </Form.Item>
+                  {Object.values(isAdd3Info).length > 0 || detailInfo.node === 2 ? (
+                    <></>
+                  ) : (
+                    <Form.Item
+                      label="是否为合作机构"
+                      name="isCoopera"
+                      initialValue={1}
+                      rules={[{ required: true, message: '请选择机构性质' }]}
+                    >
+                      <Radio.Group
+                        value={isRadio}
+                        onChange={(e) => {
+                          setIsRadio(e.target.value);
+                        }}
                       >
-                        <Radio.Group
-                          value={isRadio}
-                          onChange={(e) => {
-                            setIsRadio(e.target.value);
-                          }}
-                        >
-                          <Radio value={1}>是</Radio>
-                          <Radio value={0}>否</Radio>
-                        </Radio.Group>
-                      </Form.Item>
-                    )}
+                        <Radio value={1}>是</Radio>
+                        <Radio value={0}>否</Radio>
+                      </Radio.Group>
+                    </Form.Item>
+                  )}
 
-                    {isRadio === 0 ||
-                    Object.values(isAdd3Info).length > 0 ||
-                    detailInfo.node === 2 ? (
+                  {isRadio === 0 ||
+                  Object.values(isAdd3Info).length > 0 ||
+                  detailInfo.node === 2 ? (
+                    <></>
+                  ) : (
+                    <Form.Item label="机构展示顺序" name="sort">
+                      <div className="changeNum">
+                        <span>10</span>
+                        <span className="changeOrder">修改顺序</span>
+                      </div>
+                    </Form.Item>
+                  )}
+                  <Form.Item label="机构logo" required>
+                    {isRadio === 0 ? (
                       <></>
                     ) : (
-                      <Form.Item label="机构展示顺序" name="sort">
-                        <div className="changeNum">
-                          <span>10</span>
-                          <span className="changeOrder">修改顺序</span>
-                        </div>
-                      </Form.Item>
-                    )}
-                    <Form.Item label="机构logo" required>
-                      {isRadio === 0 ? (
-                        <></>
-                      ) : (
-                        <Form.Item
-                          name="officialLogoImage"
-                          extra="请上传224*80图片"
-                          rules={[{ required: true, message: '请上传logo' }]}
-                          style={{ display: 'inline-block', width: 140 }}
-                        >
-                          <UploadForm
-                            disabled={disabledFlag}
-                            listType="picture-card"
-                            showUploadList={false}
-                            accept=".png,.jpeg,.jpg"
-                            maxCount={1}
-                          />
-                        </Form.Item>
-                      )}
                       <Form.Item
-                        name="productLogoImage"
-                        extra="请上传80*80图片"
+                        name="officialLogoImage"
+                        extra="请上传224*80图片"
                         rules={[{ required: true, message: '请上传logo' }]}
-                        style={{ display: 'inline-block' }}
+                        style={{ display: 'inline-block', width: 140 }}
                       >
                         <UploadForm
                           disabled={disabledFlag}
@@ -834,23 +816,39 @@ export default () => {
                           maxCount={1}
                         />
                       </Form.Item>
+                    )}
+                    <Form.Item
+                      name="productLogoImage"
+                      extra="请上传80*80图片"
+                      rules={[{ required: true, message: '请上传logo' }]}
+                      style={{ display: 'inline-block' }}
+                    >
+                      <UploadForm
+                        disabled={disabledFlag}
+                        listType="picture-card"
+                        showUploadList={false}
+                        accept=".png,.jpeg,.jpg"
+                        maxCount={1}
+                      />
                     </Form.Item>
+                  </Form.Item>
 
-                    <Form.Item label="经办人">
-                      {bankUserInfoItem}
-                      <Button onClick={add} className="add">
-                        + 添加
-                      </Button>
-                    </Form.Item>
-                    <Form.Item name="content" label="机构介绍">
-                      <FormEdit width={624} />
-                    </Form.Item>
-                  </Form>
-                )}
-              </Col>
-            )}
+                  <Form.Item label="经办人">
+                    {bankUserInfoItem}
+                    <Button onClick={add} className="add">
+                      + 添加
+                    </Button>
+                  </Form.Item>
+                  <Form.Item name="content" label="机构介绍">
+                    <FormEdit width={624} />
+                  </Form.Item>
+                </Form>
+              )}
+            </Col>
           </Row>
-          {Object.keys(detailInfo).length == 0 ? (
+          {Object.keys(detailInfo).length == 0 &&
+          Object.keys(isAdd3Info).length == 0 &&
+          modalFormInfo.node === undefined ? (
             <></>
           ) : (
             <FooterToolbar>
