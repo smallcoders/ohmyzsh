@@ -25,14 +25,14 @@ export const routeName = {
   DEMAND_MANAGEMENT_INDEX: '/supply-demand-setting/demand-manage/index', // 需求管理
   DEMAND_MANAGEMENT_DETAIL: '/supply-demand-setting/demand-manage/detail', // 需求管理详情
 
-  OPERATION_ACTIVITY_PARAMETER:'/operation-activity/parameter-setting/index',//运营活动参数设置
-  OPERATION_ACTIVITY_LINK:'/operation-activity/link-setting/index',//运营活动链接设置
+  OPERATION_ACTIVITY_PARAMETER: '/operation-activity/parameter-setting/index', //运营活动参数设置
+  OPERATION_ACTIVITY_LINK: '/operation-activity/link-setting/index', //运营活动链接设置
 
   // 运营模板
-  PAGE_CREAT_MANAGE_EDIT: "/operation-activity/page_creat_manage/manage/edit",
-  PAGE_CREAT_MANAGE_PUBLISH: "/operation-activity/page_creat_manage/manage/publish",
-  PAGE_CREAT_MANAGE_PAGE_LIST: "/operation-activity/page_creat_manage/manage",
-  PAGE_CREAT_MANAGE_PAGE_DATA: "/operation-activity/page_creat_manage/manage/page_data",
+  PAGE_CREAT_MANAGE_EDIT: '/operation-activity/page_creat_manage/manage/edit',
+  PAGE_CREAT_MANAGE_PUBLISH: '/operation-activity/page_creat_manage/manage/publish',
+  PAGE_CREAT_MANAGE_PAGE_LIST: '/operation-activity/page_creat_manage/manage',
+  PAGE_CREAT_MANAGE_PAGE_DATA: '/operation-activity/page_creat_manage/manage/page_data',
 
   DEMAND_MANAGEMENT_FEEDBACK: '/supply-demand-setting/demand-manage/feedback', // 需求管理详情
   ACCOUNT: '/system-config/account', // 账号管理
@@ -111,7 +111,8 @@ export const routeName = {
 
   PROPAGANDA_CONFIG: '/operation-activity/local-propaganda/propaganda-config/index', // 地市宣传页管理
   ADD_PROPAGANDA_CONFIG: '/operation-activity/local-propaganda/propaganda-config/add-management', // 新增地市宣传页管理
-  DETAIL_PROPAGANDA_CONFIG: '/operation-activity/local-propaganda/propaganda-config/detail-management', // 新增地市宣传页管理
+  DETAIL_PROPAGANDA_CONFIG:
+    '/operation-activity/local-propaganda/propaganda-config/detail-management', // 新增地市宣传页管理
   MANAGEMENT_ACTIVITIES: '/operation-activity/local-propaganda/management_activities', // 地市活动管理
 
   //金融服务管理
@@ -1216,7 +1217,7 @@ export default [
             name: '服务详情',
             component: './supply_demand_setting/solution/detail/index',
           },
-        ]
+        ],
       },
       {
         path: routeName.DEMAND_MANAGEMENT_FEEDBACK,
@@ -1230,6 +1231,13 @@ export default [
         access: 'M_SD_GXDJ',
         name: '供需对接管理',
         component: './supply_demand_setting/docking_manage/index',
+      },
+      {
+        path: '/supply-demand-setting/demand_reports/index',
+        code: 'M_SD_GXDJBB',
+        access: 'M_SD_GXDJBB',
+        name: '供需对接报表',
+        component: './supply_demand_setting/demand_reports/index',
       },
       {
         path: routeName.DEMAND_CONTACTS,
@@ -1378,9 +1386,9 @@ export default [
             component: './page_creat_manage/edit/index',
             layout: false,
           },
-        ]
+        ],
       },
-    ]
+    ],
   },
   {
     path: '/diagnose-manage',
@@ -1451,7 +1459,7 @@ export default [
           },
         ],
       },
-    ]
+    ],
   },
   {
     path: '/diagnose-project-manage',
@@ -1476,7 +1484,7 @@ export default [
             access: 'M_DN_BAG',
             name: '诊断服务包',
             component: './diagnose_project_manage/diagnose_manage',
-          }
+          },
         ],
       },
       {
@@ -1491,10 +1499,10 @@ export default [
             access: 'M_DN_FORM',
             name: '诊断服务报表',
             component: './diagnose_project_manage/diagnose_service_report',
-          }
+          },
         ],
       },
-    ]
+    ],
   },
   {
     path: '/science-technology-manage',
@@ -1562,7 +1570,7 @@ export default [
           },
         ],
       },
-    ]
+    ],
   },
   {
     path: '/banking',
@@ -1712,7 +1720,7 @@ export default [
             name: '新增应用',
             component: './apply_manage/add_resource',
           },
-        ]
+        ],
       },
       {
         path: '/apply-manage/consult-record',
@@ -1723,7 +1731,7 @@ export default [
         hideInBreadcrumb: true, // 隐藏面包屑
         component: './apply_manage/consult_record',
       },
-    ]
+    ],
   },
   {
     path: '/digital-application',
@@ -1759,8 +1767,8 @@ export default [
             path: '/digital-application/app-list/detail',
             name: '应用详情',
             component: './digital_application/app_detail/index',
-          }
-        ]
+          },
+        ],
       },
       {
         path: '/digital-application/app-interface',
@@ -1769,7 +1777,7 @@ export default [
         name: '接口规范',
         component: './digital_application/app_interface',
       },
-    ]
+    ],
   },
   {
     path: '/goods-manage',
@@ -2121,8 +2129,8 @@ export default [
         access: 'M_RM_ZHBQ',
         name: '账号标签管理',
         component: './recommend_manage/tags_management',
-      }
-    ]
+      },
+    ],
   },
   {
     path: '/operate-data',
