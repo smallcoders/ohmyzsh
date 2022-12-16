@@ -4,7 +4,7 @@ import {
   Row,
   Col,
   message,
-  Input,
+  DatePicker,
 } from 'antd';
 
 import { DownloadOutlined } from "@ant-design/icons";
@@ -12,12 +12,14 @@ import { DownloadOutlined } from "@ant-design/icons";
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
-import type Common from '@/types/common';
 import { Access, useAccess } from 'umi';
 import SelfTable from '@/components/self_table';
 const sc = scopedClasses('tab-menu-demand-report-month');
+import moment from 'moment';
 
 export default () => {
+
+  const [totalCount, setTotalCount] = useState<number>(0)
 
   const [searchContent, setSearChContent] = useState<{
     time?: string;
@@ -28,27 +30,102 @@ export default () => {
     wrapperCol: { span: 16 },
   };
 
-  const [dataSource, setDataSource] = useState<any[]>([]);
+  const [tableHeader, setTableHeader] = useState<any[]>([])
+  const [tableItems, setTableItems] = useState<any[]>([])
 
-  const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
-    pageIndex: 1,
-    pageSize: 20,
-    totalCount: 0,
-    pageTotal: 0,
-  });
+  
 
   // /**
   //  * 获取数据列表
   //  * @param pageIndex
   //  * @param pageSize
   //  */
-  const getDataList = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
+  const getDataList = async () => {
     try {
       // 模拟走接口
-      const totalCount = 1, pageTotal = 1
-      const result: any = []
-      setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
-      setDataSource(result);
+      const tableHeader: any = [
+        { title: '需求地区', dataIndex: 'city' },
+        { title: '统计维度', dataIndex: 'range' },
+        { title: '1月', dataIndex: '1月' },
+        { title: '2月', dataIndex: '2月' },
+      ]
+      const tableItems: any = [
+        { city: '合肥', range: '新增需求数', '1月': 98 , '2月': 1 },
+        { city: '合肥', range: '新增对接需求数', '1月': 23, '2月': 2 },
+        { city: '合肥', range: '新增跟进次数', '1月': 98, '2月': 3 },
+        { city: '淮南', range: '新增跟进次数', '1月': 23, '2月': 4 },
+        { city: '淮南', range: '新增跟进次数', '1月': 98, '2月': 5 },
+        { city: '淮南', range: '新增跟进次数', '1月': 23, '2月': 6 },
+        { city: '六安', range: '新增跟进次数', '1月': 23, '2月': 4 },
+        { city: '六安', range: '新增跟进次数', '1月': 98, '2月': 5 },
+        { city: '六安', range: '新增跟进次数', '1月': 23, '2月': 6 },
+        { city: '蚌埠', range: '新增跟进次数', '1月': 23, '2月': 4 },
+        { city: '蚌埠', range: '新增跟进次数', '1月': 98, '2月': 5 },
+        { city: '蚌埠', range: '新增跟进次数', '1月': 23, '2月': 6 }
+      ]
+
+      // 插入序号      
+      tableHeader.splice(0, 0, {
+        title: '序号',
+        dataIndex: 'sort',
+        fixed: 'left',
+        onCell: (_: any, index: number) => {
+          // 从第0行数据开始，开始每 3 行只显示一行
+          if (index % 3 === 0) {
+            // 第0行（index = 0）或者第3的倍数行 ，合并3行内容
+            return { rowSpan: 3 }
+          } else {
+            // 非3的倍数行被合并，返回 0
+            return { rowSpan: 0 }
+          }
+        },
+        width: 65,
+        render: (_: any, _record: any, index: number) => (Math.floor(index / 3)) + 1
+      })
+
+
+      for (let i = 0, l = tableHeader.length; i < l; i++) {
+        const item = tableHeader[i]
+        switch (item.dataIndex) {
+          case 'city':
+            item.width = 90
+            item.align = 'center'
+            item.fixed = 'left'
+            // 合并行单元格
+            item.onCell = (_: any, index: number) => {
+              // 从第0行数据开始，开始每 3 行只显示一行
+              if (index % 3 === 0) {
+                // 第0行（index = 0）或者第3的倍数行 ，合并3行内容
+                return { rowSpan: 3 }
+              } else {
+                // 非3的倍数行被合并，返回 0
+                return { rowSpan: 0 }
+              }
+            }
+            break;
+          case 'range':
+            item.title = (
+              <div className='headerCell'>
+                <div className='top'>日期</div>
+                <div className='bottom'>统计维度</div>
+              </div>
+            )
+            item.align = 'center'
+            item.fixed = 'left'
+            item.width = 135
+            break
+          default:
+            item.align = 'center'
+            break
+        }
+      }
+
+      for (let i = 0, l = tableItems.length; i < l; i++) {
+        tableItems[i].id = i
+      }
+      
+      setTableHeader(tableHeader)
+      setTableItems(tableItems)
       // 这样走接口
       // const { result, totalCount, pageTotal, code } = await getActivityList({
       //   pageIndex,
@@ -66,38 +143,6 @@ export default () => {
     }
   };
 
-  const columns = [
-    {
-      title: '序号',
-      dataIndex: 'sort',
-      width: 100,
-      render: (_: any, _record: any, index: number) =>
-        pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
-    },
-    {
-      title: '活动编码',
-      dataIndex: 'actNo',
-      width: 200
-    },
-    {
-      title: '操作',
-      width: 120,
-      dataIndex: 'option',
-      render: (_: any, _record: any) => {
-        return (
-          <a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-            }}
-          >
-            查看详情
-          </a>
-        );
-      },
-    },
-  ];
-
   useEffect(() => {
     getDataList()
   }, [searchContent]);
@@ -108,9 +153,9 @@ export default () => {
       <div className={sc('container-search')}>
         <Form {...formLayout} form={searchForm}>
           <Row>
-          <Col span={6}>
-              <Form.Item name="actNo" label="活动编码">
-                <Input placeholder="请输入" />
+            <Col span={6}>
+              <Form.Item name="time" label="统计年份">
+                <DatePicker picker="year" />
               </Form.Item>
             </Col>
             <Col span={4} offset={14}>
@@ -120,8 +165,8 @@ export default () => {
                 key="search"
                 onClick={() => {
                   const search = searchForm.getFieldsValue();
-                  const { ...rest } = search;   
-                  setSearChContent(rest);
+                  const time = search.time && moment(search.time).format('YYYY')
+                  setSearChContent({ time });
                 }}
               >
                 查询
@@ -150,7 +195,7 @@ export default () => {
       {useSearchNode()}
       <div className={sc('container-table-header')}>
         <div className="title">
-          <span>活动列表(共{pageInfo.totalCount || 0}个)</span>
+          <span>各地市供需对接新增数据月报表(共{totalCount || 0}个)</span>
           <Access accessible={access['PX_PM_TJ_HD']}>
             <Button
               icon={<DownloadOutlined />}
@@ -166,21 +211,9 @@ export default () => {
         <SelfTable
           rowKey={'id'}
           bordered
-          scroll={{ x: 1400 }}
-          columns={columns}
-          dataSource={dataSource}
-          pagination={
-            pageInfo.totalCount === 0
-              ? false
-              : {
-                  onChange: getDataList,
-                  total: pageInfo.totalCount,
-                  current: pageInfo.pageIndex,
-                  pageSize: pageInfo.pageSize,
-                  showTotal: (total: number) =>
-                    `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
-                }
-          }
+          columns={tableHeader}
+          dataSource={tableItems}
+          pagination={false}
         />
       </div>
     </>
