@@ -150,6 +150,10 @@
   PRODUCT_MANAGEMENT_CREATE: '/banking/product_management/create',
   PRODUCT_MANAGEMENT_UPDATE: '/banking/product_management/update',
   PRODUCT_MANAGEMENT_DETAIL: '/banking/product_management/detail',
+  FINANCIAL_EXCLUSIVE: '/banking/financial_exclusive',
+  FINANCIAL_EXCLUSIVE_INDEX: '/banking/financial_exclusive/index',
+  FINANCIAL_INSTITUTION: '/banking/financial_institution',
+  FINANCIAL_INSTITUTION_INDEX: '/banking/financial_institution/index',
 
   // 推荐管理
   RECOMMENDED_HOT_WORDS: '/recommended/hot_words',
@@ -1757,6 +1761,44 @@ export default [
         code: 'M_FM_GYSGL',
         access: 'M_FM_GYSGL',
         component: './banking/supplier-management',
+      },
+      {
+        path: routeName.FINANCIAL_EXCLUSIVE,
+        name: '金融专属服务',
+        code: 'M_FM_ZSFW',
+        access: 'M_FM_ZSFW',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.FINANCIAL_EXCLUSIVE,
+            redirect: routeName.FINANCIAL_EXCLUSIVE_INDEX,
+          },
+          {
+            path: routeName.FINANCIAL_EXCLUSIVE_INDEX,
+            hideInBreadcrumb: true,
+            name: '金融专属服务',
+            component: './banking/financial_exclusive/index',
+          },
+        ],
+      },
+      {
+        path: routeName.FINANCIAL_INSTITUTION,
+        name: '金融机构管理',
+        code: 'M_FM_JGGL',
+        access: 'M_FM_JGGL',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.FINANCIAL_INSTITUTION,
+            redirect: routeName.FINANCIAL_INSTITUTION_INDEX,
+          },
+          {
+            path: routeName.FINANCIAL_INSTITUTION_INDEX,
+            hideInBreadcrumb: true,
+            name: '金融机构管理',
+            component: './banking/financial_institution/index',
+          },
+        ],
       },
     ],
   },
