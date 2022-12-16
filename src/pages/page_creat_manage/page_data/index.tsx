@@ -61,10 +61,24 @@ export default () => {
                  dataIndex: paramName,
                  width: 150,
                  isEllipsis: true,
-                 render: (text: string) => {
-                   if (text){
+                 render: (text: any) => {
+                   if (text?.tmp_result_ver_unique_key && text?.file_type === 1){
+                     return (
+                       <div className="img-list">
+                         {text.value?.split('&&@#@') ? text.value?.split('&&@#@') : [text.value].map((it: string, index: number) => {
+                           return <img key={index} src={it} alt='' />
+                         })}
+                       </div>
+                     )
+                   }
+                   if (text?.tmp_result_ver_unique_key && text?.value){
                      return(
-                       <span>{text.split('&&@#@').join(';')}</span>
+                       <span>{text.value?.split('&&@#@')?.join(';') || ''}</span>
+                     )
+                   }
+                   if (typeof text === 'string'){
+                     return(
+                       <span>{text?.split('&&@#@')?.join(';') || ''}</span>
                      )
                    }
                    return <span></span>
