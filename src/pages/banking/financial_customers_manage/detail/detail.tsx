@@ -55,16 +55,21 @@ export default () => {
                   <label>实缴资本：</label>
                   {detail?.actualCapital ? `${detail?.actualCapital}` : '--'}
                 </div>
-              </div>
-              <div>
                 <div className="item">
                   <label>注册地址：</label>
                   {detail?.regAddress || '--'}
+                </div>
+              </div>
+              <div>
+                <div className="item">
+                  <label>法人证件号码：</label>
+                  {detail?.legalCard ? detail?.legalCard.replace(/^(.{4})(?:\d+)(.{4})$/, '$1******$2') : '--'}
                 </div>
                 <div className="item">
                   <label>注册资本：</label>
                   {detail?.regCapital ? `${detail?.regCapital}` : '--'}
                 </div>
+                <div className="item" />
               </div>
               <div>
                 <div className="item">
@@ -75,6 +80,7 @@ export default () => {
                   <label>经营所在地：</label>
                   {detail?.busAddress || '--'}
                 </div>
+                <div className="item" />
               </div>
             </div>
           </div>
