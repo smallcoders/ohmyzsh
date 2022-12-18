@@ -18,7 +18,7 @@ import UploadFormFile from '@/components/upload_form/upload-form-file';
 import React, { useState, useEffect, useImperativeHandle, forwardRef } from 'react';
 import { routeName } from '@/../config/routes';
 import { history, Prompt } from 'umi';
-import { getCreditDetail, updateCreditInfo, getTakeMoneyDetail } from '@/services/banking-loan';
+import { getCreditDetail, updateInsurance, getTakeMoneyDetail } from '@/services/banking-loan';
 import { regFenToYuan, regYuanToFen, customToFixed } from '@/utils/util';
 import patchDownloadFile from '@/utils/patch-download-file';
 import type BankingLoan from '@/types/banking-loan.d';
@@ -64,7 +64,7 @@ export default forwardRef((props: Props, ref) => {
           data.endDate = creditTime[1].format('YYYY-MM-DD');
         }
 
-        const res = await updateCreditInfo(data);
+        const res = await updateInsurance(data);
         if (res?.code == 0) {
           setFormIsChange(false);
           if (cb) {

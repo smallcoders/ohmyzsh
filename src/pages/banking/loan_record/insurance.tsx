@@ -579,7 +579,7 @@ export default () => {
       } else {
         data = { ...searchContent };
       }
-      const res = await loanRecordExport(data);
+      const res = await loanRecordExport({ ...data, type: 5 });
       const content = res?.data;
       const blob = new Blob([content], {
         type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8',
