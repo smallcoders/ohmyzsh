@@ -91,6 +91,18 @@ export async function updateCreditInfo(data: { [key: string]: any }) {
 }
 
 /**
+ * 编辑或修改保单信息
+ * @param data
+ * @returns
+ */
+export async function updateInsurance(data: { [key: string]: any }) {
+  return request<any>('/antelope-finance/loanRecord/mng/updateInsurance', {
+    method: 'post',
+    data,
+  });
+}
+
+/**
  * 备注
  * @param data
  * @returns

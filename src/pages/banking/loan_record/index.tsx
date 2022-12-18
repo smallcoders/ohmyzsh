@@ -39,7 +39,7 @@ import {
 } from '@/services/banking-loan';
 
 const sc = scopedClasses('loan-record-list');
-const { DataSourcesTrans, creditStatusTrans } = BankingLoan;
+const { DataSourcesTrans, creditStatusTrans, creditStatusLeaseTrans } = BankingLoan;
 
 export default ({ loanType, name }: { loanType: number; name: string }) => {
   const [dataSource, setDataSource] = useState<BankingLoan.Content[]>([]);
@@ -508,7 +508,9 @@ export default ({ loanType, name }: { loanType: number; name: string }) => {
                 <Col span={8}>
                   <Form.Item name="creditStatus" label="授信状态">
                     <Select placeholder="请选择" allowClear showArrow mode="multiple">
-                      {Object.entries(creditStatusTrans).map((p) => {
+                      {Object.entries(
+                        loanType === 3 ? creditStatusLeaseTrans : creditStatusTrans,
+                      ).map((p) => {
                         return (
                           <Select.Option key={p[0]} value={p[0]}>
                             {p[1]}
@@ -634,7 +636,7 @@ export default ({ loanType, name }: { loanType: number; name: string }) => {
       } else {
         data = { ...searchContent };
       }
-      const res = await loanRecordExport(data);
+      const res = await loanRecordExport({ ...data, type: loanType });
       const content = res?.data;
       const blob = new Blob([content], {
         type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8',

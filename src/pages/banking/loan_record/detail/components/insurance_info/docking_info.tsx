@@ -18,7 +18,7 @@ import UploadFormFile from '@/components/upload_form/upload-form-file';
 import React, { useState, useEffect, useImperativeHandle, forwardRef } from 'react';
 import { routeName } from '@/../config/routes';
 import { history, Prompt } from 'umi';
-import { getCreditDetail, updateCreditInfo, getTakeMoneyDetail } from '@/services/banking-loan';
+import { getCreditDetail, updateInsurance, getTakeMoneyDetail } from '@/services/banking-loan';
 import { regFenToYuan, regYuanToFen, customToFixed } from '@/utils/util';
 import patchDownloadFile from '@/utils/patch-download-file';
 import type BankingLoan from '@/types/banking-loan.d';
@@ -65,7 +65,7 @@ export default forwardRef((props: Props, ref) => {
           data.endDate = creditTime[1].format('YYYY-MM-DD');
         }
 
-        const res = await updateCreditInfo(data);
+        const res = await updateInsurance(data);
         if (res?.code == 0) {
           setFormIsChange(false);
           if (cb) {
@@ -158,13 +158,13 @@ export default forwardRef((props: Props, ref) => {
               creditAmount,
               contractNo,
               rate,
-              workProves,
+              checkProves,
               refuseReason,
               ...rest
             } = result;
             const creditTime = startDate ? [moment(startDate), moment(endDate)] : [];
             form.setFieldsValue({
-              fileIds: workProves?.map((item: BankingLoan.workProves) => {
+              fileIds: checkProves?.map((item: BankingLoan.workProves) => {
                 return {
                   name: item.name + '.' + item.format,
                   path: item.path,
@@ -225,10 +225,10 @@ export default forwardRef((props: Props, ref) => {
     getDetail();
   }, []);
   const showfile = () => {
-    const imgList = detail?.workProves?.filter(
+    const imgList = detail?.checkProves?.filter(
       (item) => previewType.includes(item.format) && item.format !== 'pdf',
     );
-    const fileList = detail?.workProves?.filter(
+    const fileList = detail?.checkProves?.filter(
       (item) => !(previewType.includes(item.format) && item.format !== 'pdf'),
     );
     return (
@@ -412,7 +412,7 @@ export default forwardRef((props: Props, ref) => {
                   style={{ padding: 0, height: '24px', marginBottom: '16px' }}
                   onClick={() => {
                     patchDownloadFile(
-                      detail.workProves,
+                      detail.checkProves,
                       `对接信息凭证${moment().format('YYYYMMDD')}`,
                     );
                   }}
