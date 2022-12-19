@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import {
-  Checkbox, Form, Input, Modal,
+  Checkbox, Form, Input, InputNumber, Modal,
   Select,
 } from 'antd';
 import { useConfig } from '../hooks/hooks'
@@ -9,10 +9,11 @@ import { DesignContext } from '@/pages/page_creat_manage/edit/store';
 import { clone, cloneDeep } from 'lodash-es';
 import { ActionType } from '@/pages/page_creat_manage/edit/store/action';
 
-const SelectConfig = () => {
+const MultipleSelectConfig = () => {
+  const { selectWidgetItem, handleChange } = useConfig()
   const { state, dispatch } = useContext(DesignContext)
   const { widgetFormList } = state
-  const { selectWidgetItem, handleChange } = useConfig()
+  const [showLengthInput, setShowLengthInput] = useState<boolean>(false)
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
   const componentsList = widgetFormList.filter((listItem) => {
     return listItem.key !== selectWidgetItem!.key
@@ -80,8 +81,8 @@ const SelectConfig = () => {
           }}
           onBlur={(e) => {
             if(!e.target.value){
-              handleChange('下拉框', 'label')
-              handleChange("下拉框", 'config.paramDesc')
+              handleChange('下拉复选框', 'label')
+              handleChange("下拉复选框", 'config.paramDesc')
             }
           }}
         />
@@ -92,7 +93,11 @@ const SelectConfig = () => {
           显示标题
         </Checkbox>
       </Form.Item>
-      <Form.Item required label="参数名" tooltip="此项用于统计数据时定义字段，只允许输入大小写字母、下划线及数字">
+      <Form.Item
+        required
+        label="参数名"
+        tooltip="此项用于统计数据时定义字段，只允许输入大小写字母、下划线及数字"
+      >
         {selectWidgetItem?.errorMsg && <div className="config-error-msg">{selectWidgetItem.errorMsg}</div>}
         <Input
           value={selectWidgetItem?.config?.paramKey}
@@ -103,7 +108,7 @@ const SelectConfig = () => {
             } else if(/[^\w]/g.test(e.target.value)){
               handleChange('只允许输入大小写字母、下划线及数字', 'errorMsg')
               return
-            } {
+            }else {
               const repeatParam = widgetFormList.filter((item: any) => {
                 return item.key !== selectWidgetItem!.key && item.config.paramKey === selectWidgetItem!.config!.paramKey
               })
@@ -114,7 +119,7 @@ const SelectConfig = () => {
               }
             }
           }}
-          onChange={(event) =>{
+          onChange={(event) => {
             handleChange(event.target.value, 'config.paramKey')
           }}
         />
@@ -126,7 +131,7 @@ const SelectConfig = () => {
           onChange={(event) => handleChange(event.target.value, 'config.desc')}
         />
       </Form.Item>
-      <OptionSourceTypeConfig />
+      <OptionSourceTypeConfig multiple />
       <Form.Item label="题目关联">
         <div className="related-click" onClick={() => {
           setIsModalOpen(true)
@@ -134,6 +139,7 @@ const SelectConfig = () => {
       </Form.Item>
       <Form.Item label="默认选择">
         <Select
+          mode="multiple"
           options={selectWidgetItem?.config?.options}
           value={selectWidgetItem?.config?.defaultValue}
           onChange={(option) => {
@@ -154,6 +160,28 @@ const SelectConfig = () => {
         >
           该项为必填项
         </Checkbox>
+        <Form.Item >
+          <Checkbox
+            checked={showLengthInput}
+            onChange={(e) => {
+              setShowLengthInput(e.target.checked)
+              if (!e.target.checked){
+                handleChange(selectWidgetItem?.config?.options.length, 'config.maxLength')
+              }
+            }}
+          >
+            最多选择几项
+          </Checkbox>
+          {
+            showLengthInput &&
+            <InputNumber
+              max={selectWidgetItem?.config?.options.length}
+              min={2}
+              value={selectWidgetItem?.config?.maxLength}
+              onChange={(value) => handleChange(value, 'config.maxLength')}
+            />
+          }
+        </Form.Item>
       </Form.Item>
       <Modal
         title="题目关联"
@@ -215,4 +243,4 @@ const SelectConfig = () => {
   )
 }
 
-export default SelectConfig
+export default MultipleSelectConfig

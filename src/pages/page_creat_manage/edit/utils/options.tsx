@@ -1,4 +1,4 @@
-import React, { Dispatch } from 'react'
+import { Dispatch } from 'react'
 import { Menu } from 'antd'
 
 const createOptions = (option: string) => ({ label: option, value: option })
@@ -70,7 +70,31 @@ export const paramsTypeOptions =[
     value: "number"
   }
 ]
+
+// 省市区类型
+export const provinceCascadeOption =[
+  {
+    label: "省",
+    value: "province"
+  },
+  {
+    label: "省市",
+    value: "city"
+  },
+  {
+    label: "省市区",
+    value: "county"
+  },
+  {
+    label: "省市区-详细地址",
+    value: "detailAddress"
+  },
+]
 export const dateTypeOptions =[
+  {
+    label: "年",
+    value: "YYYY"
+  },
   {
     label: "年月",
     value: "YYYY-MM"
@@ -82,29 +106,35 @@ export const dateTypeOptions =[
   {
     label: "年月日时分",
     value: "YYYY-MM-DD HH:mm"
-  },
-  {
-    label: "年月日时分",
-    value: "YYYY-MM-DD HH:mm:ss"
   }
 ]
 // 正则表达式
 export const regOptions = [
   {
-    label: "身份证",
-    value: "/^[1-9]\\d{7}((0\\d)|(1[0-2]))(([0|1|2]\\d)|3[0-1])\\d{3}$|^[1-9]\\d{5}[1-9]\\d{3}((0\\d)|(1[0-2]))(([0|1|2]\\d)|3[0-1])\\d{3}([0-9]|X)$/",
+    label: '无',
+    value: ''
+  },
+  // {
+  //   label: "身份证",
+  //   value: "/^[1-9]\\d{7}((0\\d)|(1[0-2]))(([0|1|2]\\d)|3[0-1])\\d{3}$|^[1-9]\\d{5}[1-9]\\d{3}((0\\d)|(1[0-2]))(([0|1|2]\\d)|3[0-1])\\d{3}([0-9]|X)$/",
+  // },
+  // {
+  //   label: "邮箱",
+  //   value: "/^[A-Za-z0-9\u4e00-\u9fa5]+@[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_-]+)+$/",
+  // },
+  {
+    label: "手机号码",
+    value: "^1[3-9]\\d{9}$",
+    errorMsg: '请输入正确的11位手机号码',
+    type: 'number',
+    maxLength: 11
   },
   {
-    label: "邮箱",
-    value: "/^[A-Za-z0-9\u4e00-\u9fa5]+@[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_-]+)+$/",
-  },
-  {
-    label: "手机号",
-    value: "/^1[3-9]\\d{9}$/",
-  },
-  {
-    label: "座机号(可以不加区号,可以不加-)",
-    value: "/((^0\\d{2,3})-?)?\\d{7,8}$/"
+    label: "联系号码",
+    value: "^\\d{1,16}$",
+    errorMsg: '请输入正确的联系号码',
+    type: 'number',
+    maxLength: 16,
   }
 ]
 

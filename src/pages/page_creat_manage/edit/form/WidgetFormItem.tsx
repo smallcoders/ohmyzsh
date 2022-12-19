@@ -1,4 +1,13 @@
-import { FC, MouseEvent, useContext, useEffect, memo, useMemo, useRef, useState } from 'react';
+import {
+  FC,
+  MouseEvent,
+  useContext,
+  useEffect,
+  memo,
+  useMemo,
+  useRef,
+  useState
+} from 'react';
 import {
   Col,
   Row,
@@ -8,7 +17,9 @@ import {
   Checkbox,
   Input,
   Radio, Modal,
-  Popconfirm
+  Popconfirm,
+  Select,
+  DatePicker, Cascader,
 } from 'antd';
 import Sortable from 'sortablejs'
 import { cloneDeep, isArray, isString } from 'lodash-es'
@@ -23,13 +34,19 @@ import { removeDomNode, createNewWidgetFormList } from '../utils'
 interface Props {
   item: Component
   formInstance: FormInstance
+  areaCodeOptions: {
+    county: any[],
+    city: any[],
+    province: any[]
+  }
 }
 
 const WidgetFormItem: FC<Props> = (props) => {
   const {
     item,
     item: { key, type, label, config, childNodes, formItemConfig },
-    formInstance
+    formInstance,
+    areaCodeOptions
   } = props
 
   const {
@@ -49,6 +66,10 @@ const WidgetFormItem: FC<Props> = (props) => {
   )
 
   const [checkBoxValue, setCheckBoxValue] = useState<string[]>([])
+
+  const [mulSelectValue, setMulSelectValue] = useState<string[]>([])
+
+  const [imageSelectValue, setImageSelectValue] = useState<string[]>([])
 
   const commonProps: Record<string, any> = {
     ...config,
@@ -79,7 +100,7 @@ const WidgetFormItem: FC<Props> = (props) => {
       const options: Sortable.Options = {
         ghostClass: 'ghost',
         handle: '.drag-widget',
-        animation: 200,
+        animation: 100,
         group: {
           name: 'people'
         },
@@ -250,7 +271,7 @@ const WidgetFormItem: FC<Props> = (props) => {
           {type === 'Row' && (
             <Row {...commonProps} ref={sortableGroupDecorator}>
               {childNodes?.map((widgetFormItem) => (
-                <WidgetFormItem key={widgetFormItem.key} item={widgetFormItem} formInstance={formInstance} />
+                <WidgetFormItem areaCodeOptions={areaCodeOptions} key={widgetFormItem.key} item={widgetFormItem} formInstance={formInstance} />
               ))}
               {renderActionIcon()}
             </Row>
@@ -258,7 +279,7 @@ const WidgetFormItem: FC<Props> = (props) => {
           {type === 'Col' && (
             <Col {...commonProps} ref={sortableGroupDecorator}>
               {childNodes?.map((widgetFormItem) => (
-                <WidgetFormItem key={widgetFormItem.key} item={widgetFormItem} formInstance={formInstance} />
+                <WidgetFormItem areaCodeOptions={areaCodeOptions} key={widgetFormItem.key} item={widgetFormItem} formInstance={formInstance} />
               ))}
               {renderActionIcon()}
             </Col>
@@ -267,7 +288,7 @@ const WidgetFormItem: FC<Props> = (props) => {
             <div className={className} ref={sortableGroupDecorator}>
               <Space {...commonProps}>
                 {childNodes?.map((widgetFormItem) => (
-                  <WidgetFormItem key={widgetFormItem.key} item={widgetFormItem} formInstance={formInstance} />
+                  <WidgetFormItem areaCodeOptions={areaCodeOptions} key={widgetFormItem.key} item={widgetFormItem} formInstance={formInstance} />
                 ))}
               </Space>
               {renderActionIcon()}
@@ -316,10 +337,39 @@ const WidgetFormItem: FC<Props> = (props) => {
             {
               config?.desc && <div className="question-desc">{config.desc}</div>
             }
-            <Form.Item name={key}>
+            <Form.Item
+              name={key}
+              validateTrigger="onBlur"
+              getValueFromEvent={(e) => {
+                let newValue = e.target.value
+                if (newValue && config?.regInfo?.reg){
+                  newValue = newValue?.replace(/[^\d+]/g, '')
+                  formInstance.setFieldsValue({key: newValue})
+                }
+                return newValue
+              }}
+              rules={
+                [{
+                  validator: (_, value) => {
+                    if (config?.required && !value){
+                      return Promise.reject(new Error('请输入内容'))
+                    }
+                    if (config?.regInfo?.reg && value){
+                      const reg = new RegExp(config?.regInfo?.reg)
+                      const validResult = reg.test(value)
+                      if (!validResult){
+                        return Promise.reject(new Error(config?.regInfo?.errorMsg))
+                      }
+                      return Promise.resolve()
+                    }
+                    return Promise.resolve()
+                  }
+                }]
+              }
+            >
               <Input
                 allowClear={config?.allowClear}
-                maxLength={config?.maxLength}
+                maxLength={config?.regInfo?.maxLength || config?.maxLength}
                 placeholder={config?.placeholder}
               />
             </Form.Item>
@@ -330,11 +380,39 @@ const WidgetFormItem: FC<Props> = (props) => {
             {
               config?.desc && <div className="question-desc">{config.desc}</div>
             }
-            <Form.Item name={key}>
+            <Form.Item
+              name={key}
+              validateTrigger="onBlur"
+              getValueFromEvent={(e) => {
+                let newValue = e.target.value
+                if (newValue && config?.regInfo?.reg){
+                  newValue = newValue?.replace(/[^\d+]/g, '')
+                  formInstance.setFieldsValue({key: newValue})
+                }
+                return newValue
+              }}
+              rules={
+                [{
+                  validator: (_, value) => {
+                    if (config?.required && !value){
+                      return Promise.reject(new Error('请输入内容'))
+                    }
+                    if (config?.regInfo?.reg && value){
+                      const reg = new RegExp(config?.regInfo?.reg)
+                      const validResult = reg.test(value)
+                      if (!validResult){
+                        return Promise.reject(new Error(config?.regInfo?.errorMsg))
+                      }
+                      return Promise.resolve()
+                    }
+                    return Promise.resolve()
+                  }
+                }]
+              }
+            >
               <Input.TextArea
-                // autoSize={config?.autoSize}
                 rows={4}
-                maxLength={config?.maxLength}
+                maxLength={config?.regInfo?.maxLength || config?.maxLength}
                 placeholder={config?.placeholder}
               />
             </Form.Item>
@@ -352,6 +430,143 @@ const WidgetFormItem: FC<Props> = (props) => {
                 })}
                 optionType={config?.optionType}
               />
+            </Form.Item>
+          </Form.Item>
+        )}
+        {type === 'MultipleSelect' && (
+          <Form.Item label={config?.showLabel ? label : ''} required={config?.required}>
+            {
+              config?.desc && <div className="question-desc">{config.desc}</div>
+            }
+            <Form.Item
+              name={key}
+              getValueFromEvent={(value) => {
+                const newValue = value.length > config?.maxLength ? value.filter((checkItem: string) => {
+                  return mulSelectValue.indexOf(checkItem) !== -1
+                }): value
+                setMulSelectValue(newValue)
+                formInstance.setFieldsValue({key: newValue})
+                return newValue
+              }}
+            >
+              <Select
+                options={config?.options.map((optionItem: {label: string, value: string}, index: number) => {
+                  return {label: optionItem.label, value: `${optionItem.value}_${index}`}
+                })}
+                allowClear
+                placeholder={config?.placeholder}
+                mode="multiple"
+                onChange={(value)=>{
+                  if (value.length > config?.maxLength){
+                    Modal.info({
+                      title: '提示',
+                      content: `此题最多只能选择${config?.maxLength}项`,
+                      okText: '我知道了',
+                    });
+                  }
+                }}
+              />
+            </Form.Item>
+          </Form.Item>
+        )}
+        {type === 'DatePicker' && (
+          <Form.Item label={config?.showLabel ? label : ''} required={config?.required}>
+            {
+              config?.desc && <div className="question-desc">{config.desc}</div>
+            }
+            <Form.Item name={key}>
+              <DatePicker
+                showTime={config?.showTime}
+                format={config?.format}
+                placeholder={config?.placeholder}
+                picker={config?.picker}
+              />
+            </Form.Item>
+          </Form.Item>
+        )}
+        {type === 'Select' && (
+          <Form.Item label={config?.showLabel ? label : ''} required={config?.required}>
+            {
+              config?.desc && <div className="question-desc">{config.desc}</div>
+            }
+            <Form.Item name={key}>
+              <Select
+                options={config?.options.map((optionItem: {label: string, value: string}, index: number) => {
+                  return {label: optionItem.label, value: `${optionItem.value}_${index}`}
+                })}
+                allowClear
+                placeholder={config?.placeholder}
+              />
+            </Form.Item>
+          </Form.Item>
+        )}
+        {type === 'Cascader' && (
+          <Form.Item label={config?.showLabel ? label : ''} required={config?.required}>
+            {
+              config?.desc && <div className="question-desc">{config.desc}</div>
+            }
+            <Form.Item name={key}>
+              <Cascader
+                fieldNames={{ label: 'name', value: 'code', children: 'nodes' }}
+                options={config?.selectType === 'detailAddress' ? areaCodeOptions.county : areaCodeOptions[config?.selectType || 'county']}
+                allowClear
+              />
+            </Form.Item>
+            {
+              config?.selectType === 'detailAddress' &&
+              <Form.Item name={key}>
+                <Input.TextArea
+                  rows={4}
+                  maxLength={200}
+                  showCount
+                  placeholder='请填写详细地址'
+                />
+              </Form.Item>
+            }
+          </Form.Item>
+        )}
+        {type === 'ImagePicker' && (
+          <Form.Item label={config?.showLabel ? label : ''} required={config?.required}>
+            {
+              config?.desc && <div className="question-desc">{config.desc}</div>
+            }
+            <Form.Item
+              name={key}
+              getValueFromEvent={(value) => {
+                const newValue = value.length > config?.maxLength ? value.filter((checkItem: string) => {
+                  return imageSelectValue.indexOf(checkItem) !== -1
+                }): value
+                setImageSelectValue(newValue)
+                formInstance.setFieldsValue({key: newValue})
+                return newValue
+              }}
+            >
+              <Checkbox.Group
+                className="image-picker"
+                onChange={(value)=>{
+                  if (value.length > config?.maxLength){
+                    Modal.info({
+                      title: '提示',
+                      content: `此题最多只能选择${config?.maxLength}项`,
+                      okText: '我知道了',
+                    });
+                  }
+                }}
+              >
+                {
+                  config?.options.map((imgItem: {value: string, label: string}, index: number) => {
+                    return (
+                      <Checkbox key={index} value={imgItem.value}>
+                        {
+                          imgItem.value ? <div className="no-img"><img className="img" src={imgItem.value} alt='' /></div>
+                            : <div className="no-img" />
+                        }
+                        <div className="img-picker-label">{imgItem.label}</div>
+                      </Checkbox>
+                    )
+                  })
+                }
+              </Checkbox.Group>
             </Form.Item>
           </Form.Item>
         )}
