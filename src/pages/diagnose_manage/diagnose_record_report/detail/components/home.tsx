@@ -1,36 +1,12 @@
 /* eslint-disable */
-import { Table, message, Select, Tooltip } from 'antd';
-const { Option } = Select;
-import { MenuOutlined } from '@ant-design/icons';
 import '../service-config-diagnose-manage.less';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
 import DiagnoseManage from '@/types/service-config-diagnose-manage';
-import type { SortableContainerProps, SortEnd } from 'react-sortable-hoc';
-import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
-import DataColumn from '@/types/data-column';
-import {
-	editOrgList,
-  } from '@/services/digital-application';
 type DiagnoseResult = DiagnoseManage.Diagnose;
-import { history, Access, useAccess } from 'umi';
-import {
-  getOrgTypeList,
-  sortOrgType,
-  removeOrgType
-} from '@/services/diagnose-manage';
-import { arrayMoveImmutable } from 'array-move';
-import moment from 'moment';
 
 const sc = scopedClasses('service-config-diagnose-manage');
 
-const DragHandle = SortableHandle(() => <MenuOutlined style={{ cursor: 'grab', color: '#999' }} />);
-const SortableItem = SortableElement((props: React.HTMLAttributes<HTMLTableRowElement>) => (
-  <tr {...props} />
-));
-const SortableBody = SortableContainer((props: React.HTMLAttributes<HTMLTableSectionElement>) => (
-  <tbody {...props} />
-));
 
 const TableList: React.FC = () => {
   const [resultObj, setResultObj] = useState<DiagnoseResult>({})
@@ -39,17 +15,18 @@ const TableList: React.FC = () => {
 		setResultObj({
       "name": "111",
       "summary": "111",
-      "recommendations": "",
-      "remind": "",
+      "recommendations": "建议",
+      "remind": "2223夫人全国v",
       "defaultDiagnoseResult": false,
-      "relations": null,
-      "relatedRelation": null,
-      "relatedServers": null,
-      "relatedTechnicalManager": null,
-      "offerings": "111",
-      "offeringsFile": null,
-      "offeringsFileName": "",
-      "offeringsFilePath": ""
+      "relatedServers": ['1号服务商', '2号服务商'],
+      "relatedTechnicalManager": {
+        "name": "jingqin5",
+        "phone": "18326676793"
+      },
+      "offerings": "555",
+      "offeringsFile": "1666085316000001",
+      "offeringsFileName": "办公室入住指引.pdf",
+      "offeringsFilePath": "https://oss.lingyangplat.com/iiep-dev/d7d37ce13c024a9cbfcce4b6c5ab4594.pdf"
     })
 	}
   useEffect(() => {
@@ -68,28 +45,29 @@ const TableList: React.FC = () => {
 					<p>{resultObj && resultObj.remind || ''}</p>
 					<h3>服务方案</h3>
 					<p>{resultObj && resultObj.offerings || ''}</p>
-					<a href={resultObj.offeringsFilePath}>{resultObj.offeringsFileName}</a>
+					<a href={resultObj.offeringsFilePath} target="_blank">{resultObj.offeringsFileName}</a>
 					<h3>推荐服务商</h3>
 					<p>{resultObj&&resultObj.relatedServers&&resultObj.relatedServers.join(',') || ''}</p>
 					<h3>推荐技术经理人</h3>
 					<p>{resultObj && resultObj.relatedTechnicalManager && resultObj.relatedTechnicalManager.name || ''} {resultObj && resultObj.relatedTechnicalManager && resultObj.relatedTechnicalManager.phone || ''}</p>
 					<h3>推荐金融产品</h3>
+          <div className='banking-product-wrapper'>
+            <div>雇主责任险</div>
+            <div>
+              <label>最高保障</label>
+              <p>100万</p>
+            </div>
+            <div>
+              <label>保险期限</label>
+              <p>12个月</p>
+            </div>
+            <div>
+              <label>最低费率</label>
+              <p>根据工种</p>
+            </div>
+            <div><a>产品详情 ></a></div>
+          </div>
 				</div>
-      {/* <div className={sc('container-table-body')}>
-        <Table
-          pagination={false}
-          dataSource={dataSource}
-          columns={columns}
-          bordered
-          rowKey="sort"
-          components={{
-            body: {
-              wrapper: DraggableContainer,
-              row: DraggableBodyRow,
-            },
-          }}
-        />
-      </div> */}
     </div>
   );
 };

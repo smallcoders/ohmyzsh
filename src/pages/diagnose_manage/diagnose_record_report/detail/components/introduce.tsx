@@ -1,121 +1,194 @@
 /* eslint-disable */
-import { Table, message, Select } from 'antd';
-const { Option } = Select;
+import {  Form } from 'antd';
 import '../service-config-diagnose-manage.less';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
-import Common from '@/types/common';
-import { getOrgTypeList } from '@/services/diagnose-manage';
-import { history } from 'umi';
+import QuestionnaireTopicList from './questionnaire-topic-list'
 
 const sc = scopedClasses('service-config-diagnose-manage');
 
 const Introduce: React.FC = () => {
-  const [data, setData] = useState<any>([]);
-  const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
-    pageIndex: 1,
-    pageSize: 20,
-    totalCount: 0,
-    pageTotal: 0,
-  });
-  /**
-   * 获取数据栏
-   */
-  const getDataColumns = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
-    try {
-      let {result, code, totalCount, pageTotal} = await getOrgTypeList({state: 0,pageIndex,pageSize});
-      if (code === 0) {
-        setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
-        setData(result);
-      } else {
-        message.error(`请求分页数据失败`);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  useEffect(() => {
-    getDataColumns()
-  }, []);
+  const [diagnoseList, setDiagnoseList] = useState<any>([]);
+  const [questionsForm] = Form.useForm()
 
-  // 查看历史版本
-  const toVersion = async (value: any, record: any) => {
-    history.push((`/diagnose-manage/diagnose/history?version=${value}&firstQuestionnaireNo=${record?.firstQuestionnaireNo}`))
-  }
-  /**
-   * column
-   */
-  const columns = [
-    {
-      title: '序号',
-      dataIndex: 'sort',
-      width: 80,
-      render: (_: any, _record: any, index: number) =>
-        pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
-    },
-    {
-      title: '诊断名称',
-      dataIndex: 'name',
-      editable: true,
-      width: 150,
-    },
-    {
-      title: '下架时间',
-      dataIndex: 'stopTime',
-      editable: true,
-      width: 150,
-    },
-    {
-      title: '最新版本号',
-      dataIndex: 'latestVersion',
-      editable: true,
-      width: 150,
-    },
-    {
-      title: '操作',
-      dataIndex: 'option',
-      width: 140,
-      render: (_: any, record: any) => {
-        return (
-          <Select defaultValue="查看历史版本" style={{ width: 120 }} bordered={false}
-            onChange={(e) => toVersion(e, record)}
-          >
-            {record.allVersion && record.allVersion.map(item => {
-                return (
-                  <Option value={item}>{item}</Option>
-                )
-              })}
-          </Select>
-        );
+  useEffect(() => {
+    setDiagnoseList([
+      {
+          "name": "您的性别",
+          "type": "radio",
+          "required": true,
+          "subTitle": "",
+          "options": [
+              {
+                  "inputIsRequired": false,
+                  "label": "男",
+                  "allowInput": false
+              },
+              {
+                  "inputIsRequired": false,
+                  "label": "女",
+                  "allowInput": false
+              }
+          ],
+          "relations": [],
+          "relatedRelation": "",
+          "validate": null,
+          "maxLength": null,
+          "assignedProvince": null,
+          "questionNo": "69900bb0c4794c24948f53a13c215c39",
+          "isKey": false
       },
-    },
-  ];
+      {
+          "name": "您的爱好",
+          "type": "checkbox",
+          "required": true,
+          "subTitle": "",
+          "options": [
+              {
+                  "inputIsRequired": false,
+                  "label": "掼蛋",
+                  "allowInput": false
+              },
+              {
+                  "inputIsRequired": false,
+                  "label": "麻将",
+                  "allowInput": false
+              },
+              {
+                  "inputIsRequired": false,
+                  "label": "钓鱼",
+                  "allowInput": false
+              }
+          ],
+          "relations": [],
+          "relatedRelation": "",
+          "validate": null,
+          "maxLength": null,
+          "assignedProvince": null,
+          "questionNo": "bf805fd843a24e469e10612006235b0b",
+          "isKey": false
+      },
+      {
+          "name": "您的住址",
+          "type": "input",
+          "required": true,
+          "subTitle": "",
+          "options": null,
+          "relations": [
+              {
+                  "dependIndex": "0",
+                  "dependValue": [
+                      "男",
+                      "女"
+                  ]
+              }
+          ],
+          "relatedRelation": null,
+          "validate": 0,
+          "maxLength": 50,
+          "assignedProvince": null,
+          "questionNo": "81dc420c00a14be88b00d0252f43780a",
+          "isKey": false
+      },
+      {
+          "name": "您的手机号",
+          "type": "input",
+          "required": true,
+          "subTitle": "",
+          "options": null,
+          "relations": [
+              {
+                  "dependIndex": "1",
+                  "dependValue": [
+                      "掼蛋",
+                      "麻将",
+                      "钓鱼"
+                  ]
+              }
+          ],
+          "relatedRelation": null,
+          "validate": 1,
+          "maxLength": 50,
+          "assignedProvince": null,
+          "questionNo": "f17adf4fd8e24e51b8f180ceabe9e500",
+          "isKey": false
+      },
+      {
+          "name": "您所属的行政区划",
+          "type": "cascader",
+          "required": true,
+          "subTitle": "",
+          "options": null,
+          "relations": [],
+          "relatedRelation": "",
+          "validate": null,
+          "maxLength": null,
+          "assignedProvince": "340000",
+          "questionNo": "3fdad5e21a6345d3aba9b7fe9d5a20e3",
+          "isKey": false
+      },
+      {
+          "name": "您的预存款为？",
+          "type": "input",
+          "required": true,
+          "subTitle": "",
+          "options": null,
+          "relations": [],
+          "relatedRelation": "",
+          "validate": 2,
+          "maxLength": 50,
+          "assignedProvince": null,
+          "questionNo": "9e0c8268d53a49889448a62f9e8006a1",
+          "isKey": false
+      },
+      {
+          "name": "备注",
+          "type": "textarea",
+          "required": true,
+          "subTitle": "",
+          "options": null,
+          "relations": [],
+          "relatedRelation": "",
+          "validate": 0,
+          "maxLength": 200,
+          "assignedProvince": null,
+          "questionNo": "2c973173706e4fa6859aa864c1a65a12",
+          "isKey": false
+      },
+      {
+          "name": "题目标题8",
+          "type": "radio",
+          "required": true,
+          "subTitle": "",
+          "options": [
+              {
+                  "inputIsRequired": false,
+                  "label": "1",
+                  "allowInput": false
+              },
+              {
+                  "inputIsRequired": false,
+                  "label": "2",
+                  "allowInput": false
+              }
+          ],
+          "relations": [],
+          "relatedRelation": "",
+          "validate": null,
+          "maxLength": null,
+          "assignedProvince": null,
+          "questionNo": "cc1dcbf02d7b47728c89255b4f079e82",
+          "isKey": false
+      }
+  ])
+  }, [])
 
   return (
     <div className={sc('container')}>
-      <div className={sc('container-table-header')}>
-        <div className="title">
-          <span>企业诊断列表</span>
+      <div className='preview-wrap'>
+        <div className='web-preview'>
+          <QuestionnaireTopicList topicTitle={'暂未设置问卷标题'} topicList={diagnoseList} form={questionsForm} />
         </div>
-      </div>
-      <div className={sc('container-table-body')}>
-        <Table scroll={{ x: 1080 }} 
-          pagination={
-            pageInfo.totalCount === 0
-              ? false
-              : {
-                  onChange: getDataColumns,
-                  total: pageInfo.totalCount,
-                  current: pageInfo.pageIndex,
-                  pageSize: pageInfo.pageSize,
-                  showTotal: (total) =>
-                    `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
-                }
-          }
-          columns={columns} 
-          bordered 
-          dataSource={data} 
-        />
       </div>
     </div>
   );

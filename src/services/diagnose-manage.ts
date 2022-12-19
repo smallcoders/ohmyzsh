@@ -55,3 +55,38 @@ export async function sortOrgType(list: string[]) {
     data: list,
   });
 }
+
+// ----------------------诊断记录报表----------------------------
+/**
+ * 分页查询
+ * @param params
+ */
+ export async function getRecordQueryPage(data?: { [key: string]: any }) {
+  return request('/antelope-diagnose/mng/diagnose/report/records', {
+    method: 'POST',
+    data,
+  });
+}
+
+/**
+ * 导出
+ * @param params
+ */
+export async function exportRecordQueryPage(data?: { [key: string]: any }) {
+  return request<any>('/antelope-diagnose/mng/diagnose/report/records/export',{
+    method: 'post',
+    data,
+    responseType: 'blob',
+    getResponse: true,
+  })
+}
+
+/**
+ * 根据id查询诊断包详情
+ * @param options
+ */
+ export async function getDiagnoseDetail(id: string) {
+  return request(`/antelope-diagnose/mng/diagnose/record/detail/${id}`, {
+    method: 'GET',
+  });
+}

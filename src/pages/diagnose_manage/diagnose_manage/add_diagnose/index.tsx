@@ -20,7 +20,8 @@ import {
 	Switch,
 	Upload
 } from 'antd';
-import { RcFile, UploadChangeParam } from 'antd/lib/upload';
+const { SHOW_CHILD } = Cascader;
+import { UploadChangeParam } from 'antd/lib/upload';
 import { UploadFile } from 'antd/lib/upload/interface';
 const { Option } = Select;
 import {
@@ -57,7 +58,6 @@ import React, { useEffect, useState, useRef } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import scopedClasses from '@/utils/scopedClasses';
 import { nanoid } from 'nanoid'
-import { defaultGetValueFromEvent } from '@ant-design/pro-form/lib/components/FieldSet';
 const sc = scopedClasses('service-config-add-diagnose');
 type EditType = DiagnoseManage.Content;
 type DiagnoseResult = DiagnoseManage.Diagnose;
@@ -1115,8 +1115,8 @@ export default () => {
 		return (
 			<Radio.Group value={edge} onChange={handleEdgeChange}>
 				<Radio.Button value={1}>诊断报告</Radio.Button>
-				<Radio.Button value={2}>关联题关联</Radio.Button>
 				<Radio.Button value={3}>资源关联</Radio.Button>
+				<Radio.Button value={2}>关联题关联</Radio.Button>
 			</Radio.Group>
 		);
 	};
@@ -1273,9 +1273,6 @@ export default () => {
 			maxSize: 30,
 			action: '/antelope-manage/common/upload/record',
 			onRemove: (file: UploadFile<any>) => {
-				//   if (file.status === 'uploading' || file.status === 'error') {
-				// 	setUploadLoading(false);
-				//   }
 				const files_copy = [...files];
 				const existIndex = files_copy.findIndex((p) => p.storeId === file?.response?.result);
 				if (existIndex > -1) {
@@ -1305,35 +1302,39 @@ export default () => {
 				}
 			}
 		};
-		const handleChange = (info: UploadChangeParam<UploadFile<any>>) => {
-			console.log(info, '---------------info');
-			// if (info.file.status === 'uploading') {
-			//   setUploadLoading(true);
-			//   return;
-			// }
-			// if (info.file.status === 'error') {
-			//   setUploadLoading(false);
-			//   return;
-			// }
-
-			// if (info.file.status === 'done') {
-			//   const uploadResponse = info?.file?.response;
-			//   if (uploadResponse?.code === 0 && uploadResponse.result) {
-			// 	const upLoadResult = info?.fileList.map((p) => {
-			// 	  return {
-			// 		picId: p.response?.result?.id,
-			// 		banner: p.response?.result?.path
-			// 	  };
-			// 	});
-			// 	// console.log(upLoadResult, '上传成功后的结果');
-			// 	setFiles(upLoadResult);
-			// 	setUploadLoading(false);
-			//   } else {
-			// 	setUploadLoading(false);
-			// 	message.error(`上传失败，原因:{${uploadResponse.message}}`);
-			//   }
-			// };
-		}
+		const bankingProductOptions = [
+			{
+			  label: 'Light',
+			  value: 'light',
+			  children: new Array(20)
+				.fill(null)
+				.map((_, index) => ({ label: `Number ${index}`, value: index })),
+			},
+			{
+			  label: 'Bamboo',
+			  value: 'bamboo',
+			  children: [
+				{
+				  label: 'Little',
+				  value: 'little',
+				  children: [
+					{
+					  label: 'Toy Fish',
+					  value: 'fish',
+					},
+					{
+					  label: 'Toy Cards',
+					  value: 'cards',
+					},
+					{
+					  label: 'Toy Bird',
+					  value: 'bird',
+					},
+				  ],
+				},
+			  ],
+			},
+		];
 		return (
 			<Modal
 				title={editResultIndex > -1 ? '编辑诊断结果' : '新建诊断结果'}
@@ -1599,6 +1600,17 @@ export default () => {
 										]}
 									>
 										<Input placeholder='请输入技术经理人手机号' maxLength={11} />
+									</Form.Item>
+									<h3 style={{ fontSize: '14px' }}>关联金融产品</h3>
+									<Form.Item name="bankingProduct">
+									<Cascader
+										style={{ width: '100%' }}
+										options={bankingProductOptions}
+										// onChange={onChange}
+										multiple
+										maxTagCount="responsive"
+										showCheckedStrategy={SHOW_CHILD}
+									/>
 									</Form.Item>
 								</>
 							)}

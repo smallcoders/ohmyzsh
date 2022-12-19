@@ -2,6 +2,36 @@
 @prefix: service-config-diagnose-manage;
 
 .@{prefix}-container {
+  .container-info {
+    margin-bottom: 20px;
+    padding: 24px 40px;
+    background: #fff;
+    border-radius: 2px;
+    box-shadow: 0px 4px 16px 0px rgba(75,88,108,0.12); 
+    h3 {
+      font-size: 24px;
+      font-family: '微软雅黑 Bold, 微软雅黑 Bold-Bold';
+      font-weight: bold;
+      color: #1e232a
+    }
+    label {
+      display: inline-block;
+      width: 112px;
+      height: 24px;
+      font-size: 16px;
+      font-family: '微软雅黑, 微软雅黑-Regular';
+      font-weight: 400;
+      text-align: right;
+      color: #808da1;
+      line-height: 24px;
+    }
+    span {
+      font-size: 16px;
+      font-family: '微软雅黑, 微软雅黑-Regular';
+      font-weight: 400;
+      color: #4b586c;
+    }
+  }
   &-table-header {
     padding: 20px 20px 0;
     margin-top: 20px;
@@ -68,6 +98,44 @@
     &:hover {
       color: @primary;
       border: 1px solid @primary;
+    }
+  }
+  .preview-wrap {
+    margin-top: 20px;
+    padding: 32px 40px;
+    background: #fff;
+    h3 {
+      margin-top: 24px;
+      font-size: 16px;
+      font-family: '微软雅黑, 微软雅黑-Regular';
+      font-weight: 400;
+      color: #1e232a;
+    } 
+    h3:first-child {
+      margin-top: 0;
+    }
+    P {
+      font-size: 14px;
+      font-family: '微软雅黑, 微软雅黑-Regular';
+      font-weight: 400;
+      color: #4b586c;
+    }
+    .banking-product-wrapper {
+      width: 726px;
+      background: #ebeff7;
+      padding: 24px 0 0;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      p {
+        height: 48px;
+        line-height: 48px;
+        // padding-top: 16px;
+      }
+      div:first-child, div:last-child {
+        position: relative;
+        top: -13px;
+      }
     }
   }
 }
