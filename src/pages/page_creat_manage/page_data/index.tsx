@@ -65,7 +65,7 @@ export default () => {
                    if (text?.tmp_result_ver_unique_key && text?.file_type === 1){
                      return (
                        <div className="img-list">
-                         {text.value?.split('&&@#@') ? text.value?.split('&&@#@') : [text.value].map((it: string, index: number) => {
+                         {(text.value?.split('&&@#@') ? text.value?.split('&&@#@') : [text.value]).map((it: string, index: number) => {
                            return <img key={index} src={it} alt='' />
                          })}
                        </div>
