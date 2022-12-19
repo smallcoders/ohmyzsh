@@ -78,15 +78,15 @@ export const provinceCascadeOption =[
     value: "province"
   },
   {
-    label: "省市",
+    label: "省-市",
     value: "city"
   },
   {
-    label: "省市区",
+    label: "省-市-区",
     value: "county"
   },
   {
-    label: "省市区-详细地址",
+    label: "省-市-区/县-详细地址",
     value: "detailAddress"
   },
 ]
