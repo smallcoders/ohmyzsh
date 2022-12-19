@@ -1298,7 +1298,7 @@ export const componentsGroupList: ComponentGroup[] = [{
         paramDesc: '地址',
         paramType: '',
         showLabel: true,
-        selectType: 'county'
+        selectType: 'detailAddress'
       },
     },
     {

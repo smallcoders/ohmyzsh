@@ -514,7 +514,7 @@ const WidgetFormItem: FC<Props> = (props) => {
             </Form.Item>
             {
               config?.selectType === 'detailAddress' &&
-              <Form.Item name={key}>
+              <Form.Item name={`${key}_detailAddress`}>
                 <Input.TextArea
                   rows={4}
                   maxLength={200}
