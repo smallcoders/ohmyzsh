@@ -399,7 +399,7 @@ const ImagePickerConfig = () => {
                         newConfigOptions[index].showList = value
                         setConfigOptions(newConfigOptions)
                         // 当前组件所有选项的控制列表
-                        let controlKeyList: string[] = clone(controlList) || [];
+                        let controlKeyList: string[] = [];
                         newConfigOptions.forEach((optionItem: {showList: string[]}) => {
                           controlKeyList = [...new Set([...controlKeyList, ...(optionItem.showList || [])])]
                         })
