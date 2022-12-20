@@ -138,9 +138,12 @@ export default () => {
     return (
       <div className={sc('container-left')}>
         <div className={sc('container-left-title')}>{detail?.name || '--'}</div>
-        <div style={{marginBottom: '20px'}}>
-          <Image height={300} width={400} src={detail?.coverUrl} />
-        </div>
+        {
+          detail?.coverUrl &&
+          <div style={{marginBottom: '20px'}}>
+            <Image height={300} width={400} src={detail?.coverUrl} />
+          </div>
+        }
         <div className={sc('container-left-desc')}>
           <span>需求类型：</span>
           <span>{detail?.typeNames ? detail?.typeNames.join('、') : '--'}</span>
@@ -156,6 +159,32 @@ export default () => {
         <div className={sc('container-left-desc')}>
           <span>需求内容：</span>
           <span>{detail?.content || '--'}</span>
+        </div>
+        <div className={sc('container-left-label')}>企业基础信息</div>
+        <div className={sc('container-left-desc')}>
+          <span>组织信息展示：</span>
+          <span>{detail?.hide ? '隐藏' : '显示'}</span>
+        </div>
+        <div className={sc('container-left-desc')}>
+          <span>企业名称：</span>
+          <span>{detail?.orgName ? detail?.orgName : '--'}</span>
+        </div>
+        <div className={sc('container-left-desc')}>
+          <span>企业所在地：</span>
+          <span>{detail?.orgAreaName ? detail?.orgAreaName : '--'}</span>
+        </div>
+        <div className={sc('container-left-desc')}>
+          <span>所属产业：</span>
+          <span>{detail?.orgIndustryName ? detail?.orgIndustryName : '--'}</span>
+        </div>
+        <div className={sc('container-left-label')}>联系信息</div>
+        <div className={sc('container-left-desc')}>
+          <span>联系人：</span>
+          <span>{detail?.contact ? detail?.contact : '--'}</span>
+        </div>
+        <div className={sc('container-left-desc')}>
+          <span>联系电话：</span>
+          <span>{detail?.phone ? detail?.phone : '--'}</span>
         </div>
       </div>
     );
