@@ -152,9 +152,12 @@ export default () => {
     return (
       <div className={sc('container-left')}>
         <div className={sc('container-left-title')}>{detail?.name || '--'}</div>
-        <div style={{marginBottom: '20px'}}>
-          <Image height={300} width={400} src={detail?.coverUrl} />
-        </div>
+        {
+          detail?.coverUrl && 
+          <div style={{marginBottom: '20px'}}>
+            <Image height={300} width={400} src={detail?.coverUrl} />
+          </div>
+        }
         <div className={sc('container-left-desc')}>
           <span>需求类型：</span>
           <span>{detail?.typeNames ? detail?.typeNames.join('、') : '--'}</span>
