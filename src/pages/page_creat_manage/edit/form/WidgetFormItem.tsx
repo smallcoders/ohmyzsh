@@ -215,6 +215,40 @@ const WidgetFormItem: FC<Props> = (props) => {
     })
   }
 
+
+  const getDefaultShowList = (list: any) => {
+
+    let controlAllList: string[] = []
+    list.forEach((listItem: any) => {
+      controlAllList = [...new Set([...controlAllList, ...(listItem.controlList || [])])]
+    })
+    // 获取所有默认值 show_list
+    let showList: string[] = []
+    list.forEach((listItem: any) => {
+      const defaultValue = item.config?.defaultValue
+      if(defaultValue?.length &&
+        ['RadioGroup', 'CheckboxGroup', 'MultipleSelect', 'Select', 'ImagePicker'].indexOf(listItem.type) !== -1)
+      {
+        listItem.config.options.forEach((optionItem: {value: string, showList: string[]}) => {
+          if (defaultValue instanceof Array &&
+            defaultValue.indexOf(optionItem.value) !== -1
+          ){
+            showList = [...new Set([...showList, ...(optionItem.showList || [])])]
+          }
+          if (typeof defaultValue === 'string' && defaultValue === optionItem.value){
+            showList = [...new Set([...showList, ...(optionItem.showList || [])])]
+          }
+        })
+      }
+    })
+    // 将控制组件显示字段设置为true
+    const newList = list.map((it: any) => {
+      return {...it, hide: showList.indexOf(it.key!) !== -1 ? false : controlAllList.indexOf(it.key!) !== -1 ? true : false  }
+    })
+    console.log(newList, '0011newlist')
+    return newList
+  }
+
   const handleDeleteClick = (event: any) => {
     event.stopPropagation()
     const generateNewWidgetFormList = (list: Component[], currentKey: string) => {
@@ -232,7 +266,7 @@ const WidgetFormItem: FC<Props> = (props) => {
     }
     dispatch({
       type: ActionType.SET_WIDGET_FORM_LIST,
-      payload: generateNewWidgetFormList(widgetFormList, key!)
+      payload: getDefaultShowList(generateNewWidgetFormList(widgetFormList, key!))
     })
     dispatch({
       type: ActionType.SET_SELECT_WIDGET_ITEM,

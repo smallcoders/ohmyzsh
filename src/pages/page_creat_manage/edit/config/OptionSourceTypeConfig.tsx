@@ -49,6 +49,7 @@ const OptionSourceTypeConfig = (props: Props) => {
     setErrorMsg([...new Set(valueList)].length < valueList.length ? '选项重复，请修改' : "")
   }
   const options = selectWidgetItem?.config?.options
+  console.log()
   return (
     <Form.Item label="选项">
       {
