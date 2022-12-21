@@ -81,3 +81,59 @@ export async function signOrgTag(data?: { [key: string]: any }) {
   });
 }
 
+/**
+ * 查询组织成员信息（组织名称、管理员名称）
+ * */
+export async function getOrgManageInfo(orgId?: string) {
+  return request<any>(`/antelope-user/mng/org/member/info?orgId=${orgId}`, {
+    method: 'get',
+  });
+}
+
+/**
+ * 查询组织成员列表
+ * */
+export async function getOrgMemberPage(data: any) {
+  return request<any>(`/antelope-user/mng/org/member/page`, {
+    method: 'post',
+    data,
+  });
+}
+
+/**
+ * 查询组织操作日志）
+ * */
+export async function getOrgOperationLog(orgId?: any) {
+  return request<any>(`/antelope-user/mng/org/operation/log?orgId=${orgId}`, {
+    method: 'get',
+  });
+}
+
+/**
+ * 审核
+ * */
+export async function putOrgAudit(data?: { [key: string]: any }) {
+  return request<any>(`/antelope-user/mng/org/member/audit`, {
+    method: 'put',
+    data,
+  });
+}
+
+/**
+ * 查询管理员交接可选列表
+ * */
+export async function postChangeAdminList(data: any) {
+  return request<any>(`/antelope-user/mng/org/changeAdminList`, {
+    method: 'post',
+    data,
+  });
+}
+
+/**
+ * 管理员交接
+ * */
+export async function putChangeAdmin(data:{orgId:any,userId:any}) {
+  return request<Common.ResultCode & { result: any }>(`/antelope-user/mng/org/changeAdmin?orgId=${data.orgId}&userId=${data.userId}`, {
+    method: 'put',
+  });
+}
