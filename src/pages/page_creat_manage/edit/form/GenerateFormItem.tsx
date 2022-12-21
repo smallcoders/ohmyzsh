@@ -330,7 +330,7 @@ const GenerateFormItem = (props: Props) => {
           }
         </Form.Item>
       )}
-      {type === 'ImagePicker' && (
+      {type === 'ImagePicker' && !hide && (
         <Form.Item label={config?.showLabel ? label : ''} required={config?.required}>
           {
             config?.desc && <div className="question-desc">{config.desc}</div>
