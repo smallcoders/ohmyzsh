@@ -17,9 +17,6 @@ export default () => {
     prepare();
   }, []);
 
-  useEffect(() => {
-    console.log('activeKey =>', activeKey)
-  }, [activeKey])
 
   return (
     <div>
