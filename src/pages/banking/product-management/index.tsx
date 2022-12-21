@@ -6,19 +6,13 @@ import {
   Row,
   Col,
   Popconfirm,
-  DatePicker,
   Modal,
   message,
   Space,
-  Dropdown,
-  Menu,
   Switch,
-  Tooltip,
 } from 'antd';
-import { PlusOutlined, ExclamationCircleOutlined, DownOutlined } from '@ant-design/icons';
-import type { TableRowSelection } from 'antd/es/table/interface';
+import { PlusOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
-import { ProFormDigitRange } from '@ant-design/pro-components';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
@@ -26,19 +20,8 @@ import type Common from '@/types/common';
 import moment from 'moment';
 import { routeName } from '@/../config/routes';
 import SelfTable from '@/components/self_table';
-import { UploadOutlined } from '@ant-design/icons';
-import FormEdit from '@/components/FormEdit';
-import BankingLoan from '@/types/banking-loan.d';
-import { history, useHistory } from 'umi';
-import { regFenToYuan, regYuanToFen } from '@/utils/util';
-import {
-  getLoanRecordList,
-  getTotalAmount,
-  queryBankList,
-  loanRecordExport,
-  takeNotes,
-  getTakeMoneyDetail,
-} from '@/services/banking-loan';
+import type BankingLoan from '@/types/banking-loan.d';
+import { history } from 'umi';
 import {
   getProductList,
   getProductType,
@@ -47,10 +30,8 @@ import {
   delProduct,
 } from '@/services/banking-product';
 import { statusMap, ObjectMap, guaranteeMethodMap, sortMap } from './constants';
-import type { TablePaginationConfig } from 'antd/es/table';
 import type { FilterValue, SorterResult } from 'antd/es/table/interface';
 const sc = scopedClasses('product-management');
-const { DataSourcesTrans, creditStatusTrans } = BankingLoan;
 
 export default () => {
   const [dataSource, setDataSource] = useState<BankingLoan.Content[]>([]);
@@ -79,10 +60,6 @@ export default () => {
   /**
    * 新建窗口的弹窗
    *  */
-  // const dialogFormLayout = {
-  //   labelCol: { span: 3 },
-  //   wrapperCol: { span: 18 },
-  // };
   const [form] = Form.useForm();
   const [createModalVisible, setModalVisible] = useState<boolean>(false);
   const [editingItem, setEditingItem] = useState<BankingLoan.Content>({});
@@ -90,8 +67,7 @@ export default () => {
     form.resetFields();
     if (editingItem.id) setEditingItem({});
   };
-  const [totalAmount, setTotalAmount] = useState<BankingLoan.totalAmountContent>({});
-  const [tableParams, setTableParams] = useState<string>(null);
+  const [tableParams, setTableParams] = useState<{ field?: string; order?: string }>({});
   const [productType, setProductType] = useState<any[]>([]);
   // const [isMore, setIsMore] = useState<boolean>(false);
 
@@ -470,12 +446,13 @@ export default () => {
   };
 
   const handleTableChange = (
-    pagination: TablePaginationConfig,
+    pagination: any,
     filters: Record<string, FilterValue>,
     sorter: SorterResult<any>,
   ) => {
-    console.log(pagination, filters, sorter);
-    setTableParams(sorter.order || null);
+    setPageInfo({ ...pageInfo, pageIndex: pagination.current });
+    setTableParams({ ...sorter });
+    getPage(pagination.current);
   };
 
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {

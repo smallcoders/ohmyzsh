@@ -3,7 +3,7 @@ import scopedClasses from '@/utils/scopedClasses';
 import { history } from 'umi';
 import { Button, message } from 'antd';
 import { getProductInfo, queryPurpose } from '@/services/banking-product';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { IsCirculationLoanMap, guaranteeMethodMap, ObjectMap } from '../constants';
 import '@/components/FormEdit/index.less';
 import './index.less';
@@ -87,8 +87,8 @@ export default () => {
                 <div className={sc('page-item-body-item-wrap')}>
                   {(detail.loanIds &&
                     purpose
-                      ?.filter((it) => detail.loanIds.split(',')?.includes(it.id.toString()))
-                      .map((it) => it.name)
+                      ?.filter((it: any) => detail.loanIds.split(',')?.includes(it.id.toString()))
+                      .map((it: any) => it.name)
                       .join(',')) ||
                     '--'}
                 </div>
@@ -118,7 +118,7 @@ export default () => {
             <div className={sc('page-item-body-item')}>
               <div className={sc('page-item-body-item-label')}>申请流程：</div>
               <div className={sc('page-item-body-item-wrap') + ' productProcessInfoList'}>
-                {detail.productProcessInfoList?.map((item, index) => {
+                {detail.productProcessInfoList?.map((item: any, index: number) => {
                   return (
                     <div key={index} className="productProcessInfoList-item">
                       {index ? <div className="line" /> : null}
@@ -139,7 +139,13 @@ export default () => {
                 {detail?.typeName?.includes('保险') ? '保险' : ''}额度：
               </div>
               <div className={sc('page-item-body-item-wrap')}>
-                {detail.minAmount}万元 - {detail.maxAmount}万元
+                {
+                  typeof detail.minAmount === 'number' ? `${detail.minAmount / 1000000}万元` : '--'
+                }
+                -
+                {
+                  typeof detail.maxAmount === 'number' ? `${detail.maxAmount / 1000000}万元` : '--'
+                }
               </div>
             </div>
             <div className={sc('page-item-body-item')}>
@@ -153,7 +159,7 @@ export default () => {
                 {detail?.typeName?.includes('保险') ? '费率' : '年化利率'}：
               </div>
               <div className={sc('page-item-body-item-wrap')}>
-                {detail.minRate}% - {detail.maxnRate}%
+                {detail.minRate}% - {detail.maxRate}%
               </div>
             </div>
             <div className={sc('page-item-body-item')}>
@@ -165,7 +171,7 @@ export default () => {
             <div className={sc('page-item-body-item')}>
               <div className={sc('page-item-body-item-label')}>期限：</div>
               <div className={sc('page-item-body-item-wrap')}>
-                {detail.minTerm}个月 - {detail.maxnTerm}个月
+                {detail.minTerm}个月 - {detail.maxTerm}个月
               </div>
             </div>
             <div className={sc('page-item-body-item')}>

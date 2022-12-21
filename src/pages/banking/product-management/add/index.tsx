@@ -143,7 +143,7 @@ const ProductInfoAddOrEdit = () => {
           typeDetailId,
           ...rest
         } = res.result;
-        const Amount = minAmount ? [minAmount, maxAmount] : null;
+        const Amount = minAmount ? [minAmount / 1000000, maxAmount / 1000000] : null;
         const Rate = minRate ? [minRate, maxRate] : null;
         const Term = minTerm ? [minTerm, maxTerm] : null;
         const typeIds = typeId ? [typeId, typeDetailId] : [];
@@ -198,8 +198,8 @@ const ProductInfoAddOrEdit = () => {
       );
     }
     if (values.hasOwnProperty('Amount')) {
-      value.minAmount = values.Amount[0];
-      value.maxAmount = values.Amount[1];
+      value.minAmount = values.Amount[0] * 1000000;
+      value.maxAmount = values.Amount[1] * 1000000;
     }
     if (values.hasOwnProperty('Term')) {
       value.minTerm = values.Term[0];
