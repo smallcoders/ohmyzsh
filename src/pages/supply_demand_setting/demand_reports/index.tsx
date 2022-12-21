@@ -22,7 +22,7 @@ export default () => {
     <div>
       <TabMenu
         tabs={['M_SD_BBZB', 'M_SD_BBMXB', 'M_SD_BBZBB', 'M_SD_BBYBB']}
-        activeState={'1'}
+        activeState={'M_SD_BBMXB'}
         setActiveKey={setActiveKey}
       />
       { activeKey !== 'M_SD_BBMXB' ?
