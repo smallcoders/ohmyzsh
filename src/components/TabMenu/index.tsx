@@ -32,7 +32,7 @@ import ApplyRecord from '@/pages/user_config/expert_manage/components/apply-reco
 import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
 const sc = scopedClasses('tab-menu');
-export default (props: { tabs?: string[]; activeState?: string}) => {
+export default (props: { tabs?: string[]; activeState?: string; setActiveKey?: (v: string) => any}) => {
   const [activeKey, setActiveKey] = useState<string>('');
   const [showTabList, setShowTabList] = useState<any>([]);
 
@@ -110,7 +110,7 @@ export default (props: { tabs?: string[]; activeState?: string}) => {
       key: 'M_UM_SQJL',
     },
   ]
-  
+
   const { type } = history.location.query as any;
   const prepare = async () => {
     if (type) {
@@ -122,16 +122,16 @@ export default (props: { tabs?: string[]; activeState?: string}) => {
     if (!currentUser) return
     // console.log(props.tabs, 'props.tabs');
     if(currentUser.menuShowMap) {
-      let arr: any = [
+      const arr: any = [
         // {name: 'M_DM_XXZD', value: true},
         // {name: 'M_DM_XSZD', value: false},
         // {name: 'M_DM_ZDBM', value: true}
       ]
 
-      currentUser.menuShowMap['M_SD_BBZB'] = true
-      currentUser.menuShowMap['M_SD_BBMXB'] = true
-      currentUser.menuShowMap['M_SD_BBZBB'] = true
-      currentUser.menuShowMap['M_SD_BBYBB'] = true
+      currentUser.menuShowMap.M_SD_BBZB = true
+      currentUser.menuShowMap.M_SD_BBMXB = true
+      currentUser.menuShowMap.M_SD_BBZBB = true
+      currentUser.menuShowMap.M_SD_BBYBB = true
       Object.keys(currentUser.menuShowMap).forEach((item: any) => {
         // console.log(item, currentUser.menuShowMap[item]);
         if(props.tabs.indexOf(item) > -1) {
@@ -141,7 +141,7 @@ export default (props: { tabs?: string[]; activeState?: string}) => {
           })
         }
       })
-      let arr2 = []
+      const arr2 = []
       for(let i=0; i<arr.length; i++) {
         for(let j=0; j<tabMenu.length; j++) {
           if(arr[i].name == tabMenu[j].key && arr[i].value) {
@@ -157,11 +157,15 @@ export default (props: { tabs?: string[]; activeState?: string}) => {
         setActiveKey(props?.activeState)
       }
     }
-  }, [props.tabs]);
+  }, [props.tabs?.join()]);
 
   useEffect(() => {
     prepare();
-  }, []); 
+  }, []);
+
+  useEffect(() => {
+    props?.setActiveKey?.(activeKey)
+  }, [activeKey])
 
   return (
     <PageContainer
@@ -173,7 +177,7 @@ export default (props: { tabs?: string[]; activeState?: string}) => {
       {activeKey === 'M_DM_XSZD' && <Online />}
       {activeKey === 'M_DM_XXZD' && <Offline />}
       {activeKey === 'M_DM_ZDBM' && <Intention />}
-      
+
       {activeKey === 'M_PM_TJ_HD' && <Activity />}
       {activeKey === 'M_PM_TJ_SP' && <Goods />}
 
