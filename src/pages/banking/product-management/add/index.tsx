@@ -1,76 +1,98 @@
 import type { ProFormInstance } from '@ant-design/pro-components';
 import {
+  ProFormDateRangePicker,
   ProFormSelect,
   ProFormText,
   StepsForm,
+  ProFormTreeSelect,
+  ProForm,
   ProFormList,
   ProFormDigitRange,
+  FooterToolbar,
 } from '@ant-design/pro-components';
 import { PageContainer } from '@ant-design/pro-layout';
-import { Radio, Tooltip, Select, Form, Button, message, Input, Modal } from 'antd';
+import {
+  Radio,
+  Tooltip,
+  Select,
+  Form,
+  Row,
+  Col,
+  Button,
+  message,
+  Input,
+  Modal,
+  Cascader,
+  List,
+} from 'antd';
 import FormEdit from '@/components/FormEdit';
 import { QuestionCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import type { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 import React, { useEffect, useRef, useState } from 'react';
-import { guaranteeMethodMap, city } from '../constants';
+import { productTypeMap, guaranteeMethodMap, city } from '../constants';
+import { areaLabel } from '@/services/propaganda-config';
 import scopedClasses from '@/utils/scopedClasses';
 import { getProductType, addProduct, queryBank, getProductInfo } from '@/services/banking-product';
 import { Prompt, history } from 'umi';
 import './index.less';
 import LoanUse from './loan-use/index';
 import { routeName } from '@/../config/routes';
+import { getOrgTypeList } from '@/services/org-type-manage';
+import { any } from 'glamor';
 const sc = scopedClasses('product-management-create');
-// type FormValue = {
-//   // baseInfo: {
-//   //   name: string;
-//   // };
-//   // syncTableInfo: {
-//   //   timeRange: [Dayjs, Dayjs];
-//   //   title: string;
-//   // };
-//   id: number; // 主键
-//   name: string; // 产品姓名
-//   content: string; // 产品简介
-//   bankName: string; // 所属金融机构
-//   minAmount: number; // 最低额度
-//   maxAmount: number; // 最高额度
-//   amountDesc: string; // 额度文案
-//   minTerm: number; // 最低期限（单位月）
-//   maxTerm: number; //最高期限（单位月）
-//   termDesc: string; // 期限文案
-//   minRate: string; // 最低利率
-//   maxRate: string; // 最高利率
-//   rateDesc: string; // 利率文案
-//   applyCondition: string; // 申请条件
-//   openArea: string; // 开放地区
-//   productFeature: string; // 产品特点
-//   warrantType: string; // 担保方式 1-信用 ，2-抵押，3-质押，4-保证，多个逗号分隔
-//   object: string; // 面向对象
-//   isCirculationLoan: number; // 是否支持循环贷 0:否，1:是
-//   isHot: number; // 是否热门 0:否，1:是
-//   loanIds: string; // 贷款用途id
-//   productProcessInfoList: ProductProcessInfoList; // 面向对象
-// };
-// type ProductProcessInfoList = {
-//   id: number; // 主键
-//   name: string; // 流程名称
-//   step: number; // 步骤
-// };
-// const formValue: FormValue = {
-//   // baseInfo: {
-//   //   name: 'normal job',
-//   // },
-//   // syncTableInfo: {
-//   //   timeRange: [dayjs().subtract(1, 'm'), dayjs()],
-//   //   title: 'example table title',
-//   // },
-// };
-// const waitTime = (time: number = 100) => {
-//   return new Promise((resolve) => {
-//     setTimeout(() => {
-//       resolve(formValue);
-//     }, time);
-//   });
-// };
+type FormValue = {
+  // baseInfo: {
+  //   name: string;
+  // };
+  // syncTableInfo: {
+  //   timeRange: [Dayjs, Dayjs];
+  //   title: string;
+  // };
+  id: number; // 主键
+  name: string; // 产品姓名
+  content: string; // 产品简介
+  bankName: string; // 所属金融机构
+  minAmount: number; // 最低额度
+  maxAmount: number; // 最高额度
+  amountDesc: string; // 额度文案
+  minTerm: number; // 最低期限（单位月）
+  maxTerm: number; //最高期限（单位月）
+  termDesc: string; // 期限文案
+  minRate: string; // 最低利率
+  maxRate: string; // 最高利率
+  rateDesc: string; // 利率文案
+  applyCondition: string; // 申请条件
+  openArea: string; // 开放地区
+  productFeature: string; // 产品特点
+  warrantType: string; // 担保方式 1-信用 ，2-抵押，3-质押，4-保证，多个逗号分隔
+  object: string; // 面向对象
+  isCirculationLoan: number; // 是否支持循环贷 0:否，1:是
+  isHot: number; // 是否热门 0:否，1:是
+  loanIds: string; // 贷款用途id
+  productProcessInfoList: ProductProcessInfoList; // 面向对象
+};
+type ProductProcessInfoList = {
+  id: number; // 主键
+  name: string; // 流程名称
+  step: number; // 步骤
+};
+const formValue: FormValue = {
+  // baseInfo: {
+  //   name: 'normal job',
+  // },
+  // syncTableInfo: {
+  //   timeRange: [dayjs().subtract(1, 'm'), dayjs()],
+  //   title: 'example table title',
+  // },
+};
+const waitTime = (time: number = 100) => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(formValue);
+    }, time);
+  });
+};
 const ProductInfoAddOrEdit = () => {
   const { id } = history.location.query as any;
   const formMapRef = useRef<React.MutableRefObject<ProFormInstance<any> | undefined>[]>([]);
@@ -116,12 +138,16 @@ const ProductInfoAddOrEdit = () => {
           maxRate,
           minTerm,
           maxTerm,
+          typeName,
+          typeId,
+          typeDetailId,
           ...rest
         } = res.result;
         const Amount = minAmount ? [minAmount / 1000000, maxAmount / 1000000] : null;
         const Rate = minRate ? [minRate, maxRate] : null;
         const Term = minTerm ? [minTerm, maxTerm] : null;
-        productProcessInfoList?.sort((a: any, b: any) => a.step - b.step);
+        const typeIds = typeId ? [typeId, typeDetailId] : [];
+        productProcessInfoList?.sort((a, b) => a.step - b.step);
         // 编辑场景下需要使用formMapRef循环设置formData
         formMapRef?.current?.forEach((formInstanceRef) => {
           formInstanceRef?.current?.setFieldsValue({
@@ -131,22 +157,33 @@ const ProductInfoAddOrEdit = () => {
             Amount,
             Rate,
             Term,
+            typeIds,
           });
         });
         setFormIsChange(false);
+        setProductType(typeName);
       }
     });
   }, []);
-
+  const getproTypeList = (list: any) => {
+    return list?.map((it: any) => {
+      return {
+        value: it.id,
+        label: it.name,
+        children: getproTypeList(it.details || null),
+      };
+    });
+  };
   const prepare = async () => {
     try {
       const data = await Promise.all([getProductType(), queryBank()]);
-      setProductTypeList(data?.[0]?.result || []);
+      setProductTypeList(getproTypeList(data?.[0]?.result || []));
       setBankList(data?.[1]?.result?.bank || []);
     } catch (error) {
       message.error('数据初始化错误');
     }
   };
+
   // 保存产品信息 flag 0:暂存 1:下一步
   const saveProduct = (values: any, flag: number, cb: any) => {
     const value = { ...values };
@@ -171,6 +208,10 @@ const ProductInfoAddOrEdit = () => {
     if (values.hasOwnProperty('Rate')) {
       value.minRate = values.Rate[0];
       value.maxRate = values.Rate[1];
+    }
+    if (values.hasOwnProperty('typeIds')) {
+      value.typeId = values.typeIds[0];
+      value.typeDetailId = values.typeIds[1];
     }
 
     addProduct({ ...value, id: currentId, state: flag }).then((res) => {
@@ -271,7 +312,10 @@ const ProductInfoAddOrEdit = () => {
               name="name"
               fieldProps={{ maxLength: 35 }}
             />
-            <ProFormSelect
+            <Form.Item rules={[{ required: true }]} name="typeIds" label="产品类型">
+              <Cascader options={productTypeList} />
+            </Form.Item>
+            {/* <ProFormSelect
               rules={[{ required: true }]}
               label="产品类型"
               name="typeId"
@@ -290,7 +334,7 @@ const ProductInfoAddOrEdit = () => {
                   label: p.name,
                 };
               })}
-            />
+            /> */}
             <ProFormSelect
               rules={[{ required: true }]}
               label="金融机构"
@@ -482,10 +526,11 @@ const ProductInfoAddOrEdit = () => {
                 <div className={sc('form-input-tips')}>
                   将在门户的金融产品{productType.includes('保险') ? '保险' : ''}额度位置展示。
                   <Tooltip
+                    style={{ maxWidth: '800px' }}
                     color="#fff"
                     title={
                       <img
-                        src={require('@/assets/banking_loan/remove.png')}
+                        src={require('@/assets/banking_loan/amountDesc.png')}
                         className={sc('form-input-tips-img')}
                       />
                     }
@@ -531,7 +576,7 @@ const ProductInfoAddOrEdit = () => {
                     color="#fff"
                     title={
                       <img
-                        src={require('@/assets/banking_loan/remove.png')}
+                        src={require('@/assets/banking_loan/termDesc.png')}
                         className={sc('form-input-tips-img')}
                       />
                     }
@@ -574,7 +619,7 @@ const ProductInfoAddOrEdit = () => {
                     color="#fff"
                     title={
                       <img
-                        src={require('@/assets/banking_loan/remove.png')}
+                        src={require('@/assets/banking_loan/rateDesc.png')}
                         className={sc('form-input-tips-img')}
                       />
                     }

@@ -20,7 +20,7 @@ import type Common from '@/types/common';
 import moment from 'moment';
 import { routeName } from '@/../config/routes';
 import SelfTable from '@/components/self_table';
-import BankingLoan from '@/types/banking-loan.d';
+import type BankingLoan from '@/types/banking-loan.d';
 import { history } from 'umi';
 import {
   getProductList,
@@ -125,7 +125,7 @@ export default () => {
         pageIndex,
         pageSize,
         ...searchContent,
-        sort: tableParams?.order ? sortMap[tableParams?.order] : null,
+        sort: tableParams ? sortMap[tableParams] : null,
       });
       if (code === 0) {
         setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
@@ -450,9 +450,9 @@ export default () => {
     filters: Record<string, FilterValue>,
     sorter: SorterResult<any>,
   ) => {
-    setPageInfo({...pageInfo, pageIndex: pagination.current})
+    setPageInfo({ ...pageInfo, pageIndex: pagination.current });
     setTableParams({ ...sorter });
-    getPage(pagination.current)
+    getPage(pagination.current);
   };
 
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
