@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-no-undef */
 /* eslint-disable react/no-array-index-key */
 import { PageContainer } from '@ant-design/pro-layout';
-import { PlusOutlined, MoreOutlined } from '@ant-design/icons';
+import { PlusOutlined, MoreOutlined, MenuOutlined } from '@ant-design/icons';
 import {
   Button,
   Empty,
@@ -15,9 +15,11 @@ import {
   Radio,
   Popover,
   message as antdMessage,
-  Space,
   message,
   Popconfirm,
+  Drawer,
+  Space,
+  Table,
 } from 'antd';
 import { getFileInfo } from '@/services/common';
 import {
@@ -26,12 +28,12 @@ import {
   getQueryBank2,
   saveOrUpdateInstitution,
   removeBank,
+  queryCooperateOrg,
 } from '@/services/financial-institution';
 // import type { DirectoryTreeProps } from 'antd/es/tree';
-import { FooterToolbar } from '@ant-design/pro-components';
 import type FinancialInstitution from '@/types/financial-institution';
 import scopedClasses from '@/utils/scopedClasses';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import './index.less';
 import UploadForm from '@/components/upload_form';
 import circle from '@/assets/financial/circle.png';
@@ -39,31 +41,27 @@ import empty from '@/assets/financial/empty.png';
 import FormEdit from '@/components/FormEdit';
 const sc = scopedClasses('financial-institution');
 const { DirectoryTree, TreeNode } = Tree;
+import type { ColumnsType } from 'antd/es/table';
+import update from 'immutability-helper';
+import { DndProvider, useDrag, useDrop } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+
 export default () => {
   const [form] = Form.useForm();
   const [modalForm] = Form.useForm();
   const [createModalVisible, setCreateModalVisible] = useState(false);
-  const [modalFormInfo, setModalFormInfo] = useState({
-    id: undefined,
-    parentId: undefined,
-    node: undefined,
-    sort: undefined,
-    name: '',
-    bank: [],
-    banks: [],
-  });
+  const [modalFormInfo, setModalFormInfo] = useState<FinancialInstitution.ModalFormInfo>({});
   const [isContent, setContent] = useState(true);
   const [isRadio, setIsRadio] = useState(1);
   const [detailInfo, setDetailInfo] = useState<any>({});
   const [bankUserInfoList, setBankUserInfoList] = useState<FinancialInstitution.bankUserInfo[]>([
-    { name: '', phone: '', position: null, id: null, bankId: null },
     { name: '', phone: '', position: null, id: null, bankId: null },
   ]);
   const [isDetail, setDetail] = useState(false);
   const allBankInfo: any = useRef([]);
   const allBankOptions: any = useRef([]);
   const modalFieldsValue: any = useRef({});
-  const changeSelectObj: any = useRef({});
+  const [changeSelectObj, setChangeSelectObj] = useState<any>({});
   const [disabledFlag, setDisabledFlag] = useState(false);
   const [isBank2Show, setBank2Show] = useState(false);
   const [isAdd3Info, setIsAdd3Info] = useState({});
@@ -77,7 +75,12 @@ export default () => {
     { label: '部门主管', value: 2 },
     { label: '客户经理', value: 3 },
   ];
-
+  const [sort, setSort] = useState(null);
+  const [drawerVisible, setDrawerVisible] = useState(false);
+  const [cooperateOrgList, setCooperateOrgList] = useState<FinancialInstitution.cooperateOrg[]>([]);
+  const [firstPage, setFirstPage] = useState(false);
+  const [modalType, setModalType] = useState('');
+  const [selectTree, setSelectTree] = useState<string>();
   // 图片
   const logoImgFn = async (id: number) => {
     const { result, code } = await getFileInfo(String(id));
@@ -106,6 +109,25 @@ export default () => {
           setContent(false);
         } else {
           setBankData(result);
+        }
+      }
+    } catch (error) {
+      antdMessage.error(`请求失败，原因:{${error}}`);
+    }
+  };
+  // 合作机构
+  const getCooperateOrg = async (status: string = 'edit') => {
+    try {
+      const { code, result } = await queryCooperateOrg();
+      if (code === 0) {
+        if (status === 'add') {
+          setSort(result[result.length - 1].sort + 1);
+          setCooperateOrgList([
+            ...result,
+            { name: modalFieldsValue.current.name, sort: result[result.length - 1].sort + 1 },
+          ]);
+        } else {
+          setCooperateOrgList([...result]);
         }
       }
     } catch (error) {
@@ -145,9 +167,12 @@ export default () => {
           form.setFieldsValue({
             ...result,
           });
-        }
-        if (result.bankUserInfoList && result.bankUserInfoList?.length > 0) {
-          setBankUserInfoList([...result.bankUserInfoList]);
+          setSort(result.sort);
+          console.log(sort);
+
+          if (result.bankUserInfoList && result.bankUserInfoList?.length > 0) {
+            setBankUserInfoList([...result.bankUserInfoList]);
+          }
         }
         if (result.nature === 1) {
           setBank2Show(true);
@@ -159,7 +184,7 @@ export default () => {
       antdMessage.error(`请求失败，原因:{${error}}`);
     }
   };
-  // #region
+  // #region 右表
   // 右表
   const natureOptions1 = [
     { label: '银行', value: 1 },
@@ -242,7 +267,15 @@ export default () => {
             </Form.Item>
           </Col>
           <Col>
-            <Form.Item name={['bankUserInfoList', index, 'phone']}>
+            <Form.Item
+              name={['bankUserInfoList', index, 'phone']}
+              rules={[
+                {
+                  pattern: /^1(3[0-9]|4[01456879]|5[0-35-9]|6[2567]|7[0-8]|8[0-9]|9[0-35-9])\d{8}$/,
+                  message: '请输入正确的手机号码',
+                },
+              ]}
+            >
               <Input
                 onChange={(event) => onChange(index, 'phone', event)}
                 placeholder="请输入手机号"
@@ -291,17 +324,23 @@ export default () => {
         {item.node === 0 || item.node === 1 ? (
           <p
             onClick={async () => {
-              setIsAdd3Info({});
-              setDetailInfo({});
-              form.resetFields();
+              // setDetail(false);
+              // setIsAdd3Info({});
+              // setDetailInfo({});
+              // form.resetFields();
+              if (item.node === 0) {
+                setModalType('1');
+              } else {
+                setModalType('2');
+              }
               await getQueryBank2List();
+              // await getCooperateOrg();
               setCreateModalVisible(true);
               setModalFormInfo(item);
               if (item.node === 1) {
                 modalForm.setFieldsValue({ id: item.id });
                 // await detailBankInfo(item.id, '', item.node);
               }
-              setDetail(false);
             }}
           >
             添加子机构
@@ -312,6 +351,11 @@ export default () => {
         {item.node === 1 || item.node === 2 ? (
           <p
             onClick={async () => {
+              if (!firstPage) {
+                setFirstPage(true);
+              }
+              setSelectTree(String(item.id));
+              setDetail(false);
               setIsAdd3Info({});
               setDetailInfo({});
               if (item.node === 2) {
@@ -320,7 +364,6 @@ export default () => {
               } else {
                 await detailBankInfo(item.id, 'no', item.node);
               }
-              setDetail(false);
             }}
           >
             编辑信息
@@ -359,8 +402,12 @@ export default () => {
       <span
         className="bankName"
         onClick={async () => {
+          setSelectTree(String(item.id));
           await detailBankInfo(item.id, 'no', item.node);
           setDetail(true);
+          if (firstPage === false) {
+            setFirstPage(true);
+          }
         }}
       >
         {item.name}
@@ -402,7 +449,6 @@ export default () => {
     const selectObj = allBankInfo.current.find(
       (item: { id: number }) => item.id === modalFieldsValue.current.id,
     );
-    if (modalFormInfo.node === 0) return;
     try {
       const {
         code,
@@ -415,6 +461,7 @@ export default () => {
             id: detailInfo.id,
             parentId: detailInfo.parentId,
             node: detailInfo.node,
+            sort,
             officialLogoImage:
               values.officialLogoImage.indexOf('http') === 0
                 ? values.officialLogoImage
@@ -428,9 +475,13 @@ export default () => {
         : saveOrUpdateInstitution({
             ...values,
             name: modalFieldsValue.current.name,
+            sort,
             parentId:
-              modalFormInfo.id === undefined ? modalFieldsValue.current.id : modalFormInfo.id,
-            node: modalFormInfo.node === undefined ? selectObj.node + 1 : modalFormInfo.node + 1,
+              Object.keys(modalFormInfo).length == 0
+                ? modalFieldsValue.current.id
+                : modalFormInfo.id,
+            node:
+              Object.keys(modalFormInfo).length == 0 ? selectObj.node + 1 : modalFormInfo.node + 1,
             bankUserInfoList: bankUserInfoList,
             officialLogoImage:
               values.officialLogoImage.indexOf('http') === 0
@@ -444,6 +495,8 @@ export default () => {
       if (code === 0) {
         message.success(Object.values(detailInfo).length > 0 ? '编辑成功' : '新增成功');
         detailBankInfo(result as number, 'no');
+        setSelectTree(String(result));
+        setModalFormInfo({});
         getTree();
         setDetail(true);
       } else {
@@ -457,12 +510,11 @@ export default () => {
   };
   const onClose = () => {
     allBankOptions.current = [];
+    setChangeSelectObj({});
     modalForm.resetFields();
     setCreateModalVisible(false);
   };
-  // const handChange = (option: any) => {
-  //   console.log(option);
-  // };
+
   // 新增机构弹框
   // 选择机构
   const useModal = (): React.ReactNode => {
@@ -474,6 +526,7 @@ export default () => {
         maskClosable={false}
         destroyOnClose
         onOk={async () => {
+          const values = await modalForm.validateFields();
           if (isContent === false) {
             // const { code } = await saveOrUpdateInstitution({
             //   node: 0,
@@ -486,29 +539,40 @@ export default () => {
             //   setCreateModalVisible(false)
             //   modalForm.resetFields();
           } else {
-            if (Object.keys(changeSelectObj.current).length !== 0) {
-              await detailBankInfo(changeSelectObj.current.value, 'yes', 1);
+            setIsAdd3Info({});
+            setDetailInfo({});
+            form.resetFields();
+            setSort(null);
+            setDetail(false);
+            if (firstPage === false) {
+              setFirstPage(true);
             }
-            if (modalFormInfo.node === 1) {
+            if (modalFormInfo.node === 1 && modalType === '2') {
               await detailBankInfo(modalFormInfo.id, 'yes', modalFormInfo.node);
             }
-            setDetail(false);
+            if (modalType === '3') {
+              if (Object.keys(changeSelectObj).length !== 0) {
+                setSelectTree(String(changeSelectObj.value));
+              } else {
+                const nodeObj = allBankInfo.current.find((item: any) => item.node === 0);
+                setSelectTree(String(nodeObj.id));
+              }
+            }
+            // if (Object.keys(changeSelectObj.current).length !== 0 && ) {
+            //   setSelectTree(String(changeSelectObj.current.value));
+            //   await detailBankInfo(changeSelectObj.current.value, 'yes', 1);
+            // }
+            if (modalType === '1' || modalType === '2') {
+              setSelectTree(String(modalFormInfo.id));
+            }
             modalFieldsValue.current = modalForm.getFieldsValue();
-            form.setFieldsValue({ name: modalForm.getFieldValue('name') });
+            await getCooperateOrg('add');
+            form.setFieldsValue({ name: values.name });
             onClose();
           }
         }}
         onCancel={() => {
           onClose();
-          setModalFormInfo({
-            id: undefined,
-            parentId: undefined,
-            node: undefined,
-            sort: undefined,
-            name: '',
-            bank: [],
-            banks: [],
-          });
         }}
       >
         <Form
@@ -529,7 +593,7 @@ export default () => {
           >
             <Input placeholder="请输入" maxLength={35} />
           </Form.Item>
-          {modalFormInfo.node === undefined && isContent ? (
+          {modalType === '3' && isContent ? (
             <Form.Item
               name="id"
               label="上级机构"
@@ -551,9 +615,7 @@ export default () => {
               <Select
                 style={{ width: '100%' }}
                 onChange={(value, option) => {
-                  changeSelectObj.current = {
-                    ...option,
-                  };
+                  setChangeSelectObj({ ...option });
                 }}
               >
                 {allBankInfo.current.map((item: any) => {
@@ -565,7 +627,7 @@ export default () => {
                 })}
               </Select>
             </Form.Item>
-          ) : modalFormInfo.node === 1 ? (
+          ) : modalType === '2' && isContent ? (
             <Form.Item
               name="id"
               label="上级机构"
@@ -585,8 +647,195 @@ export default () => {
       </Modal>
     );
   };
+  //拖拽排序
+  interface DataType {
+    name?: string;
+    sort?: number;
+    index?: number;
+  }
+  interface DraggableBodyRowProps extends React.HTMLAttributes<HTMLTableRowElement> {
+    index: number;
+    moveRow: (dragIndex: number, hoverIndex: number) => void;
+  }
+  const type = 'DraggableBodyRow';
+  const DraggableBodyRow = ({
+    index,
+    moveRow,
+    className,
+    style,
+    ...restProps
+  }: DraggableBodyRowProps) => {
+    const ref = useRef<HTMLTableRowElement>(null);
+    const [{ isOver, dropClassName }, drop] = useDrop({
+      accept: type,
+      collect: (monitor) => {
+        const { index: dragIndex } = monitor.getItem() || {};
+        if (dragIndex === index) {
+          return {};
+        }
+        return {
+          isOver: monitor.isOver(),
+          dropClassName: dragIndex < index ? ' drop-over-downward' : ' drop-over-upward',
+        };
+      },
+      drop: (item: { index: number }) => {
+        moveRow(item.index, index);
+      },
+    });
+    const [, drag] = useDrag({
+      type,
+      item: { index },
+      collect: (monitor) => ({
+        isDragging: monitor.isDragging(),
+      }),
+    });
+    drop(drag(ref));
+
+    return (
+      <tr
+        ref={ref}
+        className={`${className}${isOver ? dropClassName : ''}`}
+        style={{ cursor: 'move', ...style }}
+        {...restProps}
+      />
+    );
+  };
+
+  const columns: ColumnsType<DataType> = [
+    {
+      title: '',
+      dataIndex: 'action',
+      key: 'action',
+      width: 30,
+      align: 'center',
+      className: 'drag-visible',
+      render: () => <MenuOutlined />,
+    },
+    {
+      title: '顺序排列',
+      dataIndex: 'index',
+      key: 'index',
+      align: 'center',
+      className: 'drag-visible',
+      render: (_: any, __: any, index: number) => index + 1,
+    },
+    {
+      title: '机构名称',
+      dataIndex: 'name',
+      key: 'name',
+      align: 'center',
+    },
+  ];
+
+  const components = {
+    body: {
+      row: DraggableBodyRow,
+    },
+  };
+
+  const moveRow = useCallback(
+    (dragIndex: number, hoverIndex: number) => {
+      const dragRow = cooperateOrgList[dragIndex];
+      console.log(dragIndex, 'dragIndex');
+      console.log(hoverIndex, 'hoverIndex');
+      console.log(dragRow, 'dragRow');
+      setCooperateOrgList(
+        update(cooperateOrgList, {
+          $splice: [
+            [dragIndex, 1],
+            [hoverIndex, 0, dragRow],
+          ],
+        }),
+      );
+    },
+    [cooperateOrgList],
+  );
+  // 排序抽屉
+  const onCancel = () => {
+    // setCooperateOrgList([]);
+    setDrawerVisible(false);
+  };
+  const useDrawer = (): React.ReactNode => {
+    return (
+      <Drawer
+        title="机构展示顺序"
+        width="720px"
+        placement="right"
+        onClose={onCancel}
+        visible={drawerVisible}
+        footer={
+          <Space>
+            <Button onClick={onCancel}>取消</Button>
+            <Button
+              type="primary"
+              onClick={() => {
+                if (Object.values(detailInfo).length === 0) {
+                  setSort(
+                    cooperateOrgList.findIndex(
+                      (item) => item.name === modalFieldsValue.current.name,
+                    ) + 1,
+                  );
+                } else {
+                  setSort(cooperateOrgList.findIndex((item) => item.name === detailInfo.name) + 1);
+                }
+                setDrawerVisible(false);
+              }}
+            >
+              确定
+            </Button>
+          </Space>
+        }
+        footerStyle={{ display: 'flex', justifyContent: 'end' }}
+      >
+        <DndProvider backend={HTML5Backend}>
+          <Table
+            columns={columns}
+            dataSource={cooperateOrgList}
+            components={components}
+            rowKey="sort"
+            onRow={(_, index) => {
+              const attr = {
+                index,
+                moveRow,
+              };
+              return attr as React.HTMLAttributes<any>;
+            }}
+            pagination={false}
+          />
+        </DndProvider>
+      </Drawer>
+    );
+  };
   return (
-    <PageContainer>
+    <PageContainer
+      className={isDetail || !firstPage ? sc('page2') : sc('page1')}
+      ghost
+      header={{
+        title: '金融机构管理',
+        breadcrumb: {},
+      }}
+      footer={[
+        <>
+          <Button
+            onClick={async () => {
+              await detailBankInfo(Number(selectTree), 'no');
+              setDetail(true);
+            }}
+          >
+            取消
+          </Button>
+          <Button
+            type="primary"
+            htmlType="submit"
+            onClick={() => {
+              addOrUpdate();
+            }}
+          >
+            保存
+          </Button>
+        </>,
+      ]}
+    >
       {isContent ? (
         <div className={sc('container')}>
           <Row>
@@ -594,11 +843,14 @@ export default () => {
               <DirectoryTree
                 expandAction={false}
                 // onSelect={onSelect}
+                key="id"
                 icon={() => null}
                 defaultExpandAll
                 multiple
+                selectedKeys={[selectTree]}
+                // defaultSelectedKeys={["11"]}
               >
-                <TreeNode title={getTitle(bankData)} key={bankData.id}>
+                <TreeNode selectable title={getTitle(bankData)} key={bankData.id}>
                   {renderTreeNodes(bankData.bank)}
                 </TreeNode>
               </DirectoryTree>
@@ -606,18 +858,21 @@ export default () => {
                 className="add"
                 size="large"
                 onClick={async () => {
-                  setIsAdd3Info({});
-                  setDetailInfo({});
-                  form.resetFields();
+                  // setDetail(false);
+                  // setIsAdd3Info({});
+                  // setDetailInfo({});
+                  // form.resetFields();
+                  setModalType('3');
                   await getQueryBank2List();
+                  // await getCooperateOrg();
                   setCreateModalVisible(true);
-                  if (allBankInfo.current.length > 0) {
-                    const grade1 = allBankInfo.current.find(
-                      (item: { node: number }) => item.node === 0,
-                    );
-                    modalForm.setFieldsValue({ id: grade1.id });
-                  }
-                  setDetail(false);
+                  modalForm.setFieldsValue({ id: allBankInfo.current[0].id });
+                  // if (allBankInfo.current.length > 0) {
+                  //   const grade1 = allBankInfo.current.find(
+                  //     (item: { node: number }) => item.node === 0,
+                  //   );
+                  //   modalForm.setFieldsValue({ id: grade1.id });
+                  // }
                 }}
               >
                 <PlusOutlined />
@@ -625,188 +880,225 @@ export default () => {
               </Button>
             </Col>
 
-            <Col span={18} className={sc('container-right')}>
-              <div className="title">
-                <span>基本信息</span>
+            {firstPage === false ? (
+              <></>
+            ) : (
+              <Col span={18} className={sc('container-right')}>
+                <div className="title">
+                  <span>基本信息</span>
+                  {isDetail ? (
+                    <Button
+                      type="primary"
+                      onClick={async () => {
+                        if (detailInfo.node === 2) {
+                          setDisabledFlag(true);
+                          await detailBankInfo(detailInfo.id, 'no', detailInfo.node);
+                          await detailBankInfo(detailInfo.parentId, 'yes', detailInfo.node);
+                        } else {
+                          await detailBankInfo(detailInfo.id, 'no', detailInfo.node);
+                          console.log(detailInfo);
+                        }
+                        setDetail(false);
+                      }}
+                    >
+                      编辑
+                    </Button>
+                  ) : (
+                    <></>
+                  )}
+                </div>
                 {isDetail ? (
-                  <Button
-                    type="primary"
-                    onClick={() => {
-                      if (detailInfo.node === 2) {
-                        setDisabledFlag(true);
-                      }
-                      setDetail(false);
-                    }}
-                  >
-                    编辑
-                  </Button>
-                ) : (
-                  <></>
-                )}
-              </div>
-              {isDetail ? (
-                <div className="detail-form">
-                  <div className="item">
-                    <label>机构名称 :</label>
-                    {detailInfo.name}
-                  </div>
-                  <div className="item">
-                    <label>机构编码 :</label>
-                    {detailInfo.code}
-                  </div>
-                  <div className="item">
-                    <label>机构性质 :</label>
-                    {detailInfo.bankNature === null
-                      ? natureOptions1.find((item) => item.value === detailInfo.nature)?.label
-                      : natureOptions1.find((item) => item.value === detailInfo.nature)?.label +
-                        '-' +
-                        natureOptions2.find((item) => item.value === detailInfo.bankNature)?.label}
-                  </div>
-                  {detailInfo.node === 2 ? (
-                    <></>
-                  ) : (
+                  <div className="detail-form">
                     <div className="item">
-                      <label>是否为合作机构 :</label>
-                      {detailInfo.isCoopera === 1 ? '是' : '否'}
+                      <label>机构名称 :</label>
+                      {detailInfo.name}
                     </div>
-                  )}
-                  {detailInfo.node === 2 ? (
-                    <></>
-                  ) : (
                     <div className="item">
-                      <label>机构展示顺序 :</label>
-                      {detailInfo.sort}
+                      <label>机构编码 :</label>
+                      {detailInfo.code}
                     </div>
-                  )}
-                  <div className="item">
-                    <label>机构logo :</label>
-                    <img
-                      style={{ width: 80, marginRight: 48 }}
-                      src={detailInfo?.officialLogoImage}
-                      alt=""
-                    />
-                    <img style={{ width: 80 }} src={detailInfo?.productLogoImage} alt="" />
-                  </div>
-                  <div className="item">
-                    <label>经办人 :</label>
-                    {detailInfo.bankUserInfoList && detailInfo.bankUserInfoList.length === 0 ? (
+                    <div className="item">
+                      <label>机构性质 :</label>
+                      {detailInfo.nature === 1
+                        ? natureOptions1.find((item) => item.value === detailInfo.nature)?.label +
+                          '-' +
+                          natureOptions2.find((item) => item.value === detailInfo.bankNature)?.label
+                        : natureOptions1.find((item) => item.value === detailInfo.nature)?.label}
+                    </div>
+                    {detailInfo.node === 2 ? (
                       <></>
                     ) : (
-                      detailInfo?.bankUserInfoList?.map((item: any, k: any) => {
-                        return (
-                          <p key={k} style={{ marginRight: 8 }}>
-                            {item.name} {item.phone}{' '}
-                            {item.position === 1
-                              ? '总经理'
-                              : item.position === 2
-                              ? '部门主管'
-                              : '客户经理'}
-                          </p>
-                        );
-                      })
+                      <div className="item">
+                        <label>是否为合作机构 :</label>
+                        {detailInfo.isCoopera === 1 ? '是' : '否'}
+                      </div>
                     )}
+                    {detailInfo.node === 2 ? (
+                      <></>
+                    ) : (
+                      <div className="item">
+                        <label>机构展示顺序 :</label>
+                        {detailInfo.sort}
+                      </div>
+                    )}
+                    <div className="item">
+                      <label>机构logo :</label>
+                      <img
+                        style={{ width: 80, marginRight: 48 }}
+                        src={detailInfo?.officialLogoImage}
+                        alt=""
+                      />
+                      <img style={{ width: 80 }} src={detailInfo?.productLogoImage} alt="" />
+                    </div>
+                    <div className="item">
+                      <label>经办人 :</label>
+                      <div>
+                        {detailInfo.bankUserInfoList && detailInfo.bankUserInfoList.length === 0 ? (
+                          <>--</>
+                        ) : (
+                          detailInfo?.bankUserInfoList?.map((item: any, k: any) => {
+                            return (
+                              <p key={k} style={{ marginBottom: 0 }}>
+                                {item.name} {item.phone}{' '}
+                                {item.position === 1
+                                  ? '总经理'
+                                  : item.position === 2
+                                  ? '部门主管'
+                                  : item.position === 3
+                                  ? '客户经理'
+                                  : '--'}
+                              </p>
+                            );
+                          })
+                        )}
+                      </div>
+                    </div>
+                    <div className="item">
+                      <label>机构介绍 :</label>
+                      <div dangerouslySetInnerHTML={{ __html: detailInfo?.content }} />
+                    </div>
                   </div>
-                  <div className="item">
-                    <label>机构介绍 :</label>
-                    <div dangerouslySetInnerHTML={{ __html: detailInfo?.content }} />
-                  </div>
-                </div>
-              ) : (
-                <Form form={form} name="basic" labelCol={{ span: 4 }} validateTrigger={['onBlur']}>
-                  <Form.Item
-                    label="机构名称"
-                    name="name"
-                    rules={[{ required: true, message: '请输入机构名称' }]}
+                ) : (
+                  <Form
+                    form={form}
+                    name="basic"
+                    labelCol={{ span: 4 }}
+                    validateTrigger={['onBlur']}
                   >
-                    <Input maxLength={35} allowClear />
-                  </Form.Item>
-                  <Form.Item
-                    label="机构编码"
-                    name="code"
-                    rules={[{ required: true, message: '请输入机构编码' }]}
-                  >
-                    <Input maxLength={35} placeholder="请输入" allowClear />
-                  </Form.Item>
-
-                  <Form.Item label="机构性质" required>
                     <Form.Item
-                      name="nature"
-                      rules={[{ required: true, message: '请选择机构性质' }]}
-                      style={{ display: 'inline-block', marginRight: 12, marginBottom: 0 }}
+                      label="机构名称"
+                      name="name"
+                      rules={[{ required: true, message: '请输入机构名称' }]}
                     >
-                      {Object.values(isAdd3Info).length > 0 || detailInfo.node === 2 ? (
+                      <Input maxLength={35} allowClear />
+                    </Form.Item>
+                    <Form.Item
+                      label="机构编码"
+                      name="code"
+                      rules={[{ required: true, message: '请输入机构编码' }]}
+                    >
+                      <Input maxLength={35} placeholder="请输入" allowClear />
+                    </Form.Item>
+
+                    <Form.Item label="机构性质" required>
+                      <Form.Item
+                        name="nature"
+                        rules={[{ required: true, message: '请选择机构性质' }]}
+                        style={{ display: 'inline-block', marginRight: 12, marginBottom: 0 }}
+                      >
                         <Select
-                          disabled
+                          disabled={disabledFlag}
                           onChange={changeNature1}
                           options={natureOptions1}
                           placeholder="请选择"
                         />
+                      </Form.Item>
+                      {isBank2Show ? (
+                        <Form.Item
+                          name="bankNature"
+                          rules={[{ required: true, message: '请选择机构性质' }]}
+                          style={{ display: 'inline-block', marginBottom: 0 }}
+                        >
+                          <Select
+                            disabled={disabledFlag}
+                            options={natureOptions2}
+                            placeholder="请选择"
+                          />
+                        </Form.Item>
                       ) : (
-                        <Select
-                          onChange={changeNature1}
-                          options={natureOptions1}
-                          placeholder="请选择"
-                        />
+                        <></>
                       )}
                     </Form.Item>
-                    {isBank2Show ? (
+                    {detailInfo.node === 2 ? (
+                      <></>
+                    ) : (
                       <Form.Item
-                        name="bankNature"
+                        label="是否为合作机构"
+                        name="isCoopera"
+                        initialValue={1}
                         rules={[{ required: true, message: '请选择机构性质' }]}
-                        style={{ display: 'inline-block', marginBottom: 0 }}
                       >
-                        {Object.values(isAdd3Info).length > 0 || detailInfo.node === 2 ? (
-                          <Select disabled options={natureOptions2} placeholder="请选择" />
-                        ) : (
-                          <Select options={natureOptions2} placeholder="请选择" />
-                        )}
+                        <Radio.Group
+                          value={isRadio}
+                          onChange={(e) => {
+                            setIsRadio(e.target.value);
+                          }}
+                        >
+                          <Radio value={1}>是</Radio>
+                          <Radio value={0}>否</Radio>
+                        </Radio.Group>
                       </Form.Item>
-                    ) : (
-                      <></>
                     )}
-                  </Form.Item>
-                  {Object.values(isAdd3Info).length > 0 || detailInfo.node === 2 ? (
-                    <></>
-                  ) : (
-                    <Form.Item
-                      label="是否为合作机构"
-                      name="isCoopera"
-                      initialValue={1}
-                      rules={[{ required: true, message: '请选择机构性质' }]}
-                    >
-                      <Radio.Group
-                        value={isRadio}
-                        onChange={(e) => {
-                          setIsRadio(e.target.value);
-                        }}
-                      >
-                        <Radio value={1}>是</Radio>
-                        <Radio value={0}>否</Radio>
-                      </Radio.Group>
-                    </Form.Item>
-                  )}
 
-                  {isRadio === 0 ||
-                  Object.values(isAdd3Info).length > 0 ||
-                  detailInfo.node === 2 ? (
-                    <></>
-                  ) : (
-                    <Form.Item label="机构展示顺序" name="sort">
-                      <div className="changeNum">
-                        <span>10</span>
-                        <span className="changeOrder">修改顺序</span>
-                      </div>
-                    </Form.Item>
-                  )}
-                  <Form.Item label="机构logo" required>
-                    {isRadio === 0 ? (
+                    {isRadio === 0 || detailInfo.node === 2 ? (
                       <></>
                     ) : (
+                      <Form.Item label="机构展示顺序" name="sort" required>
+                        <div className="changeNum">
+                          <span>{sort}</span>
+                          {sort !== null ? (
+                            <span
+                              className="changeOrder"
+                              onClick={() => {
+                                if (cooperateOrgList.length === 0) {
+                                  getCooperateOrg();
+                                }
+                                console.log(cooperateOrgList);
+                                setDrawerVisible(true);
+                              }}
+                            >
+                              修改顺序
+                            </span>
+                          ) : (
+                            <></>
+                          )}
+                        </div>
+                      </Form.Item>
+                    )}
+                    <Form.Item label="机构logo" required>
+                      {isRadio === 0 ? (
+                        <></>
+                      ) : (
+                        <Form.Item
+                          name="officialLogoImage"
+                          extra="请上传448*160图片"
+                          rules={[{ required: true, message: '请上传logo' }]}
+                          style={{ display: 'inline-block', width: 140 }}
+                        >
+                          <UploadForm
+                            disabled={disabledFlag}
+                            listType="picture-card"
+                            showUploadList={false}
+                            accept=".png,.jpeg,.jpg"
+                            maxCount={1}
+                          />
+                        </Form.Item>
+                      )}
                       <Form.Item
-                        name="officialLogoImage"
-                        extra="请上传224*80图片"
+                        name="productLogoImage"
+                        extra="请上传132*132图片"
                         rules={[{ required: true, message: '请上传logo' }]}
-                        style={{ display: 'inline-block', width: 140 }}
+                        style={{ display: 'inline-block' }}
                       >
                         <UploadForm
                           disabled={disabledFlag}
@@ -816,64 +1108,22 @@ export default () => {
                           maxCount={1}
                         />
                       </Form.Item>
-                    )}
-                    <Form.Item
-                      name="productLogoImage"
-                      extra="请上传80*80图片"
-                      rules={[{ required: true, message: '请上传logo' }]}
-                      style={{ display: 'inline-block' }}
-                    >
-                      <UploadForm
-                        disabled={disabledFlag}
-                        listType="picture-card"
-                        showUploadList={false}
-                        accept=".png,.jpeg,.jpg"
-                        maxCount={1}
-                      />
                     </Form.Item>
-                  </Form.Item>
 
-                  <Form.Item label="经办人">
-                    {bankUserInfoItem}
-                    <Button onClick={add} className="add">
-                      + 添加
-                    </Button>
-                  </Form.Item>
-                  <Form.Item name="content" label="机构介绍">
-                    <FormEdit width={624} />
-                  </Form.Item>
-                </Form>
-              )}
-            </Col>
-          </Row>
-          {Object.keys(detailInfo).length == 0 &&
-          Object.keys(isAdd3Info).length == 0 &&
-          modalFormInfo.node === undefined ? (
-            <></>
-          ) : (
-            <FooterToolbar>
-              <Col span={10} style={{ textAlign: 'center', height: 80 }}>
-                <Space>
-                  <Button
-                    onClick={() => {
-                      form.resetFields();
-                    }}
-                  >
-                    取消
-                  </Button>
-                  <Button
-                    type="primary"
-                    htmlType="submit"
-                    onClick={() => {
-                      addOrUpdate();
-                    }}
-                  >
-                    保存
-                  </Button>
-                </Space>
+                    <Form.Item label="经办人">
+                      {bankUserInfoItem}
+                      <Button onClick={add} className="add">
+                        + 添加
+                      </Button>
+                    </Form.Item>
+                    <Form.Item name="content" label="机构介绍">
+                      <FormEdit width={624} />
+                    </Form.Item>
+                  </Form>
+                )}
               </Col>
-            </FooterToolbar>
-          )}
+            )}
+          </Row>
         </div>
       ) : (
         <div className={sc('container')}>
@@ -903,6 +1153,7 @@ export default () => {
         </div>
       )}
       {useModal()}
+      {useDrawer()}
     </PageContainer>
   );
 };

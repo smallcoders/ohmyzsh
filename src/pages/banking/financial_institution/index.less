@@ -1,5 +1,18 @@
 @prefix: financial-institution;
 
+.@{prefix}-page1{
+  .ant-pro-footer-bar-right{
+    height: 88px;
+    flex: 0 100%;
+    text-align: center;
+    line-height: 88px;
+  }
+}
+.@{prefix}-page2{
+  .ant-pro-footer-bar-right{
+    display: none;
+  }
+}
 .@{prefix}-container {
   min-height: 892px;
   background: #fff;
@@ -15,7 +28,7 @@
           justify-content: space-between;
           .bankName {
             display: inline-block;
-            width: 200px;
+            width: 90%;
           }
         }
       }
@@ -31,7 +44,7 @@
       }
     }
     .add {
-      width: 362px;
+      width: 100%;
       margin-top: 16px;
       border: 1px dashed #dbdfe6;
     }
@@ -42,7 +55,7 @@
     .title {
       display: flex;
       justify-content: space-between;
-      width: 860px;
+      width: 80%;
       margin-bottom: 24px;
       color: #1e232a;
       font-weight: 700;
@@ -55,7 +68,6 @@
         font-weight: 400;
         font-size: 16px;
         line-height: 24px;
-        background: #0068ff;
         border-radius: 2px;
       }
     }
@@ -117,7 +129,7 @@
         }
         .agentInput {
           height: 40px;
-          margin-bottom: 12px;
+          margin-bottom: 28px;
           .ant-form-item-control-input-content {
             width: 208px;
             // .ant-select {

@@ -1,13 +1,4 @@
-import {
-  Button,
-  Input,
-  Form,
-  Row,
-  Col,
-  DatePicker,
-  message as antdMessage,
-  Cascader
-} from 'antd';
+import { Button, Input, Form, Row, Col, DatePicker, message as antdMessage, Cascader } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
@@ -18,17 +9,15 @@ import moment from 'moment';
 import { history } from 'umi';
 import SelfTable from '@/components/self_table';
 import { routeName } from '@/../config/routes';
-import {
-  getCustomers,
-} from '@/services/financial_customers_manage';
+import { getCustomers } from '@/services/financial_customers_manage';
 import { listAllAreaCode } from '@/services/common';
 const sc = scopedClasses('financial-customers-manage');
 
 export default () => {
   const [dataSource, setDataSource] = useState<FinancialCustomersManage.Content[]>([]);
   const [searchContent, setSearChContent] = useState<FinancialCustomersManage.SearchContent>({});
-  const [areaCodeOptions, setAreaCodeOptions] = useState<any>([])
-  const [regAddress, setRegAddress] = useState<string>('')
+  const [areaCodeOptions, setAreaCodeOptions] = useState<any>([]);
+  const [regAddress, setRegAddress] = useState<string>('');
   const [searchForm] = Form.useForm();
   const formLayout = {
     labelCol: { span: 6 },
@@ -82,8 +71,8 @@ export default () => {
       title: '成立时间',
       dataIndex: 'formedDate',
       render: (formedDate: string) => {
-        return <span>{formedDate ? formedDate.split(' ')[0] : '--'}</span>
-      }
+        return <span>{formedDate ? formedDate.split(' ')[0] : '--'}</span>;
+      },
     },
     {
       title: '法定代表人',
@@ -97,15 +86,15 @@ export default () => {
       title: '联系人',
       dataIndex: 'contacts',
       render: (contacts: string) => {
-        return <span>{contacts || '--'}</span>
-      }
+        return <span>{contacts || '--'}</span>;
+      },
     },
     {
       title: '联系电话',
       dataIndex: 'phone',
       render: (phone: string) => {
-        return <span>{phone || '--'}</span>
-      }
+        return <span>{phone || '--'}</span>;
+      },
     },
     {
       title: '操作',
@@ -142,8 +131,8 @@ export default () => {
       search.startTime = moment(search.time[0]).format('YYYY-MM-DD');
       search.endTime = moment(search.time[1]).format('YYYY-MM-DD');
     }
-    if (regAddress){
-      search.regAddress = regAddress
+    if (regAddress) {
+      search.regAddress = regAddress;
     }
     delete search.time;
     delete search.address;
@@ -151,14 +140,13 @@ export default () => {
   };
   useEffect(() => {
     listAllAreaCode().then((res) => {
-      const {result} = res
-      setAreaCodeOptions(result)
-    })
-  }, [])
+      const { result } = res;
+      setAreaCodeOptions(result);
+    });
+  }, []);
   useEffect(() => {
     getPage();
   }, [searchContent]);
-
 
   const useSearchNode = (): React.ReactNode => {
     return (
@@ -172,7 +160,7 @@ export default () => {
             </Col>
             <Col span={8}>
               <Form.Item name="time" label="成立时间">
-                <DatePicker.RangePicker allowClear />
+                <DatePicker.RangePicker allowClear style={{ width: '100%' }} />
               </Form.Item>
             </Col>
             <Col span={8}>
@@ -183,10 +171,12 @@ export default () => {
                   options={areaCodeOptions}
                   changeOnSelect
                   onChange={(_, options) => {
-                    const address = options.map((item) => {
-                      return item.name
-                    }).join('')
-                    setRegAddress(address)
+                    const address = options
+                      .map((item) => {
+                        return item.name;
+                      })
+                      .join('');
+                    setRegAddress(address);
                   }}
                 />
               </Form.Item>
@@ -231,7 +221,14 @@ export default () => {
   };
 
   return (
-    <PageContainer className={sc('container')}>
+    <PageContainer
+      className={sc('container')}
+      ghost
+      header={{
+        title: '金融客户管理',
+        breadcrumb: {},
+      }}
+    >
       {useSearchNode()}
       <div className={sc('container-table-body')}>
         <SelfTable
