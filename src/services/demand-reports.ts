@@ -23,3 +23,16 @@ export async function exportTotalTable() {
     getResponse: true,
   })
 }
+
+
+/**
+ * 供需对接报表 - 明细表
+ */
+export async function getDetailList(data?: Record<string, any>) {
+  return request<Common.ResultCode & { result: any }>(
+    '/antelope-manage/needTable/detailTable', {
+      method: 'post',
+      data,
+    }
+  );
+}
