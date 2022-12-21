@@ -100,7 +100,12 @@ export default () => {
             <Button
               onClick={() => {
                 setIsSet(true);
-                form.setFieldsValue({ ...customerInfo });
+                console.log(customerInfo);
+
+                form.setFieldsValue({
+                  ...customerInfo,
+                  amount: (customerInfo?.amount / 1000000).toFixed(2),
+                });
               }}
             >
               编辑
