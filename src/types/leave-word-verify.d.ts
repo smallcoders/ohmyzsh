@@ -18,6 +18,7 @@ namespace LeaveWordVerify {
     status?: string
     tab?: string
     detailId?: string
+    operationStatus?: string
   };
 
   export type Detail = {
