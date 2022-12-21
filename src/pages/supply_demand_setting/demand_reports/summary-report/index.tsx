@@ -1,16 +1,12 @@
 import {
   Button,
-  Form,
-  message
 } from 'antd';
-
-import { DownloadOutlined } from "@ant-design/icons";
-
+import { Access, useAccess } from 'umi';
+import { useEffect, useState } from 'react';
+import { DownloadOutlined, SoundOutlined } from '@ant-design/icons'
+import type Common from '@/types/common';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
-import { useEffect, useState } from 'react';
-import type Common from '@/types/common';
-import { Access, useAccess } from 'umi';
 import SelfTable from '@/components/self_table';
 const sc = scopedClasses('tab-menu-demand-report-summary');
 
@@ -71,7 +67,7 @@ export default () => {
       title: '操作',
       width: 120,
       dataIndex: 'option',
-      render: (_: any, _record: any) => {
+      render: () => {
         return (
           <a
             href="#"
@@ -96,7 +92,10 @@ export default () => {
     <>
       <div className={sc('container-table-header')}>
         <div className="title">
-          <span>各地市需求对接情况</span>
+          <span>
+            各地市需求对接情况
+            <span className="sub"><SoundOutlined />以下关于各需求状态的统计，为截止目前处于各状态的数据量总和</span>
+          </span>
           <Access accessible={access['PX_PM_TJ_HD']}>
              <Button
               icon={<DownloadOutlined />}
@@ -115,18 +114,7 @@ export default () => {
           scroll={{ x: 1400 }}
           columns={columns}
           dataSource={dataSource}
-          pagination={
-            pageInfo.totalCount === 0
-              ? false
-              : {
-                  onChange: getDataList,
-                  total: pageInfo.totalCount,
-                  current: pageInfo.pageIndex,
-                  pageSize: pageInfo.pageSize,
-                  showTotal: (total: number) =>
-                    `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
-                }
-          }
+          pagination={false}
         />
       </div>
     </>
