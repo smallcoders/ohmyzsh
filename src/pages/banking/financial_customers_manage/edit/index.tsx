@@ -67,7 +67,7 @@ export default () => {
           legalCard,
         } = result;
         console.log(legalCard);
-        
+
         form.setFieldsValue({
           name,
           logoImageId,
@@ -101,7 +101,7 @@ export default () => {
           contacts,
           banks: banks?.split(',') || [],
           scienceMark,
-          legalCard: legalCard.replace(/^(.{4})(?:\d+)(.{4})$/, '$1******$2'),
+          legalCard: legalCard?.replace(/^(.{4})(?:\d+)(.{4})$/, '$1******$2'),
         });
       } else {
         antdMessage.error(`请求失败，原因:{${resultMsg}}`);
@@ -153,7 +153,18 @@ export default () => {
   };
 
   return (
-    <PageContainer className={sc('container')}>
+    <PageContainer
+      className={sc('page')}
+      ghost
+      footer={[
+        <>
+          <Button onClick={() => history.goBack()}>返回</Button>
+          <Button type="primary" onClick={handleSubmit}>
+            保存
+          </Button>
+        </>,
+      ]}
+    >
       <Form className={sc('container-form')} form={form}>
         <Form.Item label={<span className="title">基本信息</span>} colon={false} />
         <Form.Item name="name" label="企业名称" required>
@@ -312,12 +323,6 @@ export default () => {
           <Select options={getOptions(banksMap)} placeholder="请选择" mode="multiple" />
         </Form.Item>
       </Form>
-      <FooterToolbar>
-        <Button onClick={() => history.goBack()}>返回</Button>
-        <Button type="primary" style={{ marginLeft: '20px' }} onClick={handleSubmit}>
-          保存
-        </Button>
-      </FooterToolbar>
     </PageContainer>
   );
 };
