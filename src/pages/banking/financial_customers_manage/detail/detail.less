@@ -10,17 +10,21 @@
   padding: 60px 40px 60px 40px;
   background: #fff;
   .item {
-    margin-bottom: 24px;
+    margin-bottom: 20px;
     color: #556377;
     font-size: 16px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
   }
   label {
-    display: inline-block;
     width: 140px;
     color: #8290a6;
     text-align: right;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
-  
+
   .top-content {
     display: flex;
     align-items: flex-start;
@@ -58,7 +62,7 @@
       }
       .right-bottom-content {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         justify-content: space-between;
         padding-right: 62px;
         border-radius: 4px;
@@ -70,8 +74,6 @@
             height: 26px;
             label {
               width: 120px;
-
-              white-space: nowrap;
             }
           }
         }

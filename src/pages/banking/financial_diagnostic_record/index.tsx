@@ -206,12 +206,12 @@ export default () => {
         <Form {...formLayout} form={searchForm}>
           <Row>
             <Col span={8}>
-              <Form.Item name="orgName" label="企业名称">
+              <Form.Item labelCol={{span: 8}} wrapperCol={{span: 16}} name="orgName" label="企业名称">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="exclusiveService" label="满足金融专属服务">
+              <Form.Item labelCol={{span: 11}} wrapperCol={{span: 13}} name="exclusiveService" label="满足金融专属服务">
                 <Select placeholder="请选择" allowClear>
                   <Select.Option value={true}>满足</Select.Option>
                   <Select.Option value={false}>不满足</Select.Option>
@@ -219,7 +219,7 @@ export default () => {
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="linkCustomer" label="是否对接客户">
+              <Form.Item labelCol={{span: 9}} wrapperCol={{span: 15}} name="linkCustomer" label="是否对接客户">
                 <Select placeholder="请选择" allowClear>
                   <Select.Option value={true}>是</Select.Option>
                   <Select.Option value={false}>否</Select.Option>
@@ -227,12 +227,11 @@ export default () => {
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item label="产品申请数量">
+              <Form.Item labelCol={{span: 8}} wrapperCol={{span: 16}} label="产品申请数量">
                 <Input.Group compact>
                   <Form.Item name="applyNumMin" style={{ width: 'calc(50% - 15px)' }}>
                     <InputNumber min={1} placeholder="请输入" style={{ width: '100%' }} />
                   </Form.Item>
-
                   <Input
                     style={{
                       width: 30,
@@ -243,7 +242,6 @@ export default () => {
                     placeholder="~"
                     disabled
                   />
-
                   <Form.Item name="applyNumMax" style={{ width: 'calc(50% - 15px)' }}>
                     <InputNumber min={1} placeholder="请输入" style={{ width: '100%' }} />
                   </Form.Item>
@@ -251,7 +249,7 @@ export default () => {
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="type" label="金融诊断类型">
+              <Form.Item labelCol={{span: 11}} wrapperCol={{span: 13}} name="type" label="金融诊断类型">
                 <Select placeholder="请选择" allowClear>
                   <Select.Option value={1}>快速诊断</Select.Option>
                   <Select.Option value={2}>精准诊断</Select.Option>
@@ -259,45 +257,45 @@ export default () => {
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="time" label="金融诊断时间">
+              <Form.Item labelCol={{span: 9}} wrapperCol={{span: 15}} name="time" label="金融诊断时间">
                 <DatePicker.RangePicker style={{ width: '100%' }} allowClear />
               </Form.Item>
             </Col>
           </Row>
+          <div className={sc('container-search-opereate')}>
+            <Button
+              style={{ marginRight: 16 }}
+              type="primary"
+              key="search"
+              onClick={() => {
+                const search = searchForm.getFieldsValue();
+                console.log('search', search);
+                if (search.time) {
+                  search.dateStart = moment(search.time[0]).format('YYYY-MM-DD');
+                  search.dateEnd = moment(search.time[1]).format('YYYY-MM-DD');
+                }
+                if (search.applyNum) {
+                  search.applyNumMin = search.applyNum[0];
+                  search.applyNumMax = search.applyNum[1];
+                }
+                setSearChContent(search);
+              }}
+            >
+              查询
+            </Button>
+            <Button
+              style={{ marginRight: 0 }}
+              type="primary"
+              key="reset"
+              onClick={() => {
+                searchForm.resetFields();
+                setSearChContent({});
+              }}
+            >
+              重置
+            </Button>
+          </div>
         </Form>
-        <div className={sc('container-search-opereate')}>
-          <Button
-            style={{ marginRight: 16 }}
-            type="primary"
-            key="search"
-            onClick={() => {
-              const search = searchForm.getFieldsValue();
-              console.log('search', search);
-              if (search.time) {
-                search.dateStart = moment(search.time[0]).format('YYYY-MM-DD');
-                search.dateEnd = moment(search.time[1]).format('YYYY-MM-DD');
-              }
-              if (search.applyNum) {
-                search.applyNumMin = search.applyNum[0];
-                search.applyNumMax = search.applyNum[1];
-              }
-              setSearChContent(search);
-            }}
-          >
-            查询
-          </Button>
-          <Button
-            style={{ marginRight: 0 }}
-            type="primary"
-            key="reset"
-            onClick={() => {
-              searchForm.resetFields();
-              setSearChContent({});
-            }}
-          >
-            重置
-          </Button>
-        </div>
       </div>
     );
   };
