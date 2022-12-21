@@ -18,7 +18,6 @@ import {
   orgSizeMap,
 } from '../constants';
 import './index.less';
-import { FooterToolbar } from '@ant-design/pro-components';
 
 const options = [
   { label: '否', value: 0 },
@@ -99,7 +98,7 @@ export default () => {
           isKey,
           isListed,
           contacts,
-          banks: banks?.split(',') || [],
+          banks: banks ? banks?.split(',') : [],
           scienceMark,
           legalCard: legalCard?.replace(/^(.{4})(?:\d+)(.{4})$/, '$1******$2'),
         });

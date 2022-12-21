@@ -3,7 +3,6 @@ import { getCustomersDetail } from '@/services/financial_customers_manage';
 import { useEffect, useState } from 'react';
 import { customToFixed } from '@/utils/util';
 import { Button, Row, Col, message as antdMessage } from 'antd';
-import ProCard from '@ant-design/pro-card';
 import { history } from 'umi';
 import {
   orgFormMap,
@@ -58,38 +57,38 @@ export default () => {
               <div>
                 <div className="item">
                   <label>法定代表人：</label>
-                  {detail?.legalPersonName || '--'}
+                  <span>{detail?.legalPersonName || '--'}</span>
                 </div>
                 <div className="item">
                   <label>实缴资本：</label>
-                  {detail?.actualCapital ? `${detail?.actualCapital}` : '--'}
+                  <span>{detail?.actualCapital ? `${detail?.actualCapital}` : '--'}</span>
                 </div>
                 <div className="item">
                   <label>注册地址：</label>
-                  {detail?.regAddress || '--'}
+                  <span>{detail?.regAddress || '--'}</span>
                 </div>
               </div>
               <div>
                 <div className="item">
                   <label>法人证件号码：</label>
-                  {detail?.legalCard
+                  <span>{detail?.legalCard
                     ? detail?.legalCard.replace(/^(.{4})(?:\d+)(.{4})$/, '$1******$2')
-                    : '--'}
+                    : '--'}</span>
                 </div>
                 <div className="item">
                   <label>注册资本：</label>
-                  {detail?.regCapital ? `${detail?.regCapital}` : '--'}
+                  <span>{detail?.regCapital ? `${detail?.regCapital}` : '--'}</span>
                 </div>
                 <div className="item" />
               </div>
               <div>
                 <div className="item">
                   <label>成立时间：</label>
-                  {detail?.formedDate ? detail?.formedDate.split(' ')[0] : '--'}
+                  <span>{detail?.formedDate ? detail?.formedDate.split(' ')[0] : '--'}</span>
                 </div>
                 <div className="item">
                   <label>经营所在地：</label>
-                  {detail?.busAddress || '--'}
+                  <span>{detail?.busAddress || '--'}</span>
                 </div>
                 <div className="item" />
               </div>
@@ -102,54 +101,54 @@ export default () => {
             <Row>
               <Col span={8} className="item">
                 <label>企业规模：</label>
-                {detail?.scale ? `${detail?.scale}` : '--'}
+                <span>{detail?.scale ? `${detail?.scale}` : '--'}</span>
               </Col>
               <Col span={8} className="item">
                 <label>组织规模：</label>
-                {detail?.orgSize ? orgSizeMap[detail?.orgSize] : '--'}
+                <span>{detail?.orgSize ? orgSizeMap[detail?.orgSize] : '--'}</span>
               </Col>
               <Col span={8} className="item">
                 <label>经营成分：</label>
-                {detail?.economyType ? economyTypeMap[detail?.economyType] : '--'}
+                <span>{detail?.economyType ? economyTypeMap[detail?.economyType] : '--'}</span>
               </Col>
 
               <Col span={8} className="item">
                 <label>上年营收：</label>
-                {typeof detail?.revenueLastYear === 'number'
+                <span>{typeof detail?.revenueLastYear === 'number'
                   ? `${customToFixed(`${detail?.revenueLastYear / 1000000}`)}万元`
-                  : '--'}
+                  : '--'}</span>
               </Col>
               <Col span={8} className="item">
                 <label>组织形式：</label>
-                {detail?.orgForm ? orgFormMap[detail?.orgForm] : '--'}
+                <span>{detail?.orgForm ? orgFormMap[detail?.orgForm] : '--'}</span>
               </Col>
               <Col span={8} className="item">
                 <label>总资产：</label>
-                {typeof detail?.totalAssets === 'number'
+                <span>{typeof detail?.totalAssets === 'number'
                   ? `${customToFixed(`${detail?.totalAssets / 1000000}`)}万元`
-                  : '--'}
+                  : '--'}</span>
               </Col>
 
               <Col span={8} className="item">
                 <label>上年利润：</label>
-                {typeof detail?.profitLastYear === 'number'
+                <span>{typeof detail?.profitLastYear === 'number'
                   ? `${customToFixed(`${detail?.profitLastYear / 1000000}`)}万元`
-                  : '--'}
+                  : '--'}</span>
               </Col>
               <Col span={8} className="item">
                 <label>法人资格：</label>
-                {detail?.legalQualification
+                <span>{detail?.legalQualification
                   ? legalQualificationMap[detail?.legalQualification]
-                  : '--'}
+                  : '--'}</span>
               </Col>
               <Col span={8} className="item">
                 <label>所属行业：</label>
-                {detail?.industry ? industryMap[detail?.industry] : '--'}
+                <span>{detail?.industry ? industryMap[detail?.industry] : '--'}</span>
               </Col>
 
               <Col span={24} className="item special-item">
                 <label>经营范围：</label>
-                {detail?.busRange || '--'}
+                <span>{detail?.busRange || '--'}</span>
               </Col>
             </Row>
           </div>

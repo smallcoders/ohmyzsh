@@ -1,6 +1,6 @@
 @prefix: financial-diagnostic-record;
 
-.@{prefix}-show-reason{
+.financial-diagnostic-record-show-reason{
   color: #6680FF;
 }
 .@{prefix}-container {
@@ -25,9 +25,13 @@
     }
     .ant-form {
       flex: 1;
+      display: flex;
+      align-items: flex-end;
+      justify-content: flex-start;
     }
     &-opereate{
-      margin: 0 40px 24px 32px;
+      margin: 0 0 48px 32px;
+      white-space: nowrap;
     }
   }
   &-modal {
@@ -45,14 +49,14 @@
       .ant-form-item-label > label {
         height: 40px;
         font-size: 16px;
-        font-weight: 400; 
+        font-weight: 400;
         color: #1e232a;
       }
       .ant-form-item-control-input {
         .ant-radio-wrapper {
           font-size: 16px;
           color: #556377;
-        } 
+        }
         .ant-input-group.ant-input-group-compact {
           display: flex;
         }
@@ -79,8 +83,8 @@
           padding: 4px 11px;
           .ant-select-selection-search-input {
             margin-top: 5px;
-          } 
-        } 
+          }
+        }
       }
     }
   }
