@@ -11,7 +11,20 @@ import {
   FooterToolbar,
 } from '@ant-design/pro-components';
 import { PageContainer } from '@ant-design/pro-layout';
-import { Radio, Tooltip, Select, Form, Row, Col, Button, message, Input, Modal, Spin } from 'antd';
+import {
+  Radio,
+  Tooltip,
+  Select,
+  Form,
+  Row,
+  Col,
+  Button,
+  message,
+  Input,
+  Modal,
+  Cascader,
+  List,
+} from 'antd';
 import FormEdit from '@/components/FormEdit';
 import { QuestionCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import type { Dayjs } from 'dayjs';
@@ -25,6 +38,8 @@ import { Prompt, history } from 'umi';
 import './index.less';
 import LoanUse from './loan-use/index';
 import { routeName } from '@/../config/routes';
+import { getOrgTypeList } from '@/services/org-type-manage';
+import { any } from 'glamor';
 const sc = scopedClasses('product-management-create');
 type FormValue = {
   // baseInfo: {
@@ -123,11 +138,15 @@ const ProductInfoAddOrEdit = () => {
           maxRate,
           minTerm,
           maxTerm,
+          typeName,
+          typeId,
+          typeDetailId,
           ...rest
         } = res.result;
         const Amount = minAmount ? [minAmount, maxAmount] : null;
         const Rate = minRate ? [minRate, maxRate] : null;
         const Term = minTerm ? [minTerm, maxTerm] : null;
+        const typeIds = typeId ? [typeId, typeDetailId] : [];
         productProcessInfoList?.sort((a, b) => a.step - b.step);
         // 编辑场景下需要使用formMapRef循环设置formData
         formMapRef?.current?.forEach((formInstanceRef) => {
@@ -138,22 +157,33 @@ const ProductInfoAddOrEdit = () => {
             Amount,
             Rate,
             Term,
+            typeIds,
           });
         });
         setFormIsChange(false);
+        setProductType(typeName);
       }
     });
   }, []);
-
+  const getproTypeList = (list: any) => {
+    return list?.map((it: any) => {
+      return {
+        value: it.id,
+        label: it.name,
+        children: getproTypeList(it.details || null),
+      };
+    });
+  };
   const prepare = async () => {
     try {
       const data = await Promise.all([getProductType(), queryBank()]);
-      setProductTypeList(data?.[0]?.result || []);
+      setProductTypeList(getproTypeList(data?.[0]?.result || []));
       setBankList(data?.[1]?.result?.bank || []);
     } catch (error) {
       message.error('数据初始化错误');
     }
   };
+
   // 保存产品信息 flag 0:暂存 1:下一步
   const saveProduct = (values: any, flag: number, cb: any) => {
     const value = { ...values };
@@ -178,6 +208,10 @@ const ProductInfoAddOrEdit = () => {
     if (values.hasOwnProperty('Rate')) {
       value.minRate = values.Rate[0];
       value.maxRate = values.Rate[1];
+    }
+    if (values.hasOwnProperty('typeIds')) {
+      value.typeId = values.typeIds[0];
+      value.typeDetailId = values.typeIds[1];
     }
 
     addProduct({ ...value, id: currentId, state: flag }).then((res) => {
@@ -278,7 +312,10 @@ const ProductInfoAddOrEdit = () => {
               name="name"
               fieldProps={{ maxLength: 35 }}
             />
-            <ProFormSelect
+            <Form.Item rules={[{ required: true }]} name="typeIds" label="产品类型">
+              <Cascader options={productTypeList} />
+            </Form.Item>
+            {/* <ProFormSelect
               rules={[{ required: true }]}
               label="产品类型"
               name="typeId"
@@ -297,7 +334,7 @@ const ProductInfoAddOrEdit = () => {
                   label: p.name,
                 };
               })}
-            />
+            /> */}
             <ProFormSelect
               rules={[{ required: true }]}
               label="金融机构"
@@ -489,10 +526,11 @@ const ProductInfoAddOrEdit = () => {
                 <div className={sc('form-input-tips')}>
                   将在门户的金融产品{productType.includes('保险') ? '保险' : ''}额度位置展示。
                   <Tooltip
+                    style={{ maxWidth: '800px' }}
                     color="#fff"
                     title={
                       <img
-                        src={require('@/assets/banking_loan/remove.png')}
+                        src={require('@/assets/banking_loan/amountDesc.png')}
                         className={sc('form-input-tips-img')}
                       />
                     }
@@ -538,7 +576,7 @@ const ProductInfoAddOrEdit = () => {
                     color="#fff"
                     title={
                       <img
-                        src={require('@/assets/banking_loan/remove.png')}
+                        src={require('@/assets/banking_loan/termDesc.png')}
                         className={sc('form-input-tips-img')}
                       />
                     }
@@ -581,7 +619,7 @@ const ProductInfoAddOrEdit = () => {
                     color="#fff"
                     title={
                       <img
-                        src={require('@/assets/banking_loan/remove.png')}
+                        src={require('@/assets/banking_loan/rateDesc.png')}
                         className={sc('form-input-tips-img')}
                       />
                     }

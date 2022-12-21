@@ -91,7 +91,7 @@ export default () => {
     if (editingItem.id) setEditingItem({});
   };
   const [totalAmount, setTotalAmount] = useState<BankingLoan.totalAmountContent>({});
-  const [tableParams, setTableParams] = useState<{ field?: string; order?: string }>({});
+  const [tableParams, setTableParams] = useState<string>(null);
   const [productType, setProductType] = useState<any[]>([]);
   // const [isMore, setIsMore] = useState<boolean>(false);
 
@@ -149,7 +149,7 @@ export default () => {
         pageIndex,
         pageSize,
         ...searchContent,
-        sort: tableParams?.order ? sortMap[tableParams?.order] : null,
+        sort: tableParams ? sortMap[tableParams] : null,
       });
       if (code === 0) {
         setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
@@ -475,7 +475,7 @@ export default () => {
     sorter: SorterResult<any>,
   ) => {
     console.log(pagination, filters, sorter);
-    setTableParams({ ...sorter });
+    setTableParams(sorter.order || null);
   };
 
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
