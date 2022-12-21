@@ -153,10 +153,24 @@ export const routeName = {
   PRODUCT_MANAGEMENT_CREATE: '/banking/product_management/create',
   PRODUCT_MANAGEMENT_UPDATE: '/banking/product_management/update',
   PRODUCT_MANAGEMENT_DETAIL: '/banking/product_management/detail',
+
+  // 金融诊断记录
+  FINANCIAL_DIAGNOSTIC_RECORD: '/banking/financial_diagnostic_record',
+  FINANCIAL_DIAGNOSTIC_RECORD_INDEX: '/banking/financial_diagnostic_record/index',
+  FINANCIAL_DIAGNOSTIC_RECORD_DETAIL: '/banking/financial_diagnostic_record/detail',
+  
+
+  // 金融专属
   FINANCIAL_EXCLUSIVE: '/banking/financial_exclusive',
   FINANCIAL_EXCLUSIVE_INDEX: '/banking/financial_exclusive/index',
+
+  // 机构管理
   FINANCIAL_INSTITUTION: '/banking/financial_institution',
   FINANCIAL_INSTITUTION_INDEX: '/banking/financial_institution/index',
+
+  // 产品类型
+  PRODUCT_TYPE:'/banking/product_type',
+  PRODUCT_TYPE_INDEX:'/banking/product_type/index',
 
   // 推荐管理
   RECOMMENDED_HOT_WORDS: '/recommended/hot_words',
@@ -1724,6 +1738,25 @@ export default [
         ],
       },
       {
+        path: routeName.PRODUCT_TYPE,
+        name: '产品类型',
+        code: 'M_FM_CPLX',
+        access: 'M_FM_CPLX',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.PRODUCT_TYPE,
+            redirect: routeName.PRODUCT_TYPE_INDEX,
+          },
+          {
+            path: routeName.PRODUCT_TYPE_INDEX,
+            hideInBreadcrumb: true,
+            name: '产品类型',
+            component: './banking/product_type/index',
+          },
+        ],
+      },
+      {
         path: routeName.PRODUCT_MANAGEMENT,
         name: '产品管理',
         code: 'M_FM_CPGL',
@@ -1758,40 +1791,28 @@ export default [
         ],
       },
       {
-        path: routeName.FINANCIAL_CUSTOMERS_MANAGE,
-        name: '金融客户管理',
-        code: 'M_FM_KHGL',
-        access: 'M_FM_KHGL',
+        path: routeName.FINANCIAL_DIAGNOSTIC_RECORD,
+        name: '金融诊断记录',
+        code: 'M_FM_ZDJL',
+        access: 'M_FM_ZDJL',
         hideChildrenInMenu: true,
         routes: [
           {
-            path: routeName.FINANCIAL_CUSTOMERS_MANAGE,
-            redirect: routeName.FINANCIAL_CUSTOMERS_MANAGE_INDEX,
+            path: routeName.FINANCIAL_DIAGNOSTIC_RECORD,
+            redirect: routeName.FINANCIAL_DIAGNOSTIC_RECORD_INDEX,
           },
           {
-            path: routeName.FINANCIAL_CUSTOMERS_MANAGE_INDEX,
+            path: routeName.FINANCIAL_DIAGNOSTIC_RECORD_INDEX,
+            name: '金融诊断记录',
             hideInBreadcrumb: true,
-            name: '金融客户管理',
-            component: './banking/financial_customers_manage/index',
+            component: './banking/financial_diagnostic_record/index',
           },
           {
-            path: routeName.FINANCIAL_CUSTOMERS_MANAGE_DETAIL,
-            name: '金融客户信息',
-            component: './banking/financial_customers_manage/detail/detail',
-          },
-          {
-            path: routeName.FINANCIAL_CUSTOMERS_MANAGE_EDIT,
-            name: '编辑',
-            component: './banking/financial_customers_manage/edit/index',
+            path: routeName.FINANCIAL_DIAGNOSTIC_RECORD_DETAIL,
+            name: '详情',
+            component: './banking/financial_diagnostic_record/detail/index',
           },
         ],
-      },
-      {
-        path: '/banking/supplier-management',
-        name: '讯飞供应商管理',
-        code: 'M_FM_GYSGL',
-        access: 'M_FM_GYSGL',
-        component: './banking/supplier-management',
       },
       {
         path: routeName.FINANCIAL_EXCLUSIVE,
@@ -1831,6 +1852,43 @@ export default [
           },
         ],
       },
+      {
+        path: routeName.FINANCIAL_CUSTOMERS_MANAGE,
+        name: '金融客户管理',
+        code: 'M_FM_KHGL',
+        access: 'M_FM_KHGL',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.FINANCIAL_CUSTOMERS_MANAGE,
+            redirect: routeName.FINANCIAL_CUSTOMERS_MANAGE_INDEX,
+          },
+          {
+            path: routeName.FINANCIAL_CUSTOMERS_MANAGE_INDEX,
+            hideInBreadcrumb: true,
+            name: '金融客户管理',
+            component: './banking/financial_customers_manage/index',
+          },
+          {
+            path: routeName.FINANCIAL_CUSTOMERS_MANAGE_DETAIL,
+            name: '金融客户信息',
+            component: './banking/financial_customers_manage/detail/detail',
+          },
+          {
+            path: routeName.FINANCIAL_CUSTOMERS_MANAGE_EDIT,
+            name: '编辑',
+            component: './banking/financial_customers_manage/edit/index',
+          },
+        ],
+      },
+      {
+        path: '/banking/supplier-management',
+        name: '讯飞供应商管理',
+        code: 'M_FM_GYSGL',
+        access: 'M_FM_GYSGL',
+        component: './banking/supplier-management',
+      },
+     
     ],
   },
   {

@@ -1,5 +1,17 @@
 @prefix: financial-exclusive;
-
+.@{prefix}-page1{
+  .ant-pro-footer-bar-right{
+    height: 88px;
+    flex: 0 100%;
+    text-align: center;
+    line-height: 88px;
+  }
+}
+.@{prefix}-page2{
+  .ant-pro-footer-bar-right{
+    display: none;
+  }
+}
 .@{prefix}-container {
   height: 892px;
   padding: 32px 40px;
@@ -69,7 +81,7 @@
     }
   }
   .ant-form-item {
-    margin-bottom: 20px;
+    margin-bottom: 18px;
     .ant-form-item-label > label {
       height: 40px;
       color: #1e232a;
@@ -92,11 +104,11 @@
       .ant-form-item-control-input {
         width: 400px;
         .info {
-          margin-top: 8px;
           color: #8290a6;
           font-size: 14px;
           .example {
             color: #0f71ff;
+            cursor: pointer;
           }
           .size {
             color: #ff4f17;

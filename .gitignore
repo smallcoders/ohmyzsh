@@ -13,6 +13,7 @@ _roadhog-api-doc
 .DS_Store
 npm-debug.log*
 yarn-error.log
+yarn.lock
 
 /coverage
 .idea
@@ -37,3 +38,4 @@ screenshot
 
 build
 *.zip
+

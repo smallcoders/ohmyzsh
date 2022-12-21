@@ -54,3 +54,13 @@ export async function removeBank(id: number) {
     method: 'get',
   });
 }
+
+/**
+ * 门户合作机构查询
+ * @param params
+ */
+export async function queryCooperateOrg() {
+  return request<any>(`/antelope-finance/mng/bank/queryCooperateOrg`, {
+    method: 'get',
+  });
+}

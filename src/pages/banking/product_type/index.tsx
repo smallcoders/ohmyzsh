@@ -1,352 +1,373 @@
-import { getProductTypeList} from '@/services/purchase';
+import {
+  Button,
+  Input,
+  Form,
+  Popconfirm,
+  Modal,
+  message,
+  Space,
+  Tag,
+  InputNumber,
+  message as antdMessage,
+} from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
-import ProTable from '@ant-design/pro-table';
-import { Button, Image, Popconfirm, message, Space } from 'antd';
-import { routeName } from '../../../../config/routes';
-import { useRef, useState } from 'react';
-import { useHistory, Access, useAccess } from 'umi';
+import './index.less';
+import scopedClasses from '@/utils/scopedClasses';
+import React, { useEffect, useState } from 'react';
+import SelfTable from '@/components/self_table';
+import type ProductType from '@/types/product-type';
+import { getProductTypeList, updateTypeSort, updateType, delType } from '@/services/product-type';
+import FormItem from 'antd/lib/form/FormItem';
+import { SortDetail } from './components/sortDetail';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import { DndProvider } from 'react-dnd';
+const sc = scopedClasses('product-type');
 
 export default () => {
-  const history = useHistory();
-
-  const actionRef = useRef<ActionType>();
-  const [total, setTotal] = useState<number>(0);
-
-  const [pageIndex, setPageIndex] = useState<any>(1);
-
-  // 更改活动状态
-  const addOrUpdate = async (params: object) => {
+  const [dataSource, setDataSource] = useState<ProductType.Content[]>([]);
+  const [form] = Form.useForm();
+  const [editingItem, setEditingItem] = useState<ProductType.Content>({});
+  const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [addOrUpdateLoading, setAddOrUpdateLoading] = useState<boolean>(false);
+  const [sortForm] = Form.useForm();
+  // 产品类型列表
+  const productTypeList = async () => {
     try {
-      const removeRes = await changeActState({ ...params, type: 1 });
-      if (removeRes.code === 0) {
-        message.success(`操作成功`);
-        if (actionRef.current) {
-          actionRef.current.reload();
-        }
+      const { code, result } = await getProductTypeList();
+      if (code === 0) {
+        setDataSource(result);
+      }
+    } catch (error) {
+      antdMessage.error(`请求失败，原因:{${error}}`);
+    }
+  };
+  useEffect(() => {
+    productTypeList();
+  }, []);
+
+  const clearForm = () => {
+    form.resetFields();
+    setEditingItem({});
+  };
+  /**
+   * @zh-CN 新增编辑
+   */
+  const addOrUpdata = async () => {
+    const tooltipMessage = editingItem.id ? '新增产品类型' : '编辑产品类型';
+    const values = await form.validateFields();
+    const detail = values.details.map((item: any, index: number) => {
+      return {
+        ...item,
+        sort: index + 1,
+        typeId: editingItem.id ?? null,
+      };
+    });
+    delete values.details;
+    try {
+      setAddOrUpdateLoading(true);
+      const { code, message: resultMsg } = await (editingItem.id
+        ? updateType({
+            ...values,
+            id: editingItem.id,
+            detail,
+          })
+        : updateType({
+            ...values,
+            detail,
+          }));
+      if (code === 0) {
+        setModalVisible(false);
+        message.success(`${tooltipMessage}成功！`);
+        productTypeList();
+        clearForm();
       } else {
-        message.error(`操作失败，原因:{${removeRes.message}}`);
+        message.error(`${tooltipMessage}失败，原因:{${resultMsg}}`);
+      }
+      setAddOrUpdateLoading(false);
+    } catch (error) {
+      setAddOrUpdateLoading(false);
+    }
+  };
+  // 拖拽
+  const moveDetail = (dragIndex: number, hoverIndex: number, name: string) => {
+    const list = form.getFieldValue(name);
+    const listClone = [...list];
+    listClone.splice(hoverIndex, 0, listClone.splice(dragIndex, 1)[0]);
+    form.setFieldsValue({
+      [name]: listClone,
+    });
+  };
+  const useModal = (): React.ReactNode => {
+    return (
+      <Modal
+        title={editingItem.id ? '编辑服务标签' : '新增服务标签'}
+        width="800px"
+        visible={modalVisible}
+        maskClosable={false}
+        okButtonProps={{ loading: addOrUpdateLoading }}
+        okText="保存"
+        onOk={() => {
+          addOrUpdata();
+        }}
+        onCancel={() => {
+          clearForm();
+          setModalVisible(false);
+        }}
+      >
+        <Form
+          form={form}
+          layout="horizontal"
+          labelCol={{ span: 6 }}
+          wrapperCol={{ span: 12 }}
+          className={sc('modal-form')}
+          validateTrigger="onBlur"
+        >
+          <Form.Item
+            name="name"
+            label="产品类型"
+            rules={[
+              {
+                required: true,
+                message: '请输入产品类型',
+              },
+            ]}
+            style={{ marginBottom: 40 }}
+          >
+            <Input placeholder="请输入" maxLength={35} />
+          </Form.Item>
+          <Form.Item label="产品子类型" required>
+            <DndProvider backend={HTML5Backend}>
+              <Form.List name="details" initialValue={[{}]}>
+                {(fields, { add, remove }) => {
+                  return (
+                    <>
+                      {fields.map(({ key, name, ...restField }, index: number) => {
+                        return (
+                          // eslint-disable-next-line react/jsx-key
+                          <>
+                            <SortDetail
+                              ItemTypes="subTypeCode"
+                              index={index}
+                              id={key}
+                              moveDetail={(dragIndex, hoverIndex) =>
+                                moveDetail(dragIndex, hoverIndex, 'details')
+                              }
+                              style={{
+                                position: 'relative',
+                              }}
+                            >
+                              <div className={sc('form-subType')}>
+                                <Form.Item
+                                  {...restField}
+                                  name={[name, 'name']}
+                                  rules={[
+                                    {
+                                      required: true,
+                                      message: '请输入',
+                                    },
+                                  ]}
+                                >
+                                  <Input placeholder="请输入" maxLength={35} />
+                                </Form.Item>
+                              </div>
+                              <img
+                                src={require('@/assets/banking_loan/remove.png')}
+                                alt=""
+                                onClick={() => {
+                                  if (index === 0) return;
+                                  remove(name);
+                                }}
+                                style={{
+                                  width: 24,
+                                  position: 'absolute',
+                                  right: -80,
+                                  top: 4,
+                                  cursor: 'pointer',
+                                }}
+                              />
+                            </SortDetail>
+                          </>
+                        );
+                      })}
+                      <Form.Item name="add">
+                        <Button
+                          onClick={() => {
+                            if (fields && fields.length > 19) return;
+                            add({ id: null, name: '', sort: null, typeId: null });
+                          }}
+                          className="add-type-btn"
+                        >
+                          + 子类型按钮
+                        </Button>
+                      </Form.Item>
+                    </>
+                  );
+                }}
+              </Form.List>
+            </DndProvider>
+          </Form.Item>
+        </Form>
+      </Modal>
+    );
+  };
+  /**
+   * @zh-CN 产品删除
+   */
+  const remove = async (id: number) => {
+    try {
+      const { code, message: resultMsg } = await delType(id);
+      if (code === 0) {
+        message.success(`删除成功`);
+        productTypeList();
+      } else {
+        message.error(`删除失败，原因:${resultMsg}`);
       }
     } catch (error) {
       console.log(error);
     }
   };
-
-  const columns: ProColumns<DataPromotions.Promotions>[] = [
+  /**
+   * @zh-CN 顺序调整
+   */
+  const changeSort = async (id: number, sort: number) => {
+    try {
+      const { code } = await updateTypeSort(id, sort);
+      if (code === 0) {
+        message.success(`修改成功！`);
+        productTypeList();
+      }
+    } catch (error) {
+      antdMessage.error(`请求失败，原因:{${error}}`);
+    }
+  };
+  const columns = [
     {
       title: '序号',
-      hideInSearch: true,
-      render: (_: any, _record: any, index: number) => 10 * (pageIndex - 1) + index + 1,
+      dataIndex: 'sort',
+      width: 120,
     },
     {
-      title: '活动编码',
-      dataIndex: 'actNo',
-      valueType: 'textarea',
-      hideInSearch: true,
-    },
-    {
-      title: '活动名称',
+      title: '产品类型',
       dataIndex: 'name',
-      valueType: 'textarea',
-      hideInSearch: true,
+      isEllipsis: true,
+      width: 280,
     },
     {
-      title: '活动名称',
-      dataIndex: 'actName',
-      valueType: 'textarea',
-      hideInTable: true,
-      order: 5,
-    },
-    {
-      title: '商品数量',
-      dataIndex: 'commoditys',
-      hideInSearch: true,
-      // valueType: 'textarea',
-      // order: 4,
-      renderText: (_: string, _record: any) => (_record.product ? _record.product.length : 0),
-    },
-    {
-      title: '活动时间',
-      dataIndex: 'time',
-      hideInSearch: true,
-      renderText: (_: string, _record: any) => _record?.startTime + '~' + _record?.endTime,
-    },
-    {
-      title: '上架状态',
-      dataIndex: 'addedState',
-      valueType: 'select',
-      valueEnum: {
-        0: {
-          text: '上架',
-        },
-        1: {
-          text: '下架',
-        },
-        2: {
-          text: '暂存',
-        },
-      },
-    },
-    {
-      title: '活动状态',
-      dataIndex: 'actState',
-      valueType: 'select',
-      valueEnum: {
-        0: {
-          text: '未开始',
-        },
-        1: {
-          text: '进行中',
-        },
-        2: {
-          text: '已结束',
-        },
-      },
-      order: 5,
-    },
-    {
-      title: '商品名称',
-      dataIndex: 'productName',
-      valueType: 'textarea',
-      hideInTable: true,
-      order: 5,
-    },
-    {
-      title: '活动权重',
-      dataIndex: 'sortNo',
-      valueType: 'textarea',
-      hideInSearch: true,
-    },
-    {
-      title: '最新操作时间',
-      dataIndex: 'updateTime',
-      valueType: 'dateTime',
-      hideInSearch: true,
-    },
-    {
-      title: '操作时间',
-      dataIndex: 'updateTime',
-      valueType: 'dateTimeRange',
-      hideInTable: true,
-      order: 4,
+      title: '产品子类型',
+      dataIndex: 'details',
+      isEllipsis: true,
+      width: 912,
+      render: (details: ProductType.details[]) => (
+        <>
+          {details.map((item) => {
+            return (
+              <Tag color="default" key={item.id}>
+                {item.name}
+              </Tag>
+            );
+          })}
+        </>
+      ),
     },
     {
       title: '操作',
-      hideInSearch: true,
-      width: 200,
-      fixed: 'right',
-      render: (_, record) => (
-        <Space>
-          {record.actState === 0 && ( // 未开始的可提前开始
-            <Popconfirm
-              title="确定提前开始么？"
-              okText="提前开始"
-              cancelText="取消"
-              onConfirm={() => addOrUpdate({ id: record.id, actState: 1 })}
+      width: 240,
+      dataIndex: 'option',
+      render: (_: any, record: any) => {
+        return (
+          <Space>
+            <Button
+              size="small"
+              type="link"
+              onClick={() => {
+                setEditingItem(record);
+                setModalVisible(true);
+                form.setFieldsValue({
+                  name: record?.name,
+                  details: record?.details,
+                });
+              }}
             >
-              <a href="#">提前开始</a>
+              编辑
+            </Button>
+
+            <Popconfirm
+              title="确定删除么？"
+              okText="确定"
+              cancelText="取消"
+              onConfirm={() => remove(record.id)}
+            >
+              <a href="#">删除</a>
             </Popconfirm>
-          )}
-          {record.actState === 1 && ( // 进行中的可提前结束
-            <Access accessible={access['P_DG_SJGL']}>
-              <Popconfirm
-                title="确定提前结束么？"
-                okText="提前结束"
-                cancelText="取消"
-                onConfirm={() => addOrUpdate({ id: record.id, actState: 2 })}
-              >
-                <a href="#">提前结束</a>
-              </Popconfirm>
-            </Access>
-          )}
 
-          {record.addedState == 0 && (
-            <Access accessible={access['P_DG_SJGL']}>
-              <Popconfirm
-                title="确定下架么？"
-                okText="下架"
-                cancelText="取消"
-                onConfirm={() => addOrUpdate({ id: record.id, addedState: 1 })}
-              >
-                <a href="#">下架</a>
-              </Popconfirm>
-            </Access>
-          )}
-
-          {record.addedState != 0 &&
-            record.actState != 2 && ( // 上架及活动结束的都不能编辑
-              <Button
-                size="small"
-                type="link"
-                onClick={() => {
-                  history.push(`${routeName.SHELVES_MANAGE_CREATE}?id=${record.id}`);
-                }}
-              >
-                编辑
+            <Popconfirm
+              key={record.id}
+              overlayClassName="sort-popver"
+              title={
+                <>
+                  <Form form={sortForm}>
+                    <FormItem label="序号" name="sort" colon={false}>
+                      <InputNumber min={1} defaultValue={record.sort} />
+                    </FormItem>
+                  </Form>
+                </>
+              }
+              icon={false}
+              onConfirm={() => {
+                changeSort(record.id, sortForm.getFieldValue('sort'));
+                sortForm.resetFields();
+              }}
+              onCancel={() => {
+                sortForm.resetFields();
+              }}
+              okText="确定"
+              cancelText="取消"
+            >
+              <Button size="small" type="link">
+                调整顺序
               </Button>
-            )}
-
-          <Button
-            size="small"
-            type="link"
-            onClick={() => {
-              history.push(`${routeName.SHELVES_MANAGE_DETAIL}?id=${record.id}`);
-            }}
-          >
-            详情
-          </Button>
-        </Space>
-      ),
+            </Popconfirm>
+          </Space>
+        );
+      },
     },
   ];
 
-  const [loadingObj, setLoadingObj] = useState<any>({});
-
-  const [tableData, setTableData] = useState<any>([]);
-
-  const queryExpandedData = async (record: any, key: any) => {
-    try {
-      const table = { ...tableData };
-      const loading = { ...loadingObj };
-      const data: any = record.product || [];
-      table[key] = data;
-      loading[key] = false;
-      setTableData(table);
-      setLoadingObj(loading);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const onExpand = (expanded: any, record: any) => {
-    const key = record?.id;
-    if (tableData[key]?.length) return;
-    const loading = { ...loadingObj };
-    loading[key] = true;
-    setLoadingObj(loading);
-    queryExpandedData(record, key);
-  };
-  const expandedRowRender = (record: any) => {
-    const _columns: ProColumns<DataCommodity.Commodity>[] = [
-      {
-        title: '序号',
-        hideInSearch: true,
-        renderText: (_, __, index: number) => index + 1,
-      },
-      {
-        title: '商品图',
-        dataIndex: 'productPic',
-        render: (_: any) => <Image width={100} src={_} />,
-      },
-      {
-        title: '商品名称',
-        dataIndex: 'productName',
-        valueType: 'textarea',
-      },
-      {
-        title: '商品型号',
-        dataIndex: 'productModel',
-        valueType: 'textarea',
-      },
-      {
-        title: '商品原价',
-        dataIndex: 'purchasePricePart',
-        valueType: 'textarea',
-      },
-      {
-        title: '商品售价',
-        dataIndex: 'salePricePart',
-        valueType: 'textarea',
-      },
-      {
-        title: '商品划线价',
-        dataIndex: 'originPricePart',
-      },
-      {
-        title: '销售状态',
-        dataIndex: 'addedState',
-        valueType: 'select',
-        valueEnum: {
-          0: {
-            text: '上架',
-          },
-          1: {
-            text: '下架',
-          },
-          2: {
-            text: '暂存',
-          },
-        },
-      },
-      {
-        title: '权重',
-        renderText: () => 1,
-      },
-    ];
-    return (
-      <ProTable
-        columns={_columns}
-        headerTitle={false}
-        search={false}
-        options={false}
-        dataSource={tableData[record.id]}
-        pagination={false}
-      />
-    );
-  };
-  const access = useAccess()
   return (
-    <PageContainer>
-      <ProTable
-        headerTitle={
-          <div>
-            <p>{`活动列表（共${total}个）`}</p>
+    <PageContainer
+      className={sc('container')}
+      ghost
+      header={{
+        title: '产品类型',
+        breadcrumb: {},
+      }}
+    >
+      <div className={sc('container-table')}>
+        <div className={sc('container-table-header')}>
+          <div className="title">
+            <Button
+              type="primary"
+              key="addNew"
+              onClick={() => {
+                setModalVisible(true);
+              }}
+            >
+              <PlusOutlined /> 新增产品类型
+            </Button>
           </div>
-        }
-        scroll={{ x: 1400 }}
-        options={false}
-        rowKey="id"
-        expandable={{
-          onExpand,
-          expandedRowRender,
-        }}
-        search={{
-          span: 8,
-          labelWidth: 100,
-          optionRender: (searchConfig, formProps, dom) => [dom[1], dom[0]],
-        }}
-        actionRef={actionRef}
-        toolBarRender={() => [
-          <Access accessible={access['P_DG_SJGL']}>
-          <Button
-            type="primary"
-            key="addActivity"
-            onClick={() => {
-              history.push(routeName.SHELVES_MANAGE_CREATE);
-            }}
-          >
-            <PlusOutlined /> 新增活动
-          </Button>,
-          </Access>
-        ]}
-        request={async (pagination) => {
-          const { updateTime = [] } = pagination;
-          const [startDate, endDate] = updateTime;
-          delete pagination.updateTime;
-          const result = await getActivityManageList({
-            ...pagination,
-            type: 1,
-            startDate,
-            endDate,
-          });
-
-          setPageIndex(pagination.current);
-          setTotal(result.total);
-          return result;
-        }}
-        columns={columns}
-        pagination={{ size: 'default', showQuickJumper: true, defaultPageSize: 10 }}
-      />
+        </div>
+        <div className={sc('container-table-body')}>
+          <SelfTable
+            bordered
+            columns={columns}
+            dataSource={dataSource}
+            rowKey={'id'}
+            pagination={false}
+          />
+        </div>
+      </div>
+      {useModal()}
     </PageContainer>
   );
 };
