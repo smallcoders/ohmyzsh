@@ -1,24 +1,17 @@
 import type { ProFormInstance } from '@ant-design/pro-components';
 import {
-  ProFormDateRangePicker,
   ProFormSelect,
   ProFormText,
   StepsForm,
-  ProFormTreeSelect,
-  ProForm,
   ProFormList,
   ProFormDigitRange,
-  FooterToolbar,
 } from '@ant-design/pro-components';
 import { PageContainer } from '@ant-design/pro-layout';
-import { Radio, Tooltip, Select, Form, Row, Col, Button, message, Input, Modal, Spin } from 'antd';
+import { Radio, Tooltip, Select, Form, Button, message, Input, Modal } from 'antd';
 import FormEdit from '@/components/FormEdit';
 import { QuestionCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import type { Dayjs } from 'dayjs';
-import dayjs from 'dayjs';
 import React, { useEffect, useRef, useState } from 'react';
-import { productTypeMap, guaranteeMethodMap, city } from '../constants';
-import { areaLabel } from '@/services/propaganda-config';
+import { guaranteeMethodMap, city } from '../constants';
 import scopedClasses from '@/utils/scopedClasses';
 import { getProductType, addProduct, queryBank, getProductInfo } from '@/services/banking-product';
 import { Prompt, history } from 'umi';
@@ -26,58 +19,58 @@ import './index.less';
 import LoanUse from './loan-use/index';
 import { routeName } from '@/../config/routes';
 const sc = scopedClasses('product-management-create');
-type FormValue = {
-  // baseInfo: {
-  //   name: string;
-  // };
-  // syncTableInfo: {
-  //   timeRange: [Dayjs, Dayjs];
-  //   title: string;
-  // };
-  id: number; // 主键
-  name: string; // 产品姓名
-  content: string; // 产品简介
-  bankName: string; // 所属金融机构
-  minAmount: number; // 最低额度
-  maxAmount: number; // 最高额度
-  amountDesc: string; // 额度文案
-  minTerm: number; // 最低期限（单位月）
-  maxTerm: number; //最高期限（单位月）
-  termDesc: string; // 期限文案
-  minRate: string; // 最低利率
-  maxRate: string; // 最高利率
-  rateDesc: string; // 利率文案
-  applyCondition: string; // 申请条件
-  openArea: string; // 开放地区
-  productFeature: string; // 产品特点
-  warrantType: string; // 担保方式 1-信用 ，2-抵押，3-质押，4-保证，多个逗号分隔
-  object: string; // 面向对象
-  isCirculationLoan: number; // 是否支持循环贷 0:否，1:是
-  isHot: number; // 是否热门 0:否，1:是
-  loanIds: string; // 贷款用途id
-  productProcessInfoList: ProductProcessInfoList; // 面向对象
-};
-type ProductProcessInfoList = {
-  id: number; // 主键
-  name: string; // 流程名称
-  step: number; // 步骤
-};
-const formValue: FormValue = {
-  // baseInfo: {
-  //   name: 'normal job',
-  // },
-  // syncTableInfo: {
-  //   timeRange: [dayjs().subtract(1, 'm'), dayjs()],
-  //   title: 'example table title',
-  // },
-};
-const waitTime = (time: number = 100) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(formValue);
-    }, time);
-  });
-};
+// type FormValue = {
+//   // baseInfo: {
+//   //   name: string;
+//   // };
+//   // syncTableInfo: {
+//   //   timeRange: [Dayjs, Dayjs];
+//   //   title: string;
+//   // };
+//   id: number; // 主键
+//   name: string; // 产品姓名
+//   content: string; // 产品简介
+//   bankName: string; // 所属金融机构
+//   minAmount: number; // 最低额度
+//   maxAmount: number; // 最高额度
+//   amountDesc: string; // 额度文案
+//   minTerm: number; // 最低期限（单位月）
+//   maxTerm: number; //最高期限（单位月）
+//   termDesc: string; // 期限文案
+//   minRate: string; // 最低利率
+//   maxRate: string; // 最高利率
+//   rateDesc: string; // 利率文案
+//   applyCondition: string; // 申请条件
+//   openArea: string; // 开放地区
+//   productFeature: string; // 产品特点
+//   warrantType: string; // 担保方式 1-信用 ，2-抵押，3-质押，4-保证，多个逗号分隔
+//   object: string; // 面向对象
+//   isCirculationLoan: number; // 是否支持循环贷 0:否，1:是
+//   isHot: number; // 是否热门 0:否，1:是
+//   loanIds: string; // 贷款用途id
+//   productProcessInfoList: ProductProcessInfoList; // 面向对象
+// };
+// type ProductProcessInfoList = {
+//   id: number; // 主键
+//   name: string; // 流程名称
+//   step: number; // 步骤
+// };
+// const formValue: FormValue = {
+//   // baseInfo: {
+//   //   name: 'normal job',
+//   // },
+//   // syncTableInfo: {
+//   //   timeRange: [dayjs().subtract(1, 'm'), dayjs()],
+//   //   title: 'example table title',
+//   // },
+// };
+// const waitTime = (time: number = 100) => {
+//   return new Promise((resolve) => {
+//     setTimeout(() => {
+//       resolve(formValue);
+//     }, time);
+//   });
+// };
 const ProductInfoAddOrEdit = () => {
   const { id } = history.location.query as any;
   const formMapRef = useRef<React.MutableRefObject<ProFormInstance<any> | undefined>[]>([]);
@@ -125,10 +118,10 @@ const ProductInfoAddOrEdit = () => {
           maxTerm,
           ...rest
         } = res.result;
-        const Amount = minAmount ? [minAmount, maxAmount] : null;
+        const Amount = minAmount ? [minAmount / 1000000, maxAmount / 1000000] : null;
         const Rate = minRate ? [minRate, maxRate] : null;
         const Term = minTerm ? [minTerm, maxTerm] : null;
-        productProcessInfoList?.sort((a, b) => a.step - b.step);
+        productProcessInfoList?.sort((a: any, b: any) => a.step - b.step);
         // 编辑场景下需要使用formMapRef循环设置formData
         formMapRef?.current?.forEach((formInstanceRef) => {
           formInstanceRef?.current?.setFieldsValue({
@@ -168,8 +161,8 @@ const ProductInfoAddOrEdit = () => {
       );
     }
     if (values.hasOwnProperty('Amount')) {
-      value.minAmount = values.Amount[0];
-      value.maxAmount = values.Amount[1];
+      value.minAmount = values.Amount[0] * 1000000;
+      value.maxAmount = values.Amount[1] * 1000000;
     }
     if (values.hasOwnProperty('Term')) {
       value.minTerm = values.Term[0];
