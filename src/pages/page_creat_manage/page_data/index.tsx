@@ -81,7 +81,7 @@ export default () => {
                        <span>{text?.split('&&@#@')?.join(';') || ''}</span>
                      )
                    }
-                   return <span></span>
+                   return <span>--</span>
                  }
                })
             }
@@ -90,8 +90,14 @@ export default () => {
             {
               title: '提交人',
               dataIndex: 'submit_user_name',
-              isEllipsis: true,
               width: 200,
+              render: (submit_user_name: string) => {
+                return (
+                  <>
+                    {submit_user_name || '--'}
+                  </>
+                )
+              },
             },
           )
           newColumns.push({
