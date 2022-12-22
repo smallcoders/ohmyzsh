@@ -67,7 +67,7 @@ export default () => {
     form.resetFields();
     if (editingItem.id) setEditingItem({});
   };
-  const [tableParams, setTableParams] = useState<{ field?: string; order?: string }>({});
+  const [tableParams, setTableParams] = useState<string>(null);
   const [productType, setProductType] = useState<any[]>([]);
   // const [isMore, setIsMore] = useState<boolean>(false);
 
@@ -344,7 +344,7 @@ export default () => {
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="dataSource" label="发布状态">
+              <Form.Item name="state" label="发布状态">
                 <Select placeholder="请选择" allowClear>
                   {Object.entries(statusMap).map((p) => {
                     return (
@@ -450,9 +450,8 @@ export default () => {
     filters: Record<string, FilterValue>,
     sorter: SorterResult<any>,
   ) => {
-    setPageInfo({ ...pageInfo, pageIndex: pagination.current });
-    setTableParams({ ...sorter });
-    getPage(pagination.current);
+    console.log(pagination, filters, sorter);
+    setTableParams(sorter.order || null);
   };
 
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
