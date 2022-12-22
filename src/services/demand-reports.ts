@@ -14,7 +14,9 @@ export async function getDemandReportsTotalList(data?: Record<string, any>) {
   );
 }
 
-// 导出-服务管理-意向消息导出
+/**
+ * 供需对接报表 - 导出 - 总表
+ */
 export async function exportTotalTable() {
   return request<any>('/antelope-manage/intendMessage/export',{
     method: 'post',
@@ -35,4 +37,16 @@ export async function getDetailList(data?: Record<string, any>) {
       data,
     }
   );
+}
+
+/**
+ * 供需对接报表 - 导出 - 明细表
+ */
+export async function exportDetailTable() {
+  return request<any>('/antelope-manage/intendMessage/export',{
+    method: 'post',
+    data: {},
+    responseType: 'blob',
+    getResponse: true,
+  })
 }
