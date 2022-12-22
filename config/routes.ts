@@ -1,4 +1,4 @@
-﻿export const routeName = {
+export const routeName = {
   DATA_COLUMN: '/service-config/data-column', // 数据栏
   DIAGNOSTIC_TASKS: '/service-config/diagnostic-tasks/index', // 诊断任务
   DIAGNOSTIC_TASKS_DETAIL: '/diagnose-manage/diagnostic-tasks/detail', // 诊断记录
@@ -121,6 +121,9 @@
   BANKING_SERVICE_DETAIL: '/banking/banking_service_manage/detail',
   ORG_MANAGE: '/user-config/org-manage',
   // 贷款业务
+  ORG_MANAGE_INDEX: '/user-config/org-manage/index',
+  ORG_MANAGE_DETAIL: '/user-config/org-manage/detail',
+  // 贷款记录
   LOAN_RECORD: '/banking/loan_record',
   LOAN_RECORD_INDEX: '/banking/loan_record/index',
   LOAN_RECORD_DETAIL: '/banking/loan_record/detail',
@@ -1171,6 +1174,34 @@ export default [
         name: '产业专题',
         component: './solution_properties/industry_topic',
       },
+      {
+        path: '/solution-properties/message-management',
+        code: 'M_PC_LYGL',
+        access: 'M_PC_LYGL',
+        name: '留言管理',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: '/solution-properties/message-management',
+            code: 'M_PC_LYGL',
+            access: 'M_PC_LYGL',
+            redirect: '/solution-properties/message-management/index',
+          },
+          {
+            path: '/solution-properties/message-management/index',
+            code: 'M_PC_LYGL',
+            access: 'M_PC_LYGL',
+            name: '留言管理',
+            hideInBreadcrumb: true,
+            component: './solution_properties/message_management',
+          },
+          {
+            path: '/solution-properties/message-management/detail',
+            name: '留言详情',
+            component: './solution_properties/message_management/components/detail',
+          }
+        ]
+      },
     ],
   },
   {
@@ -1465,25 +1496,25 @@ export default [
   },
   {
     path: '/diagnose-project-manage',
-    access: 'M_DM',
+    access: 'M_DN',
     name: '诊断项目管理',
     icon: 'folder-open',
     routes: [
       {
         path: '/diagnose-project-manage',
-        access: 'M_DM_ZDT',
+        access: 'M_DN_BAG',
         redirect: '/diagnose-project-manage/diagnose',
       },
       {
         path: '/diagnose-project-manage/diagnose',
-        access: 'M_DM_ZDGL',
+        access: 'M_DN_BAG',
         name: '诊断服务包',
         hideChildrenInMenu: true,
         routes: [
           {
             path: '/diagnose-project-manage/diagnose',
-            code: 'M_DM_ZDGL',
-            access: 'M_DM_ZDGL',
+            code: 'M_DN_BAG',
+            access: 'M_DN_BAG',
             name: '诊断服务包',
             component: './diagnose_project_manage/diagnose_manage',
           }
@@ -1491,14 +1522,14 @@ export default [
       },
       {
         path: '/diagnose-project-manage/diagnose-report',
-        access: 'M_DM_ZDGL',
+        access: 'M_DN_FORM',
         name: '诊断服务报表',
         hideChildrenInMenu: true,
         routes: [
           {
             path: '/diagnose-project-manage/diagnose-report',
-            code: 'M_DM_ZDGL',
-            access: 'M_DM_ZDGL',
+            code: 'M_DN_FORM',
+            access: 'M_DN_FORM',
             name: '诊断服务报表',
             component: './diagnose_project_manage/diagnose_service_report',
           }
@@ -2363,7 +2394,25 @@ export default [
         code: 'M_UM_ZZGL',
         access: 'M_UM_ZZGL',
         name: '组织管理',
-        component: './user_config/org_manage',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.ORG_MANAGE,
+            redirect: routeName.ORG_MANAGE_INDEX,
+          },
+          {
+            path: routeName.ORG_MANAGE_INDEX,
+            name: '组织管理',
+            hideInBreadcrumb: true,
+            component: './user_config/org_manage',
+          },
+          {
+            path: routeName.ORG_MANAGE_DETAIL,
+            name: '组织成员信息',
+            component: './user_config/org_manage/detail',
+          },
+
+        ],
       },
       {
         path: '/user-config/expert-manage',

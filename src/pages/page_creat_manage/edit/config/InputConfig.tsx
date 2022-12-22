@@ -3,18 +3,20 @@ import {
   Checkbox,
   Form,
   Input,
-  InputNumber,
-  Tooltip
+  InputNumber, Select,
+  Tooltip,
 } from 'antd';
 import questionIcon from '@/assets/page_creat_manage/question_icon.png'
 import { useConfig } from '../hooks/hooks'
 import { DesignContext } from '../store';
+import { regOptions } from '../utils/options'
 
 const InputConfig = () => {
   const { selectWidgetItem, handleChange } = useConfig()
   const { state } = useContext(DesignContext)
   const { widgetFormList } = state
   const [showLengthInput, setShowLengthInput] = useState<boolean>(false)
+  console.log(state, '0000000')
   return (
     <>
       <Form.Item required label="标题">
@@ -82,6 +84,23 @@ const InputConfig = () => {
           value={selectWidgetItem?.config?.placeholder}
           maxLength={20}
           onChange={(event) => handleChange(event.target.value, 'config.placeholder')}
+        />
+      </Form.Item>
+      <Form.Item label="格式">
+        <Select
+          allowClear
+          options={regOptions}
+          value={selectWidgetItem?.config?.reg}
+          onChange={(value) => {
+            const currentValues: any = regOptions.find((item) => {
+              return item.value === value
+            })
+            handleChange({
+              reg: currentValues.value,
+              errorMsg: currentValues.errorMsg,
+              maxLength: currentValues.maxLength,
+            }, 'config.regInfo')
+          }}
         />
       </Form.Item>
       <Form.Item label="限制条件" >

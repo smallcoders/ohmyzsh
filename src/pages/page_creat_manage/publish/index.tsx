@@ -5,6 +5,7 @@ import { Form, message, Radio, Popover } from 'antd';
 import logo2 from '@/assets/page_creat_manage/logo2.png'
 import successIcon from '@/assets/page_creat_manage/success.png'
 import logoImg from '@/assets/page_creat_manage/logo-img.png'
+import { listAllAreaCode } from '@/services/common';
 import previewIcon from '@/assets/page_creat_manage/preview-icon.png'
 import './index.less'
 import { history } from '@@/core/history';
@@ -35,6 +36,7 @@ export default () => {
   const id = history.location.query?.id as string;
   const [publishType, setPublishType] = useState<string>("公开发布")
   const [templateJson, setTemplateJson] = useState<any>({})
+  const [areaCodeOptions, setAreaCodeOptions] = useState<any>({county: [], city: [], province: []})
   const [templateName, setTemplateName] = useState<string>('')
   const [previewVisible, setPreviewVisible] = useState(false)
 
@@ -50,6 +52,29 @@ export default () => {
           message.error(res?.message)
         }
       })
+      listAllAreaCode().then((res) => {
+        if (res?.result){
+          const {result} = res
+          const city: any = []
+          const province: any = []
+          result.forEach((item: any) => {
+            city.push({
+              ...item,
+              nodes: item.nodes?.map((node: any) => {
+                const {nodes, ...reset} = node
+                return reset
+              })
+            })
+            const {nodes, ...reset} = item
+            province.push(reset)
+          })
+          setAreaCodeOptions({
+            county: result,
+            city,
+            province
+          })
+        }
+      })
     }
   }, [])
 
@@ -58,7 +83,7 @@ export default () => {
     if (isMobile){
       return `${hostMap[origin]}/antelope-activity-h5/template-page/index.html#/?isApp=false&id=${id}&login=${publishType === '公开发布' ? '' : '1'}`
     } else {
-      return `${hostMap[origin]}${hostMap[origin].indexOf('lingyangplat')!== -1 ? '/front' : ''}/template-page?id=${id}&login=${publishType === '公开发布' ? '' : '1'}`
+      return `${hostMap[origin]}/front/template-page?id=${id}&login=${publishType === '公开发布' ? '' : '1'}`
     }
   }
 
@@ -186,12 +211,6 @@ export default () => {
                 message.success('复制成功');
                 selection.removeRange(range);
               }}>复制</div>
-              {/*<div className="line" />*/}
-              {/*<div className="btn">*/}
-              {/*  <Popover trigger="click" content={getCode(false)} placement="bottomRight">*/}
-              {/*    二维码*/}
-              {/*  </Popover>*/}
-              {/*</div>*/}
             </div>
           </div>
         </div>
@@ -204,6 +223,7 @@ export default () => {
         onCancel={() => {
           setPreviewVisible(false)
         }}
+        areaCodeOptions={areaCodeOptions}
       />
     </div>
   )

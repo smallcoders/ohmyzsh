@@ -26,8 +26,6 @@ export const useConfig = () => {
 
   const handleChange = (value: any, fieldName: string) => {
     update(selectWidgetItem!, fieldName, () => value)
-    console.log(selectWidgetItem, '000000')
-    debugger
     const action = {
       type: ActionType.SET_SELECT_WIDGET_ITEM,
       payload: selectWidgetItem

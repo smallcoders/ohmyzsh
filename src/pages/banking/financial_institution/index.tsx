@@ -168,8 +168,6 @@ export default () => {
             ...result,
           });
           setSort(result.sort);
-          console.log(sort);
-
           if (result.bankUserInfoList && result.bankUserInfoList?.length > 0) {
             setBankUserInfoList([...result.bankUserInfoList]);
           }
@@ -402,6 +400,7 @@ export default () => {
       <span
         className="bankName"
         onClick={async () => {
+          setIsAdd3Info({});
           setSelectTree(String(item.id));
           await detailBankInfo(item.id, 'no', item.node);
           setDetail(true);
@@ -528,16 +527,17 @@ export default () => {
         onOk={async () => {
           const values = await modalForm.validateFields();
           if (isContent === false) {
-            // const { code } = await saveOrUpdateInstitution({
-            //   node: 0,
-            //   name: modalForm.getFieldsValue(),
-            // });
-            // if (code === 0) {
-            //   message.success('新增成功');
-            //   getTree();
-            //   setContent(true);
-            //   setCreateModalVisible(false)
-            //   modalForm.resetFields();
+            const { code } = await saveOrUpdateInstitution({
+              node: 0,
+              name: modalForm.getFieldsValue(),
+            });
+            if (code === 0) {
+              message.success('新增成功');
+              getTree();
+              setContent(true);
+              setCreateModalVisible(false);
+              modalForm.resetFields();
+            }
           } else {
             setIsAdd3Info({});
             setDetailInfo({});
@@ -896,7 +896,6 @@ export default () => {
                           await detailBankInfo(detailInfo.parentId, 'yes', detailInfo.node);
                         } else {
                           await detailBankInfo(detailInfo.id, 'no', detailInfo.node);
-                          console.log(detailInfo);
                         }
                         setDetail(false);
                       }}
@@ -1029,7 +1028,7 @@ export default () => {
                         <></>
                       )}
                     </Form.Item>
-                    {detailInfo.node === 2 ? (
+                    {Object.values(isAdd3Info).length > 0 || detailInfo.node === 2 ? (
                       <></>
                     ) : (
                       <Form.Item
@@ -1050,7 +1049,9 @@ export default () => {
                       </Form.Item>
                     )}
 
-                    {isRadio === 0 || detailInfo.node === 2 ? (
+                    {isRadio === 0 ||
+                    Object.values(isAdd3Info).length > 0 ||
+                    detailInfo.node === 2 ? (
                       <></>
                     ) : (
                       <Form.Item label="机构展示顺序" name="sort" required>

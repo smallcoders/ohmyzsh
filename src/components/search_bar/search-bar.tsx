@@ -140,9 +140,14 @@ const SearchBar = ({
     onSearch?.(info)
   }
 
+  const formLayout = {
+    labelCol: { span: 6 },
+    wrapperCol: { span: 16 },
+  };
+
   return (
     <div className={sc(`search ${className}`)}>
-      <Form form={form} name="advanced_search" className={sc('search-form')}>
+      <Form {...formLayout} form={form} name="advanced_search" className={sc('search-form')}>
         {searchListPro?.map((rowItems, index) => (
           <Row gutter={40} key={index}>
             {rowItems?.map((searchItem) => (

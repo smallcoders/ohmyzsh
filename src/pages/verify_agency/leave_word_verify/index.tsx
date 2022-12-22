@@ -96,6 +96,12 @@ export default () => {
         break
       }
     }
+    const unlisten = history.listen((location) => {
+      if (!location.pathname.includes('/verify-agency/leave_word_verify')) {
+        resetModel?.()
+        unlisten()
+      }
+    })
   },[])
 
   const columns = [

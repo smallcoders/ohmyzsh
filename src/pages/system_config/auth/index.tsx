@@ -1,5 +1,5 @@
 import useManage from '@/hooks/useManage';
-import { addRole, deleteRole, enableRole, getListRoles, updateRole, getMembersByRoleId } from '@/services/role';
+import { addRole, deleteRole, enableRole, getListRoles, getMembersByRoleId, updateRole } from '@/services/role';
 import scopedClasses from '@/utils/scopedClasses';
 import {
   DeleteOutlined,
@@ -33,10 +33,10 @@ import './index.less';
 const sc = scopedClasses('system-config-auth');
 
 export type EditType = {
-  id?: string | number	// 主键自增id	
-  name?: string	// 角色名称	
-  description?: string	// 角色描述	
-  enable?: boolean	// 是否启用 true启用 false不启用	
+  id?: string | number	// 主键自增id
+  name?: string	// 角色名称
+  description?: string	// 角色描述
+  enable?: boolean	// 是否启用 true启用 false不启用
   createTime?: string	// 创建时间
 };
 
@@ -103,13 +103,38 @@ export default () => {
 
   const remove = async (id: string) => {
     try {
-      const rolesRes = await deleteRole(id);
-      if (rolesRes.code === 0) {
-        message.success(`删除成功`);
-        getRoles()
-      } else {
-        message.error(`删除失败，原因:{${rolesRes.message}}`);
+
+      const { result } = await getMembersByRoleId(id as string);
+
+      if (result?.length > 0) {
+        Modal.info({
+          title: '提示',
+          content: '请先移除当前角色下的成员'
+        })
+        return
       }
+
+      Modal.confirm({
+        title: '提示',
+        icon: <ExclamationCircleOutlined />,
+        content: '确定删除',
+        okText: '删除',
+        okButtonProps: {
+          disabled: !isManage
+        },
+        onOk: async () => {
+          const rolesRes = await deleteRole(id);
+          if (rolesRes.code === 0) {
+            message.success(`删除成功`);
+            prepare()
+          } else {
+            message.error(`删除失败，原因:{${rolesRes.message}}`);
+          }
+        },
+        cancelText: '取消',
+      });
+
+
     } catch (error) {
       console.log('error', error);
       message.error('删除失败');
@@ -196,31 +221,9 @@ export default () => {
                       }}
                     />
                     <DeleteOutlined
-                      onClick={async() => {
-                        console.log(p, 'p');
-                        const { result, code, message } = await getMembersByRoleId(p?.id as string);
-                        if (code === 0 && result && result.length>0) {
-                          Modal.info({
-                            title: '提示',
-                            content: '请先移除当前角色下的成员',
-                            onOk: () => {
-                            },
-                            okText: '我知道了'
-                          })
-                        } else {
-                          Modal.confirm({
-                            title: '提示',
-                            icon: <ExclamationCircleOutlined />,
-                            content: '确定删除',
-                            okText: '删除',
-                            okButtonProps: {
-                              disabled: !isManage
-                            },
-                            onOk: () => remove(p?.id),
-                            cancelText: '取消',
-                          });
-                        }
-                        
+                      onClick={() => {
+                        remove(p?.id)
+
                       }}
                       className="icon-option"
                     />
@@ -379,7 +382,7 @@ export default () => {
         confirmLoading={addOrUpdateLoading}
       >
 
-        <Form form={form} layout={'vertical'} autocomplete="off">
+        <Form form={form} layout={'vertical'}>
           <Form.Item name="name" label="角色名称">
             <Input placeholder="请输入" maxLength={35} />
           </Form.Item>

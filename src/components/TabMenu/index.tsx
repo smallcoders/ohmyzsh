@@ -127,7 +127,7 @@ export default (props: { tabs?: string[]; activeState?: string}) => {
       setActiveKey(arr2[0].key)
       console.log(arr2)
       console.log('props?.activeState',props?.activeState)
-      if (props?.activeState != '1') {
+      if (props && props?.activeState && props?.activeState != '1') {
         setActiveKey(props?.activeState)
       }
     }

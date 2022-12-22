@@ -1,7 +1,7 @@
-import { message, Image, Button, Form, Space, Pagination, Divider, Typography   } from 'antd';
+import { message, Image, Form, Space, Pagination, Divider, Typography, Breadcrumb } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import React, { useState, useEffect, Fragment } from 'react';
-import { history } from 'umi';
+import { history, Prompt, Link } from 'umi';
 import LeaveWordVerify from '@/types/leave-word-verify';
 import VerifyInfoDetail from '@/components/verify_info_detail/verify-info-detail';
 import scopedClasses from '@/utils/scopedClasses';
@@ -14,14 +14,28 @@ import { getOfficeRequirementVerifyDetail } from '@/services/office-requirement-
 import { getCommentsDetailPage, getCommentsCurrent } from '@/services/leave-word-verify';
 import { getDemandDetail } from '@/services/creative-demand'
 
-import './index.less';
+import './detail.less';
 const { Title, Paragraph } = Typography;
-const sc = scopedClasses('leave-word-audit-detail');
+const sc = scopedClasses('solution-properties-message-detail');
 const stateObj = {
   AUDITING: '待审核',
   AUDIT_SUCCESS: '已通过',
   AUDIT_FAIL: '已拒绝',
 };
+
+const orgIndustryData = {
+  NEW_IT: '新一代信息技术',
+  INTELLIGENT_VEHICLES: '新能源汽车和智能网联汽车',
+  DIGITAL_CREATIVITY: '数字创意',
+  EQUIPMENT_MANUFACTURING: '高端装备制造',
+  NEW_ENERGY: '新能源和节能环保',
+  GREEN_FOOD: '绿色食品',
+  LIFE_HEALTH: '生命健康',
+  SMART_APPLIANCES: '智能家电',
+  MATERIAL: '新材料',
+  AI: '人工智能',
+  OTHER: '其他',
+}
 
 export default () => {
   const auditId = history.location.query?.auditId as string;
@@ -139,7 +153,7 @@ export default () => {
       <div className={sc('container-left')}>
         <div className={sc('container-left-title')}>{detail?.name || '--'}</div>
         {
-          detail?.coverUrl &&
+          detail?.coverUrl && 
           <div style={{marginBottom: '20px'}}>
             <Image height={300} width={400} src={detail?.coverUrl} />
           </div>
@@ -409,7 +423,20 @@ export default () => {
   }
 
   return (
-    <PageContainer>
+    <PageContainer
+      header={{
+        breadcrumb: (
+          <Breadcrumb>
+            <Breadcrumb.Item>
+              <Link to="/solution-properties/message-management">留言管理</Link>
+            </Breadcrumb.Item>
+            <Breadcrumb.Item>
+              {'详情'}
+            </Breadcrumb.Item>
+          </Breadcrumb>
+        )
+      }}
+    >
     {/* <PageContainer loading={loading}> */}
       <div className={sc('container')}>
         {detailDom}
