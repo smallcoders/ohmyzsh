@@ -537,38 +537,38 @@ export default () => {
               setContent(true);
               setCreateModalVisible(false);
               modalForm.resetFields();
-            } else {
-              setIsAdd3Info({});
-              setDetailInfo({});
-              form.resetFields();
-              setSort(null);
-              setDetail(false);
-              if (firstPage === false) {
-                setFirstPage(true);
-              }
-              if (modalFormInfo.node === 1 && modalType === '2') {
-                await detailBankInfo(modalFormInfo.id, 'yes', modalFormInfo.node);
-              }
-              if (modalType === '3') {
-                if (Object.keys(changeSelectObj).length !== 0) {
-                  setSelectTree(String(changeSelectObj.value));
-                } else {
-                  const nodeObj = allBankInfo.current.find((item: any) => item.node === 0);
-                  setSelectTree(String(nodeObj.id));
-                }
-              }
-              // if (Object.keys(changeSelectObj.current).length !== 0 && ) {
-              //   setSelectTree(String(changeSelectObj.current.value));
-              //   await detailBankInfo(changeSelectObj.current.value, 'yes', 1);
-              // }
-              if (modalType === '1' || modalType === '2') {
-                setSelectTree(String(modalFormInfo.id));
-              }
-              modalFieldsValue.current = modalForm.getFieldsValue();
-              await getCooperateOrg('add');
-              form.setFieldsValue({ name: values.name });
-              onClose();
             }
+          } else {
+            setIsAdd3Info({});
+            setDetailInfo({});
+            form.resetFields();
+            setSort(null);
+            setDetail(false);
+            if (firstPage === false) {
+              setFirstPage(true);
+            }
+            if (modalFormInfo.node === 1 && modalType === '2') {
+              await detailBankInfo(modalFormInfo.id, 'yes', modalFormInfo.node);
+            }
+            if (modalType === '3') {
+              if (Object.keys(changeSelectObj).length !== 0) {
+                setSelectTree(String(changeSelectObj.value));
+              } else {
+                const nodeObj = allBankInfo.current.find((item: any) => item.node === 0);
+                setSelectTree(String(nodeObj.id));
+              }
+            }
+            // if (Object.keys(changeSelectObj.current).length !== 0 && ) {
+            //   setSelectTree(String(changeSelectObj.current.value));
+            //   await detailBankInfo(changeSelectObj.current.value, 'yes', 1);
+            // }
+            if (modalType === '1' || modalType === '2') {
+              setSelectTree(String(modalFormInfo.id));
+            }
+            modalFieldsValue.current = modalForm.getFieldsValue();
+            await getCooperateOrg('add');
+            form.setFieldsValue({ name: values.name });
+            onClose();
           }
         }}
         onCancel={() => {
