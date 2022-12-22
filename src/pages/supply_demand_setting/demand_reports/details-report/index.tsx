@@ -9,13 +9,15 @@ import {
   Select
 } from 'antd';
 import React, { useEffect, useState } from 'react';
+import moment from 'moment';
 import { DownloadOutlined } from "@ant-design/icons";
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import type Common from '@/types/common';
 import { Access, useAccess } from 'umi';
+import { routeName } from '@/../config/routes';
 import SelfTable from '@/components/self_table';
-import { getDetailList } from '@/services/demand-reports';
+import { getDetailList, exportDetailTable } from '@/services/demand-reports';
 import { getAhArea } from '@/services/area';
 import DockingManage from '@/types/docking-manage.d';
 const sc = scopedClasses('tab-menu-demand-report-details');
@@ -24,12 +26,16 @@ const sc = scopedClasses('tab-menu-demand-report-details');
 
 export default () => {
 
-  const [searchContent, setSearChContent] = useState<{
-    time?: string;
-  }>({});
+  const [searchContent, setSearChContent] = useState({});
+
   // 需求地区集合
   const [area, setArea] = useState<any[]>([]);
+  // 是否在下载中
+  const [downloading, setDownloading] = useState<boolean>(false);
+  // 头部数据
+  const [headerData, setHeaderData] = useState<any[]>([]);
 
+  // 表单配置
   const formLayout = {
     labelCol: { span: 8 },
     wrapperCol: { span: 16 },
@@ -50,14 +56,79 @@ export default () => {
 
   const indexCol = {
     title: '序号',
-    width: 50,
+    width: 80,
+    dataIndex: 'sort',
+    fixed: true,
     render: (_: any, _record: any, index: number) =>
       pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1
   }
 
-  const otherGroup = {
+  // 头部组
+  const headerGroup = {
     name: {
+      title: '需求名称',
+      dataIndex: 'name',
+      isEllipsis: true,
+      fixed: true,
+      width: 200,
+      render: (_: string, _record: any) => (
+        <a
+          onClick={() => {
+            window.open(`${routeName.DEMAND_MANAGEMENT_DETAIL}?id=${_record.id}&type=1`);
+          }}
+        >
+          {_}
+        </a>
+      ),
+    },
+    area: {
+      title: '需求地区',
+      dataIndex: 'area',
+      isEllipsis: true,
+      // render: (item?: string[]) => item ? item.join('、') : '--',
+      width: 150,
+    },
+    status: {
+      title: '需求状态',
+      dataIndex: 'status',
+      isEllipsis: true,
+      // render: (_: string) => DockingManage.demandType[_],
+      width: 150,
     }
+  }
+
+  // 头部处理
+  const handleHeader = (header: any) => {
+    const headerNew = header.map((item: any) => {
+      const value = headerGroup[item.field]
+
+      if (value) {
+        return value
+      }
+
+      if (item.field.endsWith('Time')) {
+        return {
+          title: item.title,
+          dataIndex: item.field,
+          width: 200,
+          render: (val?: string) => (val || '--')
+        }
+      }
+
+      return {
+        title: item.title,
+        dataIndex: item.field,
+        isEllipsis: true,
+        width: 180,
+        render: (_: string) => {
+          return <>
+            <div>{'2022-12-12 11:22:33'}</div>
+            <span className="followUp" data-time="">{_}</span>
+          </>
+        }
+      }
+    })
+    return headerNew
   }
 
 
@@ -68,32 +139,58 @@ export default () => {
    * @param pageSize
    */
   const getDataList = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
-
     try {
-      // 模拟走接口
-      const totalCount = 1, pageTotal = 1
-      setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
-      const { result: {data, header}, code, message } = await getDetailList()
-      console.log('result =>', data)
-
+      console.log('searchContent =>', searchContent)
+      const { result, code, message } = await getDetailList(Object.assign({
+        pageIndex,
+        pageSize,
+      }, searchContent))
+      const { data, header } = result
       if (code === 0) {
-        const headerNew = header.map((item: any) => {
-          return {
-            title: item.title,
-            dataIndex: item.field,
-            width: 100
-          }
-        })
-        headerNew.unshift(indexCol)
-        setColumns(headerNew);
-        setDataSource(data);
-        console.log(headerNew, data)
-
+          console.log(header)
+          setHeaderData(header)
+          setPageInfo({pageIndex: result.pageIndex, pageSize: result.pageSize, pageTotal: result.pageTotal, totalCount: result.totalCount});
+          setDataSource(data);
       } else {
         throw new Error(message);
       }
     } catch (error) {
       antdMessage.error(`请求失败，原因:{${error}}`);
+    }
+  }
+
+  useEffect(() => {
+    if (headerData.length <= 0) return
+    const {...rest} = indexCol;
+    const headerNew = handleHeader(headerData);
+    headerNew.unshift(rest);
+    setColumns(headerNew);
+    console.log('header=>', headerNew)
+  }, [pageInfo, headerData])
+
+
+  const exportList = async () => {
+    if (downloading) {
+      antdMessage.warning('正在导出数据，请勿频繁操作');
+    }
+    setDownloading(true)
+    try {
+      const res = await exportDetailTable();
+      if (res?.data.size == 51) return antdMessage.warning('操作太过频繁，请稍后再试')
+      const content = res?.data;
+      const blob  = new Blob([content], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"});
+      const fileName = `供需对接明细表-${moment().format('YYYYMMDD')}.xlsx`;
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.style.display = 'none';
+      link.href = url;
+      link.setAttribute('download', fileName);
+      document.body.appendChild(link);
+      link.click();
+    } catch (error) {
+      antdMessage.error(`请求失败，原因:{${error}}`);
+    } finally {
+      setDownloading(false)
     }
   };
 
@@ -101,7 +198,6 @@ export default () => {
 
   useEffect(() => {
     getAhArea().then((res) => {
-      console.log('res =>', res)
       setArea(res)
     })
   }, [])
@@ -140,7 +236,7 @@ const useSearchNode = (): React.ReactNode => {
               <Form.Item name="status" label="需求状态" labelCol={{ flex: '90px' }}>
               <Select placeholder="请选择" allowClear>
                   {
-                    Object.entries(DockingManage.demandType)?.filter(p => p[0] != '3').map(p => {
+                    Object.entries(DockingManage.demandType).map(p => {
                       return <Select.Option value={p[0]}>{p[1]}</Select.Option>
                     })
                   }
@@ -155,7 +251,9 @@ const useSearchNode = (): React.ReactNode => {
                   key="search"
                   onClick={() => {
                     const search = searchForm.getFieldsValue();
+                    console.log('search =>', search)
                     const { ...rest } = search;
+                    console.log('rest =>', rest)
                     setSearChContent(rest);
                   }}
                 >
@@ -181,6 +279,8 @@ const useSearchNode = (): React.ReactNode => {
 
   const access = useAccess()
 
+
+
   return (
     <>
       {useSearchNode()}
@@ -190,8 +290,7 @@ const useSearchNode = (): React.ReactNode => {
           <Access accessible={access.PX_PM_TJ_HD}>
             <Button
               icon={<DownloadOutlined />}
-              onClick={() => {
-              }}
+              onClick={exportList}
             >
               导出数据
             </Button>
