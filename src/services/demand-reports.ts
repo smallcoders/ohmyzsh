@@ -1,15 +1,14 @@
 import type Common from '@/types/common';
-// import type OrgTypeManage from '@/types/org-type-manage';
+import type SummaryReportList from '@/types/summary-report';
 import { request } from 'umi';
 
 /**
  * 供需对接报表 - 总表
  */
-export async function getDemandReportsTotalList(data?: Record<string, any>) {
-  return request<Common.ResultCode & { result: any }>(
-    '/antelope-manage/needTable/totalNumber', {
-      method: 'post',
-      data,
+export async function getDemandReportsTotalList() {
+  return request<Common.ResultCode & { result: SummaryReportList.Content[] }>(
+    '/antelope-manage/demand/report/overview', {
+      method: 'GET'
     }
   );
 }
@@ -18,8 +17,8 @@ export async function getDemandReportsTotalList(data?: Record<string, any>) {
  * 供需对接报表 - 导出 - 总表
  */
 export async function exportTotalTable() {
-  return request<any>('/antelope-manage/intendMessage/export',{
-    method: 'post',
+  return request<any>('/antelope-manage/demand/report/overview/export',{
+    method: 'get',
     data: {},
     responseType: 'blob',
     getResponse: true,
@@ -32,7 +31,7 @@ export async function exportTotalTable() {
  */
 export async function getDetailList(data?: Record<string, any>) {
   return request<Common.ResultCode & { result: any }>(
-    '/antelope-manage/needTable/detailTable', {
+    '/antelope-manage/demand/report/detail', {
       method: 'post',
       data,
     }
@@ -43,7 +42,7 @@ export async function getDetailList(data?: Record<string, any>) {
  * 供需对接报表 - 导出 - 明细表
  */
 export async function exportDetailTable() {
-  return request<any>('/antelope-manage/intendMessage/export',{
+  return request<any>('/antelope-manage/demand/report/detail/export',{
     method: 'post',
     data: {},
     responseType: 'blob',

@@ -23,7 +23,6 @@ import DockingManage from '@/types/docking-manage.d';
 const sc = scopedClasses('tab-menu-demand-report-details');
 
 
-
 export default () => {
 
   const [searchContent, setSearChContent] = useState({});
@@ -74,7 +73,7 @@ export default () => {
       render: (_: string, _record: any) => (
         <a
           onClick={() => {
-            window.open(`${routeName.DEMAND_MANAGEMENT_DETAIL}?id=${_record.id}&type=1`);
+            window.open(`${routeName.DEMAND_MANAGEMENT_DETAIL}?id=${_record.id}`);
           }}
         >
           {_}
@@ -85,7 +84,7 @@ export default () => {
       title: '需求地区',
       dataIndex: 'area',
       isEllipsis: true,
-      // render: (item?: string[]) => item ? item.join('、') : '--',
+      render: (item?: string) => item ? item.split(',').join('、') : '--',
       width: 150,
     },
     status: {
@@ -96,6 +95,48 @@ export default () => {
       width: 150,
     }
   }
+  const defaultHeader = [
+    {
+        field: "name",
+        title: "需求名称"
+    },
+    {
+        field: "area",
+        title: "需求地区"
+    },
+    {
+        field: "status",
+        title: "需求状态"
+    },
+    {
+        field: "userSubmitTime",
+        title: "用户提交时间"
+    },
+    {
+        field: "reportTime",
+        title: "审核发布时间"
+    },
+    {
+        field: "claimsTime",
+        title: "认领时间"
+    },
+    {
+        field: "awayTime",
+        title: "分发时间"
+    },
+    {
+        field: "feedbackTime",
+        title: "反馈时间"
+    },
+    {
+        field: "appraiseTime",
+        title: "评价时间"
+    },
+    {
+        field: "closeTime",
+        title: "关闭时间"
+    }
+  ]
 
   // 头部处理
   const handleHeader = (header: any) => {
@@ -121,16 +162,16 @@ export default () => {
         isEllipsis: true,
         width: 180,
         render: (_: string) => {
+          if (!_) return '--'
           return <>
-            <div>{'2022-12-12 11:22:33'}</div>
-            <span className="followUp" data-time="">{_}</span>
+            <div>{_?.slice(0, 19) || ''}</div>
+            <span className="followUp" data-time="">{_?.slice(20) || ''}</span>
           </>
         }
       }
     })
     return headerNew
   }
-
 
 
   /**
@@ -140,17 +181,15 @@ export default () => {
    */
   const getDataList = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     try {
-      console.log('searchContent =>', searchContent)
       const { result, code, message } = await getDetailList(Object.assign({
         pageIndex,
         pageSize,
       }, searchContent))
       const { data, header } = result
       if (code === 0) {
-          console.log(header)
-          setHeaderData(header)
+          setHeaderData(header || defaultHeader)
           setPageInfo({pageIndex: result.pageIndex, pageSize: result.pageSize, pageTotal: result.pageTotal, totalCount: result.totalCount});
-          setDataSource(data);
+          setDataSource(data || []);
       } else {
         throw new Error(message);
       }
@@ -165,13 +204,14 @@ export default () => {
     const headerNew = handleHeader(headerData);
     headerNew.unshift(rest);
     setColumns(headerNew);
-    console.log('header=>', headerNew)
   }, [pageInfo, headerData])
 
 
   const exportList = async () => {
+    antdMessage.destroy()
     if (downloading) {
       antdMessage.warning('正在导出数据，请勿频繁操作');
+      return
     }
     setDownloading(true)
     try {
@@ -194,8 +234,6 @@ export default () => {
     }
   };
 
-
-
   useEffect(() => {
     getAhArea().then((res) => {
       setArea(res)
@@ -213,12 +251,12 @@ const useSearchNode = (): React.ReactNode => {
         <Form {...formLayout} form={searchForm}>
           <Row>
             <Col span={8}>
-              <Form.Item name="name" label="需求名称" labelCol={{ flex: '90px' }}>
+              <Form.Item name="demandName" label="需求名称" labelCol={{ flex: '90px' }}>
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="area" label="需求地区" labelCol={{ flex: '90px' }}>
+              <Form.Item name="demandAreaCode" label="需求地区" labelCol={{ flex: '90px' }}>
                 <TreeSelect
                   treeNodeFilterProp={'name'}
                   showSearch
@@ -233,7 +271,7 @@ const useSearchNode = (): React.ReactNode => {
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="status" label="需求状态" labelCol={{ flex: '90px' }}>
+              <Form.Item name="demandState" label="需求状态" labelCol={{ flex: '90px' }}>
               <Select placeholder="请选择" allowClear>
                   {
                     Object.entries(DockingManage.demandType).map(p => {

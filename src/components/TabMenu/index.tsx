@@ -157,15 +157,11 @@ export default (props: { tabs?: string[]; activeState?: string; setActiveKey?: (
         setActiveKey(props?.activeState)
       }
     }
-  }, [props.tabs?.join()]);
+  }, [props.tabs]);
 
   useEffect(() => {
     prepare();
   }, []);
-
-  useEffect(() => {
-    props?.setActiveKey?.(activeKey)
-  }, [activeKey])
 
   return (
     <PageContainer

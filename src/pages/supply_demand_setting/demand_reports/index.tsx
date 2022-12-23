@@ -25,17 +25,6 @@ export default () => {
         activeState={'M_SD_BBMXB'}
         setActiveKey={setActiveKey}
       />
-      { activeKey !== 'M_SD_BBMXB' ?
-        <div style={
-            {
-              position: 'absolute',
-              top: 85,
-              right: 5
-            }
-          }>
-          数据更新时间：2022-09-12 23:00:00
-        </div> : null
-      }
     </div>
   );
 };
