@@ -23,6 +23,7 @@ import {
   getDemandPage,
 } from '@/services/creative-demand';
 import RefineModal from './refine';
+import DemandCloseModal from './demand-close';
 import AssignModal from './assign';
 import DockingManage from '@/types/docking-manage.d';
 const sc = scopedClasses('user-config-logout-verify');
@@ -81,11 +82,17 @@ export default (props: { gid: any; demandTypes: any[], area: any[] }) => {
 
   const [refineVisible, setRefineVisible] = useState<boolean>(false);
   const [assignVisible, setAssignVisible] = useState<boolean>(false);
+  const [demandCloseVisible, setDemandCloseVisible] = useState<boolean>(false);
   const [record, setRecord] = useState<any>({})
   const useModal = (): React.ReactNode => {
     return (<>
       <RefineModal record={record} visible={refineVisible} setVisible={(b, isRefresh) => {
         setRefineVisible(b)
+        setRecord({})
+        isRefresh && getPage()
+      }} />
+      <DemandCloseModal record={record} visible={demandCloseVisible} setVisible={(b, isRefresh) => {
+        setDemandCloseVisible(b)
         setRecord({})
         isRefresh && getPage()
       }} />
@@ -139,6 +146,10 @@ export default (props: { gid: any; demandTypes: any[], area: any[] }) => {
       } catch (error) {
         antdMessage.error(`${tooltipMessage}失败，原因:{${error}}`);
       }
+    },
+    demandClose: async (record: any) => {
+      setDemandCloseVisible(true)
+      setRecord({ ...record })
     },
   }
 

@@ -1,5 +1,5 @@
-import { message, Image, Timeline, Form, Button, DatePicker, Input, Space, Rate, Breadcrumb, Empty, Modal } from 'antd';
-import { MinusCircleOutlined, DeleteOutlined } from '@ant-design/icons';
+import { message, Image, Timeline, Form, Button, DatePicker, Input, Space, Rate, Breadcrumb, Empty, Modal, Popover } from 'antd';
+import { MinusCircleOutlined, DeleteOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { history, Link } from 'umi';
 import moment from 'moment';
 import { useState, useEffect } from 'react';
@@ -69,7 +69,7 @@ export default () => {
   // 新增对接记录
   const handleAddConnect = async () => {
     const id = history.location.query?.id as string;
-    let dataArr: any = [];
+    const dataArr: any = [];
     createConnectForm.validateFields()
       .then(async (value) => {
         setLoading(true);
@@ -435,6 +435,21 @@ export default () => {
     ],
   }
 
+  const claimStateZH = {
+    NEW_DEMAND: '新发布',
+    CLAIMED: '已认领',
+    DISTRIBUTE: '已分发',
+    FINISHED: '已结束',
+    CONNECTING: '对接中',
+    FEEDBACK: '已反馈',
+    EVALUATED: '已评价',
+    CANCEL: '审核撤回',
+  }
+  const finishSourceZH = {
+    USER: '用户',
+    MANAGE: '运营'
+  }
+
   const [visible, setVisible] = useState<boolean>(false)
 
   return (
@@ -469,6 +484,24 @@ export default () => {
         // </Button>
       ]}
     >
+      <div className="claim-state-wrap">
+        <span className="claim-label">当前状态：</span>
+        <span className="claim-value">{ claimStateZH[detail?.claimState] || '--'}</span>
+        {detail?.claimState === 'FINISHED' && <Popover placement="bottom" content={
+          <div style={{maxWidth: '400px'}}>
+            <div>
+              <span style={{color: 'rgba(0, 0, 0, 0.45)'}}>结束方：</span>
+              <span style={{color: 'rgba(0, 0, 0, 0.85)'}}>{detail?.finishSource ? finishSourceZH[detail.finishSource] : '--'}</span>
+            </div>
+            <div>
+              <span style={{color: 'rgba(0, 0, 0, 0.45)'}}>结束原因：</span>
+              <span style={{color: 'rgba(0, 0, 0, 0.85)'}}>{(detail?.finishReasonList && detail.finishReasonList.length > 0) ? detail.finishReasonList.join(';') : '--'}</span>
+            </div>
+          </div>
+        }>
+          <QuestionCircleOutlined  className="claim-finish-icon"/>
+        </Popover>}
+      </div>
       <div style={{ display: 'flex', gap: 20 }}>
         <div style={{ flex: 1, padding: 20, background: '#fff' }}>
           <span style={{ fontWeight: 'bold', marginBottom: 20 }}>原始需求信息</span>
