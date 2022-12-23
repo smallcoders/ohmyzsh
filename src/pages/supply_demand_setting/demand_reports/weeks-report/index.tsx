@@ -16,129 +16,101 @@ import { Access, useAccess } from 'umi';
 import SelfTable from '@/components/self_table';
 const sc = scopedClasses('tab-menu-demand-report-weeks');
 import moment from 'moment';
+import { getDemandReportsWeaksList } from '@/services/demand-reports';
 
 export default () => {
 
-  const [totalCount, setTotalCount] = useState<number>(0)
-
   const [searchContent, setSearChContent] = useState<{
-    time?: string;
-  }>({});
+    month?: string;
+  }>({
+    month: moment(new Date()).format('yyyy-MM')
+  });
 
-  const formLayout = {
-    labelCol: { span: 8 },
-    wrapperCol: { span: 16 },
-  };
 
   const [tableHeader, setTableHeader] = useState<any[]>([])
   const [tableItems, setTableItems] = useState<any[]>([])
 
-  // /**
-  //  * 获取数据列表
-  //  * @param pageIndex
-  //  * @param pageSize
-  //  */
+  /**
+   * 获取数据列表
+   */
   const getDataList = async () => {
     try {
-      // 模拟走接口
-      const tableHeader: any = [
-        { title: '需求地区', dataIndex: 'city' },
-        { title: '统计维度', dataIndex: 'range' },
-        { title: '1030～1105', dataIndex: '1030～1105' },
-        { title: '1006～1112', dataIndex: '1006～1112' },
-      ]
-      const tableItems: any = [
-        { city: '合肥', range: '新增需求数', '1030～1105': 98 , '1006～1112': 1 },
-        { city: '合肥', range: '新增对接需求数', '1030～1105': 23, '1006～1112': 2 },
-        { city: '合肥', range: '新增跟进次数', '1030～1105': 98, '1006～1112': 3 },
-        { city: '淮南', range: '新增跟进次数', '1030～1105': 23, '1006～1112': 4 },
-        { city: '淮南', range: '新增跟进次数', '1030～1105': 98, '1006～1112': 5 },
-        { city: '淮南', range: '新增跟进次数', '1030～1105': 23, '1006～1112': 6 },
-        { city: '六安', range: '新增跟进次数', '1030～1105': 23, '1006～1112': 4 },
-        { city: '六安', range: '新增跟进次数', '1030～1105': 98, '1006～1112': 5 },
-        { city: '六安', range: '新增跟进次数', '1030～1105': 23, '1006～1112': 6 },
-        { city: '蚌埠', range: '新增跟进次数', '1030～1105': 23, '1006～1112': 4 },
-        { city: '蚌埠', range: '新增跟进次数', '1030～1105': 98, '1006～1112': 5 },
-        { city: '蚌埠', range: '新增跟进次数', '1030～1105': 23, '1006～1112': 6 }
-      ]
-
-      // 插入序号      
-      tableHeader.splice(0, 0, {
-        title: '序号',
-        dataIndex: 'sort',
-        fixed: 'left',
-        onCell: (_: any, index: number) => {
-          // 从第0行数据开始，开始每 3 行只显示一行
-          if (index % 3 === 0) {
-            // 第0行（index = 0）或者第3的倍数行 ，合并3行内容
-            return { rowSpan: 3 }
-          } else {
-            // 非3的倍数行被合并，返回 0
-            return { rowSpan: 0 }
-          }
-        },
-        width: 65,
-        render: (_: any, _record: any, index: number) => (Math.floor(index / 3)) + 1
-      })
-
-
-      for (let i = 0, l = tableHeader.length; i < l; i++) {
-        const item = tableHeader[i]
-        switch (item.dataIndex) {
-          case 'city':
-            item.width = 90
-            item.align = 'center'
-            item.fixed = 'left'
-            // 合并行单元格
-            item.onCell = (_: any, index: number) => {
-              // 从第0行数据开始，开始每 3 行只显示一行
-              if (index % 3 === 0) {
-                // 第0行（index = 0）或者第3的倍数行 ，合并3行内容
-                return { rowSpan: 3 }
-              } else {
-                // 非3的倍数行被合并，返回 0
-                return { rowSpan: 0 }
-              }
-            }
-            break;
-          case 'range':
-            item.title = (
-              <div className='headerCell'>
-                <div className='top'>日期</div>
-                <div className='bottom'>统计维度</div>
-              </div>
-            )
-            item.align = 'center'
-            item.fixed = 'left'
-            item.width = 135
-            break
-          default:
-            item.align = 'center'
-            break
-        }
+      const { result, code } = await getDemandReportsWeaksList({
+        ...searchContent,
+      });
+      if (code === 0) {
+        const { reportHead, reportData } = result
+        formatColumns(reportHead, reportData)
+      } else {
+        message.error(`请求分页数据失败`);
       }
-
-      for (let i = 0, l = tableItems.length; i < l; i++) {
-        tableItems[i].id = i
-      }
-      
-      setTableHeader(tableHeader)
-      setTableItems(tableItems)
-      // 这样走接口
-      // const { result, totalCount, pageTotal, code } = await getActivityList({
-      //   pageIndex,
-      //   pageSize,
-      //   ...searchContent,
-      // });
-      // if (code === 0) {
-      //   setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
-      //   setDataSource(result);
-      // } else {
-      //   message.error(`请求分页数据失败`);
-      // }
     } catch (error) {
       console.log(error);
     }
+  }
+
+  // 合并行单元格
+  const onMergeCell = (_: any, index: number) => {
+    // 从第0行数据开始，开始每 3 行只显示一行
+    if (index % 3 === 0) {
+      // 第0行（index = 0）或者第3的倍数行 ，合并3行内容
+      return { rowSpan: 3 }
+    } else {
+      // 非3的倍数行被合并，返回 0
+      return { rowSpan: 0 }
+    }
+  }
+
+  // 表头和内容数据的处理
+  function formatColumns(tableHeader: any[], tableItems: any[]) {
+    // 插入序号, 合并序号列的单元格
+    tableHeader.splice(0, 0, {
+      title: '序号',
+      dataIndex: 'sort',
+      fixed: 'left',
+      onCell: onMergeCell,
+      width: 65,
+      render: (_: any, _record: any, index: number) => (Math.floor(index / 3)) + 1
+    })
+
+    // 动态表头处理
+    for (let i = 0, l = tableHeader.length; i < l; i++) {
+      const item = tableHeader[i]
+      switch (item.dataIndex) {
+        case 'city':
+          // 需求地区列
+          item.width = 90
+          item.align = 'center'
+          item.fixed = 'left'
+          // 合并行单元格
+          item.onCell = onMergeCell
+          break;
+        case 'range':
+          // 维度/日期列
+          item.title = (
+            <div className='headerCell'>
+              <div className='top'>日期</div>
+              <div className='bottom'>统计维度</div>
+            </div>
+          )
+          item.align = 'center'
+          item.fixed = 'left'
+          item.width = 135
+          break
+        default:
+          // 其他
+          item.align = 'center'
+          break
+      }
+    }
+    
+    // 设置数据为一id
+    for (let i = 0, l = tableItems.length; i < l; i++) {
+      tableItems[i].id = i
+    }
+    
+    setTableHeader(tableHeader)
+    setTableItems(tableItems)
   }
 
   useEffect(() => {
@@ -149,22 +121,22 @@ export default () => {
     const [searchForm] = Form.useForm();
     return (
       <div className={sc('container-search')}>
-        <Form {...formLayout} form={searchForm}>
-          <Row>
-          <Col span={6}>
-              <Form.Item name="time" label="统计月份">
-                <DatePicker picker="month" />
+        <Form form={searchForm}>
+          <Row justify='space-between'>
+            <Col>
+              <Form.Item name="month" label="统计月份">
+                <DatePicker defaultValue={moment(new Date())} picker="month" />
               </Form.Item>
             </Col>
-            <Col span={4} offset={14}>
+            <Col>
               <Button
                 style={{ marginRight: 20 }}
                 type="primary"
                 key="search"
                 onClick={() => {
                   const search = searchForm.getFieldsValue();
-                  const time = search.time && moment(search.time).format('YYYY-MM')
-                  setSearChContent({ time });
+                  const month = search.month && moment(search.month).format('yyyy-MM')
+                  setSearChContent({ month });
                 }}
               >
                 查询
@@ -174,7 +146,7 @@ export default () => {
                 key="reset"
                 onClick={() => {
                   searchForm.resetFields();
-                  setSearChContent({});
+                  setSearChContent({ month: moment(new Date()).format('yyyy-MM') });
                 }}
               >
                 重置
@@ -193,7 +165,7 @@ export default () => {
       {useSearchNode()}
       <div className={sc('container-table-header')}>
         <div className="title">
-          <span>各地市供需对接新增数据周报表(共{totalCount || 0}个)</span>
+          <span>各地市供需对接新增数据周报表</span>
           <Access accessible={access['PX_PM_TJ_HD']}>
             <Button
               icon={<DownloadOutlined />}
