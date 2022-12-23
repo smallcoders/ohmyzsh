@@ -40,10 +40,10 @@ export async function getDetailList(data?: Record<string, any>) {
 /**
  * 供需对接报表 - 导出 - 明细表
  */
-export async function exportDetailTable() {
+export async function exportDetailTable(data: any) {
   return request<any>('/antelope-manage/demand/report/detail/export',{
     method: 'post',
-    data: {},
+    data,
     responseType: 'blob',
     getResponse: true,
   });
