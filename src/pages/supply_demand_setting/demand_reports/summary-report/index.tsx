@@ -38,47 +38,49 @@ export default () => {
     {
       title: '序号',
       width: 100,
+      fixed: true,
       render: (_: any, _record: any, index: number) => index + 1
     },
     {
       title: '需求地区',
-      dataIndex: 'area',
+      fixed: true,
+      dataIndex: 'demandArea',
     },
     {
       title: '需求数',
-      dataIndex: 'xqs',
+      dataIndex: 'demandNum',
     },
     {
       title: '跟进次数',
-      dataIndex: 'gjcs',
+      dataIndex: 'followNum',
     },
     {
       title: '未对接',
-      dataIndex: 'wdj',
+      dataIndex: 'notConnectNum',
     },
     {
       title: '新发布',
-      dataIndex: 'xfb',
+      dataIndex: 'newDemandNum',
     },
     {
       title: '已认领',
-      dataIndex: 'yrl',
+      dataIndex: 'claimedNum',
     },
     {
       title: '对接中',
-      dataIndex: 'djz',
+      dataIndex: 'connectingNum',
     },
     {
       title: '已反馈',
-      dataIndex: 'yfk',
+      dataIndex: 'feedbackNum',
     },
     {
       title: '已评价',
-      dataIndex: 'ypj',
+      dataIndex: 'evaluatedNum',
     },
     {
       title: '已结束',
-      dataIndex: 'yjs',
+      dataIndex: 'finishedNum',
     }
   ];
 
@@ -89,8 +91,10 @@ export default () => {
   const access = useAccess()
 
   const exportList = async () => {
+    antdMessage.destroy()
     if (downloading) {
       antdMessage.warning('正在导出数据，请勿频繁操作');
+      return;
     }
     setDownloading(true)
     try {
