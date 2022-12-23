@@ -102,12 +102,12 @@ export default () => {
           break
       }
     }
-    
+
     // 设置数据为一id
     for (let i = 0, l = tableItems.length; i < l; i++) {
       tableItems[i].id = i
     }
-    
+
     setTableHeader(tableHeader)
     setTableItems(tableItems)
   }
