@@ -70,6 +70,13 @@ const DatePickerConfig = () => {
           onChange={(event) => handleChange(event.target.value, 'config.desc')}
         />
       </Form.Item>
+      <Form.Item label="填写提示" >
+        <Input
+          value={selectWidgetItem?.config?.placeholder}
+          maxLength={20}
+          onChange={(event) => handleChange(event.target.value, 'config.placeholder')}
+        />
+      </Form.Item>
       {/*<Form.Item label="默认日期">*/}
       {/*  <DatePicker*/}
       {/*    {...(selectWidgetItem?.config)}*/}

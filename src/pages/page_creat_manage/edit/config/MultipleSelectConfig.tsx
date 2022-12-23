@@ -133,6 +133,13 @@ const MultipleSelectConfig = () => {
           onChange={(event) => handleChange(event.target.value, 'config.desc')}
         />
       </Form.Item>
+      <Form.Item label="填写提示" >
+        <Input
+          value={selectWidgetItem?.config?.placeholder}
+          maxLength={20}
+          onChange={(event) => handleChange(event.target.value, 'config.placeholder')}
+        />
+      </Form.Item>
       <OptionSourceTypeConfig multiple />
       <Form.Item label="题目关联">
         <div className="related-click" onClick={() => {
