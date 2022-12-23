@@ -121,7 +121,9 @@ export default () => {
     const [searchForm] = Form.useForm();
     return (
       <div className={sc('container-search')}>
-        <Form form={searchForm}>
+        <Form
+          form={searchForm}
+          >
           <Row justify='space-between'>
             <Col>
               <Form.Item name="month" label="统计月份">

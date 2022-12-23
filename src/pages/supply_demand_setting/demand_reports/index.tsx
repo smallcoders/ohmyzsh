@@ -25,7 +25,7 @@ export default () => {
         activeState={'M_SD_BBMXB'}
         setActiveKey={setActiveKey}
       />
-      { activeKey !== 'M_SD_BBMXB' ?
+      {/* { activeKey !== 'M_SD_BBMXB' ?
         <div style={
             {
               position: 'absolute',
@@ -35,7 +35,7 @@ export default () => {
           }>
           数据更新时间：2022-09-12 23:00:00
         </div> : null
-      }
+      } */}
     </div>
   );
 };
