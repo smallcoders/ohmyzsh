@@ -40,6 +40,17 @@ export default () => {
     wrapperCol: { span: 16 },
   };
 
+  // 需求状态
+  const stateObj3 = {
+    NEW_DEMAND: '新发布',
+    CLAIMED: '已认领',
+    DISTRIBUTE: '已分发',
+    CONNECTING: '对接中',
+    FEEDBACK: '已反馈',
+    EVALUATED: '已评价',
+    FINISHED: '已结束',
+  };
+
   // 表格数据
   const [dataSource, setDataSource] = useState<any[]>([]);
   // 动态头部
@@ -215,7 +226,7 @@ export default () => {
     }
     setDownloading(true)
     try {
-      const res = await exportDetailTable();
+      const res = await exportDetailTable(searchContent);
       if (res?.data.size == 51) return antdMessage.warning('操作太过频繁，请稍后再试')
       const content = res?.data;
       const blob  = new Blob([content], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"});
@@ -273,11 +284,13 @@ const useSearchNode = (): React.ReactNode => {
             <Col span={8}>
               <Form.Item name="demandState" label="需求状态" labelCol={{ flex: '90px' }}>
               <Select placeholder="请选择" allowClear>
-                  {
-                    Object.entries(DockingManage.demandType).map(p => {
-                      return <Select.Option value={p[0]}>{p[1]}</Select.Option>
-                    })
-                  }
+                  {Object.entries(stateObj3).map((p) => {
+                    return (
+                      <Select.Option key={p[0]} value={p[0]}>
+                        {p[1]}
+                      </Select.Option>
+                    );
+                  })}
                 </Select>
               </Form.Item>
             </Col>
