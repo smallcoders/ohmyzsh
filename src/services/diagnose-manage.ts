@@ -90,3 +90,15 @@ export async function exportRecordQueryPage(data?: { [key: string]: any }) {
     method: 'GET',
   });
 }
+
+// ----------------------诊断区域报表----------------------------
+/**
+ * 分页查询
+ * @param params
+ */
+ export async function getReportAreaPage(data?: { [key: string]: any }) {
+  return request('/antelope-diagnose/mng/diagnose/report/area', {
+    method: 'POST',
+    data,
+  });
+}

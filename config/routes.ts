@@ -1423,15 +1423,15 @@ export default [
       },
       {
         path: '/diagnose-manage/diagnose-record-report',
-        code: 'M_DM_ZDGL',
-        access: 'M_DM_ZDGL',
+        // code: 'M_DM_ZDGL',
+        // access: 'M_DM_ZDGL',
         name: '诊断记录报表',
         hideChildrenInMenu: true,
         routes: [
           {
             path: '/diagnose-manage/diagnose-record-report',
-            code: 'M_DM_ZDGL',
-            access: 'M_DM_ZDGL',
+            // code: 'M_DM_ZDGL',
+            // access: 'M_DM_ZDGL',
             name: '诊断记录报表',
             component: './diagnose_manage/diagnose_record_report',
           },
@@ -1439,6 +1439,22 @@ export default [
             path: '/diagnose-manage/diagnose-record-report/detail',
             name: '诊断详情',
             component: './diagnose_manage/diagnose_record_report/detail',
+          },
+        ],
+      },
+      {
+        path: '/diagnose-manage/diagnose-area-report',
+        // code: 'M_DM_ZDGL',
+        // access: 'M_DM_ZDGL',
+        name: '诊断区域报表',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: '/diagnose-manage/diagnose-area-report',
+            // code: 'M_DM_ZDGL',
+            // access: 'M_DM_ZDGL',
+            name: '诊断区域报表',
+            component: './diagnose_manage/diagnose_area_report',
           },
         ],
       },

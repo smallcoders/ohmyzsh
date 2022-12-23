@@ -29,14 +29,14 @@ const DColumn: React.FC = () => {
     );
   };
 
-  const getDetail = async() => {
-    let detailRes = await getDiagnoseDetail(id)
-    console.log(detailRes);
-  }
+  // const getDetail = async() => {
+  //   let detailRes = await getDiagnoseDetail(id)
+  //   console.log(detailRes);
+  // }
 
-  useEffect(() => {
-    getDetail()
-  }, [])
+  // useEffect(() => {
+  //   getDetail()
+  // }, [])
 
   return (
     <PageContainer className={sc('container')}>
