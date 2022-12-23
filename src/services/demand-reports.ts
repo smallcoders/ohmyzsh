@@ -22,9 +22,8 @@ export async function exportTotalTable() {
     data: {},
     responseType: 'blob',
     getResponse: true,
-  })
+  });
 }
-
 
 /**
  * 供需对接报表 - 明细表
@@ -47,5 +46,25 @@ export async function exportDetailTable() {
     data: {},
     responseType: 'blob',
     getResponse: true,
-  })
+  });
+}
+
+/**
+ * 供需对接报表 - 周报表
+ */
+export async function getDemandReportsWeaksList(params?: Record<string, any>) {
+  return request<Common.ResultCode & { result: any }>('/antelope-manage/demand/report/weekly', {
+    method: 'get',
+    params,
+  });
+}
+
+/**
+ * 供需对接报表 - 月报表
+ */
+export async function getDemandReportsMonthList(params?: Record<string, any>) {
+  return request<Common.ResultCode & { result: any }>('/antelope-manage/demand/report/monthly', {
+    method: 'get',
+    params,
+  });
 }
