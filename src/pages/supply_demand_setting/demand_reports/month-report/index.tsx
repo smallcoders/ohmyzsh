@@ -16,7 +16,7 @@ import { Access, useAccess } from 'umi';
 import SelfTable from '@/components/self_table';
 const sc = scopedClasses('tab-menu-demand-report-month');
 import moment from 'moment';
-import { getDemandReportsMonthList } from '@/services/demand-reports';
+import { getDemandReportsMonthList, exportMonthTable } from '@/services/demand-reports';
 
 export default () => {
 
@@ -25,6 +25,9 @@ export default () => {
   }>({
     year: moment(new Date()).format('yyyy')
   });
+  
+  // 是否在下载中
+  const [downloading, setDownloading] = useState<boolean>(false);
 
   const [tableHeader, setTableHeader] = useState<any[]>([])
   const [tableItems, setTableItems] = useState<any[]>([])
@@ -102,15 +105,47 @@ export default () => {
           break
       }
     }
-
+    
     // 设置数据为一id
     for (let i = 0, l = tableItems.length; i < l; i++) {
       tableItems[i].id = i
     }
-
+    
     setTableHeader(tableHeader)
     setTableItems(tableItems)
   }
+
+  const exportList = async () => {
+    message.destroy()
+    if (downloading) {
+      message.warning('正在导出数据，请勿频繁操作');
+      return;
+    }
+    setDownloading(true)
+    try {
+      const res = await exportMonthTable({
+        ...searchContent
+      });
+      if (res?.data.size == 51) return message.warning('操作太过频繁，请稍后再试')
+      const content = res?.data;
+      const blob  = new Blob([content], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"});
+      const fileName = `各地市供需对接新增数据月报表-${moment().format('YYYYMMDD')}.xlsx`;
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.style.display = 'none';
+      link.href = url;
+      link.setAttribute('download', fileName);
+      document.body.appendChild(link);
+      link.click();
+    } catch (error) {
+      message.error(`请求失败，原因:{${error}}`);
+    } finally {
+      setTimeout(() => {
+        setDownloading(false)
+      }, 2000)
+    }
+  };
+
 
   useEffect(() => {
     getDataList()
@@ -167,11 +202,10 @@ export default () => {
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>各地市供需对接新增数据月报表</span>
-          <Access accessible={access['PX_SD_YBB']}>
+          <Access accessible={access['PX_PM_TJ_HD']}>
             <Button
               icon={<DownloadOutlined />}
-              onClick={() => {
-              }}
+              onClick={exportList}
             >
               导出数据
             </Button>
