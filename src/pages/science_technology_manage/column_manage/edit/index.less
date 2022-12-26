@@ -18,11 +18,15 @@
       text-align: right;
       white-space: normal;
     }
+
     .ant-form-item-label > label{
       height: 44px;
     }
     .ant-form-item-control-input-content {
-      max-width: 600px;
+      max-width: 300px;
+    }
+    .red{
+      color:red;
     }
     .ant-row {
     }
@@ -34,18 +38,48 @@
       }
     }
     .pics{
+      .ant-form-item-control-input-content {
+        max-width: 600px!important;
+        input{
+          width: 300px;
+        }
+      }
       .ant-form-item{
         margin-bottom: 0;
+        padding: 10px;
       }
     }
     .pic{
       margin-bottom: 20px;
       display: flex;
       flex-flow: column;
+      position: relative;
+      &-word{
+        position: absolute;
+        right: 10px;
+        top: 16px;
+        width: 260px;
+      }
+      .ant-upload-select-picture-card{
+        background: #ffffff;
+      }
       .ant-form-item-label {
-        width: 100px;
+        width: 146px;
         text-align: left;
       }
+      &-content{
+        display: flex;
+        flex-flow: row;
+        padding: 20px;
+        .ant-upload-picture-card-wrapper {
+          display: inline-block;
+          width: 50%;
+        }
+        .ant-upload-select-picture-card{
+          background: #fff;
+        }
+      }
     }
+
   }
 }
