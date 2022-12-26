@@ -16,6 +16,7 @@ import {
 } from '../constants';
 
 import './detail.less';
+import { routeName } from '../../../../../config/routes';
 
 export default () => {
   const { id } = history.location.query as { id: string | undefined };
@@ -40,6 +41,11 @@ export default () => {
         <Button size="large" onClick={() => history.goBack()}>
           返回
         </Button>,
+        <Button size="large" type="primary" onClick={() => {
+          history.push(`${routeName.FINANCIAL_CUSTOMERS_MANAGE_EDIT}?id=${id}`);
+        }}>
+          编辑
+        </Button>
       ]}
     >
       <div className="customer-detail">
