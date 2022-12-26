@@ -82,11 +82,11 @@ export default (props: { tabs?: string[]; activeState?: string; setActiveKey?: (
     // 供需设置-供需对接报表
     {
       tab: '总表',
-      key: 'M_SD_BBZB'
+      key: 'PQ_SD_ZB'
     },
     {
       tab: '明细表',
-      key: 'M_SD_BBMXB'
+      key: 'PQ_SD_MXB'
     },
     {
       tab: '周报表',
@@ -182,8 +182,8 @@ export default (props: { tabs?: string[]; activeState?: string; setActiveKey?: (
       {activeKey === 'M_SD_FW' && <Solution />}
       {activeKey === 'M_SD_FWXX' && <DemandIntention />}
 
-      {activeKey === 'M_SD_BBZB' && <SummaryReport />}
-      {activeKey === 'M_SD_BBMXB' && <DetailsReport />}
+      {activeKey === 'PQ_SD_ZB' && <SummaryReport />}
+      {activeKey === 'PQ_SD_MXB' && <DetailsReport />}
       {activeKey === 'M_SD_BBZBB' && <WeeksReport />}
       {activeKey === 'M_SD_BBYBB' && <MonthReport />}
 

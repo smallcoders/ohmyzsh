@@ -338,7 +338,7 @@ const useSearchNode = (): React.ReactNode => {
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>供需对接明细表(共{pageInfo.totalCount || 0}个)</span>
-          <Access accessible={access.PX_PM_TJ_HD}>
+          <Access accessible={access.PX_SD_MXB}>
             <Button
               icon={<DownloadOutlined />}
               onClick={exportList}

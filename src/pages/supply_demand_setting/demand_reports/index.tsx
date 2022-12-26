@@ -21,7 +21,7 @@ export default () => {
   return (
     <div>
       <TabMenu
-        tabs={['M_SD_BBZB', 'M_SD_BBMXB', 'M_SD_BBZBB', 'M_SD_BBYBB']}
+        tabs={['PQ_SD_ZB', 'PQ_SD_MXB', 'M_SD_BBZBB', 'M_SD_BBYBB']}
         activeState={activeKey}
         setActiveKey={setActiveKey}
       />

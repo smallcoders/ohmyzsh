@@ -125,7 +125,7 @@ export default () => {
             各地市需求对接情况
             <span className="sub"><SoundOutlined />以下关于各需求状态的统计，为截止目前处于各状态的数据量总和</span>
           </span>
-          <Access accessible={access.PX_PM_TJ_HD}>
+          <Access accessible={access.PX_SD_ZB}>
              <Button
               icon={<DownloadOutlined />}
               onClick={exportList}
