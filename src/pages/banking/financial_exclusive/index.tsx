@@ -3,7 +3,6 @@ import { Button, Empty, message as antdMessage, Form, Input, Popover, message } 
 import scopedClasses from '@/utils/scopedClasses';
 import { useState, useEffect } from 'react';
 import { getExcCustomer, saveOrUpdateCustomer } from '@/services/financial-exclusive';
-import { FooterToolbar } from '@ant-design/pro-components';
 import type FinancialExclusive from '@/types/financial-exclusive';
 import empty from '@/assets/financial/empty.png';
 import UploadForm from '@/components/upload_form';
@@ -21,7 +20,7 @@ export default () => {
       // eslint-disable-next-line @typescript-eslint/no-shadow
       const { code, result, message } = await getExcCustomer();
       if (code === 0) {
-        if (Object.keys(result).length !== 0) {
+        if (!!result) {
           const res = await getFileInfo(String(result.wetChatImage));
           if (res.code === 0) {
             setCustomerInfo({ ...result, path: res.result[0].path });
@@ -67,7 +66,12 @@ export default () => {
   };
   return (
     <PageContainer
-      className={Object.keys(customerInfo).length !== 0 && !isSet ? sc('page2') : sc('page1')}
+      className={
+        (Object.keys(customerInfo).length !== 0 && !isSet) ||
+        (Object.keys(customerInfo).length === 0 && !isSet)
+          ? sc('page2')
+          : sc('page1')
+      }
       ghost
       header={{
         title: '金融专属服务',
@@ -210,7 +214,7 @@ export default () => {
                   />
                 </Form.Item>
                 <div className="info">
-                  请上传1张企业微信二维码图片<span className="size">规格大小待定</span>。
+                  请上传1张企业微信二维码图片<span className="size">尺寸为120*120</span>。
                   <Popover
                     content={
                       <div>

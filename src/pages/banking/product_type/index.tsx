@@ -17,7 +17,13 @@ import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
 import SelfTable from '@/components/self_table';
 import type ProductType from '@/types/product-type';
-import { getProductTypeList, updateTypeSort, updateType, delType } from '@/services/product-type';
+import {
+  getProductTypeList,
+  updateTypeSort,
+  updateType,
+  delType,
+  checkDelType,
+} from '@/services/product-type';
 import FormItem from 'antd/lib/form/FormItem';
 import { SortDetail } from './components/sortDetail';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -54,7 +60,7 @@ export default () => {
    * @zh-CN 新增编辑
    */
   const addOrUpdata = async () => {
-    const tooltipMessage = editingItem.id ? '新增产品类型' : '编辑产品类型';
+    const tooltipMessage = editingItem.id ? '编辑产品类型' : '新增产品类型';
     const values = await form.validateFields();
     const detail = values.details.map((item: any, index: number) => {
       return {
@@ -148,6 +154,7 @@ export default () => {
                           <>
                             <SortDetail
                               ItemTypes="subTypeCode"
+                              // eslint-disable-next-line react/no-array-index-key
                               index={index}
                               id={key}
                               moveDetail={(dragIndex, hoverIndex) =>
@@ -174,8 +181,15 @@ export default () => {
                               <img
                                 src={require('@/assets/banking_loan/remove.png')}
                                 alt=""
-                                onClick={() => {
-                                  if (index === 0) return;
+                                onClick={async () => {
+                                  console.log(form.getFieldValue('details'));
+                                  if (form.getFieldValue('details')[name].id !== null) {
+                                    const { code, message: resultMsg } = await checkDelType(
+                                      form.getFieldValue('details')[name].id,
+                                    );
+                                    if (code !== 0) return message.error(resultMsg);
+                                  }
+                                  if (fields.length === 1) return;
                                   remove(name);
                                 }}
                                 style={{
@@ -251,13 +265,13 @@ export default () => {
       title: '产品类型',
       dataIndex: 'name',
       isEllipsis: true,
-      width: 280,
+      width: 200,
     },
     {
       title: '产品子类型',
       dataIndex: 'details',
       isEllipsis: true,
-      width: 912,
+      width: 600,
       render: (details: ProductType.details[]) => (
         <>
           {details.map((item) => {
@@ -272,8 +286,9 @@ export default () => {
     },
     {
       title: '操作',
-      width: 240,
+      width: 200,
       dataIndex: 'option',
+      fixed: 'right',
       render: (_: any, record: any) => {
         return (
           <Space>
@@ -298,7 +313,9 @@ export default () => {
               cancelText="取消"
               onConfirm={() => remove(record.id)}
             >
-              <a href="#">删除</a>
+              <Button size="small" type="link">
+                删除
+              </Button>
             </Popconfirm>
 
             <Popconfirm
@@ -361,6 +378,7 @@ export default () => {
           <SelfTable
             bordered
             columns={columns}
+            scroll={{ x: 1400 }}
             dataSource={dataSource}
             rowKey={'id'}
             pagination={false}
