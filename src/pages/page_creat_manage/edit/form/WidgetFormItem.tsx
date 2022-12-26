@@ -170,6 +170,7 @@ const WidgetFormItem: FC<Props> = (props) => {
       type: ActionType.SET_SELECT_WIDGET_ITEM,
       payload: item
     }
+    console.log(item, '0000011111')
     dispatch(action)
   }
 

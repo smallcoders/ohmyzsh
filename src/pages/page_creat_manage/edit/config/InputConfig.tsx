@@ -90,7 +90,7 @@ const InputConfig = () => {
         <Select
           allowClear
           options={regOptions}
-          value={selectWidgetItem?.config?.reg}
+          value={selectWidgetItem?.config?.regInfo?.reg}
           onChange={(value) => {
             const currentValues: any = regOptions.find((item) => {
               return item.value === value
