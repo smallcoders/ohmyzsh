@@ -341,7 +341,7 @@ export default () => {
         pageIndex: 1,
         pageSize: 1000
       });
-      if (res?.data.size == 51) return message.warning('操作太过频繁，请稍后再试')
+      if (res?.data?.size == 51) return message.warning('操作太过频繁，请稍后再试')
       const content = res?.data;
       const blob  = new Blob([content], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"});
       const fileName = `诊断记录报表-${curTime}.xlsx`

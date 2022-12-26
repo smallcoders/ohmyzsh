@@ -102,3 +102,11 @@ export async function exportRecordQueryPage(data?: { [key: string]: any }) {
     data,
   });
 }
+
+// 导出
+export async function exportAreaPage(data?: { [key: string]: any }) {
+  return request('/antelope-diagnose/mng/diagnose/report/area/export', {
+    method: 'POST',
+    data,
+  });
+}
