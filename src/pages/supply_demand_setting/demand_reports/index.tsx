@@ -3,7 +3,7 @@ import { useState, useEffect} from 'react';
 import { history } from 'umi';
 
 export default () => {
-  const [activeKey, setActiveKey] = useState<string>('');
+  const [activeKey, setActiveKey] = useState<string>('1');
 
   const { type } = history.location.query as any;
 
@@ -21,8 +21,8 @@ export default () => {
   return (
     <div>
       <TabMenu
-        tabs={['M_SD_BBZB', 'M_SD_BBMXB', 'M_SD_BBZBB', 'M_SD_BBYBB']}
-        activeState={'M_SD_BBMXB'}
+        tabs={['PQ_SD_ZB', 'PQ_SD_MXB', 'M_SD_BBZBB', 'M_SD_BBYBB']}
+        activeState={activeKey}
         setActiveKey={setActiveKey}
       />
     </div>
