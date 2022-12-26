@@ -78,7 +78,7 @@
     }
   }
   .fc-container {
-    height: calc(100vh - 96px);
+    height: calc(100vh - 48px);
     background-color: #fff;
     padding-top: 48px;
     .components-container {
@@ -156,6 +156,7 @@
         right: 0;
         bottom: 0;
         left: 0;
+        overflow: auto;
         .form-empty {
           position: absolute;
           top: 40%;
@@ -171,10 +172,8 @@
         }
         .widget-form-list {
           position: relative;
-          min-height: calc(100vh - 65px);
-          max-height: calc(100vh - 65px);
+          height: 100vh;
           margin: 0 10px 10px;
-          overflow: auto;
           background-color: #fff;
           box-shadow: 0 4px 12px #ebedf0;
           padding: 0 10px 10px;
