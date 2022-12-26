@@ -160,13 +160,13 @@ export default ({ current }: { current?: EditType }) => {
             let levelV1Includes: any[] = []
             if (p?.childNodes?.length > 0) {
 
-                p?.childNodes.map(c => {
-                    c?.permissions.map(c => {
+                p?.childNodes?.map(c => {
+                    c?.permissions?.map(c => {
                         levelV1Includes.push(c?.id)
                     })
                 })
 
-                p?.childNodes.map(c => {
+                p?.childNodes?.map(c => {
                     data.push({
                         levelV1: { ...p, includeChildren: [...levelV1Includes] },
                         levelV2: { ...c, includeChildren: c?.permissions?.map(p => p.id) },
@@ -174,7 +174,7 @@ export default ({ current }: { current?: EditType }) => {
                     })
                 })
             } else {
-                p?.permissions.map(c => {
+                p?.permissions?.map(c => {
                     levelV1Includes.push(c?.id)
                 })
                 if (p?.permissions?.length > 0) {
@@ -194,7 +194,7 @@ export default ({ current }: { current?: EditType }) => {
         const data: any[] = []
         dataSource.map(p => {
             if (p?.childNodes?.length > 0) {
-                p?.childNodes.map(c => {
+                p?.childNodes?.map(c => {
                     c?.permissions?.map(e => {
                         data.push(e?.id)
                     })
