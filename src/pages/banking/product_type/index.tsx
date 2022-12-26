@@ -189,7 +189,7 @@ export default () => {
                                     );
                                     if (code !== 0) return message.error(resultMsg);
                                   }
-                                  if (index === 0) return;
+                                  if (fields.length === 1) return;
                                   remove(name);
                                 }}
                                 style={{

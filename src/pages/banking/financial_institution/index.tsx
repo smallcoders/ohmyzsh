@@ -473,7 +473,6 @@ export default () => {
           })
         : saveOrUpdateInstitution({
             ...values,
-            name: modalFieldsValue.current.name,
             sort,
             parentId:
               Object.keys(modalFormInfo).length == 0
@@ -528,8 +527,8 @@ export default () => {
           const values = await modalForm.validateFields();
           if (isContent === false) {
             const { code } = await saveOrUpdateInstitution({
+              ...values,
               node: 0,
-              name: modalForm.getFieldsValue(),
             });
             if (code === 0) {
               message.success('新增成功');
@@ -541,6 +540,7 @@ export default () => {
           } else {
             setIsAdd3Info({});
             setDetailInfo({});
+            setBankUserInfoList([]);
             form.resetFields();
             setSort(null);
             setDetail(false);
@@ -808,7 +808,7 @@ export default () => {
   };
   return (
     <PageContainer
-      className={isDetail || !firstPage ? sc('page2') : sc('page1')}
+      className={isDetail || !firstPage || !isContent ? sc('page2') : sc('page1')}
       ghost
       header={{
         title: '金融机构管理',
@@ -846,6 +846,7 @@ export default () => {
                 key="id"
                 icon={() => null}
                 defaultExpandAll
+                // height={800}
                 multiple
                 selectedKeys={[selectTree]}
                 // defaultSelectedKeys={["11"]}

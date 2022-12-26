@@ -63,7 +63,7 @@ export async function removeBank(id: number) {
  * @param params
  */
 export async function queryCooperateOrg() {
-  return request<any>(`/antelope-finance/mng/bank/queryCooperateOrg`, {
+  return request<any>(`/antelope-finance/bank/queryCooperateOrg`, {
     method: 'get',
     headers: {
       'rpc-tag': 'jbxu5',
