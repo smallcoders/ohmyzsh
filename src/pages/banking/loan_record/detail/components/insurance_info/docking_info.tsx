@@ -158,13 +158,13 @@ export default forwardRef((props: Props, ref) => {
               creditAmount,
               contractNo,
               rate,
-              checkProves,
+              workProves,
               refuseReason,
               ...rest
             } = result;
             const creditTime = startDate ? [moment(startDate), moment(endDate)] : [];
             form.setFieldsValue({
-              fileIds: checkProves?.map((item: BankingLoan.workProves) => {
+              fileIds: workProves?.map((item: BankingLoan.workProves) => {
                 return {
                   name: item.name + '.' + item.format,
                   path: item.path,
@@ -225,10 +225,10 @@ export default forwardRef((props: Props, ref) => {
     getDetail();
   }, []);
   const showfile = () => {
-    const imgList = detail?.checkProves?.filter(
+    const imgList = detail?.workProves?.filter(
       (item) => previewType.includes(item.format) && item.format !== 'pdf',
     );
-    const fileList = detail?.checkProves?.filter(
+    const fileList = detail?.workProves?.filter(
       (item) => !(previewType.includes(item.format) && item.format !== 'pdf'),
     );
     return (
@@ -412,7 +412,7 @@ export default forwardRef((props: Props, ref) => {
                   style={{ padding: 0, height: '24px', marginBottom: '16px' }}
                   onClick={() => {
                     patchDownloadFile(
-                      detail.checkProves,
+                      detail.workProves,
                       `对接信息凭证${moment().format('YYYYMMDD')}`,
                     );
                   }}
