@@ -84,7 +84,7 @@ export async function removeColumn(creativeColumnId: string) {
  * @returns
  */
 export async function loanClickExport(data?: { [key: string]: any }) {
-  return request<any>('//antelope-science/mng/creative/column/clickExport', {
+  return request<any>('/antelope-science/mng/creative/column/clickExport', {
     method: 'post',
     data,
     responseType: 'blob',

@@ -1565,6 +1565,8 @@ export default [
       {
         path: '/science-technology-manage/column-manage',
         name: '科产专栏管理',
+        code: 'M_SM_KCZL',
+        access: 'M_SM_KCZL',
         hideChildrenInMenu: true,
         routes: [
           {
