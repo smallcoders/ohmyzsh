@@ -214,7 +214,7 @@ const ProductInfoAddOrEdit = () => {
       value.typeDetailId = values.typeIds[1];
     }
 
-    addProduct({ ...value, id: currentId, state: flag }).then((res) => {
+    addProduct({ ...value, id: currentId || '', state: flag }).then((res) => {
       if (res.code === 0) {
         setFormIsChange(false);
         message.success('保存成功');
@@ -313,7 +313,14 @@ const ProductInfoAddOrEdit = () => {
               fieldProps={{ maxLength: 35 }}
             />
             <Form.Item rules={[{ required: true }]} name="typeIds" label="产品类型">
-              <Cascader options={productTypeList} />
+              <Cascader
+                options={productTypeList}
+                onChange={(value, selectedOptions) => {
+                  const labels = selectedOptions && selectedOptions[0];
+                  setProductType(labels?.label);
+                  console.log(value, selectedOptions);
+                }}
+              />
             </Form.Item>
             {/* <ProFormSelect
               rules={[{ required: true }]}
@@ -347,7 +354,7 @@ const ProductInfoAddOrEdit = () => {
               })}
             />
             <ProFormSelect
-              rules={[{ required: true }]}
+              rules={[{ required: !productType?.includes('保险') }]}
               label="担保方式"
               name="warrantType"
               options={Object.entries(guaranteeMethodMap).map((p) => {
@@ -363,7 +370,7 @@ const ProductInfoAddOrEdit = () => {
               name="object"
               options={[{ value: 'BUSINESS', label: '企业' }]}
             />
-            {!productType.includes('保险') && (
+            {!productType?.includes('保险') && (
               <Form.Item rules={[{ required: true }]} name="isCirculationLoan" label="支持循环贷">
                 <Radio.Group>
                   <Radio value={1}>
@@ -408,7 +415,7 @@ const ProductInfoAddOrEdit = () => {
                 })}
               </Select>
             </Form.Item>
-            {!productType.includes('保险') && (
+            {!productType?.includes('保险') && (
               <Form.Item
                 rules={[{ required: true }]}
                 {...formProps2}
@@ -510,21 +517,21 @@ const ProductInfoAddOrEdit = () => {
                 },
               ]}
               {...formProps2}
-              label={productType.includes('保险') ? '保险额度' : '额度'}
+              label={productType?.includes('保险') ? '保险额度' : '额度'}
               name="Amount"
               placeholder={[
-                `最低${productType.includes('保险') ? '保险' : ''}额度`,
-                `最高${productType.includes('保险') ? '保险' : ''}额度`,
+                `最低${productType?.includes('保险') ? '保险' : ''}额度`,
+                `最高${productType?.includes('保险') ? '保险' : ''}额度`,
               ]}
               addonAfter={<div style={{ width: '30px', whiteSpace: 'nowrap' }}>万元</div>}
             />
             <Form.Item
               {...formProps2}
-              label={`${productType.includes('保险') ? '保险' : ''}额度文案`}
+              label={`${productType?.includes('保险') ? '保险' : ''}额度文案`}
               name="amountDesc"
               extra={
                 <div className={sc('form-input-tips')}>
-                  将在门户的金融产品{productType.includes('保险') ? '保险' : ''}额度位置展示。
+                  将在门户的金融产品{productType?.includes('保险') ? '保险' : ''}额度位置展示。
                   <Tooltip
                     style={{ maxWidth: '800px' }}
                     color="#fff"
@@ -557,21 +564,21 @@ const ProductInfoAddOrEdit = () => {
                 },
               ]}
               {...formProps2}
-              label={productType.includes('保险') ? '参考费率' : '年化利率'}
+              label={productType?.includes('保险') ? '参考费率' : '年化利率'}
               name="Term"
               placeholder={[
-                `最低${productType.includes('保险') ? '费率' : '利率'}`,
-                `最高${productType.includes('保险') ? '费率' : '利率'}`,
+                `最低${productType?.includes('保险') ? '费率' : '利率'}`,
+                `最高${productType?.includes('保险') ? '费率' : '利率'}`,
               ]}
               addonAfter={<div style={{ width: '30px', whiteSpace: 'nowrap' }}>%</div>}
             />
             <Form.Item
               {...formProps2}
-              label={`${productType.includes('保险') ? '参考费率' : '年化利率'}文案`}
+              label={`${productType?.includes('保险') ? '参考费率' : '年化利率'}文案`}
               name="termDesc"
               extra={
                 <div className={sc('form-input-tips')}>
-                  将在门户的金融产品{productType.includes('保险') ? '费率' : '年化利率'}位置展示。
+                  将在门户的金融产品{productType?.includes('保险') ? '费率' : '年化利率'}位置展示。
                   <Tooltip
                     color="#fff"
                     title={
