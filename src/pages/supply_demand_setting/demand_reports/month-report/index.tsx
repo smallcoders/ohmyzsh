@@ -167,7 +167,7 @@ export default () => {
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>各地市供需对接新增数据月报表</span>
-          <Access accessible={access['PX_PM_TJ_HD']}>
+          <Access accessible={access['PX_SD_YBB']}>
             <Button
               icon={<DownloadOutlined />}
               onClick={() => {

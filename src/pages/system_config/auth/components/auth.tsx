@@ -110,7 +110,7 @@ export default ({ current }: { current?: EditType }) => {
 
     const dealAllCheck = (check: boolean, includeChildren: any[]) => {
         if (check) {
-            includeChildren.map((p) => {
+            includeChildren?.map((p) => {
                 setCheckedAuths((pre) => {
                     const checked = [...pre]
                     const index = checked.indexOf(p)
@@ -121,7 +121,7 @@ export default ({ current }: { current?: EditType }) => {
                 })
             })
         } else {
-            includeChildren.map((p) => {
+            includeChildren?.map((p) => {
                 saveAuth(p)
             })
         }

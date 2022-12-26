@@ -32,7 +32,7 @@ import ApplyRecord from '@/pages/user_config/expert_manage/components/apply-reco
 import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
 const sc = scopedClasses('tab-menu');
-export default (props: { tabs?: string[]; activeState?: string; setActiveKey?: (v: string) => any}) => {
+export default (props: { tabs?: string[]; activeState?: string; sort?: boolean;}) => {
   const [activeKey, setActiveKey] = useState<string>('');
   const [showTabList, setShowTabList] = useState<any>([]);
 
@@ -82,19 +82,23 @@ export default (props: { tabs?: string[]; activeState?: string; setActiveKey?: (
     // 供需设置-供需对接报表
     {
       tab: '总表',
-      key: 'PQ_SD_ZB'
+      key: 'M_SD_ZB',
+      sort: 1
     },
     {
       tab: '明细表',
-      key: 'PQ_SD_MXB'
+      key: 'M_SD_MXB',
+      sort: 2
     },
     {
       tab: '周报表',
-      key: 'M_SD_BBZBB'
+      key: 'M_SD_ZBB',
+      sort: 3
     },
     {
       tab: '月报表',
-      key: 'M_SD_BBYBB'
+      key: 'M_SD_YBB',
+      sort: 4
     },
     // 用户管理-专家管理tab页
     {
@@ -127,11 +131,6 @@ export default (props: { tabs?: string[]; activeState?: string; setActiveKey?: (
         // {name: 'M_DM_XSZD', value: false},
         // {name: 'M_DM_ZDBM', value: true}
       ]
-
-      currentUser.menuShowMap.M_SD_BBZB = true
-      currentUser.menuShowMap.M_SD_BBMXB = true
-      currentUser.menuShowMap.M_SD_BBZBB = true
-      currentUser.menuShowMap.M_SD_BBYBB = true
       Object.keys(currentUser.menuShowMap).forEach((item: any) => {
         // console.log(item, currentUser.menuShowMap[item]);
         if(props.tabs.indexOf(item) > -1) {
@@ -149,6 +148,11 @@ export default (props: { tabs?: string[]; activeState?: string; setActiveKey?: (
           }
         }
       }
+
+      if (props.sort) {
+        arr2.sort((a: any, b: any) => a.sort - b.sort);
+      }
+
       setShowTabList(arr2)
       if (arr2[0]) setActiveKey(arr2[0].key)
       console.log(arr2)
@@ -182,10 +186,10 @@ export default (props: { tabs?: string[]; activeState?: string; setActiveKey?: (
       {activeKey === 'M_SD_FW' && <Solution />}
       {activeKey === 'M_SD_FWXX' && <DemandIntention />}
 
-      {activeKey === 'PQ_SD_ZB' && <SummaryReport />}
-      {activeKey === 'PQ_SD_MXB' && <DetailsReport />}
-      {activeKey === 'M_SD_BBZBB' && <WeeksReport />}
-      {activeKey === 'M_SD_BBYBB' && <MonthReport />}
+      {activeKey === 'M_SD_ZB' && <SummaryReport />}
+      {activeKey === 'M_SD_MXB' && <DetailsReport />}
+      {activeKey === 'M_SD_ZBB' && <WeeksReport />}
+      {activeKey === 'M_SD_YBB' && <MonthReport />}
 
       {activeKey === 'M_UM_ZJZY' && <ExpertResource />}
       {activeKey === 'M_UM_ZJZX' && <ConsultRecord />}
