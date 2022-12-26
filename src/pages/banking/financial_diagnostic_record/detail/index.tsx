@@ -105,17 +105,17 @@ export default () => {
           <div className={sc('page-item-body')}>
             <div className={sc('page-item-body-item')}>
               <div className={sc('page-item-body-item-label')}>业务名称：</div>
-              <div className={sc('page-item-body-item-wrap')}>{basicInfo.name || '--'}</div>
+              <div className={sc('page-item-body-item-wrap')}>{basicInfo?.name || '--'}</div>
             </div>
             <div className={sc('page-item-body-item')}>
               <div className={sc('page-item-body-item-label')}>法定代表人：</div>
               <div className={sc('page-item-body-item-wrap')}>
-                {basicInfo.legalPersonName || '--'}
+                {basicInfo?.legalPersonName || '--'}
               </div>
             </div>
             <div className={sc('page-item-body-item')}>
               <div className={sc('page-item-body-item-label')}>注册地址：</div>
-              <div className={sc('page-item-body-item-wrap')}>{basicInfo.regAddress || '--'}</div>
+              <div className={sc('page-item-body-item-wrap')}>{basicInfo?.regAddress || '--'}</div>
             </div>
             <div className={sc('page-item-body-item')}>
               <div className={sc('page-item-body-item-label')}>成立日期：</div>
@@ -125,11 +125,11 @@ export default () => {
             </div>
             <div className={sc('page-item-body-item')}>
               <div className={sc('page-item-body-item-label')}>联系人：</div>
-              <div className={sc('page-item-body-item-wrap')}>{basicInfo.contacts || '--'}</div>
+              <div className={sc('page-item-body-item-wrap')}>{basicInfo?.contacts || '--'}</div>
             </div>
             <div className={sc('page-item-body-item')}>
               <div className={sc('page-item-body-item-label')}>联系方式：</div>
-              <div className={sc('page-item-body-item-wrap')}>{basicInfo.phone || '--'}</div>
+              <div className={sc('page-item-body-item-wrap')}>{basicInfo?.phone || '--'}</div>
             </div>
           </div>
         </div>
@@ -140,13 +140,13 @@ export default () => {
             <div className={sc('page-item-body-item')}>
               <div className={sc('page-item-body-item-label')}>金融诊断编号：</div>
               <div className={sc('page-item-body-item-wrap')}>
-                {recordResult1.diagnoseNum || '--'}
+                {recordResult1?.diagnoseNum || '--'}
               </div>
             </div>
             <div className={sc('page-item-body-item')}>
               <div className={sc('page-item-body-item-label')}>金融诊断时间：</div>
               <div className={sc('page-item-body-item-wrap')}>
-                {recordResult1.createTime || '--'}
+                {recordResult1?.createTime || '--'}
               </div>
             </div>
             <div className={sc('page-item-body-item')}>
@@ -160,7 +160,7 @@ export default () => {
             <div className={sc('page-item-body-item')}>
               <div className={sc('page-item-body-item-label')}>拟融资期限：</div>
               <div className={sc('page-item-body-item-wrap')}>
-                {recordResult1.term + '个月' || '--'}
+                {recordResult1?.term ? recordResult1.term + '个月' : '--'}
               </div>
             </div>
             <div className={sc('page-item-body-item')}>
@@ -174,7 +174,9 @@ export default () => {
             <div className={sc('page-item-body-item')}>
               <div className={sc('page-item-body-item-label')}>企业上一年营收规模：</div>
               <div className={sc('page-item-body-item-wrap')}>
-                {basicInfo?.revenueLastYear?.toFixed(2) + '万元' || '--'}
+                {basicInfo?.revenueLastYear
+                  ? basicInfo?.revenueLastYear?.toFixed(2) + '万元'
+                  : '--'}
               </div>
             </div>
             <div className={sc('page-item-body-item')}>
@@ -206,9 +208,9 @@ export default () => {
           <div className={sc('page-item-body')}>
             <div className={sc('page-item-body-item')}>
               <div className={sc('page-item-body-item-label')}>产品申请数量：</div>
-              <div className={sc('page-item-body-item-wrap')}>{recordResult1.applyNum}</div>
+              <div className={sc('page-item-body-item-wrap')}>{recordResult1?.applyNum}</div>
             </div>
-            {recordResult1.applyNum === 0 ? (
+            {recordResult1?.applyNum === 0 ? (
               <></>
             ) : (
               <div className={sc('page-item-body-item')}>
