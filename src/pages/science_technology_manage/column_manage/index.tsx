@@ -230,7 +230,7 @@ export default () => {
         )
       }
     },
-      access.P_SM_KCZL && {
+      access['P_SM_KCZL'] && {
       title: '操作',
       key: 'action',
       render: (_record: any) => {

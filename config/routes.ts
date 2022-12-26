@@ -1587,7 +1587,7 @@ export default [
           {
             path: '/science-technology-manage/column-manage/detail',
             name: '详情',
-            component: './science_technology_manage/column_manage/detail/index',
+            component: './science_technology_manage/column_manage/detail',
           },
         ],
       },
