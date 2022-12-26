@@ -26,6 +26,7 @@ import { listAllAreaCode } from '@/services/common';
 import { PageContainer } from '@ant-design/pro-layout';
 import { getOrgManagePage, signOrgTag } from '@/services/org-type-manage';
 import { Access, useAccess } from 'umi';
+import {routeName} from "../../../../config/routes";
 const sc = scopedClasses('user-config-org-manage');
 enum Edge {
   HOME = 0,
@@ -184,6 +185,14 @@ export default () => {
                 标注
               </Button>
             </Popconfirm>
+            <Button
+              type="link"
+              onClick={() => {
+                window.open(`${routeName.ORG_MANAGE_DETAIL}?id=${record.id}`);
+              }}
+            >
+              成员信息
+            </Button>
           </Space>
         </Access>
       },

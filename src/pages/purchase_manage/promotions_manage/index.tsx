@@ -249,7 +249,7 @@ export default () => {
       },
       {
         title: '权重',
-        renderText: () => 1,
+        dataIndex: 'sortNo',
       },
     ];
     return (
