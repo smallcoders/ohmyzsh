@@ -184,7 +184,7 @@ export default () => {
       key: 'content',
       ellipsis: true,
     },
-    access.P_SM_KCZL && {
+    access['P_SM_KCZL'] && {
       title: '上下架状态',
       key: 'shelfStatus',
       dataIndex: 'shelfStatus',
@@ -215,18 +215,21 @@ export default () => {
         )
       }
     },
-    {
+    access['P_SM_KCZL'] && {
       title: '点击量',
       dataIndex: 'clickRate',
       key: 'clickRate',
       width:80,
       render: (clickRate: any,_record: any) => {
+        const accessible = access?.[permissions?.[edge].replace(new RegExp("Q"), "")]
         return (
+          <Access accessible={accessible}>
           <Tooltip placement="top" title={clickRate}>
             <a
               onClick={()=>{showDrawer(_record)}}
             >{clickRate}</a>
           </Tooltip>
+      </Access>
         )
       }
     },
