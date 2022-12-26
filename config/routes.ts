@@ -1234,8 +1234,8 @@ export default [
       },
       {
         path: '/supply-demand-setting/demand_reports/index',
-        code: 'M_SD_GXDJBB',
-        access: 'M_SD_GXDJBB',
+        code: 'M_SD_BB',
+        access: 'M_SD_BB',
         name: '供需对接报表',
         component: './supply_demand_setting/demand_reports/index',
       },
