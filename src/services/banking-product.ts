@@ -122,7 +122,7 @@ export async function delPurpose(params?: { [key: string]: any }) {
  * @returns
  */
 export async function queryBank() {
-  return request<any>('/antelope-finance/mng/bank/queryBank', {
+  return request<any>('/antelope-finance/bank/mng/queryBank', {
     method: 'get',
     headers: {
       'rpc-tag': 'jbxu5',
