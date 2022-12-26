@@ -366,7 +366,6 @@ export default () => {
                 <Select placeholder="请选择" allowClear>
                   <Select.Option value={'WEB'}>WEB</Select.Option>
                   <Select.Option value={'APP'}>APP</Select.Option>
-                  <Select.Option value={'WECHAT'}>WECHAT</Select.Option>
                 </Select>
               </Form.Item>
             </Col>
