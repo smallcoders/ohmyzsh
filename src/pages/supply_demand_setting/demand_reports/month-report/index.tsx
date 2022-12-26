@@ -25,7 +25,7 @@ export default () => {
   }>({
     year: moment(new Date()).format('yyyy')
   });
-  
+
   // 是否在下载中
   const [downloading, setDownloading] = useState<boolean>(false);
 
@@ -105,12 +105,12 @@ export default () => {
           break
       }
     }
-    
+
     // 设置数据为一id
     for (let i = 0, l = tableItems.length; i < l; i++) {
       tableItems[i].id = i
     }
-    
+
     setTableHeader(tableHeader)
     setTableItems(tableItems)
   }
@@ -202,7 +202,7 @@ export default () => {
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>各地市供需对接新增数据月报表</span>
-          <Access accessible={access['PX_PM_TJ_HD']}>
+          <Access accessible={access['PX_SD_YBB']}>
             <Button
               icon={<DownloadOutlined />}
               onClick={exportList}
