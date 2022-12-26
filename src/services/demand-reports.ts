@@ -7,9 +7,10 @@ import { request } from 'umi';
  */
 export async function getDemandReportsTotalList() {
   return request<Common.ResultCode & { result: SummaryReportList.Content[] }>(
-    '/antelope-manage/demand/report/overview', {
-      method: 'GET'
-    }
+    '/antelope-manage/demand/report/overview',
+    {
+      method: 'GET',
+    },
   );
 }
 
@@ -17,7 +18,7 @@ export async function getDemandReportsTotalList() {
  * 供需对接报表 - 导出 - 总表
  */
 export async function exportTotalTable() {
-  return request<any>('/antelope-manage/demand/report/overview/export',{
+  return request<any>('/antelope-manage/demand/report/overview/export', {
     method: 'get',
     data: {},
     responseType: 'blob',
@@ -29,19 +30,17 @@ export async function exportTotalTable() {
  * 供需对接报表 - 明细表
  */
 export async function getDetailList(data?: Record<string, any>) {
-  return request<Common.ResultCode & { result: any }>(
-    '/antelope-manage/demand/report/detail', {
-      method: 'post',
-      data,
-    }
-  );
+  return request<Common.ResultCode & { result: any }>('/antelope-manage/demand/report/detail', {
+    method: 'post',
+    data,
+  });
 }
 
 /**
  * 供需对接报表 - 导出 - 明细表
  */
 export async function exportDetailTable(data: any) {
-  return request<any>('/antelope-manage/demand/report/detail/export',{
+  return request<any>('/antelope-manage/demand/report/detail/export', {
     method: 'post',
     data,
     responseType: 'blob',
@@ -66,5 +65,29 @@ export async function getDemandReportsMonthList(params?: Record<string, any>) {
   return request<Common.ResultCode & { result: any }>('/antelope-manage/demand/report/monthly', {
     method: 'get',
     params,
+  });
+}
+
+/**
+ * 供需对接报表 - 导出 - 周报表
+ */
+export async function exportWeaksTable(params?: Record<string, any>) {
+  return request<any>('/antelope-manage/demand/report/weekly/export', {
+    method: 'get',
+    params,
+    responseType: 'blob',
+    getResponse: true,
+  });
+}
+
+/**
+ * 供需对接报表 - 导出 - 月报表
+ */
+export async function exportMonthTable(params?: Record<string, any>) {
+  return request<any>('/antelope-manage/demand/report/monthly/export', {
+    method: 'get',
+    params,
+    responseType: 'blob',
+    getResponse: true,
   });
 }
