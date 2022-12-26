@@ -3,15 +3,33 @@ import {PageContainer} from "@ant-design/pro-layout";
 import './index.less';
 import scopedClasses from "@/utils/scopedClasses";
 import ProCard from "@ant-design/pro-card";
-import {Button, Form, Input, message} from "antd";
+import {Button, Form, Input, InputNumber, message} from "antd";
 import {history} from "@@/core/history";
 import UploadForm from "@/components/upload_form";
-import {getColumnDetailById, saveColumn} from "@/services/column-manage";
-import {useEffect} from "react";
+import {getColumnByPage, getColumnDetailById, saveColumn} from "@/services/column-manage";
+import  {useEffect, useState} from "react";
 const sc = scopedClasses('column-manage-edit');
 export default () => {
+  const [total, setTotal] = useState<any>([]);
   const creativeColumnId = history.location.query?.id as string;
-
+  const getColumnList = async (pageIndex: number = 1, pageSize = 10) => {
+    try {
+      const res = await getColumnByPage({
+        pageIndex,
+        pageSize,
+      })
+      if (res?.code === 0) {
+        setTotal(res?.totalCount)
+      } else {
+        message.error(`请求分页数据失败`);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    getColumnList();
+  }, []);
   const [form] = Form.useForm();
   const getColumnDetail = async () =>{
     try {
@@ -98,8 +116,24 @@ export default () => {
             </Form.Item>
           </Form.Item>
         </Form.Item>
-        <Form.Item name="sort" label="展示顺序" >
-          <Input   placeholder={'请输入'}/>
+        <Form.Item name="sort" label="展示顺序"   rules={[
+          {
+            validator(rule, value) {
+              console.log(value)
+              if (value>total+1) {
+                return Promise.reject('已超过当前排序范围');
+              } else {
+                return Promise.resolve();
+              }
+            },
+          },
+        ]}>
+          <InputNumber
+            min={1}
+            defaultValue={1}
+            max={100}
+            placeholder="请输入"
+          />
         </Form.Item>
         <Form.Item
           name="remark"
