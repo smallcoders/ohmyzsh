@@ -361,8 +361,9 @@ export default () => {
             <Col span={8}>
               <Form.Item name="clientSource" label="浏览端">
                 <Select placeholder="请选择" allowClear>
-                  <Select.Option value={'web'}>WEB</Select.Option>
-                  <Select.Option value={'app'}>APP</Select.Option>
+                  <Select.Option value={'WEB'}>WEB</Select.Option>
+                  <Select.Option value={'APP'}>APP</Select.Option>
+                  <Select.Option value={'WECHAT'}>WECHAT</Select.Option>
                 </Select>
               </Form.Item>
             </Col>
