@@ -401,6 +401,7 @@ export default () => {
         className="bankName"
         onClick={async () => {
           setIsAdd3Info({});
+          setBankUserInfoList([]);
           setSelectTree(String(item.id));
           await detailBankInfo(item.id, 'no', item.node);
           setDetail(true);
