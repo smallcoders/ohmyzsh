@@ -297,7 +297,7 @@ export default () => {
       title: '企业名称',
       dataIndex: 'orgName',
       isEllipsis: true,
-      width: 150,
+      width: '120px',
     },
     {
       title: '联系人',

@@ -305,7 +305,7 @@ export default ({ loanType, name }: { loanType: number; name: string }) => {
       title: '企业名称',
       dataIndex: 'orgName',
       isEllipsis: true,
-      width: 150,
+      width: '120px',
     },
     {
       title: '申请金额(万元)',
