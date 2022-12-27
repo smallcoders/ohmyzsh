@@ -374,7 +374,7 @@ export default () => {
                 <Select placeholder="请选择" allowClear mode="multiple">
                   {Object.entries(guaranteeMethodMap).map((p) => {
                     return (
-                      <Select.Option key={p[0]} value={p[0]}>
+                      <Select.Option key={p[0]} value={Number(p[0])}>
                         {p[1]}
                       </Select.Option>
                     );
