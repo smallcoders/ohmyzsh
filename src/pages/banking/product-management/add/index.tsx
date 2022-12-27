@@ -130,6 +130,7 @@ const ProductInfoAddOrEdit = () => {
     getProductInfo({ id: currentId }).then((res) => {
       if (res.code === 0) {
         const {
+          warrantType,
           openArea,
           productProcessInfoList,
           minAmount,
@@ -153,6 +154,7 @@ const ProductInfoAddOrEdit = () => {
           formInstanceRef?.current?.setFieldsValue({
             ...rest,
             openArea: openArea?.split(',') || [],
+            warrantType: warrantType?.split(',') || [],
             productProcessInfoList,
             Amount,
             Rate,
@@ -187,6 +189,9 @@ const ProductInfoAddOrEdit = () => {
   // 保存产品信息 flag 0:暂存 1:下一步
   const saveProduct = (values: any, flag: number, cb: any) => {
     const value = { ...values };
+    if (values.hasOwnProperty('warrantType')) {
+      value.warrantType = values.warrantType?.join(',');
+    }
     if (values.hasOwnProperty('openArea')) {
       value.openArea = values.openArea?.join(',');
     }
