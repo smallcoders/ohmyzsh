@@ -571,7 +571,7 @@ const ProductInfoAddOrEdit = () => {
               ]}
               {...formProps2}
               label={productType?.includes('保险') ? '参考费率' : '年化利率'}
-              name="Term"
+              name="Rate"
               placeholder={[
                 `最低${productType?.includes('保险') ? '费率' : '利率'}`,
                 `最高${productType?.includes('保险') ? '费率' : '利率'}`,
@@ -581,7 +581,7 @@ const ProductInfoAddOrEdit = () => {
             <Form.Item
               {...formProps2}
               label={`${productType?.includes('保险') ? '参考费率' : '年化利率'}文案`}
-              name="termDesc"
+              name="rateDesc"
               extra={
                 <div className={sc('form-input-tips')}>
                   将在门户的金融产品{productType?.includes('保险') ? '费率' : '年化利率'}位置展示。
@@ -617,14 +617,14 @@ const ProductInfoAddOrEdit = () => {
               ]}
               {...formProps2}
               label="期限"
-              name="Rate"
+              name="Term"
               placeholder={['最低期限', '最高期限']}
               addonAfter={<div style={{ width: '30px', whiteSpace: 'nowrap' }}>个月</div>}
             />
             <Form.Item
               {...formProps2}
               label="期限文案"
-              name="rateDesc"
+              name="termDesc"
               extra={
                 <div className={sc('form-input-tips')}>
                   将在门户的金融产品额度位置展示。
