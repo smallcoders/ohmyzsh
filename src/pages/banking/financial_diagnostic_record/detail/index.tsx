@@ -174,9 +174,7 @@ export default () => {
             <div className={sc('page-item-body-item')}>
               <div className={sc('page-item-body-item-label')}>企业上一年营收规模：</div>
               <div className={sc('page-item-body-item-wrap')}>
-                {basicInfo?.revenueLastYear
-                  ? basicInfo?.revenueLastYear?.toFixed(2) + '万元'
-                  : '--'}
+                {recordResult1?.revenueContent || '--'}
               </div>
             </div>
             <div className={sc('page-item-body-item')}>
