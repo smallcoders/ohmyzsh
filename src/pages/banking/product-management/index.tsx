@@ -371,7 +371,7 @@ export default () => {
             </Col>
             <Col span={8}>
               <Form.Item name="warrantType" label="担保方式">
-                <Select placeholder="请选择" allowClear>
+                <Select placeholder="请选择" allowClear mode="multiple">
                   {Object.entries(guaranteeMethodMap).map((p) => {
                     return (
                       <Select.Option key={p[0]} value={p[0]}>

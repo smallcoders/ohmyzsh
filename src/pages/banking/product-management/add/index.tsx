@@ -346,6 +346,9 @@ const ProductInfoAddOrEdit = () => {
               rules={[{ required: true }]}
               label="金融机构"
               name="bankId"
+              fieldProps={{
+                showSearch: true,
+              }}
               options={bankList.map((p) => {
                 return {
                   value: p.id,
@@ -357,6 +360,9 @@ const ProductInfoAddOrEdit = () => {
               rules={[{ required: !productType?.includes('保险') }]}
               label="担保方式"
               name="warrantType"
+              fieldProps={{
+                mode: 'multiple',
+              }}
               options={Object.entries(guaranteeMethodMap).map((p) => {
                 return {
                   value: p[0],
