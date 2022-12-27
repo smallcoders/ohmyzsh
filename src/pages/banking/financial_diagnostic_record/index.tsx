@@ -213,8 +213,8 @@ export default () => {
             <Col span={8}>
               <Form.Item labelCol={{span: 11}} wrapperCol={{span: 13}} name="exclusiveService" label="满足金融专属服务">
                 <Select placeholder="请选择" allowClear>
-                  <Select.Option value={true}>满足</Select.Option>
-                  <Select.Option value={false}>不满足</Select.Option>
+                  <Select.Option value={true}>是</Select.Option>
+                  <Select.Option value={false}>否</Select.Option>
                 </Select>
               </Form.Item>
             </Col>
