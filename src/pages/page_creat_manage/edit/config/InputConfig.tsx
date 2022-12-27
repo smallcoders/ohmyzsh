@@ -96,9 +96,9 @@ const InputConfig = () => {
               return item.value === value
             })
             handleChange({
-              reg: currentValues.value,
-              errorMsg: currentValues.errorMsg,
-              maxLength: currentValues.maxLength,
+              reg: currentValues?.value || '',
+              errorMsg: currentValues?.errorMsg || '',
+              maxLength: currentValues?.maxLength || undefined,
             }, 'config.regInfo')
           }}
         />
