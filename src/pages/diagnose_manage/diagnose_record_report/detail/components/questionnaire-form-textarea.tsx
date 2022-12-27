@@ -30,6 +30,7 @@ export default observer(
             onChange={(e) => {
               onChange && onChange(topicInfo, e, index)
             }}
+            value={topicInfo.answer}
             rows={4}
             showCount
             minLength={minLength}

@@ -27,8 +27,8 @@ import type NeedVerify from '@/types/user-config-need-verify';
 import icon1 from '@/assets/system/empty.png';
 
 const stateObj = {
-  0: 'App',
-  1: 'Web'
+  0: 'APP',
+  1: 'WEB'
 };
 export default () => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -41,7 +41,7 @@ export default () => {
   };
   const [searchContent, setSearChContent] = useState<{
     orgName?: string; // 标题
-    source?: number; // 状态：0app、1web
+    source?: number; // 状态：app、web
     areaLevel?: number;
     orgProvinceCode?: number;
     orgCityCode?: number;
@@ -67,7 +67,7 @@ export default () => {
       const { result, totalCount, pageTotal, code } = await getRecordQueryPage({
         orgName,
         source,
-        areaLevel,
+        // areaLevel,
         orgProvinceCode, 
         orgCityCode, 
         orgCountyCode, 
@@ -180,7 +180,7 @@ export default () => {
                   <Form.Item name="source" label="诊断端">
                     <Select placeholder="请选择" allowClear>
                       {Object.entries(stateObj).map((p) => (
-                        <Select.Option key={p[0] + p[1]} value={p[0]}>
+                        <Select.Option key={p[0] + p[1]} value={Number(p[0])}>
                           {p[1]}
                         </Select.Option>
                       ))}
@@ -203,15 +203,15 @@ export default () => {
                   if (selectedArea && selectedArea.length > 0) {
                     selectedArea.map((item: any) => {
                       if (item.grade == 1) {
-                        search.areaLevel = 3
+                        // search.areaLevel = 3
                         search.orgProvinceCode = item.code;
                       }
                       if (item.grade == 2) {
-                        search.areaLevel = 2
+                        // search.areaLevel = 2
                         search.orgCityCode = item.code;
                       }
                       if (item.grade == 3) {
-                        search.areaLevel = 1
+                        // search.areaLevel = 1
                         search.orgCountyCode = item.code;
                       }
                     });

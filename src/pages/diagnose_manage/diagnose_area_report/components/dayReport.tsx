@@ -212,7 +212,7 @@ import {
                 </Form.Item>
               </Col>
               <Col span={6}>
-                <Form.Item name="areaCode" label="企业所属区域">
+                <Form.Item name="areaCode" label="所属区域">
                   <TreeSelect
                     placeholder="请选择"
                     allowClear

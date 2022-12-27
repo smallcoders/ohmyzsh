@@ -1,75 +1,74 @@
 /* eslint-disable */
+import { observer } from 'mobx-react'
 import '../service-config-diagnose-manage.less';
 import scopedClasses from '@/utils/scopedClasses';
-import React, { useEffect, useState } from 'react';
 import DiagnoseManage from '@/types/service-config-diagnose-manage';
-type DiagnoseResult = DiagnoseManage.Diagnose;
 
 const sc = scopedClasses('service-config-diagnose-manage');
+const hostMap = {
+  'http://172.30.33.222:10086': 'http://172.30.33.222',
+  'http://172.30.33.212:10086': 'http://172.30.33.212',
+  'http://10.103.142.216': 'https://preprod.lingyangplat.com',
+  'http://manage.lingyangplat.com': 'https://www.lingyangplat.com',
+  'https://manage.lingyangplat.com': 'https://www.lingyangplat.com',
+  'http://localhost:8000': 'http://172.30.33.222'
+}
 
-
-const TableList: React.FC = () => {
-  const [resultObj, setResultObj] = useState<DiagnoseResult>({})
-
-  const previewResult = async () => {
-		setResultObj({
-      "name": "111",
-      "summary": "111",
-      "recommendations": "建议",
-      "remind": "2223夫人全国v",
-      "defaultDiagnoseResult": false,
-      "relatedServers": ['1号服务商', '2号服务商'],
-      "relatedTechnicalManager": {
-        "name": "jingqin5",
-        "phone": "18326676793"
-      },
-      "offerings": "555",
-      "offeringsFile": "1666085316000001",
-      "offeringsFileName": "办公室入住指引.pdf",
-      "offeringsFilePath": "https://oss.lingyangplat.com/iiep-dev/d7d37ce13c024a9cbfcce4b6c5ab4594.pdf"
-    })
-	}
-  useEffect(() => {
-    previewResult()
-  },[])
-
-
-  return (
-    <div className={sc('container')}>
-      <div className='preview-wrap'>
-					<h3>诊断报告概述</h3>
-					<p>{resultObj && resultObj.summary || ''}</p>
-					<h3>诊断目标建议</h3>
-					<p>{resultObj && resultObj.recommendations || ''}</p>
-					<h3>特殊提醒</h3>
-					<p>{resultObj && resultObj.remind || ''}</p>
-					<h3>服务方案</h3>
-					<p>{resultObj && resultObj.offerings || ''}</p>
-					<a href={resultObj.offeringsFilePath} target="_blank">{resultObj.offeringsFileName}</a>
-					<h3>推荐服务商</h3>
-					<p>{resultObj&&resultObj.relatedServers&&resultObj.relatedServers.join(',') || ''}</p>
-					<h3>推荐技术经理人</h3>
-					<p>{resultObj && resultObj.relatedTechnicalManager && resultObj.relatedTechnicalManager.name || ''} {resultObj && resultObj.relatedTechnicalManager && resultObj.relatedTechnicalManager.phone || ''}</p>
-					<h3>推荐金融产品</h3>
-          <div className='banking-product-wrapper'>
-            <div>雇主责任险</div>
-            <div>
-              <label>最高保障</label>
-              <p>100万</p>
-            </div>
-            <div>
-              <label>保险期限</label>
-              <p>12个月</p>
-            </div>
-            <div>
-              <label>最低费率</label>
-              <p>根据工种</p>
-            </div>
-            <div><a>产品详情 ></a></div>
+export default observer(
+  (props: {
+    diagnoseRes: any
+  }) => {
+    const { diagnoseRes = {} } = props || {}
+    const getLink = (id: string) => {
+      const { origin } = window.location
+      return `${hostMap[origin]}/front/financial-service/detail?productId=${id}`
+        // return `${hostMap[origin]}${hostMap[origin].indexOf('lingyangplat')!== -1 ? '/front' : ''}/template-page?id=${id}&login=${publishType === '公开发布' ? '' : '1'}`
+    }
+    const toProductDetail = (id: string) => {
+      console.log(getLink(id))
+      window.open(getLink(id))
+    }
+    return (
+      <div className={sc('container')}>
+        <div className='preview-wrap'>
+          <h3>诊断报告概述</h3>
+          <p>{diagnoseRes && diagnoseRes.desc || ''}</p>
+          <h3>诊断目标建议</h3>
+          <p>{diagnoseRes && diagnoseRes.recommend || ''}</p>
+          <h3>特殊提醒</h3>
+          <p>{diagnoseRes && diagnoseRes.remind || ''}</p>
+          <h3>服务方案</h3>
+          <p>{diagnoseRes && diagnoseRes.offerings || ''}</p>
+          <a href={diagnoseRes.offeringsFilePath} target="_blank">{diagnoseRes.offeringsFileName}</a>
+          <h3>推荐服务商</h3>
+          <p>{diagnoseRes && diagnoseRes.relatedServerName && diagnoseRes.relatedServerName.join(',') || ''}</p>
+          <h3>推荐技术经理人</h3>
+          <p>{diagnoseRes && diagnoseRes.relatedTechManager && diagnoseRes.relatedTechManager.name || ''} {diagnoseRes && diagnoseRes.relatedTechManager && diagnoseRes.relatedTechManager.phone || ''}</p>
+          <h3>推荐金融产品</h3>
+          <div>
+            {diagnoseRes.relatedFinancialProduct && diagnoseRes.relatedFinancialProduct.map((product: any) => {
+              return (
+                <div className='banking-product-wrapper'>
+                  <div>{product.name}</div>
+                  <div>
+                    <label>最高保障</label>
+                    <p>{product.maxAmount/1000000}万</p>
+                  </div>
+                  <div>
+                    <label>保险期限</label>
+                    <p>{product.maxTerm}个月</p>
+                  </div>
+                  <div>
+                    <label>最低费率</label>
+                    <p>{product.minRate}</p>
+                  </div>
+                  <div><a onClick={() => {toProductDetail(product.id)}}>产品详情 ></a></div>
+                </div>
+              )
+            })}
           </div>
-				</div>
-    </div>
-  );
-};
-
-export default TableList;
+        </div>
+      </div>
+    );
+  },
+)

@@ -15,6 +15,17 @@ export async function getOrgTypeList(data?: { [key: string]: any }) {
 }
 
 /**
+ * 获取诊断机构
+ * @returns
+ */
+export async function getFinanceProducts(data?: { [key: string]: any}) {
+  return request(`/antelope-finance/product/queryFactory`, {
+    method: 'POST',
+    data
+  });
+}
+
+/**
  * 添加问卷
  * @returns
  */
@@ -105,8 +116,10 @@ export async function exportRecordQueryPage(data?: { [key: string]: any }) {
 
 // 导出
 export async function exportAreaPage(data?: { [key: string]: any }) {
-  return request('/antelope-diagnose/mng/diagnose/report/area/export', {
-    method: 'POST',
+  return request<any>('/antelope-diagnose/mng/diagnose/report/area/export',{
+    method: 'post',
     data,
-  });
+    responseType: 'blob',
+    getResponse: true,
+  })
 }

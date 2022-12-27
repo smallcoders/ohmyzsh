@@ -197,12 +197,12 @@ import {
             >
             <Row justify='space-between'>
               <Col span={6}>
-                <Form.Item name="year" label="统计年份">
+                <Form.Item name="year" label="诊断年份">
                   <DatePicker  defaultValue={moment(new Date())} picker="year" />
                 </Form.Item>
               </Col>
               <Col span={6}>
-                <Form.Item name="areaCode" label="企业所属区域">
+                <Form.Item name="areaCode" label="所属区域">
                   <TreeSelect
                     placeholder="请选择"
                     allowClear
@@ -304,10 +304,11 @@ import {
         {useSearchNode()}
         <div className={sc('container-table-header')}>
           <div className="title">
-            <span>各地市供需对接新增数据月报表</span>
+            <h3>诊断区域报表<span>当前诊断区域统计范围只有安徽省内区县，安徽省外暂不做统计</span></h3>
             <Access accessible={access['PX_PM_TJ_HD']}>
               <Button
                 icon={<DownloadOutlined />}
+                type="primary"
                 onClick={exportList}
               >
                 导出数据

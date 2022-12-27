@@ -4,6 +4,7 @@ import { Form, Input } from 'antd'
 // 正则
 // import { phoneVerifyReg, decimalsVerifyReg } from '@/utils/regex-util'
 import shouldUpdate from './should-update'
+import { Item } from 'rc-menu'
 
 export default observer(
   (props: {
@@ -44,6 +45,7 @@ export default observer(
             minLength={minLength}
             maxLength={maxLength}
             placeholder="请输入"
+            value={topicInfo.answer}
           />
         </Form.Item>
       </Form.Item>

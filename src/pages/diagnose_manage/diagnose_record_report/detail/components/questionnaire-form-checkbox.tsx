@@ -29,6 +29,7 @@ export default observer(
           ]}
         >
           <Checkbox.Group
+            value={topicInfo.answer}
             onChange={(e) => {
               setValue(e)
               onChange && onChange(topicInfo, e, index)

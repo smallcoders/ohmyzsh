@@ -29,6 +29,7 @@ export default observer(
           ]}
         >
           <Radio.Group
+            value={topicInfo.answer}
             onChange={(e) => {
               setValue(e.target.value)
               onChange && onChange(topicInfo, e.target.value, index)

@@ -1,7 +1,7 @@
 import { observer } from 'mobx-react'
 import { Form, Cascader } from 'antd'
 import shouldUpdate from './should-update'
-import { listAllAreaCode } from '@/services/common';
+import { getWholeAreaTree } from '@/services/area'
 import React, { useEffect, useState } from 'react';
 
 export default observer(
@@ -13,9 +13,18 @@ export default observer(
   }) => {
     const [provinceList, setProvinceList] = useState<any>([])
     const prepare = async () => {
-      let areaRes = await listAllAreaCode()
-			console.log(areaRes, 'areaRes');
-			setProvinceList(areaRes && areaRes.result || [] )
+      getWholeAreaTree({endLevel: 'COUNTY'}).then((data) => {
+        setProvinceList(data || []);
+      });
+    }
+    const dealCascaderAnswer = (select: string) => {
+      let arr = select.split('###&')
+      let arr2:any = []
+      arr.map((item) => {
+        arr2.push(Number(item))
+      })
+      console.log(arr2)
+      return arr2
     }
     useEffect(() => {
       prepare();
@@ -51,6 +60,8 @@ export default observer(
             onChange={(e) => {
               onChange && onChange(topicInfo, e, index)
             }}
+            // value={topicInfo.answer}
+            defaultValue={dealCascaderAnswer(topicInfo.answer)}
             getPopupContainer={(triggerNode) => triggerNode}
             placeholder="请选择"
           />

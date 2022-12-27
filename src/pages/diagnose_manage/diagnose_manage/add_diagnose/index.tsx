@@ -21,7 +21,6 @@ import {
 	Upload
 } from 'antd';
 const { SHOW_CHILD } = Cascader;
-import { UploadChangeParam } from 'antd/lib/upload';
 import { UploadFile } from 'antd/lib/upload/interface';
 const { Option } = Select;
 import {
@@ -49,6 +48,7 @@ import { listAllAreaCode } from '@/services/common';
 import {
 	addOrgType,
 	diagnoseDetail,
+	getFinanceProducts
 } from '@/services/diagnose-manage';
 import UploadForm from '@/components/upload_form';
 import DiagnoseManage from '@/types/service-config-diagnose-manage';
@@ -58,6 +58,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import scopedClasses from '@/utils/scopedClasses';
 import { nanoid } from 'nanoid'
+import { chain } from 'lodash';
 const sc = scopedClasses('service-config-add-diagnose');
 type EditType = DiagnoseManage.Content;
 type DiagnoseResult = DiagnoseManage.Diagnose;
@@ -69,6 +70,7 @@ export default () => {
 	const [diagnoseListString, setDiagnoseListString] = useState<string>('')
 	const [oldTitle, setOldTitle] = useState<string>('')
 	const [industryData, setIndustryData] = useState<any>([])
+	const [bankingProductOptions, setBankingProductOptions] = useState([]) //金融产品
 	/**
    * 准备数据和路由获取参数等
    */
@@ -107,7 +109,23 @@ export default () => {
 			message.error('获取初始数据失败');
 		}
 	};
+	const financeProduct = async () => {
+		try {
+			getFinanceProducts( { collation: 1, pageIndex: 1, pageSize: 100 }).then((res) => {
+				const {code, result} = res
+				if(code === 0) {
+					setBankingProductOptions(result)
+				}else {
+					message.error(`请求金融产品列表失败`);
+				}
+			})
+		} catch(error) {
+			console.log('error', error);
+			message.error('获取初始数据失败');
+		}
+	}
 	useEffect(() => {
+		financeProduct();
 		prepare();
 	}, []);
 
@@ -1095,7 +1113,8 @@ export default () => {
 			relatedTechnicalManager: {
 				name: record.relatedTechnicalManager && record.relatedTechnicalManager.name || '',
 				phone: record.relatedTechnicalManager && record.relatedTechnicalManager.phone || ''
-			}
+			},
+			relatedFinancialProduct: record.relatedFinancialProduct || []
 		})
 		setResultObj({...record, offeringsFile: []});
 		setAddResultVisible(true);
@@ -1177,7 +1196,6 @@ export default () => {
 					} as DiagnoseResult);
 					setDataSource(list)
 				} else {// 新增
-					console.log(files, '新增诊断结果-------files');
 					let arr = [...dataSource]
 					arr.push({
 						...resultObj,
@@ -1192,7 +1210,6 @@ export default () => {
 			})
 			.catch((err) => {
 				console.log(err, '---------err');
-				// info('请检查「诊断报告名称」、「诊断报告概述」和「服务方案」是否填写')
 			});
 	}
 	// 获取服务商
@@ -1302,39 +1319,6 @@ export default () => {
 				}
 			}
 		};
-		const bankingProductOptions = [
-			{
-			  label: 'Light',
-			  value: 'light',
-			  children: new Array(20)
-				.fill(null)
-				.map((_, index) => ({ label: `Number ${index}`, value: index })),
-			},
-			{
-			  label: 'Bamboo',
-			  value: 'bamboo',
-			  children: [
-				{
-				  label: 'Little',
-				  value: 'little',
-				  children: [
-					{
-					  label: 'Toy Fish',
-					  value: 'fish',
-					},
-					{
-					  label: 'Toy Cards',
-					  value: 'cards',
-					},
-					{
-					  label: 'Toy Bird',
-					  value: 'bird',
-					},
-				  ],
-				},
-			  ],
-			},
-		];
 		return (
 			<Modal
 				title={editResultIndex > -1 ? '编辑诊断结果' : '新建诊断结果'}
@@ -1602,15 +1586,15 @@ export default () => {
 										<Input placeholder='请输入技术经理人手机号' maxLength={11} />
 									</Form.Item>
 									<h3 style={{ fontSize: '14px' }}>关联金融产品</h3>
-									<Form.Item name="bankingProduct">
-									<Cascader
-										style={{ width: '100%' }}
-										options={bankingProductOptions}
-										// onChange={onChange}
-										multiple
-										maxTagCount="responsive"
-										showCheckedStrategy={SHOW_CHILD}
-									/>
+									<Form.Item name="relatedFinancialProduct">
+										<Select
+											getPopupContainer={(trigger: any) => trigger as HTMLElement}
+											placeholder={"请选择"}
+											mode="multiple"
+											allowClear
+											options={bankingProductOptions}
+											fieldNames={{ label: 'name', value: 'id' }}
+										/>
 									</Form.Item>
 								</>
 							)}
@@ -2240,7 +2224,6 @@ export default () => {
 									resultForm.setFieldsValue({
 										name: '',
 										summary: '',
-										// offeringsFile: '',
 										offerings: '',
 										recommendations: '',
 										remind: '',
@@ -2249,7 +2232,8 @@ export default () => {
 										relatedTechnicalManager: {
 											name: '',
 											phone: ''
-										}
+										},
+										relatedFinancialProduct: []
 									})
 									setSelectedOrgList([])
 									setResultObj({})
