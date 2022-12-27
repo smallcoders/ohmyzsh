@@ -126,7 +126,7 @@ export const regOptions = [
     maxLength: 11
   },
   {
-    label: "联系号码",
+    label: "电话号码",
     value: "^\\d{1,16}$",
     errorMsg: '请输入正确的联系号码',
     type: 'number',
