@@ -107,7 +107,7 @@ export default () => {
   const useModal = (): React.ReactNode => {
     return (
       <Modal
-        title={editingItem.id ? '编辑服务标签' : '新增服务标签'}
+        title={editingItem.id ? '编辑产品类型' : '新增产品类型'}
         width="800px"
         visible={modalVisible}
         maskClosable={false}

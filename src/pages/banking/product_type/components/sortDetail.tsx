@@ -55,13 +55,14 @@ export const SortDetail: FC<CardProps> = ({
   return (
     <div ref={drop} data-handler-id={handlerId}>
       <div ref={preview} style={{ position: 'relative' }}>
-        {children}
-        <img
-          ref={drag}
-          src={require('@/assets/banking_loan/drag.png')}
-          alt=""
-          style={{ width: 24, position: 'absolute', right: -40, top: 8,cursor:'move'}}
-        />
+        <div ref={drag}>
+          {children}
+          <img
+            src={require('@/assets/banking_loan/drag.png')}
+            alt=""
+            style={{ width: 24, position: 'absolute', right: -40, top: 8, cursor: 'move' }}
+          />
+        </div>
       </div>
     </div>
   );
