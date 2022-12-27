@@ -26,7 +26,9 @@ export default () => {
     }
   }
   useEffect(() => {
-    getColumnDetail()
+    if(creativeColumnId){
+      getColumnDetail()
+    }
   }, [creativeColumnId]);
   //新增和修改的发布按钮
   const onFinish = async () => {
