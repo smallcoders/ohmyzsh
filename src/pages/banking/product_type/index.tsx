@@ -196,7 +196,7 @@ export default () => {
                                   width: 24,
                                   position: 'absolute',
                                   right: -80,
-                                  top: 4,
+                                  top: 8,
                                   cursor: 'pointer',
                                 }}
                               />
