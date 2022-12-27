@@ -241,7 +241,10 @@ export default () => {
     } catch (error) {
       antdMessage.error(`请求失败，原因:{${error}}`);
     } finally {
-      setDownloading(false)
+      const timer = setTimeout(() => {
+        setDownloading(false)
+        clearTimeout(timer)
+      }, 2000)
     }
   };
 
