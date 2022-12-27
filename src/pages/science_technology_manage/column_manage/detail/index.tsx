@@ -61,6 +61,7 @@ export default () => {
           <div className="detail-item-label">备注：</div>
           <div className="detail-item-word">{columnDetail?.remark || '-'}</div>
         </div>
+        { columnDetail?.publisherName&&<>
         <div className="detail-item">
           <div className="detail-item-label">发布人：</div>
           <div className="detail-item-word">{columnDetail?.publisherName || '-'}</div>
@@ -68,7 +69,7 @@ export default () => {
         <div className="detail-item">
           <div className="detail-item-label">发布时间：</div>
           <div className="detail-item-word">{columnDetail?.publishTime || '-'}</div>
-        </div>
+        </div></>}
       </div>
       <ProCard layout="center">
         <Button style={{marginRight:'40px'}} onClick={() => history.goBack()}>返回</Button>

@@ -70,15 +70,12 @@ export default () => {
   const [clickPageInfo, setClickPageInfo] = useState({
     pageIndex: 1,
     pageSize: 10,
-    totalCount: 1,
+    totalCount: 0,
   });
   const [clickOpen, setClickOpen] = useState(false);
-  const showDrawer = async (_record: any,e: any,pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
-    setClickOpen(true);
-    setClickId(_record)
+  const showDrawer = async (pageIndex: number = 1, pageSize = clickPageInfo.pageSize) => {
     try{
-      console.log(clickSearchContent)
-      const data = {creativeColumnId:_record.id,pageSize,pageIndex,...e}
+      const data = {creativeColumnId:clickId.id,pageSize,pageIndex,...clickSearchContent}
       const res =await getClickPageDetailById(data)
       const { result,totalCount,code }=res
       if(code===0){
@@ -91,6 +88,11 @@ export default () => {
       console.log(err)
     }
   };
+  useEffect(() => {
+    if(clickId.id){
+      showDrawer();
+    }
+  }, [clickId,clickSearchContent]);
 
   const onClickClose = () => {
     setClickOpen(false);
@@ -226,7 +228,12 @@ export default () => {
           <Access accessible={accessible}>
           <Tooltip placement="top" title={clickRate}>
             <a
-              onClick={()=>{showDrawer(_record)}}
+              onClick={()=>{
+                setClickOpen(true);
+                setTimeout(function () {
+                  setClickId(_record)
+                }, 0);
+                }}
             >{clickRate}</a>
           </Tooltip>
       </Access>
@@ -378,7 +385,6 @@ export default () => {
                   const search = clickSearchClickForm.getFieldsValue();
                   console.log(search)
                   setClickSearchContent(search);
-                  showDrawer(clickId,search)
                 }}
               >
                 查询
@@ -498,14 +504,13 @@ export default () => {
             selectedRowKeys,
             onChange: onSelectChange,
           }}
-
           columns={clickColumns}
           dataSource={clickDataSource}
           pagination={
             clickPageInfo.totalCount === 0
               ? false
               : {
-                onChange: getColumnList,
+                onChange:  showDrawer,
                 total: clickPageInfo.totalCount,
                 current: clickPageInfo.pageIndex,
                 pageSize: clickPageInfo.pageSize,
