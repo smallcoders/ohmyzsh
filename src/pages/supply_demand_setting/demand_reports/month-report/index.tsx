@@ -157,11 +157,14 @@ export default () => {
       <div className={sc('container-search')}>
         <Form
           form={searchForm}
+          initialValues={{
+            year: moment(new Date())
+          }}
           >
           <Row justify='space-between'>
             <Col>
               <Form.Item name="year" label="统计年份">
-                <DatePicker  defaultValue={moment(new Date())} picker="year" />
+                <DatePicker picker="year" clearIcon={false} />
               </Form.Item>
             </Col>
             <Col>
@@ -171,7 +174,7 @@ export default () => {
                 key="search"
                 onClick={() => {
                   const search = searchForm.getFieldsValue();
-                  const year = search.year && moment(search.year).format('yyyy')
+                  const year = (search.year && moment(search.year).format('yyyy')) || moment(new Date()).format('yyyy')
                   setSearChContent({ year });
                 }}
               >
