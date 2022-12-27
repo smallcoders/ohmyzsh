@@ -549,7 +549,11 @@ const ProductInfoAddOrEdit = () => {
                     color="#fff"
                     title={
                       <img
-                        src={require('@/assets/banking_loan/amountDesc.png')}
+                        src={
+                          productType?.includes('保险')
+                            ? require('@/assets/banking_loan/amount-insurance.png')
+                            : require('@/assets/banking_loan/amountDesc.png')
+                        }
                         className={sc('form-input-tips-img')}
                       />
                     }
@@ -595,7 +599,11 @@ const ProductInfoAddOrEdit = () => {
                     color="#fff"
                     title={
                       <img
-                        src={require('@/assets/banking_loan/termDesc.png')}
+                        src={
+                          productType?.includes('保险')
+                            ? require('@/assets/banking_loan/rate-insurance.png')
+                            : require('@/assets/banking_loan/termDesc.png')
+                        }
                         className={sc('form-input-tips-img')}
                       />
                     }
@@ -638,7 +646,11 @@ const ProductInfoAddOrEdit = () => {
                     color="#fff"
                     title={
                       <img
-                        src={require('@/assets/banking_loan/rateDesc.png')}
+                        src={
+                          productType?.includes('保险')
+                            ? require('@/assets/banking_loan/term-insurance.png')
+                            : require('@/assets/banking_loan/rateDesc.png')
+                        }
                         className={sc('form-input-tips-img')}
                       />
                     }
