@@ -15,15 +15,18 @@ export default () => {
 
   useEffect(() => {
     prepare();
+    setActiveKey(sessionStorage['activeKey'] || '1')
   }, []);
 
+  history.listen(() => {
+    sessionStorage.removeItem('activeKey')
+  })
 
   return (
     <div>
       <TabMenu
         tabs={['M_SD_ZB', 'M_SD_MXB', 'M_SD_ZBB', 'M_SD_YBB']}
         activeState={activeKey}
-        setActiveKey={setActiveKey}
         sort
       />
     </div>

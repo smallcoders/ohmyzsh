@@ -36,7 +36,7 @@ export default (props: { tabs?: string[]; activeState?: string; sort?: boolean;}
   const [activeKey, setActiveKey] = useState<string>('');
   const [showTabList, setShowTabList] = useState<any>([]);
 
-  const { initialState } = useModel('@@initialState');
+  const { initialState, loading } = useModel('@@initialState');
   const { currentUser } = initialState;
   const tabMenu = [
     // 诊断管理-诊断通tab页
@@ -163,14 +163,21 @@ export default (props: { tabs?: string[]; activeState?: string; sort?: boolean;}
     }
   }, [props.tabs]);
 
+
+  useEffect(() => {
+    if (!activeKey) return
+    sessionStorage.setItem('activeKey', activeKey)
+  }, [activeKey])
+
   useEffect(() => {
     prepare();
   }, []);
 
+
+
   return (
     <PageContainer
-      className={sc('container')}
-      tabList={showTabList}
+      className={sc('container')}      tabList={showTabList}
       tabActiveKey={activeKey}
       onTabChange={(key: string) => setActiveKey(key)}
     >
