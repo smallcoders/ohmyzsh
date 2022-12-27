@@ -149,12 +149,13 @@ const ProductInfoAddOrEdit = () => {
         const Term = minTerm ? [minTerm, maxTerm] : null;
         const typeIds = typeId ? [typeId, typeDetailId] : [];
         productProcessInfoList?.sort((a, b) => a.step - b.step);
+        console.log('warrantType?.split(', ') || []', warrantType?.split(',') || []);
         // 编辑场景下需要使用formMapRef循环设置formData
         formMapRef?.current?.forEach((formInstanceRef) => {
           formInstanceRef?.current?.setFieldsValue({
             ...rest,
-            openArea: openArea?.split(',') || [],
-            warrantType: warrantType?.split(',') || [],
+            openArea: (openArea && openArea?.split(',')) || [],
+            warrantType: (warrantType && warrantType.split(',')) || [],
             productProcessInfoList,
             Amount,
             Rate,
