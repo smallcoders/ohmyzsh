@@ -65,7 +65,7 @@ export async function getOrgTypeOptions() {
  * 获取组织分页
  * */
 export async function getOrgManagePage(data?: any) {
-  return request<OrgManage.RecordList>(`/antelope-manage/org/page`, {
+  return request<OrgManage.RecordList>(`/antelope-user/mng/org/page`, {
     method: 'get',
     params: data,
   });
@@ -75,7 +75,7 @@ export async function getOrgManagePage(data?: any) {
  * 标记
  * */
 export async function signOrgTag(data?: { [key: string]: any }) {
-  return request<Common.ResultCode & { result: any }>(`/antelope-manage/org/sign`, {
+  return request<Common.ResultCode & { result: any }>(`/antelope-user/mng/org/sign`, {
     method: 'put',
     data,
   });
