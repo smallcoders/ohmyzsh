@@ -23,7 +23,7 @@ export default () => {
         if (!!result) {
           const res = await getFileInfo(String(result.wetChatImage));
           if (res.code === 0) {
-            setCustomerInfo({ ...result, path: res.result[0].path });
+            setCustomerInfo({ ...result, path: (res.result[0].path).split("?")[0] });
           }
         } else {
           setCustomerInfo({});
@@ -104,8 +104,6 @@ export default () => {
             <Button
               onClick={() => {
                 setIsSet(true);
-                console.log(customerInfo);
-
                 form.setFieldsValue({
                   ...customerInfo,
                   amount: (customerInfo?.amount / 1000000).toFixed(2),
