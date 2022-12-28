@@ -11,6 +11,7 @@ import {
   message,
   Modal,
   Spin,
+  Image,
 } from 'antd';
 import { UploadOutlined, CheckCircleTwoTone, ExclamationCircleOutlined } from '@ant-design/icons';
 import { FooterToolbar } from '@ant-design/pro-components';
@@ -241,7 +242,7 @@ export default forwardRef((props: Props, ref) => {
             {imgList?.map((file: BankingLoan.workProves) => {
               return (
                 <div className="file-img-item">
-                  <img width={30} src={file?.path} className="file-img-item-img" />
+                  <Image width={30} src={file?.path} className="file-img-item-img" />
                   <div className="file-img-item-name">
                     {file.name}.{file.format}
                   </div>
