@@ -342,8 +342,17 @@ export default () => {
                 await getOrgInfo();
                 await getOrgPage();
                 await getOrgLog()
+              } else if (res?.code === 11209) {
+                setChangeModelShow(false)
+                Modal.info({
+                  icon: null,
+                  title: '退出失败',
+                  content: res?.message || '请求出错',
+                  closable: true,
+                  okText: '知道了',
+                })
               }else{
-                message.error(res.message)
+                message.error(res.message || '请求出错')
 
               }
             }catch (e) {

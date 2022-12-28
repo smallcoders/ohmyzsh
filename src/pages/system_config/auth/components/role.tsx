@@ -105,6 +105,18 @@ export default ({ current }: { current?: EditType }) => {
         },
     ];
 
+    // const transferColumns = [
+    //     {
+    //         title: '姓名',
+    //         dataIndex: 'name',
+    //     },
+    //     {
+    //         title: '账号',
+    //         dataIndex: 'loginName',
+    //         isEllipsis: true,
+    //     },
+    // ];
+
     const isManage = useManage()
 
     const [selectRoleModal, setSelectRoleModal] = useState<{
@@ -156,6 +168,9 @@ export default ({ current }: { current?: EditType }) => {
         }
     }
 
+    const filterOption = (inputValue: string, option: any) =>
+    (option.name.indexOf(inputValue) > -1 ||option.loginName.indexOf(inputValue) > -1);
+
     return (
         <div>
             <div className={sc('container-table-header')}>
@@ -204,14 +219,22 @@ export default ({ current }: { current?: EditType }) => {
                         height: 460,
                         width: 260
                     }}
+                    filterOption={filterOption}
+                    // columns={transferColumns}
                     showSearch
                     rowKey={record => record.id}
                     dataSource={members}
                     titles={['成员列表', '已选角色成员']}
                     targetKeys={selectedKeys}
                     onChange={onChange}
+                    locale={{
+                        itemUnit: '名', itemsUnit: '名',
+                    }}
                     // selectedKeys={dataSource}
-                    render={item => item.name}
+                    render={item => {
+                        return <div>{item?.name}：{item?.loginName}</div>
+                    }
+                    }
                 />
 
             </Modal>

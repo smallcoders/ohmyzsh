@@ -1121,6 +1121,7 @@ export const componentsGroupList: ComponentGroup[] = [{
       label: '单行文本',
       type: 'Input',
       errorMsg: '',
+      hide: false,
       config: {
         allowClear: true,
         maxLength: 35,
@@ -1132,12 +1133,18 @@ export const componentsGroupList: ComponentGroup[] = [{
         paramDesc: '单行文本',
         paramType: "string",
         showLabel: true,
+        regInfo: {
+          reg: '',
+          errorMsg: '',
+          maxLength: undefined,
+        }
       },
     },
     {
       label: '多行文本',
       type: 'TextArea',
       errorMsg: '',
+      hide: false,
       config: {
         autoSize: true,
         maxLength: 200,
@@ -1155,10 +1162,11 @@ export const componentsGroupList: ComponentGroup[] = [{
       label: '单选按钮组',
       type: 'RadioGroup',
       errorMsg: '',
+      hide: false,
       config: {
         options: [
-          { label: '选项1', value: '选项1', index: 0 },
-          { label: '选项2', value: '选项2', index: 1 }
+          { label: '选项1', value: '选项1', index: 1, showList: [] },
+          { label: '选项2', value: '选项2', index: 2, showList: [] }
         ],
         optionType: 'default',
         required: false,
@@ -1167,19 +1175,21 @@ export const componentsGroupList: ComponentGroup[] = [{
         desc: '',
         isParam: true,
         paramDesc: '单选按钮组',
-        paramType: '',
+        paramType: 'string',
         showLabel: true,
       },
+      controlList: [],
     },
     {
       label: '多选按钮组',
       type: 'CheckboxGroup',
       errorMsg: '',
+      hide: false,
       config: {
         options: [
-          { label: '选项1', value: '选项1', index: 0 },
-          { label: '选项2', value: '选项2', index: 1 },
-          { label: '选项3', value: '选项3', index: 2 }
+          { label: '选项1', value: '选项1', index: 1, showList: [] },
+          { label: '选项2', value: '选项2', index: 2, showList: [] },
+          { label: '选项3', value: '选项3', index: 3, showList: [] }
         ],
         required: false,
         maxLength: 3,
@@ -1188,82 +1198,128 @@ export const componentsGroupList: ComponentGroup[] = [{
         paramKey: '',
         isParam: true,
         paramDesc: '多选按钮组',
+        paramType: 'string',
+        showLabel: true,
+      },
+      controlList: [],
+    },
+    {
+      label: '下拉框',
+      type: 'Select',
+      hide: false,
+      config: {
+        paramKey: '',
+        isParam: true,
+        paramDesc: '下拉框',
+        paramType: 'string',
+        allowClear: false,
+        bordered: true,
+        placeholder: '',
+        defaultValue: '',
+        showLabel: true,
+        options: [
+          { label: '选项1', value: '选项1', index: 1, showList: []  },
+          { label: '选项2', value: '选项2', index: 2, showList: [] }
+        ]
+      },
+      controlList: [],
+    },
+    {
+      label: '下拉复选框',
+      type: 'MultipleSelect',
+      hide: false,
+      config: {
+        paramKey: '',
+        isParam: true,
+        paramDesc: '下拉复选框',
+        paramType: 'string',
+        allowClear: false,
+        bordered: true,
+        maxLength: 3,
+        placeholder: '',
+        showLabel: true,
+        defaultValue: [],
+        mode: "multiple",
+        options: [
+          { label: '选项1', value: '选项1', index: 1, showList: []  },
+          { label: '选项2', value: '选项2', index: 2, showList: [] },
+          { label: '选项3', value: '选项3', index: 3, showList: [] }
+        ]
+      },
+      controlList: [],
+    },
+    {
+      label: '图片选择',
+      type: 'ImagePicker',
+      errorMsg: '',
+      hide: false,
+      controlList: [],
+      config: {
+        desc: '',
+        paramKey: '',
+        isParam: true,
+        paramDesc: '图片选择',
+        paramType: 'string',
+        showLabel: true,
+        maxLength: 3,
+        defaultValue: [],
+        defaultValueLabels: [],
+        options: [
+          {
+            value: 1,
+            label: '选项1',
+            index: 1,
+            showList: []
+          },
+          {
+            value: 2,
+            label: '选项2',
+            index: 2,
+            showList: []
+          },
+          {
+            value: 3,
+            label: '选项3',
+            index: 3,
+            showList: []
+          }
+        ]
+      },
+    },
+    {
+      label: '地址',
+      type: 'Cascader',
+      hide: false,
+      config: {
+        allowClear: true,
+        placeholder: undefined,
+        paramKey: '',
+        isParam: true,
+        paramDesc: '地址',
         paramType: '',
+        showLabel: true,
+        selectType: 'detailAddress'
+      },
+    },
+    {
+      label: '日期时间',
+      type: 'DatePicker',
+      errorMsg: '',
+      hide: false,
+      config: {
+        allowClear: true,
+        picker: 'date',
+        placeholder: undefined,
+        format: 'YYYY-MM-DD',
+        showTime: false,
+        desc: '',
+        paramKey: '',
+        isParam: true,
+        paramDesc: '日期时间',
+        paramType: 'string',
         showLabel: true,
       },
     },
-    // {
-    //   label: '选择器',
-    //   type: 'Select',
-    //   config: {
-    //     paramKey: '',
-    //     isParam: true,
-    //     paramDesc: '',
-    //     paramType: '',
-    //     allowClear: false,
-    //     bordered: true,
-    //     dropdownMatchSelectWidth: true,
-    //     listHeight: 256,
-    //     maxTagCount: undefined,
-    //     placeholder: '',
-    //     showLabel: true,
-    //     mode: undefined,
-    //     options: [
-    //       { label: 'Option1', value: 'Option1' },
-    //       { label: 'Option2', value: 'Option2' }
-    //     ]
-    //   },
-    //   formItemConfig: {
-    //     initialValue: '',
-    //     labelCol: undefined,
-    //     wrapperCol: undefined,
-    //     rules: [
-    //       {
-    //         required: false,
-    //         message: undefined,
-    //       }
-    //     ]
-    //   }
-    // },
-    // {
-    //   label: '文本',
-    //   type: 'Text',
-    //   config: {
-    //     children: 'Text',
-    //     strong: false,
-    //     italic: false,
-    //     underline: false,
-    //     fontSize: 12,
-    //     textAlign: "left"
-    //   }
-    // },
-    // {
-    //   label: '日期选择框',
-    //   type: 'DatePicker',
-    //   config: {
-    //     allowClear: true,
-    //     picker: 'date',
-    //     placeholder: undefined,
-    //     format: 'YYYY-MM-DD',
-    //     showTime: false,
-    //     paramKey: '',
-    //     isParams: true,
-    //     paramDesc: '',
-    //     paramType: '',
-    //     showLabel: true,
-    //   },
-    //   formItemConfig: {
-    //     initialValue: '',
-    //     labelCol: undefined,
-    //     wrapperCol: undefined,
-    //     rules: [
-    //       {
-    //         required: false,
-    //         message: undefined,
-    //       }
-    //     ]
-    //   }
-    // },
     // {
     //   label: '起止时间选择',
     //   type: 'RangePicker',
@@ -1355,33 +1411,6 @@ export const componentsGroupList: ComponentGroup[] = [{
     //     ]
     //   }
     // },
-    // {
-    //   label: '省市区选择器',
-    //   type: 'Cascader',
-    //   config: {
-    //     allowClear: true,
-    //     expandTrigger: 'click',
-    //     notFoundContent: 'Not Found',
-    //     placeholder: '请选择',
-    //     placement: 'bottomLeft',
-    //     paramKey: '',
-    //     isParam: true,
-    //     paramDesc: '',
-    //     paramType: '',
-    //     showLabel: true,
-    //   },
-    //   formItemConfig: {
-    //     initialValue: [],
-    //     labelCol: undefined,
-    //     wrapperCol: undefined,
-    //     rules: [
-    //       {
-    //         required: false,
-    //         message: undefined,
-    //       }
-    //     ]
-    //   }
-    // },
   ]
 }
 ]
@@ -1395,7 +1424,7 @@ export type Component = {
   remoteConfig?: Record<string, any>
   formItemConfig?: Record<string, any>
   childNodes?: Component[],
-  params_key?: string
+  controlList?: string[],
   [key: string]: unknown
 }
 

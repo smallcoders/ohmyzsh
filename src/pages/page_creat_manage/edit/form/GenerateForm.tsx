@@ -1,37 +1,38 @@
-import { useEffect, useImperativeHandle, forwardRef } from 'react'
+import { useState } from 'react'
 import { Button, Form } from 'antd';
-import { cloneDeep } from 'lodash-es'
+import { clone } from 'lodash-es'
 import { State } from '../store/state'
-import { loadJsLink } from '../utils'
 import { GenerateProvider } from '../store'
 import GenerateFormItem from '../form/GenerateFormItem'
 export interface GenerateFormProps {
   widgetInfoJson: string
   formValue?: Record<string, any>
   isMobile: boolean
+  areaCodeOptions: {
+    county: any[],
+    city: any[],
+    province: any[]
+  }
 }
 export interface GenerateFormRef {
   getData: () => Promise<Record<string, any>>
   reset: () => void
 }
 const height = window.screen.availHeight
-const GenerateForm = forwardRef<GenerateFormRef, GenerateFormProps>((props, ref) => {
-  const { widgetInfoJson, formValue, isMobile } = props
+const GenerateForm = (props: GenerateFormProps) => {
+  const { widgetInfoJson, isMobile, areaCodeOptions } = props
+  const [widgetInfo, setWidgetInfo] = useState<State>(JSON.parse(widgetInfoJson))
   const [formInstance] = Form.useForm()
-  useImperativeHandle(ref, () => ({
-    getData: async () => {
-      const validateResult = await formInstance.validateFields()
-      return validateResult
-    },
-    reset: () => formInstance.resetFields()
-  }))
 
-  const widgetInfo: State = JSON.parse(widgetInfoJson)
-
-  useEffect(() => {
-    formInstance.setFieldsValue(cloneDeep(formValue))
-    loadJsLink(widgetInfo.iconSrc)
-  }, [])
+  // 改变组件显示隐藏
+  const clickCallBack = (showList: string[], controlList: string[]) => {
+    const newWidgetInfo = clone(widgetInfo)
+    const { widgetFormList } = newWidgetInfo
+    newWidgetInfo.widgetFormList = widgetFormList.map((widgetFormItem) => {
+      return {...widgetFormItem, hide: showList?.indexOf(widgetFormItem.key!) !== -1 ? false : controlList?.indexOf(widgetFormItem.key!) !== -1 ? true : widgetFormItem.hide}
+    })
+    setWidgetInfo(newWidgetInfo)
+  }
 
   return (
     <div style={{height: `${height - 385}px`}} className={`preview-modal-box ${isMobile? ' mobile' : ''}`}>
@@ -50,7 +51,7 @@ const GenerateForm = forwardRef<GenerateFormRef, GenerateFormProps>((props, ref)
           }
           <div className="text-box">
             {
-             !isMobile && widgetInfo?.globalConfig?.showPageName &&
+              !isMobile && widgetInfo?.globalConfig?.showPageName &&
               <div className="preview-page-title">{ widgetInfo?.globalConfig?.pageName}</div>
             }
             {
@@ -61,8 +62,8 @@ const GenerateForm = forwardRef<GenerateFormRef, GenerateFormProps>((props, ref)
         </div>
         <div className="preview-form">
           <Form {...widgetInfo.formConfig} form={formInstance}>
-            {widgetInfo.widgetFormList.map((widgetFormItem) => (
-              <GenerateFormItem key={widgetFormItem.key} item={widgetFormItem} formInstance={formInstance} />
+            {widgetInfo.widgetFormList.map((widgetFormItem: any) => (
+              <GenerateFormItem widgetInfo={widgetInfo} clickCallBack={clickCallBack} areaCodeOptions={areaCodeOptions} key={widgetFormItem.key} item={widgetFormItem} formInstance={formInstance} />
             ))}
           </Form>
           <Button type="primary" onClick={async () => {
@@ -72,16 +73,12 @@ const GenerateForm = forwardRef<GenerateFormRef, GenerateFormProps>((props, ref)
       </div>
     </div>
   )
-})
-
-GenerateForm.defaultProps = {
-  formValue: {}
 }
 
-export default forwardRef<GenerateFormRef, GenerateFormProps>((props, ref) => {
+export default (props: GenerateFormProps) => {
   return (
     <GenerateProvider>
-      <GenerateForm {...props} ref={ref} />
+      <GenerateForm {...props} />
     </GenerateProvider>
   )
-})
+}

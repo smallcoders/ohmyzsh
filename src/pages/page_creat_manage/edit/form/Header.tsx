@@ -13,7 +13,7 @@ import { DesignContext } from '../store'
 import { routeName } from '../../../../../config/routes';
 
 const Header = (props: any) => {
-  const { preview, callback } = props
+  const { preview, callback, areaCodeOptions } = props
   const { state } = useContext(DesignContext)
   const { handlerSetVisible, dispatch } = useConfig()
   const [previewVisible, setPreviewVisible] = useState(false)
@@ -158,6 +158,7 @@ const Header = (props: any) => {
         footer={null}
         visible={previewVisible}
         json={state}
+        areaCodeOptions={areaCodeOptions}
         onCancel={handlerSetVisible(setPreviewVisible, false)}
       />
     </>

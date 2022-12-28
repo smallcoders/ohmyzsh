@@ -12,6 +12,7 @@ namespace BankingLoan {
     PENDING_CREDIT = 6, // 待授信
     CREDIT_GRANTED = 2, // 已授信
     CREDIT_FAILURE = 3, // 授信失败
+    CONTRACT_TO_BE_SIGNED = 4, // 待签订合同
   }
 
   // 放款状态
@@ -25,6 +26,12 @@ namespace BankingLoan {
     [DataSources.MAILBOXRESOLUTION]: '邮箱解析',
   };
   export const creditStatusTrans = {
+    [CreditStatus.PENDING_CREDIT]: '待授信',
+    [CreditStatus.CREDIT_GRANTED]: '已授信',
+    [CreditStatus.CREDIT_FAILURE]: '授信失败',
+    [CreditStatus.CONTRACT_TO_BE_SIGNED]: '待签订合同',
+  };
+  export const creditStatusLeaseTrans = {
     [CreditStatus.PENDING_CREDIT]: '待授信',
     [CreditStatus.CREDIT_GRANTED]: '已授信',
     [CreditStatus.CREDIT_FAILURE]: '授信失败',
@@ -52,14 +59,14 @@ namespace BankingLoan {
   };
   export type LoanContent = {
     id?: integer; // id
-    busiStatus?: string; // 放款状态
+    busiStatus?: number; // 放款状态
     refuseReason?: string; // 失败原因
     debitNo?: string; // 借据编号
     borrowStartDate?: string; // 实际借款日期
     takeMoney?: float; // 放款金额
     rate?: string; // 执行年利率
     workProves?: workProves[];
-    backMoney?: number;//还款金额
+    backMoney?: number; //还款金额
     backMoneyInfoVO?: any[];
   };
   // 审核状态列表

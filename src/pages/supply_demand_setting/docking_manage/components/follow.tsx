@@ -334,7 +334,6 @@ export default (props: { gid: any; demandTypes: any[], area: any[] }) => {
               </Form.Item>
             </Col>
 
-
             <Col span={8}>
               <Form.Item name="claimId" label="需求认领人">
                 <Select placeholder="请选择" allowClear>
