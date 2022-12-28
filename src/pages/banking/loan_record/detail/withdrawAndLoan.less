@@ -1,46 +1,83 @@
 @prefix: withdraw-loan-info;
+
 .@{prefix}-contain {
-  padding: 20px;
+  padding: 32px 40px;
   background-color: #fff;
   &-title {
     position: relative;
-    margin: 10px 0;
-    padding-left: 10px;
-    font-weight: bold;
+    margin: 0 0 24px;
+    font-weight: 700;
     font-size: 18px;
-    line-height: 18px;
-    &::before {
-      position: absolute;
-      top: 50%;
-      left: 0;
-      width: 4px;
-      height: 18px;
-      background: #2d5cf6;
-      border-radius: 2px;
-      transform: translateY(-50%);
-      content: '';
-    }
+    line-height: 26px;
+    // &::before {
+    //   position: absolute;
+    //   top: 50%;
+    //   left: 0;
+    //   width: 4px;
+    //   height: 18px;
+    //   background: #2d5cf6;
+    //   border-radius: 2px;
+    //   transform: translateY(-50%);
+    //   content: '';
+    // }
   }
   .ant-col {
     display: flex;
-    line-height: 30px;
+    line-height: 24px;
+    margin-bottom: 20px;
+    font-size: 16px;
+    display: flex;
   }
-  .contain-label {
-    line-height: 30px;
+  &-label {
     white-space: nowrap;
+    flex: 0 144px;
+    text-align: right;
+    color: #8290A6;
   }
   &-wrap {
+    flex: 1;
     display: flex;
+    color: #556377;
     &-button {
       margin: auto 10px;
       // line-height: 30px;
     }
   }
+  &-show-reason{
+    color: #0068FF;
+    margin-left: 40px;
+  }
   &-table {
+    padding-left: 46px;
     width: 100%;
   }
   &-table-body {
     width: 100%;
     margin: 10px 0 20px;
+  }
+}
+.ant-pro-basicLayout-content .ant-pro-page-container{
+  &.@{prefix}-page{
+    margin: -24px;
+    padding: 24px 32px 12px;
+    background-color: #f8f9fb;
+    .ant-pro-page-container-warp, .ant-page-header{
+      background-color: #f8f9fb;
+    }
+    .ant-page-header.has-breadcrumb{
+      padding: 0;
+    }
+    // .ant-page-header-footer .ant-tabs .ant-tabs-tab {
+    //   padding-top: 16px;
+    //   padding-bottom: 16px;
+    // }
+    // .ant-page-header-footer {
+    //   background-color:#fff;
+    //   padding-left: 40px;
+    // }
+    .ant-pro-page-container-children-content {
+      margin: 16px 0 0;
+      background-color: #fff;
+    }
   }
 }

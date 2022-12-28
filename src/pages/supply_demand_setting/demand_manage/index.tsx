@@ -784,17 +784,8 @@ export default () => {
   };
 
   const exportList = async () => {
-    const {
-      name,
-      type,
-      publisherName,
-      publishStartTime,
-      publishEndTime,
-      operationState,
-      claimId,
-      claimState,
-      areaCode,
-    } = searchContent;
+    const { name, type, publisherName, publishStartTime, publishEndTime, operationState, claimId, claimState, areaCode } =
+      searchContent;
     try {
       const res = await demandExport({
         name,
@@ -808,10 +799,8 @@ export default () => {
         areaCode,
       });
       const content = res?.data;
-      const blob = new Blob([content], {
-        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8',
-      });
-      const fileName = '企业需求.xlsx';
+      const blob = new Blob([content], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8" });
+      const fileName = '企业需求.xlsx'
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.style.display = 'none';

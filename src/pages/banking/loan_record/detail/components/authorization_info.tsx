@@ -11,6 +11,7 @@ import {
   message,
   Modal,
   Spin,
+  Image,
 } from 'antd';
 import { UploadOutlined, CheckCircleTwoTone, ExclamationCircleOutlined } from '@ant-design/icons';
 import { FooterToolbar } from '@ant-design/pro-components';
@@ -24,18 +25,22 @@ import patchDownloadFile from '@/utils/patch-download-file';
 import type BankingLoan from '@/types/banking-loan.d';
 import moment from 'moment';
 import { isNull } from 'lodash';
+import { file } from 'jszip';
 export type Props = {
   isDetail?: boolean; //详情展示
-  type?: number; // 数据来源
+  type?: number; // 供应链e贷产品1-否 0-是(详情跳转去录入，无api不展示录入凭证)
   id?: string; // 贷款记录id
   step?: string; //跳转页面
   toTab?: any; //跳转的tab函数
+  left?: number; //距离左侧距离
+  loanType?: string; // 贷款类型 1-贷款，3-租赁，5-保险
+  name?: string; // 路由名称拼接
 };
 const { confirm } = Modal;
 export default forwardRef((props: Props, ref) => {
   const [detailLoading, setDetailLoading] = useState<boolean>(false);
   const [hasSuccessLoad, setHasSuccessLoad] = useState<boolean>(false);
-  const { isDetail, type, step, id, toTab } = props;
+  const { isDetail, type, step, id, toTab, left, name, loanType } = props;
   const previewType = ['png', 'jpg', 'jpeg', 'jpeg2000', 'pdf'];
   const [form] = Form.useForm();
   const busiStatus = Form.useWatch('busiStatus', form);
@@ -43,7 +48,11 @@ export default forwardRef((props: Props, ref) => {
   const [formIsChange, setFormIsChange] = useState<boolean>(false);
   const [afterSaveVisible, setAfterSaveVisible] = useState<boolean>(false);
   const toCreditApply = () => {
-    history.push(`${routeName.LOAN_RECORD_ENTER}?id=${id}&type=${type}&step=${step}`);
+    history.push(
+      `${
+        routeName[name + '_RECORD_ENTER']
+      }?id=${id}&type=${type}&step=${step}&loanType=${loanType}&name=${name}`,
+    );
   };
   const onOk = async (cb: any) => {
     form
@@ -80,7 +89,7 @@ export default forwardRef((props: Props, ref) => {
                 content: `保存成功`,
                 duration: 2,
                 onClose: () => {
-                  history.push(`${routeName.LOAN_RECORD}`);
+                  history.push(`${routeName[name + '_RECORD']}`);
                 },
               });
             }
@@ -132,7 +141,7 @@ export default forwardRef((props: Props, ref) => {
         onCancel={() => setAfterSaveVisible(false)}
         // icon={<CheckCircleTwoTone />}
         footer={[
-          <Button key="back" onClick={() => history.push(`${routeName.LOAN_RECORD}`)}>
+          <Button key="back" onClick={() => history.push(`${routeName[name + '_RECORD']}`)}>
             返回列表
           </Button>,
           <Button key="submit" type="primary" onClick={() => toTab('3')}>
@@ -225,32 +234,56 @@ export default forwardRef((props: Props, ref) => {
     getDetail();
   }, []);
   const showfile = () => {
-    return detail?.workProves?.map((file: BankingLoan.workProves) => {
-      console.log('file', file);
-      return (
-        <div key={file.uid} className="file-show">
-          <span>
-            {file.name}.{file.format}
-          </span>
-          {previewType.includes(file?.format) && (
-            <Button
-              type="link"
-              style={{ padding: 0, height: 'auto' }}
-              onClick={() => {
-                window.open(file?.path);
-              }}
-            >
-              预览
-            </Button>
-          )}
-        </div>
-      );
-    });
+    const imgList = detail?.workProves?.filter(
+      (item) => previewType.includes(item.format) && item.format !== 'pdf',
+    );
+    const fileList = detail?.workProves?.filter(
+      (item) => !(previewType.includes(item.format) && item.format !== 'pdf'),
+    );
+    return (
+      <>
+        {!!imgList?.length && (
+          <div className="file-img">
+            {imgList?.map((file: BankingLoan.workProves) => {
+              return (
+                <div className="file-img-item">
+                  <Image width={30} src={file?.path} className="file-img-item-img" />
+                  <div className="file-img-item-name">
+                    {file.name}.{file.format}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+        {fileList?.map((file: BankingLoan.workProves) => {
+          return (
+            <div key={file.uid} className="file-show">
+              {file?.format === 'pdf' ? (
+                <Button
+                  type="link"
+                  style={{ padding: 0, height: 'auto' }}
+                  onClick={() => {
+                    window.open(file?.path);
+                  }}
+                >
+                  {file.name}.{file.format}
+                </Button>
+              ) : (
+                <span>
+                  {file.name}.{file.format}
+                </span>
+              )}
+            </div>
+          );
+        })}
+      </>
+    );
   };
   const renderFooter = () => {
     if (!isDetail) {
       return (
-        <Space size={'middle'}>
+        <Space size={'large'}>
           <Button key="cancel" onClick={() => onCancel(null)}>
             返回
           </Button>
@@ -279,8 +312,9 @@ export default forwardRef((props: Props, ref) => {
     </Spin>
   ) : (
     <Spin spinning={detailLoading}>
-      <div className="authorization">
+      <div className={`authorization ${isDetail ? 'detail' : ''}`}>
         <Form
+          size="large"
           name="basic"
           labelCol={{ span: 4 }}
           wrapperCol={{ span: 8 }}
@@ -396,7 +430,7 @@ export default forwardRef((props: Props, ref) => {
                 <>
                   <Button
                     type="link"
-                    style={{ padding: 0, height: '32px' }}
+                    style={{ padding: 0, height: '24px', marginBottom: '16px' }}
                     onClick={() => {
                       patchDownloadFile(
                         detail.workProves,
@@ -416,7 +450,14 @@ export default forwardRef((props: Props, ref) => {
                   maxSize={30}
                 >
                   <Button icon={<UploadOutlined />}>上传文件</Button>
-                  <div style={{ fontSize: '12px' }}>
+                  <div
+                    style={{
+                      fontSize: '14px',
+                      color: '#8290A6',
+                      marginTop: '12px',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
                     上传金融机构授信反馈，支持30M以内的图片、word、Excel或pdf文件
                   </div>
                 </UploadFormFile>
@@ -433,7 +474,15 @@ export default forwardRef((props: Props, ref) => {
             </Form.Item>
           )}
         </Form>
-        <FooterToolbar>{renderFooter()}</FooterToolbar>
+        <FooterToolbar
+          style={{
+            height: '88px',
+            left: left + 'px',
+            width: `calc(100% - ${left}px)`,
+          }}
+        >
+          {renderFooter()}
+        </FooterToolbar>
         {/* <div className="loan-footer">{renderFooter()}</div> */}
         {afterSaveModel()}
         <Prompt

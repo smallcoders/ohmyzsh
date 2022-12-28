@@ -184,7 +184,9 @@ export default () => {
       title: '提交时间',
       dataIndex: 'publishTime',
       width: 200,
-      render: (_: string) => moment(_).format('YYYY-MM-DD HH:mm:ss'),
+      render: (_: string) => {
+        return  _ ? moment(_).format('YYYY-MM-DD HH:mm:ss') : '--'
+      },
     },
     {
       title: '审核状态',
@@ -309,6 +311,7 @@ export default () => {
                     search.startPublishTime = moment(search.publishTimeSpan[0]).format('YYYY-MM-DD HH:mm:ss');
                     search.endPublishTime = moment(search.publishTimeSpan[1]).format('YYYY-MM-DD HH:mm:ss');
                   }
+                  delete search.publishTimeSpan
                   setSearChContent(search);
                 }}
               >

@@ -18,7 +18,6 @@ import {
   orgSizeMap,
 } from '../constants';
 import './index.less';
-import { FooterToolbar } from '@ant-design/pro-components';
 
 const options = [
   { label: '否', value: 0 },
@@ -64,7 +63,10 @@ export default () => {
           isListed,
           scienceMark,
           banks,
+          legalCard,
         } = result;
+        console.log(legalCard);
+
         form.setFieldsValue({
           name,
           logoImageId,
@@ -96,8 +98,9 @@ export default () => {
           isKey,
           isListed,
           contacts,
-          banks: banks?.split(',') || [],
+          banks: banks ? banks?.split(',') : [],
           scienceMark,
+          legalCard: legalCard?.replace(/^(.{4})(?:\d+)(.{4})$/, '$1******$2'),
         });
       } else {
         antdMessage.error(`请求失败，原因:{${resultMsg}}`);
@@ -149,7 +152,18 @@ export default () => {
   };
 
   return (
-    <PageContainer className={sc('container')}>
+    <PageContainer
+      className={sc('page')}
+      ghost
+      footer={[
+        <>
+          <Button onClick={() => history.goBack()}>返回</Button>
+          <Button type="primary" onClick={handleSubmit}>
+            保存
+          </Button>
+        </>,
+      ]}
+    >
       <Form className={sc('container-form')} form={form}>
         <Form.Item label={<span className="title">基本信息</span>} colon={false} />
         <Form.Item name="name" label="企业名称" required>
@@ -182,6 +196,12 @@ export default () => {
         </Form.Item>
         <Form.Item name="legalPersonName" label="法定代表人" required>
           <Input disabled />
+        </Form.Item>
+        <Form.Item name="legalCard" label="法人证件号码" required>
+          <Input
+            addonBefore={<Select placeholder="居民身份证" style={{ width: 120 }} disabled />}
+            disabled
+          />
         </Form.Item>
         <Form.Item name="regStatus" label="经营状态" required validateTrigger="onBlur">
           <Select options={getOptions(regStatusMap)} placeholder="请选择" disabled />
@@ -302,12 +322,6 @@ export default () => {
           <Select options={getOptions(banksMap)} placeholder="请选择" mode="multiple" />
         </Form.Item>
       </Form>
-      <FooterToolbar>
-        <Button onClick={() => history.goBack()}>返回</Button>
-        <Button type="primary" style={{ marginLeft: '20px' }} onClick={handleSubmit}>
-          保存
-        </Button>
-      </FooterToolbar>
     </PageContainer>
   );
 };

@@ -1,4 +1,4 @@
-import { Row, Col, message, Anchor, Button, Form, Image, Space, Table, Tag } from 'antd';
+import { Row, Col, message, Anchor, Button, Form, Image, Space, Table, Tag, Tooltip } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import './withdrawAndLoan.less';
 import scopedClasses from '@/utils/scopedClasses';
@@ -146,7 +146,12 @@ export default () => {
   ];
   return (
     <PageContainer
-      footer={[<Button onClick={() => history.goBack()}>返回</Button>]}
+      className={sc('page')}
+      // footer={[
+      //   <Button size="large"  onClick={() => history.goBack()}>
+      //     返回
+      //   </Button>,
+      // ]}
       header={{ title: '' }}
     >
       <div className={sc('contain')} key="detail">
@@ -156,10 +161,6 @@ export default () => {
             <Col span={8}>
               <label className={sc('contain-label')}>提款申请编号：</label>
               <div className={sc('contain-wrap')}>{detail?.loanBatchNo || '--'}</div>
-            </Col>
-            <Col span={8}>
-              <label className={sc('contain-label')}>提款申请状态：</label>
-              <div className={sc('contain-wrap')}>{detail?.busiStatusContent}</div>
             </Col>
             <Col span={8}>
               <label className={sc('contain-label')}>融资天数：</label>
@@ -175,10 +176,10 @@ export default () => {
                 {priceUppercase(regFenToYuan(detail?.takeMoney, 1))}
               </div>
             </Col>
-            <Col span={8}>
+            {/* <Col span={8}>
               <label className={sc('contain-label')}>执行年利率：</label>
               <div className={sc('contain-wrap')}>{detail?.rate}%</div>
-            </Col>
+            </Col> */}
             <Col span={8}>
               <label className={sc('contain-label')}>股东会决议：</label>
               <div className={sc('contain-wrap')}>
@@ -247,6 +248,40 @@ export default () => {
           <p className={sc('contain-title')}>金融机构放款信息</p>
           <Row>
             <Col span={8}>
+              <label className={sc('contain-label')}>放款状态：</label>
+              <div className={sc('contain-wrap')}>
+                {detail?.busiStatusContent}
+                {detail?.busiStatusContent?.indexOf('失败') > -1 && (
+                  <Tooltip
+                    placement="topLeft"
+                    color="#fff"
+                    title={
+                      <div
+                        style={{
+                          color: '#8290A6',
+                          fontSize: '14px',
+                          lineHeight: '22px',
+                          padding: '10px 8px',
+                        }}
+                      >
+                        <p
+                          style={{
+                            fontWeight: 700,
+                            color: '#556377',
+                          }}
+                        >
+                          失败原因
+                        </p>
+                        <div>{detail.refuseReason}</div>
+                      </div>
+                    }
+                  >
+                    <div className={sc('contain-show-reason')}>查看原因</div>
+                  </Tooltip>
+                )}
+              </div>
+            </Col>
+            <Col span={8}>
               <label className={sc('contain-label')}>借据编号：</label>
               <div className={sc('contain-wrap')}>{detail?.debitNo || '暂无'}</div>
             </Col>
@@ -261,6 +296,14 @@ export default () => {
             <Col span={8}>
               <label className={sc('contain-label')}>执行年利率：</label>
               <div className={sc('contain-wrap')}>{detail?.rate}%</div>
+            </Col>
+            <Col span={8}>
+              <label className={sc('contain-label')}>放款账号：</label>
+              <div className={sc('contain-wrap')}>{detail?.accountNumber || '--'}</div>
+            </Col>
+            <Col span={8}>
+              <label className={sc('contain-label')}>账号名称：</label>
+              <div className={sc('contain-wrap')}>{detail?.account || '--'}</div>
             </Col>
           </Row>
         </div>

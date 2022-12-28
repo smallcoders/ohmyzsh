@@ -49,3 +49,25 @@ export async function exportUsers(data?: { [key: string]: any }) {
         data,
     });
 }
+
+/**
+ * 查询用户姓名风险总数
+ */
+export function getQueryUserManageRisky(data?: { [key: string]: any }) {
+    return request<any>('/antelope-user/mng/user/queryUserManageRisky', {
+        method: 'post',
+        data,
+    })
+}
+
+/**
+ * 用户注册来源
+ */
+export function getListEnumsByKey(params: {
+    key: string
+}) {
+    return request<any>('/antelope-user/enum/listEnumsByKey',{
+        method: 'GET',
+        params,
+    })
+}
