@@ -138,6 +138,7 @@ const RadioGroupConfig = () => {
       </Form.Item>
       <Form.Item label="默认选择">
         <Select
+          allowClear
           options={selectWidgetItem?.config?.options}
           value={selectWidgetItem?.config?.defaultValue}
           onChange={(option) => {

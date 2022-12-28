@@ -148,7 +148,7 @@ const DesignForm = forwardRef<DesignFormRef, DesignFormProps>((props, ref) => {
       <div>
         <Header {...props} callback={callback} areaCodeOptions={areaCodeOptions} />
         <Layout className="fc-container">
-          <Sider theme="light" width={250} style={{ overflow: 'auto' }}>
+          <Sider theme="light" className="components-container" width={250} style={{ overflow: 'auto' }}>
             <div className="components">
               {componentsGroupList.map((componentGroup) => (
                 <ComponentsGroup key="基础字段" componentGroup={componentGroup} />
@@ -162,7 +162,7 @@ const DesignForm = forwardRef<DesignFormRef, DesignFormProps>((props, ref) => {
               </Layout>
             </Content>
           </Layout>
-          <Sider className="widget-config-container" theme="light" width={300}>
+          <Sider className="widget-config-container" theme="light" width={300} style={{ overflow: 'auto' }}>
             <Layout>
               <>
                 <Layout.Header>

@@ -75,7 +75,7 @@ export default ({ id, left, loanType }: Props) => {
             <div className="creditCode">{detail.creditCode}</div>
             <Row>
               <Col span={6}>
-                <span>法定代表人：</span>
+                <span style={{ textAlign: 'left', flex: '0 0 auto' }}>法定代表人：</span>
                 <span>{detail.legalPersonName || '--'}</span>
               </Col>
               <Col span={9}>

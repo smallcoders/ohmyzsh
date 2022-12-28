@@ -246,6 +246,10 @@ const ProductInfoAddOrEdit = () => {
   const formProps2 = {
     wrapperCol: { span: 18 },
   };
+  const formProps3 = {
+    labelCol: { span: 6 },
+    wrapperCol: { span: 16 },
+  };
   return (
     // <Spin>
     <>
@@ -528,7 +532,7 @@ const ProductInfoAddOrEdit = () => {
                   },
                 },
               ]}
-              {...formProps2}
+              {...formProps3}
               label={productType?.includes('保险') ? '保险额度' : '额度'}
               name="Amount"
               placeholder={[
@@ -538,7 +542,7 @@ const ProductInfoAddOrEdit = () => {
               addonAfter={<div style={{ width: '30px', whiteSpace: 'nowrap' }}>万元</div>}
             />
             <Form.Item
-              {...formProps2}
+              {...formProps3}
               label={`${productType?.includes('保险') ? '保险' : ''}额度文案`}
               name="amountDesc"
               extra={
@@ -579,7 +583,7 @@ const ProductInfoAddOrEdit = () => {
                   },
                 },
               ]}
-              {...formProps2}
+              {...formProps3}
               label={productType?.includes('保险') ? '参考费率' : '年化利率'}
               name="Rate"
               placeholder={[
@@ -589,7 +593,7 @@ const ProductInfoAddOrEdit = () => {
               addonAfter={<div style={{ width: '30px', whiteSpace: 'nowrap' }}>%</div>}
             />
             <Form.Item
-              {...formProps2}
+              {...formProps3}
               label={`${productType?.includes('保险') ? '参考费率' : '年化利率'}文案`}
               name="rateDesc"
               extra={
@@ -629,14 +633,14 @@ const ProductInfoAddOrEdit = () => {
                   },
                 },
               ]}
-              {...formProps2}
+              {...formProps3}
               label="期限"
               name="Term"
               placeholder={['最低期限', '最高期限']}
               addonAfter={<div style={{ width: '30px', whiteSpace: 'nowrap' }}>个月</div>}
             />
             <Form.Item
-              {...formProps2}
+              {...formProps3}
               label="期限文案"
               name="termDesc"
               extra={

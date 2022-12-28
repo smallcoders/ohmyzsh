@@ -348,7 +348,7 @@ const ImagePickerConfig = () => {
             showLengthInput &&
             <InputNumber
               max={selectWidgetItem?.config?.options.length}
-              min={2}
+              min={1}
               value={selectWidgetItem?.config?.maxLength}
               onChange={(value) => handleChange(value, 'config.maxLength')}
             />

@@ -11,6 +11,7 @@ import {
   message,
   Modal,
   Spin,
+  Image,
 } from 'antd';
 import { UploadOutlined, CheckCircleTwoTone, ExclamationCircleOutlined } from '@ant-design/icons';
 import { FooterToolbar } from '@ant-design/pro-components';
