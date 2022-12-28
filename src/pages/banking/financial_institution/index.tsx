@@ -520,7 +520,7 @@ export default () => {
     return (
       <Modal
         title="新增机构"
-        width="600px"
+        width="640px"
         visible={createModalVisible}
         maskClosable={false}
         destroyOnClose
@@ -579,7 +579,7 @@ export default () => {
         <Form
           form={modalForm}
           labelCol={{ span: 6 }}
-          wrapperCol={{ span: 16 }}
+          wrapperCol={{ span: 15 }}
           validateTrigger="onBlur"
         >
           <Form.Item
