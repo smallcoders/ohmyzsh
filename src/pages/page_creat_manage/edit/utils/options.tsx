@@ -110,10 +110,6 @@ export const dateTypeOptions =[
 ]
 // 正则表达式
 export const regOptions = [
-  {
-    label: '无',
-    value: ''
-  },
   // {
   //   label: "身份证",
   //   value: "/^[1-9]\\d{7}((0\\d)|(1[0-2]))(([0|1|2]\\d)|3[0-1])\\d{3}$|^[1-9]\\d{5}[1-9]\\d{3}((0\\d)|(1[0-2]))(([0|1|2]\\d)|3[0-1])\\d{3}([0-9]|X)$/",
@@ -130,7 +126,7 @@ export const regOptions = [
     maxLength: 11
   },
   {
-    label: "联系号码",
+    label: "电话号码",
     value: "^\\d{1,16}$",
     errorMsg: '请输入正确的联系号码',
     type: 'number',

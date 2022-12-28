@@ -52,6 +52,7 @@ namespace DiagnosticRecord {
     purposeRemark?: string; //融资用途为其他时的备注
     applyNum?: number; //产品申请数量
     qualification?: string; //企业资质（多选，逗号隔开） 1 规上企业 2 高新技术企业 3 科技型中小企业 4 民营科技企业 5 专精特新企业
+    revenueContent?: string;
   };
   export type OrgAssets = {
     typeContent?: string; //资产类型 1自有产权土地、2自有高价值设备

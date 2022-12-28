@@ -126,6 +126,13 @@ const SelectConfig = () => {
           onChange={(event) => handleChange(event.target.value, 'config.desc')}
         />
       </Form.Item>
+      <Form.Item label="填写提示" >
+        <Input
+          value={selectWidgetItem?.config?.placeholder}
+          maxLength={20}
+          onChange={(event) => handleChange(event.target.value, 'config.placeholder')}
+        />
+      </Form.Item>
       <OptionSourceTypeConfig />
       <Form.Item label="题目关联">
         <div className="related-click" onClick={() => {
@@ -134,6 +141,7 @@ const SelectConfig = () => {
       </Form.Item>
       <Form.Item label="默认选择">
         <Select
+          allowClear
           options={selectWidgetItem?.config?.options}
           value={selectWidgetItem?.config?.defaultValue}
           onChange={(option) => {
