@@ -519,6 +519,7 @@ export default () => {
   const useModal = (): React.ReactNode => {
     return (
       <Modal
+        className="new-org"
         title="新增机构"
         width="600px"
         visible={createModalVisible}
