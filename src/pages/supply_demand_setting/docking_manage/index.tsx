@@ -7,7 +7,7 @@ import { message, Select } from 'antd';
 import './index.less'
 import { getBizGroup } from '@/services/creative-demand';
 import TabMenu from '@/components/TabMenu';
-import { Access, useAccess } from 'umi';
+import { Access, useAccess, useHistory } from 'umi';
 import { getDictionayTree } from '@/services/common';
 import { getAhArea } from '@/services/area';
 
@@ -18,6 +18,7 @@ export default () => {
   const [activeGroup, setActiveGroup] = useState<number>();
   const [group, setGroup] = useState<any[]>([])
   const [dataKey, setDataKey] = useState<number>(1)
+  const history = useHistory()
   // 拿到当前角色的access权限兑现
   const access = useAccess()
   // 页面权限
@@ -63,14 +64,39 @@ export default () => {
   const [area, setArea] = useState<any[]>([])
   useEffect(() => {
     prepare()
+
+    if (sessionStorage.activeKey) {
+      setActiveKey(sessionStorage.activeKey)
+    }
+    if (sessionStorage.activeGroup) {
+      setActiveGroup(+sessionStorage.activeGroup)
+    }
   }, [])
+
+  history.listen(() => {
+    sessionStorage.removeItem('activeKey')
+    sessionStorage.removeItem('activeGroup')
+  })
+
+  useEffect(() => {
+    if (activeKey) {
+      sessionStorage.setItem('activeKey', activeKey)
+    }
+    sessionStorage.setItem('activeGroup', String(activeGroup))
+  }, [activeKey])
+
+  useEffect(() => {
+    if (activeGroup) {
+      sessionStorage.setItem('activeGroup', String(activeGroup))
+    }
+  }, [activeGroup])
 
   const prepare = async () => {
     try {
       const res = await Promise.all([getDictionayTree('DEMAND_TYPE'), getBizGroup(), getAhArea()])
       setDemandTypes(res?.[0]?.result)
       setGroup(res[1]?.result?.filter((p: { gid: number; }) => p.gid < 6))
-      setActiveGroup(res[1]?.result?.[0]?.gid)
+      setActiveGroup(+sessionStorage.activeGroup || res[1]?.result?.[0]?.gid)
       console.log('res===>', res)
       setArea(res?.[2])
     } catch (error) {
@@ -86,7 +112,7 @@ export default () => {
         break
       }
     }
-    setActiveGroup(activeIndex)
+    setActiveGroup(+sessionStorage.activeGroup || activeIndex)
 
     // 初始化key
     if (!access) return

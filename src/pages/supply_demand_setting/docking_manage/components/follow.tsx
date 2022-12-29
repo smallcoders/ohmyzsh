@@ -232,7 +232,7 @@ export default (props: { gid: any; demandTypes: any[], area: any[] }) => {
     },
     tabState && {
       title: '操作',
-      width: 400,
+      width: 500,
       dataIndex: 'option',
       fixed: 'right',
       render: (_: any, record: any) => {

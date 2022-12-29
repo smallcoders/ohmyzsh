@@ -88,10 +88,10 @@ export default () => {
           item.onCell = onMergeCell
           break;
         case 'range':
-          // 维度/日期列
+          // 维度/月份列
           item.title = (
             <div className='headerCell'>
-              <div className='top'>日期</div>
+              <div className='top'>月份</div>
               <div className='bottom'>统计维度</div>
             </div>
           )
