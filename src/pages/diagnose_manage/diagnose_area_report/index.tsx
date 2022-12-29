@@ -13,7 +13,7 @@ enum Edge {
 	MONTH = 1 //月报表
 }
 
-const sc = scopedClasses('service-config-diagnose-manage');
+const sc = scopedClasses('report-day-and-month');
 
 const DColumn: React.FC = () => {
 	const access = useAccess()

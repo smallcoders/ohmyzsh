@@ -257,7 +257,7 @@ export default () => {
       title: '所属企业',
       dataIndex: 'orgName',
       width: 200,
-      render: (_: any, _record: any) => (_record.projectName ? _record.projectName : '--'),
+      render: (_: any, _record: any) => (_record.orgName ? _record.orgName : '--'),
     },
     {
       title: '企业所属区域',

@@ -17,7 +17,7 @@ import {
   import { listAllAreaCode } from '@/services/common';
   import { Access, useAccess } from 'umi';
   import SelfTable from '@/components/self_table';
-  const sc = scopedClasses('tab-menu-demand-report-month');
+  const sc = scopedClasses('report-day-and-month');
   import moment from 'moment';
   import { getReportAreaPage, exportAreaPage } from '@/services/diagnose-manage';
   
@@ -59,8 +59,13 @@ import {
         });
         if (code === 0) {
           const { header, data } = result
-          setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
-          formatColumns(header, data)
+          if(header && data) {
+            setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
+            formatColumns(header, data)
+          }else {
+            setTableHeader([])
+            setTableItems([])
+          }
         } else {
           message.error(`请求分页数据失败`);
         }
@@ -71,12 +76,12 @@ import {
   
     // 合并行单元格
     const onMergeCell = (_: any, index: number) => {
-      // 从第0行数据开始，开始每 3 行只显示一行
-      if (index % 3 === 0) {
-        // 第0行（index = 0）或者第3的倍数行 ，合并3行内容
-        return { rowSpan: 3 }
+      // 从第0行数据开始，开始每 2 行只显示一行
+      if (index % 2 === 0) {
+        // 第0行（index = 0）或者第2的倍数行 ，合并2行内容
+        return { rowSpan: 2 }
       } else {
-        // 非3的倍数行被合并，返回 0
+        // 非2的倍数行被合并，返回 0
         return { rowSpan: 0 }
       }
     }

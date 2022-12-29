@@ -39,9 +39,13 @@ const DColumn: React.FC = () => {
       setDetailData(result)
       if(result.diagnoseRes) {
         setDiagnoseRes(result.diagnoseRes)
+      }else {
+        setDiagnoseRes({})
       }
       if(result.questionAndAnswer) {
         setQuestionAndAnswer(result.questionAndAnswer)
+      }else {
+        setQuestionAndAnswer([])
       }
     }else {
       message.error(`请求详情数据失败`);
@@ -56,7 +60,7 @@ const DColumn: React.FC = () => {
   return (
     <PageContainer className={sc('container')}>
       <div className='container-info'>
-        <h3>喜洋洋</h3>
+        <h3>{detailData.userName || '--'}</h3>
         <Row>
           <Col span={8}>
             <label>所属企业：</label>
@@ -67,7 +71,7 @@ const DColumn: React.FC = () => {
             <span>{detailData.questionnaireName || '--'}</span>
           </Col>
           <Col span={8}>
-            <label>诊断段：</label>
+            <label>诊断端：</label>
             <span>{detailData.source || '--'}</span>
           </Col>
           <Col span={8} style={{marginTop: 8}}>
@@ -81,7 +85,6 @@ const DColumn: React.FC = () => {
         </Row>
       </div>
       {selectButton()}
-      {/* {JSON.stringify(diagnoseRes)} */}
       {edge === DataColumn.Type.HOME && <Home diagnoseRes={diagnoseRes} />}
       {edge === DataColumn.Type.INTRODUCE && <Introduce questionAndAnswer={questionAndAnswer} />}
     </PageContainer>
