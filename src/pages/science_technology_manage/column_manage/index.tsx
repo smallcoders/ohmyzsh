@@ -12,14 +12,14 @@ import {
   Select,
   Space,
   Switch,
-  Table, message,Dropdown,
-  Menu,
+  Table, message, Dropdown,
+  Menu, Modal,
 } from "antd";
 import './index.less';
 import { Access, useAccess } from 'umi';
 import scopedClasses from "@/utils/scopedClasses";
 import {history} from "@@/core/history";
-import { DownOutlined ,UploadOutlined} from '@ant-design/icons';
+import {DownOutlined, ExclamationCircleOutlined, UploadOutlined} from '@ant-design/icons';
 import {
   columnOffShelf,
   columnOnShelf,
@@ -186,7 +186,7 @@ export default () => {
       key: 'content',
       ellipsis: true,
     },
-    access['P_SM_KCZL'] && {
+    access.P_SM_KCZL && {
       title: '上下架状态',
       key: 'shelfStatus',
       dataIndex: 'shelfStatus',
@@ -195,29 +195,29 @@ export default () => {
         const accessible = access?.[permissions?.[edge].replace(new RegExp("Q"), "")]
         return (
           <Access accessible={accessible}>
-          <Popconfirm
-            title={
-              (shelfStatus&&
-                <div className="className">
-                  <div>提示</div>
-                  <div>是否下架</div>
-                </div>)||  (!shelfStatus&&
-                <div className="className">
-                  <div>提示</div>
-                  <div>是否上架</div>
-                </div>)
-            }
-            okText="确定"
-            cancelText="取消"
-            onConfirm={()=>changeShelfStatus(shelfStatus,_record as any)}
-          >
-            <Switch checked={shelfStatus}  />
-          </Popconfirm>
+            <div>
+            <Switch checked={shelfStatus}  onChange={()=>{
+              Modal.confirm({
+                title:
+                (shelfStatus&&
+                  <div className="className">
+                    <div>确定下架所选专栏？</div>
+                  </div>)||  (!shelfStatus&&
+                  <div className="className">
+                    <div>确定上架所选专栏？</div>
+                  </div>)
+              ,
+              content: '', okText:shelfStatus?'设为下架':'设为上架',
+              onOk: () => changeShelfStatus(shelfStatus,_record as any),
+                cancelText: '取消',
+            });
+            }}/>
+            </div>
           </Access>
         )
       }
     },
-    access['P_SM_KCZL'] && {
+    access.P_SM_KCZL && {
       title: '点击量',
       dataIndex: 'clickRate',
       key: 'clickRate',
@@ -240,7 +240,7 @@ export default () => {
         )
       }
     },
-      access['P_SM_KCZL'] && {
+      access.P_SM_KCZL && {
       title: '操作',
       key: 'action',
       render: (_record: any) => {
@@ -337,7 +337,6 @@ export default () => {
                 查询
               </Button>
               <Button
-                type="primary"
                 key="reset"
                 onClick={() => {
                   searchForm.resetFields();
@@ -390,7 +389,6 @@ export default () => {
                 查询
               </Button>
               <Button
-                type="primary"
                 key="reset"
                 onClick={() => {
                   clickSearchClickForm.resetFields();

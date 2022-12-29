@@ -80,7 +80,7 @@ export default () => {
               accept=".png,.jpg"
             />
             </Form.Item>
-            <div className={'pic-word'} style={{marginBottom:'20px'}}>限定一张图片，不超过5M，<span className={'red'}>尺寸（以实际效果图为准）</span>，格式支持png、jpg;</div>
+            <div className={'pic-word'} style={{marginBottom:'20px'}}>限定一张图片，不超过5M，<span className={'red'}>尺寸（1200 * 160）</span>，格式支持png、jpg;</div>
             <Form.Item style={{backgroundColor:"#F8F9FA"}}  name="webLink" label="Web端链接地址" required className={'link'} rules={[{ required: true, message: '请输入Web端链接地址！' }]}>
             <Input  placeholder={'请输入Web端链接'}/>
             </Form.Item>
@@ -97,7 +97,7 @@ export default () => {
               />
               {/*</div>*/}
             </Form.Item>
-            <div className={'pic-word'} style={{marginBottom:'20px'}}>限定一张图片，不超过5M，<span className={'red'}>尺寸（以实际效果图为准）</span>，格式支持png、jpg;</div>
+            <div className={'pic-word'} style={{marginBottom:'20px'}}>限定一张图片，不超过5M，<span className={'red'}>尺寸（375 * 150）</span>，格式支持png、jpg;</div>
             <Form.Item style={{backgroundColor:"#F8F9FA"}} name="appLink" label="App端链接地址" className={'link'} >
               <Input  placeholder={'请输入App端链接'}/>
             </Form.Item>
