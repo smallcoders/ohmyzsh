@@ -130,6 +130,7 @@ export default () => {
           </span>
           <Access accessible={access.PX_SD_ZB}>
              <Button
+              type="primary"
               icon={<DownloadOutlined />}
               onClick={exportList}
             >

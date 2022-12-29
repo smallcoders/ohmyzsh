@@ -207,6 +207,7 @@ export default () => {
           <span>各地市供需对接新增数据月报表</span>
           <Access accessible={access['PX_SD_YBB']}>
             <Button
+              type="primary"
               icon={<DownloadOutlined />}
               onClick={exportList}
             >

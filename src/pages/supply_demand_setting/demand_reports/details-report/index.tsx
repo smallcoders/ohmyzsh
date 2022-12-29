@@ -264,12 +264,12 @@ const useSearchNode = (): React.ReactNode => {
       <div className={sc('container-search')}>
         <Form {...formLayout} form={searchForm}>
           <Row>
-            <Col span={8}>
+            <Col span={6}>
               <Form.Item name="demandName" label="需求名称" labelCol={{ flex: '90px' }}>
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
-            <Col span={8}>
+            <Col span={6}>
               <Form.Item name="demandAreaCode" label="需求地区" labelCol={{ flex: '90px' }}>
                 <TreeSelect
                   treeNodeFilterProp={'name'}
@@ -284,7 +284,7 @@ const useSearchNode = (): React.ReactNode => {
                 />
               </Form.Item>
             </Col>
-            <Col span={8}>
+            <Col span={6}>
               <Form.Item name="demandState" label="需求状态" labelCol={{ flex: '90px' }}>
               <Select placeholder="请选择" allowClear>
                   {Object.entries(stateObj3).map((p) => {
@@ -297,8 +297,8 @@ const useSearchNode = (): React.ReactNode => {
                 </Select>
               </Form.Item>
             </Col>
-            <Col span={8} offset={16} style={{textAlign: 'right'}}>
-              <div className="ant-col-16" style={{marginLeft: '90px'}}>
+            <Col span={6} style={{textAlign: 'right'}}>
+              <div style={{paddingRight: '20px'}}>
                 <Button
                   style={{ marginRight: 20 }}
                   type="primary"
@@ -343,6 +343,7 @@ const useSearchNode = (): React.ReactNode => {
           <span>供需对接明细表(共{pageInfo.totalCount || 0}个)</span>
           <Access accessible={access.PX_SD_MXB}>
             <Button
+              type="primary"
               icon={<DownloadOutlined />}
               onClick={exportList}
             >
