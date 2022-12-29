@@ -10,7 +10,7 @@ import {
 } from 'antd';
 import React, { useEffect, useState } from 'react';
 import moment from 'moment';
-import { DownloadOutlined } from "@ant-design/icons";
+import { UploadOutlined } from "@ant-design/icons";
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import type Common from '@/types/common';
@@ -344,7 +344,7 @@ const useSearchNode = (): React.ReactNode => {
           <Access accessible={access.PX_SD_MXB}>
             <Button
               type="primary"
-              icon={<DownloadOutlined />}
+              icon={<UploadOutlined />}
               onClick={exportList}
             >
               导出数据

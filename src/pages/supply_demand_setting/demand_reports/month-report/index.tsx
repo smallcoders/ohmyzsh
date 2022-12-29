@@ -7,7 +7,7 @@ import {
   DatePicker,
 } from 'antd';
 
-import { DownloadOutlined } from "@ant-design/icons";
+import { UploadOutlined } from "@ant-design/icons";
 
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
@@ -208,7 +208,7 @@ export default () => {
           <Access accessible={access['PX_SD_YBB']}>
             <Button
               type="primary"
-              icon={<DownloadOutlined />}
+              icon={<UploadOutlined />}
               onClick={exportList}
             >
               导出数据

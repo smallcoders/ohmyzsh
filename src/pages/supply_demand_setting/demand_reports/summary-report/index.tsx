@@ -5,7 +5,7 @@ import {
 import { Access, useAccess } from 'umi';
 import { useEffect, useState } from 'react';
 import moment from 'moment';
-import { DownloadOutlined, SoundOutlined } from '@ant-design/icons'
+import { UploadOutlined, SoundOutlined } from '@ant-design/icons'
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import SelfTable from '@/components/self_table';
@@ -131,7 +131,7 @@ export default () => {
           <Access accessible={access.PX_SD_ZB}>
              <Button
               type="primary"
-              icon={<DownloadOutlined />}
+              icon={<UploadOutlined />}
               onClick={exportList}
             >
               导出数据
