@@ -12,7 +12,7 @@ export default observer(
     (props: {
       diagnoseRes: any
     }) => {
-      const { questionAndAnswer = [] } = props || {}
+      const { questionAndAnswer = [], questionnaireName = '', submitTime = '' } = props || {}
       console.log(questionAndAnswer, '-----questionAndAnswer')
       const [questionsForm] = Form.useForm()
       return (
@@ -20,7 +20,11 @@ export default observer(
           {questionAndAnswer && questionAndAnswer.length > 0 ? (
             <div className='preview-wrap'>
               <div className='web-preview'>
-                <QuestionnaireTopicList topicTitle={'暂未设置问卷标题'} topicList={questionAndAnswer} form={questionsForm} />
+                <QuestionnaireTopicList 
+                  topicTitle={questionnaireName} 
+                  submitTime={submitTime}
+                  topicList={questionAndAnswer} 
+                  form={questionsForm} />
               </div>
             </div>
           ) : (

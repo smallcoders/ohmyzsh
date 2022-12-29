@@ -21,12 +21,13 @@ enum TopicType {
 export default observer(
   (props: {
     topicTitle: string
+    submitTime: string
     topicList: object[]
     showAlphaCode?: boolean
     form?: FormInstance<any>
     onChange?: (record: any, value: any, index: number) => void
   }) => {
-    const { topicList = [], form, showAlphaCode = false, onChange, topicTitle } = props || {}
+    const { topicList = [], form, showAlphaCode = false, onChange, topicTitle, submitTime } = props || {}
 
     const formItemDisplay = (item: any, index: number) => {
       let formItem = null
@@ -89,7 +90,7 @@ export default observer(
 
     return (
       <div className={sc('container')}>
-        <h3 className='questionnaire-title'>{topicTitle}</h3>
+        <h3 className='questionnaire-title'>{topicTitle} <span>诊断提交时间：{submitTime}</span></h3>
         <div className="content">
           <div className={sc('form')}>
             <Form layout="vertical" size="small" form={form} scrollToFirstError>

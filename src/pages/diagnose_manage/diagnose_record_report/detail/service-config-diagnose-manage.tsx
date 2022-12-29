@@ -86,7 +86,12 @@ const DColumn: React.FC = () => {
       </div>
       {selectButton()}
       {edge === DataColumn.Type.HOME && <Home diagnoseRes={diagnoseRes} />}
-      {edge === DataColumn.Type.INTRODUCE && <Introduce questionAndAnswer={questionAndAnswer} />}
+      {edge === DataColumn.Type.INTRODUCE && 
+        <Introduce 
+          questionAndAnswer={questionAndAnswer} 
+          questionnaireName={detailData.questionnaireName || '--'}
+          submitTime={detailData.submitTime || '--'} />
+      }
     </PageContainer>
   );
 };
