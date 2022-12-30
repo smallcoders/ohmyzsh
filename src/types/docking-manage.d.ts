@@ -49,6 +49,10 @@ namespace DockingManage {
             text: "需求跟进",
             method: 'follow'
         },
+        12: {
+            text: "需求关闭",
+            method: 'demandClose'
+        },
         99: { text: "--" }
     }
     export const specifyType = {
