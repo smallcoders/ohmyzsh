@@ -19,6 +19,22 @@ const { Column } = Table;
 const { Option } = Select;
 const sc = scopedClasses('user-config-kechuang');
 
+const filterNames = ['交付方式', '商品付费方式'];
+
+const deliveryTypes = ['本地部署', 'SaaS服务'];
+
+enum PayMethodAppEnum {
+  YEAR = 1,
+  SET,
+  TIME,
+}
+
+const commodityPaymentTypes = [
+  { value: PayMethodAppEnum.YEAR, content: '元/年' },
+  { value: PayMethodAppEnum.SET, content: '元/套' },
+  { value: PayMethodAppEnum.TIME, content: '元/次' },
+];
+
 export default () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [detail, setDetail] = useState<any>({});
@@ -35,8 +51,8 @@ export default () => {
         if (code === 0) {
           setDetail(result);
           setAppTypeId(result?.payProduct?.appTypeId);
-          const payProductApply = result?.payProductApply
-          const list = []
+          const payProductApply = result?.payProductApply;
+          const list = [];
           if (payProductApply) {
             // 已审核的展示审核人
             if (payProductApply.isHandle === 1) {
@@ -48,54 +64,46 @@ export default () => {
                     time={payProductApply.handleTime}
                     reason={payProductApply.handleReason}
                     special={true}
-                    color={
-                      payProductApply.handleResult === 1
-                        ? '#25d48f'
-                        : '#e94d4d'
-                    }
+                    color={payProductApply.handleResult === 1 ? '#25d48f' : '#e94d4d'}
                   />
                 ),
                 description: null,
                 state: null,
-              })
+              });
             }
-            
+
             // 系统审核
             list.push({
               title: (
                 <CommonTitle
-                  title='系统审核'
+                  title="系统审核"
                   detail={payProductApply.auditResult === 1 ? '审核通过' : '拒绝'}
                   time={payProductApply.auditTime}
                   reason={payProductApply.systemAudit}
                   special={true}
-                  color={
-                    payProductApply.auditResult === 1
-                      ? '#25d48f'
-                      : '#e94d4d'
-                  }
+                  color={payProductApply.auditResult === 1 ? '#25d48f' : '#e94d4d'}
                 />
               ),
               description: null,
               state: null,
-            })
+            });
             // 提交人
             list.push({
               title: (
                 <CommonTitle
                   title={payProductApply.userName}
-                  detail='提交审核'
+                  detail="提交审核"
                   time={payProductApply.createTime}
-                  reason=''
+                  reason=""
                   special={true}
-                  color='rgba(0, 0, 0, 0.65)'
+                  color="rgba(0, 0, 0, 0.65)"
                 />
               ),
               description: null,
               state: null,
-            })
+            });
           }
-          setList(list)
+          setList(list);
         } else {
           throw new Error(message);
         }
@@ -158,6 +166,7 @@ export default () => {
     prepare();
     handleGetApplicationTypeList();
   }, []);
+
   return (
     <PageContainer loading={loading} title={false}>
       <ProCard gutter={8} ghost>
@@ -245,9 +254,19 @@ export default () => {
                   ))}
                 </Row>
               </Form.Item>
-              <Form.Item label="免费试用">
-                {detail?.payProduct?.isFree === 1 ? '是' : '否'}
+              <Form.Item label="交付方式">
+                {deliveryTypes[detail?.payProduct?.deliverMethodApp] || '--'}
               </Form.Item>
+              <Form.Item label="付费方式">
+                {commodityPaymentTypes.find(
+                  (type) => type?.value === detail?.payProduct?.payMethodApp,
+                )?.content || '--'}
+              </Form.Item>
+              {detail?.payProduct?.productSource === 1 && (
+                <Form.Item label="免费试用">
+                  {detail?.payProduct?.freeDayApp ? `${detail?.payProduct?.freeDayApp}天` : '--'}
+                </Form.Item>
+              )}
             </Form>
           </ProCard>
 
@@ -256,11 +275,35 @@ export default () => {
             <Table
               rowKey="id"
               bordered
-              dataSource={detail?.payProductSpecsList || []}
+              dataSource={detail?.payProductSpecsListV2 || []}
               pagination={false}
               style={{ width: 400 }}
             >
               <Column title="规格" dataIndex="specsValue" />
+              <Column
+                title="规格信息"
+                dataIndex="type"
+                render={(text, record: any) => {
+                  switch (text) {
+                    case PayMethodAppEnum.YEAR:
+                      return `用户数：${
+                        record?.userNum > 0 ? `${record?.userNum}人` : '无限制'
+                      }；有效时间：${
+                        record?.expireType !== -1 ? `${record?.expireTime}年` : '无限制'
+                      }`;
+                    case PayMethodAppEnum.SET:
+                      return `使用次数：${
+                        record?.count > 0 ? `${record?.count}次` : '无限制'
+                      }；有效时间：${
+                        record?.expireType !== -1 ? `${record?.expireTime}年` : '无限制'
+                      }`;
+                    case PayMethodAppEnum.TIME:
+                      return `使用次数：${record?.count > 0 ? `${record?.count}次` : '无限制'}`;
+                    default:
+                      return '--';
+                  }
+                }}
+              />
             </Table>
           </ProCard>
           <ProCard>
@@ -289,7 +332,9 @@ export default () => {
             <h2 id="goods-argument">商品参数信息</h2>
             <Table
               rowKey="id"
-              dataSource={detail?.payProductParamList || []}
+              dataSource={(detail?.payProductParamList || [])?.filter(
+                (item: Record<string, string | number>) => !filterNames.includes(`${item?.name}`),
+              )}
               bordered
               pagination={false}
             >
@@ -349,23 +394,19 @@ export default () => {
             {detail?.payProductApply?.isHandle === 1 ? (
               <VerifyStepsDetail list={list} />
             ) : (
-                <div>
-                  <VerifyDescription form={form} mustFillIn />
-                  <VerifyStepsDetail list={list} />
-                </div>
+              <div>
+                <VerifyDescription form={form} mustFillIn />
+                <VerifyStepsDetail list={list} />
+              </div>
             )}
 
             <div style={{ marginTop: 20 }}>
-              {
-                detail?.payProductApply?.isHandle === 0
-                &&
-                (
-                  <Button type="primary" style={{ marginRight: '10px' }} onClick={onSave}>
-                    提交
-                  </Button>
-                )
-              }
-              
+              {detail?.payProductApply?.isHandle === 0 && (
+                <Button type="primary" style={{ marginRight: '10px' }} onClick={onSave}>
+                  提交
+                </Button>
+              )}
+
               <Button onClick={gobackList}>返回</Button>
             </div>
           </ProCard>
