@@ -196,7 +196,7 @@ export default () => {
       <Modal
         className={sc('model-mark')}
         title="备注"
-        width="720px"
+        width="650px"
         maskClosable={false}
         visible={createModalVisible}
         onCancel={() => {

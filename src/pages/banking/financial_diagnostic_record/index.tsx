@@ -84,115 +84,16 @@ export default () => {
       const { code, result } = await queryCustomerDemand(id);
       if (code === 0 && result !== null) {
         setCustomerDemand(result);
-        form.setFieldsValue({ ...result, amount: (result.amount / 1000000).toFixed(2) });
+        form.setFieldsValue({
+          ...result,
+          amount: result?.amount === null ? null : (result?.amount / 1000000).toFixed(2),
+        });
+        setIsLoanDemand(result.loanDemand);
       }
     } catch (error) {
       console.log(error);
     }
   };
-  const columns = [
-    {
-      title: '序号',
-      dataIndex: 'sort',
-      width: 80,
-      render: (_: any, _record: DiagnosticRecord.Content, index: number) =>
-        pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
-    },
-    {
-      title: '金融诊断编号',
-      dataIndex: 'diagnoseNum',
-      width: 120,
-    },
-    {
-      title: '企业名称',
-      dataIndex: 'orgName',
-      isEllipsis: true,
-      width: 140,
-    },
-    {
-      title: '满足金融专属服务',
-      dataIndex: 'exclusiveService',
-      render: (exclusiveService: boolean) => {
-        return exclusiveService ? '是' : '否';
-      },
-      width: 160,
-    },
-    {
-      title: '金融诊断类型',
-      dataIndex: 'type',
-      render: (type: number) => {
-        return type === 1 ? '快速诊断' : '精准诊断';
-      },
-      width: 120,
-    },
-    {
-      title: '拟融资金额(万元)',
-      dataIndex: 'amount',
-      width: 160,
-      render: (amount: number) => {
-        return amount ? (amount / 1000000).toFixed(2) : '--';
-      },
-    },
-    {
-      title: '拟融资期限(个月)',
-      dataIndex: 'term',
-      width: 160,
-    },
-    {
-      title: '诊断时间',
-      dataIndex: 'createTime',
-      width: 160,
-    },
-    {
-      title: '产品申请数量',
-      dataIndex: 'applyNum',
-      width: 120,
-    },
-    {
-      title: '是否对接客户',
-      dataIndex: 'linkCustomer',
-      render: (linkCustomer: boolean) => {
-        return linkCustomer ? '是' : '否';
-      },
-      width: 140,
-    },
-    {
-      title: '操作',
-      fixed: 'right',
-      dataIndex: 'option',
-      width: 140,
-      render: (_: any, record: DiagnosticRecord.Content) => {
-        return (
-          <Space>
-            <Button
-              size="small"
-              type="link"
-              onClick={() => {
-                history.push(`${routeName.FINANCIAL_DIAGNOSTIC_RECORD_DETAIL}?id=${record.id}`);
-              }}
-            >
-              诊断详情
-            </Button>
-            {record.exclusiveService && record.applyNum === 0 ? (
-              <Button
-                size="small"
-                type="link"
-                onClick={() => {
-                  getCustomerDemand(record.id as number);
-                  setRemarksItem(record);
-                  setModalVisible(true);
-                }}
-              >
-                备注
-              </Button>
-            ) : (
-              <></>
-            )}
-          </Space>
-        );
-      },
-    },
-  ];
 
   useEffect(() => {
     getPage();
@@ -206,12 +107,22 @@ export default () => {
         <Form {...formLayout} form={searchForm}>
           <Row>
             <Col span={8}>
-              <Form.Item labelCol={{span: 8}} wrapperCol={{span: 16}} name="orgName" label="企业名称">
+              <Form.Item
+                labelCol={{ span: 8 }}
+                wrapperCol={{ span: 16 }}
+                name="orgName"
+                label="企业名称"
+              >
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item labelCol={{span: 11}} wrapperCol={{span: 13}} name="exclusiveService" label="满足金融专属服务">
+              <Form.Item
+                labelCol={{ span: 11 }}
+                wrapperCol={{ span: 13 }}
+                name="exclusiveService"
+                label="满足金融专属服务"
+              >
                 <Select placeholder="请选择" allowClear>
                   <Select.Option value={true}>是</Select.Option>
                   <Select.Option value={false}>否</Select.Option>
@@ -219,7 +130,12 @@ export default () => {
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item labelCol={{span: 9}} wrapperCol={{span: 15}} name="linkCustomer" label="是否对接客户">
+              <Form.Item
+                labelCol={{ span: 9 }}
+                wrapperCol={{ span: 15 }}
+                name="linkCustomer"
+                label="是否对接客户"
+              >
                 <Select placeholder="请选择" allowClear>
                   <Select.Option value={true}>是</Select.Option>
                   <Select.Option value={false}>否</Select.Option>
@@ -227,7 +143,7 @@ export default () => {
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item labelCol={{span: 8}} wrapperCol={{span: 16}} label="产品申请数量">
+              <Form.Item labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} label="产品申请数量">
                 <Input.Group compact>
                   <Form.Item name="applyNumMin" style={{ width: 'calc(50% - 15px)' }}>
                     <InputNumber min={1} placeholder="请输入" style={{ width: '100%' }} />
@@ -249,7 +165,12 @@ export default () => {
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item labelCol={{span: 11}} wrapperCol={{span: 13}} name="type" label="金融诊断类型">
+              <Form.Item
+                labelCol={{ span: 11 }}
+                wrapperCol={{ span: 13 }}
+                name="type"
+                label="金融诊断类型"
+              >
                 <Select placeholder="请选择" allowClear>
                   <Select.Option value={1}>快速诊断</Select.Option>
                   <Select.Option value={2}>精准诊断</Select.Option>
@@ -257,7 +178,12 @@ export default () => {
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item labelCol={{span: 9}} wrapperCol={{span: 15}} name="time" label="金融诊断时间">
+              <Form.Item
+                labelCol={{ span: 9 }}
+                wrapperCol={{ span: 15 }}
+                name="time"
+                label="金融诊断时间"
+              >
                 <DatePicker.RangePicker style={{ width: '100%' }} allowClear />
               </Form.Item>
             </Col>
@@ -301,8 +227,6 @@ export default () => {
   };
 
   const handleSearch = debounce(async (value: string) => {
-    console.log(value);
-    if (value === '') return;
     try {
       const { result } = await getLoanProList({ productName: value });
       // eslint-disable-next-line @typescript-eslint/no-shadow
@@ -317,9 +241,26 @@ export default () => {
       console.log(error);
     }
   }, 200);
+
+  const selectProduct = async () => {
+    try {
+      const { result } = await getLoanProList({ productName: '' });
+      // eslint-disable-next-line @typescript-eslint/no-shadow
+      const options = result?.map((item: { productId: string; productName: string }) => {
+        return {
+          value: item.productId,
+          label: item.productName,
+        };
+      });
+      setOptions(options);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const clearForm = () => {
     form.resetFields();
     setModalVisible(false);
+    setIsLoanDemand(true);
   };
   // 备注确定
   const onFinsh = async () => {
@@ -335,7 +276,6 @@ export default () => {
         id: Object.keys(customerDemand).length === 0 ? null : customerDemand.id,
       });
       if (code === 0) {
-        setModalVisible(false);
         message.success(`备注成功！`);
         getPage();
         clearForm();
@@ -445,6 +385,110 @@ export default () => {
       </Modal>
     );
   };
+  const columns = [
+    {
+      title: '序号',
+      dataIndex: 'sort',
+      width: 80,
+      render: (_: any, _record: DiagnosticRecord.Content, index: number) =>
+        pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
+    },
+    {
+      title: '金融诊断编号',
+      dataIndex: 'diagnoseNum',
+      width: 120,
+    },
+    {
+      title: '企业名称',
+      dataIndex: 'orgName',
+      isEllipsis: true,
+      width: 140,
+    },
+    {
+      title: '满足金融专属服务',
+      dataIndex: 'exclusiveService',
+      render: (exclusiveService: boolean) => {
+        return exclusiveService ? '是' : '否';
+      },
+      width: 160,
+    },
+    {
+      title: '金融诊断类型',
+      dataIndex: 'type',
+      render: (type: number) => {
+        return type === 1 ? '快速诊断' : '精准诊断';
+      },
+      width: 120,
+    },
+    {
+      title: '拟融资金额(万元)',
+      dataIndex: 'amount',
+      width: 160,
+      render: (amount: number) => {
+        return amount ? (amount / 1000000).toFixed(2) : '--';
+      },
+    },
+    {
+      title: '拟融资期限(个月)',
+      dataIndex: 'term',
+      width: 160,
+    },
+    {
+      title: '诊断时间',
+      dataIndex: 'createTime',
+      width: 160,
+    },
+    {
+      title: '产品申请数量',
+      dataIndex: 'applyNum',
+      width: 120,
+    },
+    {
+      title: '是否对接客户',
+      dataIndex: 'linkCustomer',
+      render: (linkCustomer: boolean) => {
+        return linkCustomer ? '是' : '否';
+      },
+      width: 140,
+    },
+    {
+      title: '操作',
+      fixed: 'right',
+      dataIndex: 'option',
+      width: 140,
+      render: (_: any, record: DiagnosticRecord.Content) => {
+        return (
+          <Space>
+            <Button
+              size="small"
+              type="link"
+              onClick={() => {
+                history.push(`${routeName.FINANCIAL_DIAGNOSTIC_RECORD_DETAIL}?id=${record.id}`);
+              }}
+            >
+              诊断详情
+            </Button>
+            {record.exclusiveService && record.applyNum === 0 ? (
+              <Button
+                size="small"
+                type="link"
+                onClick={async () => {
+                  await getCustomerDemand(record.id as number);
+                  setRemarksItem(record);
+                  selectProduct();
+                  setModalVisible(true);
+                }}
+              >
+                备注
+              </Button>
+            ) : (
+              <></>
+            )}
+          </Space>
+        );
+      },
+    },
+  ];
   return (
     <PageContainer
       className={sc('container')}
