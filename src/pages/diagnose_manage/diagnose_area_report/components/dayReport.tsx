@@ -271,7 +271,12 @@ import {
                   key="primary2"
                   onClick={() => {
                     searchForm.resetFields();
-                    setSearChContent({ year: moment(new Date()).format('yyyy') });
+                    setSearChContent(
+                      { 
+                        year: moment(new Date()).format('yyyy'), 
+                        month: (new Date()).getMonth() + 1
+                      }
+                    );
                   }}
                 >
                   重置

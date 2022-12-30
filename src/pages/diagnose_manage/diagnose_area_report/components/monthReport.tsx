@@ -199,6 +199,9 @@ import {
         <div className={sc('container-search')}>
           <Form
             form={searchForm}
+            initialValues={{
+              year: moment(new Date())
+            }}
             >
             <Row justify='space-between'>
               <Col span={6}>
