@@ -327,7 +327,7 @@ import {
         <div className={sc('container-table-header')}>
           <div className="title">
             <h3>诊断区域报表<span>当前诊断区域统计范围只有安徽省内区县，安徽省外暂不做统计</span></h3>
-            <Access accessible={access['PX_PM_TJ_HD']}>
+            <Access accessible={access['PX_DM_QYBB_DAY']}>
               <Button
                 type='primary'
                 icon={<DownloadOutlined />}

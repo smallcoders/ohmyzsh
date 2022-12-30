@@ -364,7 +364,7 @@ export default () => {
       <div className="content-wrapper">
         <div className="container-table-header">
           <h3>诊断记录列表（共{pageInfo.totalCount}条）</h3>
-          <Access accessible={access['PX_DM_XSZD']}>
+          <Access accessible={access['PX_DM_JLBB']}>
             <Button type='primary' icon={<UploadOutlined />} onClick={exportList}>
               导出数据
             </Button>

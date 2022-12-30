@@ -17,20 +17,27 @@ const sc = scopedClasses('report-day-and-month');
 
 const DColumn: React.FC = () => {
 	const access = useAccess()
-	const [edge, setEdge] = useState<Edge>(Edge.DAY);
+	const [edge, setEdge] = useState<Edge>(0);
 	// 页面权限
-	// const permissions = {
-	// 	[Edge.DAY]: 'PQ_AM_ZXJL',
-	// }
-	// useEffect(() => {
-	// 	for (const key in permissions) {
-	// 		const permission = permissions[key]
-	// 		if (Object.prototype.hasOwnProperty.call(access, permission)) {
-	// 			setEdge(key as any)
-	// 			break
-	// 		}
-	// 	}
-	// }, [])
+	useEffect(() => {
+		for (const key in permissions) {
+		  const permission = permissions[key]
+		  // permission 看这个属性，是否再access中存在，存在为true
+		  if (Object.prototype.hasOwnProperty.call(access, permission)) {
+			console.log('key',key)
+			setEdge(key as any)
+			break
+		  }
+		}
+	}, [])
+	const edges = {
+		[Edge.DAY]: '日报表', // 日报表
+		[Edge.MONTH]: '月报表', // 月报表
+	}
+	const permissions = {
+		[Edge.DAY]: 'PQ_DM_QYBB_DAY', // 日报表
+		[Edge.MONTH]: 'PQ_DM_QYBB_MONTH', // 月报表
+	  }
 
 	const selectButton = (): React.ReactNode => {
 		const handleEdgeChange = (e: RadioChangeEvent) => {
@@ -38,8 +45,11 @@ const DColumn: React.FC = () => {
 		};
 		return (
 			<Radio.Group value={edge} onChange={handleEdgeChange}>
-				<Radio.Button value={Edge.DAY}>日报表</Radio.Button>
-				<Radio.Button value={Edge.MONTH}>月报表</Radio.Button>
+				{
+					Object.keys(edges).map((p, index) => {
+						return <Access accessible={access?.[permissions[p]]}><Radio.Button value={p}>{edges[p]}</Radio.Button></Access>
+					})
+				}
 			</Radio.Group>
 		);
 	};
@@ -47,8 +57,8 @@ const DColumn: React.FC = () => {
 	return (
 		<PageContainer className={sc('container')}>
 			{selectButton()}
-			{edge === Edge.DAY && <DayReport />}
-			{edge === Edge.MONTH && <MonthReport />}
+			{edge == 0 && <DayReport />}
+			{edge == 1 && <MonthReport />}
 		</PageContainer>
 	);
 };
