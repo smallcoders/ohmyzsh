@@ -32,6 +32,8 @@ enum Edge {
   HOME = 0,
 }
 
+const { RangePicker } = DatePicker
+
 export default () => {
   const [dataSource, setDataSource] = useState<OrgManage.Content[]>([]);
   const [searchContent, setSearChContent] = useState<OrgManage.searchContent>({});
@@ -125,6 +127,24 @@ export default () => {
     {
       title: '组织注册区域',
       dataIndex: 'areaName',
+      isEllipsis: true,
+      width: 250,
+    },
+    {
+      title: '组织管理员',
+      dataIndex: 'adminName',
+      isEllipsis: true,
+      width: 150,
+    },
+    {
+      title: '认证时间',
+      dataIndex: 'auditTime',
+      isEllipsis: true,
+      width: 250,
+    },
+    {
+      title: '管理员注册时间',
+      dataIndex: 'registerTime',
       isEllipsis: true,
       width: 250,
     },
@@ -258,6 +278,11 @@ export default () => {
                 </Select>
               </Form.Item>
             </Col>
+            <Col span={8}>
+              <Form.Item name="time" label="认证时间">
+                <RangePicker showTime style={{ width: '100%' }} />
+              </Form.Item>
+            </Col>
             <Col offset={12} span={4}>
               <Button
                 style={{ marginRight: 20 }}
@@ -269,6 +294,9 @@ export default () => {
                     search.signed = false
                     search.orgSign = undefined
                   }
+                  search.startTime = search?.time &&  moment(search?.time[0]).format('YYYY-MM-DD HH:mm:ss'),
+                  search.endTime = search?.time &&  moment(search?.time[1]).format('YYYY-MM-DD HH:mm:ss'),
+                  delete search.time;
                   setSearChContent(search);
                 }}
               >
