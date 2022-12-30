@@ -1,0 +1,47 @@
+@prefix:column-manage-detail;
+.@{prefix}-container {
+  .detail{
+    padding: 20px;
+    background-color: #fff;
+    &-item{
+      margin-bottom: 20px;
+      display: flex;
+      flex-flow: row;
+      &-label{
+        width: 100px;
+        margin-right: 10px;
+        text-align: right;
+        font-weight: bold;
+        font-size: 16px;
+      }
+      &-word{
+        width: 800px;
+      }
+      &-pics{
+        display: flex;
+        flex-flow: column;
+        &-item{
+          width: 120px;
+          height: 100px;
+        }
+        &-word{
+          font-size: 16px;
+          margin-bottom: 20px;
+        }
+      }
+      &-link{
+        display: flex;
+        flex-flow: column;
+        &-item{
+          font-weight: bold;
+          font-size: 16px;
+          margin-bottom: 20px;
+          &-word{
+            font-size: 16px;
+            font-weight: 400;
+          }
+        }
+      }
+    }
+  }
+}

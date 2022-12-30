@@ -158,7 +158,7 @@ export const routeName = {
   FINANCIAL_DIAGNOSTIC_RECORD: '/banking/financial_diagnostic_record',
   FINANCIAL_DIAGNOSTIC_RECORD_INDEX: '/banking/financial_diagnostic_record/index',
   FINANCIAL_DIAGNOSTIC_RECORD_DETAIL: '/banking/financial_diagnostic_record/detail',
-  
+
 
   // 金融专属
   FINANCIAL_EXCLUSIVE: '/banking/financial_exclusive',
@@ -1603,7 +1603,36 @@ export default [
           },
         ],
       },
-    ],
+      {
+        path: '/science-technology-manage/column-manage',
+        name: '科产专栏管理',
+        code: 'M_SM_KCZL',
+        access: 'M_SM_KCZL',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: '/science-technology-manage/column-manage',
+            redirect: '/science-technology-manage/column-manage/index',
+          },
+          {
+            path: '/science-technology-manage/column-manage/index',
+            name: '科产专栏管理',
+            hideInBreadcrumb: true,
+            component: './science_technology_manage/column_manage/index',
+          },
+          {
+            path: '/science-technology-manage/column-manage/edit',
+            name: '新增专栏',
+            component: './science_technology_manage/column_manage/edit/index',
+          },
+          {
+            path: '/science-technology-manage/column-manage/detail',
+            name: '详情',
+            component: './science_technology_manage/column_manage/detail',
+          },
+        ],
+      },
+    ]
   },
   {
     path: '/banking',
@@ -1888,7 +1917,7 @@ export default [
         access: 'M_FM_GYSGL',
         component: './banking/supplier-management',
       },
-     
+
     ],
   },
   {
