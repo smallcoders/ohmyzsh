@@ -8,7 +8,7 @@ import {
     TreeSelect
   } from 'antd';
   
-  import { DownloadOutlined } from "@ant-design/icons";
+  import { UploadOutlined } from "@ant-design/icons";
   
 //   
   import scopedClasses from '@/utils/scopedClasses';
@@ -206,7 +206,13 @@ import {
             <Row justify='space-between'>
               <Col span={6}>
                 <Form.Item name="year" label="诊断年份">
-                  <DatePicker  defaultValue={moment(new Date())} picker="year" />
+                  <DatePicker
+                    defaultValue={moment(new Date())} 
+                    picker="year" 
+                    disabledDate={(current) => 
+                      current < moment('2022-01-01') || current > moment().endOf('day')
+                    }
+                  />
                 </Form.Item>
               </Col>
               <Col span={6}>
@@ -315,7 +321,7 @@ import {
             <h3>诊断区域报表<span>当前诊断区域统计范围只有安徽省内区县，安徽省外暂不做统计</span></h3>
             <Access accessible={access['PX_DM_QYBB_MONTH']}>
               <Button
-                icon={<DownloadOutlined />}
+                icon={<UploadOutlined />}
                 type="primary"
                 onClick={exportList}
               >

@@ -7,8 +7,9 @@ import {
     DatePicker,
     TreeSelect
   } from 'antd';
+  import type { RangePickerProps } from 'antd/es/date-picker';
   
-  import { DownloadOutlined } from "@ant-design/icons";
+  import { UploadOutlined } from "@ant-design/icons";
   
 //   
   import scopedClasses from '@/utils/scopedClasses';
@@ -213,7 +214,13 @@ import {
             <Row justify='space-between'>
               <Col span={6}>
                 <Form.Item name="year" label="诊断月份">
-                  <DatePicker defaultValue={moment(new Date())} picker="month" />
+                  <DatePicker 
+                    defaultValue={moment(new Date())} 
+                    picker="month" 
+                    disabledDate={(current) => 
+                      current < moment('2022-06-01') || current > moment().endOf('day')
+                    }
+                  />
                 </Form.Item>
               </Col>
               <Col span={6}>
@@ -330,7 +337,7 @@ import {
             <Access accessible={access['PX_DM_QYBB_DAY']}>
               <Button
                 type='primary'
-                icon={<DownloadOutlined />}
+                icon={<UploadOutlined />}
                 onClick={exportList}
               >
                 导出数据

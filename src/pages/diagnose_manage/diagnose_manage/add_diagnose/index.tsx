@@ -1333,6 +1333,7 @@ export default () => {
 					<div className='result-add-form'>
 						<Form layout={'vertical'} form={resultForm}
 							onValuesChange={(newEventName, allValues) => { onValuesChange2(newEventName, allValues) }}
+							autocomplete="off"
 						>
 							{edge == 1 && (
 								<>
