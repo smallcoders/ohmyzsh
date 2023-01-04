@@ -26,10 +26,13 @@ import { listAllAreaCode } from '@/services/common';
 import { PageContainer } from '@ant-design/pro-layout';
 import { getOrgManagePage, signOrgTag } from '@/services/org-type-manage';
 import { Access, useAccess } from 'umi';
+import {routeName} from "../../../../config/routes";
 const sc = scopedClasses('user-config-org-manage');
 enum Edge {
   HOME = 0,
 }
+
+const { RangePicker } = DatePicker
 
 export default () => {
   const [dataSource, setDataSource] = useState<OrgManage.Content[]>([]);
@@ -128,6 +131,24 @@ export default () => {
       width: 250,
     },
     {
+      title: '组织管理员',
+      dataIndex: 'adminName',
+      isEllipsis: true,
+      width: 150,
+    },
+    {
+      title: '认证时间',
+      dataIndex: 'auditTime',
+      isEllipsis: true,
+      width: 250,
+    },
+    {
+      title: '管理员注册时间',
+      dataIndex: 'registerTime',
+      isEllipsis: true,
+      width: 250,
+    },
+    {
       title: '标注情况',
       dataIndex: 'orgSignName',
       isEllipsis: true,
@@ -184,6 +205,14 @@ export default () => {
                 标注
               </Button>
             </Popconfirm>
+            <Button
+              type="link"
+              onClick={() => {
+                window.open(`${routeName.ORG_MANAGE_DETAIL}?id=${record.id}`);
+              }}
+            >
+              成员信息
+            </Button>
           </Space>
         </Access>
       },
@@ -249,6 +278,11 @@ export default () => {
                 </Select>
               </Form.Item>
             </Col>
+            <Col span={8}>
+              <Form.Item name="time" label="认证时间">
+                <RangePicker showTime style={{ width: '100%' }} />
+              </Form.Item>
+            </Col>
             <Col offset={12} span={4}>
               <Button
                 style={{ marginRight: 20 }}
@@ -260,6 +294,9 @@ export default () => {
                     search.signed = false
                     search.orgSign = undefined
                   }
+                  search.startTime = search?.time &&  moment(search?.time[0]).format('YYYY-MM-DD HH:mm:ss'),
+                  search.endTime = search?.time &&  moment(search?.time[1]).format('YYYY-MM-DD HH:mm:ss'),
+                  delete search.time;
                   setSearChContent(search);
                 }}
               >

@@ -12,6 +12,9 @@ export async function getLoanRecordList(data?: { [key: string]: any }) {
   return request<any>('/antelope-finance/loanRecord/mng/records', {
     method: 'post',
     data,
+    // headers: {
+    //   'rpc-tag': 'jianwang44',
+    // },
   });
 }
 /**
@@ -23,6 +26,9 @@ export async function getTotalAmount(data?: { [key: string]: any }) {
   return request<any>('/antelope-finance/loanRecord/mng/getTotalAmount', {
     method: 'post',
     data,
+    // headers: {
+    //   'rpc-tag': 'jianwang44',
+    // },
   });
 }
 /**
@@ -32,7 +38,8 @@ export async function getTotalAmount(data?: { [key: string]: any }) {
  */
 export async function queryBankList(data?: { [key: string]: any }) {
   return request<any>('/antelope-finance/demand/queryBankList', {
-    method: 'get',
+    method: 'post',
+    data,
   });
 }
 /**
@@ -84,6 +91,18 @@ export async function updateCreditInfo(data: { [key: string]: any }) {
 }
 
 /**
+ * 编辑或修改保单信息
+ * @param data
+ * @returns
+ */
+export async function updateInsurance(data: { [key: string]: any }) {
+  return request<any>('/antelope-finance/loanRecord/mng/updateInsurance', {
+    method: 'post',
+    data,
+  });
+}
+
+/**
  * 备注
  * @param data
  * @returns
@@ -92,7 +111,6 @@ export async function takeNotes(data: { [key: string]: any }) {
   return request<any>('/antelope-finance/loanRecord/mng/takeNotes', {
     method: 'post',
     data,
-    
   });
 }
 

@@ -38,10 +38,10 @@ import {
   getTakeMoneyDetail,
 } from '@/services/banking-loan';
 
-const sc = scopedClasses('loan-record');
-const { DataSourcesTrans, creditStatusTrans } = BankingLoan;
+const sc = scopedClasses('loan-record-list');
+const { DataSourcesTrans, creditStatusTrans, creditStatusLeaseTrans } = BankingLoan;
 
-export default () => {
+export default ({ loanType, name }: { loanType: number; name: string }) => {
   const [dataSource, setDataSource] = useState<BankingLoan.Content[]>([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [searchForm] = Form.useForm();
@@ -59,10 +59,9 @@ export default () => {
     creditAmountMin?: number; // 授信金额最小值
     creditAmountMax?: number; // 授信金额最大值
   }>({});
-
   const formLayout = {
-    labelCol: { span: 7 },
-    wrapperCol: { span: 16 },
+    labelCol: { xs: { span: 8 }, xxs: { span: 6 } },
+    wrapperCol: { xs: { span: 16 }, xxs: { span: 18 } },
   };
 
   /**
@@ -103,7 +102,7 @@ export default () => {
   const prepare = async () => {
     console.log(history.action);
     try {
-      const data = await Promise.all([queryBankList()]);
+      const data = await Promise.all([queryBankList({ type: loanType })]);
       setBankList(data?.[0]?.result || []);
     } catch (error) {
       message.error('数据初始化错误');
@@ -148,6 +147,7 @@ export default () => {
         pageIndex,
         pageSize,
         ...searchContent,
+        type: loanType,
       });
       if (code === 0) {
         setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
@@ -187,8 +187,9 @@ export default () => {
   const getModal = () => {
     return (
       <Modal
+        className={sc('model-mark')}
         title="备注"
-        width="720px"
+        width="650px"
         maskClosable={false}
         visible={createModalVisible}
         onCancel={() => {
@@ -204,7 +205,7 @@ export default () => {
             <Col span="12">
               <Form.Item
                 name="dealName"
-                labelCol={{ span: 7 }}
+                labelCol={{ span: 8 }}
                 wrapperCol={{ span: 12 }}
                 label="业务申请编号"
               >
@@ -216,7 +217,7 @@ export default () => {
               <Form.Item
                 name="dealName1"
                 labelCol={{ span: 7 }}
-                wrapperCol={{ span: 18 }}
+                wrapperCol={{ span: 17 }}
                 label="企业名称"
               >
                 {/* <Input disabled /> */}
@@ -224,11 +225,11 @@ export default () => {
               </Form.Item>
             </Col>
           </Row>
+          <div className="tips">备注：最长可输入1500字，必填</div>
           <Form.Item
-            labelCol={{ span: 3 }}
-            wrapperCol={{ span: 18 }}
+            labelCol={{ span: 0 }}
+            wrapperCol={{ span: 24 }}
             name="text"
-            label="备注"
             rules={[{ required: true }]}
           >
             <FormEdit />
@@ -242,6 +243,7 @@ export default () => {
     try {
       const { result, code } = await getTotalAmount({
         ...searchContent,
+        type: loanType,
       });
       if (code === 0) {
         setTotalAmount(result);
@@ -303,7 +305,7 @@ export default () => {
       title: '企业名称',
       dataIndex: 'orgName',
       isEllipsis: true,
-      width: 150,
+      width: '120px',
     },
     {
       title: '申请金额(万元)',
@@ -337,9 +339,24 @@ export default () => {
             {_ === '授信失败' && (
               <Tooltip
                 placement="topLeft"
+                color="#fff"
                 title={
-                  <div>
-                    <p>失败原因</p>
+                  <div
+                    style={{
+                      color: '#8290A6',
+                      fontSize: '14px',
+                      lineHeight: '22px',
+                      padding: '10px 8px',
+                    }}
+                  >
+                    <p
+                      style={{
+                        fontWeight: 700,
+                        color: '#556377',
+                      }}
+                    >
+                      失败原因
+                    </p>
                     <div>{record.refuseReason}</div>
                   </div>
                 }
@@ -386,7 +403,9 @@ export default () => {
                 const step = await getStep(record, type);
                 setParams();
                 history.push(
-                  `${routeName.LOAN_RECORD_DETAIL}?id=${record.id}&isDetail=1&type=${type}&step=${step}`,
+                  `${routeName[name + '_RECORD_DETAIL']}?id=${
+                    record.id
+                  }&isDetail=1&type=${type}&step=${step}&loanType=${loanType}&name=${name}`,
                 );
               }}
             >
@@ -401,7 +420,9 @@ export default () => {
                     const step = await getStep(record, type);
                     setParams();
                     history.push(
-                      `${routeName.LOAN_RECORD_ENTER}?id=${record.id}&type=${type}&step=${step}`,
+                      `${routeName[name + '_RECORD_ENTER']}?id=${
+                        record.id
+                      }&type=${type}&step=${step}&loanType=${loanType}&name=${name}`,
                     );
                   }}
                 >
@@ -439,17 +460,17 @@ export default () => {
       <div className={sc('container-search')}>
         <Form {...formLayout} form={searchForm}>
           <Row>
-            <Col span={isMore ? 8 : 7}>
+            <Col span={8}>
               <Form.Item name="applyNo" label="业务申请编号">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
-            <Col span={isMore ? 8 : 5}>
+            <Col span={8}>
               <Form.Item name="orgName" label="企业名称">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
-            <Col span={isMore ? 8 : 6}>
+            <Col span={8}>
               <Form.Item name="time" label="申请时间">
                 <DatePicker.RangePicker
                   style={{ width: '100%' }}
@@ -487,7 +508,9 @@ export default () => {
                 <Col span={8}>
                   <Form.Item name="creditStatus" label="授信状态">
                     <Select placeholder="请选择" allowClear showArrow mode="multiple">
-                      {Object.entries(creditStatusTrans).map((p) => {
+                      {Object.entries(
+                        loanType === 3 ? creditStatusLeaseTrans : creditStatusTrans,
+                      ).map((p) => {
                         return (
                           <Select.Option key={p[0]} value={p[0]}>
                             {p[1]}
@@ -514,7 +537,7 @@ export default () => {
                       min: 0,
                       precision: 2,
                     }}
-                    addonAfter={<div style={{ width: '30px' }}>万元</div>}
+                    addonAfter={<div style={{ width: '30px', whiteSpace: 'nowrap' }}>万元</div>}
                   />
                 </Col>
                 <Col span={8}>
@@ -527,76 +550,76 @@ export default () => {
                     }}
                     separatorWidth={30}
                     name="creditAmount"
-                    addonAfter={<div style={{ width: '30px' }}>万元</div>}
+                    addonAfter={<div style={{ width: '30px', whiteSpace: 'nowrap' }}>万元</div>}
                   />
                 </Col>
               </>
             )}
-
-            <Col offset={isMore ? 18 : 0} span={6}>
-              <Button
-                style={{ marginRight: 10 }}
-                type="primary"
-                key="search"
-                onClick={() => {
-                  setPageInfo({
-                    pageIndex: 1,
-                    pageSize: 10,
-                    totalCount: 0,
-                    pageTotal: 0,
-                  });
-                  const search = searchForm.getFieldsValue();
-                  if (search.time) {
-                    search.applyTimeStart = moment(search.time[0]).format('YYYY-MM-DD');
-                    search.applyTimeEnd = moment(search.time[1]).format('YYYY-MM-DD');
-                  }
-                  if (search.takeMoney) {
-                    search.takeMoneyMin = search.takeMoney[0]
-                      ? regYuanToFen(search.takeMoney[0])
-                      : null;
-                    search.takeMoneyMax = search.takeMoney[1]
-                      ? regYuanToFen(search.takeMoney[1])
-                      : null;
-                  }
-                  if (search.creditAmount) {
-                    search.creditAmountMin = search.creditAmount[0]
-                      ? regYuanToFen(search.creditAmount[0])
-                      : null;
-                    search.creditAmountMax = search.creditAmount[1]
-                      ? regYuanToFen(search.creditAmount[1])
-                      : null;
-                  }
-                  console.log('search', search);
-                  setSearChContent(search);
-                }}
-              >
-                查询
-              </Button>
-              <Button
-                style={{ marginRight: 0 }}
-                type="primary"
-                key="reset"
-                onClick={() => {
-                  searchForm.resetFields();
-                  setSearChContent({});
-                }}
-              >
-                重置
-              </Button>
-
-              <Button
-                style={{ marginRight: 0 }}
-                type="link"
-                onClick={() => {
-                  setIsMore(!isMore);
-                }}
-              >
-                {isMore ? '收起筛选' : '展开筛选'}
-                {isMore ? <CaretUpOutlined /> : <CaretDownOutlined />}
-              </Button>
-            </Col>
           </Row>
         </Form>
+        <div className={sc('container-search-opereate')}>
+          <div>
+            <Button
+              style={{ marginRight: 10 }}
+              type="primary"
+              key="search"
+              onClick={() => {
+                setPageInfo({
+                  pageIndex: 1,
+                  pageSize: 10,
+                  totalCount: 0,
+                  pageTotal: 0,
+                });
+                const search = searchForm.getFieldsValue();
+                if (search.time) {
+                  search.applyTimeStart = moment(search.time[0]).format('YYYY-MM-DD');
+                  search.applyTimeEnd = moment(search.time[1]).format('YYYY-MM-DD');
+                }
+                if (search.takeMoney) {
+                  search.takeMoneyMin = search.takeMoney[0]
+                    ? regYuanToFen(search.takeMoney[0])
+                    : null;
+                  search.takeMoneyMax = search.takeMoney[1]
+                    ? regYuanToFen(search.takeMoney[1])
+                    : null;
+                }
+                if (search.creditAmount) {
+                  search.creditAmountMin = search.creditAmount[0]
+                    ? regYuanToFen(search.creditAmount[0])
+                    : null;
+                  search.creditAmountMax = search.creditAmount[1]
+                    ? regYuanToFen(search.creditAmount[1])
+                    : null;
+                }
+                console.log('search', search);
+                setSearChContent(search);
+              }}
+            >
+              查询
+            </Button>
+            <Button
+              style={{ marginRight: 0 }}
+              key="reset"
+              onClick={() => {
+                searchForm.resetFields();
+                setSearChContent({});
+              }}
+            >
+              重置
+            </Button>
+          </div>
+
+          <Button
+            style={{ marginRight: 0 }}
+            type="link"
+            onClick={() => {
+              setIsMore(!isMore);
+            }}
+          >
+            {isMore ? '收起' : '展开'}
+            {isMore ? <CaretUpOutlined /> : <CaretDownOutlined />}
+          </Button>
+        </div>
       </div>
     );
   };
@@ -613,7 +636,7 @@ export default () => {
       } else {
         data = { ...searchContent };
       }
-      const res = await loanRecordExport(data);
+      const res = await loanRecordExport({ ...data, type: loanType });
       const content = res?.data;
       const blob = new Blob([content], {
         type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8',
@@ -649,54 +672,60 @@ export default () => {
     setSelectedRowKeys(newSelectedRowKeys);
   };
   return (
-    <PageContainer className={sc('container')}>
+    <PageContainer
+      header={{
+        title: loanType === 1 ? '贷款业务' : '租赁业务',
+        breadcrumb: {},
+      }}
+      className={sc('container')}
+      ghost
+    >
       {useSearchNode()}
-      <div className={sc('container-table-header')}>
-        <div className="title">
-          <div>
-            <span style={{ marginRight: 10 }}>
-              累计授信金额：{regFenToYuan(totalAmount.creditTotal)}万元
-            </span>
-            <span>累计放款金额：{regFenToYuan(totalAmount.takeTotal)}万元</span>
+      <div className={sc('container-table')}>
+        <div className={sc('container-table-header')}>
+          <div className="title">
+            <Dropdown overlay={menuProps}>
+              <Button size="large">
+                <Space>
+                  导出
+                  <DownOutlined />
+                </Space>
+              </Button>
+            </Dropdown>
+            <div className="tips">
+              <span style={{ marginRight: 20 }}>
+                累计授信金额：{regFenToYuan(totalAmount.creditTotal)}万元
+              </span>
+              <span>累计放款金额：{regFenToYuan(totalAmount.takeTotal)}万元</span>
+            </div>
           </div>
-          <Dropdown overlay={menuProps}>
-            <Button>
-              <Space>
-                导出
-                <DownOutlined />
-              </Space>
-            </Button>
-          </Dropdown>
-          {/* <Button icon={<UploadOutlined />} onClick={exportList}>
-            导出
-          </Button> */}
         </div>
-      </div>
-      <div className={sc('container-table-body')}>
-        <SelfTable
-          bordered
-          scroll={{ x: 2280 }}
-          columns={columns}
-          dataSource={dataSource}
-          rowKey={'id'}
-          rowSelection={{
-            fixed: true,
-            selectedRowKeys,
-            onChange: onSelectChange,
-          }}
-          pagination={
-            pageInfo.totalCount === 0
-              ? false
-              : {
-                  onChange: getPage,
-                  total: pageInfo.totalCount,
-                  current: pageInfo.pageIndex,
-                  pageSize: pageInfo.pageSize,
-                  showTotal: (total: number) =>
-                    `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
-                }
-          }
-        />
+        <div className={sc('container-table-body')}>
+          <SelfTable
+            bordered
+            scroll={{ x: 2280 }}
+            columns={columns}
+            dataSource={dataSource}
+            rowKey={'id'}
+            rowSelection={{
+              fixed: true,
+              selectedRowKeys,
+              onChange: onSelectChange,
+            }}
+            pagination={
+              pageInfo.totalCount === 0
+                ? false
+                : {
+                    onChange: getPage,
+                    total: pageInfo.totalCount,
+                    current: pageInfo.pageIndex,
+                    pageSize: pageInfo.pageSize,
+                    showTotal: (total: number) =>
+                      `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
+                  }
+            }
+          />
+        </div>
       </div>
       {getModal()}
     </PageContainer>

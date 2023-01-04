@@ -225,3 +225,15 @@ export async function getClaimFollow(specifyType: string) {
   return request<any>(`/antelope-science/mng/demand/claim/follow?specifyType=${specifyType}`);
 }
 
+/**
+ * 结束需求
+ * @param data
+ * @returns
+ */
+ export async function postDemandFinish(data?: { [key: string]: any }) {
+  return request<any>('/antelope-science/mng/demand/finish', {
+    method: 'post',
+    data,
+  });
+}
+

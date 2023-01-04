@@ -1,0 +1,85 @@
+@prefix:column-manage-edit;
+
+.@{prefix}-container {
+  &-form {
+    padding: 60px 0 20px 80px;
+    background-color: #fff;
+    .ant-form-item-no-colon {
+      text-align: left;
+      display: block;
+      font-weight: bold;
+      font-size: 16px;
+    }
+    .ant-form-item {
+      min-height: 44px;
+    }
+    .ant-form-item-label {
+      width: 140px;
+      text-align: right;
+      white-space: normal;
+    }
+
+    .ant-form-item-label > label{
+      height: 44px;
+    }
+    .ant-form-item-control-input-content {
+      max-width: 300px;
+    }
+    .red{
+      color:red;
+    }
+    .ant-row {
+    }
+    .link{
+      .ant-form-item-label {
+        width: 70px;
+        text-align: right;
+        white-space: normal;
+      }
+    }
+    .pics{
+      .ant-form-item-control-input-content {
+        max-width: 600px!important;
+        input{
+          width: 300px;
+        }
+      }
+      .ant-form-item{
+        margin-bottom: 0;
+        padding: 10px;
+      }
+    }
+    .pic{
+      margin-bottom: 20px;
+      display: flex;
+      flex-flow: column;
+      position: relative;
+      &-word{
+        position: absolute;
+        right: 10px;
+        top: 16px;
+        width: 260px;
+      }
+      .ant-upload-select-picture-card{
+        background: #ffffff;
+      }
+      .ant-form-item-label {
+        width: 146px;
+        text-align: left;
+      }
+      &-content{
+        display: flex;
+        flex-flow: row;
+        padding: 20px;
+        .ant-upload-picture-card-wrapper {
+          display: inline-block;
+          width: 50%;
+        }
+        .ant-upload-select-picture-card{
+          background: #fff;
+        }
+      }
+    }
+
+  }
+}

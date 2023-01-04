@@ -146,7 +146,7 @@ export default ({ demandTypes, area }: { demandTypes: any[], area: any[] }) => {
       render: (_: string, _record: any) => (
         <a
           onClick={() => {
-            window.open(`${routeName.DEMAND_MANAGEMENT_DETAIL}?id=${_record.id}`);
+            history.push(`${routeName.DEMAND_MANAGEMENT_DETAIL}?id=${_record.id}`);
           }}
         >
           {_}
@@ -199,7 +199,6 @@ export default ({ demandTypes, area }: { demandTypes: any[], area: any[] }) => {
       isEllipsis: true,
       width: 150,
     },  
-
     {
       title: '分发情况',
       dataIndex: 'specifyType',
@@ -336,9 +335,6 @@ export default ({ demandTypes, area }: { demandTypes: any[], area: any[] }) => {
                 </Select>
               </Form.Item>
             </Col>
-
-          
-
 
             <Col offset={12} span={4}>
               <Button

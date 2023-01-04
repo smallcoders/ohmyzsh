@@ -18,6 +18,11 @@ import Recommend from '@/pages/live_management/search_record_management/componen
 // 供需设置-服务管理tab页
 import Solution from '@/pages/supply_demand_setting/solution/solution';
 import DemandIntention from '@/pages/supply_demand_setting/solution/intention_message/index';
+// 供需设置-供需对接报表各Tab页
+import SummaryReport from '@/pages/supply_demand_setting/demand_reports/summary-report';
+import DetailsReport from '@/pages/supply_demand_setting/demand_reports/details-report';
+import MonthReport from '@/pages/supply_demand_setting/demand_reports/month-report';
+import WeeksReport from '@/pages/supply_demand_setting/demand_reports/weeks-report';
 
 // 用户管理-专家管理tab页
 import ExpertResource from '@/pages/user_config/expert_manage/components/expert-resource';
@@ -27,12 +32,11 @@ import ApplyRecord from '@/pages/user_config/expert_manage/components/apply-reco
 import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
 const sc = scopedClasses('tab-menu');
-export default (props: { tabs?: string[]; activeState?: string}) => {
-  const [contentHtml, setContentHtml] = useState<string | undefined>();
+export default (props: { tabs?: string[]; activeState?: string; sort?: boolean;}) => {
   const [activeKey, setActiveKey] = useState<string>('');
   const [showTabList, setShowTabList] = useState<any>([]);
 
-  const { initialState } = useModel('@@initialState');
+  const { initialState, loading } = useModel('@@initialState');
   const { currentUser } = initialState;
   const tabMenu = [
     // 诊断管理-诊断通tab页
@@ -75,6 +79,27 @@ export default (props: { tabs?: string[]; activeState?: string}) => {
       tab: '意向消息',
       key: 'M_SD_FWXX'
     },
+    // 供需设置-供需对接报表
+    {
+      tab: '总表',
+      key: 'M_SD_ZB',
+      sort: 1
+    },
+    {
+      tab: '明细表',
+      key: 'M_SD_MXB',
+      sort: 2
+    },
+    {
+      tab: '周报表',
+      key: 'M_SD_ZBB',
+      sort: 3
+    },
+    {
+      tab: '月报表',
+      key: 'M_SD_YBB',
+      sort: 4
+    },
     // 用户管理-专家管理tab页
     {
       tab: '专家资源',
@@ -89,7 +114,7 @@ export default (props: { tabs?: string[]; activeState?: string}) => {
       key: 'M_UM_SQJL',
     },
   ]
-  
+
   const { type } = history.location.query as any;
   const prepare = async () => {
     if (type) {
@@ -101,7 +126,7 @@ export default (props: { tabs?: string[]; activeState?: string}) => {
     if (!currentUser) return
     // console.log(props.tabs, 'props.tabs');
     if(currentUser.menuShowMap) {
-      let arr: any = [
+      const arr: any = [
         // {name: 'M_DM_XXZD', value: true},
         // {name: 'M_DM_XSZD', value: false},
         // {name: 'M_DM_ZDBM', value: true}
@@ -115,7 +140,7 @@ export default (props: { tabs?: string[]; activeState?: string}) => {
           })
         }
       })
-      let arr2 = []
+      const arr2 = []
       for(let i=0; i<arr.length; i++) {
         for(let j=0; j<tabMenu.length; j++) {
           if(arr[i].name == tabMenu[j].key && arr[i].value) {
@@ -123,31 +148,43 @@ export default (props: { tabs?: string[]; activeState?: string}) => {
           }
         }
       }
+
+      if (props.sort) {
+        arr2.sort((a: any, b: any) => a.sort - b.sort);
+      }
+
       setShowTabList(arr2)
-      setActiveKey(arr2[0].key)
+      if (arr2[0]) setActiveKey(arr2[0].key)
       console.log(arr2)
       console.log('props?.activeState',props?.activeState)
-      if (props?.activeState != '1') {
+      if (props && props?.activeState && props?.activeState != '1') {
         setActiveKey(props?.activeState)
       }
     }
   }, [props.tabs]);
 
+
+  useEffect(() => {
+    if (!activeKey) return
+    sessionStorage.setItem('activeKey', activeKey)
+  }, [activeKey])
+
   useEffect(() => {
     prepare();
-  }, []); 
+  }, []);
+
+
 
   return (
     <PageContainer
-      className={sc('container')}
-      tabList={showTabList}
+      className={sc('container')}      tabList={showTabList}
       tabActiveKey={activeKey}
       onTabChange={(key: string) => setActiveKey(key)}
     >
       {activeKey === 'M_DM_XSZD' && <Online />}
       {activeKey === 'M_DM_XXZD' && <Offline />}
       {activeKey === 'M_DM_ZDBM' && <Intention />}
-      
+
       {activeKey === 'M_PM_TJ_HD' && <Activity />}
       {activeKey === 'M_PM_TJ_SP' && <Goods />}
 
@@ -155,6 +192,11 @@ export default (props: { tabs?: string[]; activeState?: string}) => {
       {activeKey === 'M_LM_SSTJ' && <Recommend />}
       {activeKey === 'M_SD_FW' && <Solution />}
       {activeKey === 'M_SD_FWXX' && <DemandIntention />}
+
+      {activeKey === 'M_SD_ZB' && <SummaryReport />}
+      {activeKey === 'M_SD_MXB' && <DetailsReport />}
+      {activeKey === 'M_SD_ZBB' && <WeeksReport />}
+      {activeKey === 'M_SD_YBB' && <MonthReport />}
 
       {activeKey === 'M_UM_ZJZY' && <ExpertResource />}
       {activeKey === 'M_UM_ZJZX' && <ConsultRecord />}

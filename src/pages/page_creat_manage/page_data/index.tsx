@@ -59,13 +59,29 @@ export default () => {
                newColumns.push({
                  title: paramDesc,
                  dataIndex: paramName,
-                 render: (text: string) => {
-                   if (text){
-                     return(
-                       <span>{text.split('&&@#@').join(';')}</span>
+                 width: 150,
+                 isEllipsis: true,
+                 render: (text: any) => {
+                   if (text?.tmp_result_ver_unique_key && text?.file_type === 1){
+                     return (
+                       <div className="img-list">
+                         {(text.value?.split('&&@#@') ? text.value?.split('&&@#@') : [text.value]).map((it: string, index: number) => {
+                           return <img key={index} src={it} alt='' />
+                         })}
+                       </div>
                      )
                    }
-                   return <span></span>
+                   if (text?.tmp_result_ver_unique_key && text?.value){
+                     return(
+                       <span>{text.value?.split('&&@#@')?.join(';') || ''}</span>
+                     )
+                   }
+                   if (typeof text === 'string'){
+                     return(
+                       <span>{text?.split('&&@#@')?.join(';') || ''}</span>
+                     )
+                   }
+                   return <span>--</span>
                  }
                })
             }
@@ -74,8 +90,14 @@ export default () => {
             {
               title: '提交人',
               dataIndex: 'submit_user_name',
-              isEllipsis: true,
               width: 200,
+              render: (submit_user_name: string) => {
+                return (
+                  <>
+                    {submit_user_name || '--'}
+                  </>
+                )
+              },
             },
           )
           newColumns.push({
@@ -205,6 +227,7 @@ export default () => {
             bordered
             columns={tableColumns}
             dataSource={dataSource}
+            scroll={tableColumns.length > 8 ? { x: 1000 } : {}}
             pagination={
               pageInfo.totalCount === 0
                 ? false

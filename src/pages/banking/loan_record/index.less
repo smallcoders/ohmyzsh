@@ -1,30 +1,63 @@
-@prefix: loan-record;
+@prefix: loan-record-list;
 
 .@{prefix}-show-reason{
   color: #6680FF;
 }
+.@{prefix}-model-mark{
+  .ant-form-item {
+    color: #556377;
+    font-size: 16px;
+  }
+  .ant-form-item-label > label{
+    color: #8290a6;
+    font-size: 16px;
+  }
+  .tips {
+    color: #c4cad5;
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+}
 .@{prefix}-container {
-  &-table-header {
-    padding: 20px;
+  &-table{
+    border-radius: 2px;
     background-color: #fff;
+    padding: 24px 32px;
+  }
+  &-table-header {
     .title {
       display: flex;
       justify-content: space-between;
-      > span {
-        color: rgba(0, 0, 0, 0.85);
-        font-weight: 600;
-        font-size: 16px;
-        line-height: 22px;
+      margin-bottom: 16px;
+      .tips {
+        color: #8290a6;
+        font-size: 14px;
+        line-height: 40px;
       }
     }
   }
   &-table-body {
-    padding: 0 20px;
     background-color: #fff;
   }
   &-search {
+    border-radius: 2px;
     margin-bottom: 20px;
-    padding: 20px 0 20px 10px;
+    padding: 24px 0 0 10px;
     background-color: #fff;
+    display: flex;
+    align-items: flex-end;
+    .ant-form-item-label > label{
+      color: #556377;
+      font-size: 16px;
+    }
+    .ant-form {
+      flex: 1;
+    }
+    &-opereate{
+      display: flex;
+      flex: 0 278px;
+      justify-content: space-around;
+      margin-bottom: 24px;
+    }
   }
 }

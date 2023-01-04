@@ -352,7 +352,7 @@ export default () => {
             expandedRowRender: (record: IntendMessage.Content) => (
               <p style={{ margin: 0 }}>
                 备注：{record.remark}
-                {record.editState &&  access['P_SD_FWXX'](
+                { (record.editState && access['P_SD_FWXX']) &&
                   <Popconfirm
                     icon={null}
                     title={
@@ -376,7 +376,7 @@ export default () => {
                       }}
                     />
                   </Popconfirm>
-                )}
+                }
               </p>
             ),
             // rowExpandable: () => true,

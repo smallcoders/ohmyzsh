@@ -1,0 +1,136 @@
+@prefix: financial-exclusive;
+.@{prefix}-page1{
+  .ant-pro-footer-bar-right{
+    height: 88px;
+    flex: 0 100%;
+    text-align: center;
+    line-height: 88px;
+  }
+}
+.@{prefix}-page2{
+  .ant-pro-footer-bar-right{
+    display: none;
+  }
+}
+.@{prefix}-container {
+  height: 892px;
+  padding: 32px 40px;
+  background: #fff;
+  &-title {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    padding-right: 80px;
+    color: #1e232a;
+    font-weight: 700;
+    font-size: 18px;
+    button {
+      width: 96px;
+      height: 40px;
+      color: #1e232a;
+      font-weight: 400;
+      font-size: 16px;
+      text-align: center;
+      background: #ffffff;
+      border: 1px solid #dbdfe6;
+      border-radius: 2px;
+    }
+  }
+  &-content-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 182px 300px;
+    .ant-empty-description {
+      color: #8290a6;
+      font-weight: 400;
+      font-size: 16px;
+    }
+    button {
+      width: 120px;
+      height: 40px;
+      margin-top: 24px;
+      color: #ffffff;
+      font-weight: 400;
+      font-size: 16px;
+      text-align: center;
+      background: #0068ff;
+      border-radius: 2px;
+    }
+  }
+  &-content-detail {
+    .item {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 20px;
+      color: #556377;
+      font-size: 16px;
+      line-height: 24px;
+      label {
+        width: 200px;
+        color: #8290a6;
+        font-weight: 400;
+        font-size: 16px;
+        white-space: nowrap;
+        text-align: right;
+        span {
+          color: red;
+        }
+      }
+    }
+  }
+  .ant-form-item {
+    margin-bottom: 18px;
+    .ant-form-item-label > label {
+      height: 40px;
+      color: #1e232a;
+      font-size: 16px;
+    }
+    .ant-input-affix-wrapper {
+      padding: 0 11px 0 0;
+      .ant-input-prefix,
+      .ant-input-suffix {
+        color: #c4cad5;
+        font-size: 16px;
+      }
+    }
+    .ant-input {
+      padding: 8px 11px;
+      font-size: 16px;
+      line-height: 16px;
+    }
+    .ant-form-item-control {
+      .ant-form-item-control-input {
+        width: 400px;
+        .info {
+          color: #8290a6;
+          font-size: 14px;
+          .example {
+            color: #0f71ff;
+            cursor: pointer;
+          }
+          .size {
+            color: #ff4f17;
+          }
+        }
+        .ant-upload.ant-upload-select-picture-card > .ant-upload {
+          span {
+            color: #8290a6;
+            font-size: 17px;
+          }
+          div {
+            color: #556377;
+            font-size: 14px;
+          }
+        }
+      }
+    }
+  }
+  .ant-pro-footer-bar {
+    padding: 0;
+    .ant-pro-footer-bar-left {
+      width: 208px;
+    }
+  }
+}

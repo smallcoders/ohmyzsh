@@ -834,14 +834,13 @@ export default () => {
       isEllipsis: true,
       width: 160,
     },
-    access.P_SM_XQGL && {
+    {
       title: '操作',
       width: 180,
       dataIndex: 'option',
       fixed: 'right',
       render: (_: any, record: any) => {
         return (
-          // <Access accessible={accessible}>
           <Space wrap>
             <Button
               type="link"
@@ -852,17 +851,18 @@ export default () => {
             >
               详情
             </Button>
-            <Button
-              type="link"
-              style={{ padding: 0 }}
-              onClick={() => {
-                editService(record);
-              }}
-            >
-              编辑
-            </Button>
+            <Access accessible={access['P_DN_BAG']}>
+              <Button
+                type="link"
+                style={{ padding: 0 }}
+                onClick={() => {
+                  editService(record);
+                }}
+              >
+                编辑
+              </Button>
+            </Access>
           </Space>
-          // </Access>
         );
       },
     },
@@ -874,7 +874,7 @@ export default () => {
       <div className="content-wrapper">
         <div className="container-table-header">
           <h3>诊断服务包</h3>
-          <Access accessible={access.P_SM_XQGL}>
+          <Access accessible={access['P_DN_BAG']}>
             <Button type="primary" onClick={showDrawer}>
               新增诊断服务包
             </Button>

@@ -40,3 +40,38 @@ export function getCommentsDetailPage(params: {
     params,
   })
 }
+
+// 留言管理列表
+export function getCommentsManagePage(data: {
+  name?: string // 用户名
+  startDateTime?: string // 开始时间
+  endDateTime?: string // 结束时间
+  status?: string // 留言状态
+  tabEnum?: string // 所属板块
+  pageSize?: number;
+  pageIndex?: number;
+}) {
+  return request('/antelope-common/mng/comments/manage/page', {
+    method: 'post',
+    data,
+  })
+}
+
+// 留言管理 - 上架
+export function getCommentsManageOnshelf(data: {
+  id: number
+}) {
+  return request('/antelope-common/mng/comments/manage/onShelf', {
+    method: 'post',
+    data,
+  })
+}
+// 留言上架
+export function getCommentsManageOffShelf(data: {
+  id: number
+}) {
+  return request('/antelope-common/mng/comments/manage/offShelf', {
+    method: 'post',
+    data,
+  })
+}

@@ -1,6 +1,6 @@
 import { Row, Col, Button, Image, message, Spin } from 'antd';
 import './application_info.less';
-import VerifyStepsDetail from '@/components/verify_steps';
+import VerifyStepsDetail from './verify-steps/verify-steps';
 import CommonTitle from '@/components/verify_steps/common_title';
 import { useEffect, useState } from 'react';
 import ProCard from '@ant-design/pro-card';
@@ -10,7 +10,7 @@ import type { Props } from './authorization_info';
 import { getApplicationInfo } from '@/services/banking-loan';
 import { regFenToYuan } from '@/utils/util';
 import type BankingLoan from '@/types/banking-loan.d';
-export default ({ id }: Props) => {
+export default ({ id, left, loanType }: Props) => {
   const history = useHistory();
   const [list, setList] = useState<any>([]);
   const [detail, setDetail] = useState<BankingLoan.ApplicationInfoContent>({});
@@ -32,6 +32,7 @@ export default ({ id }: Props) => {
                   detail={item.flowDesc}
                   time={item.createTime}
                   special={true}
+                  color={item.flowDesc?.includes('失败') ? '#FF4F17' : '#1E232A'}
                   reason={item.failReason}
                 />
               ),
@@ -49,86 +50,118 @@ export default ({ id }: Props) => {
   useEffect(() => {
     getInfo();
   }, []);
-
   return (
     <Spin spinning={detailLoading}>
       <div className="application">
-        <Row className="application-contain">
-          <Col span={3}>
-            <Image width={100} src={detail.path} />
-          </Col>
-          <Col span={21}>
-            <Row className="orgName">{detail.orgName}</Row>
-            <Row className="creditCode">{detail.creditCode}</Row>
+        <div className="application-contain">
+          <div className="application-contain-img">
+            <Image width={'120px'} height={'120px'} src={detail.path} />
+          </div>
+          <div className="application-contain-right">
+            <div className="orgName-status">
+              <div className="orgName">{detail.orgName}</div>
+              <div
+                className={`application-state ${
+                  detail.applyStatus === '待授信'
+                    ? 'huang'
+                    : detail.applyStatus === '授信失败'
+                    ? 'cheng'
+                    : ''
+                }`}
+              >
+                {detail.applyStatus || '--'}
+              </div>
+            </div>
+            <div className="creditCode">{detail.creditCode}</div>
             <Row>
               <Col span={6}>
-                <span>法定代表人：{detail.legalPersonName || '--'}</span>
+                <span style={{ textAlign: 'left', flex: '0 0 auto' }}>法定代表人：</span>
+                <span>{detail.legalPersonName || '--'}</span>
               </Col>
-              <Col span={8}>
-                <span>注册地址：{detail.registerAddress || '--'}</span>
+              <Col span={9}>
+                <span>注册地址：</span>
+                <span>{detail.registerAddress || '--'}</span>
               </Col>
-              <Col span={10}>
+              <Col span={9}>
+                <span>经营所在地：</span>
                 <span>
-                  经营所在地：{detail.manageAddress || '--'}
+                  {detail.manageAddress || '--'}
                   {/* {detail.address || '--'} */}
                 </span>
               </Col>
             </Row>
-            <span className="application-state">{detail.applyStatus || '--'}</span>
-          </Col>
-        </Row>
-        <div className="application-contain">
+          </div>
+        </div>
+        <div className="application-contain main">
           <h2>申请信息</h2>
           <Row>
             <Col span={8}>
-              <span>业务申请编号：{detail.applyNo || '--'}</span>
+              <span>业务申请编号：</span>
+              <span>{detail.applyNo || '--'}</span>
             </Col>
             <Col span={8}>
-              <span>申请时间：{detail.createTime || '--'}</span>
+              <span>申请时间：</span>
+              <span>{detail.createTime || '--'}</span>
             </Col>
-            {detail.effectiveDate !== null && (
+            {loanType === '5' && (
               <>
                 <Col span={8}>
-                  <span>保单拟生效时间：{detail.effectiveDate || '--'}</span>
+                  <span>保单拟生效时间：</span>
+                  <span>{detail.effectiveDate || '--'}</span>
                 </Col>
                 <Col span={8}>
-                  <span>承保过该类产品：{detail.isAccept || '--'}</span>
+                  <span>承保过该类产品：</span>
+                  <span>{detail.isAccept || '--'}</span>
                 </Col>
               </>
             )}
-            {detail.deadLine !== null && (
+            {loanType !== '5' && (
               <>
                 <Col span={8}>
-                  <span>申请金额：{regFenToYuan(detail?.applyAmount)}万元</span>
+                  <span>申请金额：</span>
+                  <span>{regFenToYuan(detail?.applyAmount)}万元</span>
                 </Col>
                 <Col span={8}>
-                  <span>拟融资期限：{detail.deadLine}</span>
+                  <span>拟融资期限：</span>
+                  <span>{detail.deadLine}</span>
                 </Col>
               </>
             )}
             <Col span={8}>
-              <span>联系人：{detail.name}</span>
+              <span>联系人：</span>
+              <span>{detail.name}</span>
             </Col>
             <Col span={8}>
-              <span>联系电话：{detail.phone}</span>
+              <span>联系电话：</span>
+              <span>{detail.phone}</span>
             </Col>
             <Col span={8}>
-              <span>产品名称：{detail.productName}</span>
+              <span>产品名称：</span>
+              <span>{detail.productName}</span>
             </Col>
             <Col span={8}>
-              <span>金融机构：{detail.financialOrg}</span>
+              <span>金融机构：</span>
+              <span>{detail.financialOrg}</span>
             </Col>
           </Row>
         </div>
-        <div className="application-contain">
+        <div className="application-contain main">
           <h2>平台响应信息</h2>
           <VerifyStepsDetail list={list} />
         </div>
         {/* <ProCard layout="center">
         <Button onClick={() => history.goBack()}>返回</Button>
       </ProCard> */}
-        <FooterToolbar>
-          <Button onClick={() => history.goBack()}>返回</Button>
+        <FooterToolbar
+          style={{
+            height: '88px',
+            left: left + 'px',
+            width: `calc(100% - ${left}px)`,
+          }}
+        >
+          <Button size="large" onClick={() => history.goBack()}>
+            返回
+          </Button>
         </FooterToolbar>
       </div>
     </Spin>

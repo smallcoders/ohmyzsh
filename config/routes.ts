@@ -25,14 +25,14 @@
   DEMAND_MANAGEMENT_INDEX: '/supply-demand-setting/demand-manage/index', // 需求管理
   DEMAND_MANAGEMENT_DETAIL: '/supply-demand-setting/demand-manage/detail', // 需求管理详情
 
-  OPERATION_ACTIVITY_PARAMETER:'/operation-activity/parameter-setting/index',//运营活动参数设置
-  OPERATION_ACTIVITY_LINK:'/operation-activity/link-setting/index',//运营活动链接设置
+  OPERATION_ACTIVITY_PARAMETER: '/operation-activity/parameter-setting/index', //运营活动参数设置
+  OPERATION_ACTIVITY_LINK: '/operation-activity/link-setting/index', //运营活动链接设置
 
   // 运营模板
-  PAGE_CREAT_MANAGE_EDIT: "/operation-activity/page_creat_manage/manage/edit",
-  PAGE_CREAT_MANAGE_PUBLISH: "/operation-activity/page_creat_manage/manage/publish",
-  PAGE_CREAT_MANAGE_PAGE_LIST: "/operation-activity/page_creat_manage/manage",
-  PAGE_CREAT_MANAGE_PAGE_DATA: "/operation-activity/page_creat_manage/manage/page_data",
+  PAGE_CREAT_MANAGE_EDIT: '/operation-activity/page_creat_manage/manage/edit',
+  PAGE_CREAT_MANAGE_PUBLISH: '/operation-activity/page_creat_manage/manage/publish',
+  PAGE_CREAT_MANAGE_PAGE_LIST: '/operation-activity/page_creat_manage/manage',
+  PAGE_CREAT_MANAGE_PAGE_DATA: '/operation-activity/page_creat_manage/manage/page_data',
 
   DEMAND_MANAGEMENT_FEEDBACK: '/supply-demand-setting/demand-manage/feedback', // 需求管理详情
   ACCOUNT: '/system-config/account', // 账号管理
@@ -111,7 +111,8 @@
 
   PROPAGANDA_CONFIG: '/operation-activity/local-propaganda/propaganda-config/index', // 地市宣传页管理
   ADD_PROPAGANDA_CONFIG: '/operation-activity/local-propaganda/propaganda-config/add-management', // 新增地市宣传页管理
-  DETAIL_PROPAGANDA_CONFIG: '/operation-activity/local-propaganda/propaganda-config/detail-management', // 新增地市宣传页管理
+  DETAIL_PROPAGANDA_CONFIG:
+    '/operation-activity/local-propaganda/propaganda-config/detail-management', // 新增地市宣传页管理
   MANAGEMENT_ACTIVITIES: '/operation-activity/local-propaganda/management_activities', // 地市活动管理
 
   //金融服务管理
@@ -119,16 +120,58 @@
   BANKING_SERVICE_INDEX: '/banking/banking_service_manage/index',
   BANKING_SERVICE_DETAIL: '/banking/banking_service_manage/detail',
   ORG_MANAGE: '/user-config/org-manage',
+  // 贷款业务
+  ORG_MANAGE_INDEX: '/user-config/org-manage/index',
+  ORG_MANAGE_DETAIL: '/user-config/org-manage/detail',
   // 贷款记录
   LOAN_RECORD: '/banking/loan_record',
   LOAN_RECORD_INDEX: '/banking/loan_record/index',
   LOAN_RECORD_DETAIL: '/banking/loan_record/detail',
   LOAN_RECORD_ENTER: '/banking/loan_record/enter',
   LOAN_RECORD_WITHDRAWANDLOAN: '/banking/loan_record/withdrawAndLoan',
+
+  // 租赁业务
+  LEASE_RECORD: '/banking/lease_record',
+  LEASE_RECORD_INDEX: '/banking/lease_record/index',
+  LEASE_RECORD_DETAIL: '/banking/lease_record/detail',
+  LEASE_RECORD_ENTER: '/banking/lease_record/enter',
+  LEASE_RECORD_WITHDRAWANDLOAN: '/banking/lease_record/withdrawAndLoan',
+  // 保险业务
+  INSURANCE_RECORD: '/banking/insurance_record',
+  INSURANCE_RECORD_INDEX: '/banking/insurance_record/index',
+  INSURANCE_RECORD_DETAIL: '/banking/insurance_record/detail',
+  INSURANCE_RECORD_ENTER: '/banking/insurance_record/enter',
+
   FINANCIAL_CUSTOMERS_MANAGE: '/banking/financial_customers_manage',
   FINANCIAL_CUSTOMERS_MANAGE_INDEX: '/banking/financial_customers_manage/index',
   FINANCIAL_CUSTOMERS_MANAGE_DETAIL: '/banking/financial_customers_manage/detail',
   FINANCIAL_CUSTOMERS_MANAGE_EDIT: '/banking/financial_customers_manage/edit',
+
+  // 产品管理
+  PRODUCT_MANAGEMENT: '/banking/product_management',
+  PRODUCT_MANAGEMENT_INDEX: '/banking/product_management/index',
+  PRODUCT_MANAGEMENT_CREATE: '/banking/product_management/create',
+  PRODUCT_MANAGEMENT_UPDATE: '/banking/product_management/update',
+  PRODUCT_MANAGEMENT_DETAIL: '/banking/product_management/detail',
+
+  // 金融诊断记录
+  FINANCIAL_DIAGNOSTIC_RECORD: '/banking/financial_diagnostic_record',
+  FINANCIAL_DIAGNOSTIC_RECORD_INDEX: '/banking/financial_diagnostic_record/index',
+  FINANCIAL_DIAGNOSTIC_RECORD_DETAIL: '/banking/financial_diagnostic_record/detail',
+
+
+  // 金融专属
+  FINANCIAL_EXCLUSIVE: '/banking/financial_exclusive',
+  FINANCIAL_EXCLUSIVE_INDEX: '/banking/financial_exclusive/index',
+
+  // 机构管理
+  FINANCIAL_INSTITUTION: '/banking/financial_institution',
+  FINANCIAL_INSTITUTION_INDEX: '/banking/financial_institution/index',
+
+  // 产品类型
+  PRODUCT_TYPE:'/banking/product_type',
+  PRODUCT_TYPE_INDEX:'/banking/product_type/index',
+
   // 推荐管理
   RECOMMENDED_HOT_WORDS: '/recommended/hot_words',
   RECOMMENDED_HOT_WORDS_INDEX: '/recommended/hot_words/index',
@@ -1131,6 +1174,34 @@ export default [
         name: '产业专题',
         component: './solution_properties/industry_topic',
       },
+      {
+        path: '/solution-properties/message-management',
+        code: 'M_PC_LYGL',
+        access: 'M_PC_LYGL',
+        name: '留言管理',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: '/solution-properties/message-management',
+            code: 'M_PC_LYGL',
+            access: 'M_PC_LYGL',
+            redirect: '/solution-properties/message-management/index',
+          },
+          {
+            path: '/solution-properties/message-management/index',
+            code: 'M_PC_LYGL',
+            access: 'M_PC_LYGL',
+            name: '留言管理',
+            hideInBreadcrumb: true,
+            component: './solution_properties/message_management',
+          },
+          {
+            path: '/solution-properties/message-management/detail',
+            name: '留言详情',
+            component: './solution_properties/message_management/components/detail',
+          }
+        ]
+      },
     ],
   },
   {
@@ -1186,7 +1257,7 @@ export default [
             name: '服务详情',
             component: './supply_demand_setting/solution/detail/index',
           },
-        ]
+        ],
       },
       {
         path: routeName.DEMAND_MANAGEMENT_FEEDBACK,
@@ -1200,6 +1271,13 @@ export default [
         access: 'M_SD_GXDJ',
         name: '供需对接管理',
         component: './supply_demand_setting/docking_manage/index',
+      },
+      {
+        path: '/supply-demand-setting/demand_reports/index',
+        code: 'M_SD_BB',
+        access: 'M_SD_BB',
+        name: '供需对接报表',
+        component: './supply_demand_setting/demand_reports/index',
       },
       {
         path: routeName.DEMAND_CONTACTS,
@@ -1348,9 +1426,9 @@ export default [
             component: './page_creat_manage/edit/index',
             layout: false,
           },
-        ]
+        ],
       },
-    ]
+    ],
   },
   {
     path: '/diagnose-manage',
@@ -1462,46 +1540,46 @@ export default [
   },
   {
     path: '/diagnose-project-manage',
-    access: 'M_DM',
+    access: 'M_DN',
     name: '诊断项目管理',
     icon: 'folder-open',
     routes: [
       {
         path: '/diagnose-project-manage',
-        access: 'M_DM_ZDT',
+        access: 'M_DN_BAG',
         redirect: '/diagnose-project-manage/diagnose',
       },
       {
         path: '/diagnose-project-manage/diagnose',
-        access: 'M_DM_ZDGL',
+        access: 'M_DN_BAG',
         name: '诊断服务包',
         hideChildrenInMenu: true,
         routes: [
           {
             path: '/diagnose-project-manage/diagnose',
-            code: 'M_DM_ZDGL',
-            access: 'M_DM_ZDGL',
+            code: 'M_DN_BAG',
+            access: 'M_DN_BAG',
             name: '诊断服务包',
             component: './diagnose_project_manage/diagnose_manage',
-          }
+          },
         ],
       },
       {
         path: '/diagnose-project-manage/diagnose-report',
-        access: 'M_DM_ZDGL',
+        access: 'M_DN_FORM',
         name: '诊断服务报表',
         hideChildrenInMenu: true,
         routes: [
           {
             path: '/diagnose-project-manage/diagnose-report',
-            code: 'M_DM_ZDGL',
-            access: 'M_DM_ZDGL',
+            code: 'M_DN_FORM',
+            access: 'M_DN_FORM',
             name: '诊断服务报表',
             component: './diagnose_project_manage/diagnose_service_report',
-          }
+          },
         ],
       },
-    ]
+    ],
   },
   {
     path: '/science-technology-manage',
@@ -1569,6 +1647,35 @@ export default [
           },
         ],
       },
+      {
+        path: '/science-technology-manage/column-manage',
+        name: '科产专栏管理',
+        code: 'M_SM_KCZL',
+        access: 'M_SM_KCZL',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: '/science-technology-manage/column-manage',
+            redirect: '/science-technology-manage/column-manage/index',
+          },
+          {
+            path: '/science-technology-manage/column-manage/index',
+            name: '科产专栏管理',
+            hideInBreadcrumb: true,
+            component: './science_technology_manage/column_manage/index',
+          },
+          {
+            path: '/science-technology-manage/column-manage/edit',
+            name: '新增专栏',
+            component: './science_technology_manage/column_manage/edit/index',
+          },
+          {
+            path: '/science-technology-manage/column-manage/detail',
+            name: '详情',
+            component: './science_technology_manage/column_manage/detail',
+          },
+        ],
+      },
     ]
   },
   {
@@ -1608,9 +1715,9 @@ export default [
       // },
       {
         path: routeName.LOAN_RECORD,
-        name: '贷款记录',
-        code: 'M_FM_DKJL',
-        access: 'M_FM_DKJL',
+        name: '贷款业务',
+        code: 'M_FM_DKYW',
+        access: 'M_FM_DKYW',
         hideChildrenInMenu: true,
         routes: [
           {
@@ -1620,8 +1727,8 @@ export default [
           {
             path: routeName.LOAN_RECORD_INDEX,
             hideInBreadcrumb: true,
-            name: '贷款记录',
-            component: './banking/loan_record/index',
+            name: '贷款业务',
+            component: './banking/loan_record/loan',
           },
           {
             path: routeName.LOAN_RECORD_DETAIL,
@@ -1637,6 +1744,184 @@ export default [
             path: routeName.LOAN_RECORD_WITHDRAWANDLOAN,
             name: '提款及放款详情',
             component: './banking/loan_record/detail/withdrawAndLoan',
+          },
+        ],
+      },
+      {
+        path: routeName.LEASE_RECORD,
+        name: '租赁业务',
+        code: 'M_FM_ZLYW',
+        access: 'M_FM_ZLYW',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.LEASE_RECORD,
+            redirect: routeName.LEASE_RECORD_INDEX,
+          },
+          {
+            path: routeName.LEASE_RECORD_INDEX,
+            hideInBreadcrumb: true,
+            name: '租赁业务',
+            component: './banking/loan_record/lease',
+          },
+          {
+            path: routeName.LEASE_RECORD_DETAIL,
+            name: '详情',
+            component: './banking/loan_record/detail/detail',
+          },
+          {
+            path: routeName.LEASE_RECORD_ENTER,
+            name: '信息录入',
+            component: './banking/loan_record/detail/detail',
+          },
+          {
+            path: routeName.LEASE_RECORD_WITHDRAWANDLOAN,
+            name: '提款及放款详情',
+            component: './banking/loan_record/detail/withdrawAndLoan',
+          },
+        ],
+      },
+      {
+        path: routeName.INSURANCE_RECORD,
+        name: '保险业务',
+        code: 'M_FM_BXYW',
+        access: 'M_FM_BXYW',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.INSURANCE_RECORD,
+            redirect: routeName.INSURANCE_RECORD_INDEX,
+          },
+          {
+            path: routeName.INSURANCE_RECORD_INDEX,
+            hideInBreadcrumb: true,
+            name: '保险业务',
+            component: './banking/loan_record/insurance',
+          },
+          {
+            path: routeName.INSURANCE_RECORD_DETAIL,
+            name: '详情',
+            component: './banking/loan_record/detail/detail',
+          },
+          {
+            path: routeName.INSURANCE_RECORD_ENTER,
+            name: '信息录入',
+            component: './banking/loan_record/detail/detail',
+          },
+        ],
+      },
+      {
+        path: routeName.PRODUCT_TYPE,
+        name: '产品类型',
+        code: 'M_FM_CPLX',
+        access: 'M_FM_CPLX',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.PRODUCT_TYPE,
+            redirect: routeName.PRODUCT_TYPE_INDEX,
+          },
+          {
+            path: routeName.PRODUCT_TYPE_INDEX,
+            hideInBreadcrumb: true,
+            name: '产品类型',
+            component: './banking/product_type/index',
+          },
+        ],
+      },
+      {
+        path: routeName.PRODUCT_MANAGEMENT,
+        name: '产品管理',
+        code: 'M_FM_CPGL',
+        access: 'M_FM_CPGL',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.PRODUCT_MANAGEMENT,
+            redirect: routeName.PRODUCT_MANAGEMENT_INDEX,
+          },
+          {
+            path: routeName.PRODUCT_MANAGEMENT_INDEX,
+            name: '产品管理',
+            hideInBreadcrumb: true,
+            component: './banking/product-management/index',
+          },
+          {
+            path: routeName.PRODUCT_MANAGEMENT_CREATE,
+            name: '新增产品',
+            component: './banking/product-management/add/index',
+          },
+          {
+            path: routeName.PRODUCT_MANAGEMENT_UPDATE,
+            name: '编辑产品',
+            component: './banking/product-management/add/index',
+          },
+          {
+            path: routeName.PRODUCT_MANAGEMENT_DETAIL,
+            name: '详情',
+            component: './banking/product-management/detail/index',
+          },
+        ],
+      },
+      {
+        path: routeName.FINANCIAL_DIAGNOSTIC_RECORD,
+        name: '金融诊断记录',
+        code: 'M_FM_ZDJL',
+        access: 'M_FM_ZDJL',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.FINANCIAL_DIAGNOSTIC_RECORD,
+            redirect: routeName.FINANCIAL_DIAGNOSTIC_RECORD_INDEX,
+          },
+          {
+            path: routeName.FINANCIAL_DIAGNOSTIC_RECORD_INDEX,
+            name: '金融诊断记录',
+            hideInBreadcrumb: true,
+            component: './banking/financial_diagnostic_record/index',
+          },
+          {
+            path: routeName.FINANCIAL_DIAGNOSTIC_RECORD_DETAIL,
+            name: '详情',
+            component: './banking/financial_diagnostic_record/detail/index',
+          },
+        ],
+      },
+      {
+        path: routeName.FINANCIAL_EXCLUSIVE,
+        name: '金融专属服务',
+        code: 'M_FM_ZSFW',
+        access: 'M_FM_ZSFW',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.FINANCIAL_EXCLUSIVE,
+            redirect: routeName.FINANCIAL_EXCLUSIVE_INDEX,
+          },
+          {
+            path: routeName.FINANCIAL_EXCLUSIVE_INDEX,
+            hideInBreadcrumb: true,
+            name: '金融专属服务',
+            component: './banking/financial_exclusive/index',
+          },
+        ],
+      },
+      {
+        path: routeName.FINANCIAL_INSTITUTION,
+        name: '金融机构管理',
+        code: 'M_FM_JGGL',
+        access: 'M_FM_JGGL',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.FINANCIAL_INSTITUTION,
+            redirect: routeName.FINANCIAL_INSTITUTION_INDEX,
+          },
+          {
+            path: routeName.FINANCIAL_INSTITUTION_INDEX,
+            hideInBreadcrumb: true,
+            name: '金融机构管理',
+            component: './banking/financial_institution/index',
           },
         ],
       },
@@ -1676,6 +1961,7 @@ export default [
         access: 'M_FM_GYSGL',
         component: './banking/supplier-management',
       },
+
     ],
   },
   {
@@ -1719,7 +2005,7 @@ export default [
             name: '新增应用',
             component: './apply_manage/add_resource',
           },
-        ]
+        ],
       },
       {
         path: '/apply-manage/consult-record',
@@ -1730,7 +2016,7 @@ export default [
         hideInBreadcrumb: true, // 隐藏面包屑
         component: './apply_manage/consult_record',
       },
-    ]
+    ],
   },
   {
     path: '/digital-application',
@@ -1766,8 +2052,8 @@ export default [
             path: '/digital-application/app-list/detail',
             name: '应用详情',
             component: './digital_application/app_detail/index',
-          }
-        ]
+          },
+        ],
       },
       {
         path: '/digital-application/app-interface',
@@ -1776,7 +2062,7 @@ export default [
         name: '接口规范',
         component: './digital_application/app_interface',
       },
-    ]
+    ],
   },
   {
     path: '/goods-manage',
@@ -2128,8 +2414,8 @@ export default [
         access: 'M_RM_ZHBQ',
         name: '账号标签管理',
         component: './recommend_manage/tags_management',
-      }
-    ]
+      },
+    ],
   },
   {
     path: '/operate-data',
@@ -2181,7 +2467,25 @@ export default [
         code: 'M_UM_ZZGL',
         access: 'M_UM_ZZGL',
         name: '组织管理',
-        component: './user_config/org_manage',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.ORG_MANAGE,
+            redirect: routeName.ORG_MANAGE_INDEX,
+          },
+          {
+            path: routeName.ORG_MANAGE_INDEX,
+            name: '组织管理',
+            hideInBreadcrumb: true,
+            component: './user_config/org_manage',
+          },
+          {
+            path: routeName.ORG_MANAGE_DETAIL,
+            name: '组织成员信息',
+            component: './user_config/org_manage/detail',
+          },
+
+        ],
       },
       {
         path: '/user-config/expert-manage',
