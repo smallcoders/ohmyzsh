@@ -324,7 +324,13 @@ export default forwardRef((props: Props, ref) => {
             {isDetail ? (
               <span>{detail?.busiStatus === 10 ? '对接失败' : '对接成功'}</span>
             ) : (
-              <Radio.Group>
+              <Radio.Group
+                onChange={() => {
+                  form.setFieldsValue({
+                    fileIds: [],
+                  });
+                }}
+              >
                 <Radio value={11}>对接成功</Radio>
                 <Radio value={10} disabled={hasSuccessLoad}>
                   对接失败
