@@ -1273,6 +1273,13 @@ export default [
         component: './supply_demand_setting/docking_manage/index',
       },
       {
+        path: '/supply-demand-setting/demand_reports/index',
+        code: 'M_SD_BB',
+        access: 'M_SD_BB',
+        name: '供需对接报表',
+        component: './supply_demand_setting/demand_reports/index',
+      },
+      {
         path: routeName.DEMAND_CONTACTS,
         code: 'M_SD_XQLXR',
         access: 'M_SD_XQLXR',
@@ -1517,7 +1524,7 @@ export default [
             access: 'M_DN_BAG',
             name: '诊断服务包',
             component: './diagnose_project_manage/diagnose_manage',
-          }
+          },
         ],
       },
       {
@@ -1532,10 +1539,10 @@ export default [
             access: 'M_DN_FORM',
             name: '诊断服务报表',
             component: './diagnose_project_manage/diagnose_service_report',
-          }
+          },
         ],
       },
-    ]
+    ],
   },
   {
     path: '/science-technology-manage',

@@ -304,6 +304,62 @@ export default () => [
                 ],
             },
             {
+              title: '供需对接报表-总表',
+              code: 'M_SD_ZB',
+              children: [
+                {
+                  title: '页面查看',
+                  code: 'PQ_SD_ZB'
+                },
+                {
+                  title: '导出数据',
+                  code: 'PX_SD_ZB',
+                },
+              ]
+            },
+            {
+              title: '供需对接报表-明细表',
+              code: 'M_SD_MXB',
+              children: [
+                {
+                  title: '页面查看',
+                  code: 'PQ_SD_MXB'
+                },
+                {
+                  title: '导出数据',
+                  code: 'PX_SD_MXB',
+                },
+              ]
+            },
+            {
+              title: '供需对接报表-周报表',
+              code: 'M_SD_ZBB',
+              children: [
+                {
+                  title: '页面查看',
+                  code: 'PQ_SD_ZBB'
+                },
+                {
+                  title: '导出数据',
+                  code: 'PX_SD_ZBB',
+                },
+              ]
+            },
+            {
+              title: '供需对接报表-月报表',
+              code: 'M_SD_YBB',
+              children: [
+                {
+                  title: '页面查看',
+                  code: 'PQ_SD_YBB'
+                },
+                {
+                  title: '导出数据',
+                  code: 'PX_SD_YBB',
+                },
+              ]
+            },
+            {
                 title: '供需对接管理-需求认领/我的认领',
                 code: 'M_SD_XQRL',
                 children: [
@@ -534,7 +590,7 @@ export default () => [
                         title: '编辑',
                         code: 'PU_DM_XSZD',
                     },
-                   
+
                 ],
             },
             {
@@ -593,7 +649,7 @@ export default () => [
                         title: '管理(所属产业编辑、已解决)',
                         code: 'P_SM_XQGL',
                     },
-                   
+
                 ],
             },
             {
@@ -629,7 +685,7 @@ export default () => [
                         title: '管理(新增应用、编辑、置顶、删除、下架)',
                         code: 'P_AM_YYZY',
                     },
-                   
+
                 ],
             },
             {
@@ -706,7 +762,7 @@ export default () => [
                         title: '页面查看',
                         code: 'PQ_DG_DDXQ',
                     },
-                   
+
                 ],
             },
         ],

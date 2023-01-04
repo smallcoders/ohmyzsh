@@ -1,0 +1,72 @@
+
+@prefix: tab-menu-demand-report-weeks;
+
+.@{prefix}-container {
+  &-table-header {
+    padding: 20px;
+    background-color: #fff;
+    .title {
+      display: flex;
+      justify-content: space-between;
+      > span {
+        color: rgba(0, 0, 0, 0.85);
+        font-weight: 600;
+        font-size: 16px;
+        line-height: 22px;
+      }
+    }
+  }
+  &-table-body {
+    padding: 0 20px 20px;
+    background-color: #fff;
+
+    // 移除第3列表头边距
+    .ant-table-cell-fix-left:nth-of-type(3) {
+      padding: 0;
+    }
+    
+    // 上下半边背景
+    .headerCell {
+      border-top: 55px #fafafa solid;
+      width: 0px;
+      height: 0px;
+      border-left: 135px #fafafa solid;
+      position: relative;
+      
+      // 上半边位置
+      .top {
+        position: absolute;
+        top: -48px;
+        left: -50px;
+        width: 50px;
+      }
+
+      // 下半边位置
+      .bottom {
+        position: absolute;
+        top: -26px;
+        left: -126px;
+        width: 60px;
+      }
+      
+      // 分割线
+      &::after {
+        content: '';
+        position: absolute;
+        width: 1px;
+        height: 145px;
+        top: -100px;
+        left: -68px;
+        background-color: #f0f0f0;
+        display: block;
+        transform: rotate(-68deg);
+      }
+    }
+  }
+
+  &-search {
+    margin-bottom: 20px;
+    padding: 20px 20px 0;
+    background-color: #fff;
+  }
+}
