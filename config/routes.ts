@@ -1,4 +1,4 @@
-export const routeName = {
+﻿export const routeName = {
   DATA_COLUMN: '/service-config/data-column', // 数据栏
   DIAGNOSTIC_TASKS: '/service-config/diagnostic-tasks/index', // 诊断任务
   DIAGNOSTIC_TASKS_DETAIL: '/diagnose-manage/diagnostic-tasks/detail', // 诊断记录
@@ -1499,7 +1499,44 @@ export default [
           },
         ],
       },
-    ],
+      {
+        path: '/diagnose-manage/diagnose-record-report',
+        code: 'M_DM_JLBB',
+        access: 'M_DM_JLBB',
+        name: '诊断记录报表',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: '/diagnose-manage/diagnose-record-report',
+            code: 'M_DM_JLBB',
+            access: 'M_DM_JLBB',
+            name: '诊断记录报表',
+            component: './diagnose_manage/diagnose_record_report',
+          },
+          {
+            path: '/diagnose-manage/diagnose-record-report/detail',
+            name: '诊断详情',
+            component: './diagnose_manage/diagnose_record_report/detail',
+          },
+        ],
+      },
+      {
+        path: '/diagnose-manage/diagnose-area-report',
+        code: 'M_DM_QYBB',
+        access: 'M_DM_QYBB',
+        name: '诊断区域报表',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: '/diagnose-manage/diagnose-area-report',
+            code: 'M_DM_QYBB',
+            access: 'M_DM_QYBB',
+            name: '诊断区域报表',
+            component: './diagnose_manage/diagnose_area_report',
+          },
+        ],
+      },
+    ]
   },
   {
     path: '/diagnose-project-manage',

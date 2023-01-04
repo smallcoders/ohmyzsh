@@ -1,0 +1,151 @@
+@import '../../../../global.less';
+@prefix: service-config-diagnose-manage;
+
+.@{prefix}-container {
+  .container-info {
+    margin-bottom: 20px;
+    padding: 24px 40px;
+    background: #fff;
+    border-radius: 2px;
+    box-shadow: 0px 4px 16px 0px rgba(75,88,108,0.12); 
+    h3 {
+      font-size: 24px;
+      font-family: '微软雅黑 Bold, 微软雅黑 Bold-Bold';
+      font-weight: bold;
+      color: #1e232a
+    }
+    label {
+      display: inline-block;
+      width: 112px;
+      height: 24px;
+      font-size: 16px;
+      font-family: '微软雅黑, 微软雅黑-Regular';
+      font-weight: 400;
+      text-align: right;
+      color: #808da1;
+      line-height: 24px;
+    }
+    span {
+      font-size: 16px;
+      font-family: '微软雅黑, 微软雅黑-Regular';
+      font-weight: 400;
+      color: #4b586c;
+    }
+  }
+  &-table-header {
+    padding: 20px 20px 0;
+    margin-top: 20px;
+    background-color: #fff;
+    .title {
+      display: flex;
+      justify-content: space-between;
+      > span {
+        color: rgba(0, 0, 0, 0.85);
+        font-weight: 600;
+        font-size: 16px;
+        line-height: 22px;
+      }
+    }
+  }
+  &-table-body {
+    padding: 20px;
+    background-color: #fff;
+    .rowBackground {
+      background: #6680FF!important;
+    }
+    .rowBackground td {
+      background-color: #6680FF!important;
+    }
+    
+  }
+  .industry-cell {
+    width: 180px;
+    height: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    word-break: keep-all;
+    -webkit-line-clamp: 2;
+  }
+  .editable-cell {
+    position: relative;
+  }
+  .ant-select-selection-item {
+    padding-right: 0!important;
+  }
+  .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+    color: #fff;
+    background-color: @primary !important;
+  }
+  .editable-cell-value-wrap {
+    padding: 5px 12px;
+    cursor: pointer;
+  }
+
+  .editable-row:hover .editable-cell-value-wrap {
+    padding: 4px 11px;
+    border: 1px solid #d9d9d9;
+    border-radius: 2px;
+  }
+
+  [data-theme='dark'] .editable-row:hover .editable-cell-value-wrap {
+    border: 1px solid #434343;
+  }
+  &-add-button {
+    line-height: 46px;
+    text-align: center;
+    border: 1px solid #f0f0f0;
+    &:hover {
+      color: @primary;
+      border: 1px solid @primary;
+    }
+  }
+  .preview-wrap {
+    margin-top: 20px;
+    padding: 32px 40px;
+    background: #fff;
+    h3 {
+      margin-top: 24px;
+      font-size: 16px;
+      font-family: '微软雅黑, 微软雅黑-Regular';
+      font-weight: 400;
+      color: #1e232a;
+    } 
+    h3:first-child {
+      margin-top: 0;
+    }
+    P {
+      font-size: 14px;
+      font-family: '微软雅黑, 微软雅黑-Regular';
+      font-weight: 400;
+      color: #4b586c;
+    }
+    .banking-product-wrapper {
+      width: 726px;
+      background: #ebeff7;
+      padding: 24px 0 0;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      p {
+        height: 48px;
+        line-height: 48px;
+        // padding-top: 16px;
+      }
+      div:first-child, div:last-child {
+        position: relative;
+        top: -13px;
+      }
+    }
+  }
+  .empty-status {
+    background: #fff;
+    margin: 20px auto 0;
+    text-align: center;
+    padding: 88px 0 112px;
+    p {
+      margin-top: 8px;
+      color: #8290a6;
+    }
+  }
+}

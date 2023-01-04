@@ -1,0 +1,235 @@
+.diagnose-service-package {
+  h3.title {
+    margin: 16px 0 32px 0;
+    height: 32px;
+    font-size: 24px;
+    font-family: MicrosoftYaHei, MicrosoftYaHei-Bold;
+    font-weight: 700;
+    text-align: left;
+    color: #1e232a;
+    line-height: 32px;
+  }
+  .content-wrapper {
+    padding: 24px 32px;
+    background-color: #fff;
+    h3 {
+      font-size: 20px;
+      font-family: MicrosoftYaHei, MicrosoftYaHei-Bold;
+      font-weight: 700;
+      text-align: left;
+      color: #1e232a;
+    }
+  }
+  .container-table-header {
+    background-color: #fff;
+    display: flex;
+    justify-content: space-between;
+  }
+  .container-search {
+    margin-bottom: 20px;
+    padding: 20px 0;
+    background-color: #fff;
+    .ant-form-item {
+      margin-bottom: 0;
+    }
+  }
+  .empty-status {
+    margin: auto;
+    text-align: center;
+    padding: 56px 0 200px;
+    p {
+      margin-top: 8px;
+      color: #8290a6;
+    }
+  }
+}
+// 抽屉样式
+.detail-drawer {
+  .container-service-enterprise {
+    ul {
+      padding: 0;
+    }
+    li {
+      padding-top: 16px;
+      border-bottom: 1px solid #ebeff7;
+      div {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        button.ant-btn {
+          font-weight: 400;
+          color: #6680FF;
+        }
+      }
+      p {
+        width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: #8290a6;
+      }
+    }
+  }
+  .container-form-group {
+    height: 48px;
+    line-height: 48px;
+    font-size: 16px;
+    font-weight: 400;
+    color: #8290a6;
+  }
+  ul {
+    padding: 0;
+    li p {
+      color: #8290a6;
+      width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+  .ant-table-thead .ant-table-cell {
+    background: #f8f9fb;
+    font-size: 16px;
+    font-family: MicrosoftYaHei, MicrosoftYaHei-Regular;
+    font-weight: 400;
+    text-align: left;
+    color: #8290a6;
+  }
+  .org-fenpei {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    button {
+      padding: 0;
+      color: #0068FF;
+    }
+  }
+  .ant-drawer-footer {
+    text-align: right;
+    button {
+      margin-left: 12px;
+    }
+  }
+}
+
+.servicers-modal {
+  .ant-modal-body {
+    padding: 0 24px;
+  }
+  .left-content-wrapper {
+    padding: 24px 24px 24px 0;
+    border-right: 1px solid #eee;
+    .checkbox-wrapper {
+      height: 300px;
+      overflow-y: auto;
+    }
+    .ant-form-item {
+      margin-bottom: 8px;
+    }
+    .ant-list-split .ant-list-item {
+      padding: 8px 0;
+      border: none;
+    }
+  }
+  .right-content-wrapper {
+    padding: 24px 0 0 24px;
+    .selected-servers-length {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      button {
+        padding: 0;
+      }
+      button.ant-btn {
+        color: #6680FF;
+      }
+      button:disabled {
+        color: #ccc;
+      }
+    }
+    .selected-servers-wrap {
+      height: 300px;
+      overflow-y: auto;
+      p {
+        margin-top: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0;
+      }
+      .anticon-close-circle {
+        background: #808da1;
+        color: #fff;
+        border-radius: 50%;
+        font-size: 16px;
+      }
+    }
+  }
+}
+.enterprise-modal {
+  .ant-modal-body {
+    padding: 0 24px;
+  }
+  .left-content-wrapper {
+    padding: 24px 24px 24px 0;
+    border-right: 1px solid #eee;
+    .checkbox-wrapper {
+      height: 240px;
+      overflow-y: auto;
+      border-bottom: 1px solid #ebeff7;
+      .ant-form-item {
+        margin-bottom: 8px;
+      }
+    }
+    .not-find-title {
+      margin-top: 24px;
+      margin-bottom: 8px;
+      font-size: 14px;
+      font-family: MicrosoftYaHei, MicrosoftYaHei-Regular;
+      font-weight: 400;
+      text-align: left;
+      color: #8290a6;
+    }
+    .ant-form-item {
+      margin-bottom: 8px;
+    }
+    .ant-list-split .ant-list-item {
+      padding: 8px 0;
+      border: none;
+    }
+  }
+  .right-content-wrapper {
+    padding: 24px 0 0 24px;
+    .selected-servers-length {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      button {
+        padding: 0;
+      }
+      button.ant-btn {
+        color: #6680FF;
+      }
+      button:disabled {
+        color: #ccc;
+      }
+    }
+    .selected-servers-wrap {
+      height: 420px;
+      overflow-y: auto;
+      p {
+        margin-top: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0;
+      }
+      .anticon-close-circle {
+        background: #808da1;
+        color: #fff;
+        border-radius: 50%;
+        font-size: 16px;
+      }
+    }
+  }
+}

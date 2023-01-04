@@ -1,0 +1,96 @@
+@prefix: report-day-and-month;
+
+.@{prefix}-container {
+  &-table-header {
+    padding: 20px;
+    background-color: #fff;
+    .title {
+      display: flex;
+      h3 {
+        font-size: 20px;
+        font-weight: bold;
+        text-align: left;
+        color: #1e232a;
+      }
+      justify-content: space-between;
+      h3 span {
+        font-size: 14px;
+        margin-left: 24px;
+        color: #808da1;
+      }
+      // > span {
+      //   color: rgba(0, 0, 0, 0.85);
+      //   font-weight: 600;
+      //   font-size: 16px;
+      //   line-height: 22px;
+      // }
+    }
+  }
+  &-table-body {
+    padding: 0 20px 20px;
+    background-color: #fff;
+
+    .ant-table-thead th {
+      background: #eff2f9;
+      color: #4b586c;
+      font-weight: 400;
+    }
+    .ant-table-tbody .gray-bg {
+      background: #eff2f9;
+    }
+    .ant-table-tbody td {
+      padding: 3px 12px;
+      color: #808da1;
+    }
+ 
+    // 移除第3列表头边距
+    .ant-table-cell-fix-left:nth-of-type(3) {
+      padding: 0;
+    }
+    
+    // 上下半边背景
+    .headerCell {
+      border-top: 55px #eff2f9 solid;
+      width: 0px;
+      height: 0px;
+      border-left: 135px #eff2f9 solid;
+      position: relative;
+      
+      // 上半边位置
+      .top {
+        position: absolute;
+        top: -48px;
+        left: -50px;
+        width: 50px;
+      }
+
+      // 下半边位置
+      .bottom {
+        position: absolute;
+        top: -26px;
+        left: -126px;
+        width: 60px;
+      }
+      
+      // 分割线
+      &::after {
+        content: '';
+        position: absolute;
+        width: 1px;
+        height: 145px;
+        top: -100px;
+        left: -68px;
+        background-color: #f0f0f0;
+        display: block;
+        transform: rotate(-68deg);
+      }
+    }
+  }
+
+  &-search {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding: 20px 20px 0;
+    background-color: #fff;
+  }
+}
