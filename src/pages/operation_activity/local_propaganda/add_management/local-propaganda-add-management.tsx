@@ -1074,6 +1074,7 @@ const TableList: React.FC = () => {
             exchangeDemandIds: resultDataSource.map(item => item.bizId) || [],
           })
           if (res?.code === 0) {
+            setEdit(false);
             message.success('成功')
             history.push(routeName.PROPAGANDA_CONFIG);
           } else {
@@ -1096,7 +1097,7 @@ const TableList: React.FC = () => {
         breadcrumb: (
           <Breadcrumb>
             <Breadcrumb.Item>
-              <Link to="/local-propaganda/propaganda-config/index">地市宣传页管理</Link>
+              <Link to="/operation-activity/local-propaganda/propaganda-config/index">地市宣传页管理</Link>
             </Breadcrumb.Item>
             <Breadcrumb.Item>
               {edit ? `编辑地市宣传页` : '新增地市宣传页'}
@@ -1117,7 +1118,10 @@ const TableList: React.FC = () => {
     >
       <div className={sc('container-basic')}>
         基本信息
-        <Form className={sc('container-basic-form')} form={form}>
+        <Form className={sc('container-basic-form')} form={form} onValuesChange={() => {
+          console.log('onValuesChange');
+          setEdit(true);
+        }}>
           <Form.Item
             labelCol={{ span: 8 }}
             wrapperCol={{ span: 10 }}
