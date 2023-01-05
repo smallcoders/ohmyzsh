@@ -485,11 +485,11 @@ export default () => {
               Object.keys(modalFormInfo).length == 0 ? selectObj.node + 1 : modalFormInfo.node + 1,
             bankUserInfoList: bankUserInfoList,
             officialLogoImage:
-              values.officialLogoImage.indexOf('http') === 0
+              values.officialLogoImage?.indexOf('http') === 0
                 ? values.officialLogoImage
                 : await logoImgFn(values.officialLogoImage),
             productLogoImage:
-              values.productLogoImage.indexOf('http') === 0
+              values.productLogoImage?.indexOf('http') === 0
                 ? values.productLogoImage
                 : await logoImgFn(values.productLogoImage),
           }));
