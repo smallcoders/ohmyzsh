@@ -39,7 +39,7 @@ export default () => {
     areaCode?: number;
     startTime?: string;
     endTime?: string;
-  }>({}); 
+  }>({});
   const [editingItem, setEditingItem] = useState<DiagnosticTasks.OnlineRecord | undefined>();
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [addOrUpdateLoading, setAddOrUpdateLoading] = useState<boolean>(false);
@@ -102,7 +102,7 @@ export default () => {
       dataIndex: 'org',
       isEllipsis: true,
       render: (org: { id: string; orgName: string }, record: DiagnosticTasks.OnlineRecord) => (
-        <a href="#" onClick={() => open(record?.id)}>
+        <a href="javascript:" onClick={() => open(record?.id)}>
           {org?.orgName || ''}
         </a>
       ),
