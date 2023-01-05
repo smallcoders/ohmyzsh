@@ -49,16 +49,16 @@ import {
      */
     const getDataList = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
       try {
-        const { result, code, totalCount, pageTotal } = await getReportAreaPage({
+        const { result, code } = await getReportAreaPage({
             ...searchContent,
             pageIndex,
             pageSize,
             type: 2
         });
         if (code === 0) {
-          const { header, data } = result
+          const { header, data, totalCount, pageTotal } = result
           if(header && data) {
-            setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
+            setPageInfo({ totalCount: totalCount*2, pageTotal, pageIndex, pageSize });
             formatColumns(header, data)
           }else {
             setTableHeader([])
@@ -93,7 +93,7 @@ import {
         fixed: 'left',
         onCell: onMergeCell,
         width: 65,
-        render: (_: any, _record: any, index: number) => (Math.floor(index / 3)) + 1
+        render: (_: any, _record: any, index: number) => (Math.floor(index / 2)) + 1
       })
   
       // 动态表头处理
