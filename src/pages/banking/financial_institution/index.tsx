@@ -161,14 +161,14 @@ export default () => {
             productLogoImage,
             bankNature: nature === 1 ? bankNature : null,
           });
-          setIsRadio(result?.isCoopera)
+          setIsRadio(result?.isCoopera);
           setDisabledFlag(true);
         } else {
           setDetailInfo({ ...result });
           form.setFieldsValue({
             ...result,
           });
-          setIsRadio(result?.isCoopera)
+          setIsRadio(result?.isCoopera);
           setSort(result.sort);
           if (result.bankUserInfoList && result.bankUserInfoList?.length > 0) {
             setBankUserInfoList([...result.bankUserInfoList]);
@@ -546,6 +546,7 @@ export default () => {
             setDetailInfo({});
             setBankUserInfoList([]);
             form.resetFields();
+            setIsRadio(1)
             setSort(null);
             setDetail(false);
             if (firstPage === false) {
@@ -949,10 +950,14 @@ export default () => {
                       <label>机构logo :</label>
                       <img
                         style={{ width: 80, marginRight: 48 }}
-                        src={detailInfo?.officialLogoImage?.split("?")[0]}
+                        src={detailInfo?.officialLogoImage?.split('?')[0]}
                         alt=""
                       />
-                      <img style={{ width: 80 }} src={detailInfo?.productLogoImage?.split("?")[0]} alt="" />
+                      <img
+                        style={{ width: 80 }}
+                        src={detailInfo?.productLogoImage?.split('?')[0]}
+                        alt=""
+                      />
                     </div>
                     <div className="item">
                       <label>经办人 :</label>
