@@ -59,7 +59,10 @@ export default () => {
             <div className={sc('page-item-body-item')}>
               <div className={sc('page-item-body-item-label')}>担保方式：</div>
               <div className={sc('page-item-body-item-wrap')}>
-                {guaranteeMethodMap[detail.warrantType] || '--'}
+                {detail?.warrantType?.split(',').map((item: string) => {
+                  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+                  return guaranteeMethodMap[item] + ' ';
+                })}
               </div>
             </div>
             <div className={sc('page-item-body-item')}>
@@ -139,13 +142,8 @@ export default () => {
                 {detail?.typeName?.includes('保险') ? '保险' : ''}额度：
               </div>
               <div className={sc('page-item-body-item-wrap')}>
-                {
-                  typeof detail.minAmount === 'number' ? `${detail.minAmount / 1000000}万元` : '--'
-                }
-                -
-                {
-                  typeof detail.maxAmount === 'number' ? `${detail.maxAmount / 1000000}万元` : '--'
-                }
+                {typeof detail.minAmount === 'number' ? `${detail.minAmount / 1000000}万元` : '--'}-
+                {typeof detail.maxAmount === 'number' ? `${detail.maxAmount / 1000000}万元` : '--'}
               </div>
             </div>
             <div className={sc('page-item-body-item')}>
