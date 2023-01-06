@@ -35,6 +35,22 @@ const commodityPaymentTypes = [
   { value: PayMethodAppEnum.TIME, content: '元/次' },
 ];
 
+enum ExpireTimeEnum {
+  ONE = 1,
+  TWO = 2,
+  THREE = 3,
+  FOUR = 4,
+  FIVE = 5,
+}
+
+const yearMap = {
+  [ExpireTimeEnum.ONE]: '一',
+  [ExpireTimeEnum.TWO]: '二',
+  [ExpireTimeEnum.THREE]: '三',
+  [ExpireTimeEnum.FOUR]: '四',
+  [ExpireTimeEnum.FIVE]: '五',
+};
+
 export default () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [detail, setDetail] = useState<any>({});
@@ -289,13 +305,13 @@ export default () => {
                       return `用户数：${
                         record?.userNum > 0 ? `${record?.userNum}人` : '无限制'
                       }；有效时间：${
-                        record?.expireType !== -1 ? `${record?.expireTime}年` : '无限制'
+                        record?.expireTime > 0 ? `${yearMap[record?.expireTime]}年` : '无限制'
                       }`;
                     case PayMethodAppEnum.SET:
                       return `使用次数：${
                         record?.count > 0 ? `${record?.count}次` : '无限制'
                       }；有效时间：${
-                        record?.expireType !== -1 ? `${record?.expireTime}年` : '无限制'
+                        record?.expireTime > 0 ? `${yearMap[record?.expireTime]}年` : '无限制'
                       }`;
                     case PayMethodAppEnum.TIME:
                       return `使用次数：${record?.count > 0 ? `${record?.count}次` : '无限制'}`;
