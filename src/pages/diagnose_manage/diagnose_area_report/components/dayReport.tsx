@@ -43,7 +43,6 @@ import {
         totalCount: 0,
         pageTotal: 0,
       });
-  
     const [tableHeader, setTableHeader] = useState<any[]>([])
     const [tableItems, setTableItems] = useState<any[]>([])
   
@@ -52,16 +51,16 @@ import {
      */
     const getDataList = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
       try {
-        const { result, code, totalCount, pageTotal } = await getReportAreaPage({
+        const { result, code } = await getReportAreaPage({
             ...searchContent,
             pageIndex,
             pageSize,
             type: 1
         });
         if (code === 0) {
-          const { header, data } = result
+          const { header, data, totalCount, pageTotal } = result
           if(header && data) {
-            setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
+            setPageInfo({ totalCount: totalCount*2, pageTotal, pageIndex, pageSize });
             formatColumns(header, data)
           }else {
             setTableHeader([])
@@ -96,7 +95,7 @@ import {
         fixed: 'left',
         onCell: onMergeCell,
         width: 65,
-        render: (_: any, _record: any, index: number) => (Math.floor(index / 3)) + 1
+        render: (_: any, _record: any, index: number) => (Math.floor(index / 2)) + 1
       })
   
       // 动态表头处理
@@ -143,7 +142,6 @@ import {
       for (let i = 0, l = tableItems.length; i < l; i++) {
         tableItems[i].id = i
       }
-      
       setTableHeader(tableHeader)
       setTableItems(tableItems)
     }
@@ -158,7 +156,7 @@ import {
 
     const dealOption = (areas: any) => {
       let arr = areas.filter(item => item.code == '340000')[0]?.nodes || []
-      console.log(arr)
+      // console.log(arr)
       return arr
     }
 
