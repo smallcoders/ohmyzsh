@@ -240,7 +240,7 @@ const TableList: React.FC = () => {
         breadcrumb: (
           <Breadcrumb>
             <Breadcrumb.Item>
-              <Link to="/local-propaganda/propaganda-config/index">地市宣传页管理</Link>
+              <Link to="/operation-activity/local-propaganda/propaganda-config/index">地市宣传页管理</Link>
             </Breadcrumb.Item>
             <Breadcrumb.Item>
               {'地市宣传页详情'}
