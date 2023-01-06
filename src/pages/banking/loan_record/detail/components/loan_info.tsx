@@ -440,7 +440,13 @@ export default ({ isDetail, type, id, step, toTab, left, name, loanType }: Props
               },
             ]}
           >
-            <Radio.Group>
+            <Radio.Group
+              onChange={() => {
+                form.setFieldsValue({
+                  workProve: [],
+                });
+              }}
+            >
               <Radio value={3}>已放款</Radio>
               <Radio value={4}>放款失败</Radio>
             </Radio.Group>

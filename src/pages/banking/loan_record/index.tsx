@@ -392,7 +392,8 @@ export default ({ loanType, name }: { loanType: number; name: string }) => {
       fixed: 'right',
       dataIndex: 'option',
       render: (_: any, record: BankingLoan.Content) => {
-        const isApiType = record.productId === 1662285468000019;
+        const isApiType =
+          record.productId === 1662285468000019 || record.productId === 1662285468000031;
         const type = isApiType ? 0 : 1;
         return (
           <Space>
