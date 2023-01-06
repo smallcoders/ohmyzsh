@@ -161,12 +161,14 @@ export default () => {
             productLogoImage,
             bankNature: nature === 1 ? bankNature : null,
           });
+          setIsRadio(result?.isCoopera);
           setDisabledFlag(true);
         } else {
           setDetailInfo({ ...result });
           form.setFieldsValue({
             ...result,
           });
+          setIsRadio(result?.isCoopera);
           setSort(result.sort);
           if (result.bankUserInfoList && result.bankUserInfoList?.length > 0) {
             setBankUserInfoList([...result.bankUserInfoList]);
@@ -463,11 +465,11 @@ export default () => {
             node: detailInfo.node,
             sort,
             officialLogoImage:
-              values.officialLogoImage.indexOf('http') === 0
+              values.officialLogoImage?.indexOf('http') === 0
                 ? values.officialLogoImage
                 : await logoImgFn(values.officialLogoImage),
             productLogoImage:
-              values.productLogoImage.indexOf('http') === 0
+              values.productLogoImage?.indexOf('http') === 0
                 ? values.productLogoImage
                 : await logoImgFn(values.productLogoImage),
             bankUserInfoList: bankUserInfoList,
@@ -483,11 +485,11 @@ export default () => {
               Object.keys(modalFormInfo).length == 0 ? selectObj.node + 1 : modalFormInfo.node + 1,
             bankUserInfoList: bankUserInfoList,
             officialLogoImage:
-              values.officialLogoImage.indexOf('http') === 0
+              values.officialLogoImage?.indexOf('http') === 0
                 ? values.officialLogoImage
                 : await logoImgFn(values.officialLogoImage),
             productLogoImage:
-              values.productLogoImage.indexOf('http') === 0
+              values.productLogoImage?.indexOf('http') === 0
                 ? values.productLogoImage
                 : await logoImgFn(values.productLogoImage),
           }));
@@ -544,6 +546,7 @@ export default () => {
             setDetailInfo({});
             setBankUserInfoList([]);
             form.resetFields();
+            setIsRadio(1)
             setSort(null);
             setDetail(false);
             if (firstPage === false) {
@@ -935,7 +938,7 @@ export default () => {
                         {detailInfo.isCoopera === 1 ? '是' : '否'}
                       </div>
                     )}
-                    {detailInfo.node === 2 ? (
+                    {isRadio === 0 ? (
                       <></>
                     ) : (
                       <div className="item">
@@ -947,10 +950,14 @@ export default () => {
                       <label>机构logo :</label>
                       <img
                         style={{ width: 80, marginRight: 48 }}
-                        src={detailInfo?.officialLogoImage}
+                        src={detailInfo?.officialLogoImage?.split('?')[0]}
                         alt=""
                       />
-                      <img style={{ width: 80 }} src={detailInfo?.productLogoImage} alt="" />
+                      <img
+                        style={{ width: 80 }}
+                        src={detailInfo?.productLogoImage?.split('?')[0]}
+                        alt=""
+                      />
                     </div>
                     <div className="item">
                       <label>经办人 :</label>
