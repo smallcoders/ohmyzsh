@@ -38,7 +38,7 @@ const stateObj = {
 };
 
 const TableList: React.FC = () => {
-  const access = useAccess()
+  const access = useAccess();
   const permissions = {
     [Banner.Edge.PC]: 'PQ_PC_B_SY', // 官网-首页
     [Banner.Edge.FINANCIAL_SERVICE]: 'PQ_PC_B_JR', // 官网-金融
@@ -47,7 +47,8 @@ const TableList: React.FC = () => {
     [Banner.Edge.APPLET_CREATIVE]: 'PQ_PC_B_XKC', // 小程序-科产
     [Banner.Edge.APP]: 'PQ_PC_B_ASY', // APP-首页
     [Banner.Edge.APP_CREATIVE]: 'PQ_PC_B_AKC', // APP-科产
-  }
+    [Banner.Edge.APP_FINANCIAL]: 'PQ_PC_B_AJR', // APP-金融
+  };
   const formLayout = {
     labelCol: { span: 6 },
     wrapperCol: { span: 14 },
@@ -67,7 +68,6 @@ const TableList: React.FC = () => {
     totalCount: 0,
     pageTotal: 0,
   });
-
 
   const [dataSource, setDataSource] = useState<Banner.Content[]>([]);
 
@@ -202,11 +202,11 @@ const TableList: React.FC = () => {
       title: '发布人',
       dataIndex: 'publishUserName',
     },
-    access?.[permissions?.[edge].replace(new RegExp("Q"), "")] && {
+    access?.[permissions?.[edge].replace(new RegExp('Q'), '')] && {
       title: '操作',
       dataIndex: 'option',
       render: (_: any, record: Banner.Content) => {
-        const accessible = access?.[permissions?.[edge].replace(new RegExp("Q"), "")]
+        const accessible = access?.[permissions?.[edge].replace(new RegExp('Q'), '')];
         return (
           <Access accessible={accessible}>
             <Space size="middle">
@@ -238,11 +238,12 @@ const TableList: React.FC = () => {
                   <a href="#">下架</a>
                 </Popconfirm>
               )}
-            </Space></Access>
+            </Space>
+          </Access>
         );
       },
     },
-  ].filter(p => p);
+  ].filter((p) => p);
 
   const edges = {
     [Banner.Edge.PC]: '官网-首页', // 官网-首页
@@ -252,20 +253,20 @@ const TableList: React.FC = () => {
     [Banner.Edge.APPLET_CREATIVE]: '小程序-科产', // 小程序-科产
     [Banner.Edge.APP]: 'APP-首页', // APP-首页
     [Banner.Edge.APP_CREATIVE]: 'APP-科产', // APP-科产
-  }
+    [Banner.Edge.APP_FINANCIAL]: 'APP-金融', // APP-金融
+  };
 
-  console.log('Object.entries(edges)', edges, Object.keys(edges))
+  console.log('Object.entries(edges)', edges, Object.keys(edges));
 
   useEffect(() => {
     for (const key in permissions) {
-      const permission = permissions[key]
+      const permission = permissions[key];
       if (Object.prototype.hasOwnProperty.call(access, permission)) {
-        setEdge(key as any)
-        break
+        setEdge(key as any);
+        break;
       }
     }
-  }, [])
-
+  }, []);
 
   /**
    * 切换 app、小程序、pc
@@ -278,11 +279,14 @@ const TableList: React.FC = () => {
     };
     return (
       <Radio.Group value={edge} onChange={handleEdgeChange}>
-        {
-          Object.keys(edges).map((p, index) => {
-            return <Access accessible={access?.[permissions[p]]}><Radio.Button value={p}>{edges[p]}</Radio.Button></Access>
-          })
-        }
+        {Object.keys(edges).map((p, index) => {
+          
+          return (
+            <Access accessible={access?.[permissions[p]]}>
+              <Radio.Button value={p}>{edges[p]}</Radio.Button>
+            </Access>
+          );
+        })}
 
         {/*<Radio.Button value={Banner.Edge.PC}>官网-首页</Radio.Button>
         <Radio.Button value={Banner.Edge.FINANCIAL_SERVICE}>官网-金融</Radio.Button>
@@ -348,6 +352,7 @@ const TableList: React.FC = () => {
               <Select.Option value={Banner.Edge.APPLET_CREATIVE}>小程序-科产</Select.Option>
               <Select.Option value={Banner.Edge.APP}>APP-首页</Select.Option>
               <Select.Option value={Banner.Edge.APP_CREATIVE}>APP-科产</Select.Option>
+              <Select.Option value={Banner.Edge.APP_FINANCIAL}>APP-金融</Select.Option>
             </Select>
           </Form.Item>
           <Form.Item name="sort" label="展示顺序">
@@ -367,16 +372,18 @@ const TableList: React.FC = () => {
         <div style={{ backgroundColor: '#fff', padding: 20 }}>
           <div className={sc('container-header')}>
             {selectButton()}
-            <Access accessible={access['PA_PC_B']}>  <Button
-              type="primary"
-              key="newAdd"
-              loading={addOrUpdateLoading}
-              onClick={() => {
-                setModalVisible(true);
-              }}
-            >
-              <PlusOutlined /> 新增
-            </Button>
+            <Access accessible={access['PA_PC_B']}>
+              {' '}
+              <Button
+                type="primary"
+                key="newAdd"
+                loading={addOrUpdateLoading}
+                onClick={() => {
+                  setModalVisible(true);
+                }}
+              >
+                <PlusOutlined /> 新增
+              </Button>
             </Access>
           </div>
           <Table
@@ -388,13 +395,13 @@ const TableList: React.FC = () => {
               pageInfo.totalCount === 0
                 ? false
                 : {
-                  onChange: getBanners,
-                  total: pageInfo.totalCount,
-                  current: pageInfo.pageIndex,
-                  pageSize: pageInfo.pageSize,
-                  showTotal: (total) =>
-                    `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
-                }
+                    onChange: getBanners,
+                    total: pageInfo.totalCount,
+                    current: pageInfo.pageIndex,
+                    pageSize: pageInfo.pageSize,
+                    showTotal: (total) =>
+                      `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
+                  }
             }
           />
         </div>

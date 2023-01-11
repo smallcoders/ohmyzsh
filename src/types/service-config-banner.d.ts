@@ -9,6 +9,7 @@ namespace Banner {
     APPLET_CREATIVE = 3, // 小程序-科产
     APP_CREATIVE = 4, // APP-科产
     PC_CITY = 5, // 官网-地市专题首页
+    APP_FINANCIAL = 7, // APP-金融
   }
 
   export interface ResultList extends Common.ResultCode, Common.ResultPage {
