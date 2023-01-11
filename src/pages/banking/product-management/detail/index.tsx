@@ -59,10 +59,12 @@ export default () => {
             <div className={sc('page-item-body-item')}>
               <div className={sc('page-item-body-item-label')}>担保方式：</div>
               <div className={sc('page-item-body-item-wrap')}>
-                {detail?.warrantType?.split(',').map((item: string) => {
-                  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-                  return guaranteeMethodMap[item] + ' ';
-                })}
+                {detail?.warrantType
+                  ? detail.warrantType.split(',').map((item: string) => {
+                      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+                      return guaranteeMethodMap[item] + ' ';
+                    })
+                  : '--'}
               </div>
             </div>
             <div className={sc('page-item-body-item')}>
