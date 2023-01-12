@@ -110,7 +110,7 @@ export default () => {
             <Input maxLength={20} />
           </Form.Item>
           <Form.Item
-            label="华为应用市场"
+            label={auditItem?.channelContent}
             name="audit"
             initialValue={true}
             extra="仅当APP在此应用市场上架成功后，才可开启金融服务入口"

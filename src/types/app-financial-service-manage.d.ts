@@ -14,6 +14,7 @@ namespace AppFinancialMng {
     audit?: boolean; //是否审核中
     createTime?: string; //创建时间
     updateTime?: string; //修改时间
+    channelContent?: string;
   };
 }
 
