@@ -16,7 +16,6 @@ const InputConfig = () => {
   const { state } = useContext(DesignContext)
   const { widgetFormList } = state
   const [showLengthInput, setShowLengthInput] = useState<boolean>(false)
-  console.log(state, '0000000')
   return (
     <>
       <Form.Item required label="标题">

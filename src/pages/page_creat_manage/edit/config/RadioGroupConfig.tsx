@@ -45,7 +45,7 @@ const RadioGroupConfig = () => {
     let showList: string[] = []
     widgetFormList.forEach((item: any) => {
       const defaultValue = item.config?.defaultValue
-      if(defaultValue?.length &&
+      if(defaultValue?.length && !item.hide &&
         ['RadioGroup', 'CheckboxGroup', 'MultipleSelect', 'Select', 'ImagePicker'].indexOf(item.type) !== -1)
       {
         item.config.options.forEach((optionItem: {value: string, showList: string[]}) => {
@@ -70,7 +70,6 @@ const RadioGroupConfig = () => {
     })
   }
 
-  console.log(state, '2222222')
 
   return (
     <>
@@ -206,7 +205,6 @@ const RadioGroupConfig = () => {
                         newConfigOptions.forEach((optionItem: {showList: string[]}) => {
                           controlKeyList = [...new Set([...controlKeyList, ...(optionItem.showList || [])])]
                         })
-                        console.log(controlKeyList, 'controlKeyList')
                         setControlList(controlKeyList)
                       }}
                     />

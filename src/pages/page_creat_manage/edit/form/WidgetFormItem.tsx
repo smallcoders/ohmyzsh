@@ -170,7 +170,6 @@ const WidgetFormItem: FC<Props> = (props) => {
       type: ActionType.SET_SELECT_WIDGET_ITEM,
       payload: item
     }
-    console.log(item, '0000011111')
     dispatch(action)
   }
 
@@ -246,7 +245,6 @@ const WidgetFormItem: FC<Props> = (props) => {
     const newList = list.map((it: any) => {
       return {...it, hide: showList.indexOf(it.key!) !== -1 ? false : controlAllList.indexOf(it.key!) !== -1 ? true : false  }
     })
-    console.log(newList, '0011newlist')
     return newList
   }
 
