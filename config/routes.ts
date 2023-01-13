@@ -159,7 +159,6 @@
   FINANCIAL_DIAGNOSTIC_RECORD_INDEX: '/banking/financial_diagnostic_record/index',
   FINANCIAL_DIAGNOSTIC_RECORD_DETAIL: '/banking/financial_diagnostic_record/detail',
 
-
   // 金融专属
   FINANCIAL_EXCLUSIVE: '/banking/financial_exclusive',
   FINANCIAL_EXCLUSIVE_INDEX: '/banking/financial_exclusive/index',
@@ -168,9 +167,13 @@
   FINANCIAL_INSTITUTION: '/banking/financial_institution',
   FINANCIAL_INSTITUTION_INDEX: '/banking/financial_institution/index',
 
+  // App金融服务管理
+  APP_FINANCIAL_SERVICE_MANAGE: '/banking/app_financial_service_manage',
+  APP_FINANCIAL_SERVICE_MANAGE_INDEX: '/banking/app_financial_service_manage/index',
+
   // 产品类型
-  PRODUCT_TYPE:'/banking/product_type',
-  PRODUCT_TYPE_INDEX:'/banking/product_type/index',
+  PRODUCT_TYPE: '/banking/product_type',
+  PRODUCT_TYPE_INDEX: '/banking/product_type/index',
 
   // 推荐管理
   RECOMMENDED_HOT_WORDS: '/recommended/hot_words',
@@ -1199,8 +1202,8 @@ export default [
             path: '/solution-properties/message-management/detail',
             name: '留言详情',
             component: './solution_properties/message_management/components/detail',
-          }
-        ]
+          },
+        ],
       },
     ],
   },
@@ -1536,7 +1539,7 @@ export default [
           },
         ],
       },
-    ]
+    ],
   },
   {
     path: '/diagnose-project-manage',
@@ -1676,7 +1679,7 @@ export default [
           },
         ],
       },
-    ]
+    ],
   },
   {
     path: '/banking',
@@ -1926,6 +1929,25 @@ export default [
         ],
       },
       {
+        path: routeName.APP_FINANCIAL_SERVICE_MANAGE,
+        name: 'App金融服务管理',
+        code: 'M_FM_FWGL',
+        access: 'M_FM_FWGL',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.APP_FINANCIAL_SERVICE_MANAGE,
+            redirect: routeName.APP_FINANCIAL_SERVICE_MANAGE_INDEX,
+          },
+          {
+            path: routeName.APP_FINANCIAL_SERVICE_MANAGE_INDEX,
+            hideInBreadcrumb: true,
+            name: 'App金融服务管理',
+            component: './banking/app_financial_service_manage',
+          },
+        ],
+      },
+      {
         path: routeName.FINANCIAL_CUSTOMERS_MANAGE,
         name: '金融客户管理',
         code: 'M_FM_KHGL',
@@ -1961,7 +1983,6 @@ export default [
         access: 'M_FM_GYSGL',
         component: './banking/supplier-management',
       },
-
     ],
   },
   {
@@ -2484,7 +2505,6 @@ export default [
             name: '组织成员信息',
             component: './user_config/org_manage/detail',
           },
-
         ],
       },
       {

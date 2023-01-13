@@ -1,0 +1,72 @@
+@prefix: app-financial-service-manage;
+
+.app-financial-service-manage-show-reason {
+  color: #6680ff;
+}
+.@{prefix}-container {
+  &-table {
+    padding: 24px 32px;
+    background-color: #fff;
+    border-radius: 2px;
+  }
+  &-table-body {
+    background-color: #fff;
+  }
+  &-modal {
+    .modal-title {
+      margin-bottom: 32px;
+      color: #556377;
+      font-weight: 400;
+      font-size: 16px;
+      label {
+        margin-right: 10px;
+        color: #8290a6;
+      }
+    }
+    .ant-form {
+      .ant-form-item-label {
+        margin-right: 10px;
+      }
+      .ant-form-item-label > label {
+        height: 40px;
+        color: #1e232a;
+        font-weight: 400;
+        font-size: 16px;
+      }
+      .ant-form-item-control-input {
+        .ant-radio-wrapper {
+          color: #556377;
+          font-size: 16px;
+        }
+        .ant-input-group.ant-input-group-compact {
+          display: flex;
+        }
+        .ant-input-number-group .ant-input-number {
+          width: 100%;
+          height: 40px;
+          .ant-input-number-input {
+            margin-top: 4px;
+          }
+        }
+        .ant-input-affix-wrapper {
+          padding: 0 11px;
+          font-size: 16px;
+          line-height: 16px;
+          .ant-input-suffix {
+            color: #c4cad5;
+          }
+        }
+        .ant-input {
+          height: 40px;
+        }
+        .ant-select-selector {
+          height: 40px;
+          padding: 4px 11px;
+          .ant-select-selection-search-input {
+            margin-top: 5px;
+          }
+        }
+      }
+    }
+  }
+}
