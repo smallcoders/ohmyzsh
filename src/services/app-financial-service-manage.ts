@@ -10,10 +10,10 @@ export async function getAuditInfoMngList() {
   });
 }
 /**
- * 贷款产品（贷款和租赁）下拉框，返回产品id和产品名称，支持模糊搜索
+ * 新增修改审核信息
  */
 export async function addOrUpdateAudit(data?: Record<string, any>) {
-  return request<any>(`/antelope-finance/app/addOrUpdateAudit`, {
+  return request<any>(`/antelope-finance/app/mng/addOrUpdateAudit`, {
     method: 'post',
     data,
   });
