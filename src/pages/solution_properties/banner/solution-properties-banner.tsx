@@ -53,6 +53,16 @@ const TableList: React.FC = () => {
     labelCol: { span: 6 },
     wrapperCol: { span: 14 },
   };
+  const options = [
+    { label: '官网-首页', value: 0 },
+    { label: '小程序-首页', value: 1 },
+    { label: 'APP-首页', value: 2 },
+    { label: '小程序-科产', value: 3 },
+    { label: 'APP-科产', value: 4 },
+    { label: '官网-地市专题首页', value: 5 },
+    { label: '官网-金融', value: 6 },
+    { label: 'APP-金融', value: 7 },
+  ];
   /**
    * 新建窗口的弹窗
    *  */
@@ -214,6 +224,7 @@ const TableList: React.FC = () => {
                 href="#"
                 onClick={() => {
                   setEditingItem(record);
+                  form.setFieldsValue({ belong: Number(edge) });
                   setModalVisible(true);
                   form.setFieldsValue({ ...record });
                 }}
@@ -247,12 +258,12 @@ const TableList: React.FC = () => {
 
   const edges = {
     [Banner.Edge.PC]: '官网-首页', // 官网-首页
-    [Banner.Edge.FINANCIAL_SERVICE]: '官网-金融', // 官网-金融
-    [Banner.Edge.PC_CITY]: '官网-地市专题首页', // 官网-地市专题首页
     [Banner.Edge.APPLET]: '小程序-首页', // 小程序-首页
-    [Banner.Edge.APPLET_CREATIVE]: '小程序-科产', // 小程序-科产
     [Banner.Edge.APP]: 'APP-首页', // APP-首页
+    [Banner.Edge.APPLET_CREATIVE]: '小程序-科产', // 小程序-科产
     [Banner.Edge.APP_CREATIVE]: 'APP-科产', // APP-科产
+    [Banner.Edge.PC_CITY]: '官网-地市专题首页', // 官网-地市专题首页
+    [Banner.Edge.FINANCIAL_SERVICE]: '官网-金融', // 官网-金融
     [Banner.Edge.APP_FINANCIAL]: 'APP-金融', // APP-金融
   };
 
@@ -280,7 +291,6 @@ const TableList: React.FC = () => {
     return (
       <Radio.Group value={edge} onChange={handleEdgeChange}>
         {Object.keys(edges).map((p, index) => {
-          
           return (
             <Access accessible={access?.[permissions[p]]}>
               <Radio.Button value={p}>{edges[p]}</Radio.Button>
@@ -336,7 +346,7 @@ const TableList: React.FC = () => {
           <Form.Item
             name="belong"
             label="所属产品"
-            // initialValue={Banner.Edge.PC}
+            initialValue={0}
             rules={[
               {
                 required: true,
@@ -344,15 +354,21 @@ const TableList: React.FC = () => {
               },
             ]}
           >
-            <Select placeholder="请选择">
-              <Select.Option value={Banner.Edge.PC}>官网-首页</Select.Option>
+            <Select
+              options={options}
+              placeholder="请选择"
+              onChange={(value) => {
+                console.log(value);
+              }}
+            >
+              {/* <Select.Option value={Banner.Edge.PC}>官网-首页</Select.Option>
               <Select.Option value={Banner.Edge.FINANCIAL_SERVICE}>官网-金融</Select.Option>
               <Select.Option value={Banner.Edge.PC_CITY}>官网-地市专题主页</Select.Option>
               <Select.Option value={Banner.Edge.APPLET}>小程序-首页</Select.Option>
               <Select.Option value={Banner.Edge.APPLET_CREATIVE}>小程序-科产</Select.Option>
               <Select.Option value={Banner.Edge.APP}>APP-首页</Select.Option>
               <Select.Option value={Banner.Edge.APP_CREATIVE}>APP-科产</Select.Option>
-              <Select.Option value={Banner.Edge.APP_FINANCIAL}>APP-金融</Select.Option>
+              <Select.Option value={Banner.Edge.APP_FINANCIAL}>APP-金融</Select.Option> */}
             </Select>
           </Form.Item>
           <Form.Item name="sort" label="展示顺序">
@@ -379,6 +395,7 @@ const TableList: React.FC = () => {
                 key="newAdd"
                 loading={addOrUpdateLoading}
                 onClick={() => {
+                  form.setFieldsValue({ belong: Number(edge) });
                   setModalVisible(true);
                 }}
               >
