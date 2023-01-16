@@ -172,7 +172,7 @@ const GenerateForm = (props: GenerateFormProps) => {
             }
           </Form>
           <Button
-            style={{color: widgetInfo?.globalConfig?.textColor || '#fff', background: widgetInfo?.globalConfig?.btnBgColor || '#0068ff'}}
+            style={{borderColor: widgetInfo?.globalConfig?.btnBgColor || '#0068ff', color: widgetInfo?.globalConfig?.textColor || '#fff', background: widgetInfo?.globalConfig?.btnBgColor || '#0068ff'}}
             type="primary"
             onClick={async () => {
               await formInstance.validateFields()
