@@ -22,6 +22,7 @@ import TableConfig from '../config/TableConfig'
 import TreeConfig from '../config/TreeConfig'
 import ImagePickerConfig from '../config/ImagePickerConfig'
 import { useConfig } from '../hooks/hooks'
+import '../style/widgetConfig.less'
 
 const WidgetConfig: FC = () => {
   const { selectWidgetItem } = useConfig()
