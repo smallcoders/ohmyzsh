@@ -203,13 +203,13 @@ export default () => {
       title: '产品名称',
       dataIndex: 'name',
       isEllipsis: true,
-      width: 100,
+      width: '140px',
     },
     {
       title: '被申请次数',
       dataIndex: 'count',
       sorter: true,
-      width: 100,
+      width: 80,
     },
     {
       title: '面向对象',
@@ -222,12 +222,12 @@ export default () => {
     {
       title: '产品类型',
       dataIndex: 'typeName',
-      width: 100,
+      width: 80,
     },
     {
       title: '担保方式',
       dataIndex: 'warrantType',
-      width: 100,
+      width: 140,
       render: (_: string) => {
         return (
           <div>
@@ -241,7 +241,7 @@ export default () => {
     {
       title: '发布状态',
       dataIndex: 'state',
-      width: 100,
+      width: 80,
       render: (_: string) => {
         return <div>{statusMap[_] || '--'}</div>;
       },

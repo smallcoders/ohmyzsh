@@ -389,20 +389,20 @@ export default () => {
     {
       title: '序号',
       dataIndex: 'sort',
-      width: 80,
+      width: 60,
       render: (_: any, _record: DiagnosticRecord.Content, index: number) =>
         pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
       title: '金融诊断编号',
       dataIndex: 'diagnoseNum',
-      width: 120,
+      width: 150,
     },
     {
       title: '企业名称',
       dataIndex: 'orgName',
       isEllipsis: true,
-      width: 140,
+      width: '150px',
     },
     {
       title: '满足金融专属服务',
@@ -410,7 +410,7 @@ export default () => {
       render: (exclusiveService: boolean) => {
         return exclusiveService ? '是' : '否';
       },
-      width: 160,
+      width: 140,
     },
     {
       title: '金融诊断类型',
@@ -423,7 +423,7 @@ export default () => {
     {
       title: '拟融资金额(万元)',
       dataIndex: 'amount',
-      width: 160,
+      width: 120,
       render: (amount: number) => {
         return amount ? (amount / 1000000).toFixed(2) : '--';
       },
@@ -431,12 +431,12 @@ export default () => {
     {
       title: '拟融资期限(个月)',
       dataIndex: 'term',
-      width: 160,
+      width: 120,
     },
     {
       title: '诊断时间',
       dataIndex: 'createTime',
-      width: 160,
+      width: 140,
     },
     {
       title: '产品申请数量',
@@ -449,13 +449,13 @@ export default () => {
       render: (linkCustomer: boolean) => {
         return linkCustomer ? '是' : '否';
       },
-      width: 140,
+      width: 100,
     },
     {
       title: '操作',
       fixed: 'right',
       dataIndex: 'option',
-      width: 140,
+      width: 120,
       render: (_: any, record: DiagnosticRecord.Content) => {
         return (
           <Space>

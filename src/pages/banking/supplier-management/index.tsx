@@ -158,7 +158,6 @@ export default () => {
       key: 'sort',
       dataIndex: 'sort',
       width: 80,
-      align: 'center',
       render: (_: any, __: any, index: number) =>
         pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
@@ -166,8 +165,7 @@ export default () => {
       title: '供应商编码',
       key: 'code',
       dataIndex: 'code',
-      align: 'center',
-      width: 200,
+      width: 160,
       render: (code: string) => {
         return code === null ? '--' : code;
       },
@@ -176,15 +174,13 @@ export default () => {
       title: '供应商名称',
       key: 'name',
       dataIndex: 'name',
-      align: 'center',
       isEllipsis: true,
-      width: 260,
+      width: '200px',
     },
     {
       title: '统一社会信用代码',
       key: 'creditCode',
       dataIndex: 'creditCode',
-      align: 'center',
       width: 200,
       render: (creditCode: string) => {
         return creditCode === null ? '--' : creditCode;
@@ -195,8 +191,7 @@ export default () => {
       key: 'estiblishTime',
       dataIndex: 'estiblishTime',
       isEllipsis: true,
-      align: 'center',
-      width: 200,
+      width: 120,
       render: (time1: string) => {
         return time1 === null ? '--' : time1.split(' ')[0];
       },
@@ -205,15 +200,13 @@ export default () => {
       title: '法定代表人',
       key: 'legalName',
       dataIndex: 'legalName',
-      align: 'center',
-      width: 200,
+      width: 120,
     },
     {
       title: '身份证号',
       key: 'cardNo',
       dataIndex: 'cardNo',
-      align: 'center',
-      width: 200,
+      width: 140,
       render: (card: string) => {
         return card ? card.replace(/^(.{4})(?:\d+)(.{4})$/, '$1******$2') : '--';
       },
@@ -222,7 +215,6 @@ export default () => {
       title: '经营所在地',
       key: 'city',
       dataIndex: 'city',
-      align: 'center',
       width: 200,
       render: (cityName: string) => {
         return cityName === null ? '--' : cityName.split(',')[0].split('-').join('/');
@@ -232,8 +224,7 @@ export default () => {
       title: '合作时间',
       key: 'startDate',
       dataIndex: 'startDate',
-      align: 'center',
-      width: 200,
+      width: 140,
       render: (time2: string) => {
         return time2 === null ? '--' : time2.split(' ')[0];
       },
@@ -242,15 +233,14 @@ export default () => {
       title: '允许申请供应链e贷',
       key: 'applyFlag',
       dataIndex: 'applyFlag',
-      align: 'center',
       render: (_: any, record: any) => {
         return record.applyFlag === 0 ? '是' : '否';
       },
-      width: 200,
+      width: 160,
     },
     {
       title: '操作',
-      width: 200,
+      width: 180,
       fixed: 'right',
       key: 'option',
       align: 'center',
