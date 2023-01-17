@@ -176,11 +176,7 @@ export default () => {
       title: '姓名',
       dataIndex: 'name',
       width: 200,
-      render: (_: string) => (
-        <Tooltip placement="top" title={_}>
-          <div className="name">{_}</div>
-        </Tooltip>
-      ),
+      render: (_: string) => _ || '--',
     },
     {
       title: '手机号',

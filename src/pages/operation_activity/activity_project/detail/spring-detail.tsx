@@ -38,7 +38,7 @@ export default () => {
               <Form.Item label="注册端">{registerSourceEnum?.[detail?.registerSource] || '--'}</Form.Item>
               <Form.Item label="身份">{detail?.role || '--'}</Form.Item>
               <Form.Item label="所属组织">{detail?.orgName || '--'}</Form.Item>
-              <Form.Item label="邀请人数">{detail?.assistCount || '--'} 人      <Button
+              <Form.Item label="邀请人数">{detail?.assistCount} 人      <Button
                 style={{ marginRight: 10 }}
                 type="link"
                 onClick={() => {
