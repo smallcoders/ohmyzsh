@@ -1,21 +1,21 @@
 import { PageContainer } from '@ant-design/pro-layout';
 import React, { useState, useEffect } from 'react';
-import { Access, history } from 'umi';
+import { Access, history, useAccess } from 'umi';
 import Spring from './spring';
 import Intro from './intro';
 import scopedClasses from '@/utils/scopedClasses';
-import access from '@/access';
 const sc = scopedClasses('service_config_activity_project');
 
 export default () => {
   const [activeKey, setActiveKey] = useState<string>('1');
 
   const { type } = history.location.query as any;
-
+  const access = useAccess()
   const prepare = async () => {
     if (type) {
       setActiveKey(type);
     }
+
   };
 
   const tabList = []

@@ -67,14 +67,14 @@ export default () => {
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     const search = searchForm.getFieldsValue();
     if (search.registerDate) {
-      search.registerStartDate = moment(search.time[0]).format('YYYY-MM-DD HH:mm:ss');
-      search.registerEndDate = moment(search.time[1]).format('YYYY-MM-DD HH:mm:ss');
+      search.registerStartDate = moment(search.registerDate[0]).format('YYYY-MM-DD');
+      search.registerEndDate = moment(search.registerDate[1]).format('YYYY-MM-DD');
       delete search.registerDate;
     }
     if (search.completeDate) {
-      search.completeStartDate = moment(search.time[0]).format('YYYY-MM-DD HH:mm:ss');
-      search.completeEndDate = moment(search.time[1]).format('YYYY-MM-DD HH:mm:ss');
-      delete search.time;
+      search.completeStartDate = moment(search.completeDate[0]).format('YYYY-MM-DD');
+      search.completeEndDate = moment(search.completeDate[1]).format('YYYY-MM-DD');
+      delete search.completeDate;
     }
     try {
       const params = {
@@ -98,14 +98,14 @@ export default () => {
   const exportExcel = async () => {
     const search = searchForm.getFieldsValue();
     if (search.registerDate) {
-      search.registerStartDate = moment(search.time[0]).format('YYYY-MM-DD HH:mm:ss');
-      search.registerEndDate = moment(search.time[1]).format('YYYY-MM-DD HH:mm:ss');
+      search.registerStartDate = moment(search.registerDate[0]).format('YYYY-MM-DD');
+      search.registerEndDate = moment(search.registerDate[1]).format('YYYY-MM-DD');
       delete search.registerDate;
     }
     if (search.completeDate) {
-      search.completeStartDate = moment(search.time[0]).format('YYYY-MM-DD HH:mm:ss');
-      search.completeEndDate = moment(search.time[1]).format('YYYY-MM-DD HH:mm:ss');
-      delete search.time;
+      search.completeStartDate = moment(search.completeDate[0]).format('YYYY-MM-DD');
+      search.completeEndDate = moment(search.completeDate[1]).format('YYYY-MM-DD');
+      delete search.completeDate;
     }
     try {
       const params = {
@@ -191,7 +191,6 @@ export default () => {
       title: '注册时间',
       width: 200,
       dataIndex: 'registerTime',
-      render: (_: string) => moment(_).format('YYYY-MM-DD HH:mm:ss'),
     },
     {
       title: '注册端',
@@ -332,7 +331,7 @@ export default () => {
               <>
                 <Col span={8}>
                   <Form.Item name="registerDate" label="注册时间">
-                    <DatePicker.RangePicker allowClear showTime />
+                    <DatePicker.RangePicker allowClear  />
                   </Form.Item>
                 </Col>
                 <Col span={8}>
@@ -354,7 +353,7 @@ export default () => {
                 </Col>
                 <Col span={8}>
                   <Form.Item name="completeDate" label="完成时间">
-                    <DatePicker.RangePicker allowClear showTime />
+                    <DatePicker.RangePicker allowClear  />
                   </Form.Item>
                 </Col>
                 <Col span={8}>
@@ -452,7 +451,7 @@ export default () => {
 
       <div className={sc('container-table-header')}>
         <div className="title">
-          数据明细
+          <span>数据明细</span>
         </div>
         <div>
           {useSearchNode()}
