@@ -176,7 +176,7 @@ export default () => {
             >
               详情
             </Button>
-            <Access accessible={access['P_OA_CJHD']}>
+            <Access accessible={access['P_OA_YQYL']}>
               <Popconfirm
                 icon={null}
                 title={

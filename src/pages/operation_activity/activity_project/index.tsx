@@ -8,7 +8,7 @@ import { TabPaneProps } from 'antd';
 const sc = scopedClasses('service_config_activity_project');
 
 export default () => {
-  const [activeKey, setActiveKey] = useState<string>('1');
+  const [activeKey, setActiveKey] = useState<string>('0');
 
   const { type } = history.location.query as any;
   const access = useAccess()
@@ -24,6 +24,7 @@ export default () => {
         tab: '春节活动',
         key: '1',
       })
+      setActiveKey('1')
     }
     if (access['M_OA_YQYL']) {
       tab.push({
