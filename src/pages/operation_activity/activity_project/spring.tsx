@@ -33,21 +33,20 @@ const appEnum = {
 //   'PARTICIPATE': '参与总数', 'ASSIST': '成功助力总数', 'SIGN': '兑换成功总数'
 // };
 
-const registerSourceEnum = {
-  WEB: 'web端注册',
-  WECHAT: '微信小程序注册',
+export const registerSourceEnum = {
+  WEB: 'web端',
+  WECHAT: '微信小程序',
   APP: 'APP',
   OTHER: '其他终端',
   WST: '皖事通',
   WQT: '皖企通',
-  IFLYTEK: '科大讯飞-注册局',
-  TOPOLOGY: '拓普-注册局',
+  IFLYTEK: '科大讯飞-局',
+  TOPOLOGY: '拓普-局',
 };
 
 export default () => {
   const [dataSource, setDataSource] = useState<ActivityProject.Content[]>([]);
   const [exchange, setExchange] = useState(false);
-  const [selectRows, setSelectRows] = useState<ActivityProject.Content>({});
   const [searchForm] = Form.useForm();
   // 拿到当前角色的access权限兑现
   const access = useAccess()
@@ -171,6 +170,7 @@ export default () => {
       title: '用户ID',
       width: 200,
       dataIndex: 'userId',
+      render: (_: string) => _ || '--',
     },
     {
       title: '姓名',
@@ -186,11 +186,13 @@ export default () => {
       title: '手机号',
       width: 200,
       dataIndex: 'phone',
+      render: (_: string) => _ || '--',
     },
     {
       title: '注册时间',
       width: 200,
       dataIndex: 'registerTime',
+      render: (_: string) => _ || '--',
     },
     {
       title: '注册端',
@@ -203,16 +205,19 @@ export default () => {
       title: '身份',
       width: 200,
       dataIndex: 'role',
+      render: (_: string) => _ || '--',
     },
     {
       title: '所属组织',
       width: 200,
       dataIndex: 'orgName',
+      render: (_: string) => _ || '--',
     },
     {
       title: '邀请人数',
       width: 200,
       dataIndex: 'assistCount',
+      render: (_: string) => _ || '--',
     },
     {
       title: '完成状态',
@@ -224,11 +229,13 @@ export default () => {
       title: '完成时间',
       width: 200,
       dataIndex: 'completeTime',
+      render: (_: string) => _ || '--',
     },
     {
       title: '应用名称',
       width: 200,
       dataIndex: 'appNames',
+      render: (_: string) => _ || '--',
     },
     {
       title: '奖品兑换',
@@ -331,7 +338,7 @@ export default () => {
               <>
                 <Col span={8}>
                   <Form.Item name="registerDate" label="注册时间">
-                    <DatePicker.RangePicker allowClear  />
+                    <DatePicker.RangePicker allowClear />
                   </Form.Item>
                 </Col>
                 <Col span={8}>
@@ -353,7 +360,7 @@ export default () => {
                 </Col>
                 <Col span={8}>
                   <Form.Item name="completeDate" label="完成时间">
-                    <DatePicker.RangePicker allowClear  />
+                    <DatePicker.RangePicker allowClear />
                   </Form.Item>
                 </Col>
                 <Col span={8}>
