@@ -213,7 +213,6 @@ export default () => {
       title: '邀请人数',
       width: 200,
       dataIndex: 'assistCount',
-      render: (_: string) => _ || '--',
     },
     {
       title: '完成状态',
