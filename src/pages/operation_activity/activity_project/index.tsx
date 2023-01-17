@@ -30,6 +30,9 @@ export default () => {
       tab: '邀请有礼',
       key: '2',
     })
+    if (!access['M_OA_CJHD']) {
+      setActiveKey('2')
+    }
   }
 
   useEffect(() => {
