@@ -4,6 +4,7 @@ import { Access, history, useAccess } from 'umi';
 import Spring from './spring';
 import Intro from './intro';
 import scopedClasses from '@/utils/scopedClasses';
+import { TabPaneProps } from 'antd';
 const sc = scopedClasses('service_config_activity_project');
 
 export default () => {
@@ -11,29 +12,31 @@ export default () => {
 
   const { type } = history.location.query as any;
   const access = useAccess()
+  const [tabList, setTabList] = useState<any>([]);
+
   const prepare = async () => {
     if (type) {
       setActiveKey(type);
     }
-
+    const tab = []
+    if (access['M_OA_CJHD']) {
+      tab.push({
+        tab: '春节活动',
+        key: '1',
+      })
+    }
+    if (access['M_OA_YQYL']) {
+      tab.push({
+        tab: '邀请有礼',
+        key: '2',
+      })
+      if (!access['M_OA_CJHD']) {
+        setActiveKey('2')
+      }
+    }
+    setTabList(tab)
   };
 
-  const tabList = []
-  if (access['M_OA_CJHD']) {
-    tabList.push({
-      tab: '春节活动',
-      key: '1',
-    })
-  }
-  if (access['M_OA_YQYL']) {
-    tabList.push({
-      tab: '邀请有礼',
-      key: '2',
-    })
-    if (!access['M_OA_CJHD']) {
-      setActiveKey('2')
-    }
-  }
 
   useEffect(() => {
     prepare();
