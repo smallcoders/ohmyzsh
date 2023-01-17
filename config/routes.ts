@@ -1394,15 +1394,15 @@ export default [
           },
           {
             path: '/operation-activity/activity-project/detail',
-            name: '活动专题详情',
-            code: 'M_OA_HDZT',
-            access: 'M_OA_HDZT',
+            name: '邀请有礼详情',
+            code: 'M_OA_YQYL',
+            access: 'M_OA_YQYL',
             component: './operation_activity/activity_project/detail',
           },
           {
             path: routeName.ACTIVITY_PROJECT_NEWYEAR_DETAIL,
-            name: '活动专题详情',
-            access: 'M_OA_HDZT',
+            name: '春节活动详情',
+            access: 'M_OA_CJHD',
             component: './operation_activity/activity_project/detail/spring-detail',
           },
           

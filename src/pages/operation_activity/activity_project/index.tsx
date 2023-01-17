@@ -25,7 +25,7 @@ export default () => {
       key: '1',
     })
   }
-  if (access['M_OA_HDZT']) {
+  if (access['M_OA_YQYL']) {
     tabList.push({
       tab: '邀请有礼',
       key: '2',
