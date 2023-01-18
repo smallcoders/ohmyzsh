@@ -139,6 +139,9 @@
   .body-title-box {
     min-height: 240px;
     position: relative;
+    &.tiled {
+      min-height: 80px;
+    }
     .page-bg {
       display: block;
       width: 100%;
@@ -160,7 +163,7 @@
     }
   }
   .preview-form {
-    margin: -48px 24px 24px;
+    margin: -48px 24px 0;
     position: relative;
     padding-bottom: 32px;
     .ant-picker {
@@ -168,6 +171,7 @@
     }
     &.tiled {
       background: #fff;
+      margin-bottom: 24px;
       .ant-form > .ant-form-item {
         margin-bottom: 0;
         &:last-child {

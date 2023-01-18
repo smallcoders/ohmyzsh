@@ -46,7 +46,7 @@ const GenerateForm = (props: GenerateFormProps) => {
         {
           isMobile && widgetInfo?.globalConfig?.showPageName && <div className="mobile-title">{ widgetInfo?.globalConfig?.pageName}</div>
         }
-        <div  className="body-title-box">
+        <div  className={widgetInfo.globalConfig.formStyle === 'tiled' ? "body-title-box tiled" : "body-title-box"}>
           {
             widgetInfo?.globalConfig?.pageBg &&
             <img
