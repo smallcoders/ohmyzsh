@@ -106,6 +106,7 @@ const GenerateFormItem = (props: Props) => {
           <Form.Item
             rules={config?.required ? [{ required: true, message: '请选择选项'}] : []}
             name={key}
+            className="real-form-area"
             getValueFromEvent={(value) => {
               const newValue = value.length > config?.maxLength ? value.filter((checkItem: string) => {
                 return checkBoxValue.indexOf(checkItem) !== -1
@@ -143,6 +144,7 @@ const GenerateFormItem = (props: Props) => {
           <Form.Item
             name={key}
             validateTrigger="onBlur"
+            className="real-form-area"
             getValueFromEvent={(e) => {
               let newValue = e.target.value
               if (newValue && config?.regInfo?.reg){
@@ -189,6 +191,7 @@ const GenerateFormItem = (props: Props) => {
           <Form.Item
             name={key}
             validateTrigger="onBlur"
+            className="real-form-area"
             getValueFromEvent={(e) => {
               let newValue = e.target.value
               if (newValue && config?.regInfo?.reg){
@@ -233,6 +236,7 @@ const GenerateFormItem = (props: Props) => {
             config?.desc && <div className="question-desc">{config.desc}</div>
           }
           <Form.Item
+            className="real-form-area"
             name={key}
             rules={config?.required ? [{ required: true, message: '请输入内容'}] : []}
           >
@@ -254,6 +258,7 @@ const GenerateFormItem = (props: Props) => {
           }
           <Form.Item
             name={key}
+            className="real-form-area"
             rules={config?.required ? [{ required: true, message: '请选择'}] : []}
             getValueFromEvent={(value) => {
               const newValue = value.length > config?.maxLength ? value.filter((checkItem: string) => {
@@ -293,6 +298,7 @@ const GenerateFormItem = (props: Props) => {
           }
           <Form.Item
             name={key}
+            className="real-form-area"
             rules={config?.required ? [{ required: true, message: '请选择日期'}] : []}
           >
             <DatePicker
@@ -311,6 +317,7 @@ const GenerateFormItem = (props: Props) => {
           }
           <Form.Item
             name={key}
+            className="real-form-area"
             rules={config?.required ? [{ required: true, message: '请选择'}] : []}
           >
             <Select
@@ -361,6 +368,7 @@ const GenerateFormItem = (props: Props) => {
             config?.desc && <div className="question-desc">{config.desc}</div>
           }
           <Form.Item
+            className="real-form-area"
             name={key}
             rules={config?.required ? [{ required: true, message: '请选择'}] : []}
             getValueFromEvent={(value) => {

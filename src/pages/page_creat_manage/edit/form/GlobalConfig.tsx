@@ -6,9 +6,9 @@ import { ActionType } from '../store/action'
 import questionIcon from '@/assets/page_creat_manage/question_icon.png';
 
 const colorMapList = {
-  bgColor: ["#bbbbbb","#bbbccb","#bbdddb","#aaabbb","#ff00ff","#fffaaa","#fffbbb","#fffddb"],
-  btnBgColor: ["#bbbbbb","#bbbccb","#bbdddb","#aaabbb","#ff00ff","#fffaaa","#fffbbb","#fffddb"],
-  textColor: ["#bbbbbb","#bbbccb","#bbdddb","#aaabbb","#ff00ff","#fffaaa","#fffbbb","#fffddb"]
+  bgColor: ["#CCDFFF","#DEE5FF","#BCDFFF","#0A309E","#D1EAFF"],
+  btnBgColor: ["#CCDFFF","#DEE5FF","#BCDFFF","#0A309E","#D1EAFF"],
+  textColor: ["#CCDFFF","#DEE5FF","#BCDFFF","#0A309E","#D1EAFF"]
 }
 
 const GlobalConfig: FC = () => {

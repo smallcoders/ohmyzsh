@@ -1,6 +1,10 @@
 import { useState } from 'react'
 import { Button, Form, Input, Checkbox } from 'antd';
 import { clone } from 'lodash-es'
+import phoneIcon from '@/assets/page_creat_manage/icon_phone.png'
+import codeIcon from '@/assets/page_creat_manage/icon_code.png'
+import nameIcon from '@/assets/page_creat_manage/icon_name.png'
+import logo from '@/assets/page_creat_manage/logo.png'
 import { State } from '../store/state'
 import { GenerateProvider } from '../store'
 import GenerateFormItem from '../form/GenerateFormItem'
@@ -62,7 +66,7 @@ const GenerateForm = (props: GenerateFormProps) => {
             }
           </div>
         </div>
-        <div className="preview-form">
+        <div className={widgetInfo.globalConfig.formStyle === 'tiled' ? "preview-form tiled" : "preview-form"}>
           <Form {...widgetInfo.formConfig} form={formInstance}>
             {widgetInfo.widgetFormList.map((widgetFormItem: any) => (
               <GenerateFormItem widgetInfo={widgetInfo} clickCallBack={clickCallBack} areaCodeOptions={areaCodeOptions} key={widgetFormItem.key} item={widgetFormItem} formInstance={formInstance} />
@@ -70,7 +74,9 @@ const GenerateForm = (props: GenerateFormProps) => {
             {
               widgetInfo.globalConfig.showRegister &&
               <Form.Item
-                label="欢迎注册羚羊平台"
+                className="register-area real-form-area"
+                required
+                label={<span className="customer-label"><img className="official-logo" src={logo} alt='' /><span>欢迎注册羚羊平台</span> </span>}
               >
                 <Form.Item
                   name="registerPhone"
@@ -87,6 +93,11 @@ const GenerateForm = (props: GenerateFormProps) => {
                 >
                   <Input
                     maxLength={11}
+                    prefix={
+                      <span className="action-icon">
+                        <img src={phoneIcon} alt='' />
+                      </span>
+                    }
                     placeholder="手机号"
                     autoComplete="off"
                   />
@@ -108,6 +119,11 @@ const GenerateForm = (props: GenerateFormProps) => {
                     placeholder="短信验证码"
                     autoComplete="off"
                     maxLength={6}
+                    prefix={
+                      <span className="action-icon">
+                        <img src={codeIcon} alt='' />
+                      </span>
+                    }
                     addonAfter={
                       <div className="get-code-btn">
                         获取验证码
@@ -132,6 +148,11 @@ const GenerateForm = (props: GenerateFormProps) => {
                   getValueFromEvent={(event) => event.target.value.replace(/\d/g, '')}
                 >
                   <Input
+                    prefix={
+                      <span className="action-icon">
+                        <img src={nameIcon} alt='' />
+                      </span>
+                    }
                     placeholder="请输入姓名"
                     maxLength={35}
                   />
@@ -172,7 +193,7 @@ const GenerateForm = (props: GenerateFormProps) => {
             }
           </Form>
           <Button
-            style={{borderColor: widgetInfo?.globalConfig?.btnBgColor || '#0068ff', color: widgetInfo?.globalConfig?.textColor || '#fff', background: widgetInfo?.globalConfig?.btnBgColor || '#0068ff'}}
+            style={{boxShadow: 'none', borderColor: widgetInfo?.globalConfig?.btnBgColor || '#0068ff', color: widgetInfo?.globalConfig?.textColor || '#fff', background: widgetInfo?.globalConfig?.btnBgColor || '#0068ff'}}
             type="primary"
             onClick={async () => {
               await formInstance.validateFields()
