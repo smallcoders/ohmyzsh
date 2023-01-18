@@ -66,10 +66,12 @@ export default () => {
     {
       title: '统一社会信用代码',
       dataIndex: 'creditCode',
+      width: 160,
     },
     {
       title: '成立时间',
       dataIndex: 'formedDate',
+      width: 100,
       render: (formedDate: string) => {
         return <span>{formedDate ? formedDate.split(' ')[0] : '--'}</span>;
       },
@@ -77,14 +79,18 @@ export default () => {
     {
       title: '法定代表人',
       dataIndex: 'legalPersonName',
+      width: 120,
     },
     {
       title: '注册地址',
       dataIndex: 'regAddress',
+      isEllipsis: true,
+      width: '200px',
     },
     {
       title: '联系人',
       dataIndex: 'contacts',
+      width: 120,
       render: (contacts: string) => {
         return <span>{contacts || '--'}</span>;
       },
@@ -92,6 +98,7 @@ export default () => {
     {
       title: '联系电话',
       dataIndex: 'phone',
+      width: 120,
       render: (phone: string) => {
         return <span>{phone || '--'}</span>;
       },
@@ -100,6 +107,7 @@ export default () => {
       title: '操作',
       hideInSearch: true,
       fixed: 'right',
+      width: 120,
       render: (_: any, record: any) => (
         <>
           <Button

@@ -488,6 +488,7 @@ const ProductInfoAddOrEdit = () => {
                 };
               }}
               min={1}
+              max={5}
             >
               {(f, index, action) => {
                 console.log(f, index, action);

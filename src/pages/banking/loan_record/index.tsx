@@ -292,14 +292,14 @@ export default ({ loanType, name }: { loanType: number; name: string }) => {
     {
       title: '序号',
       dataIndex: 'sort',
-      width: 50,
+      width: 40,
       render: (_: any, _record: BankingLoan.Content, index: number) =>
         pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
       title: '业务申请编号',
       dataIndex: 'id',
-      width: 100,
+      width: 90,
     },
     {
       title: '企业名称',
@@ -310,28 +310,29 @@ export default ({ loanType, name }: { loanType: number; name: string }) => {
     {
       title: '申请金额(万元)',
       dataIndex: 'amount',
-      width: 100,
+      width: 80,
       render: (_: number) => regFenToYuan(_),
     },
     {
       title: '联系人',
       dataIndex: 'name',
-      width: 100,
+      width: 80,
     },
     {
       title: '联系电话',
       dataIndex: 'phone',
-      width: 100,
+      width: 80,
     },
     {
       title: '产品名称',
       dataIndex: 'productName',
-      width: 150,
+      isEllipsis: true,
+      width: '80px',
     },
     {
       title: '授信状态',
       dataIndex: 'creditStatus',
-      width: 100,
+      width: 80,
       render: (_: string, record: BankingLoan.Content) => {
         return (
           <div className={`state${_}`}>
@@ -372,13 +373,13 @@ export default ({ loanType, name }: { loanType: number; name: string }) => {
       title: '授信金额(万元)',
       dataIndex: 'creditAmount',
       render: (_: number) => regFenToYuan(_),
-      width: 100,
+      width: 80,
     },
     {
       title: '已放款金额(万元)',
       dataIndex: 'takeAmount',
       render: (_: number) => regFenToYuan(_),
-      width: 100,
+      width: 80,
     },
     {
       title: '申请时间',
@@ -388,7 +389,7 @@ export default ({ loanType, name }: { loanType: number; name: string }) => {
     },
     {
       title: '操作',
-      width: 140,
+      width: 120,
       fixed: 'right',
       dataIndex: 'option',
       render: (_: any, record: BankingLoan.Content) => {
@@ -704,7 +705,7 @@ export default ({ loanType, name }: { loanType: number; name: string }) => {
         <div className={sc('container-table-body')}>
           <SelfTable
             bordered
-            scroll={{ x: 2280 }}
+            scroll={{ x: 1900 }}
             columns={columns}
             dataSource={dataSource}
             rowKey={'id'}

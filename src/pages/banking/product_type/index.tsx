@@ -259,19 +259,19 @@ export default () => {
     {
       title: '序号',
       dataIndex: 'sort',
-      width: 120,
+      width: 50,
     },
     {
       title: '产品类型',
       dataIndex: 'name',
       isEllipsis: true,
-      width: 200,
+      width: 120,
     },
     {
       title: '产品子类型',
       dataIndex: 'details',
       isEllipsis: true,
-      width: 600,
+      width: '400px',
       render: (details: ProductType.details[]) => (
         <>
           {details.map((item) => {
@@ -286,7 +286,7 @@ export default () => {
     },
     {
       title: '操作',
-      width: 200,
+      width: 140,
       dataIndex: 'option',
       fixed: 'right',
       render: (_: any, record: any) => {

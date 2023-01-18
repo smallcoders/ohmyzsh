@@ -302,22 +302,23 @@ export default () => {
     {
       title: '联系人',
       dataIndex: 'name',
-      width: 100,
+      width: 80,
     },
     {
       title: '联系电话',
       dataIndex: 'phone',
-      width: 100,
+      width: 80,
     },
     {
       title: '产品名称',
       dataIndex: 'productName',
-      width: 150,
+      isEllipsis: true,
+      width: '100px',
     },
     {
       title: '业务状态',
       dataIndex: 'creditStatus',
-      width: 100,
+      width: 80,
       render: (_: string, record: BankingLoan.Content) => {
         return (
           <div className={`state${_}`}>
@@ -358,7 +359,7 @@ export default () => {
       title: '承保金额(万元)',
       dataIndex: 'creditAmount',
       render: (_: number) => regFenToYuan(_),
-      width: 100,
+      width: 80,
     },
     {
       title: '申请时间',
@@ -368,7 +369,7 @@ export default () => {
     },
     {
       title: '操作',
-      width: 140,
+      width: 120,
       fixed: 'right',
       dataIndex: 'option',
       render: (_: any, record: BankingLoan.Content) => {
@@ -646,7 +647,7 @@ export default () => {
         <div className={sc('container-table-body')}>
           <SelfTable
             bordered
-            scroll={{ x: 2280 }}
+            scroll={{ x: 1700 }}
             columns={columns}
             dataSource={dataSource}
             rowKey={'id'}
