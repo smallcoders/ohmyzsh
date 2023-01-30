@@ -10,7 +10,8 @@ export default ({ visible, setVisible, path }) => {
         total: 0,
         fail: 0,
         success: 0,
-        step: 1
+        step: 1,
+        errorFile: ''
     })
     const handleChange = (info: UploadChangeParam<UploadFile<any>>) => {
         if (info.file.status === 'uploading') {
@@ -28,7 +29,8 @@ export default ({ visible, setVisible, path }) => {
                     step: (uploadResponse?.result?.failNum || 0) > 0 ? 3 : 2,
                     fail: (uploadResponse?.result?.failNum || 0),
                     success: (uploadResponse?.result?.successNum || 0),
-                    total: (uploadResponse?.result?.failNum || 0) + (uploadResponse?.result?.successNum || 0)
+                    total: (uploadResponse?.result?.failNum || 0) + (uploadResponse?.result?.successNum || 0),
+                    errorFile: uploadResponse?.result?.filePath
                 })
 
             } else {
@@ -43,8 +45,8 @@ export default ({ visible, setVisible, path }) => {
 
             const isLtLimit = file.size / 1024 / 1024 < 20;
             if (!isLtLimit) {
-              message.error(`上传的文件大小不得超过20M`);
-              return reject(false);
+                message.error(`上传的文件大小不得超过20M`);
+                return reject(false);
             }
 
             const lastName = file.name.split('.');
@@ -62,6 +64,7 @@ export default ({ visible, setVisible, path }) => {
         multiple: true,
         action: '/antelope-finance/loanOrder/importOrders',
         onChange: handleChange,
+        itemRender: () => { },
         beforeUpload: beforeUpload,
         // onDrop: (e: React.DragEvent) => {
         //     try {
@@ -109,7 +112,7 @@ export default ({ visible, setVisible, path }) => {
         {stepObj.step == 3 && <Result
             status="warning"
             title={`共导入${stepObj.total}，成功${stepObj.success}条，失败${stepObj.fail}条`}
-            subTitle={<div>点此查看导入失败数据，<span>下载失败数据</span></div>}
+            subTitle={<div>点此查看导入失败数据，<a href={stepObj.errorFile}>下载失败数据</a></div>}
             extra={[
                 <Button key="console" onClick={() => {
                     setVisible(false)

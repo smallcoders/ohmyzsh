@@ -60,6 +60,7 @@ export default ({ visible, setVisible }) => {
         name: 'file',
         multiple: true,
         action: `/antelope-pay/mng/iflytek/flow/sync?tag=${(new Date()).valueOf()}`,
+        itemRender: ()=>{},
         onChange: handleChange,
         beforeUpload: beforeUpload,
         // onDrop: (e: React.DragEvent) => {

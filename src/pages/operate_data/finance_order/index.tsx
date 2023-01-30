@@ -18,8 +18,7 @@ import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import AuthenticationInfo from '@/types/authentication-info.d';
 import Upload from './upload';
-import { Access } from 'umi';
-import access from '@/access';
+import { Access, useAccess } from 'umi';
 import { deleteLoanOrder, getLoanOrderCount, getLoanOrderList } from '@/services/app-financial-service-manage';
 import { getTemplateFile } from '@/services/supplier';
 import { getFileInfo } from '@/services/common';
@@ -33,7 +32,7 @@ export default () => {
         applyCount?: number; // 企业申请数（笔）
         creditAmount?: number; // 总授信金额（万元）
     }>({});
-
+    const access = useAccess()
     const prepare = async () => {
         try {
             const res = await getLoanOrderCount()
@@ -42,7 +41,7 @@ export default () => {
 
         }
     }
-
+   
     useEffect(() => {
         prepare()
     }, [])

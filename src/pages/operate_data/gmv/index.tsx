@@ -21,8 +21,7 @@ import moment from 'moment';
 import AuthenticationInfo from '@/types/authentication-info.d';
 import { getAuthenticationInfoPage } from '@/services/data-manage';
 import Upload from './upload';
-import { Access } from 'umi';
-import access from '@/access';
+import { Access, useAccess } from 'umi';
 import { getGMVTotal, getGVMPage, removeGMVItem } from '@/services/purchase';
 const sc = scopedClasses('operate-data-manage');
 export default () => {
@@ -39,7 +38,7 @@ export default () => {
 
         }
     }
-
+    const access = useAccess()
     useEffect(() => {
         prepare()
     }, [])
