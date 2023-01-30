@@ -270,7 +270,7 @@ const UploadForm = (
                   size: "small",
                   onChange: async (current: number) => {
                     setPageInfo({pageSize: pageInfo.pageSize, pageIndex: current})
-                    const { result: materials } = await getMaterialList({pageIndex: 1, pageSize: 10, groupsId: selectGroup.id}) || []
+                    const { result: materials } = await getMaterialList({pageIndex: current, pageSize: 10, groupsId: selectGroup.id}) || []
                     setMaterialList(materials || [])
                   }
                 }}
