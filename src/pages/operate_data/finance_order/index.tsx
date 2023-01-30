@@ -81,6 +81,7 @@ export default () => {
             if (code === 0) {
                 antdMessage.success(`删除成功`);
                 getPage()
+                prepare()
             } else {
                 antdMessage.error(message || `删除失败`);
             }
