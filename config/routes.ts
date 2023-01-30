@@ -1445,6 +1445,28 @@ export default [
     ],
   },
   {
+    path: '/data-special-topic',
+    code: 'M_DM',
+    access: 'M_DM',
+    name: '数据专题',
+    icon: 'BarChartOutlined',
+    routes: [
+      {
+        path: '/data-special-topic',
+        code: 'M_DM_ZDT',
+        access: 'M_DM_ZDT',
+        redirect: '/data-special-topic/digital-app-data',
+      },
+      {
+        path: '/data-special-topic/digital-app-data',
+        name: '数字化应用数据',
+        code: 'M_DM_ZDT',
+        access: 'M_DM_ZDT',
+        component: './data_special_topic/digital_app_data',
+      },
+    ],
+  },
+  {
     path: '/diagnose-manage',
     code: 'M_DM',
     access: 'M_DM',
