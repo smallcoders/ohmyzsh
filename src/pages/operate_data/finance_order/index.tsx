@@ -102,36 +102,42 @@ export default () => {
             dataIndex: 'applyNo',
             width: 200,
             isEllipsis: true,
+            render: (item: string)=> item || '--'
         },
         {
             title: '业务类型',
             dataIndex: 'workType',
             isEllipsis: true,
             width: 150,
+            render: (item: string)=> item || '--'
         },
         {
             title: '企业名称',
             dataIndex: 'orgName',
             isEllipsis: true,
             width: 200,
+            render: (item: string)=> item || '--'
         },
         {
             title: '联系人',
             dataIndex: 'name',
             isEllipsis: true,
             width: 150,
+            render: (item: string)=> item || '--'
         },
         {
             title: '产品名称',
             dataIndex: 'product',
             isEllipsis: true,
             width: 150,
+            render: (item: string)=> item || '--'
         },
         {
             title: '金融机构',
             dataIndex: 'bankName',
             isEllipsis: true,
             width: 250,
+            render: (item: string)=> item || '--'
         },
 
         {
@@ -139,6 +145,7 @@ export default () => {
             dataIndex: 'workStatus',
             isEllipsis: true,
             width: 150,
+            render: (item: string)=> item || '--'
         },
         {
             title: '授信/承担保金额（万元）',
@@ -152,6 +159,7 @@ export default () => {
             dataIndex: 'time',
             isEllipsis: true,
             width: 300,
+            render: (item: string)=> item || '--'
         },
         {
             title: '操作',
