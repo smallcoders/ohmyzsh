@@ -71,13 +71,13 @@ const UploadForm = (
       const uploadResponse = info?.file?.response;
       if (uploadResponse?.code === 0 && uploadResponse.result) {
         getImageSize(uploadResponse.result.path).then((res: any) => {
-          uploadMaterial({dtos: [{
-              originalName: uploadResponse.result.name,
-              fileId: uploadResponse.result.id,
-              photoUrl: uploadResponse.result.path,
-              photoWidth: res.width,
-              photoHeight: res.height
-            }]}).then((result) => {
+          uploadMaterial([{
+            originalName: uploadResponse.result.name,
+            fileId: uploadResponse.result.id,
+            photoUrl: uploadResponse.result.path,
+            photoWidth: res.width,
+            photoHeight: res.height
+          }]).then((result) => {
             console.log(result)
           })
         })
