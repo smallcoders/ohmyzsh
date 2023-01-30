@@ -139,9 +139,11 @@ const DesignForm = forwardRef<DesignFormRef, DesignFormProps>((props, ref) => {
         message={'表单设计有修改，是否直接离开'}
       />
       <div className="top-header">
-        <img src={logoImg} alt='' />
-        <div className="top-header-right">
-          羚羊运营平台
+        <div className="top-header-right" onClick={() => {
+          history.push('/');
+        }}>
+          <img src={logoImg} alt='' />
+          <span>羚羊运营平台</span>
         </div>
         <GlobalHeaderRight />
       </div>

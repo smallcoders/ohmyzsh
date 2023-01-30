@@ -2,8 +2,25 @@ import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 import { message, Upload, Popover, Modal, Pagination, Checkbox } from 'antd';
 import type { RcFile, UploadChangeParam, UploadFile, UploadProps } from 'antd/lib/upload/interface';
 import type { ReactNode, RefAttributes } from 'react';
+import { getGroupList, getMaterialList, uploadMaterial } from '@/services/page-creat-manage'
 import { useState } from 'react';
 import './upload-form.less';
+
+function getImageSize(url: string) {
+  return new Promise(function (resolve, reject) {
+    const image = new Image();
+    image.onload = function () {
+      resolve({
+        width: image.width,
+        height: image.height
+      });
+    };
+    image.onerror = function () {
+      reject(new Error('error'));
+    };
+    image.src = url;
+  });
+}
 
 const UploadForm = (
   props: JSX.IntrinsicAttributes &
@@ -18,6 +35,10 @@ const UploadForm = (
   const [fileId, setFileId] = useState<string | undefined | any>();
   const [pageInfo, setPageInfo] = useState<any>({pageSize: 10, pageIndex: 1});
   const [selectImage, setSelectImage] = useState<any>('');
+  const [total, setTotal] = useState<number>(0);
+  const [selectGroup, setSelectGroup] = useState<any>('');
+  const [groupList, setGroupList] = useState<any>([]);
+  const [materialList, setMaterialList] = useState<any>([]);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
   const [uploadLoading, setUploadLoading] = useState<boolean>(false);
 
@@ -49,6 +70,17 @@ const UploadForm = (
     if (info.file.status === 'done') {
       const uploadResponse = info?.file?.response;
       if (uploadResponse?.code === 0 && uploadResponse.result) {
+        getImageSize(uploadResponse.result.path).then((res: any) => {
+          uploadMaterial({dtos: [{
+              originalName: uploadResponse.result.name,
+              fileId: uploadResponse.result.id,
+              photoUrl: uploadResponse.result.path,
+              photoWidth: res.width,
+              photoHeight: res.height
+            }]}).then((result) => {
+            console.log(result)
+          })
+        })
         setFileId(uploadResponse.result);
         const value: any = props.needName
           ? uploadResponse.result + '_+*%' + info?.file?.name
@@ -118,7 +150,19 @@ const UploadForm = (
           <>
             <div
               className="material-btn"
-              onClick={() => {setIsModalOpen(true)}}
+              onClick={async () => {
+                const { result } = await getGroupList() || {}
+                if (!result || !result.length){
+                  message.info('暂无素材，请选择从本地上传')
+                  return
+                }
+                setGroupList(result)
+                setSelectGroup(result[0])
+                const { result: materials, totalCount } = await getMaterialList({...pageInfo, groupsId: result[0].id}) || []
+                setMaterialList(materials || [])
+                setTotal(totalCount)
+                setIsModalOpen(true)
+              }}
             >
               从素材库选择
             </div>
@@ -165,58 +209,77 @@ const UploadForm = (
         <div className="material-modal">
           <div className="material-group-name">
             {
-              [1,2,3,4,4,5,6,6,2,3,4,4,5,6,6,2,3,4,4,5,6,6].map((item, index) => {
-                return (
-                  <div className="group-name-item" key={index}>
-                    素材库分组1(32)
-                  </div>
-                )
-              })
-            }
-          </div>
-          <div className="img-list">
-            {
-              [1,2,3,4,5,6,67,8,9,10].map((item, index) => {
+              groupList.map((item: any, index: number) => {
                 return (
                   <div
-                    className="img-item"
-                    key={index}
-                    onClick={() => {
-                      setSelectImage(item)
+                    onClick={async () => {
+                      setPageInfo(() => {
+                        return {pageIndex: 1, pageSize: 10}
+                      })
+                      setSelectGroup(item)
+                      const { result: materials, totalCount } = await getMaterialList({pageIndex: 1, pageSize: 10, groupsId: item.id}) || []
+                      setMaterialList(materials || [])
+                      setTotal(totalCount)
                     }}
+                    className={selectGroup.id === item.id ? "group-name-item active" : "group-name-item"}
+                    key={index}
                   >
-                    <div className="img-box">
-                      <img src='https://oss-hefei-a2a.openstorage.cn/iiep-prod/3f4cee6126274db580cb94d9fcea93ae.jpg' alt='' />
-                    </div>
-                    {
-                      selectImage === item && <Checkbox checked />
-                    }
-                    <div className="img-name">tupianmingcheng</div>
-                    <div className="image-size">700 * 360</div>
+                    {item.groupName}({item.materialCount})
                   </div>
                 )
               })
             }
-            <Pagination
-              {...{
-                pageSize: pageInfo.pageSize,
-                showSizeChanger: false,
-                hideOnSinglePage: false,
-                total: 100,
-                simple: false,
-                current: pageInfo.pageIndex,
-                showTotal(total: number) {
-                  const currentPage = pageInfo.pageIndex
-                  const totalPage = Math.ceil(total / 10)
-                  return `共 ${total} 条     第 ${currentPage}/${totalPage} 页`
-                },
-                size: "small",
-                onChange: (current: number) => {
-                  setPageInfo({pageSize: pageInfo.pageSize, pageIndex: current})
-                }
-              }}
-            />
           </div>
+          {
+            materialList.length > 0 ? <div className="img-list">
+              {
+                materialList.map((item: any, index: number) => {
+                  return (
+                    <div
+                      className="img-item"
+                      key={index}
+                      onClick={() => {
+                        setSelectImage(item.photoUrl)
+                      }}
+                    >
+                      <div className="img-box">
+                        <img src={item.photoUrl} alt='' />
+                      </div>
+                      {
+                        selectImage === item.photoUrl && <Checkbox checked />
+                      }
+                      <div className="img-name">{item.name}</div>
+                      <div className="image-size">{item.photoWidth} * {item.photoHeight}</div>
+                    </div>
+                  )
+                })
+              }
+              <Pagination
+                {...{
+                  pageSize: pageInfo.pageSize,
+                  showSizeChanger: false,
+                  hideOnSinglePage: false,
+                  total: total,
+                  simple: false,
+                  current: pageInfo.pageIndex,
+                  showTotal(totalCount: number) {
+                    const currentPage = pageInfo.pageIndex
+                    const totalPage = Math.ceil(totalCount / 10)
+                    return `共 ${total} 条     第 ${currentPage}/${totalPage} 页`
+                  },
+                  size: "small",
+                  onChange: async (current: number) => {
+                    setPageInfo({pageSize: pageInfo.pageSize, pageIndex: current})
+                    const { result: materials } = await getMaterialList({pageIndex: 1, pageSize: 10, groupsId: selectGroup.id}) || []
+                    setMaterialList(materials || [])
+                  }
+                }}
+              />
+            </div> :
+              <div className="img-list">
+                <div className="empty">当前分组暂无素材</div>
+              </div>
+          }
         </div>
       </Modal>
     </>

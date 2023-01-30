@@ -68,6 +68,10 @@
     .group-name-item {
       white-space: nowrap;
       margin-bottom: 4px;
+      cursor: pointer;
+      &.active {
+        color: #0068ff;
+      }
     }
   }
   .img-list {
@@ -75,6 +79,7 @@
     padding-left: 20px;
     border-left: 1px solid #ccc;
     position: relative;
+    flex: 1;
     .ant-pagination {
       position: absolute;
       bottom: 0;
@@ -123,6 +128,7 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        text-align: center;
       }
     }
   }

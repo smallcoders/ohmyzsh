@@ -128,9 +128,11 @@ export default () => {
   return (
     <div className="publish-page">
       <div className="top-header">
-        <div className="top-header-right">
+        <div className="top-header-right" onClick={() => {
+          history.push('/');
+        }}>
           <img src={logoImg} alt='' />
-          羚羊运营平台
+          <span>羚羊运营平台</span>
         </div>
         <GlobalHeaderRight />
       </div>
