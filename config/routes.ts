@@ -199,6 +199,8 @@
   ACTIVITY_PROJECT: '/service-config/activity_project',
   ACTIVITY_PROJECT_INDEX: '/service-config/activity_project/index',
   ACTIVITY_PROJECT_DETAIL: '/service-config/activity_project/detail',
+
+  ACTIVITY_PROJECT_NEWYEAR_DETAIL: '/operation-activity/activity-project/new-year/detail',
 };
 
 export default [
@@ -1392,9 +1394,18 @@ export default [
           },
           {
             path: '/operation-activity/activity-project/detail',
-            name: '活动专题详情',
+            name: '邀请有礼详情',
+            code: 'M_OA_YQYL',
+            access: 'M_OA_YQYL',
             component: './operation_activity/activity_project/detail',
           },
+          {
+            path: routeName.ACTIVITY_PROJECT_NEWYEAR_DETAIL,
+            name: '春节活动详情',
+            access: 'M_OA_CJHD',
+            component: './operation_activity/activity_project/detail/spring-detail',
+          },
+          
         ],
       },
       {

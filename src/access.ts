@@ -5,7 +5,6 @@ import Account from '@/types/account';
  * */
 export default function access(initialState: { currentUser?: Account.CurrentUser | undefined }) {
   const { currentUser } = initialState || {};
-  console.log('用户权限', currentUser)
   let permissionCodes = {}
 
   currentUser?.permissionCodes?.map(p => {

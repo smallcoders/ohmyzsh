@@ -5,10 +5,12 @@
   &-table-header {
     padding: 20px;
     background-color: #fff;
+
     .title {
       display: flex;
       justify-content: space-between;
-      > span {
+
+      >span {
         color: rgba(0, 0, 0, 0.85);
         font-weight: 600;
         font-size: 16px;
@@ -16,15 +18,18 @@
       }
     }
   }
+
   &-table-body {
     padding: 0 20px;
     background-color: #fff;
-    .name{
+
+    .name {
       white-space: nowrap;
-overflow: hidden;
-text-overflow: ellipsis;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
+
   &-search {
     margin-bottom: 20px;
     padding: 20px;
@@ -63,6 +68,23 @@ text-overflow: ellipsis;
         color: blue;
         cursor: pointer;
       }
+    }
+  }
+
+  .overTable {
+    border-left: 1px solid #ccc;
+
+    &-cell {
+      height: 60px;
+      line-height: 27px;
+      padding: 16px;
+      border-bottom: 1px solid #ccc;
+      border-right: 1px solid #ccc;
+      text-align: center;
+    }
+
+    .black {
+      background: #f4f4f4;
     }
   }
 }
