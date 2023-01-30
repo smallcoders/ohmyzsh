@@ -2,6 +2,7 @@ import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 import { message, Upload, Popover, Modal, Pagination, Checkbox } from 'antd';
 import type { RcFile, UploadChangeParam, UploadFile, UploadProps } from 'antd/lib/upload/interface';
 import type { ReactNode, RefAttributes } from 'react';
+import emptyImg from '@/assets/financial/empty.png'
 import { getGroupList, getMaterialList, uploadMaterial } from '@/services/page-creat-manage'
 import { useState } from 'react';
 import './upload-form.less';
@@ -278,7 +279,10 @@ const UploadForm = (
               />
             </div> :
               <div className="img-list">
-                <div className="empty">当前分组暂无素材</div>
+                <div className="empty">
+                  <img src={emptyImg} alt='' />
+                  当前分组暂无素材
+                </div>
               </div>
           }
         </div>
