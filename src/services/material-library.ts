@@ -1,92 +1,99 @@
 import { request } from 'umi';
-import Common from '@/types/common';
+import type MaterialLibrary from '@/types/material-library';
+import { any } from 'glamor';
 
 /**
- * 保存
- * @returns
+ * 列表
  */
-export async function saveTemplate(data?: { [key: string]: any }) {
-  return request<Common.ResultCode & { result: any }>(`/antelope-common/mng/template/save`, {
-    method: 'post',
-    data,
-  });
+export async function materialList(data?: Record<string, any>) {
+  return request<MaterialLibrary.ResultList>(
+    '/antelope-common/mng/common/material/queryByGroupsId',
+    {
+      method: 'post',
+      data,
+    },
+  );
 }
-
 /**
- * 历史页面记录
- * @returns
+ * 查询素材总数量
  */
-export async function getPageList(data?: { [key: string]: any }) {
-  return request<any>(`/antelope-common/mng/template/page/query`, {
-    method: 'post',
-    data,
-  });
-}
-
-/**
- * 根据id查询模版信息
- * @returns
- */
-export async function getTemplatePageInfo(data?: { [key: string]: any }) {
-  return request<any>(`/antelope-common/mng/template/info`, {
+export async function totalNumber() {
+  return request<MaterialLibrary.TotalNumber>(`/antelope-common/mng/common/material/totalNumber`, {
     method: 'get',
-    params: data,
   });
 }
 
 /**
- * 修改模版状态
+ * 查询所有分组信息
  * @returns
  */
-export async function modifyTemplateState(data?: { [key: string]: any }) {
-  return request<any>(`/antelope-common/mng/template/modify/state`, {
-    method: 'post',
-    data,
-  });
-}
-
-/**
- * 查询模版数据
- * @returns
- */
-export async function getTemplateData(data?: { [key: string]: any }) {
-  return request<any>(`/antelope-common/mng/template/ans/data`, {
-    method: 'post',
-    data,
-  });
-}
-
-/**
- * 查询模版操作记录
- * @returns
- */
-export async function getTemplateOperationList(data?: { [key: string]: any }) {
-  return request<any>(`/antelope-common/mng/template/log/list`, {
+export async function listAll() {
+  return request<MaterialLibrary.ListAll>('/antelope-common/mng/common/materialGroup/listAll', {
     method: 'get',
-    params: data,
   });
 }
 
 /**
- * 操作记录
+ * 新增分组
  * @returns
  */
-export async function addOperationLog(data?: { [key: string]: any }) {
-  return request<any>(`/antelope-common/mng/template/add/operate/log`, {
+export async function addMaterialGroup(data?: Record<string, any>) {
+  return request<any>('/antelope-common/mng/common/materialGroup/add', {
     method: 'post',
     data,
   });
 }
 
 /**
- * 导出数据
+ * 修改分组
  * @returns
  */
-export async function exportData(data?: { [key: string]: any }) {
-  return request<any>(`/antelope-common/mng/template/export/data`, {
+export async function editMaterialGroup(data?: Record<string, any>) {
+  return request<any>('/antelope-common/mng/common/materialGroup/edit', {
+    method: 'put',
+    data,
+  });
+}
+/**
+ * 删除分组
+ * @returns
+ */
+export async function removeMaterialGroup(groupId: number) {
+  return request<any>(`/antelope-common/mng/common/materialGroup/remove?groupId=${groupId}`, {
+    method: 'delete',
+  });
+}
+
+/**
+ * 批量删除
+ * @returns
+ */
+export async function deleteBatch(data?: Record<string, any>) {
+  return request<any>('/antelope-common/mng/common/material/deleteBatch', {
     method: 'post',
     data,
-    responseType: 'blob',
-    getResponse: true,
   });
+}
+
+/**
+ * 素材移动分组
+ * @returns
+ */
+export async function moveGroup(data?: Record<string, any>) {
+  return request<any>('/antelope-common/mng/common/material/group', {
+    method: 'post',
+    data,
+  });
+}
+
+/**
+ * 重命名素材
+ */
+export async function renameMaterial(materialId: number, rename: string) {
+  return request<any>(
+    `/antelope-common/mng/common/material/rename?materialId=${materialId}&rename=${rename}`,
+    {
+      method: 'get',
+    },
+  );
 }

@@ -1,26 +1,39 @@
 import type Common from './common';
 
 namespace MaterialLibrary {
-  export interface ResultList extends Common.ResultCode {
+  export interface ResultList extends Common.ResultCode, Common.ResultPage {
     result: Content[];
   }
-  // 产品类型列表
+  // 分页查询分组后的素材
   export type Content = {
-    id?: number; // 业务申请编号
-    name?: string; //类型名称
-    sort?: number; //类型顺序
-    details: details[]; //子类型
+    createTime?: string; //创建时间
+    createUser?: string; //创建名称
+    fileId?: number; //图片ID
+    groupsId?: number; //分组ID
+    id: number; //素材ID
+    name?: string; //素材名称
+    photoUrl?: string; //图片路径
+    photoWidth?: number; //	图片宽度
+    photoHeight?: number; //图片高度
   };
 
-  // 累计授信金额
-  export type details = {
-    id: number; //	主键
-    name: string; // 产品类型名称
-    sort: number; // 排序
-    typeId: number; // 产品类型id
-    status: number; //状态 0-未删除 1-删除
+  //  查询素材总数量
+  export interface TotalNumber extends Common.ResultCode {
+    result: number;
+  }
+  //  查询分组信息
+  export interface ListAll extends Common.ResultCode {
+    result: List[];
+  }
+  export type List = {
+    id: number; //主键
+    groupName: string; //组名
+    userId: number; //创建人id
+    orgId: number; //创建组织id
+    state: number; //0-失效,1-生效
     createTime: string; //创建时间
-    updateTime: string; // 修改时间;
+    updateTime: string; //修改时间
+    materialCount: number; //分组下素材数量
   };
 }
 
