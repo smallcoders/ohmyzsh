@@ -33,6 +33,11 @@ const MoveGroupModal = ({
   };
   // 确定
   const handleOk = async () => {
+    if (type === 'single') {
+      console.log(imgId);
+      console.log(selectImg);
+      console.log(value);
+    }
     try {
       const { code } = await moveGroup({
         materialIds: type === 'single' ? [imgId] : selectImg,
