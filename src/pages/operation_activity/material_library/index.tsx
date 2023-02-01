@@ -135,6 +135,7 @@ export default () => {
     try {
       const { code } = await addMaterialGroup(value);
       if (code === 0) {
+        addGroupForm.resetFields();
         setAddGroupVisible(false);
         message.success('新建分组成功！');
         getGroupListAll();
