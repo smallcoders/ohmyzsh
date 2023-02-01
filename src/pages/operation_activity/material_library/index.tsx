@@ -605,12 +605,14 @@ export default () => {
             }
           />
         ) : (
-          <Empty
-            image={empty}
-            imageStyle={{
-              height: 160,
-            }}
-          />
+          <div className={sc('container-content-empty')}>
+            <Empty
+              image={empty}
+              imageStyle={{
+                height: 160,
+              }}
+            />
+          </div>
         )}
       </div>
       <EditGroupModal

@@ -171,6 +171,18 @@
       }
     }
   }
+  &-content-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 182px 300px;
+    .ant-empty-description {
+      color: #8290a6;
+      font-weight: 400;
+      font-size: 16px;
+    }
+  }
 }
 .@{prefix}-add-group {
   .ant-popover-message {
@@ -192,6 +204,10 @@
     color: #8290a6;
     font-weight: 400;
     font-size: 14px;
+  }
+  .not-group {
+    padding: 16px;
+    border-bottom: 1px solid #f0f0f0;
   }
   .ant-modal-body {
     padding: 12px 24px;

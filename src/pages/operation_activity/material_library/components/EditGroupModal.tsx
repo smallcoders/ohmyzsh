@@ -1,6 +1,6 @@
 import { EditOutlined, DeleteOutlined, MenuOutlined } from '@ant-design/icons';
-import { Table, Popconfirm, Space, Form, Input, Tag, message, message as antdMessage } from 'antd';
-import React, { useRef, useState, useEffect } from 'react';
+import { Table, Popconfirm, Space, Form, Input, message, message as antdMessage, Tag } from 'antd';
+import React, { useState, useEffect } from 'react';
 import FormItem from 'antd/lib/form/FormItem';
 import { Modal, Button } from 'antd';
 import scopedClasses from '@/utils/scopedClasses';
@@ -29,36 +29,6 @@ const SortableItem = SortableElement((props: React.HTMLAttributes<HTMLTableRowEl
 const SortableBody = SortableContainer((props: React.HTMLAttributes<HTMLTableSectionElement>) => (
   <tbody {...props} />
 ));
-// const data = [
-//   {
-//     id: 1,
-//     groupName: '未分组',
-//     age: 32,
-//     address: 'New York No. 1 Lake Park',
-//     index: 0,
-//   },
-//   {
-//     id: 2,
-//     groupName: '素材库分组2',
-//     age: 42,
-//     address: 'London No. 1 Lake Park',
-//     index: 1,
-//   },
-//   {
-//     id: 3,
-//     groupName: '素材库分组3',
-//     age: 32,
-//     address: 'Sidney No. 1 Lake Park',
-//     index: 2,
-//   },
-//   {
-//     id: 4,
-//     groupName: '素材库分组4',
-//     age: 32,
-//     address: 'Sidney No. 1 Lake Park',
-//     index: 3,
-//   },
-// ];
 const EditGroupModal = ({ handleCancel, visible, getGroupList }: Props) => {
   const [editGroupForm] = Form.useForm();
   const [dataSource, setDataSource] = useState<MaterialLibrary.List[]>([]);
@@ -122,17 +92,6 @@ const EditGroupModal = ({ handleCancel, visible, getGroupList }: Props) => {
       dataIndex: 'groupName',
       key: 'groupName',
       isEllipsis: true,
-      // render: (text: string) => {
-      //   if (text === '未分组') {
-      //     return (
-      //       <div>
-      //         <span style={{ marginRight: 12 }}>{text}</span> <Tag color="blue">系统分组</Tag>
-      //       </div>
-      //     );
-      //   } else {
-      //     return text;
-      //   }
-      // },
     },
     {
       title: '操作',
@@ -262,7 +221,10 @@ const EditGroupModal = ({ handleCancel, visible, getGroupList }: Props) => {
         wrapClassName={sc('edit-group-modal')}
         destroyOnClose
         centered
-        onCancel={handleCancel}
+        onCancel={() => {
+          getGroupList();
+          handleCancel();
+        }}
         maskClosable={false}
         footer={[
           <Button key="submit" type="primary" onClick={handleOk}>
@@ -271,6 +233,9 @@ const EditGroupModal = ({ handleCancel, visible, getGroupList }: Props) => {
         ]}
       >
         <div className="title1">拖拽分组进行排序</div>
+        <div className="not-group">
+          <span style={{ marginRight: 12 }}>未分组</span> <Tag color="blue">系统分组</Tag>
+        </div>
         <Table
           pagination={false}
           showHeader={false}
