@@ -194,10 +194,13 @@ export default () => {
   };
   // 完成上传
   const finish = async () => {
-    setGroupsId(uploadGroupsId);
+    if (groupsId === uploadGroupsId) {
+      getPage();
+    } else {
+      setGroupsId(uploadGroupsId);
+    }
     getGroupListAll();
     getTotalNumber();
-    getPage();
   };
   // 图片更多
   const getContent = (item: MaterialLibrary.Content) => {
