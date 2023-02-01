@@ -34,7 +34,7 @@ import {
   deleteBatch,
   renameMaterial,
 } from '@/services/material-library';
-import type Common from './common';
+import type Common from '@/types/common';
 import type MaterialLibrary from '@/types/material-library';
 import FormItem from 'antd/lib/form/FormItem';
 import empty from '@/assets/financial/empty.png';
