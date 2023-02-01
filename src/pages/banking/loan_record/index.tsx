@@ -270,7 +270,7 @@ export default ({ loanType, name }: { loanType: number; name: string }) => {
         if (code === 0) {
           if (
             result?.takeMoneyInfo?.some(
-              (item: BankingLoan.TakeMoneyInfoContent) => item.status == '放款成功',
+              (item: BankingLoan.TakeMoneyInfoContent) => item.status == '已放款',
             )
           ) {
             return 4;
