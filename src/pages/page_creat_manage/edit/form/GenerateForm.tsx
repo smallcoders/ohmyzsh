@@ -145,7 +145,7 @@ const GenerateForm = (props: GenerateFormProps) => {
                       }
                     },
                   ]}
-                  getValueFromEvent={(event) => event.target.value.replace(/\d/g, '')}
+                  getValueFromEvent={(event) => event.target.value.replace(/[^\u4e00-\u9fa5a-zA-Z]/g, '')}
                 >
                   <Input
                     prefix={
