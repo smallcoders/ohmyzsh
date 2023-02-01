@@ -1446,22 +1446,22 @@ export default [
   },
   {
     path: '/data-special-topic',
-    code: 'M_DM',
-    access: 'M_DM',
+    code: 'M_DT',
+    access: 'M_DT',
     name: '数据专题',
     icon: 'BarChartOutlined',
     routes: [
       {
         path: '/data-special-topic',
-        code: 'M_DM_ZDT',
-        access: 'M_DM_ZDT',
+        code: 'M_DT_SZYY',
+        access: 'M_DT_SZYY',
         redirect: '/data-special-topic/digital-app-data',
       },
       {
         path: '/data-special-topic/digital-app-data',
         name: '数字化应用数据',
-        code: 'M_DM_ZDT',
-        access: 'M_DM_ZDT',
+        code: 'M_DT_SZYY',
+        access: 'M_DT_SZYY',
         component: './data_special_topic/digital_app_data',
       },
     ],
