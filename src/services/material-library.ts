@@ -97,3 +97,27 @@ export async function renameMaterial(materialId: number, rename: string) {
     },
   );
 }
+
+/**
+ * 上传素材信息
+ * @returns
+ */
+export async function uploadMaterial(data?: Record<string, any>) {
+  return request<any>('/antelope-common/mng/common/material/upload', {
+    method: 'post',
+    data,
+  });
+}
+
+/**
+ * 移动分组
+ * @returns
+ */
+export async function moveMaterialGroup(groupId: number, offset: number) {
+  return request<any>(
+    `/antelope-common/mng/common/materialGroup/move?groupId=${groupId}&offset=${offset}`,
+    {
+      method: 'put',
+    },
+  );
+}

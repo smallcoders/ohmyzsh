@@ -4,21 +4,24 @@ import React, { useRef, useState, useEffect } from 'react';
 import FormItem from 'antd/lib/form/FormItem';
 import { Modal, Button } from 'antd';
 import scopedClasses from '@/utils/scopedClasses';
-import { listAll, editMaterialGroup, removeMaterialGroup } from '@/services/material-library';
+import {
+  listAll,
+  editMaterialGroup,
+  removeMaterialGroup,
+  moveMaterialGroup,
+} from '@/services/material-library';
 import type { ColumnsType } from 'antd/es/table';
 import type MaterialLibrary from '@/types/material-library';
 import { arrayMoveImmutable } from 'array-move';
 import type { SortableContainerProps, SortEnd } from 'react-sortable-hoc';
 import { SortableContainer, SortableElement, SortableHandle } from 'react-sortable-hoc';
 const sc = scopedClasses('material-library');
-
 type Props = {
   handleCancel: () => void;
   getGroupList: () => void;
   visible: boolean;
-  data: MaterialLibrary.List[];
+  // data: MaterialLibrary.List[];
 };
-
 const DragHandle = SortableHandle(() => <MenuOutlined style={{ cursor: 'grab' }} />);
 const SortableItem = SortableElement((props: React.HTMLAttributes<HTMLTableRowElement>) => (
   <tr {...props} />
@@ -28,29 +31,29 @@ const SortableBody = SortableContainer((props: React.HTMLAttributes<HTMLTableSec
 ));
 // const data = [
 //   {
-//     key: '1',
-//     name: '未分组',
+//     id: 1,
+//     groupName: '未分组',
 //     age: 32,
 //     address: 'New York No. 1 Lake Park',
 //     index: 0,
 //   },
 //   {
-//     key: '2',
-//     name: '素材库分组2',
+//     id: 2,
+//     groupName: '素材库分组2',
 //     age: 42,
 //     address: 'London No. 1 Lake Park',
 //     index: 1,
 //   },
 //   {
-//     key: '3',
-//     name: '素材库分组3',
+//     id: 3,
+//     groupName: '素材库分组3',
 //     age: 32,
 //     address: 'Sidney No. 1 Lake Park',
 //     index: 2,
 //   },
 //   {
-//     key: '4',
-//     name: '素材库分组4',
+//     id: 4,
+//     groupName: '素材库分组4',
 //     age: 32,
 //     address: 'Sidney No. 1 Lake Park',
 //     index: 3,
@@ -63,7 +66,13 @@ const EditGroupModal = ({ handleCancel, visible, getGroupList }: Props) => {
     try {
       const { result, code, message: resultMsg } = await listAll();
       if (code === 0) {
-        setDataSource(result);
+        result.shift();
+        const data = result.map((item, index) => {
+          item.index = index;
+          return item;
+        });
+        console.log(data);
+        setDataSource(data);
       } else {
         throw new Error(resultMsg);
       }
@@ -71,9 +80,11 @@ const EditGroupModal = ({ handleCancel, visible, getGroupList }: Props) => {
       antdMessage.error(`请求失败，原因:{${error}}`);
     }
   };
+
   useEffect(() => {
     getGroupListAll();
   }, [visible]);
+
   // useEffect(() => {
   //   setDataSource(data);
   // }, [data]);
@@ -109,107 +120,115 @@ const EditGroupModal = ({ handleCancel, visible, getGroupList }: Props) => {
     {
       title: '分组',
       dataIndex: 'groupName',
+      key: 'groupName',
       isEllipsis: true,
-      render: (text: string) => {
-        if (text === '未分组') {
-          return (
-            <div>
-              <span style={{ marginRight: 12 }}>{text}</span> <Tag color="blue">系统分组</Tag>
-            </div>
-          );
-        } else {
-          return text;
-        }
-      },
+      // render: (text: string) => {
+      //   if (text === '未分组') {
+      //     return (
+      //       <div>
+      //         <span style={{ marginRight: 12 }}>{text}</span> <Tag color="blue">系统分组</Tag>
+      //       </div>
+      //     );
+      //   } else {
+      //     return text;
+      //   }
+      // },
     },
     {
       title: '操作',
       dataIndex: 'option',
+      key: 'option',
       width: 120,
       render: (_: any, record: any) => {
-        console.log(record);
         return (
           <>
-            {record.groupName !== '未分组' && (
-              <Space size="middle">
-                {/* 编辑 */}
-                <Popconfirm
-                  key={record.id}
-                  placement="bottomRight"
-                  overlayClassName={sc('edit-group')}
-                  title={
-                    <>
-                      <Form form={editGroupForm} layout="vertical">
-                        <FormItem
-                          label="请输入分组名称"
-                          name="groupName"
-                          colon={false}
-                          rules={[
-                            {
-                              validator(rule, value) {
-                                if (!value) {
-                                  return Promise.reject('名称不能为空');
-                                } else if (
-                                  dataSource.some((item: any) => item.groupName === value)
-                                ) {
-                                  return Promise.reject('该分组名称已存在');
-                                }
-                                return Promise.resolve();
-                              },
+            <Space size="middle">
+              {/* 编辑 */}
+              <Popconfirm
+                key={record.id}
+                placement="bottomRight"
+                overlayClassName={sc('edit-group')}
+                title={
+                  <>
+                    <Form form={editGroupForm} layout="vertical">
+                      <FormItem
+                        label="请输入分组名称"
+                        name="groupName"
+                        colon={false}
+                        rules={[
+                          {
+                            validator(rule, value) {
+                              if (!value) {
+                                return Promise.reject('名称不能为空');
+                              } else if (dataSource.some((item: any) => item.groupName === value)) {
+                                return Promise.reject('该分组名称已存在');
+                              }
+                              return Promise.resolve();
                             },
-                          ]}
-                        >
-                          <Input showCount maxLength={8} defaultValue={record.groupName} />
-                        </FormItem>
-                      </Form>
-                    </>
-                  }
-                  icon={false}
-                  onConfirm={() => {
-                    editGroup(record.id, editGroupForm.getFieldValue('groupName'));
-                  }}
-                  onCancel={() => {
-                    editGroupForm.resetFields();
-                  }}
-                  okText="确定"
-                  cancelText="取消"
-                >
-                  <EditOutlined className="editIcon" />
-                </Popconfirm>
-                {/* 删除 */}
-                <Popconfirm
-                  title={
-                    <div>
-                      <span style={{ color: '#1e232a', fontSize: 16, fontWeight: 700 }}>提示</span>
-                      <br />
-                      删除该分组，组内所有图片会移到未分组
-                    </div>
-                  }
-                  placement="bottomRight"
-                  okText="确定"
-                  cancelText="取消"
-                  onConfirm={() => {
-                    remove(record.id);
-                  }}
-                >
-                  <DeleteOutlined className="delIcon" />
-                </Popconfirm>
-                {/* 拖拽 */}
-                <DragHandle />
-              </Space>
-            )}
+                          },
+                        ]}
+                      >
+                        <Input showCount maxLength={8} defaultValue={record.groupName} />
+                      </FormItem>
+                    </Form>
+                  </>
+                }
+                icon={false}
+                onConfirm={() => {
+                  editGroup(record.id, editGroupForm.getFieldValue('groupName'));
+                }}
+                onCancel={() => {
+                  editGroupForm.resetFields();
+                }}
+                okText="确定"
+                cancelText="取消"
+              >
+                <EditOutlined className="editIcon" />
+              </Popconfirm>
+              {/* 删除 */}
+              <Popconfirm
+                title={
+                  <div>
+                    <span style={{ color: '#1e232a', fontSize: 16, fontWeight: 700 }}>提示</span>
+                    <br />
+                    删除该分组，组内所有图片会移到未分组
+                  </div>
+                }
+                placement="bottomRight"
+                okText="确定"
+                cancelText="取消"
+                onConfirm={() => {
+                  remove(record.id);
+                }}
+              >
+                <DeleteOutlined className="delIcon" />
+              </Popconfirm>
+              {/* 拖拽 */}
+              <DragHandle />
+            </Space>
           </>
         );
       },
     },
   ];
 
-  const onSortEnd = ({ oldIndex, newIndex }: SortEnd) => {
+  const onSortEnd = async ({ oldIndex, newIndex }: SortEnd) => {
     if (oldIndex !== newIndex) {
+      const groupId = dataSource[oldIndex].id;
+      const offset = newIndex - oldIndex;
+      try {
+        const { result, code, message: resultMsg } = await moveMaterialGroup(groupId, offset);
+        if (code === 0) {
+          console.log(result);
+        } else {
+          throw new Error(resultMsg);
+        }
+      } catch (error) {
+        antdMessage.error(`请求失败，原因:{${error}}`);
+      }
       const newData = arrayMoveImmutable(dataSource.slice(), oldIndex, newIndex).filter(
         (el) => !!el,
       );
-      console.log('Sorted items: ', newData);
       setDataSource(newData);
     }
   };
@@ -257,8 +276,8 @@ const EditGroupModal = ({ handleCancel, visible, getGroupList }: Props) => {
           showHeader={false}
           dataSource={dataSource}
           columns={columns}
-          rowKey="id"
-          scroll={{ y: 342 }}
+          rowKey="index"
+          // scroll={{ y: 342 }}
           components={{
             body: {
               wrapper: DraggableContainer,

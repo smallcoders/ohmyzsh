@@ -340,11 +340,67 @@
         div:last-child {
           border-bottom: 0;
         }
+        .ant-upload {
+          width: 100%;
+        }
       }
     }
     .ant-popover-buttons {
       display: none;
     }
   }
+}
  
+.@{prefix}-upload-modal {
+  .ant-modal-body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 342px;
+    .resultSuccess {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 342px;
+      .icon {
+        color: #25D48F;
+        font-size: 56px;
+      }
+      .text1 {
+        margin-top: 16px;
+        margin-bottom: 50px;
+        font-size: 16px;
+      }
+      .ant-btn-lg {
+        width: 100px;
+        border-radius: 4px;
+      }
+    }
+    .resultFail {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 342px;
+      .icon {
+        color: #FF8E02;
+        font-size: 56px;
+      }
+      .text1 {
+        margin: 16px 0;
+        font-size: 16px;
+      }
+      .text2 {
+        margin-bottom: 24px;
+        color:#8290A6;
+        font-size: 14px;
+      }
+      .ant-btn-lg {
+        width: 100px;
+        border-radius: 4px;
+      }
+    }
+  }
 }

@@ -41,6 +41,7 @@ import empty from '@/assets/financial/empty.png';
 import EditGroupModal from './components/EditGroupModal';
 import MoveGroupModal from './components/MoveGroupModal';
 import BigImgVisible from './components/BigImgModal';
+import UploadImg from './components/UploadImg';
 import { ProList } from '@ant-design/pro-components';
 const sc = scopedClasses('material-library');
 
@@ -48,6 +49,7 @@ export default () => {
   const [totalNum, setTotalNum] = useState(0);
   const [isMore, setIsMore] = useState(false);
   const [groupsId, setGroupsId] = useState<number | null>(null);
+  const [uploadGroupsId, setUploadGroupsId] = useState<number | null>(null);
   const [groupListAll, setGroupListAll] = useState<MaterialLibrary.List[]>([]);
   const [dataSource, setDataSource] = useState<MaterialLibrary.Content[]>([]);
   const [editGroupVisible, setEditGroupVisible] = useState(false);
@@ -109,7 +111,9 @@ export default () => {
       const { result, code, message: resultMsg } = await listAll();
       if (code === 0) {
         setGroupListAll(result);
-        setGroupsId(result[0].id);
+        if (groupsId === null) {
+          setGroupsId(result[0].id);
+        }
       } else {
         throw new Error(resultMsg);
       }
@@ -174,12 +178,19 @@ export default () => {
         } else {
           setDelImgId(null);
         }
+        getTotalNumber();
         getGroupListAll();
         getPage();
       }
     } catch (error) {
       antdMessage.error(`请求失败，原因:{${error}}`);
     }
+  };
+  // 完成上传
+  const finish = async () => {
+    setGroupsId(uploadGroupsId);
+    getGroupListAll();
+    getTotalNumber();
   };
   // 图片更多
   const getContent = (item: MaterialLibrary.Content) => {
@@ -305,17 +316,39 @@ export default () => {
                 <>
                   <div className="title">
                     <div className="title-name">请选择目标分组</div>
-                    <div style={{ cursor: 'pointer' }} onClick={() => setUploadGroupVisible(false)}>
+                    <div
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => {
+                        setUploadGroupsId(null);
+                        setUploadGroupVisible(false);
+                      }}
+                    >
                       <CloseOutlined />
                     </div>
                   </div>
-                  {groupListAll.map((item: MaterialLibrary.List) => {
-                    return (
-                      <div key={item.id} className="group">
-                        {item.groupName}
-                      </div>
-                    );
-                  })}
+                  <UploadImg
+                    multiple={true}
+                    maxSize={10}
+                    accept=".png,.jpeg,.jpg"
+                    groupsId={uploadGroupsId}
+                    finish={finish}
+                  >
+                    {groupListAll.map((item: MaterialLibrary.List) => {
+                      return (
+                        // eslint-disable-next-line react/jsx-key
+                        <div
+                          key={item.id}
+                          className="group"
+                          onClick={() => {
+                            setUploadGroupsId(item.id);
+                            setUploadGroupVisible(false);
+                          }}
+                        >
+                          {item.groupName}
+                        </div>
+                      );
+                    })}
+                  </UploadImg>
                 </>
               }
               icon={false}
@@ -582,7 +615,6 @@ export default () => {
       </div>
       <EditGroupModal
         visible={editGroupVisible}
-        data={groupListAll}
         handleCancel={() => setEditGroupVisible(false)}
         getGroupList={() => getGroupListAll()}
       />

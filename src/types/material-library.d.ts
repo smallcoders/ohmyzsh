@@ -34,6 +34,16 @@ namespace MaterialLibrary {
     createTime: string; //创建时间
     updateTime: string; //修改时间
     materialCount: number; //分组下素材数量
+    index?: number;
+  };
+  // 上传的素材
+  export type UploadMaterials = {
+    originalName: string; //原始名称
+    groupsId: number; //分组ID
+    fileId: number; //图片ID
+    photoUrl: string; //图片路径
+    photoWidth: number; //图片宽度
+    photoHeight: number; //图片高度
   };
 }
 
