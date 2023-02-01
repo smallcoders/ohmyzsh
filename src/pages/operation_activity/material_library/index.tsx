@@ -191,6 +191,7 @@ export default () => {
     setGroupsId(uploadGroupsId);
     getGroupListAll();
     getTotalNumber();
+    getPage();
   };
   // 图片更多
   const getContent = (item: MaterialLibrary.Content) => {
@@ -618,7 +619,10 @@ export default () => {
       <EditGroupModal
         visible={editGroupVisible}
         handleCancel={() => setEditGroupVisible(false)}
-        getGroupList={() => getGroupListAll()}
+        getGroupList={() => {
+          getGroupListAll();
+          setGroupsId(groupListAll[0].id);
+        }}
       />
       <MoveGroupModal
         visible={moveGroupVisible}

@@ -23,7 +23,6 @@ const UploadImg = (props: any) => {
   const percentRef = useRef(percent);
   percentRef.current = percent;
   useEffect(() => {
-    console.log(props.groupsId);
   }, [props.groupsId]);
 
   const finishReset = () => {
@@ -72,13 +71,13 @@ const UploadImg = (props: any) => {
             Number((((doneNumRef.current + failNumRef.current) / fileListLen) * 100).toFixed(2)),
           );
           setTimeout(() => {
-            console.log(
-              doneNumRef.current,
-              failNumRef.current,
-              uploadMaterialsRef.current,
-              fileListLen,
-              percentRef.current,
-            );
+            // console.log(
+            //   doneNumRef.current,
+            //   failNumRef.current,
+            //   uploadMaterialsRef.current,
+            //   fileListLen,
+            //   percentRef.current,
+            // );
             if (doneNumRef.current + failNumRef.current === fileListLen) {
               uploadMaterial(uploadMaterialsRef.current).then((res) => {
                 console.log(res);

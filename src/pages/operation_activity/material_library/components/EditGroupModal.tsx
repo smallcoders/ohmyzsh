@@ -41,7 +41,6 @@ const EditGroupModal = ({ handleCancel, visible, getGroupList }: Props) => {
           item.index = index;
           return item;
         });
-        console.log(data);
         setDataSource(data);
       } else {
         throw new Error(resultMsg);
@@ -242,7 +241,7 @@ const EditGroupModal = ({ handleCancel, visible, getGroupList }: Props) => {
           dataSource={dataSource}
           columns={columns}
           rowKey="index"
-          // scroll={{ y: 342 }}
+          // scroll={{ y: 548 }}
           components={{
             body: {
               wrapper: DraggableContainer,

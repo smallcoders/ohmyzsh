@@ -56,6 +56,7 @@ const MoveGroupModal = ({
         destroyOnClose
         centered
         maskClosable={false}
+        zIndex={10000}
         onCancel={() => {
           cancelMove();
           setValue(null);
