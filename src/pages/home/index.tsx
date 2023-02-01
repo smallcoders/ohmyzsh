@@ -1,5 +1,5 @@
 import type { RadioChangeEvent } from 'antd';
-import { Col, Row, Button, DatePicker, Modal, message } from 'antd';
+import { Col, Row, Button, DatePicker, Modal, message, Radio, Input, Tabs } from 'antd';
 import { ArrowUpOutlined, PlusOutlined, MinusOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import type { Moment } from 'moment';
@@ -12,6 +12,12 @@ import { useHistory } from 'react-router-dom';
 import { routeName } from '@/../config/routes';
 import { divide } from 'lodash';
 import { Access, useAccess } from 'umi';
+import UserData from './user_data/index';
+import OrganizationData from './organization_data/index';
+import EnterpriseData from './enterprise_demand_data/index';
+import dayjs from 'dayjs';
+import ArrowDown from '@/assets/home/arrowdown.png'
+import Arrowup from '@/assets/home/arrowup.png'
 
 const sc = scopedClasses('home-page');
 const { RangePicker } = DatePicker;
@@ -32,17 +38,22 @@ const pageOptions = [
   { label: '科产首页', value: '8' },
 ];
 const statisticsType = {
-  USER: '用户注册数量',
-  ENTERPRISE: '企业认证数量',
+  USER: '用户注册量',
+  ENTERPRISE: '企业认证量',
   EXPERT: '专家数量',
   ENTERPRISE_DEMAND: '企业需求数量',
   CREATIVE_DEMAND: '创新需求数量',
   CREATIVE_ACHIEVEMENT: '科技成果数量',
   APP: '应用数量',
   SOLUTION: '解决方案数量',
+  LOAN: '企业申请贷款笔数',
+  CREDIT: '企业累计授信额（万元）',
 };
 
 type RangeValue = [Moment | null, Moment | null] | null;
+type AuditType = '用户数据分析'|'组织数据分析'|'企业需求数据分析'
+
+const updateTime = dayjs().format('YYYY-MM-DD 00:00:00')
 
 export default () => {
   const history = useHistory();
@@ -52,6 +63,7 @@ export default () => {
   const [dates, setDates] = useState<RangeValue>(null);
   const [hackValue, setHackValue] = useState<RangeValue>(null);
   const [value, setValue] = useState<RangeValue>(null);
+  const [activeTab, setActiveTab] = useState<AuditType>('用户数据分析')
   // 拿到当前角色的access权限兑现
   const access = useAccess()
   const disabledDate = (current: Moment) => {
@@ -154,6 +166,7 @@ export default () => {
     solutionIntentionCount,
     expertConsultationCount,
     liveIntentionCount,
+    financeDiagnosisCount,
   } = addedDataYesterday || {};
 
   const handleDataStatistic = (item: any) => {
@@ -277,140 +290,147 @@ export default () => {
         }
         history.push(`/live-management/intention-collect`);
         break;
+      case '金融诊断记录':
+        if (!access['M_FM_JRZD']) {
+          setModalOpen(true)
+          return
+        }
+        history.push(`/banking/financial_diagnostic_record/index`);
+        break;
     }
   }
 
   return (
     <>
+      <div className={sc('container-update-time')}>数据更新时间：{updateTime}</div>
       <div className={sc('container')}>
         <h3>业务咨询昨日新增数据</h3>
         <Row gutter={40}>
-          <Col span={4} offset={2}>
+          <Col span={4}>
             <div className={sc('container-add-item')} onClick={() => {handleAddItem('诊断意向报名')}}>
               <p>诊断意向报名</p>
-              <ArrowUpOutlined style={{ color: 'red' }} />
-              <strong>{diagnosisIntentionCount || 0}</strong>
+              <div className={sc('container-add-item-text')}>
+                <img className={sc('container-add-item-text-img')} src={Arrowup} />
+                <strong>{diagnosisIntentionCount || 0}</strong>
+              </div>
             </div>
           </Col>
           <Col span={4}>
             <div className={sc('container-add-item')} onClick={() => {handleAddItem('应用咨询记录')}}>
               <p>应用咨询记录</p>
-              <ArrowUpOutlined style={{ color: 'red' }} />
-              <strong>{appConsultationCount || 0}</strong>
+              <div className={sc('container-add-item-text')}>
+                <img className={sc('container-add-item-text-img')} src={Arrowup} />
+                <strong>{appConsultationCount || 0}</strong>
+              </div>
             </div>
           </Col>
           <Col span={4}>
             <div className={sc('container-add-item')} onClick={() => {handleAddItem('服务意向消息')}}>
               <p>服务意向消息</p>
-              <ArrowUpOutlined style={{ color: 'red' }} />
-              <strong>{solutionIntentionCount || 0}</strong>
+              <div className={sc('container-add-item-text')}>
+                <img className={sc('container-add-item-text-img')} src={Arrowup} />
+                <strong>{solutionIntentionCount || 0}</strong>
+              </div>
             </div>
           </Col>
           <Col span={4}>
             <div className={sc('container-add-item')} onClick={() => {handleAddItem('专家咨询记录')}}>
               <p>专家咨询记录</p>
-              <ArrowUpOutlined style={{ color: 'red' }} />
-              <strong>{expertConsultationCount || 0}</strong>
+              <div className={sc('container-add-item-text')}>
+                <img className={sc('container-add-item-text-img')} src={Arrowup} />
+                <strong>{expertConsultationCount || 0}</strong>
+              </div>
             </div>
           </Col>
           <Col span={4}>
             <div className={sc('container-add-item')} onClick={() => {handleAddItem('直播意向管理')}}>
               <p>直播意向管理</p>
-              <ArrowUpOutlined style={{ color: 'red' }} />
-              <strong>{liveIntentionCount || 0}</strong>
+              <div className={sc('container-add-item-text')}>
+                <img className={sc('container-add-item-text-img')} src={Arrowup} />
+                <strong>{liveIntentionCount || 0}</strong>
+              </div>
+            </div>
+          </Col>
+          <Col span={4}>
+            <div className={sc('container-add-item')} onClick={() => {handleAddItem('金融诊断记录')}}>
+              <p>金融诊断记录</p>
+              <div className={sc('container-add-item-text')}>
+                <img className={sc('container-add-item-text-img')} src={Arrowup} />
+                <strong>{financeDiagnosisCount || 0}</strong>
+              </div>
             </div>
           </Col>
         </Row>
       </div>
       <div className={sc('container')}>
         <h3>平台关键数据统计</h3>
-        <Row gutter={40}>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: '20% 20% 20% 20% 20%',
+          gridTemplateRows: '210px',
+        }}>
           {statistics?.map((item: any) => {
-            const { type, todayCount, yesterdayChangeCount, weekChangeCount, monthChangeCount } =
+            const { type, currentCount, yesterdayChangeCount, weekChangeCount, monthChangeCount } =
               item || {};
             return (
-              <Col span={4}>
                 <div className={sc('container-statistic-item')} onClick={()=>{handleDataStatistic(item)}}>
                   <p>{statisticsType[type]}</p>
-                  <strong>{todayCount}</strong>
+                  <strong>{currentCount}</strong>
                   <p className={sc('container-statistic-item-content')}>
-                    日
-                    <span
-                      style={{
-                        position: 'absolute',
-                        left: '55%',
-                      }}
-                    >
-                      {yesterdayChangeCount >= 0 ? <PlusOutlined /> : <MinusOutlined />}
-                      {yesterdayChangeCount >= 0 ? yesterdayChangeCount : -yesterdayChangeCount}
-                    </span>
+                    <div className={sc('container-statistic-item-content-text')}>
+                      <span className={sc('container-statistic-item-content-text-time')}>日</span>
+                      <span 
+                        className={`${sc('container-statistic-item-content-text-data')}
+                        ${yesterdayChangeCount >= 0 ? sc('container-statistic-item-content-text-data-up') : sc('container-statistic-item-content-text-data-down')}`}
+                      >
+                        {yesterdayChangeCount >= 0 ? '+' : '-'}
+                        {yesterdayChangeCount >= 0 ? yesterdayChangeCount : -yesterdayChangeCount}
+                      </span>
+                    </div>
                   </p>
                   <p className={sc('container-statistic-item-content')}>
-                    周
-                    <span
-                      style={{
-                        position: 'absolute',
-                        left: '55%',
-                      }}
-                    >
-                      {weekChangeCount >= 0 ? <PlusOutlined /> : <MinusOutlined />}
-                      {weekChangeCount >= 0 ? weekChangeCount : -weekChangeCount}
-                    </span>
+                    <div className={sc('container-statistic-item-content-text')}>
+                      <span className={sc('container-statistic-item-content-text-time')}>周</span>
+                      <span 
+                        className={`${sc('container-statistic-item-content-text-data')}
+                        ${weekChangeCount >= 0 ? sc('container-statistic-item-content-text-data-up') : sc('container-statistic-item-content-text-data-down')}`}
+                      >
+                        {weekChangeCount >= 0 ? '+' : '-'}
+                        {weekChangeCount >= 0 ? weekChangeCount : -weekChangeCount}
+                      </span>
+                    </div>
                   </p>
                   <p className={sc('container-statistic-item-content')}>
-                    月
-                    <span
-                      style={{
-                        position: 'absolute',
-                        left: '55%',
-                      }}
-                    >
-                      {monthChangeCount >= 0 ? <PlusOutlined /> : <MinusOutlined />}
-                      {monthChangeCount >= 0 ? monthChangeCount : -monthChangeCount}
-                    </span>
+                    <div className={sc('container-statistic-item-content-text')}>
+                      <span className={sc('container-statistic-item-content-text-time')}>月</span>
+                      <span 
+                        className={`${sc('container-statistic-item-content-text-data')}
+                        ${monthChangeCount >= 0 ? sc('container-statistic-item-content-text-data-up') : sc('container-statistic-item-content-text-data-down')}`}
+                      >
+                        {monthChangeCount >= 0 ? '+' : '-'}
+                        {monthChangeCount >= 0 ? monthChangeCount : -monthChangeCount}
+                      </span>
+                    </div>
                   </p>
                 </div>
-              </Col>
             );
           })}
-        </Row>
+        </div>
       </div>
-      {/* <div className={sc('container')}>
-                <h3>页面流量统计</h3>
-                <div className={sc('container-search')}>
-                    <div className={sc('container-search-item')}>
-                        <label>数据时间：</label>
-                        <Radio.Group
-                            options={options}
-                            onChange={changeQuicklyDate}
-                            value={quicklyDate}
-                            optionType="button"
-                            buttonStyle="solid"
-                        />
-                        <RangePicker 
-                            value={hackValue || value}
-                            disabledDate={disabledDate} 
-                            onCalendarChange={val => setDates(val)}
-                            onChange={val => setValue(val)}
-                            onOpenChange={onOpenChange}
-                            style={{marginLeft: 8}}
-                        />
-                    </div>
-                    <div className={sc('container-search-item')}>
-                        <label>统计页面：</label>
-                        <Radio.Group
-                            options={pageOptions}
-                            onChange={changePageType}
-                            value={pageType}
-                            optionType="button"
-                            buttonStyle="solid"
-                        />
-                        <Input placeholder="请输入要查看页面流量的页面地址" style={{width: 256, marginLeft: 8}}/>
-                    </div>
-                </div>
-                <div id='charts' style={{width: '100%', height: 500}}></div>
-            </div> */}
-        {motal}
+      <div className={sc('container')}>
+        <Tabs tabBarStyle={{color: '#556377'}} className={sc('container-tabs')} defaultActiveKey="用户数据分析" activeKey={activeTab} onChange={(e: string) => setActiveTab(e as AuditType) }>
+          <Tabs.TabPane tab="用户数据分析" key="用户数据分析">
+            <UserData></UserData>
+          </Tabs.TabPane>
+          <Tabs.TabPane tab="组织数据分析" key="组织数据分析">
+            <OrganizationData></OrganizationData>
+          </Tabs.TabPane>
+          <Tabs.TabPane tab="企业需求数据分析" key="企业需求数据分析">
+            <EnterpriseData></EnterpriseData>
+          </Tabs.TabPane>
+        </Tabs>
+      </div>
+      {motal}
     </>
   );
 };

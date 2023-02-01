@@ -3,26 +3,53 @@
 .@{prefix}-container {
     margin-bottom: 8px;
     width: 100%;
-    padding: 16px;
+    padding: 16px 40px;
     background: #fff;
-
+    h3 {
+        font-size: 20px;
+        font-weight: 700;
+        text-align: left;
+        color: #1e232a;
+        line-height: 28px;
+        margin-bottom: 16px;
+    }
     &-add-item {
         display: block;
-        padding: 16px 24px;
+        padding: 24px 24px;
         text-align: center;
-        border: 1px dashed #ccc;
+        width: 236px;
+        height: 128px;
+        background: #ffffff;
+        border: 1px solid #dbdfe6;
         color: #333;
         cursor: pointer;
         p {
             margin: 0;
+            font-size: 16px;
+            font-weight: 400;
+            color: #8290a6;
+            line-height: 24px;
+            margin-bottom: 16px;
         }
 
         strong {
-            font-size: 24px;
+            font-size: 32px;
+            font-weight: 700;
+            color: #556377;
+            line-height: 40px;
         }
         &:hover {
             P,strong {
-                color: #8fa5ff;
+                color: #0068ff;
+            }
+        }
+        &-text {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            &-img {
+                width: 32px;
+                height: 32px;
             }
         }
     }
@@ -37,14 +64,51 @@
         }
 
         p {
-            text-align: center;
             margin: 0;
+            font-size: 16px;
+            font-weight: 400;
+            color: #8290a6;
+            line-height: 24px;
         }
         strong {
-            font-size: 24px;
+            font-size: 32px;
+            font-weight: 700;
+            color: #556377;
+            line-height: 40px;
+            margin-top: 8px;
+            margin-bottom: 16px;
         }
-        span {
-            color: red;
+        // span {
+        //     color: red;
+        // }
+        &-content {
+            font-size: 16px;
+            font-weight: 400;
+            color: #8290a6;
+            line-height: 24px;
+            display: flex;
+            justify-content: center;
+            &-text {
+                width: 80px;
+                text-align: left;
+                &-time {
+                    color: #8290a6;
+                    margin-right: 16px;
+                }
+                &-data {
+                    font-size: 16px;
+                    font-weight: 400;
+                    text-align: left;
+                    line-height: 24px;
+                    &-up {
+                        color: #25d48f;
+                    }
+                    &-down {
+                        color: #ff4f17;
+
+                    }
+                }
+            }
         }
     }
 
@@ -54,4 +118,25 @@
         line-height: 50px;
         margin-left: 16px;
     }
+    &-tabs {
+        .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+            color: #0068ff;
+        }
+        .ant-tabs-tab:hover {
+            color: #0068ff;
+        }
+        .ant-tabs-ink-bar {
+            background: #0068ff;
+        }
+    }
+}
+
+.@{prefix}-container-update-time {
+    height: 24px;
+    font-size: 16px;
+    font-weight: 400;
+    text-align: left;
+    color: #8290a6;
+    line-height: 24px;
+    margin-bottom: 24px;
 }
