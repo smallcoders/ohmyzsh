@@ -201,8 +201,8 @@ const UploadForm = (
         onOk={() => {
           if (props.onChange && selectImage){
             props.onChange(selectImage);
+            setFileId({path: selectImage});
           }
-          setFileId({path: selectImage});
           setIsModalOpen(false)
         }}
         onCancel={() => {
