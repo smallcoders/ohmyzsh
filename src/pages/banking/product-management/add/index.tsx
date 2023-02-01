@@ -433,7 +433,7 @@ const ProductInfoAddOrEdit = () => {
             </Form.Item>
             {!productType?.includes('保险') && (
               <Form.Item
-                rules={[{ required: true }]}
+                rules={[{ required: true, message: '请选择贷款用途' }]}
                 {...formProps2}
                 name="loanIds"
                 label="贷款用途"
