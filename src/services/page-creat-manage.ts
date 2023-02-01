@@ -93,3 +93,36 @@ export async function exportData(data?: { [key: string]: any }) {
     getResponse: true,
   });
 }
+
+
+/**
+ * 素材分组信息
+ * @returns
+ */
+export async function getGroupList() {
+  return request<any>(`/antelope-common/mng/common/materialGroup/listAll`, {
+    method: 'get',
+  });
+}
+
+/**
+ * 素材列表
+ * @returns
+ */
+export async function getMaterialList(data?: { [key: string]: any }) {
+  return request<any>(`/antelope-common/mng/common/material/queryByGroupsId`, {
+    method: 'post',
+    data,
+  });
+}
+
+/**
+ * 上传素材
+ * @returns
+ */
+export async function uploadMaterial(data?: { [key: string]: any }) {
+  return request<any>(`/antelope-common/mng/common/material/upload`, {
+    method: 'post',
+    data,
+  });
+}

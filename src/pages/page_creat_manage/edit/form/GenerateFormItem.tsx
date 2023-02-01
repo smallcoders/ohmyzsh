@@ -28,6 +28,37 @@ const GenerateFormItem = (props: Props) => {
     clickCallBack,
     widgetInfo: {widgetFormList}
   } = props
+
+  const [checkBoxValue, setCheckBoxValue] = useState<string[]>(config?.defaultValue || [])
+  const [mulSelectValue, setMulSelectValue] = useState<string[]>(config?.defaultValue || [])
+  const [imageSelectValue, setImageSelectValue] = useState<string[]>([])
+
+  const getList = (currentValues: any, showArr: string[], controlArr: string[], widgetFormArr: any) => {
+    let showList: string[] = showArr
+    // 获取所有被控制组件
+    let controlAllList: string[] = controlArr
+    widgetFormArr.forEach((item: any) => {
+      if (['RadioGroup', 'CheckboxGroup', 'MultipleSelect', 'Select', 'ImagePicker'].indexOf(item.type) !== -1){
+        const isHide = showList?.indexOf(item.key!) !== -1 ? false : controlAllList?.indexOf(item.key!) !== -1 ? true : item.hide
+        if ((currentValues[item.key] && !isHide) || (!isHide && (currentValues[item.key] || item.config.defaultValue)) ) {
+          const currentValue = currentValues[item.key] || item.config.defaultValue
+          item.config.options.forEach((optionItem: {value: string, showList: string[]}) => {
+            if (currentValue instanceof Array &&
+              currentValue.indexOf(optionItem.value) !== -1
+            ){
+              showList = [...new Set([...showList, ...(optionItem.showList || [])])]
+            }
+            if (typeof currentValue === 'string' && currentValue === optionItem.value){
+              showList = [...new Set([...showList, ...(optionItem.showList || [])])]
+            }
+          })
+        }
+      }
+      controlAllList = [...new Set([...controlAllList, ...(item.controlList || [])])]
+    })
+    return {showList, controlAllList}
+  }
+
   const handleShowList = (value: string | string[]) => {
     // 获取当前表单所有输入值
     const currentValues = formInstance.getFieldsValue();
@@ -38,23 +69,14 @@ const GenerateFormItem = (props: Props) => {
 
     // 获取所有被控制组件
     let controlAllList: string[] = []
-    widgetFormList.forEach((item: any) => {
-      if(currentValues[item.key] &&
-        ['RadioGroup', 'CheckboxGroup', 'MultipleSelect', 'Select', 'ImagePicker'].indexOf(item.type) !== -1)
-      {
-        item.config.options.forEach((optionItem: {value: string, showList: string[]}) => {
-          if (currentValues[item.key] instanceof Array &&
-            currentValues[item.key].indexOf(optionItem.value) !== -1
-          ){
-            showList = [...new Set([...showList, ...(optionItem.showList || [])])]
-          }
-          if (typeof currentValues[item.key] === 'string' && currentValues[item.key] === optionItem.value){
-            showList = [...new Set([...showList, ...(optionItem.showList || [])])]
-          }
-        })
-      }
-      controlAllList = [...new Set([...controlAllList, ...(item.controlList || [])])]
-    })
+    let listObject = getList(currentValues, showList, controlAllList, widgetFormList)
+    while (listObject.showList.length !== showList.length){
+      showList = listObject.showList
+      controlAllList = listObject.controlAllList
+      listObject = getList(currentValues, showList, controlAllList, widgetFormList)
+    }
+    showList = listObject.showList
+    controlAllList = listObject.controlAllList
     if (clickCallBack){
       clickCallBack(showList, controlAllList || [])
     }
@@ -66,10 +88,13 @@ const GenerateFormItem = (props: Props) => {
       })
     }
   }, [config?.defaultValue])
-
-  const [checkBoxValue, setCheckBoxValue] = useState<string[]>(config?.defaultValue || [])
-  const [mulSelectValue, setMulSelectValue] = useState<string[]>(config?.defaultValue || [])
-  const [imageSelectValue, setImageSelectValue] = useState<string[]>([])
+  useEffect(() => {
+    if (config?.defaultValue && !hide){
+      formInstance.setFieldsValue({
+        [key!]: config.defaultValue
+      })
+    }
+  }, [hide])
   return (
     <>
       {type === 'CheckboxGroup' && !hide && (
@@ -81,6 +106,7 @@ const GenerateFormItem = (props: Props) => {
           <Form.Item
             rules={config?.required ? [{ required: true, message: '请选择选项'}] : []}
             name={key}
+            className="real-form-area"
             getValueFromEvent={(value) => {
               const newValue = value.length > config?.maxLength ? value.filter((checkItem: string) => {
                 return checkBoxValue.indexOf(checkItem) !== -1
@@ -118,6 +144,7 @@ const GenerateFormItem = (props: Props) => {
           <Form.Item
             name={key}
             validateTrigger="onBlur"
+            className="real-form-area"
             getValueFromEvent={(e) => {
               let newValue = e.target.value
               if (newValue && config?.regInfo?.reg){
@@ -164,6 +191,7 @@ const GenerateFormItem = (props: Props) => {
           <Form.Item
             name={key}
             validateTrigger="onBlur"
+            className="real-form-area"
             getValueFromEvent={(e) => {
               let newValue = e.target.value
               if (newValue && config?.regInfo?.reg){
@@ -208,6 +236,7 @@ const GenerateFormItem = (props: Props) => {
             config?.desc && <div className="question-desc">{config.desc}</div>
           }
           <Form.Item
+            className="real-form-area"
             name={key}
             rules={config?.required ? [{ required: true, message: '请输入内容'}] : []}
           >
@@ -229,6 +258,7 @@ const GenerateFormItem = (props: Props) => {
           }
           <Form.Item
             name={key}
+            className="real-form-area"
             rules={config?.required ? [{ required: true, message: '请选择'}] : []}
             getValueFromEvent={(value) => {
               const newValue = value.length > config?.maxLength ? value.filter((checkItem: string) => {
@@ -268,6 +298,7 @@ const GenerateFormItem = (props: Props) => {
           }
           <Form.Item
             name={key}
+            className="real-form-area"
             rules={config?.required ? [{ required: true, message: '请选择日期'}] : []}
           >
             <DatePicker
@@ -286,6 +317,7 @@ const GenerateFormItem = (props: Props) => {
           }
           <Form.Item
             name={key}
+            className="real-form-area"
             rules={config?.required ? [{ required: true, message: '请选择'}] : []}
           >
             <Select
@@ -336,6 +368,7 @@ const GenerateFormItem = (props: Props) => {
             config?.desc && <div className="question-desc">{config.desc}</div>
           }
           <Form.Item
+            className="real-form-area"
             name={key}
             rules={config?.required ? [{ required: true, message: '请选择'}] : []}
             getValueFromEvent={(value) => {

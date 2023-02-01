@@ -1,8 +1,15 @@
 import { FC, useContext, useMemo } from 'react'
-import { Form, Input, Checkbox } from 'antd';
-import UploadForm from '@/components/upload_form';
+import { Form, Input, Checkbox, Popover, Radio, Tooltip } from 'antd';
+import UploadForm from '../components/upload_form/upload-form';
 import { DesignContext } from '../store'
 import { ActionType } from '../store/action'
+import questionIcon from '@/assets/page_creat_manage/question_icon.png';
+
+const colorMapList = {
+  bgColor: ["#CCDFFF","#DEE5FF","#BCDFFF","#0A309E","#D1EAFF"],
+  btnBgColor: ["#CCDFFF","#DEE5FF","#BCDFFF","#0A309E","#D1EAFF"],
+  textColor: ["#CCDFFF","#DEE5FF","#BCDFFF","#0A309E","#D1EAFF"]
+}
 
 const GlobalConfig: FC = () => {
   const {
@@ -12,6 +19,7 @@ const GlobalConfig: FC = () => {
 
 
   const handleGlobalConfigChange = <T extends keyof typeof globalConfig>(fieldName: T, value: typeof globalConfig[T]) => {
+    console.log(fieldName, value)
     const action = {
       type: ActionType.SET_GLOBAL_CONFIG,
       payload: {
@@ -19,8 +27,46 @@ const GlobalConfig: FC = () => {
         [fieldName]: value
       }
     }
-
     dispatch(action)
+  }
+
+  const handleGlobalConfigListChange = (configs: any) => {
+    const action = {
+      type: ActionType.SET_GLOBAL_CONFIG,
+      payload: {
+        ...globalConfig,
+        ...configs
+      }
+    }
+    dispatch(action)
+  }
+
+  const content = (mapKey: string) => {
+    return (
+      <div className="color-card">
+        <div className="color-card-value" style={{background: `${globalConfig?.[mapKey]}`}} />
+        <div className="color-list">
+          {
+            colorMapList[mapKey].map((item: string, index: number) => {
+              return (
+                <div
+                  onClick={() => {
+                    const inputKey = mapKey === 'bgColor' ? 'inputBgColor' : mapKey === 'textColor' ? 'inputTextColor' : 'inputBtnBgColor'
+                    handleGlobalConfigListChange({
+                      [mapKey]: item,
+                      [inputKey]: item
+                    })
+                  }}
+                  key={index}
+                  style={{background: item}}
+                  className="color-list-item"
+                />
+              )
+            })
+          }
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -45,20 +91,73 @@ const GlobalConfig: FC = () => {
               <Input maxLength={50} value={globalConfig?.pageDesc} onChange={(event) => handleGlobalConfigChange('pageDesc',event.target.value)} />
               <Checkbox checked={globalConfig?.showDesc} onChange={(e) => handleGlobalConfigChange('showDesc',e.target.checked)}>显示描述信息</Checkbox>
             </Form.Item>
+            <Form.Item
+              label={'表单样式'}
+            >
+              <Form.Item>
+                <Radio.Group
+                  defaultValue={globalConfig?.formStyle}
+                  options={
+                    [
+                      {label: '题目分割（问卷类表单建议选择此样式）', value: 'split'},
+                      {label: '题目平铺（活动类表单建议选择此样式）', value: 'tiled'},
+                    ]
+                  }
+                  onChange={(e) => {
+                    handleGlobalConfigChange('formStyle', e.target.value)
+                  }}
+                />
+              </Form.Item>
+            </Form.Item>
             <Form.Item label="表单背景" >
-              <UploadForm
-                listType="picture-card"
-                className="avatar-uploader"
-                maxSize={1}
-                action={'/antelope-common/common/file/upload/record'}
-                showUploadList={false}
-                accept=".bmp,.gif,.png,.jpeg,.jpg"
-                value={globalConfig?.pageBg}
-                onChange={(value: any) => {
-                  handleGlobalConfigChange('pageBg', value?.path || value)
-                }}
-              />
-              <div className="upload-suggest">建议上传尺寸:1500 * 480</div>
+              <div className="config-item">
+                <div className="config-item-label">头图:</div>
+                <div>
+                  <UploadForm
+                    listType="picture-card"
+                    className="avatar-uploader"
+                    maxSize={1}
+                    showUploadList={false}
+                    accept=".bmp,.gif,.png,.jpeg,.jpg"
+                    value={globalConfig?.pageBg}
+                    onChange={(value: any) => {
+                      handleGlobalConfigChange('pageBg', value?.path || value)
+                    }}
+                  />
+                  <div className="upload-suggest">建议上传尺寸:1500 * 480</div>
+                </div>
+              </div>
+              <div className="config-item">
+                <div className="config-item-label">背景底色:</div>
+                <div className="flex">
+                  <Popover placement="topLeft" overlayClassName="color-popover" content={content('bgColor')} trigger="click">
+                    <div className="show-color">
+                      <span className="color" style={{background: `${globalConfig?.bgColor}`}} />
+                      颜色
+                    </div>
+                  </Popover>
+                  <div className="color-value">
+                    <Form.Item>
+                      <Input
+                        maxLength={6}
+                        value={globalConfig?.inputBgColor.replace('#', '')}
+                        onChange={(e) => {
+                          handleGlobalConfigChange('inputBgColor', `#${e.target.value.toUpperCase()}`)
+                        }}
+                        onBlur={(event) => {
+                          const {value} = event.target
+                          if(value && /^[0-9A-F]{6}$/i.test(value)){
+                            handleGlobalConfigChange('bgColor', `#${value.toUpperCase()}`)
+                          } else {
+                            handleGlobalConfigChange('inputBgColor', globalConfig.bgColor)
+                          }
+                        }}
+                      />
+                    </Form.Item>
+                    Hex
+                  </div>
+                </div>
+              </div>
             </Form.Item>
             <Form.Item label="提交按钮" >
               <Input
@@ -71,6 +170,81 @@ const GlobalConfig: FC = () => {
                   }
                 }}
               />
+              <div className="config-item">
+                <div className="config-item-label">字体颜色:</div>
+                <div className="flex">
+                  <Popover placement="topLeft" overlayClassName="color-popover" content={content('textColor')} trigger="click">
+                    <div className="show-color">
+                      <span className="color" style={{background: `${globalConfig?.textColor}`}} />
+                      颜色
+                    </div>
+                  </Popover>
+                  <div className="color-value">
+                    <Form.Item>
+                      <Input
+                        maxLength={6}
+                        value={globalConfig?.inputTextColor.replace('#', '')}
+                        onChange={(e) => {
+                          handleGlobalConfigChange('inputTextColor', `#${e.target.value.toUpperCase()}`)
+                        }}
+                        onBlur={(event) => {
+                          const {value} = event.target
+                          if(value && /^[0-9A-F]{6}$/i.test(value)){
+                            handleGlobalConfigChange('textColor', `#${value.toUpperCase()}`)
+                          } else {
+                            handleGlobalConfigChange('inputTextColor', globalConfig.bgColor)
+                          }
+                        }}
+                      />
+                    </Form.Item>
+                    Hex
+                  </div>
+                </div>
+              </div>
+              <div className="config-item">
+                <div className="config-item-label">填充颜色:</div>
+                <div className="flex">
+                  <Popover placement="topLeft" overlayClassName="color-popover" content={content('btnBgColor')} trigger="click">
+                    <div className="show-color">
+                      <span className="color" style={{background: `${globalConfig?.btnBgColor}`}} />
+                      颜色
+                    </div>
+                  </Popover>
+                  <div className="color-value">
+                    <Form.Item>
+                      <Input
+                        maxLength={6}
+                        value={globalConfig?.inputBtnBgColor.replace('#', '')}
+                        onChange={(e) => {
+                          handleGlobalConfigChange('inputBtnBgColor', `#${e.target.value.toUpperCase()}`)
+                        }}
+                        onBlur={(event) => {
+                          const {value} = event.target
+                          if(value && /^[0-9A-F]{6}$/i.test(value)){
+                            handleGlobalConfigChange('btnBgColor', `#${value.toUpperCase()}`)
+                          } else {
+                            handleGlobalConfigChange('inputBtnBgColor', globalConfig.bgColor)
+                          }
+                        }}
+                      />
+                    </Form.Item>
+                    Hex
+                  </div>
+                </div>
+              </div>
+            </Form.Item>
+            <Form.Item label="附加条件" >
+              <Checkbox
+                checked={globalConfig.showRegister}
+                onChange={(e) => {
+                  handleGlobalConfigChange('showRegister', e.target.checked)
+                }}
+              >
+                添加注册模块
+                <Tooltip title="注册模块">
+                  <img className="question-icon" src={questionIcon} alt='' />
+                </Tooltip>
+              </Checkbox>
             </Form.Item>
           </Form>
         ),
