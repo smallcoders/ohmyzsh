@@ -25,7 +25,7 @@ export default () => {
   const permissions = [
     {
       gid: 1,
-      name: '数字化应用业务中',
+      name: '数字化应用业务组',
       power: 'PQ_SD_XQGJ_SZH',
       twoPower: 'M_SD_XQGJ_SZH',
       state: access?.['PQ_SD_XQGJ_SZH'],
