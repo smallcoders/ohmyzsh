@@ -93,7 +93,7 @@ export default ({ visible, setVisible, path }) => {
     }
 
     return <Modal title="导入" visible={visible} footer={null} onCancel={() => {
-        setVisible(false)
+        setVisible(false, stepObj.success > 0)
         resetStep()
     }}>
         {stepObj.step == 2 && <Result
@@ -102,7 +102,7 @@ export default ({ visible, setVisible, path }) => {
             subTitle=""
             extra={[
                 <Button type="primary" key="console" onClick={() => {
-                    setVisible(false)
+                    setVisible(false, true)
                     resetStep()
                 }}>
                     完成
@@ -115,7 +115,7 @@ export default ({ visible, setVisible, path }) => {
             subTitle={<div>点此查看导入失败数据，<a href={stepObj.errorFile}>下载失败数据</a></div>}
             extra={[
                 <Button key="console" onClick={() => {
-                    setVisible(false)
+                    setVisible(false, stepObj.success > 0)
                     resetStep()
                 }}>
                     取消

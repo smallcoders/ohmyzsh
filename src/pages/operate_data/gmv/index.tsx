@@ -100,42 +100,42 @@ export default () => {
             dataIndex: 'archiveTime',
             width: 150,
             isEllipsis: true,
-            render: (item: string)=> item || '--'
+            render: (item: string) => item || '--'
         },
         {
             title: '采购单号',
             dataIndex: 'orderNo',
             isEllipsis: true,
             width: 150,
-            render: (item: string)=> item || '--'
+            render: (item: string) => item || '--'
         },
         {
             title: '物资大类',
             dataIndex: 'goodsCtBig',
             isEllipsis: true,
             width: 200,
-            render: (item: string)=> item || '--'
+            render: (item: string) => item || '--'
         },
         {
             title: '物资小类',
             dataIndex: 'goodsCtSmall',
             isEllipsis: true,
             width: 150,
-            render: (item: string)=> item || '--'
+            render: (item: string) => item || '--'
         },
         {
             title: '物料编码',
             dataIndex: 'goodsCode',
             isEllipsis: true,
             width: 150,
-            render: (item: string)=> item || '--'
+            render: (item: string) => item || '--'
         },
         {
             title: '物料描述',
             dataIndex: 'goodsDesc',
             isEllipsis: true,
             width: 150,
-            render: (item: string)=> item || '--'
+            render: (item: string) => item || '--'
         },
 
         {
@@ -143,55 +143,55 @@ export default () => {
             dataIndex: 'bigText',
             isEllipsis: true,
             width: 150,
-            render: (item: string)=> item || '--'
+            render: (item: string) => item || '--'
         },
         {
             title: '数量',
             dataIndex: 'num',
             width: 150,
             isEllipsis: true,
-            render: (item: string)=> item || '--'
+            render: (item: string) => item || '--'
         },
         {
             title: '单位',
             dataIndex: 'unitName',
             isEllipsis: true,
             width: 150,
-            render: (item: string)=> item || '--'
+            render: (item: string) => item || '--'
         },
         {
             title: '价格单位',
             dataIndex: 'priceUnitName',
             isEllipsis: true,
             width: 150,
-            render: (item: string)=> item || '--'
+            render: (item: string) => item || '--'
         },
         {
             title: '含税单价',
             dataIndex: 'singlePrice',
             isEllipsis: true,
             width: 150,
-            render: (item: string)=> item || '--'
+            render: (item: string) => item || '--'
         },
         {
             title: '税率',
             dataIndex: 'taxRate',
             isEllipsis: true,
             width: 150,
-            render: (item: string)=> item || '--'
+            render: (item: string) => item || '--'
         }, {
             title: '币种',
             dataIndex: 'currencyName',
             width: 150,
             isEllipsis: true,
-            render: (item: string)=> item || '--'
+            render: (item: string) => item || '--'
         },
         {
             title: '汇率',
             dataIndex: 'exchangeRate',
             isEllipsis: true,
             width: 150,
-            render: (item: string)=> item || '--'
+            render: (item: string) => item || '--'
         },
         {
             title: '含税金额（人民币：元）',
@@ -222,7 +222,7 @@ export default () => {
 
     ];
 
- 
+
     const [timer, setTimer] = useState({
         applyTimeStart: undefined,
         applyTimeEnd: undefined
@@ -253,11 +253,14 @@ export default () => {
                             onClick={() => {
                                 setImportVisible(true)
                             }}>导入</Button></Access>
-                        <Upload visible={importVisible} setVisible={(e) => {
-                            setImportVisible(e)
-                            getPage()
-                            prepare()
-                        }}></Upload>
+                        <Upload visible={importVisible}
+                            setVisible={(e, isFresh = false) => {
+                                setImportVisible(e)
+                                if (isFresh) {
+                                    getPage()
+                                    prepare()
+                                }
+                            }}></Upload>
                         <DatePicker.RangePicker allowClear onChange={(e) => {
                             console.log('eeee', e)
                             setTimer({
