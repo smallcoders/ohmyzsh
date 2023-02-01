@@ -170,6 +170,11 @@ export default () => {
   };
   // 批量删除
   const batchDel = async () => {
+    if (type === 'single') {
+      if (selectImg.includes(delImgId)) {
+        selectImg.splice(selectImg.indexOf(delImgId), 1);
+      }
+    }
     try {
       const { code } = await deleteBatch(type === 'single' ? [delImgId] : selectImg);
       if (code === 0) {
@@ -371,21 +376,21 @@ export default () => {
               value={groupsId}
               style={{ marginLeft: '-12px' }}
             >
-              {groupListAll.map((item: MaterialLibrary.List) => {
-                return (
-                  <Radio.Button key={item.id} value={item.id}>
-                    {item.groupName + ' ' + item.materialCount}
-                  </Radio.Button>
-                );
-              })}
-              {/* <Radio.Button value="w">未分组</Radio.Button>
-              <Radio.Button value="b">banner46</Radio.Button>
-              {isMore && (
-                <>
-                  <Radio.Button value="c">问卷配图43</Radio.Button>
-                  <Radio.Button value="d">门户配图24</Radio.Button>
-                </>
-              )} */}
+              {isMore
+                ? groupListAll.map((item: MaterialLibrary.List) => {
+                    return (
+                      <Radio.Button key={item.id} value={item.id}>
+                        {item.groupName + ' ' + item.materialCount}
+                      </Radio.Button>
+                    );
+                  })
+                : groupListAll.slice(0, 8).map((item: MaterialLibrary.List) => {
+                    return (
+                      <Radio.Button key={item.id} value={item.id}>
+                        {item.groupName + ' ' + item.materialCount}
+                      </Radio.Button>
+                    );
+                  })}
             </Radio.Group>
 
             <Button
@@ -395,12 +400,12 @@ export default () => {
               }}
               style={{ color: '#1E232A' }}
             >
-              {groupListAll.length > 10 && isMore ? (
+              {groupListAll.length > 8 && isMore ? (
                 <>
                   <span>收起更多</span>
                   <CaretUpOutlined />
                 </>
-              ) : groupListAll.length > 10 && !isMore ? (
+              ) : groupListAll.length > 8 && !isMore ? (
                 <>
                   <span>展开更多</span>
                   <CaretDownOutlined />
@@ -633,7 +638,13 @@ export default () => {
         type={type}
         cancelMove={() => setMoveGroupVisible(false)}
         moveSuccess={() => {
-          setSelectImg([]);
+          if (type === 'single') {
+            if (selectImg.includes(imgId)) {
+              selectImg.splice(selectImg.indexOf(imgId), 1);
+            }
+          } else {
+            setSelectImg([]);
+          }
           getGroupListAll();
           getPage();
           setMoveGroupVisible(false);
