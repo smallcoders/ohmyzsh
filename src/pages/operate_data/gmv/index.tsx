@@ -222,15 +222,15 @@ export default () => {
 
     ];
 
-    useEffect(() => {
-        getPage();
-    }, [timer]);
+ 
     const [timer, setTimer] = useState({
         applyTimeStart: undefined,
         applyTimeEnd: undefined
     });
     const [importVisible, setImportVisible] = useState(false);
-
+    useEffect(() => {
+        getPage();
+    }, [timer]);
     const useHeader = (): React.ReactNode => {
         return (
             <div className={sc('container-search')}>
@@ -256,6 +256,7 @@ export default () => {
                         <Upload visible={importVisible} setVisible={(e) => {
                             setImportVisible(e)
                             getPage()
+                            prepare()
                         }}></Upload>
                         <DatePicker.RangePicker allowClear onChange={(e) => {
                             console.log('eeee', e)

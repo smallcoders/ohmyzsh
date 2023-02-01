@@ -135,7 +135,6 @@ export default ({ visible, setVisible, path }) => {
                 <Upload {...uploadProps} accept={accept}>
                     <Button loading={loading} icon={<UploadOutlined />}>上传</Button>
                 </Upload>
-                <p style={{ marginTop: 20 }} className="ant-upload-text">点击或将文件拖拽到这里上传</p>
                 <p className="ant-upload-hint">支持xls，xlsx类型的文件，限20M以内</p>
             </div>
         </div>}
