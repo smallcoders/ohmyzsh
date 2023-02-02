@@ -225,7 +225,7 @@ const GlobalConfig: FC = () => {
                           if(value && /^[0-9A-F]{6}$/i.test(value)){
                             handleGlobalConfigChange('textColor', `#${value.toUpperCase()}`)
                           } else {
-                            handleGlobalConfigChange('inputTextColor', globalConfig.bgColor)
+                            handleGlobalConfigChange('inputTextColor', globalConfig.textColor)
                           }
                         }}
                       />
@@ -267,7 +267,7 @@ const GlobalConfig: FC = () => {
                           if(value && /^[0-9A-F]{6}$/i.test(value)){
                             handleGlobalConfigChange('btnBgColor', `#${value.toUpperCase()}`)
                           } else {
-                            handleGlobalConfigChange('inputBtnBgColor', globalConfig.bgColor)
+                            handleGlobalConfigChange('inputBtnBgColor', globalConfig.btnBgColor)
                           }
                         }}
                       />
