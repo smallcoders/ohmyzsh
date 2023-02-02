@@ -1,42 +1,18 @@
-import type { RadioChangeEvent } from 'antd';
 import { Col, Row, Button, DatePicker, Modal, message, Radio, Input, Tabs } from 'antd';
-import { ArrowUpOutlined, PlusOutlined, MinusOutlined } from '@ant-design/icons';
-import moment from 'moment';
-import type { Moment } from 'moment';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useState, useEffect } from 'react';
-import * as echarts from 'echarts';
 import './index.less';
 import { getAddedDataYesterday, getStatistics } from '@/services/home';
 import { useHistory } from 'react-router-dom';
 import { routeName } from '@/../config/routes';
-import { divide } from 'lodash';
 import { Access, useAccess } from 'umi';
 import UserData from './user_data/index';
 import OrganizationData from './organization_data/index';
 import EnterpriseData from './enterprise_demand_data/index';
 import dayjs from 'dayjs';
-import ArrowDown from '@/assets/home/arrowdown.png'
 import Arrowup from '@/assets/home/arrowup.png'
 
 const sc = scopedClasses('home-page');
-const { RangePicker } = DatePicker;
-
-const options = [
-  { label: '最近7天', value: '1' },
-  { label: '最近30天', value: '2' },
-  { label: '最近90天', value: '3' },
-];
-const pageOptions = [
-  { label: '全站', value: '1' },
-  { label: '首页', value: '2' },
-  { label: '应用列表', value: '3' },
-  { label: '政策首页', value: '4' },
-  { label: '诊断首页', value: '5' },
-  { label: '需求列表', value: '6' },
-  { label: '解决方案列表', value: '7' },
-  { label: '科产首页', value: '8' },
-];
 const statisticsType = {
   USER: '用户注册量',
   ENTERPRISE: '企业认证量',
@@ -50,7 +26,6 @@ const statisticsType = {
   CREDIT: '企业累计授信额（万元）',
 };
 
-type RangeValue = [Moment | null, Moment | null] | null;
 type AuditType = '用户数据分析'|'组织数据分析'|'企业需求数据分析'
 
 const updateTime = dayjs().format('YYYY-MM-DD 00:00:00')
@@ -59,91 +34,9 @@ export default () => {
   const history = useHistory();
   const [addedDataYesterday, setAddedDataYesterday] = useState<any>({});
   const [statistics, setStatistics] = useState<any>([]);
-  const [quicklyDate, setQuicklyDate] = useState('1');
-  const [dates, setDates] = useState<RangeValue>(null);
-  const [hackValue, setHackValue] = useState<RangeValue>(null);
-  const [value, setValue] = useState<RangeValue>(null);
   const [activeTab, setActiveTab] = useState<AuditType>('用户数据分析')
   // 拿到当前角色的access权限兑现
   const access = useAccess()
-  const disabledDate = (current: Moment) => {
-    if (!dates) {
-      return false;
-    }
-    const tooLate = dates[0] && current.diff(dates[0], 'days') > 90;
-    const tooEarly = dates[1] && dates[1].diff(current, 'days') > 90;
-    return !!tooEarly || !!tooLate || current > moment().startOf('day');
-  };
-  const onOpenChange = (open: boolean) => {
-    if (open) {
-      setHackValue([null, null]);
-      setDates([null, null]);
-    } else {
-      setHackValue(null);
-    }
-  };
-  const changeQuicklyDate = ({ target: { value } }: RadioChangeEvent) => {
-    console.log('date checked', value);
-    setQuicklyDate(value);
-  };
-
-  const [pageType, setPageType] = useState('1');
-  const changePageType = ({ target: { value } }: RadioChangeEvent) => {
-    console.log('page checked', value);
-    setPageType(value);
-  };
-
-  const chartShow = () => {
-    let myChart = echarts.init(document.getElementById('charts'));
-    myChart.setOption({
-      tooltip: {
-        trigger: 'axis',
-        axisPointer: {
-          type: 'cross',
-          label: {
-            backgroundColor: '#6a7985',
-          },
-        },
-        backgroundColor: 'rgba(0,0,0,.7)',
-        textStyle: {
-          color: '#fff',
-        },
-      },
-      legend: {
-        data: ['浏览次数（次）', '浏览人数（人）'],
-        bottom: '5px',
-      },
-      xAxis: {
-        type: 'category',
-        data: [
-          '2022-07-27',
-          '2022-07-28',
-          '2022-07-29',
-          '2022-07-30',
-          '2022-07-31',
-          '2022-08-01',
-          '2022-08-02',
-        ],
-      },
-      yAxis: {
-        type: 'value',
-        max: 400,
-        splitNumber: 1,
-      },
-      series: [
-        {
-          name: '浏览次数（次）',
-          data: [150, 230, 224, 218, 135, 147, 260],
-          type: 'line',
-        },
-        {
-          name: '浏览人数（人）',
-          data: [50, 330, 124, 298, 175, 197, 60],
-          type: 'line',
-        },
-      ],
-    });
-  };
 
   const prepare = async () => {
     try {
@@ -165,7 +58,6 @@ export default () => {
   };
   useEffect(() => {
     prepare();
-    // chartShow();
   }, []);
 
   const {

@@ -171,7 +171,6 @@ export default () => {
   };
 
   const chartRightShow = (data?: any) => {
-    console.log('折线图数据data',data)
     const {xAxisData, series} = data || {}
     let myChart = echarts.init(document.getElementById('home-page-user-data-charts-right'));
     myChart.setOption({

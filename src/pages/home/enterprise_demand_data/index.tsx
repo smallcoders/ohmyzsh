@@ -204,10 +204,10 @@ export default () => {
       yAxis: {
         type: 'value',
         // maxNumber 显示最大值
-        max: 400,
-        splitLine: {
-          show: true,
-        }
+        // max: 400,
+        // splitLine: {
+        //   show: true,
+        // }
       },
       series: series,
     });
