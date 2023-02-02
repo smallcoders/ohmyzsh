@@ -1,4 +1,4 @@
-import { FC, useContext, useMemo } from 'react'
+import { FC, useContext, useMemo, useState } from 'react'
 import { Form, Input, Checkbox, Popover, Radio, Tooltip } from 'antd';
 import UploadForm from '../components/upload_form/upload-form';
 import { DesignContext } from '../store'
@@ -16,6 +16,9 @@ const GlobalConfig: FC = () => {
     state: { globalConfig, formConfig },
     dispatch
   } = useContext(DesignContext)
+  const [bgColorOpen, setBgColorOpen] = useState<boolean>(false)
+  const [textColorOpen, setTextColorOpen] = useState<boolean>(false)
+  const [buttonBgColorOpen, setButtonBgColorOpen] = useState<boolean>(false)
 
 
   const handleGlobalConfigChange = <T extends keyof typeof globalConfig>(fieldName: T, value: typeof globalConfig[T]) => {
@@ -51,6 +54,15 @@ const GlobalConfig: FC = () => {
               return (
                 <div
                   onClick={() => {
+                    if (mapKey === 'bgColor'){
+                      setBgColorOpen(false)
+                    }
+                    if (mapKey === 'textColor'){
+                      setTextColorOpen(false)
+                    }
+                    if (mapKey === 'btnBgColor'){
+                      setTextColorOpen(false)
+                    }
                     const inputKey = mapKey === 'bgColor' ? 'inputBgColor' : mapKey === 'textColor' ? 'inputTextColor' : 'inputBtnBgColor'
                     handleGlobalConfigListChange({
                       [mapKey]: item,
@@ -68,6 +80,7 @@ const GlobalConfig: FC = () => {
       </div>
     )
   }
+
 
   return (
     <>
@@ -130,7 +143,16 @@ const GlobalConfig: FC = () => {
               <div className="config-item">
                 <div className="config-item-label">背景底色:</div>
                 <div className="flex">
-                  <Popover placement="topLeft" overlayClassName="color-popover" content={content('bgColor')} trigger="click">
+                  <Popover
+                    placement="topLeft"
+                    overlayClassName="color-popover"
+                    content={content('bgColor')}
+                    trigger="click"
+                    visible={bgColorOpen}
+                    onVisibleChange={(newOpen: boolean) => {
+                      setBgColorOpen(newOpen)
+                    }}
+                  >
                     <div className="show-color">
                       <span className="color" style={{background: `${globalConfig?.bgColor}`}} />
                       颜色
@@ -173,8 +195,19 @@ const GlobalConfig: FC = () => {
               <div className="config-item">
                 <div className="config-item-label">字体颜色:</div>
                 <div className="flex">
-                  <Popover placement="topLeft" overlayClassName="color-popover" content={content('textColor')} trigger="click">
-                    <div className="show-color">
+                  <Popover
+                    placement="topLeft"
+                    overlayClassName="color-popover"
+                    content={content('textColor')}
+                    trigger="click"
+                    visible={textColorOpen}
+                    onVisibleChange={(newOpen: boolean) => {
+                      setTextColorOpen(newOpen)
+                    }}
+                  >
+                    <div className="show-color" onClick={() => {
+                      setTextColorOpen(true)
+                    }}>
                       <span className="color" style={{background: `${globalConfig?.textColor}`}} />
                       颜色
                     </div>
@@ -204,8 +237,19 @@ const GlobalConfig: FC = () => {
               <div className="config-item">
                 <div className="config-item-label">填充颜色:</div>
                 <div className="flex">
-                  <Popover placement="topLeft" overlayClassName="color-popover" content={content('btnBgColor')} trigger="click">
-                    <div className="show-color">
+                  <Popover
+                    placement="topLeft"
+                    overlayClassName="color-popover"
+                    content={content('btnBgColor')}
+                    trigger="click"
+                    visible={buttonBgColorOpen}
+                    onVisibleChange={(newOpen: boolean) => {
+                      setButtonBgColorOpen(newOpen)
+                    }}
+                  >
+                    <div className="show-color" onClick={() => {
+                      setButtonBgColorOpen(true)
+                    }}>
                       <span className="color" style={{background: `${globalConfig?.btnBgColor}`}} />
                       颜色
                     </div>
@@ -248,7 +292,7 @@ const GlobalConfig: FC = () => {
             </Form.Item>
           </Form>
         ),
-        [globalConfig, formConfig]
+        [globalConfig, formConfig, bgColorOpen, buttonBgColorOpen, textColorOpen]
       )}
     </>
   )
