@@ -108,7 +108,7 @@ export default ({ visible, setVisible }) => {
         />}
         {stepObj.step == 3 && <Result
             status="warning"
-            title={`共导入${stepObj.total}，成功${stepObj.success}条，失败${stepObj.fail}条`}
+            title={`共导入${stepObj.total}条，成功${stepObj.success}条，失败${stepObj.fail}条`}
             subTitle={<div>点此查看导入失败数据，<span>下载失败数据</span></div>}
             extra={[
                 <Button key="console" onClick={() => {
