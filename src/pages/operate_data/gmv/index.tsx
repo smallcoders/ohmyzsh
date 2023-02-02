@@ -203,6 +203,7 @@ export default () => {
             title: '操作',
             dataIndex: 'operate',
             fixed: 'right',
+            width: 100,
             render: (_: any, record: any) => (
                 <Access accessible={access['P_OD_GMV']}>
                     <Popconfirm
@@ -275,7 +276,7 @@ export default () => {
             <div className={sc('container-table-body')}>
                 <SelfTable
                     bordered
-                    scroll={{ x: 1480 }}
+                    scroll={{ x: 2530 }}
                     columns={columns}
                     rowKey={'id'}
                     dataSource={dataSource}
