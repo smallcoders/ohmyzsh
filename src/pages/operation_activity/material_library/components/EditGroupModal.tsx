@@ -10,7 +10,6 @@ import {
   removeMaterialGroup,
   moveMaterialGroup,
 } from '@/services/material-library';
-import type { ColumnsType } from 'antd/es/table';
 import type MaterialLibrary from '@/types/material-library';
 import { arrayMoveImmutable } from 'array-move';
 import type { SortableContainerProps, SortEnd } from 'react-sortable-hoc';
@@ -18,8 +17,9 @@ import { SortableContainer, SortableElement, SortableHandle } from 'react-sortab
 const sc = scopedClasses('material-library');
 type Props = {
   handleCancel: () => void;
-  getGroupList: () => void;
+  getGroupList: (boolean: boolean) => void;
   visible: boolean;
+  groupsId: number | null;
   // data: MaterialLibrary.List[];
 };
 const DragHandle = SortableHandle(() => <MenuOutlined style={{ cursor: 'grab' }} />);
@@ -29,7 +29,7 @@ const SortableItem = SortableElement((props: React.HTMLAttributes<HTMLTableRowEl
 const SortableBody = SortableContainer((props: React.HTMLAttributes<HTMLTableSectionElement>) => (
   <tbody {...props} />
 ));
-const EditGroupModal = ({ handleCancel, visible, getGroupList }: Props) => {
+const EditGroupModal = ({ handleCancel, visible, getGroupList, groupsId }: Props) => {
   const [editGroupForm] = Form.useForm();
   const [dataSource, setDataSource] = useState<MaterialLibrary.List[]>([]);
   const getGroupListAll = async () => {
@@ -209,7 +209,10 @@ const EditGroupModal = ({ handleCancel, visible, getGroupList }: Props) => {
   // 点击完成
   const handleOk = () => {
     // 重新渲染分组
-    getGroupList();
+    const boolean = dataSource.some((item) => {
+      return item.id !== -1 && item.id === groupsId;
+    });
+    getGroupList(boolean);
     handleCancel();
   };
   return (
@@ -221,8 +224,7 @@ const EditGroupModal = ({ handleCancel, visible, getGroupList }: Props) => {
         destroyOnClose
         centered
         onCancel={() => {
-          getGroupList();
-          handleCancel();
+          handleOk();
         }}
         maskClosable={false}
         footer={[

@@ -68,11 +68,12 @@ export default (props: { value?: string; onChange?: any }) => {
       if (res.code === 0) {
         message.success('删除贷款用途成功');
         getPurpose();
-        if (props?.value?.split(',')?.includes(id)) {
+        console.log(props?.value, id);
+        if (props?.value?.split(',')?.includes(id.toString())) {
           props?.onChange(
             props.value
               ?.split(',')
-              .filter((i) => i !== id)
+              .filter((i) => i !== id.toString())
               ?.join(',') || '',
           );
         }
