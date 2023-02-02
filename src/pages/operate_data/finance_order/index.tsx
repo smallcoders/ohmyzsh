@@ -165,6 +165,7 @@ export default () => {
         {
             title: '操作',
             dataIndex: 'operate',
+            fixed: 'right',
             width: 100,
             render: (_: any, record: any) => (
                 <Access accessible={access['P_OD_JRDD']}>

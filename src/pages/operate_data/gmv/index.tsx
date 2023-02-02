@@ -202,6 +202,7 @@ export default () => {
         {
             title: '操作',
             dataIndex: 'operate',
+            fixed: 'right',
             render: (_: any, record: any) => (
                 <Access accessible={access['P_OD_GMV']}>
                     <Popconfirm
