@@ -627,10 +627,15 @@ export default () => {
       </div>
       <EditGroupModal
         visible={editGroupVisible}
+        groupsId={groupsId}
         handleCancel={() => setEditGroupVisible(false)}
-        getGroupList={() => {
+        getGroupList={(boolean) => {
           getGroupListAll();
-          setGroupsId(groupListAll[0].id);
+          if (boolean) {
+            getPage();
+          } else {
+            setGroupsId(groupListAll[0].id);
+          }
         }}
       />
       <MoveGroupModal
