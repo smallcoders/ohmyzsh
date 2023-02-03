@@ -296,3 +296,35 @@ export async function getProductList(data?: Record<string, any>) {
     data,
   });
 }
+
+/**
+ * 讯飞供应链流水总额统计
+ */
+ export async function getGMVTotal() {
+  return request<LogoutVerify.ResultList>('/antelope-pay/mng/iflytek/flow/sum', {
+    method: 'get',
+  });
+}
+
+/**
+ * 讯飞供应链流水列表
+ * @param params
+ */
+export async function getGVMPage(data?: Record<string, any>) {
+  return request<LogoutVerify.ResultList>('/antelope-pay/mng/iflytek/flow/page', {
+    method: 'post',
+    data,
+  });
+}
+
+/**
+ * 删除GMV
+ * @param params
+ */
+ export async function removeGMVItem(id: string) {
+  return request<Common.ResultCode>(`/antelope-pay/mng/iflytek/flow/delete?id=${id}`, {
+    method: 'DELETE',
+  });
+}
+
+

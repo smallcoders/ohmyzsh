@@ -18,3 +18,31 @@ export async function addOrUpdateAudit(data?: Record<string, any>) {
     data,
   });
 }
+
+/**
+ * 数据统计
+ */
+ export async function getLoanOrderCount() {
+  return request<AppFinancialMng.ResultList>('/antelope-finance/loanOrder/mng/count', {
+    method: 'get',
+  });
+}
+
+/**
+ * 金融订单列表 applyTimeStart applyTimeEnd
+ */
+ export async function getLoanOrderList(data?: Record<string, any>) {
+  return request<any>(`/antelope-finance/loanOrder/mng/list`, {
+    method: 'post',
+    data,
+  });
+}
+
+/**
+ * 删除金融订单
+ */
+ export async function deleteLoanOrder(applyNo: string) {
+  return request<AppFinancialMng.ResultList>(`/antelope-finance/loanOrder/mng/delete?applyNo=${applyNo}`, {
+    method: 'get',
+  });
+}

@@ -201,6 +201,11 @@
   ACTIVITY_PROJECT_DETAIL: '/service-config/activity_project/detail',
 
   ACTIVITY_PROJECT_NEWYEAR_DETAIL: '/operation-activity/activity-project/new-year/detail',
+
+  //运营数据
+  OPERATE_DATA_USER: '/operate-data/user',
+  OPERATE_DATA_GMV:  '/operate-data/gmv',
+  OPERATE_DATA_FINANCEORDER:  '/operate-data/finance-order',
 };
 
 export default [
@@ -228,6 +233,43 @@ export default [
     name: '首页',
     icon: 'home',
     component: './home',
+  },
+  {
+    path: '/operate-data',
+    code: 'M_OD',
+    access: 'M_OD',
+    name: '运营数据',
+    icon: 'hdd',
+    routes: [
+      {
+        path: '/operate-data',
+        code: 'M_OD_GMV',
+        access: 'M_OD_GMV',
+        redirect: routeName.OPERATE_DATA_GMV,
+      },
+      {
+        path: routeName.OPERATE_DATA_GMV,
+        code: 'M_OD_GMV',
+        access: 'M_OD_GMV',
+        name: 'GMV管理',
+        component: './operate_data/gmv/index',
+      },
+      {
+        path: routeName.OPERATE_DATA_FINANCEORDER,
+        code: 'M_OD_JRDD',
+        access: 'M_OD_JRDD',
+        name: '金融订单管理',
+        component: './operate_data/finance_order/index',
+      },
+      {
+        path: routeName.OPERATE_DATA_USER,
+        code: 'M_OD_YYSJ',
+        access: 'M_OD_YYSJ',
+        name: '用户认证数据',
+        component: './operate_data/data_manage/index',
+      },
+      
+    ],
   },
   // {
   //   path: '/service-config',
@@ -2313,13 +2355,6 @@ export default [
         name: '销售数据统计',
         component: './purchase_manage/sales_statistics',
       },
-      {
-        path: '/purchase-manage/gvm',
-        code: 'M_PM_GMV',
-        access: 'M_PM_GMV',
-        name: 'GVM管理',
-        component: './purchase_manage/gvm',
-      },
     ],
   },
   {
@@ -2449,14 +2484,7 @@ export default [
       },
     ],
   },
-  {
-    path: '/operate-data',
-    code: 'M_OD',
-    access: 'M_OD',
-    name: '运营数据',
-    icon: 'hdd',
-    component: './operate_data/data_manage/index',
-  },
+
   {
     path: '/user-config',
     code: 'M_UM',
