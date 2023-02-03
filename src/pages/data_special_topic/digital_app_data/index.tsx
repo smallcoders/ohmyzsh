@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
-import { message, Select, Tooltip } from 'antd';
+import { message, Select } from 'antd';
 
 import './index.less';
 
 import scopedClasses from '@/utils/scopedClasses';
 import { DateTypeEnum } from '@/types/data-special-topic.d';
-import questionIcon from '@/assets/page_creat_manage/question_icon.png';
+// import questionIcon from '@/assets/page_creat_manage/question_icon.png';
 import { getRSStatistic } from '@/services/data-special-topic/digital-app-data';
 
 const sc = scopedClasses('digital-app-data');
@@ -97,9 +97,9 @@ const DigitalAppData: React.FC = () => {
             <li key={item.name}>
               <div className="card-name">
                 {item.name}
-                <Tooltip title={item.tooltip}>
+                {/* <Tooltip title={item.tooltip}>
                   <img className="question-icon" src={questionIcon} alt="" />
-                </Tooltip>
+                </Tooltip> */}
               </div>
               <p className="num">{item.num}</p>
             </li>
@@ -115,9 +115,9 @@ const DigitalAppData: React.FC = () => {
             <li key={item.name}>
               <div className="card-name">
                 {item.name}
-                <Tooltip title={item.tooltip}>
+                {/* <Tooltip title={item.tooltip}>
                   <img className="question-icon" src={questionIcon} alt="" />
-                </Tooltip>
+                </Tooltip> */}
               </div>
               <p className="num">{item.num}</p>
             </li>
