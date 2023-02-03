@@ -136,8 +136,16 @@ export default () => {
   const prepare = async () => {
     try {
       const res = await Promise.all([getAddedDataYesterday(), getStatistics()]);
-      setAddedDataYesterday(res[0].result || {});
-      setStatistics(res[1].result || {});
+      if (res[0].code === 0) {
+        setAddedDataYesterday(res[0].result || {});
+      } else {
+        throw new Error("");
+      }
+      if (res[1].code === 0) {
+        setStatistics(res[1].result || []);
+      } else {
+        throw new Error("");
+      }
     } catch (error) {
       console.log(error);
       message.error('服务器错误');

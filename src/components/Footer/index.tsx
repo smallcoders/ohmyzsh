@@ -2,7 +2,7 @@
 import { DefaultFooter } from '@ant-design/pro-layout';
 
 export default () => {
-  const defaultMessage = '科大讯飞工业智能业务部出品';
+  const defaultMessage = '羚羊工业互联网股份有限公司';
 
   const currentYear = new Date().getFullYear();
 
