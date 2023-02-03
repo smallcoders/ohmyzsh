@@ -285,7 +285,7 @@ const GlobalConfig: FC = () => {
                 }}
               >
                 添加注册模块
-                <Tooltip title="“若勾选添加注册模块”，发布链接请勿选择[对私发布]">
+                <Tooltip title="若勾选添加注册模块，发布链接请勿选择[对私发布]">
                   <img className="question-icon" src={questionIcon} alt='' />
                 </Tooltip>
               </Checkbox>
