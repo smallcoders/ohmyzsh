@@ -1,7 +1,16 @@
 .widget-config-container {
   position: relative;
   height: calc(100vh - 96px);
+  .ant-layout-sider-children {
+    overflow-y: auto;
+    padding-top: 45px;
+  }
   .ant-layout-header {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    z-index: 1;
     height: 45px;
     padding: 0 5px;
     line-height: 45px;
@@ -22,9 +31,11 @@
       }
     }
   }
+  .ant-form {
+    padding-bottom: 5px;
+  }
   .config-content {
     padding: 10px 10px 20px;
-    overflow: auto;
     background-color: #fff;
     .config-item {
       display: flex;

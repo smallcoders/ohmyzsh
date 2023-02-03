@@ -164,7 +164,7 @@ const DesignForm = forwardRef<DesignFormRef, DesignFormProps>((props, ref) => {
               </Layout>
             </Content>
           </Layout>
-          <Sider className="widget-config-container" theme="light" width={300} style={{ overflow: 'auto' }}>
+          <Sider className="widget-config-container" theme="light" width={300}>
             <Layout>
               <>
                 <Layout.Header>
