@@ -52,7 +52,7 @@ const EditGroupModal = ({ handleCancel, visible, getGroupList, groupsId }: Props
       const { result, code, message: resultMsg } = await listAll();
       if (code === 0) {
         result.shift();
-        const data = result.map((item, index) => {
+        const data = result.map((item: any, index: number) => {
           item.index = index;
           return item;
         });
@@ -139,7 +139,13 @@ const EditGroupModal = ({ handleCancel, visible, getGroupList, groupsId }: Props
                             validator(rule, value) {
                               if (!value) {
                                 return Promise.reject('名称不能为空');
-                              } else if (dataSource.some((item: any) => item.groupName === value)) {
+                              } else if (
+                                dataSource.some(
+                                  (item: any) =>
+                                    (item.groupName === value || '未分组' === value) &&
+                                    record.groupName !== value 
+                                )
+                              ) {
                                 return Promise.reject('该分组名称已存在');
                               }
                               return Promise.resolve();
@@ -147,11 +153,7 @@ const EditGroupModal = ({ handleCancel, visible, getGroupList, groupsId }: Props
                           },
                         ]}
                       >
-                        <Input
-                          ref={inputRef}
-                          showCount
-                          maxLength={8}
-                        />
+                        <Input ref={inputRef} showCount maxLength={8} />
                       </FormItem>
                       <Row>
                         <Col span={24} style={{ textAlign: 'right' }}>

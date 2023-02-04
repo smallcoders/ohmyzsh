@@ -77,11 +77,11 @@ export default () => {
   });
   const groupRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<any>(null);
-  useEffect(()=>{
-     inputRef?.current?.focus({
+  useEffect(() => {
+    inputRef?.current?.focus({
       cursor: 'all',
     });
-  },[renameVisibleId])
+  }, [renameVisibleId]);
   // 列表
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     try {
@@ -299,7 +299,7 @@ export default () => {
               onClick={async (e) => {
                 e.stopPropagation();
                 editphotoForm.setFieldsValue({ rename: item.name });
-                 setRenameVisibleId(item.id);
+                setRenameVisibleId(item.id);
               }}
             >
               重命名
@@ -438,7 +438,6 @@ export default () => {
         <div className="group">
           <div className="left">
             <div
-              // ref={groupRef}
               className={`group-list ${showMoreButton ? ' ellipsis' : ''} ${
                 isMore ? ' pack-up' : ''
               }`}
@@ -450,6 +449,7 @@ export default () => {
                     key={item.id}
                     onClick={() => {
                       setGroupsId(item.id);
+                      setSelectImg([]);
                     }}
                   >
                     {item.groupName + ' ' + item.materialCount}

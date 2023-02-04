@@ -35,7 +35,7 @@ const UploadImg = (props: any) => {
     setUploadMaterials([]);
     doneNumRef.current = 0;
     failNumRef.current = 0;
-    checkfailNumRef.current = 0;  
+    checkfailNumRef.current = 0;
     uploadMaterialsRef.current = [];
     setFileListLen(0);
     props.finish();
@@ -114,7 +114,6 @@ const UploadImg = (props: any) => {
         setCheckfailNum((checkfailNum) => checkfailNum + 1);
         setTimeout(() => {
           if (checkfailNumRef.current === files.length) {
-            console.log(1111);
             setPercent(100.0);
           }
         }, 0);
@@ -158,7 +157,9 @@ const UploadImg = (props: any) => {
             <div className="icon">
               <CheckCircleFilled />
             </div>
-            <div className="text1">上传成功,共{doneNum}条</div>
+            <div className="text1">
+              上传成功，共<span style={{ color: '#0068FF' }}> {doneNum}</span>条
+            </div>
             <div>
               <Button
                 type="primary"
