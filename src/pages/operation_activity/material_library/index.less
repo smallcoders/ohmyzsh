@@ -29,6 +29,30 @@
       .left {
         display: flex;
         width: 80%;
+        align-items: flex-start;
+        .group-list {
+          width: 82%;
+          flex-shrink: 0;
+          &.ellipsis {
+            height: auto;
+            &.pack-up {
+              height: 32px;
+              overflow: hidden;
+              // white-space: nowrap
+            }
+          }
+          .group-item {
+            line-height: 32px;
+            margin-right: 20px;
+            cursor: pointer;
+            display: inline-block;
+            vertical-align: middle;
+          }
+        }
+     
+        .active {
+          color: #0068ff;
+        }
         .ant-radio-group {
           .ant-radio-button-wrapper {
             padding: 0 12px;
@@ -214,8 +238,11 @@
   }
   .ant-modal-body {
     padding: 12px 24px;
-    overflow: auto;
-    max-height: 440px;
+    // overflow: auto;
+    // max-height: 440px;
+    .groupColumns {
+      z-index: 10000 !important;
+    }
     .editIcon:hover {
       color: #0068ff;
     }
@@ -271,7 +298,7 @@
   }
   .viewImg {
     width: 100%;
-    max-height: 600px;
+    max-height: 500px;
     margin-top: 24px;
     background-color: #f5f7fa;
     .img {
@@ -426,4 +453,19 @@
       }
     }
   }
+}
+
+.row-dragging {
+  display: flex;
+  justify-content: space-between;
+  background: #fafafa;
+  border: 1px solid #ccc;
+}
+
+.row-dragging td {
+  padding: 16px;
+}
+
+.row-dragging .drag-visible {
+  visibility: visible;
 }

@@ -22,8 +22,7 @@ const UploadImg = (props: any) => {
 
   const percentRef = useRef(percent);
   percentRef.current = percent;
-  useEffect(() => {
-  }, [props.groupsId]);
+  useEffect(() => {}, [props.groupsId]);
 
   const finishReset = () => {
     setPercent(0);
@@ -40,7 +39,6 @@ const UploadImg = (props: any) => {
 
   const handleChange = (info: UploadChangeParam<UploadFile<any>>) => {
     if (info.file.status === 'uploading') {
-      setUploadVisible(true);
       return;
     }
     if (info.file.status === 'error') {
@@ -71,13 +69,7 @@ const UploadImg = (props: any) => {
             Number((((doneNumRef.current + failNumRef.current) / fileListLen) * 100).toFixed(2)),
           );
           setTimeout(() => {
-            // console.log(
-            //   doneNumRef.current,
-            //   failNumRef.current,
-            //   uploadMaterialsRef.current,
-            //   fileListLen,
-            //   percentRef.current,
-            // );
+            console.log(doneNumRef.current, failNumRef.current, percentRef.current);
             if (doneNumRef.current + failNumRef.current === fileListLen) {
               uploadMaterial(uploadMaterialsRef.current).then((res) => {
                 console.log(res);
@@ -92,6 +84,7 @@ const UploadImg = (props: any) => {
   // 上传前
   const beforeUpload = (file: RcFile, files: RcFile[]) => {
     setFileListLen(files.length);
+    setUploadVisible(true);
     if (props.beforeUpload) {
       props.beforeUpload(file, files);
       return;
@@ -99,7 +92,16 @@ const UploadImg = (props: any) => {
     if (props.maxSize) {
       const isLtLimit = file.size / 1024 / 1024 < props.maxSize;
       if (!isLtLimit) {
-        message.error(`上传的文件大小不得超过${props.maxSize}M`);
+        // message.error(`上传的文件大小不得超过${props.maxSize}M`);
+        // eslint-disable-next-line @typescript-eslint/no-shadow
+        setFailNum((failNum) => failNum + 1);
+        console.log(failNumRef.current,fileListLen);
+        // setPercent(() =>
+        //   Number((((doneNumRef.current + failNumRef.current) / fileListLen) * 100).toFixed(2)),
+        // );
+        setTimeout(() => {
+          console.log(failNumRef.current, percentRef.current, 'failNumRef');
+        }, 0);
         return Upload.LIST_IGNORE;
       }
     }
@@ -109,6 +111,8 @@ const UploadImg = (props: any) => {
         const accepts = props.accept.split(',');
         if (!accepts.includes('.' + lastName[lastName.length - 1])) {
           message.error(`请上传以${props.accept}后缀名开头的文件`);
+          // eslint-disable-next-line @typescript-eslint/no-shadow
+          setFailNum((failNum) => failNum + 1);
           return Upload.LIST_IGNORE;
         }
       } catch (error) {
@@ -157,8 +161,8 @@ const UploadImg = (props: any) => {
               <ExclamationCircleFilled />
             </div>
             <div className="text1">
-              共上传<span style={{ color: '#0068FF' }}>{doneNum}</span>条，成功
-              <span style={{ color: '#0068FF' }}>{doneNum - failNum}</span>条，失败
+              共上传<span style={{ color: '#0068FF' }}>{doneNum + failNum}</span>条，成功
+              <span style={{ color: '#0068FF' }}>{doneNum}</span>条，失败
               <span style={{ color: '#ff4f17' }}>{failNum}</span>条
             </div>
             <div className="text2">图片大小不能超过10M</div>

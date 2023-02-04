@@ -28,7 +28,7 @@ const MoveGroupModal = ({ cancelImg, visible, imgInfo }: Props) => {
           <Image
             className="img"
             width={'100%'}
-            height={600}
+            height={500}
             style={{ objectFit: 'contain' }}
             preview={false}
             src={imgInfo.photoUrl}
