@@ -172,6 +172,9 @@ export default () => {
 
   const chartRightShow = (data?: any) => {
     const {xAxisData, series} = data || {}
+    const dataSource = series && series?.map((item: any) => {
+      return item?.name
+    })
     let myChart = echarts.init(document.getElementById('home-page-user-data-charts-right'));
     myChart.setOption({
       tooltip: {
@@ -188,7 +191,7 @@ export default () => {
         },
       },
       legend: {
-        data: ['注册用户数', '活跃用户数','注销用户数','净增用户数'],
+        data: dataSource,
         bottom: '5px',
         icon: 'rect', // 标签icon类型 'circle', 'rect', 'roundRect', 'triangle', 'diamond', 'pin', 'arrow', 'none'，
         itemHeight: 3, //修改icon图形大小
@@ -269,7 +272,6 @@ export default () => {
             type: 'line',
           }
         })
-        console.log('整理后series',series)
         chartRightShow({xAxisData, series})
       } else {
         throw new Error("");
