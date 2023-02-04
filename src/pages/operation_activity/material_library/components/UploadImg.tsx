@@ -11,6 +11,7 @@ const UploadImg = (props: any) => {
   const [uploadVisible, setUploadVisible] = useState(false);
   const [percent, setPercent] = useState(0);
   const [failNum, setFailNum] = useState(0);
+  const [checkfailNum, setCheckfailNum] = useState(0);
   const [doneNum, setDoneNum] = useState(0);
   const [fileListLen, setFileListLen] = useState(0);
   const doneNumRef = useRef(doneNum);
@@ -19,6 +20,8 @@ const UploadImg = (props: any) => {
   failNumRef.current = failNum;
   const uploadMaterialsRef = useRef(uploadMaterials);
   uploadMaterialsRef.current = uploadMaterials;
+  const checkfailNumRef = useRef(checkfailNum);
+  checkfailNumRef.current = checkfailNum;
 
   const percentRef = useRef(percent);
   percentRef.current = percent;
@@ -28,9 +31,11 @@ const UploadImg = (props: any) => {
     setPercent(0);
     setDoneNum(0);
     setFailNum(0);
+    setCheckfailNum(0);
     setUploadMaterials([]);
     doneNumRef.current = 0;
     failNumRef.current = 0;
+    checkfailNumRef.current = 0;  
     uploadMaterialsRef.current = [];
     setFileListLen(0);
     props.finish();
@@ -66,11 +71,23 @@ const UploadImg = (props: any) => {
             },
           ]);
           setPercent(() =>
-            Number((((doneNumRef.current + failNumRef.current) / fileListLen) * 100).toFixed(2)),
+            Number(
+              (
+                ((doneNumRef.current + failNumRef.current + checkfailNumRef.current) /
+                  fileListLen) *
+                100
+              ).toFixed(2),
+            ),
           );
           setTimeout(() => {
-            console.log(doneNumRef.current, failNumRef.current, percentRef.current);
-            if (doneNumRef.current + failNumRef.current === fileListLen) {
+            console.log(
+              doneNumRef.current,
+              failNumRef.current,
+              checkfailNumRef.current,
+              fileListLen,
+            );
+
+            if (doneNumRef.current + failNumRef.current + checkfailNumRef.current === fileListLen) {
               uploadMaterial(uploadMaterialsRef.current).then((res) => {
                 console.log(res);
               });
@@ -94,13 +111,12 @@ const UploadImg = (props: any) => {
       if (!isLtLimit) {
         // message.error(`上传的文件大小不得超过${props.maxSize}M`);
         // eslint-disable-next-line @typescript-eslint/no-shadow
-        setFailNum((failNum) => failNum + 1);
-        console.log(failNumRef.current,fileListLen);
-        // setPercent(() =>
-        //   Number((((doneNumRef.current + failNumRef.current) / fileListLen) * 100).toFixed(2)),
-        // );
+        setCheckfailNum((checkfailNum) => checkfailNum + 1);
         setTimeout(() => {
-          console.log(failNumRef.current, percentRef.current, 'failNumRef');
+          if (checkfailNumRef.current === files.length) {
+            console.log(1111);
+            setPercent(100.0);
+          }
         }, 0);
         return Upload.LIST_IGNORE;
       }
@@ -137,7 +153,7 @@ const UploadImg = (props: any) => {
           finishReset();
         }}
       >
-        {percent === 100.0 && failNum === 0 ? (
+        {percent === 100.0 && failNum === 0 && checkfailNum === 0 ? (
           <div className="resultSuccess">
             <div className="icon">
               <CheckCircleFilled />
@@ -155,15 +171,15 @@ const UploadImg = (props: any) => {
               </Button>
             </div>
           </div>
-        ) : percent === 100 && failNum !== 0 ? (
+        ) : percent === 100 && (failNum !== 0 || checkfailNum !== 0) ? (
           <div className="resultFail">
             <div className="icon">
               <ExclamationCircleFilled />
             </div>
             <div className="text1">
-              共上传<span style={{ color: '#0068FF' }}>{doneNum + failNum}</span>条，成功
+              共上传<span style={{ color: '#0068FF' }}>{fileListLen}</span>条，成功
               <span style={{ color: '#0068FF' }}>{doneNum}</span>条，失败
-              <span style={{ color: '#ff4f17' }}>{failNum}</span>条
+              <span style={{ color: '#ff4f17' }}>{failNum + checkfailNum}</span>条
             </div>
             <div className="text2">图片大小不能超过10M</div>
             <div>

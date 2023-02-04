@@ -194,6 +194,7 @@ const EditGroupModal = ({ handleCancel, visible, getGroupList, groupsId }: Props
                   onClick={async () => {
                     editGroupForm.setFieldsValue({ groupName: record.groupName });
                     await setEditGroupId(record.id);
+                    console.log(inputRef.current);
                     inputRef.current!.focus({
                       cursor: 'all',
                     });
@@ -302,7 +303,7 @@ const EditGroupModal = ({ handleCancel, visible, getGroupList, groupsId }: Props
           dataSource={dataSource}
           columns={columns}
           rowKey="index"
-          scroll={{ y: 100 }}
+          scroll={{ y: 300 }}
           components={{
             body: {
               wrapper: DraggableContainer,

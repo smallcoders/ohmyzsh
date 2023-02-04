@@ -13,7 +13,6 @@ import {
   Space,
   message,
   Empty,
-  Typography,
   Row,
   Col,
 } from 'antd';
@@ -78,6 +77,11 @@ export default () => {
   });
   const groupRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<any>(null);
+  useEffect(()=>{
+     inputRef?.current?.focus({
+      cursor: 'all',
+    });
+  },[renameVisibleId])
   // 列表
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     try {
@@ -295,11 +299,7 @@ export default () => {
               onClick={async (e) => {
                 e.stopPropagation();
                 editphotoForm.setFieldsValue({ rename: item.name });
-                await setRenameVisibleId(item.id);
-                console.log(inputRef.current.input.value);
-                inputRef.current!.focus({
-                  cursor: 'all',
-                });
+                 setRenameVisibleId(item.id);
               }}
             >
               重命名
@@ -422,10 +422,23 @@ export default () => {
             </Popconfirm>
           </div>
         </div>
+        <div className="group hidden">
+          <div className="left">
+            <div ref={groupRef} className={`group-list`}>
+              {groupListAll.map((item: MaterialLibrary.List) => {
+                return (
+                  <span className={`group-item`} key={item.id}>
+                    {item.groupName + ' ' + item.materialCount}
+                  </span>
+                );
+              })}
+            </div>
+          </div>
+        </div>
         <div className="group">
           <div className="left">
             <div
-              ref={groupRef}
+              // ref={groupRef}
               className={`group-list ${showMoreButton ? ' ellipsis' : ''} ${
                 isMore ? ' pack-up' : ''
               }`}

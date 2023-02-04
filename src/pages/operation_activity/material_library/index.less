@@ -4,6 +4,7 @@
   &-table-header {
     padding: 20px;
     background-color: #fff;
+    position: relative;
     .title {
       display: flex;
       justify-content: space-between;
@@ -26,12 +27,20 @@
       display: flex;
       justify-content: space-between;
       margin-top: 32px;
+      &.hidden {
+        position: absolute;
+        left: 20px;
+        right: 20px;
+        background: transparent;
+        z-index: -100;
+      }
       .left {
         display: flex;
         width: 80%;
         align-items: flex-start;
+        flex-shrink: 0;
         .group-list {
-          width: 82%;
+          width: 88%;
           flex-shrink: 0;
           &.ellipsis {
             height: auto;
