@@ -207,7 +207,7 @@ const UploadImg = (props: any) => {
       <Upload
         {...props}
         name="file"
-        action="/antelope-manage/common/upload/record"
+        action="/antelope-common/common/file/upload/record"
         onChange={handleChange}
         beforeUpload={beforeUpload}
         showUploadList={false}
