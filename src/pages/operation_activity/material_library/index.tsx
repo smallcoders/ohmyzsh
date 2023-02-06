@@ -26,7 +26,7 @@ import {
 import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import {
   totalNumber,
   listAll,
@@ -76,11 +76,6 @@ export default () => {
   });
   const groupRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<any>(null);
-  useEffect(() => {
-    inputRef?.current?.focus({
-      cursor: 'all',
-    });
-  }, [renameVisibleId]);
   // 列表
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     try {
@@ -255,7 +250,15 @@ export default () => {
                       },
                     ]}
                   >
-                    <Input ref={inputRef} showCount maxLength={35} placeholder="请输入" />
+                    <Input
+                      ref={inputRef}
+                      onFocus={() => {
+                        inputRef.current.select();
+                      }}
+                      showCount
+                      maxLength={35}
+                      placeholder="请输入"
+                    />
                   </FormItem>
                   <Row>
                     <Col span={24} style={{ textAlign: 'right' }}>
@@ -299,6 +302,9 @@ export default () => {
                 e.stopPropagation();
                 editphotoForm.setFieldsValue({ rename: item.name });
                 setRenameVisibleId(item.id);
+                setTimeout(() => {
+                  inputRef?.current?.focus()
+                }, )
               }}
             >
               重命名
