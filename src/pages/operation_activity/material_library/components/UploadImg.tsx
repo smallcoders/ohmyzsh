@@ -127,7 +127,7 @@ const UploadImg = (props: any) => {
         if (!accepts.includes('.' + lastName[lastName.length - 1])) {
           message.error(`请上传以${props.accept}后缀名开头的文件`);
           // eslint-disable-next-line @typescript-eslint/no-shadow
-          setFailNum((failNum) => failNum + 1);
+          setCheckfailNum((checkfailNum) => checkfailNum + 1);
           return Upload.LIST_IGNORE;
         }
       } catch (error) {

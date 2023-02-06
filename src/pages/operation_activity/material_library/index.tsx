@@ -1,7 +1,6 @@
 import {
   Button,
   Form,
-  Radio,
   message as antdMessage,
   Popover,
   Popconfirm,
@@ -390,7 +389,7 @@ export default () => {
                   </div>
                   <UploadImg
                     multiple={true}
-                    maxSize={2}
+                    maxSize={10}
                     accept=".png,.jpeg,.jpg"
                     groupsId={uploadGroupsId}
                     finish={finish}
