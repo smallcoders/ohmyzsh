@@ -61,7 +61,7 @@ export const SortDetail: FC<CardProps> = ({
             <img
               src={require('@/assets/banking_loan/drag.png')}
               alt=""
-              style={{ width: 24, position: 'absolute', right: -40, top: 8, cursor: 'move' }}
+              style={{ width: 24, position: 'absolute', right: -40, top: 8, cursor: 'move'}}
             />
           )}
         </div>

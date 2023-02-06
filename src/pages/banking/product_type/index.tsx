@@ -10,7 +10,7 @@ import {
   InputNumber,
   message as antdMessage,
 } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined, MinusCircleFilled } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
@@ -180,12 +180,9 @@ export default () => {
                                 </Form.Item>
                               </div>
                               {fields.length !== 1 && (
-                                <img
-                                  src={require('@/assets/banking_loan/remove.png')}
-                                  alt=""
+                                <MinusCircleFilled
                                   onClick={async () => {
-                                    console.log(form.getFieldValue('details'));
-                                    if (form.getFieldValue('details')[name].id !== null) {
+                                    if (!!form.getFieldValue('details')[name].id) {
                                       const { code, message: resultMsg } = await checkDelType(
                                         form.getFieldValue('details')[name].id,
                                       );
@@ -194,12 +191,14 @@ export default () => {
                                     if (fields.length === 1) return;
                                     remove(name);
                                   }}
+                                  className="del-subtype"
                                   style={{
-                                    width: 24,
+                                    fontSize: 24,
                                     position: 'absolute',
                                     right: -80,
                                     top: 8,
                                     cursor: 'pointer',
+                                    color: '#8d9aae',
                                   }}
                                 />
                               )}
@@ -215,7 +214,7 @@ export default () => {
                           }}
                           className="add-type-btn"
                         >
-                          + 子类型按钮
+                          + 添加子类型
                         </Button>
                       </Form.Item>
                     </>

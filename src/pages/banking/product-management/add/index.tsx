@@ -1,33 +1,19 @@
 import type { ProFormInstance } from '@ant-design/pro-components';
 import {
-  ProFormDateRangePicker,
   ProFormSelect,
   ProFormText,
   StepsForm,
-  ProFormTreeSelect,
-  ProForm,
   ProFormList,
   ProFormDigitRange,
-  FooterToolbar,
 } from '@ant-design/pro-components';
 import { PageContainer } from '@ant-design/pro-layout';
-import {
-  Radio,
-  Tooltip,
-  Select,
-  Form,
-  Row,
-  Col,
-  Button,
-  message,
-  Input,
-  Modal,
-  Cascader,
-  List,
-} from 'antd';
+import { Radio, Tooltip, Select, Form, Button, message, Input, Modal, Cascader } from 'antd';
 import FormEdit from '@/components/FormEdit';
-import { QuestionCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import type { Dayjs } from 'dayjs';
+import {
+  QuestionCircleOutlined,
+  ExclamationCircleOutlined,
+  MinusCircleFilled,
+} from '@ant-design/icons';
 import dayjs from 'dayjs';
 import React, { useEffect, useRef, useState } from 'react';
 import { productTypeMap, guaranteeMethodMap, city } from '../constants';
@@ -257,6 +243,19 @@ const ProductInfoAddOrEdit = () => {
         className={sc('page')}
         ghost
         footer={[
+          <>
+            {current === 1 && (
+              <Button
+                key="pre"
+                onClick={() => {
+                  setCurrent(0);
+                }}
+              >
+                上一步
+              </Button>
+            )}
+          </>,
+
           <Button
             key="pre"
             onClick={() => {
@@ -330,6 +329,7 @@ const ProductInfoAddOrEdit = () => {
                   setProductType(labels?.label);
                   console.log(value, selectedOptions);
                 }}
+                placeholder="请选择"
               />
             </Form.Item>
             {/* <ProFormSelect
@@ -408,6 +408,7 @@ const ProductInfoAddOrEdit = () => {
                   console.log(values);
                   setOpenAreas(values);
                 }}
+                placeholder="请选择"
               >
                 <Select.Option
                   key={0}
@@ -502,8 +503,7 @@ const ProductInfoAddOrEdit = () => {
                     />
                     {!!index && (
                       <div className={sc('form-step-delete')}>
-                        <img
-                          src={require('@/assets/banking_loan/remove.png')}
+                        <MinusCircleFilled
                           className={sc('form-step-delete-img')}
                           onClick={() => {
                             action.remove?.(index);
