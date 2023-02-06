@@ -234,7 +234,7 @@ export default () => {
             title={false}
             content={
               <>
-                <Form form={editphotoForm} layout="vertical" validateTrigger={['onBlur']}>
+              {renameVisibleId === item.id && <Form form={editphotoForm} layout="vertical" validateTrigger={['onBlur']}>
                   <FormItem
                     label="请输入图片名称"
                     name="rename"
@@ -286,6 +286,7 @@ export default () => {
                     </Col>
                   </Row>
                 </Form>
+              }
               </>
             }
             onVisibleChange={(visible) => {
@@ -304,7 +305,7 @@ export default () => {
                 setRenameVisibleId(item.id);
                 setTimeout(() => {
                   inputRef?.current?.focus()
-                }, )
+                }, 0)
               }}
             >
               重命名
