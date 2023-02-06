@@ -389,12 +389,13 @@ export default () => {
                   </div>
                   <UploadImg
                     multiple={true}
-                    maxSize={10}
+                    maxSize={2}
                     accept=".png,.jpeg,.jpg"
                     groupsId={uploadGroupsId}
                     finish={finish}
                   >
-                    {groupListAll.map((item: MaterialLibrary.List) => {
+                    111
+                    {/* {groupListAll.map((item: MaterialLibrary.List) => {
                       return (
                         // eslint-disable-next-line react/jsx-key
                         <div
@@ -408,7 +409,7 @@ export default () => {
                           {item.groupName}
                         </div>
                       );
-                    })}
+                    })} */}
                   </UploadImg>
                 </>
               }

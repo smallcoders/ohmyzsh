@@ -102,10 +102,6 @@ const UploadImg = (props: any) => {
   const beforeUpload = (file: RcFile, files: RcFile[]) => {
     setFileListLen(files.length);
     setUploadVisible(true);
-    if (props.beforeUpload) {
-      props.beforeUpload(file, files);
-      return;
-    }
     if (props.maxSize) {
       const isLtLimit = file.size / 1024 / 1024 < props.maxSize;
       if (!isLtLimit) {
@@ -114,7 +110,7 @@ const UploadImg = (props: any) => {
         setCheckfailNum((checkfailNum) => checkfailNum + 1);
         setTimeout(() => {
           if (checkfailNumRef.current === files.length) {
-            setPercent(100.0);
+            setPercent(100.00);
           }
         }, 0);
         return Upload.LIST_IGNORE;
@@ -128,6 +124,11 @@ const UploadImg = (props: any) => {
           message.error(`请上传以${props.accept}后缀名开头的文件`);
           // eslint-disable-next-line @typescript-eslint/no-shadow
           setCheckfailNum((checkfailNum) => checkfailNum + 1);
+          setTimeout(() => {
+            if (checkfailNumRef.current === files.length) {
+              setPercent(100.00);
+            }
+          }, 0);
           return Upload.LIST_IGNORE;
         }
       } catch (error) {
@@ -152,7 +153,7 @@ const UploadImg = (props: any) => {
           finishReset();
         }}
       >
-        {percent === 100.0 && failNum === 0 && checkfailNum === 0 ? (
+        {percent === 100.00 && failNum === 0 && checkfailNum === 0 ? (
           <div className="resultSuccess">
             <div className="icon">
               <CheckCircleFilled />
@@ -172,7 +173,7 @@ const UploadImg = (props: any) => {
               </Button>
             </div>
           </div>
-        ) : percent === 100 && (failNum !== 0 || checkfailNum !== 0) ? (
+        ) : percent === 100.00 && (failNum !== 0 || checkfailNum !== 0) ? (
           <div className="resultFail">
             <div className="icon">
               <ExclamationCircleFilled />
