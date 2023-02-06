@@ -519,6 +519,7 @@ const ProductInfoAddOrEdit = () => {
           <StepsForm.StepForm name="step2" title={'额度/利率信息'} className={sc('form-input')}>
             <div className="title">额度/利率信息</div>
             <ProFormDigitRange
+              fieldProps={{ controls: false }}
               rules={[
                 { required: true },
                 {
@@ -570,6 +571,7 @@ const ProductInfoAddOrEdit = () => {
               <Input maxLength={35} placeholder="请输入" />
             </Form.Item>
             <ProFormDigitRange
+              fieldProps={{ controls: false }}
               rules={[
                 { required: true },
                 {
@@ -620,6 +622,7 @@ const ProductInfoAddOrEdit = () => {
               <Input maxLength={35} placeholder="请输入" />
             </Form.Item>
             <ProFormDigitRange
+              fieldProps={{ controls: false }}
               rules={[
                 { required: true },
                 {
