@@ -1,6 +1,18 @@
 import { EditOutlined, DeleteOutlined, MenuOutlined } from '@ant-design/icons';
-import { Table, Popconfirm, Space, Form, Input, message, message as antdMessage, Tag } from 'antd';
-import React, { useState, useEffect } from 'react';
+import {
+  Table,
+  Popconfirm,
+  Space,
+  Form,
+  Input,
+  message,
+  message as antdMessage,
+  Tag,
+  Popover,
+  Row,
+  Col,
+} from 'antd';
+import React, { useState, useEffect, useRef } from 'react';
 import FormItem from 'antd/lib/form/FormItem';
 import { Modal, Button } from 'antd';
 import scopedClasses from '@/utils/scopedClasses';
@@ -10,7 +22,6 @@ import {
   removeMaterialGroup,
   moveMaterialGroup,
 } from '@/services/material-library';
-import type { ColumnsType } from 'antd/es/table';
 import type MaterialLibrary from '@/types/material-library';
 import { arrayMoveImmutable } from 'array-move';
 import type { SortableContainerProps, SortEnd } from 'react-sortable-hoc';
@@ -18,26 +29,30 @@ import { SortableContainer, SortableElement, SortableHandle } from 'react-sortab
 const sc = scopedClasses('material-library');
 type Props = {
   handleCancel: () => void;
-  getGroupList: () => void;
+  getGroupList: (boolean: boolean) => void;
   visible: boolean;
+  groupsId: number | null;
   // data: MaterialLibrary.List[];
 };
 const DragHandle = SortableHandle(() => <MenuOutlined style={{ cursor: 'grab' }} />);
 const SortableItem = SortableElement((props: React.HTMLAttributes<HTMLTableRowElement>) => (
-  <tr {...props} />
+  <tr {...props} style={{ zIndex: 10000 }} />
 ));
 const SortableBody = SortableContainer((props: React.HTMLAttributes<HTMLTableSectionElement>) => (
   <tbody {...props} />
 ));
-const EditGroupModal = ({ handleCancel, visible, getGroupList }: Props) => {
+
+const EditGroupModal = ({ handleCancel, visible, getGroupList, groupsId }: Props) => {
   const [editGroupForm] = Form.useForm();
   const [dataSource, setDataSource] = useState<MaterialLibrary.List[]>([]);
+  const [editGroupId, setEditGroupId] = useState(-2);
+  const inputRef = useRef<any>(null);
   const getGroupListAll = async () => {
     try {
       const { result, code, message: resultMsg } = await listAll();
       if (code === 0) {
         result.shift();
-        const data = result.map((item, index) => {
+        const data = result.map((item: any, index: number) => {
           item.index = index;
           return item;
         });
@@ -58,20 +73,21 @@ const EditGroupModal = ({ handleCancel, visible, getGroupList }: Props) => {
   //   setDataSource(data);
   // }, [data]);
   // 编辑分组
-  const editGroup = (id: number, groupName: string) => {
-    editGroupForm
-      .validateFields()
-      .then(async () => {
-        const { code } = await editMaterialGroup({ id, groupName });
-        if (code === 0) {
-          message.success('编辑分组成功！');
-          getGroupListAll();
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+  const editGroup = async (id: number) => {
+    const { groupName } = await editGroupForm.validateFields();
+    try {
+      const { code } = await editMaterialGroup({ id, groupName });
+      if (code === 0) {
+        message.success('编辑分组成功！');
+        getGroupListAll();
+        setEditGroupId(-2);
+        editGroupForm.resetFields();
+      }
+    } catch (error) {
+      antdMessage.error(`请求失败，原因:{${error}}`);
+    }
   };
+
   // 删除分组
   const remove = async (groupId: number) => {
     try {
@@ -91,22 +107,27 @@ const EditGroupModal = ({ handleCancel, visible, getGroupList }: Props) => {
       dataIndex: 'groupName',
       key: 'groupName',
       isEllipsis: true,
+      className: 'groupColumns',
     },
     {
       title: '操作',
       dataIndex: 'option',
       key: 'option',
       width: 120,
+      className: 'groupColumns',
       render: (_: any, record: any) => {
         return (
           <>
             <Space size="middle">
               {/* 编辑 */}
-              <Popconfirm
+              <Popover
+                visible={editGroupId === record.id}
                 key={record.id}
                 placement="bottomRight"
+                title={false}
+                trigger="click"
                 overlayClassName={sc('edit-group')}
-                title={
+                content={
                   <>
                     <Form form={editGroupForm} layout="vertical">
                       <FormItem
@@ -118,7 +139,13 @@ const EditGroupModal = ({ handleCancel, visible, getGroupList }: Props) => {
                             validator(rule, value) {
                               if (!value) {
                                 return Promise.reject('名称不能为空');
-                              } else if (dataSource.some((item: any) => item.groupName === value)) {
+                              } else if (
+                                dataSource.some(
+                                  (item: any) =>
+                                    (item.groupName === value || '未分组' === value) &&
+                                    record.groupName !== value 
+                                )
+                              ) {
                                 return Promise.reject('该分组名称已存在');
                               }
                               return Promise.resolve();
@@ -126,23 +153,56 @@ const EditGroupModal = ({ handleCancel, visible, getGroupList }: Props) => {
                           },
                         ]}
                       >
-                        <Input showCount maxLength={8} defaultValue={record.groupName} />
+                        <Input ref={inputRef} showCount maxLength={8} />
                       </FormItem>
+                      <Row>
+                        <Col span={24} style={{ textAlign: 'right' }}>
+                          <Space>
+                            <Button
+                              size="small"
+                              onClick={() => {
+                                setEditGroupId(-2);
+                                editGroupForm.resetFields();
+                              }}
+                            >
+                              取消
+                            </Button>
+                            <Button
+                              size="small"
+                              onClick={() => {
+                                editGroup(record.id);
+                              }}
+                              type="primary"
+                            >
+                              确定
+                            </Button>
+                          </Space>
+                        </Col>
+                      </Row>
                     </Form>
                   </>
                 }
-                icon={false}
-                onConfirm={() => {
-                  editGroup(record.id, editGroupForm.getFieldValue('groupName'));
+                onVisibleChange={(groupVisible) => {
+                  if (groupVisible) {
+                    setEditGroupId(record.id);
+                  } else {
+                    setEditGroupId(-2);
+                    editGroupForm.resetFields();
+                  }
                 }}
-                onCancel={() => {
-                  editGroupForm.resetFields();
-                }}
-                okText="确定"
-                cancelText="取消"
               >
-                <EditOutlined className="editIcon" />
-              </Popconfirm>
+                <EditOutlined
+                  className="editIcon"
+                  onClick={async () => {
+                    editGroupForm.setFieldsValue({ groupName: record.groupName });
+                    await setEditGroupId(record.id);
+                    console.log(inputRef.current);
+                    inputRef.current!.focus({
+                      cursor: 'all',
+                    });
+                  }}
+                />
+              </Popover>
               {/* 删除 */}
               <Popconfirm
                 title={
@@ -171,6 +231,7 @@ const EditGroupModal = ({ handleCancel, visible, getGroupList }: Props) => {
   ];
 
   const onSortEnd = async ({ oldIndex, newIndex }: SortEnd) => {
+    if (oldIndex === newIndex) return;
     if (oldIndex !== newIndex) {
       const groupId = dataSource[oldIndex].id;
       const offset = newIndex - oldIndex;
@@ -195,6 +256,7 @@ const EditGroupModal = ({ handleCancel, visible, getGroupList }: Props) => {
       useDragHandle
       disableAutoscroll
       helperClass="row-dragging"
+      axis="y"
       onSortEnd={onSortEnd}
       {...props}
     />
@@ -209,7 +271,10 @@ const EditGroupModal = ({ handleCancel, visible, getGroupList }: Props) => {
   // 点击完成
   const handleOk = () => {
     // 重新渲染分组
-    getGroupList();
+    const boolean = dataSource.some((item) => {
+      return item.id !== -1 && item.id === groupsId;
+    });
+    getGroupList(boolean);
     handleCancel();
   };
   return (
@@ -221,8 +286,7 @@ const EditGroupModal = ({ handleCancel, visible, getGroupList }: Props) => {
         destroyOnClose
         centered
         onCancel={() => {
-          getGroupList();
-          handleCancel();
+          handleOk();
         }}
         maskClosable={false}
         footer={[
@@ -241,7 +305,7 @@ const EditGroupModal = ({ handleCancel, visible, getGroupList }: Props) => {
           dataSource={dataSource}
           columns={columns}
           rowKey="index"
-          // scroll={{ y: 548 }}
+          scroll={{ y: 300 }}
           components={{
             body: {
               wrapper: DraggableContainer,

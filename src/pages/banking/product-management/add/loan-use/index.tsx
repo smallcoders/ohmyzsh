@@ -61,6 +61,8 @@ export default (props: { value?: string; onChange?: any }) => {
           message.error('新增贷款用途失败');
         }
       });
+    } else {
+      setInputVisible(false);
     }
   };
   const remove = (id) => {

@@ -11,6 +11,7 @@ const UploadImg = (props: any) => {
   const [uploadVisible, setUploadVisible] = useState(false);
   const [percent, setPercent] = useState(0);
   const [failNum, setFailNum] = useState(0);
+  const [checkfailNum, setCheckfailNum] = useState(0);
   const [doneNum, setDoneNum] = useState(0);
   const [fileListLen, setFileListLen] = useState(0);
   const doneNumRef = useRef(doneNum);
@@ -19,19 +20,22 @@ const UploadImg = (props: any) => {
   failNumRef.current = failNum;
   const uploadMaterialsRef = useRef(uploadMaterials);
   uploadMaterialsRef.current = uploadMaterials;
+  const checkfailNumRef = useRef(checkfailNum);
+  checkfailNumRef.current = checkfailNum;
 
   const percentRef = useRef(percent);
   percentRef.current = percent;
-  useEffect(() => {
-  }, [props.groupsId]);
+  useEffect(() => {}, [props.groupsId]);
 
   const finishReset = () => {
     setPercent(0);
     setDoneNum(0);
     setFailNum(0);
+    setCheckfailNum(0);
     setUploadMaterials([]);
     doneNumRef.current = 0;
     failNumRef.current = 0;
+    checkfailNumRef.current = 0;
     uploadMaterialsRef.current = [];
     setFileListLen(0);
     props.finish();
@@ -40,7 +44,6 @@ const UploadImg = (props: any) => {
 
   const handleChange = (info: UploadChangeParam<UploadFile<any>>) => {
     if (info.file.status === 'uploading') {
-      setUploadVisible(true);
       return;
     }
     if (info.file.status === 'error') {
@@ -68,17 +71,23 @@ const UploadImg = (props: any) => {
             },
           ]);
           setPercent(() =>
-            Number((((doneNumRef.current + failNumRef.current) / fileListLen) * 100).toFixed(2)),
+            Number(
+              (
+                ((doneNumRef.current + failNumRef.current + checkfailNumRef.current) /
+                  fileListLen) *
+                100
+              ).toFixed(2),
+            ),
           );
           setTimeout(() => {
-            // console.log(
-            //   doneNumRef.current,
-            //   failNumRef.current,
-            //   uploadMaterialsRef.current,
-            //   fileListLen,
-            //   percentRef.current,
-            // );
-            if (doneNumRef.current + failNumRef.current === fileListLen) {
+            console.log(
+              doneNumRef.current,
+              failNumRef.current,
+              checkfailNumRef.current,
+              fileListLen,
+            );
+
+            if (doneNumRef.current + failNumRef.current + checkfailNumRef.current === fileListLen) {
               uploadMaterial(uploadMaterialsRef.current).then((res) => {
                 console.log(res);
               });
@@ -92,14 +101,18 @@ const UploadImg = (props: any) => {
   // 上传前
   const beforeUpload = (file: RcFile, files: RcFile[]) => {
     setFileListLen(files.length);
-    if (props.beforeUpload) {
-      props.beforeUpload(file, files);
-      return;
-    }
+    setUploadVisible(true);
     if (props.maxSize) {
       const isLtLimit = file.size / 1024 / 1024 < props.maxSize;
       if (!isLtLimit) {
-        message.error(`上传的文件大小不得超过${props.maxSize}M`);
+        // message.error(`上传的文件大小不得超过${props.maxSize}M`);
+        // eslint-disable-next-line @typescript-eslint/no-shadow
+        setCheckfailNum((checkfailNum) => checkfailNum + 1);
+        setTimeout(() => {
+          if (checkfailNumRef.current === files.length) {
+            setPercent(100.00);
+          }
+        }, 0);
         return Upload.LIST_IGNORE;
       }
     }
@@ -109,6 +122,13 @@ const UploadImg = (props: any) => {
         const accepts = props.accept.split(',');
         if (!accepts.includes('.' + lastName[lastName.length - 1])) {
           message.error(`请上传以${props.accept}后缀名开头的文件`);
+          // eslint-disable-next-line @typescript-eslint/no-shadow
+          setCheckfailNum((checkfailNum) => checkfailNum + 1);
+          setTimeout(() => {
+            if (checkfailNumRef.current === files.length) {
+              setPercent(100.00);
+            }
+          }, 0);
           return Upload.LIST_IGNORE;
         }
       } catch (error) {
@@ -133,12 +153,14 @@ const UploadImg = (props: any) => {
           finishReset();
         }}
       >
-        {percent === 100.0 && failNum === 0 ? (
+        {percent === 100.00 && failNum === 0 && checkfailNum === 0 ? (
           <div className="resultSuccess">
             <div className="icon">
               <CheckCircleFilled />
             </div>
-            <div className="text1">上传成功,共{doneNum}条</div>
+            <div className="text1">
+              上传成功，共<span style={{ color: '#0068FF' }}> {doneNum}</span>条
+            </div>
             <div>
               <Button
                 type="primary"
@@ -151,15 +173,15 @@ const UploadImg = (props: any) => {
               </Button>
             </div>
           </div>
-        ) : percent === 100 && failNum !== 0 ? (
+        ) : percent === 100.00 && (failNum !== 0 || checkfailNum !== 0) ? (
           <div className="resultFail">
             <div className="icon">
               <ExclamationCircleFilled />
             </div>
             <div className="text1">
-              共上传<span style={{ color: '#0068FF' }}>{doneNum}</span>条，成功
-              <span style={{ color: '#0068FF' }}>{doneNum - failNum}</span>条，失败
-              <span style={{ color: '#ff4f17' }}>{failNum}</span>条
+              共上传<span style={{ color: '#0068FF' }}>{fileListLen}</span>条，成功
+              <span style={{ color: '#0068FF' }}>{doneNum}</span>条，失败
+              <span style={{ color: '#ff4f17' }}>{failNum + checkfailNum}</span>条
             </div>
             <div className="text2">图片大小不能超过10M</div>
             <div>
@@ -185,7 +207,7 @@ const UploadImg = (props: any) => {
       <Upload
         {...props}
         name="file"
-        action="/antelope-manage/common/upload/record"
+        action="/antelope-common/common/file/upload/record"
         onChange={handleChange}
         beforeUpload={beforeUpload}
         showUploadList={false}

@@ -27,17 +27,14 @@ const MoveGroupModal = ({
   type,
 }: Props) => {
   const [value, setValue] = useState(null);
+  const [disabled, setDisabled] = useState(true);
   // 移动
   const changeMove = (e: RadioChangeEvent) => {
     setValue(e.target.value);
+    setDisabled(false);
   };
   // 确定
   const handleOk = async () => {
-    if (type === 'single') {
-      console.log(imgId);
-      console.log(selectImg);
-      console.log(value);
-    }
     try {
       const { code } = await moveGroup({
         materialIds: type === 'single' ? [imgId] : selectImg,
@@ -46,6 +43,7 @@ const MoveGroupModal = ({
       if (code === 0) {
         message.success('移动分组成功！');
         setValue(null);
+        setDisabled(true);
         moveSuccess();
       }
     } catch (error) {
@@ -65,8 +63,10 @@ const MoveGroupModal = ({
         onCancel={() => {
           cancelMove();
           setValue(null);
+          setDisabled(true);
         }}
         onOk={handleOk}
+        okButtonProps={{ disabled }}
       >
         <Radio.Group onChange={changeMove} buttonStyle="solid">
           <Space direction="vertical">
