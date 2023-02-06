@@ -143,7 +143,7 @@ const EditGroupModal = ({ handleCancel, visible, getGroupList, groupsId }: Props
                                 dataSource.some(
                                   (item: any) =>
                                     (item.groupName === value || '未分组' === value) &&
-                                    record.groupName !== value 
+                                    record.groupName !== value,
                                 )
                               ) {
                                 return Promise.reject('该分组名称已存在');
@@ -196,8 +196,7 @@ const EditGroupModal = ({ handleCancel, visible, getGroupList, groupsId }: Props
                   onClick={async () => {
                     editGroupForm.setFieldsValue({ groupName: record.groupName });
                     await setEditGroupId(record.id);
-                    console.log(inputRef.current);
-                    inputRef.current!.focus({
+                    inputRef?.current?.focus({
                       cursor: 'all',
                     });
                   }}
