@@ -143,7 +143,7 @@ const EditGroupModal = ({ handleCancel, visible, getGroupList, groupsId }: Props
                                 dataSource.some(
                                   (item: any) =>
                                     (item.groupName === value || '未分组' === value) &&
-                                    record.groupName !== value 
+                                    record.groupName !== value
                                 )
                               ) {
                                 return Promise.reject('该分组名称已存在');
@@ -254,7 +254,6 @@ const EditGroupModal = ({ handleCancel, visible, getGroupList, groupsId }: Props
   const DraggableContainer = (props: SortableContainerProps) => (
     <SortableBody
       useDragHandle
-      disableAutoscroll
       helperClass="row-dragging"
       axis="y"
       onSortEnd={onSortEnd}
