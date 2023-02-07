@@ -234,7 +234,7 @@ export default () => {
         httpUpload(formData1).then(res=>{
           if(res.code==0){
             const activeImageId1=res.result
-            window.location.href=(`/antelope-manage/common/download/${res.result}`)
+            window.location.href=(`/antelope-common/common/file/download/${res.result}`)
             message.success('下载成功')
             if(edge==4){
               if(types.indexOf("新建") !== -1){
@@ -833,8 +833,8 @@ export default () => {
         <Space size="middle">
           <Access accessible={access['PX_OA_FXMLJ']}>
             <a
-              download={`/antelope-manage/common/download/${_record?.activeImageId}`}
-              href={`/antelope-manage/common/download/${_record?.activeImageId}`}
+              download={`/antelope-common/common/file/download/${_record?.activeImageId}`}
+              href={`/antelope-common/common/file/download/${_record?.activeImageId}`}
               onClick={downShareCode}
             >下载分享码</a>
           </Access>

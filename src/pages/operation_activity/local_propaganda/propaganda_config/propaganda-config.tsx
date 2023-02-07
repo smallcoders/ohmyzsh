@@ -1,15 +1,15 @@
 import React, { useState, useRef } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
-import { 
-  Button, 
-  Space, 
-  Popconfirm, 
-  message, 
+import {
+  Button,
+  Space,
+  Popconfirm,
+  message,
   Image,
 } from 'antd';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
-import { 
-  getPropagandaDataList, 
+import {
+  getPropagandaDataList,
   removePropaganda,
   cityPropaganda,
 } from '@/services/propaganda-config';
@@ -26,7 +26,7 @@ const TableList: React.FC = () => {
   const actionRef = useRef<ActionType>();
   const paginationRef = useRef<any>();
   const [total, setTotal] = useState<number>(0);
-  
+
   // 保留当前Item的值
   // const [editingItem, setEditingItem] = useState<any>({});
 
@@ -83,14 +83,14 @@ const TableList: React.FC = () => {
     },
     {
       title: 'banner',
-      hideInSearch: true, 
+      hideInSearch: true,
       align: 'center',
       dataIndex: 'cityBannerId',
       width: 200,
       render: (cityBannerId: string) => (
         <Image
           className={'banner-img'}
-          src={`/antelope-manage/common/download/${cityBannerId}`}
+          src={`/antelope-common/common/file/download/${cityBannerId}`}
           alt="图片损坏"
         />
         // </div>
@@ -101,7 +101,7 @@ const TableList: React.FC = () => {
       align: 'center',
       dataIndex: 'state',
       width: 100,
-      hideInSearch: true, 
+      hideInSearch: true,
       renderText: (_: string) => {
         return (
           <div className={`state${_}`}>
@@ -114,13 +114,13 @@ const TableList: React.FC = () => {
       title: '企业需求数量',
       align: 'center',
       dataIndex: 'demandCount',
-      hideInSearch: true, 
+      hideInSearch: true,
     },
     {
       title: '服务方案数量',
       align: 'center',
       dataIndex: 'solutionCount',
-      hideInSearch: true, 
+      hideInSearch: true,
     },
     {
       title: '操作',
@@ -195,7 +195,7 @@ const TableList: React.FC = () => {
 
   return (
     <PageContainer className={sc('container')}>
-      <ProTable 
+      <ProTable
         headerTitle={`地市宣传页列表（共${total}个）`}
         options={false}
         rowKey="id"
@@ -215,10 +215,10 @@ const TableList: React.FC = () => {
         columns={columns}
         toolBarRender={()=>[
           <Access accessible={access['P_OA_DSXCY']}>
-            <Button 
-              key="button" 
-              icon={<PlusOutlined /> } 
-              type="primary" 
+            <Button
+              key="button"
+              icon={<PlusOutlined /> }
+              type="primary"
               disabled={total >= 16}
               onClick={()=>{
                 history.push(`${routeName.ADD_PROPAGANDA_CONFIG}`)

@@ -127,7 +127,7 @@ export default () => {
             <Button
               type="link"
               style={{ marginLeft: '8px', padding: 0, height: 'auto' }}
-              href={`/antelope-manage/common/download/${record?.id}`}
+              href={`/antelope-common/common/file/download/${record?.id}`}
             >
               下载
             </Button>

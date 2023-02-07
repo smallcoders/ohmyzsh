@@ -11,7 +11,7 @@ export const httpUploadWithDetail = (
   onUploadProgress?: (props: any) => void,
   cancelToken?: any,
 ) => {
-  return request(`/antelope-manage/common/upload/record`, {
+  return request(`/antelope-common/common/file/upload/record`, {
     method: 'post',
     data,
     onUploadProgress,
@@ -22,7 +22,7 @@ export const httpUploadWithDetail = (
 export const httpUpload = (
   data: FormData,
 ) => {
-  return request(`/antelope-manage/common/upload`, {
+  return request(`/antelope-common/common/file/upload`, {
     method: 'post',
     data,
   });
@@ -32,7 +32,7 @@ export const httpUpload = (
  * 下载
  */
 export async function downloadFile(fileId: string) {
-  return request<CourseManage.ResultList>(`/antelope-manage/common/download/${fileId}`, {
+  return request<CourseManage.ResultList>(`/antelope-common/common/file/download/${fileId}`, {
     method: 'get',
     responseType: 'blob',
   });

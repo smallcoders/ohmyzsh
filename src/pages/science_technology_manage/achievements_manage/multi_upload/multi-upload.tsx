@@ -140,7 +140,7 @@ export default () => {
               <Button
                 type="link"
                 style={{ padding: 0 }}
-                href={`/antelope-manage/common/download/1663227912000001`}
+                href={`/antelope-common/common/file/download/1663227912000001`}
               >
                 下载导入模板
               </Button>
@@ -162,7 +162,7 @@ export default () => {
           </div>
           {failDataFileId && <p className={sc('result-download-text')}>
             请
-            <Button type="link" style={{ padding: 0 }} href={`/antelope-manage/common/download/${failDataFileId}`}>
+            <Button type="link" style={{ padding: 0 }} href={`/antelope-common/common/file/download/${failDataFileId}`}>
               下载导入失败科技成果列表
             </Button>
             ，修改后重新导入

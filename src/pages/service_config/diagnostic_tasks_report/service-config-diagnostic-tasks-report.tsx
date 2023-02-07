@@ -58,8 +58,8 @@ export default () => {
           {isExist && (
             <Button
               type="primary"
-              href={`/antelope-manage/common/download/${fileId}`}
-              download={`/antelope-manage/common/download/${fileId}`}
+              href={`/antelope-common/common/file/download/${fileId}`}
+              download={`/antelope-common/common/file/download/${fileId}`}
             >
               下载报告
             </Button>
@@ -72,7 +72,7 @@ export default () => {
         {/* <Document
           //文件路径,
           file={`/antelope-manage/common/download/${fileId}`}
-          //加载成功调用 
+          //加载成功调用
           onLoadSuccess={(total: any) => {
             console.log(total, total)
             if (total)
@@ -81,9 +81,9 @@ export default () => {
                 total,
               });
           }}
-          //加载失败调用 
+          //加载失败调用
           // onLoadError={onDocumentLoadFail}
-          //加载提示 
+          //加载提示
           loading={<div>Please wait!</div>}>
           <Page pageNumber={pdfPageInfo.page} />
         </Document> */}
