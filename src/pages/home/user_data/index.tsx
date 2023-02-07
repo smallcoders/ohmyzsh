@@ -8,6 +8,7 @@ import { getUserStatistice, getUserLineList } from '@/services/home';
 import * as echarts from 'echarts';
 import './index.less';
 import dayjs from 'dayjs';
+import { clearConfigCache } from 'prettier';
 
 const sc = scopedClasses('home-page-user-data');
 const { RangePicker } = DatePicker;
@@ -86,6 +87,7 @@ export default () => {
     const tooLate = dates[0] && current.diff(dates[0], 'days') > 30;
     const tooEarly = dates[1] && dates[1].diff(current, 'days') > 30;
     return !!tooEarly || !!tooLate || current > moment().startOf('day');
+    // return !!tooEarly || !!tooLate || current > moment().subtract(-1, 'days').startOf('day');
   };
   const onOpenChange = (open: boolean) => {
     if (open) {
@@ -289,8 +291,11 @@ export default () => {
   useEffect(() => {
     if (!value) return;
     setQuicklyDate(null)
-    const startDate = moment(value[0]).format('YYYY-MM-DD');
-    const endDate = moment(value[1]).format('YYYY-MM-DD');
+    let startDate = moment(value[0]).format('YYYY-MM-DD');
+    let endDate = moment(value[1]).format('YYYY-MM-DD');
+    if (startDate == endDate) {
+      endDate = dayjs(endDate).add(1, 'day').format('YYYY-MM-DD')
+    }
     let xAxisData = [] as any;
     let data = DateDiff(startDate,dayjs(endDate).add(1, 'day').format('YYYY-MM-DD'))
     if (data > 1) {

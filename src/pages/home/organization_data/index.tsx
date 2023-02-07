@@ -251,8 +251,11 @@ export default () => {
   }, []);
 
   const watchTime = (value: any) => {
-    const startDate = moment(value[0]).format('YYYY-MM-DD');
-    const endDate = moment(value[1]).format('YYYY-MM-DD');
+    let startDate = moment(value[0]).format('YYYY-MM-DD');
+    let endDate = moment(value[1]).format('YYYY-MM-DD');
+    if (startDate == endDate) {
+      endDate = dayjs(endDate).add(1, 'day').format('YYYY-MM-DD')
+    }
     let xAxisData = [] as any;
     let data = DateDiff(startDate,dayjs(endDate).add(1, 'day').format('YYYY-MM-DD'))
     if (data > 1) {
@@ -329,7 +332,6 @@ export default () => {
     }
   }
   useEffect(() => {
-    console.log('selectDate',selectDate)
     if (!selectDate) return;
     watchSelectDate(selectDate)
   },[selectDate])
