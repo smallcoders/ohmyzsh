@@ -1,0 +1,73 @@
+@import '../../../global.less';
+
+.digital-app-data {
+  &-container:last-of-type {
+    margin-top: 20px;
+  }
+  &-container {
+    padding: 20px;
+    background: #fff;
+    ul,
+    li {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .title {
+      color: #333;
+      font-weight: bold;
+      font-size: 16px;
+    }
+    .overview-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 10px;
+      .extra-line {
+        position: relative;
+        padding-left: 16px;
+        &::before {
+          position: absolute;
+          left: 0;
+          display: block;
+          width: 2px;
+          height: 100%;
+          background-color: #6680ff;
+          content: '';
+        }
+      }
+    }
+
+    .overview-card-container {
+      display: flex;
+      justify-content: space-between;
+      padding-top: 20px;
+      li {
+        padding: 10px 40px 40px;
+        font-size: 14px;
+        .card-name {
+          display: flex;
+          align-items: center;
+          img {
+            width: 14px;
+            height: 14px;
+            margin-left: 4px;
+            cursor: pointer;
+          }
+        }
+        .num {
+          margin-top: 16px;
+          color: #0068ff;
+          font-weight: 700;
+          font-size: 16px;
+          line-height: 24px;
+          text-align: center;
+        }
+      }
+    }
+  }
+
+  &-ellipsis2 {
+    .textoverflow(2);
+  }
+}
