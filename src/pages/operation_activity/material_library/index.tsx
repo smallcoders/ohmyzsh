@@ -638,7 +638,7 @@ export default () => {
                     <div
                       className={`card-img ${selectImg.indexOf(item.id) !== -1 ? 'isSelect' : ''}`}
                     >
-                      <img className="img" src={`/antelope-manage/common/download/${item.fileId}`} alt='' />
+                      <img className="img" src={`/antelope-common/common/file/download/${item.fileId}`} alt='' />
                       <div
                         className="card-mask"
                         onClick={() => {
