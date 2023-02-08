@@ -5,8 +5,8 @@ import { request } from 'umi';
  * @param dateType
  * @returns
  */
-export async function getRSStatistic(dateType: string) {
-  return request<any>(`/antelope-other/mng/hrss/statistic?dateType=${dateType}`, {
+export async function getRSStatistic(dateType: string, source?: string) {
+  return request<any>(`/antelope-other/mng/hrss/statistic?dateType=${dateType}&source=${source}`, {
     method: 'get',
   });
 }
