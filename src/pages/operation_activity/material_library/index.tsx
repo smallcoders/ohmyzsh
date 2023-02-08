@@ -13,7 +13,7 @@ import {
   message,
   Empty,
   Row,
-  Col,
+  Col, Spin,
 } from 'antd';
 import {
   PlusCircleOutlined,
@@ -26,7 +26,7 @@ import {
 import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
-import { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   totalNumber,
   listAll,
@@ -50,6 +50,7 @@ export default () => {
   const [totalNum, setTotalNum] = useState(0);
   const [isMore, setIsMore] = useState(false);
   const [groupsId, setGroupsId] = useState<number | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
   const [uploadGroupsId, setUploadGroupsId] = useState<number | null>(null);
   const [groupListAll, setGroupListAll] = useState<MaterialLibrary.List[]>([]);
   const [dataSource, setDataSource] = useState<MaterialLibrary.Content[]>([]);
@@ -78,6 +79,7 @@ export default () => {
   const inputRef = useRef<any>(null);
   // 列表
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
+    setLoading(true)
     try {
       const {
         result,
@@ -90,6 +92,7 @@ export default () => {
         pageSize,
         groupsId,
       });
+      setLoading(false)
       if (code === 0) {
         setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
         setDataSource(result);
@@ -97,6 +100,7 @@ export default () => {
         throw new Error(resultMsg);
       }
     } catch (error) {
+      setLoading(false)
       antdMessage.error(`请求失败，原因:{${error}}`);
     }
   };
@@ -622,87 +626,80 @@ export default () => {
           </div>
         )}
         {/* 图片列表 */}
-        {dataSource.length > 0 ? (
-          <ProList<any>
-            grid={{ gutter: 18, column: 5 }}
-            rowKey="name"
-            dataSource={dataSource}
-            renderItem={(item) => (
-              <List.Item>
-                <Card bordered={false}>
-                  <div
-                    className={`card-img ${selectImg.indexOf(item.id) !== -1 ? 'isSelect' : ''}`}
-                  >
-                    <Image
-                      id={item.id}
-                      className="img"
-                      width={'100%'}
-                      height={'100%'}
-                      preview={false}
-                      src={`/antelope-manage/common/download/${item.fileId}`}
-                      alt={item.name}
-                    />
+        <Spin wrapperClassName={sc('container-table-body')} spinning={loading}>
+          {dataSource.length > 0 ? (
+            <ProList<any>
+              grid={{ gutter: 18, column: 5 }}
+              rowKey="name"
+              dataSource={dataSource}
+              renderItem={(item) => (
+                <List.Item>
+                  <Card bordered={false}>
                     <div
-                      className="card-mask"
-                      onClick={() => {
-                        onChangeImg(item.id);
-                      }}
+                      className={`card-img ${selectImg.indexOf(item.id) !== -1 ? 'isSelect' : ''}`}
                     >
-                      <Checkbox
-                        className={`select-action ${
-                          selectImg.indexOf(item.id) !== -1 ? 'isSelectAction' : ''
-                        }`}
-                        checked={selectImg.indexOf(item.id) !== -1}
-                      />
+                      <img className="img" src={`/antelope-manage/common/download/${item.fileId}`} alt='' />
                       <div
-                        className="big-action"
-                        onClick={async (e) => {
-                          e.stopPropagation();
-                          await setImgInfo(item);
-                          setBigImgVisible(true);
+                        className="card-mask"
+                        onClick={() => {
+                          onChangeImg(item.id);
                         }}
                       >
-                        <ZoomInOutlined />
-                      </div>
-                      <Popover
-                        placement="bottomLeft"
-                        title={false}
-                        trigger="click"
-                        content={getContent(item)}
-                        overlayClassName="operation-img-popover"
-                        visible={moreVisibleId === item.id}
-                        onVisibleChange={(visible) => {
-                          if (visible) {
-                            setMoreVisibleId(item.id);
-                          } else {
-                            setMoreVisibleId(-1);
-                            setRenameVisibleId(-1);
-                          }
-                        }}
-                      >
+                        <Checkbox
+                          className={`select-action ${
+                            selectImg.indexOf(item.id) !== -1 ? 'isSelectAction' : ''
+                          }`}
+                          checked={selectImg.indexOf(item.id) !== -1}
+                        />
                         <div
-                          className="more-action"
-                          onClick={(e) => {
+                          className="big-action"
+                          onClick={async (e) => {
                             e.stopPropagation();
-                            setMoreVisibleId(item.id);
+                            await setImgInfo(item);
+                            setBigImgVisible(true);
                           }}
                         >
-                          <EllipsisOutlined />
+                          <ZoomInOutlined />
                         </div>
-                      </Popover>
-                      <span className="size-info">{item.photoWidth + '*' + item.photoHeight}</span>
+                        <Popover
+                          placement="bottomLeft"
+                          title={false}
+                          trigger="click"
+                          content={getContent(item)}
+                          overlayClassName="operation-img-popover"
+                          visible={moreVisibleId === item.id}
+                          onVisibleChange={(visible) => {
+                            if (visible) {
+                              setMoreVisibleId(item.id);
+                            } else {
+                              setMoreVisibleId(-1);
+                              setRenameVisibleId(-1);
+                            }
+                          }}
+                        >
+                          <div
+                            className="more-action"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setMoreVisibleId(item.id);
+                            }}
+                          >
+                            <EllipsisOutlined />
+                          </div>
+                        </Popover>
+                        <span className="size-info">{item.photoWidth + '*' + item.photoHeight}</span>
+                      </div>
                     </div>
-                  </div>
-                  <div className="card-imgName" title={item.name}>
-                    {item.name}
-                  </div>
-                </Card>
-              </List.Item>
-            )}
-            pagination={
-              pageInfo.totalCount === 0
-                ? false
-                : {
+                    <div className="card-imgName" title={item.name}>
+                      {item.name}
+                    </div>
+                  </Card>
+                </List.Item>
+              )}
+              pagination={
+                pageInfo.totalCount === 0
+                  ? false
+                  : {
                     onChange: getPage,
                     total: pageInfo.totalCount,
                     current: pageInfo.pageIndex,
@@ -712,18 +709,19 @@ export default () => {
                         pageInfo.pageTotal || 1
                       }页`,
                   }
-            }
-          />
-        ) : (
-          <div className={sc('container-content-empty')}>
-            <Empty
-              image={empty}
-              imageStyle={{
-                height: 160,
-              }}
+              }
             />
-          </div>
-        )}
+          ) : (
+            <div className={sc('container-content-empty')}>
+              <Empty
+                image={empty}
+                imageStyle={{
+                  height: 160,
+                }}
+              />
+            </div>
+          )}
+        </Spin>
       </div>
       <EditGroupModal
         visible={editGroupVisible}
