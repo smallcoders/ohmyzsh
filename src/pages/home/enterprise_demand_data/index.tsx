@@ -92,7 +92,7 @@ export default () => {
           let p = ''
           data.items.forEach((item: any) => {
             if (item.name === name) {
-              p = item.rate + '%'
+              p = item.rate
             }
           })
           return `${name}    ${p}`
@@ -141,7 +141,7 @@ export default () => {
             return {
               name: item.name,
               count: item.count,
-              rate: item.rate,
+              rate: item.count, // 列表的展示
               value: item.count, // 饼图的提示
             }
           })
