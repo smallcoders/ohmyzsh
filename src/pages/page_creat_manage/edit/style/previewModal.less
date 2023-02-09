@@ -33,6 +33,12 @@
     .body-title-box {
       min-height: 120px;
       position: relative;
+      &.tiled {
+        .page-bg {
+          height: 120px;
+          object-fit: cover;
+        }
+      }
       .page-bg {
         display: block;
         width: 100%;
@@ -141,6 +147,10 @@
     position: relative;
     &.tiled {
       min-height: 80px;
+      .page-bg {
+        height: 240px;
+        object-fit: cover;
+      }
     }
     .page-bg {
       display: block;
