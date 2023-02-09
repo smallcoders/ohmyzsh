@@ -33,32 +33,22 @@ function StatisticTabContent(props: StatisticTabContentPropsType) {
     {
       name: `${isHRSSPage ? '人社' : '活动'}访客量`,
       num: props?.statisticInfo?.pv,
-      tooltip:
-        '从人社跳转过来的数量（今日：当天人社访问数（0点23点59分）；近7天：近7天的人社访客数；近30天：近30天的人社访客数）',
     },
     {
       name: isHRSSPage ? '礼包领取量' : '领取礼包用户数',
       num: props?.statisticInfo?.amountReceive,
-      tooltip:
-        '点击领取的用户总数，未点击关闭页面的不计数（今日：当天人社领取数（0点23点59分）；近7天：近7天的人社领取数；近30天：近30天的人社领取数）',
     },
     {
       name: `${isHRSSPage ? '人社' : '活动'}注册量`,
       num: props?.statisticInfo?.amountRegister,
-      tooltip:
-        '人社链接跳转并且新注册量（今日：当天人社注册量（0点23点59分）；近7天：近7天的人社注册量；近30天：近30天的人社注册量）',
     },
     {
       name: `${isHRSSPage ? '人社' : '活动'}认证量`,
       num: props?.statisticInfo?.amountCertification,
-      tooltip:
-        '人社链接跳转并完成认证的企业数量（今日：当天人社认证量（0点23点59分）；近7天：近7天的人社认证量；近30天：近30天的人社认证量）',
     },
     {
       name: '应用使用量',
       num: props?.statisticInfo?.amountUsage,
-      tooltip:
-        '应用被点击次数的总和(同账户可以多次累加,按点击次数累加）（今日：当天应用使用量（0点23点59分）；近7天：近7天的应用使用量；近30天：近30天的应用使用量） ',
     },
   ];
 
@@ -66,7 +56,7 @@ function StatisticTabContent(props: StatisticTabContentPropsType) {
     {
       name: '平均停留时长(分钟)',
       num: props?.statisticInfo?.avgStayDuration,
-      tooltip: '总时长（所有访客数的浏览时间累加）/总跳访客数（人社访客数）',
+      tooltip: '所有访客浏览招聘季数字化礼包领取介绍页时间累加/总访客数',
     },
   ];
 
