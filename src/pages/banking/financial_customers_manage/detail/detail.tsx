@@ -50,7 +50,7 @@ export default () => {
     >
       <div className="customer-detail">
         <div className="top-content">
-          <img src={`/antelope-manage/common/download/${detail?.logoImageId}`} alt="" />
+          <img src={`/antelope-common/common/file/download/${detail?.logoImageId}`} alt="" />
           <div className="top-right">
             <div className="org-name">
               {detail?.name}

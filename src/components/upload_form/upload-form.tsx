@@ -25,8 +25,8 @@ const UploadForm = (
     </div>
   );
   const imgSrc = fileId?.path ? fileId?.path :
-    fileId ? `/antelope-manage/common/download/${fileId}` : `${props?.value || ''}`?.indexOf('http') !== -1 ?
-      props.value : `/antelope-manage/common/download/${props.value}`
+    fileId ? `/antelope-common/common/file/download/${fileId}` : `${props?.value || ''}`?.indexOf('http') !== -1 ?
+      props.value : `/antelope-common/common/file/download/${props.value}`
   const reUpload = (
     <div className={'reupload'}>
       <img src={imgSrc} alt="图片损坏" />
@@ -112,7 +112,7 @@ delete p.value
       <Upload
         {...p}
         name="file"
-        action={props.action || '/antelope-manage/common/upload'}
+        action={props.action || '/antelope-common/common/file/upload'}
         onChange={handleChange}
         beforeUpload={beforeUpload}
       >

@@ -103,7 +103,7 @@ export default () => {
   const [transferModalSelectedData, setTransferModalSelectedData] = useState<ApplicationManager.RecordType[]>([]);
 
   const [transferSearchLoading, setTransferSearchLoading] = useState<boolean>(false);
-  
+
   // 应用from
   const [appForm] = Form.useForm();
 
@@ -290,7 +290,7 @@ export default () => {
               <Form.Item style={{marginBottom: '20px'}} label="应用详情">{editingItem.content}</Form.Item>
               <Form.Item style={{marginBottom: '20px'}} label="应用图标">
                 <div className='app-icon'>
-                  <img src={`/antelope-manage/common/download/${editingItem.logoImageId}`} alt="图片损坏" />
+                  <img src={`/antelope-common/common/file/download/${editingItem.logoImageId}`} alt="图片损坏" />
                 </div>
               </Form.Item>
               <Form.Item label="操作手册">
@@ -299,8 +299,8 @@ export default () => {
                     <Button
                       type="link"
                       disabled={!editingItem.path}
-                      href={`/antelope-manage/common/download/${editingItem.path[0].uid}`}
-                      download={`/antelope-manage/common/download/${editingItem.path[0].uid}`}
+                      href={`/antelope-common/common/file/download/${editingItem.path[0].uid}`}
+                      download={`/antelope-common/common/file/download/${editingItem.path[0].uid}`}
                     >
                       {editingItem.path[0].name}
                     </Button>
@@ -308,7 +308,7 @@ export default () => {
                     <div className='upload-tip'>未上传</div>
                   )
                 }
-                
+
               </Form.Item>
             </Form>
           ) : (
@@ -448,12 +448,12 @@ export default () => {
           return !!~newTargetKeys.indexOf(e.key)
         }))
       };
-    
+
       const handleSelectChange = (sourceSelectedKeys: string[], targetSelectedKeys: string[]) => {
         const resKeys = [...sourceSelectedKeys, ...targetSelectedKeys]
         setSelectedKeys(resKeys);
       };
-  
+
       const handleOnSearch = _.debounce((dir: TransferDirection, value: string) => {
         console.log('search:', dir, value);
         if (dir === 'left') {
@@ -466,7 +466,7 @@ export default () => {
           })
         }
       }, 1000, { leading: false, trailing: true })
-  
+
       const renderFooter: any = (
         _: TransferListProps<any>,
         {
@@ -477,11 +477,11 @@ export default () => {
       ) => {
         if (direction === 'left') {
           return (
-            <Pagination 
+            <Pagination
               style={{padding: '10px 0'}}
               size="small"
-              current={transferPageInfo.pageIndex} 
-              onChange={getCompanyList} 
+              current={transferPageInfo.pageIndex}
+              onChange={getCompanyList}
               total={transferPageInfo.totalCount}
               pageSize={transferPageInfo.pageSize}
               pageSizeOptions={[10, 20, 30]}
@@ -490,8 +490,8 @@ export default () => {
         }
         return
       };
-    
-      
+
+
       return (
         <Modal
           title="请选择推送企业"
@@ -732,14 +732,14 @@ export default () => {
       appForm.setFieldsValue(item)
     }
   }
-  
+
   const columns: ColumnsType<ApplicationManager.Content> = [
     {
       title: '应用',
       dataIndex: 'title',
       render: (_: any, row: ApplicationManager.Content) => (
         <div className="table-app-row">
-          <img src={`/antelope-manage/common/download/${row.logoImageId}`} alt="图片损坏" />
+          <img src={`/antelope-common/common/file/download/${row.logoImageId}`} alt="图片损坏" />
           <div className='info'>
             <Tooltip title={row.appName}>
               <span onClick={() => {
@@ -786,8 +786,8 @@ export default () => {
             <Button
               type="link"
               disabled={!row.path}
-              href={`/antelope-manage/common/download/${row.path}`}
-              download={`/antelope-manage/common/download/${row.path}`}
+              href={`/antelope-common/common/file/download/${row.path}`}
+              download={`/antelope-common/common/file/download/${row.path}`}
               onClick={() => message.success(`下载成功，请查阅`) }
             >
               下载手册
@@ -840,7 +840,7 @@ export default () => {
               type: 'checkbox',
               ...rowSelection,
             }}
-            
+
             rowKey={'id'}
             pagination={
               pageInfo.totalCount === 0
@@ -862,7 +862,7 @@ export default () => {
         </Spin>
         <div className='select-app-count'>{selectedPushKeys.length ? `已选${selectedPushKeys.length}个应用` : ''}</div>
       </div>
-      
+
       {useModal()}
       {useDrawer()}
     </div>

@@ -191,7 +191,7 @@ const TableList: React.FC = () => {
       render: (photoId: string) => (
         <Image
           className={'banner-img'}
-          src={`/antelope-manage/common/download/${photoId}`}
+          src={`/antelope-common/common/file/download/${photoId}`}
           alt="图片损坏"
         />
         // </div>
