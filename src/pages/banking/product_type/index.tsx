@@ -10,7 +10,7 @@ import {
   InputNumber,
   message as antdMessage,
 } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined, MinusCircleFilled } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
@@ -157,6 +157,7 @@ export default () => {
                               // eslint-disable-next-line react/no-array-index-key
                               index={index}
                               id={key}
+                              fields={fields}
                               moveDetail={(dragIndex, hoverIndex) =>
                                 moveDetail(dragIndex, hoverIndex, 'details')
                               }
@@ -178,28 +179,29 @@ export default () => {
                                   <Input placeholder="请输入" maxLength={35} />
                                 </Form.Item>
                               </div>
-                              <img
-                                src={require('@/assets/banking_loan/remove.png')}
-                                alt=""
-                                onClick={async () => {
-                                  console.log(form.getFieldValue('details'));
-                                  if (form.getFieldValue('details')[name].id !== null) {
-                                    const { code, message: resultMsg } = await checkDelType(
-                                      form.getFieldValue('details')[name].id,
-                                    );
-                                    if (code !== 0) return message.error(resultMsg);
-                                  }
-                                  if (fields.length === 1) return;
-                                  remove(name);
-                                }}
-                                style={{
-                                  width: 24,
-                                  position: 'absolute',
-                                  right: -80,
-                                  top: 8,
-                                  cursor: 'pointer',
-                                }}
-                              />
+                              {fields.length !== 1 && (
+                                <MinusCircleFilled
+                                  onClick={async () => {
+                                    if (!!form.getFieldValue('details')[name].id) {
+                                      const { code, message: resultMsg } = await checkDelType(
+                                        form.getFieldValue('details')[name].id,
+                                      );
+                                      if (code !== 0) return message.error(resultMsg);
+                                    }
+                                    if (fields.length === 1) return;
+                                    remove(name);
+                                  }}
+                                  className="del-subtype"
+                                  style={{
+                                    fontSize: 24,
+                                    position: 'absolute',
+                                    right: -80,
+                                    top: 8,
+                                    cursor: 'pointer',
+                                    color: '#8d9aae',
+                                  }}
+                                />
+                              )}
                             </SortDetail>
                           </>
                         );
@@ -212,7 +214,7 @@ export default () => {
                           }}
                           className="add-type-btn"
                         >
-                          + 子类型按钮
+                          + 添加子类型
                         </Button>
                       </Form.Item>
                     </>

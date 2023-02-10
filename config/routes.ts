@@ -34,6 +34,9 @@
   PAGE_CREAT_MANAGE_PAGE_LIST: '/operation-activity/page_creat_manage/manage',
   PAGE_CREAT_MANAGE_PAGE_DATA: '/operation-activity/page_creat_manage/manage/page_data',
 
+  // 素材库管理
+  MATERIAL_LIBRARY_MANAGE:'/operation-activity/material-library-manage/index',
+
   DEMAND_MANAGEMENT_FEEDBACK: '/supply-demand-setting/demand-manage/feedback', // 需求管理详情
   ACCOUNT: '/system-config/account', // 账号管理
   AUTH: '/system-config/auth', // 权限管理
@@ -1483,6 +1486,13 @@ export default [
             layout: false,
           },
         ],
+      },
+      {
+        path: routeName.MATERIAL_LIBRARY_MANAGE,
+        name: '素材库',
+        code: 'M_OA_SCK',
+        access: 'M_OA_SCK',
+        component: './operation_activity/material_library/index',
       },
     ],
   },

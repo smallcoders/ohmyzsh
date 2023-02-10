@@ -166,7 +166,7 @@ export default () => {
               validateTrigger={['onBlur']}
               style={{ marginTop: 24 }}
             >
-              <Form.Item label="拟融资金融需大于等于">
+              <Form.Item label="拟融资金融需大于等于" required>
                 <Form.Item
                   name="amount"
                   rules={[{ required: true, message: '请输入金融，支持两位小数' }]}
@@ -176,7 +176,7 @@ export default () => {
                 <div className="info">此内容为金融大客户判断门槛</div>
               </Form.Item>
 
-              <Form.Item label="金融专属顾问昵称">
+              <Form.Item label="金融专属顾问昵称" required>
                 <Form.Item
                   name="name"
                   rules={[{ required: true, message: '请输入金融专属顾问昵称' }]}
@@ -197,7 +197,7 @@ export default () => {
                 </div>
               </Form.Item>
 
-              <Form.Item label="金融专属顾问企业微信">
+              <Form.Item label="金融专属顾问企业微信" required>
                 <Form.Item
                   name="wetChatImage"
                   extra=""
@@ -212,7 +212,7 @@ export default () => {
                   />
                 </Form.Item>
                 <div className="info">
-                  请上传1张企业微信二维码图片<span className="size">尺寸为120*120</span>。
+                  请上传1张企业微信二维码图片尺寸为120*120。
                   <Popover
                     content={
                       <div>

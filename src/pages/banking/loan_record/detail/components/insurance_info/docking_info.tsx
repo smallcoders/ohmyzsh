@@ -276,7 +276,12 @@ export default forwardRef((props: Props, ref) => {
     if (!isDetail) {
       return (
         <Space size={'large'}>
-          <Button key="cancel" onClick={() => onCancel(null)}>
+          <Button
+            key="cancel"
+            onClick={() => {
+              history.goBack();
+            }}
+          >
             返回
           </Button>
           <Button key="ensure" type="primary" onClick={() => onOk()}>

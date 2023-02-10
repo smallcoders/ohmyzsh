@@ -8,6 +8,9 @@ import { DesignContext } from '../store'
 import { ActionType } from '../store/action'
 import { removeDomNode } from '../utils'
 import { Component } from '../config'
+import '../style/windgetForm.less'
+
+
 interface Props {
   formInstance: FormInstance,
   areaCodeOptions: {

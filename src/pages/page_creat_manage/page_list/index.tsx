@@ -325,6 +325,7 @@ export default () => {
             {moment(creatTime).format('YYYY-MM-DD HH:mm:ss')}
             <Dropdown
               visible={record.tmpId === openMenuId}
+              overlayClassName="operation-list-drop-menu"
               onVisibleChange={(visible) => {
                 if (visible){
                   getTemplateOperationList({tmpId: record.tmpId}).then((res) => {
@@ -344,7 +345,7 @@ export default () => {
               return (
                 <Menu>
                   {
-                    menuData.map((item: {opTypeDesc: string, opTime: string, opUserName: string}, index: number) => {
+                    menuData.concat(menuData).concat(menuData).concat(menuData).concat(menuData).concat(menuData).concat(menuData).map((item: {opTypeDesc: string, opTime: string, opUserName: string}, index: number) => {
                       return (
                         <Menu.Item key={index}>
                            <div className="operation-list">

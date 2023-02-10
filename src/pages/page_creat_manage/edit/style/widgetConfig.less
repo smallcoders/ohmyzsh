@@ -1,0 +1,190 @@
+.widget-config-container {
+  position: relative;
+  height: calc(100vh - 96px);
+  .ant-layout-sider-children {
+    overflow-y: auto;
+    padding-top: 45px;
+  }
+  .ant-layout-header {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    z-index: 1;
+    height: 45px;
+    padding: 0 5px;
+    line-height: 45px;
+    background-color: #fff;
+    border-bottom: 2px solid #e4e7ed;
+    white-space: nowrap;
+    .config-tab {
+      display: inline-block;
+      width: 145px;
+      height: 41px;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 41px;
+      text-align: center;
+      cursor: pointer;
+      &.active {
+        border-bottom: 2px solid @primary-color;
+      }
+    }
+  }
+  .ant-form {
+    padding-bottom: 5px;
+  }
+  .config-content {
+    padding: 10px 10px 20px;
+    background-color: #fff;
+    .config-item {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-top: 20px;
+      .config-item-label {
+        white-space: nowrap;
+      }
+      .flex {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        .show-color {
+          text-align: center;
+          cursor: pointer;
+          span {
+            display: block;
+            width: 32px;
+            height: 32px;
+            border-radius: 2px;
+            margin-bottom: 4px;
+            border: 1px solid #ccc;
+          }
+        }
+        .color-value {
+          margin-left: 20px;
+          margin-right: 20px;
+          .ant-form-item {
+            margin-bottom: 4px;
+            .ant-input {
+              width: 84px;
+            }
+          }
+        }
+      }
+    }
+    .config-error-msg {
+      font-size: 12px;
+      color: red;
+      margin-bottom: 6px;
+    }
+    .upload-suggest {
+      font-size: 14px;
+      color: #ccc;
+      text-align: center;
+    }
+    .empty-config {
+      text-align: center;
+      margin-top: 100px;
+    }
+    .option-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 8px 8px 0;
+      .ant-upload-picture-card-wrapper {
+        width: 50px;
+        height: 50px;
+        margin-right: 10px;
+      }
+      .avatar-uploader > .ant-upload {
+        width: 50px;
+        height: 50px;
+      }
+      span {
+        &.ant-upload {
+          >div >div {
+            margin-top: 0 !important;
+            font-size: 12px;
+          }
+        }
+      }
+      .drag-item {
+        display: block;
+        width: 14px;
+        height: 14px;
+        margin: 0 10px;
+        cursor: move;
+      }
+      .ant-select-selector {
+        height: 24px;
+        margin-left: 4px;
+      }
+      .ant-btn-sm {
+        border-color: @primary-color;
+        color: @primary-color;
+        margin-left: 4px;
+      }
+    }
+    .related-click {
+      height: 36px;
+      border: 1px dashed #ddd;
+      text-align: center;
+      line-height: 36px;
+      cursor: pointer;
+      margin-top: 6px;
+    }
+    ul {
+      padding: 0;
+      list-style: none;
+    }
+    .ghost {
+      background: #fff;
+      border: 1px dashed @primary-color;
+
+      &::after {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        display: block;
+        content: "";
+        background: #fff;
+      }
+    }
+
+    .insert-btn {
+      margin-top: 5px;
+    }
+    h4 {
+      padding-bottom: 10px;
+      border-bottom: 1px solid #e1e1e1;
+    }
+    .label {
+      margin: 0 5px;
+      font-size: 14px;
+      font-weight: 500;
+      &:first-child {
+        margin-left: 0;
+      }
+    }
+    .ant-form-item-label {
+      font-weight: 500;
+    }
+    .ant-form-item .ant-form-item {
+      margin-bottom: 12px;
+    }
+  }
+  .error-tip {
+    color: red;
+    font-size: 12px;
+  }
+  .question-icon {
+    width: 15px;
+    height: 15px;
+    position: relative;
+    top: -1px;
+    margin-left: 2px;
+  }
+}

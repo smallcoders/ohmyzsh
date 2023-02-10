@@ -94,13 +94,11 @@ export default () => {
             AuthorizationRef.current.cancelEdit(() => {
               setActiveKey(key);
             });
-          }
-          if (activeKey === '5' && AuditRef.current.formIsChange) {
+          } else if (activeKey === '5' && AuditRef.current.formIsChange) {
             AuditRef.current.cancelEdit(() => {
               setActiveKey(key);
             });
-          }
-          if (activeKey === '6' && DockingRef.current.formIsChange) {
+          } else if (activeKey === '6' && DockingRef.current.formIsChange) {
             DockingRef.current.cancelEdit(() => {
               setActiveKey(key);
             });

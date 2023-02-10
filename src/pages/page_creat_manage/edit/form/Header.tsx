@@ -61,6 +61,18 @@ const Header = (props: any) => {
       message.warn('请检查各题目参数名是否按要求定义', 2)
       return
     }
+    if (globalConfig.showRegister){
+      paramsList.push({
+        paramName: 'registerName',
+        paramType: 'string',
+        paramDesc: '注册姓名'
+      })
+      paramsList.push({
+        paramName: 'registerPhone',
+        paramType: 'string',
+        paramDesc: '注册手机号码'
+      })
+    }
     const data = {
       config: {
         tmpName: globalConfig.pageName,

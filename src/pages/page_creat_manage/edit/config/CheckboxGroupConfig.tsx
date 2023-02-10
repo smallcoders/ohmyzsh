@@ -42,7 +42,7 @@ const CheckboxGroupConfig = () => {
     let showList: string[] = []
     widgetFormList.forEach((item: any) => {
       const defaultValue = item.config?.defaultValue
-      if(defaultValue?.length &&
+      if(defaultValue?.length && !item.hide &&
         ['RadioGroup', 'CheckboxGroup', 'MultipleSelect', 'Select', 'ImagePicker'].indexOf(item.type) !== -1)
       {
         item.config.options.forEach((optionItem: {value: string, showList: string[]}) => {
@@ -66,7 +66,6 @@ const CheckboxGroupConfig = () => {
       payload: {...state}
     })
   }
-  console.log(state, '00000000111111')
   return (
     <>
       <Form.Item required label="标题">
@@ -228,7 +227,6 @@ const CheckboxGroupConfig = () => {
                         newConfigOptions.forEach((optionItem: {showList: string[]}) => {
                           controlKeyList = [...new Set([...controlKeyList, ...(optionItem.showList || [])])]
                         })
-                        console.log(controlKeyList, 'controlKeyList')
                         setControlList(controlKeyList)
                       }}
                     />

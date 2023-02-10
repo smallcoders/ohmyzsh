@@ -9,7 +9,7 @@ export interface CardProps {
   children: React.ReactNode;
   index: number;
   moveDetail: (dragIndex: number, hoverIndex: number) => void;
-
+  fields: any;
   style?: React.CSSProperties;
 }
 
@@ -26,7 +26,7 @@ export const SortDetail: FC<CardProps> = ({
   children,
   index,
   moveDetail,
-  style = {},
+  fields,
 }) => {
   const [{ handlerId }, drop] = useDrop<DragItem, void, { handlerId: Identifier | null }>({
     accept: ItemTypes,
@@ -57,11 +57,13 @@ export const SortDetail: FC<CardProps> = ({
       <div ref={preview} style={{ position: 'relative' }}>
         <div ref={drag}>
           {children}
-          <img
-            src={require('@/assets/banking_loan/drag.png')}
-            alt=""
-            style={{ width: 24, position: 'absolute', right: -40, top: 8, cursor: 'move' }}
-          />
+          {fields.length !== 1 && (
+            <img
+              src={require('@/assets/banking_loan/drag.png')}
+              alt=""
+              style={{ width: 24, position: 'absolute', right: -40, top: 8, cursor: 'move'}}
+            />
+          )}
         </div>
       </div>
     </div>
