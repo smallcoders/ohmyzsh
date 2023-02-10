@@ -345,7 +345,7 @@ export default () => {
               return (
                 <Menu>
                   {
-                    menuData.concat(menuData).concat(menuData).concat(menuData).concat(menuData).concat(menuData).concat(menuData).map((item: {opTypeDesc: string, opTime: string, opUserName: string}, index: number) => {
+                    menuData.map((item: {opTypeDesc: string, opTime: string, opUserName: string}, index: number) => {
                       return (
                         <Menu.Item key={index}>
                            <div className="operation-list">
