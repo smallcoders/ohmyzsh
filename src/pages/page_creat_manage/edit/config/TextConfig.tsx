@@ -90,6 +90,12 @@ const TextConfig = () => {
             </div>
           </div>
         </div>
+        <div className="config-item">
+          <div className="config-item-label">对齐方式:</div>
+          <div className="flex">
+
+          </div>
+        </div>
       </Form.Item>
     </>
   )
