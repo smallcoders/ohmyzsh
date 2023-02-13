@@ -86,7 +86,7 @@ export default () => {
         itemHeight: 14, // 设置高度
         bottom:'0px',
         right: 'center',
-        selectedMode: false, // 标签是否支持点击
+        selectedMode: true, // 标签是否支持点击
         icon: 'circle', // 标签icon类型 'circle', 'rect', 'roundRect', 'triangle', 'diamond', 'pin', 'arrow', 'none'，
         formatter: function (name:any) {
           let p = ''

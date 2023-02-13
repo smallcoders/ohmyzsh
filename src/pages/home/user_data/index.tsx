@@ -127,7 +127,7 @@ export default () => {
         orient: 'vertical',
         top:'12%',
         right: '1px',
-        selectedMode: false, // 标签是否支持点击
+        selectedMode: true, // 标签是否支持点击
         icon: 'circle', // 标签icon类型 'circle', 'rect', 'roundRect', 'triangle', 'diamond', 'pin', 'arrow', 'none'，
         // formatter: `{name} ${dataSource}`,
         formatter: function (name:any) {

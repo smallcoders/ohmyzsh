@@ -86,7 +86,7 @@ export default () => {
         itemHeight: 14, // 设置高度
         top:'12%',
         right: '1px',
-        selectedMode: false, // 标签是否支持点击
+        selectedMode: true, // 标签是否支持点击
         icon: 'circle', // 标签icon类型 'circle', 'rect', 'roundRect', 'triangle', 'diamond', 'pin', 'arrow', 'none'，
         formatter: function (name:any) {
           let p = ''
@@ -100,7 +100,7 @@ export default () => {
       },
       series: [
         {
-          center: ['25%', '40%'], // 饼图的位置
+          center: ['22%', '40%'], // 饼图的位置
           name: pageOptionsName, //label的title
           type: 'pie',
           radius: ['40%', '55%'],
