@@ -10,6 +10,8 @@ import {
   Dropdown,
   Menu,
   Modal,
+  Radio,
+  Popover
 } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
@@ -64,6 +66,7 @@ export default () => {
   const [templateJson, setTemplateJson] = useState<any>({})
   const [previewVisible, setPreviewVisible] = useState(false)
   const [menuData, setMenuData] = useState<any>([])
+  const [tmpType, setTmpType] = useState<any>(0)
   const history = useHistory();
   const [searchForm] = Form.useForm();
   const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
@@ -72,11 +75,12 @@ export default () => {
     totalCount: 0,
     pageTotal: 0,
   });
-  const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
+  const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize, templateType: number = 0) => {
     try {
       const { result, totalCount, pageTotal, code, message } = await getPageList({
         pageIndex,
         pageSize,
+        tmpType: templateType,
         ...searchContent,
       });
       if (code === 0) {
@@ -137,7 +141,7 @@ export default () => {
   const handleDelete = (record: record) => {
     Modal.confirm({
       title: '提示',
-      content: '删除后用户将不能填写，表单及其数据也将无法恢复，确认删除？',
+      content: tmpType === 1 ? '下架后用户将不能访问此网页，确认删除？' : '删除后用户将不能填写，表单及其数据也将无法恢复，确认删除？',
       okText: '删除',
       onOk: () => {
         modifyTemplateState({
@@ -170,7 +174,7 @@ export default () => {
   const handleDrop = (record: record) => {
     Modal.confirm({
       title: '提示',
-      content: '下架后用户将不能填写，确认下架？若重新发布，之前的分享链接还可继续使用？',
+      content: tmpType === 1 ? '下架后用户将不能访问此网页，确认下架？' : '下架后用户将不能填写，确认下架？若重新发布，之前的分享链接还可继续使用？',
       okText: '下架',
       onOk: () => {
         addOperationLog({
@@ -192,7 +196,7 @@ export default () => {
     })
   }
 
-  const menuItemClick = (type: string, record: record) => {
+  const buttonClick = (type: string, record: record) => {
     if (type === 'drop'){
       handleDrop(record)
     }
@@ -202,52 +206,29 @@ export default () => {
     if (type === 'edit'){
       handleEdit(record)
     }
+    if (type === 'publish'){
+      handlePublish(record)
+    }
+    if (type === 'link'){
+      checkLink(record)
+    }
+    if (type === 'data_manage'){
+      checkData(record)
+    }
   }
 
   const getButtonList = (record: record) => {
-    const buttonTypeList = record.state === 0 ?
-      [{type: 'publish'},{type: 'data_manage'}, {type: 'more', children: [{type: 'delete', text: '删除'}, {text: '编辑', type: 'edit'}]}]
-      :[{type: 'link'},{type: 'data_manage'}, {type: 'more', children: [{type: 'drop', text: '下架'}, {text: '删除', type: 'delete'}]}]
+    let buttonTypeList = [];
+    if (tmpType === 1){
+      buttonTypeList = record.state === 0 ?
+        [{type: 'publish', text: '发布'},{text: '编辑', type: 'edit'}, {type: 'delete', text: '删除'}]
+        :[{type: 'link', text: '查看链接'},{type: 'drop', text: '下架'}, {text: '删除', type: 'delete'}]
+    } else {
+      buttonTypeList = record.state === 0 ?
+        [{type: 'publish', text: '发布'},{type: 'data_manage', text: '数据管理'}, {type: 'more', children: [{type: 'delete', text: '删除'}, {text: '编辑', type: 'edit'}]}]
+        :[{type: 'link', text: '查看链接'},{type: 'data_manage', text: '数据管理'}, {type: 'more', children: [{type: 'drop', text: '下架'}, {text: '删除', type: 'delete'}]}]
+    }
     return buttonTypeList.map((item: any) => {
-      if (item.type === 'publish'){
-        return (
-          <Button
-            size="small"
-            type="link"
-            onClick={() => {
-              handlePublish(record)
-            }}
-          >
-            发布
-          </Button>
-        )
-      }
-      if (item.type === 'link'){
-        return (
-          <Button
-            size="small"
-            type="link"
-            onClick={() => {
-              checkLink(record)
-            }}
-          >
-            查看链接
-          </Button>
-        )
-      }
-      if (item.type === 'data_manage'){
-        return (
-          <Button
-            size="small"
-            type="link"
-            onClick={() => {
-              checkData(record)
-            }}
-          >
-            数据管理
-          </Button>
-        )
-      }
       if (item.type === 'more'){
         const { children } = item
         const menu = (
@@ -257,7 +238,7 @@ export default () => {
                 return (
                   <Menu.Item
                     onClick={() => {
-                      menuItemClick(child.type, record)
+                      buttonClick(child.type, record)
                     }}
                   >
                     {child.text}
@@ -274,8 +255,19 @@ export default () => {
               </a>
             </Dropdown>
         )
+      } else {
+       return(
+         <Button
+           size="small"
+           type="link"
+           onClick={() => {
+             buttonClick(item.type, record)
+           }}
+         >
+           {item.text}
+         </Button>
+       )
       }
-      return null
     })
   }
 
@@ -288,7 +280,7 @@ export default () => {
         pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
-      title: '模板名称',
+      title: '模版名称',
       dataIndex: 'tmpName',
       width: 150,
       render: (tmpName: string, record: record) => {
@@ -345,7 +337,7 @@ export default () => {
               return (
                 <Menu>
                   {
-                    menuData.concat(menuData).concat(menuData).concat(menuData).concat(menuData).concat(menuData).concat(menuData).map((item: {opTypeDesc: string, opTime: string, opUserName: string}, index: number) => {
+                    menuData.map((item: {opTypeDesc: string, opTime: string, opUserName: string}, index: number) => {
                       return (
                         <Menu.Item key={index}>
                            <div className="operation-list">
@@ -484,15 +476,31 @@ export default () => {
       {useSearchNode()}
       <div className={sc('container-table-header')}>
         <div className="title">
-          <span>模板列表</span>
-          <Button
-            type="primary"
-            onClick={() => {
+          <Radio.Group
+            defaultValue={tmpType}
+            buttonStyle="solid"
+            onChange={(event) => {
+              getPage(1, pageInfo.pageSize, event.target.value)
+              setTmpType(event.target.value)
+            }}>
+            <Radio.Button value={0}>表单模版</Radio.Button>
+            <Radio.Button value={1}>网页模版</Radio.Button>
+          </Radio.Group>
+          <Popover
+            placement="bottomLeft"
+            content={<div className="build-btn"><div onClick={() => {
               window.open(`${routeName.PAGE_CREAT_MANAGE_EDIT}`);
-            }}
+            }}>表单模版</div><div onClick={() => {
+              window.open(`${routeName.PAGE_CREAT_MANAGE_EDIT}?type=1`);
+            }}>网页模版</div></div>}
+            trigger={['click', 'hover']}
           >
-            新建模板
-          </Button>
+            <Button
+              type="primary"
+            >
+              新建模版
+            </Button>
+          </Popover>
         </div>
       </div>
 

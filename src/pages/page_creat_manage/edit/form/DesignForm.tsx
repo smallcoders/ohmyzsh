@@ -1,4 +1,4 @@
-import { useContext, useState, forwardRef, useImperativeHandle, useEffect } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { Layout, Form, message } from 'antd';
 import GlobalHeaderRight from '@/components/RightContent'
 import { history, Prompt } from 'umi';
@@ -10,32 +10,17 @@ import Header from './Header'
 import WidgetForm from './WidgetForm'
 import WidgetConfig from './WidgetConfig'
 import GlobalConfig from './GlobalConfig'
+import WebGlobalConfig from './WebGlobalConfig';
 import { DesignContext, DesignProvider } from '../store'
 import { ActionType } from '../store/action'
-import { componentsGroupList } from '../config'
-import generateCode from '../utils/generateCode'
+import { formComponentsList, webComponentsList } from '../config'
 
 const { Content, Sider } = Layout
-
-export interface DesignFormProps {
-  uploadJson?: boolean
-  clearable?: boolean
-  preview?: boolean
-  generateJson?: boolean
-  generateCode?: boolean
-}
-
-export interface DesignFormRef {
-  getJson: () => string
-  setJson: (value: string) => void
-  clear: () => void
-  getTemplate: (type: 'component' | 'html') => string
-}
-
-const DesignForm = forwardRef<DesignFormRef, DesignFormProps>((props, ref) => {
+const DesignForm = () => {
   const { state, dispatch } = useContext(DesignContext)
   const [formInstance] = Form.useForm()
   const id = history.location.query?.id as string;
+  const tmpType = history.location.query?.type as string
   const [currentTab, setCurrentTab] = useState<'Global' | 'Local'>('Global')
   const [areaCodeOptions, setAreaCodeOptions] = useState<any>({county: [], city: [], province: []})
   const [initJson, setInitJson] = useState<string>('')
@@ -95,30 +80,6 @@ const DesignForm = forwardRef<DesignFormRef, DesignFormProps>((props, ref) => {
       })
     }
   }, [])
-  useImperativeHandle(ref, () => ({
-    getJson: () => JSON.stringify(state),
-    setJson: (value) => {
-      try {
-        dispatch({
-          type: ActionType.SET_GLOBAL,
-          payload: JSON.parse(value)
-        })
-      } catch (error) {
-        message.error('设置 JSON 出错')
-      }
-    },
-    clear: () => {
-      dispatch({
-        type: ActionType.SET_GLOBAL,
-        payload: {
-          widgetFormList: [],
-          selectWidgetItem: undefined
-        }
-      })
-    },
-    getTemplate: (type) => generateCode(type, state)
-  }))
-
   const callback = (json: string, type: string) => {
     setInitJson(json)
     if (type === 'publish'){
@@ -136,7 +97,7 @@ const DesignForm = forwardRef<DesignFormRef, DesignFormProps>((props, ref) => {
     <div  className="fc-style">
       <Prompt
         when={isChanged()}
-        message={'表单设计有修改，是否直接离开'}
+        message={`${tmpType === '1' ? '网页' : '表单'}设计有修改，是否直接离开`}
       />
       <div className="top-header">
         <div className="top-header-right" onClick={() => {
@@ -148,11 +109,11 @@ const DesignForm = forwardRef<DesignFormRef, DesignFormProps>((props, ref) => {
         <GlobalHeaderRight />
       </div>
       <div>
-        <Header {...props} callback={callback} areaCodeOptions={areaCodeOptions} />
+        <Header callback={callback} areaCodeOptions={areaCodeOptions} />
         <Layout className="fc-container">
           <Sider theme="light" className="components-container" width={250} style={{ overflow: 'auto' }}>
             <div className="components">
-              {componentsGroupList.map((componentGroup) => (
+              {(tmpType === '1' ? webComponentsList : formComponentsList).map((componentGroup) => (
                 <ComponentsGroup key="基础字段" componentGroup={componentGroup} />
               ))}
             </div>
@@ -172,10 +133,12 @@ const DesignForm = forwardRef<DesignFormRef, DesignFormProps>((props, ref) => {
                     字段属性
                   </div>
                   <div className={`config-tab ${currentTab === 'Global' && 'active'}`} onClick={() => setCurrentTab('Global')}>
-                    表单属性
+                    {tmpType === '1' ? '网页属性' : '表单属性' }
                   </div>
                 </Layout.Header>
-                <Content className="config-content">{currentTab === 'Local' ? <WidgetConfig /> : <GlobalConfig />}</Content>
+                <Content className="config-content">
+                  {currentTab === 'Local' ? <WidgetConfig /> : tmpType === '1' ? <WebGlobalConfig /> : <GlobalConfig />}
+                </Content>
               </>
             </Layout>
           </Sider>
@@ -183,18 +146,10 @@ const DesignForm = forwardRef<DesignFormRef, DesignFormProps>((props, ref) => {
       </div>
     </div>
   )
-})
-
-DesignForm.defaultProps = {
-  uploadJson: true,
-  clearable: true,
-  preview: true,
-  generateJson: true,
-  generateCode: true
 }
 
-export default forwardRef<DesignFormRef, DesignFormProps>((props, ref) => (
+export default () => (
   <DesignProvider>
-    <DesignForm {...props} ref={ref} />
+    <DesignForm />
   </DesignProvider>
-))
+)

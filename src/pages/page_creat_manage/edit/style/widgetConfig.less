@@ -175,6 +175,27 @@
     .ant-form-item .ant-form-item {
       margin-bottom: 12px;
     }
+    .text-style {
+      .text-style-item {
+        border: 1px solid #ccc;
+        line-height: 32px;
+        border-radius: 4px;
+        font-size: 15px;
+        padding: 0 10px;
+        margin-bottom: 4px;
+        cursor: pointer;
+        &.active {
+          border-color: #0068ff;
+        }
+        &:first-child {
+          color: #000;
+          font-weight: bold;
+        }
+        &:nth-child(2) {
+          color: #333;
+        }
+      }
+    }
   }
   .error-tip {
     color: red;

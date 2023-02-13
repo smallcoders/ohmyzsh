@@ -22,7 +22,6 @@ const GlobalConfig: FC = () => {
 
 
   const handleGlobalConfigChange = <T extends keyof typeof globalConfig>(fieldName: T, value: typeof globalConfig[T]) => {
-    console.log(fieldName, value)
     const action = {
       type: ActionType.SET_GLOBAL_CONFIG,
       payload: {

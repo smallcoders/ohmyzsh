@@ -1114,7 +1114,8 @@ export const componentsGroup: ComponentGroup[] = [
   }
 ]
 
-export const componentsGroupList: ComponentGroup[] = [{
+// 表单设计组件
+export const formComponentsList: ComponentGroup[] = [{
   title: "基础字段",
   components: [
     {
@@ -1320,100 +1321,59 @@ export const componentsGroupList: ComponentGroup[] = [{
         showLabel: true,
       },
     },
-    // {
-    //   label: '起止时间选择',
-    //   type: 'RangePicker',
-    //   config: {
-    //     picker: 'date',
-    //     allowClear: true,
-    //     placeholder: undefined,
-    //     format: 'YYYY-MM-DD',
-    //     showTime: false,
-    //     paramKey: '',
-    //     isParam: true,
-    //     paramDesc: '',
-    //     paramType: '',
-    //     showLabel: true,
-    //   },
-    //   formItemConfig: {
-    //     initialValue: [],
-    //     labelCol: undefined,
-    //     wrapperCol: undefined,
-    //     rules: [
-    //       {
-    //         required: false,
-    //         message: undefined,
-    //       }
-    //     ]
-    //   }
-    // },
-    // {
-    //   label: '按钮',
-    //   type: 'Button',
-    //   config: {
-    //     children: '按钮',
-    //     type: 'default',
-    //     size: "large"
-    //   }
-    // },
-    // {
-    //   label: '数字输入框',
-    //   type: 'InputNumber',
-    //   config: {
-    //     controls: true,
-    //     max: 1000,
-    //     min: 0,
-    //     precision: undefined,
-    //     step: 1,
-    //     paramKey: '',
-    //     isParam: true,
-    //     paramDesc: '',
-    //     paramType: '',
-    //     showLabel: true,
-    //   },
-    //   formItemConfig: {
-    //     initialValue: '',
-    //     labelCol: undefined,
-    //     wrapperCol: undefined,
-    //     rules: [
-    //       {
-    //         validateTrigger: 'onBlur',
-    //         required: false,
-    //         type: 'number',
-    //       }
-    //     ]
-    //   }
-    // },
-    // {
-    //   label: '上传',
-    //   type: 'Upload',
-    //   config: {
-    //     accept: '.jpg',
-    //     listType: 'text',
-    //     maxCount: undefined,
-    //     multiple: false,
-    //     openFileDialogOnClick: true,
-    //     paramKey: '',
-    //     isParam: true,
-    //     paramDesc: '',
-    //     paramType: '',
-    //     showLabel: true,
-    //   },
-    //   formItemConfig: {
-    //     initialValue: undefined,
-    //     labelCol: undefined,
-    //     wrapperCol: undefined,
-    //     rules: [
-    //       {
-    //         required: false,
-    //         message: undefined,
-    //       }
-    //     ]
-    //   }
-    // },
   ]
 }
 ]
+
+// 网页设计组件
+
+export const webComponentsList: ComponentGroup[] = [
+  {
+    title: '基础字段',
+    components: [
+      {
+        label: '文本',
+        type: 'Text',
+        errorMsg: '',
+        config: {
+          text: '文本',
+          fontWeight: 'normal',
+          fontSize: 24,
+          color: '#333333',
+          inputColor: '#333333',
+          lineHeight: '28',
+          textAlign: 'left'
+        },
+      },
+      {
+        label: '图片',
+        type: 'Image',
+        errorMsg: '',
+        config: {
+          text: '文本',
+          fontWeight: 'normal',
+          fontSize: 24,
+          color: '#333333',
+          textAlign: 'left'
+        },
+      },
+      {
+        type: 'Video',
+        label: '视频',
+        errorMsg: '',
+        config: {
+          text: '文本',
+          fontWeight: 'normal',
+          fontSize: 24,
+          color: '#333333',
+          textAlign: 'left'
+        },
+      },
+    ]
+  }
+]
+
+
 
 export type Component = {
   key?: string

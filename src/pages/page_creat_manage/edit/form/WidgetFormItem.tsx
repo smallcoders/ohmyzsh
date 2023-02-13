@@ -332,6 +332,11 @@ const WidgetFormItem: FC<Props> = (props) => {
     }
     return (
       <div className={`${className}`} onClick={(event) => handleItemClick(event)}>
+        {
+          type === 'Text' && (
+            <div>{config?.text}</div>
+          )
+        }
         {type === 'CheckboxGroup' && (
           <Form.Item label={config?.showLabel ? label : ''} required={config?.required}>
             {

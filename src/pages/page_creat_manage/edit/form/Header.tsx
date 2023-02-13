@@ -13,11 +13,12 @@ import { DesignContext } from '../store'
 import { routeName } from '../../../../../config/routes';
 
 const Header = (props: any) => {
-  const { preview, callback, areaCodeOptions } = props
+  const { callback, areaCodeOptions } = props
   const { state } = useContext(DesignContext)
   const { handlerSetVisible, dispatch } = useConfig()
   const [previewVisible, setPreviewVisible] = useState(false)
-  const history = useHistory();
+  const history: any = useHistory();
+  const tmpType = history.location.query?.type
   const checkParams = () => {
     const { widgetFormList, globalConfig, id } =  state;
     const newState = cloneDeep(state)
@@ -146,15 +147,13 @@ const Header = (props: any) => {
       <Layout.Header className="btn-bar">
         <Space>{state.globalConfig?.pageName}</Space>
         <div className="middle-title">
-          表单设计
+          {tmpType === '1' ? '网页设计' : '表单设计'}
         </div>
         <Space>
-          {preview && (
-            <div className="btn" onClick={handlerSetVisible(setPreviewVisible, true)}>
-              <img src={preViewIcon} alt='' />
-              <span>预览</span>
-            </div>
-          )}
+          <div className="btn" onClick={handlerSetVisible(setPreviewVisible, true)}>
+            <img src={preViewIcon} alt='' />
+            <span>预览</span>
+          </div>
           <div className="btn save" onClick={handleSave}>
             <img src={saveIcon} alt='' />
             <span>保存</span>
