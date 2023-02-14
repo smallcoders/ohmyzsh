@@ -8,7 +8,7 @@ import { getDemandStatistics, getAnalysisDemandList } from '@/services/home';
 import * as echarts from 'echarts';
 import './index.less';
 import dayjs from 'dayjs';
-import { options, DateDiff, getDay, endDateTime, sevenDayTime, fifteenDayTime, thirtyDayTime } from '../user_data/index'
+import { options, DateDiff, getDay, endDateTime, sevenDayTime, fifteenDayTime, thirtyDayTime, colorList } from '../user_data/index'
 import { getAhArea } from '@/services/area';
 
 const sc = scopedClasses('home-page-enterprise-data');
@@ -250,7 +250,7 @@ export default () => {
         // 拿数据
         const {items, maxNumber } = res?.result || {}
         let series = [] as any;
-        series = items?.map((item: any) => {
+        series = items?.map((item: any, index: any) => {
           let data = [] as any
           item?.data?.forEach((item: any) => {
             const {count, date} = item || {}
@@ -260,6 +260,14 @@ export default () => {
             name: item?.name,
             data: data,
             type: 'line',
+            itemStyle: {
+              normal: {
+                color: colorList[index],
+                lineStyle: {
+                  color: colorList[index],
+                }
+              }
+            }
           }
         })
         // 渲染折线图

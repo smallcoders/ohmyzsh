@@ -68,6 +68,13 @@ export const options = [
   },
 ];
 
+export const colorList = [
+  '#0068FF',
+  '#1CD8ED',
+  '#0FEA97',
+  '#FFD900',
+];
+
 type quicklyDateValue = string | null;
 
 export default () => {
@@ -284,7 +291,7 @@ export default () => {
         const {items, maxNumber} = res?.result || {}
         let series = [] as any
         // 渲染折线图
-        series = items?.map((item: any) => {
+        series = items?.map((item: any, index: any) => {
           let data = [] as any
           item?.data?.forEach((item: any) => {
             const {count, date} = item || {}
@@ -294,6 +301,14 @@ export default () => {
             name: item?.name,
             data: data,
             type: 'line',
+            itemStyle: {
+              normal: {
+                color: colorList[index],
+                lineStyle: {
+                  color: colorList[index],
+                }
+              }
+            }
           }
         })
         chartRightShow({xAxisData, series})
