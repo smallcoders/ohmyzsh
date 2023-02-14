@@ -92,9 +92,9 @@ export default () => {
   //查询组织成员列表
   const getOrgPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     try {
-      const {code,result,res} =await getOrgMemberPage({orgId,pageIndex,pageSize})
+      const {code,result,totalCount} =await getOrgMemberPage({orgId,pageIndex,pageSize})
       if(code===0){
-        setPageInfo({total:res?.totalCount,pageIndex:1,pageSize:10})
+        setPageInfo({total: totalCount,pageIndex,pageSize})
         setOrgMemberList(result)
       }else{
         message.error('请求组织成员列表数据失败')
