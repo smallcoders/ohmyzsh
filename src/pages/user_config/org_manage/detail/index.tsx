@@ -94,7 +94,7 @@ export default () => {
     try {
       const {code,result,res} =await getOrgMemberPage({orgId,pageIndex,pageSize})
       if(code===0){
-        setPageInfo({total:res?.total,pageIndex:1,pageSize:10})
+        setPageInfo({total:res?.totalCount,pageIndex:1,pageSize:10})
         setOrgMemberList(result)
       }else{
         message.error('请求组织成员列表数据失败')
