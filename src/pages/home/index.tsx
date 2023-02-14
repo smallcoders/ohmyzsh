@@ -81,7 +81,11 @@ export default () => {
         history.push(`${routeName.USER_INFO_INDEX}`);
         break;
       case 'ENTERPRISE':
-        // history.push(`${routeName.LOGOUT_RECORD}`);
+        if (!access['M_UM_ZZGL']) {
+          setModalOpen(true)
+          return
+        }
+        history.push(`${routeName.ORG_MANAGE_INDEX}`);
         break;
       case 'EXPERT':
         if (!access['M_UM_ZJZY']) {
@@ -124,6 +128,28 @@ export default () => {
           return
         }
         history.push(`/supply-demand-setting/solution/index?type=M_SD_FW`);
+        break;
+      case 'LOAN':
+				Modal.warning({
+					title: '提示',
+					content: (
+						<div>
+							<p>当前数据无具体分析页面</p>
+						</div>
+					),
+					okText: '我知道了',
+				});
+        break;
+      case 'CREDIT':
+				Modal.warning({
+					title: '提示',
+					content: (
+						<div>
+							<p>当前数据无具体分析页面</p>
+						</div>
+					),
+					okText: '我知道了',
+				});
         break;
     
       default:

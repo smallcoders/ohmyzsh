@@ -151,6 +151,28 @@ export default () => {
             borderRadius: 3,
             borderColor: '#fff',
             borderWidth: 2,
+            color: function (colors: any) {
+              var colorList = [
+                '#0068FF',
+                '#1CD8ED',
+                '#0FEA97',
+                '#25D48F',
+                '#0FEA97',
+                '#DFF32D',
+                '#FFD900',
+                '#FF8E02',
+                '#FF4F17',
+                '#FF1975',
+                '#CE11F0',
+                '#6714FF',
+                '#593472',
+                '#934747',
+                '#9A8E46',
+                '#649A46',
+                '#46889A',
+              ];
+              return colorList[colors.dataIndex];
+            }
           },
           label: {
             show: false,
