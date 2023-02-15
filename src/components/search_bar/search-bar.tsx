@@ -159,7 +159,7 @@ const SearchBar = ({
         ))}
       </Form>
       <div className={sc('search-action')}>
-        <div className={sc('search-action-item')}>
+        <div className={sc('search-action-item')} style={{ paddingBottom: '0px'}}>
           {actionList.map((action) => (
             <Button
               className={sc('search-action-btn')}
