@@ -213,6 +213,7 @@
   BASELINE: 'baseline',
   BASELINE_CONTENT_MANAGE: 'baseline-content-manage',
   BASELINE_BID_MANAGE: 'baseline-bid-manage',
+  BASELINE_TOPIC_MANAGE: 'baseline-topic-manage',
 };
 
 export default [
@@ -275,7 +276,7 @@ export default [
         name: '用户认证数据',
         component: './operate_data/data_manage/index',
       },
-      
+
     ],
   },
   {
@@ -305,7 +306,13 @@ export default [
         name: '招投标管理',
         component: './baseline/bid/index',
       },
-      
+      {
+        path: routeName.BASELINE_TOPIC_MANAGE,
+        // code: 'M_OD_GMV',
+        // access: 'M_OD_GMV',
+        name: '话题管理',
+        component: './baseline/topic/index',
+      },
     ],
   },
   // {
@@ -1484,7 +1491,7 @@ export default [
             access: 'M_OA_CJHD',
             component: './operation_activity/activity_project/detail/spring-detail',
           },
-          
+
         ],
       },
       {
