@@ -1,0 +1,101 @@
+@prefix: home-page-enterprise-data;
+
+.@{prefix}-container { 
+  display: flex;
+  justify-content: space-between;
+  // background: #ffffff;
+  // border: 1px solid #dbdfe6;
+  .@{prefix}-container-left {
+    .@{prefix}-container-left-top {
+      display: flex;
+      justify-content: space-between;
+      .@{prefix}-container-left-top-cart {
+        width: 496px;
+        height: 128px;
+        background: #ffffff;
+        border: 1px solid #dbdfe6;
+        padding: 24px 0px;
+        .@{prefix}-container-left-top-cart-label {
+          text-align: center;
+          font-size: 16px;
+          font-weight: 400;
+          color: #8290a6;
+          line-height: 24px;
+        }
+        .@{prefix}-container-left-top-cart-value {
+          margin-top: 16px;
+          text-align: center;
+          font-size: 32px;
+          font-weight: 700;
+          color: #556377;
+          line-height: 40px;
+        }
+      }
+    }
+    .@{prefix}-container-left-bottom {
+      margin-top: 24px;
+      padding: 24px 30px 0px;
+      width: 496px;
+      height: 420px;
+      background: #ffffff;
+      border: 1px solid #dbdfe6;
+      .@{prefix}-container-left-bottom-label {
+        display: flex;
+        align-items: center;
+        .ant-radio-group {
+          margin-left: 8px;
+        }
+        .ant-radio-button-wrapper-checked {
+          background: #0068ff;
+          border-color: #0068ff;
+        }
+        .ant-radio-button-wrapper:hover {
+          color: #0068ff;
+        }
+        .ant-radio-group-solid .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled):hover {
+          color: #fff;
+        }
+      }
+      .@{prefix}-container-left-bottom-charts {
+        margin-top: 5px;
+      }
+    }
+  }
+  .@{prefix}-container-right {
+    width: 1016px;
+    height: 572px;
+    background: #ffffff;
+    border: 1px solid #dbdfe6;
+    padding: 28px 40px 39px;
+    .@{prefix}-container-right-search {
+      .@{prefix}-container-right-search-item {
+        .@{prefix}-container-right-search-item-label {
+          height: 24px;
+          font-size: 14px;
+          font-weight: 400;
+          text-align: left;
+          color: #556377;
+          line-height: 24px;
+          margin-right: 8px;
+        }
+        .@{prefix}-container-right-search-item-rangePicker {
+          margin-left: 64px;
+          width: 300px;
+        }
+        .ant-radio-button-wrapper-checked {
+          background: #0068ff;
+          border-color: #0068ff;
+        }
+        .ant-radio-button-wrapper:hover {
+          color: #0068ff;
+        }
+        .ant-radio-group-solid .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled):hover {
+          color: #fff;
+        }
+        .@{prefix}-container-right-search-item-select {
+          width: 320px;
+        }
+      }
+    }
+  }
+}
