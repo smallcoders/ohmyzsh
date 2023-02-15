@@ -209,6 +209,10 @@
   OPERATE_DATA_USER: '/operate-data/user',
   OPERATE_DATA_GMV:  '/operate-data/gmv',
   OPERATE_DATA_FINANCEORDER:  '/operate-data/finance-order',
+
+  BASELINE: 'baseline',
+  BASELINE_CONTENT_MANAGE: 'baseline-content-manage',
+  BASELINE_BID_MANAGE: 'baseline-bid-manage',
 };
 
 export default [
@@ -270,6 +274,36 @@ export default [
         access: 'M_OD_YYSJ',
         name: '用户认证数据',
         component: './operate_data/data_manage/index',
+      },
+      
+    ],
+  },
+  {
+    path: routeName.BASELINE,
+    // code: 'M_OD',
+    // access: 'M_OD',
+    name: '基线管理',
+    icon: 'hdd',
+    routes: [
+      {
+        path: routeName.BASELINE,
+        // code: 'M_OD_GMV',
+        // access: 'M_OD_GMV',
+        redirect: routeName.BASELINE,
+      },
+      {
+        path: routeName.BASELINE_CONTENT_MANAGE,
+        // code: 'M_OD_GMV',
+        // access: 'M_OD_GMV',
+        name: '内容管理',
+        component: './baseline/content/index',
+      },
+      {
+        path: routeName.BASELINE_BID_MANAGE,
+        // code: 'M_OD_GMV',
+        // access: 'M_OD_GMV',
+        name: '招投标管理',
+        component: './baseline/bid/index',
       },
       
     ],
