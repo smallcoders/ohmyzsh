@@ -31,6 +31,7 @@ const UploadForm = (
       maxSize?: number;
       changeLoading?: (loaidng: boolean) => void;
       maxSizeKb?: number;
+      noUploadText?: boolean
     },
 ) => {
   const [fileId, setFileId] = useState<string | undefined | any>();
@@ -46,7 +47,9 @@ const UploadForm = (
   const uploadButton = (
     <div>
       <PlusOutlined />
-      <div style={{ marginTop: 8 }}>上传</div>
+      {
+        !props.noUploadText && <div style={{ marginTop: 8 }}>上传</div>
+      }
     </div>
   );
   const handleChange = (info: UploadChangeParam<UploadFile<any>>) => {
@@ -136,7 +139,9 @@ const UploadForm = (
   const reUpload = (
     <div className={'reupload'}>
       <img src={imgSrc} alt="图片损坏" />
-      <div>重新上传</div>
+      {
+        !props.noUploadText && <div>重新上传</div>
+      }
     </div>
   );
   const p = {...props}
@@ -182,6 +187,7 @@ const UploadForm = (
       >
         <div
           className="upload-area"
+          style={props.style || {}}
         >
           {props.children ? (
             props.children

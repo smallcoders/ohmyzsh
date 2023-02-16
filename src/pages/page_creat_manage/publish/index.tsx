@@ -11,6 +11,7 @@ import './index.less'
 import { history } from '@@/core/history';
 import { getTemplatePageInfo } from '@/services/page-creat-manage';
 import PreviewModal from '../edit/components/PreviewModal';
+import { routeName } from '../../../../config/routes';
 
 const publishOptions = [
   {
@@ -36,6 +37,7 @@ export default () => {
   const id = history.location.query?.id as string;
   const [publishType, setPublishType] = useState<string>("公开发布")
   const [templateJson, setTemplateJson] = useState<any>({})
+  const [templateInfo, setTemplateInfo] = useState<any>({})
   const [areaCodeOptions, setAreaCodeOptions] = useState<any>({county: [], city: [], province: []})
   const [templateName, setTemplateName] = useState<string>('')
   const [previewVisible, setPreviewVisible] = useState(false)
@@ -48,6 +50,7 @@ export default () => {
         if (res?.code === 0 && res?.result?.tmpJson){
           setTemplateJson(JSON.parse(res?.result?.tmpJson))
           setTemplateName(res?.result?.tmpName)
+          setTemplateInfo(res?.result)
         } else {
           message.error(res?.message)
         }
@@ -141,13 +144,17 @@ export default () => {
           <div className="page-name">{templateName}</div>
           <div className="preview-btn" onClick={() => {
             if(Object.keys(templateJson).length){
-              setPreviewVisible(true)
+              if (templateInfo.tmpType !== 1){
+                setPreviewVisible(true)
+              } else {
+                window.open(`${routeName.PAGE_CREAT_MANAGE_WEB_PREVIEW}?id=${templateInfo.tmpId || ''}&type=${templateInfo.tmpType || ''}`);
+              }
             }
           }}>
             <img src={previewIcon} alt='' /><span>预览</span>
           </div>
         </div>
-        <div className="title">表单发布</div>
+        <div className="title">{templateInfo.tmpType === '1' ? '网页' : '表单'}发布</div>
       </div>
       <div className="content">
         <div className="result-content">
@@ -166,31 +173,34 @@ export default () => {
           </Form.Item>
           <div className="publish-type-desc">
             {
-              publishType === '公开发布' ? "使用此方式发布表单，访问时不需要登录" : "使用此方法发布表单，访问时需要登录羚羊平台账号"
+              publishType === '公开发布' ? `使用此方式发布${templateInfo.tmpType === '1' ? '网页' : '表单'}，访问时不需要登录` : `使用此方法发布${templateInfo.tmpType === '1' ? '网页' : '表单'}，访问时需要登录羚羊平台账号`
             }
           </div>
-          <div className="link-info">
-            <div className="title">移动端</div>
-            <div className="link-content">
-              <div className="link" id="mobile-link">{getLink(true)}</div>
-              <div className="btn" onClick={() => {
-                const range = document.createRange();
-                range.selectNode(document.getElementById('mobile-link')!);
-                const selection: any = window.getSelection();
-                if (selection.rangeCount > 0) selection.removeAllRanges();
-                selection.addRange(range);
-                document.execCommand('copy');
-                message.success('复制成功');
-                selection.removeRange(range);
-              }}>复制</div>
-              <div className="line" />
-              <div className="btn">
-                <Popover trigger="click" content={getCode(true)} placement="bottomRight">
-                  二维码
-                </Popover>
+          {
+            templateInfo.tmpType !== 1 &&
+            <div className="link-info">
+              <div className="title">移动端</div>
+              <div className="link-content">
+                <div className="link" id="mobile-link">{getLink(true)}</div>
+                <div className="btn" onClick={() => {
+                  const range = document.createRange();
+                  range.selectNode(document.getElementById('mobile-link')!);
+                  const selection: any = window.getSelection();
+                  if (selection.rangeCount > 0) selection.removeAllRanges();
+                  selection.addRange(range);
+                  document.execCommand('copy');
+                  message.success('复制成功');
+                  selection.removeRange(range);
+                }}>复制</div>
+                <div className="line" />
+                <div className="btn">
+                  <Popover trigger="click" content={getCode(true)} placement="bottomRight">
+                    二维码
+                  </Popover>
+                </div>
               </div>
             </div>
-          </div>
+          }
           <div className="link-info">
             <div className="title">web端</div>
             <div className="link-content">

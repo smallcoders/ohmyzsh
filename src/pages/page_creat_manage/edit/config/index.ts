@@ -1332,17 +1332,46 @@ export const webComponentsList: ComponentGroup[] = [
     title: '基础字段',
     components: [
       {
+        label: '标题',
+        type: 'Title',
+        errorMsg: '',
+        config: {
+          text: '主标题',
+          fontWeight: 'bold',
+          fontSize: 28,
+          color: '#1E232A',
+          inputColor: '#1E232A',
+          lineHeight: 36,
+          textAlign: 'center',
+          paddingTop: 64,
+          paddingBottom: 24,
+          subTitle: {
+            text: '',
+            fontWeight: 'normal',
+            fontSize: 14,
+            color: '#1E232A',
+            inputColor: '#1E232A',
+            lineHeight: 22,
+            textAlign: 'center',
+            paddingTop: 64,
+            paddingBottom: 24,
+          }
+        },
+      },
+      {
         label: '文本',
         type: 'Text',
         errorMsg: '',
         config: {
           text: '文本',
           fontWeight: 'normal',
-          fontSize: 24,
-          color: '#333333',
-          inputColor: '#333333',
-          lineHeight: '28',
-          textAlign: 'left'
+          fontSize: 14,
+          color: '#1E232A',
+          inputColor: '#1E232A',
+          lineHeight: 22,
+          textAlign: 'center',
+          paddingTop: 24,
+          paddingBottom: 24,
         },
       },
       {
@@ -1350,11 +1379,18 @@ export const webComponentsList: ComponentGroup[] = [
         type: 'Image',
         errorMsg: '',
         config: {
-          text: '文本',
-          fontWeight: 'normal',
-          fontSize: 24,
-          color: '#333333',
-          textAlign: 'left'
+          imgStyle: 'main',
+          imgWidth: 1200,
+          imgHeight: 300,
+          duration: 5,
+          imgList: [{
+            img: '',
+            link: '',
+            index: 0
+          }],
+          lineNumber: 2,
+          columnNumber: 4,
+          isCarousel: false
         },
       },
       {
@@ -1362,11 +1398,10 @@ export const webComponentsList: ComponentGroup[] = [
         label: '视频',
         errorMsg: '',
         config: {
-          text: '文本',
-          fontWeight: 'normal',
-          fontSize: 24,
-          color: '#333333',
-          textAlign: 'left'
+          url: '',
+          videoAreaWidth: 1200,
+          videoAreaHeight: 675,
+          coverImageUrl: '',
         },
       },
     ]

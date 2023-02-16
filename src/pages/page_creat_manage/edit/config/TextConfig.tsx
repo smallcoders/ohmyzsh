@@ -1,11 +1,27 @@
-import { useState } from 'react';
-import { Form, Input, Popover } from 'antd';
+import { useState, useEffect, useRef } from 'react';
+import { Form, Input, InputNumber, Popover, Select, Tooltip } from 'antd';
 import { useConfig } from '../hooks/hooks'
+export const fontWeightOptions = [
+  {
+    label: "Regular",
+    value: "normal",
+  },
+  {
+    label: "Bold",
+    value: "bold",
+  }
+]
 
 const colorMapList = ["#CCDFFF","#DEE5FF","#BCDFFF","#0A309E","#D1EAFF"]
 
 const TextConfig = () => {
   const { selectWidgetItem, handleChange } = useConfig()
+  const inputRef = useRef<any>(null);
+  useEffect(() => {
+    if (inputRef?.current){
+      inputRef.current.focus()
+    }
+  }, [])
   const { config } = selectWidgetItem || {}
   const [textColorOpen, setTextColorOpen] = useState<boolean>(false)
 
@@ -20,8 +36,8 @@ const TextConfig = () => {
                 <div
                   onClick={() => {
                     setTextColorOpen(false)
-                    handleChange(item, 'color')
-                    handleChange(item, 'inputColor')
+                    handleChange(item, 'config.color')
+                    handleChange(item, 'config.inputColor')
                   }}
                   key={index}
                   style={{background: item}}
@@ -38,16 +54,35 @@ const TextConfig = () => {
   return (
     <>
       <Form.Item label="文本内容" required>
-        <Input.TextArea maxLength={300} value={config?.text} onChange={(event) => handleChange(event.target.value, 'config.children')} />
-      </Form.Item>
-      <Form.Item label="文本样式">
-        <div className="text-style">
-          <div className="text-style-item">标题</div>
-          <div className="text-style-item">副标题</div>
-          <div className="text-style-item">正文</div>
-        </div>
+        <Input.TextArea
+          onFocus={() => {
+            inputRef.current?.resizableTextArea.textArea.select()
+          }}
+          ref={inputRef}
+          maxLength={300}
+          value={config?.text}
+          onChange={(event) => handleChange(event.target.value, 'config.text')}
+        />
       </Form.Item>
       <Form.Item label="排版">
+        <div className="config-item">
+          <div className="config-item-label">字符:</div>
+          <div className="flex special-style">
+            <Select
+              options={fontWeightOptions}
+              value={config?.fontWeight}
+              onChange={(value) => {
+                handleChange(value, 'config.fontWeight')
+              }}
+            />
+            <InputNumber
+              value={config?.fontSize}
+              max={48}
+              min={12}
+              onChange={(value) => handleChange(value, 'config.fontSize')}
+            />
+          </div>
+        </div>
         <div className="config-item">
           <div className="config-item-label">字体颜色:</div>
           <div className="flex">
@@ -74,14 +109,14 @@ const TextConfig = () => {
                   maxLength={6}
                   value={config?.inputColor?.replace('#', '')}
                   onChange={(e) => {
-                    handleChange('inputColor', `#${e.target.value.toUpperCase()}`)
+                    handleChange(`#${e.target.value.toUpperCase()}`, 'config.inputColor' )
                   }}
                   onBlur={(event) => {
                     const {value} = event.target
                     if(value && /^[0-9A-F]{6}$/i.test(value)){
-                      handleChange('textColor', `#${value.toUpperCase()}`)
+                      handleChange(`#${value.toUpperCase()}`, 'config.color')
                     } else {
-                      handleChange('inputTextColor', config?.textColor)
+                      handleChange(config?.color,'config.inputColor')
                     }
                   }}
                 />
@@ -92,8 +127,39 @@ const TextConfig = () => {
         </div>
         <div className="config-item">
           <div className="config-item-label">对齐方式:</div>
-          <div className="flex">
-
+          <div className="flex align">
+            <Tooltip title="左对齐" placement="bottomLeft">
+              <div
+                className={config?.textAlign === 'left' ? 'left active' : 'left'}
+                onClick={() => {
+                  handleChange('left', 'config.textAlign')
+                }}
+              />
+            </Tooltip>
+            <Tooltip title="居中对齐" placement="bottomLeft">
+              <div
+                className={config?.textAlign === 'center' ? 'center active' : 'center'}
+                onClick={() => {
+                  handleChange('center', 'config.textAlign')
+                }}
+              />
+            </Tooltip>
+            <Tooltip title="右对齐" placement="bottomLeft">
+              <div
+                className={config?.textAlign === 'right' ? 'right active' : 'right'}
+                onClick={() => {
+                  handleChange('right', 'config.textAlign')
+                }}
+              />
+            </Tooltip>
+            <Tooltip title="两端对齐" placement="bottomLeft">
+              <div
+                className={config?.textAlign === 'justifyAlign' ? 'justify-align active' : 'justify-align'}
+                onClick={() => {
+                  handleChange('justifyAlign', 'config.textAlign')
+                }}
+              />
+            </Tooltip>
           </div>
         </div>
       </Form.Item>

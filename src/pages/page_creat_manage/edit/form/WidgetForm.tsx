@@ -1,4 +1,4 @@
-import { FC, useContext, useEffect, useRef } from 'react'
+import { FC, useContext, useEffect, useRef, useState } from 'react';
 import { Form, FormInstance } from 'antd'
 import Sortable from 'sortablejs'
 import { history } from 'umi';
@@ -25,6 +25,7 @@ const WidgetForm: FC<Props> = (props) => {
   const { state, dispatch } = useContext(DesignContext)
   const widgetFormListRef = useRef(state.widgetFormList)
   const selectWidgetItemRef = useRef(state.selectWidgetItem)
+  const [editWidth, setEditWidth] = useState<number>(1)
   const tmpType = history.location.query?.type as string
 
   useEffect(() => {
@@ -34,6 +35,10 @@ const WidgetForm: FC<Props> = (props) => {
   useEffect(() => {
     selectWidgetItemRef.current = state.selectWidgetItem
   }, [state.selectWidgetItem])
+
+  useEffect(() => {
+    setEditWidth(document.querySelector('.widget-form-list')?.clientWidth || 0)
+  }, [state.widgetFormList?.length])
 
   const sortableGroupDecorator = (instance: HTMLDivElement | null) => {
     if (instance) {
@@ -149,14 +154,14 @@ const WidgetForm: FC<Props> = (props) => {
           state.widgetFormList.length > 0 && tmpType !== '1' && <div className="questions-title">题目设置</div>
         }
         <Form {...state.formConfig} form={formInstance}>
-          <div ref={sortableGroupDecorator} className="widget-form-list">
+          <div style={state.widgetFormList.length > 0 && tmpType === '1' ? {background: state.webGlobalConfig.bgColor} : {}} ref={sortableGroupDecorator} className="widget-form-list">
             {!state.widgetFormList.length &&
             <div className="form-empty">
               <img src={emptyIcon} alt='' />
               从左侧拖拽来添加字段
             </div>}
             {state.widgetFormList.map((widgetFormItem) => (
-              <WidgetFormItem areaCodeOptions={areaCodeOptions} key={widgetFormItem.key} item={widgetFormItem} formInstance={formInstance} />
+              <WidgetFormItem editWidth={editWidth} areaCodeOptions={areaCodeOptions} key={widgetFormItem.key} item={widgetFormItem} formInstance={formInstance} />
             ))}
           </div>
         </Form>

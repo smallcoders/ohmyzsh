@@ -125,7 +125,7 @@ const DesignForm = () => {
               </Layout>
             </Content>
           </Layout>
-          <Sider className="widget-config-container" theme="light" width={300}>
+          <Sider className="widget-config-container" theme="light" width={320}>
             <Layout>
               <>
                 <Layout.Header>

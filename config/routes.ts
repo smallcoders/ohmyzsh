@@ -33,6 +33,7 @@
   PAGE_CREAT_MANAGE_PUBLISH: '/operation-activity/page_creat_manage/manage/publish',
   PAGE_CREAT_MANAGE_PAGE_LIST: '/operation-activity/page_creat_manage/manage',
   PAGE_CREAT_MANAGE_PAGE_DATA: '/operation-activity/page_creat_manage/manage/page_data',
+  PAGE_CREAT_MANAGE_WEB_PREVIEW: '/operation-activity/page_creat_manage/manage/web_preview',
 
   // 素材库管理
   MATERIAL_LIBRARY_MANAGE:'/operation-activity/material-library-manage/index',
@@ -271,7 +272,7 @@ export default [
         name: '用户认证数据',
         component: './operate_data/data_manage/index',
       },
-      
+
     ],
   },
   // {
@@ -1450,7 +1451,7 @@ export default [
             access: 'M_OA_CJHD',
             component: './operation_activity/activity_project/detail/spring-detail',
           },
-          
+
         ],
       },
       {
@@ -1477,6 +1478,13 @@ export default [
             name: '数据管理',
             hideInMenu: true,
             component: './page_creat_manage/page_data/index',
+          },
+          {
+            path: routeName.PAGE_CREAT_MANAGE_WEB_PREVIEW,
+            name: '网页设计预览',
+            hideInMenu: true,
+            layout: false,
+            component: './page_creat_manage/web_preview/index',
           },
           {
             path: routeName.PAGE_CREAT_MANAGE_EDIT,

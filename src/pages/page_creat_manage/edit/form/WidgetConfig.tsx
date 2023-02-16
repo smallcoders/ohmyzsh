@@ -2,6 +2,8 @@ import { FC } from 'react'
 import { Form } from 'antd'
 import ButtonConfig from '../config/ButtonConfig'
 import TextConfig from '../config/TextConfig'
+import TitleConfig from '../config/TitleConfig'
+import VideoConfig from '../config/VideoConfig'
 import RowConfig from '../config/RowConfig'
 import ColConfig from '../config/ColConfig'
 import CascaderConfig from '../config/CascaderConfig'
@@ -33,6 +35,8 @@ const WidgetConfig: FC = () => {
     <>
       <Form layout="vertical">
         {selectWidgetItem?.type === 'Button' && <ButtonConfig />}
+        {selectWidgetItem?.type === 'Title' && <TitleConfig />}
+        {selectWidgetItem?.type === 'Video' && <VideoConfig />}
         {selectWidgetItem?.type === 'Text' && <TextConfig />}
         {selectWidgetItem?.type === 'Row' && <RowConfig />}
         {selectWidgetItem?.type === 'Col' && <ColConfig />}

@@ -15,8 +15,9 @@ import { routeName } from '../../../../../config/routes';
 const Header = (props: any) => {
   const { callback, areaCodeOptions } = props
   const { state } = useContext(DesignContext)
-  const { handlerSetVisible, dispatch } = useConfig()
+  const { dispatch } = useConfig()
   const [previewVisible, setPreviewVisible] = useState(false)
+  const [newWinUrl, setNewWinUrl] = useState<any>(null)
   const history: any = useHistory();
   const tmpType = history.location.query?.type
   const checkParams = () => {
@@ -80,7 +81,7 @@ const Header = (props: any) => {
         tmpDesc: globalConfig.pageDesc,
         tmpJson: JSON.stringify(state),
         repeatAble: 1,
-        tmpType: 0,
+        tmpType: tmpType === '1' ? 1 : 0,
         state: 0,
       },
       params: paramsList
@@ -150,7 +151,24 @@ const Header = (props: any) => {
           {tmpType === '1' ? '网页设计' : '表单设计'}
         </div>
         <Space>
-          <div className="btn" onClick={handlerSetVisible(setPreviewVisible, true)}>
+          <div className="btn" onClick={() => {
+            if (tmpType === '1'){
+              localStorage.setItem('tmpInfo', JSON.stringify({
+                tmpJson: JSON.stringify(state),
+                tmpType: 1,
+                state: 0,
+              }))
+              if (!newWinUrl || newWinUrl && newWinUrl?.closed){
+                const winUrl = window.open(`${routeName.PAGE_CREAT_MANAGE_WEB_PREVIEW}?id=${state.id || ''}&type=${tmpType || ''}`);
+                setNewWinUrl(winUrl)
+              }
+              if (newWinUrl && !newWinUrl.closed){
+                newWinUrl.location.reload()
+              }
+            } else {
+              setPreviewVisible(true)
+            }
+          }}>
             <img src={preViewIcon} alt='' />
             <span>预览</span>
           </div>
@@ -170,7 +188,9 @@ const Header = (props: any) => {
         visible={previewVisible}
         json={state}
         areaCodeOptions={areaCodeOptions}
-        onCancel={handlerSetVisible(setPreviewVisible, false)}
+        onCancel={() => {
+          setPreviewVisible(false)
+        }}
       />
     </>
   )

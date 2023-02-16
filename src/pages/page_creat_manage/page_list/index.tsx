@@ -55,6 +55,7 @@ interface record {
   state: string | number,
   updateTime: string,
   tmpJson: string,
+  tmpType: number,
 }
 
 
@@ -106,14 +107,14 @@ export default () => {
     }).then((res) => {
       if (res.code === 0){
         antdMessage.success(`发布成功`);
-        history.push(`${routeName.PAGE_CREAT_MANAGE_PUBLISH}?id=${record.tmpId}`);
+        history.push(`${routeName.PAGE_CREAT_MANAGE_PUBLISH}?id=${record.tmpId}&type=${record.tmpType || ''}`);
       } else {
         antdMessage.error(`${res.message}`);
       }
     })
   }
   const checkLink = (record: record) => {
-    window.open(`${routeName.PAGE_CREAT_MANAGE_PUBLISH}?id=${record.tmpId}`);
+    window.open(`${routeName.PAGE_CREAT_MANAGE_PUBLISH}?id=${record.tmpId}&type=${record.tmpType || ''}`);
   }
   const checkData = (record: record) => {
     getTemplateData({
@@ -167,7 +168,7 @@ export default () => {
       tmpId: record.tmpId,
       type:0,
     }).then(() => {
-      history.push(`${routeName.PAGE_CREAT_MANAGE_EDIT}?id=${record.tmpId}`);
+      history.push(`${routeName.PAGE_CREAT_MANAGE_EDIT}?id=${record.tmpId}&type=${record.tmpType || ''}`);
     })
   }
 
@@ -285,9 +286,11 @@ export default () => {
       width: 150,
       render: (tmpName: string, record: record) => {
         return <span onClick={() => {
-          if (record.tmpJson){
+          if (record.tmpJson && record.tmpType !== 1){
             setTemplateJson(JSON.parse(record.tmpJson || '{}'))
             setPreviewVisible(true)
+          } else {
+            window.open(`${routeName.PAGE_CREAT_MANAGE_WEB_PREVIEW}?id=${record.tmpId || ''}&type=${record.tmpType || ''}`);
           }
         }} style={{cursor: 'pointer', color: '#6680FF'}}>{tmpName}</span>
       }
