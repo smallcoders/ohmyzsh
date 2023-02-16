@@ -22,17 +22,15 @@ const Header = (props: any) => {
   const tmpType = history.location.query?.type
   const checkParams = () => {
     const { widgetFormList, globalConfig, id, webGlobalConfig } =  state;
-    const newState = cloneDeep(state)
     const paramsList: any = []
     const paramsKeyList: string[] = []
     if (!widgetFormList.length){
       message.warn('请先设置题目', 2)
       return;
     }
-    let hasError = false
     if (tmpType !== '1'){
       if (widgetFormList.length){
-        widgetFormList.forEach((item, index) => {
+        widgetFormList.forEach((item) => {
           if (item?.config?.paramKey){
             paramsKeyList.push(item?.config?.paramKey)
             paramsList.push({
@@ -41,28 +39,7 @@ const Header = (props: any) => {
               paramDesc: item?.config?.paramDesc
             })
           }
-          if (!(item?.config?.paramKey)){
-            hasError = true
-            if (newState.selectWidgetItem?.key === item.key){
-              newState.selectWidgetItem!.errorMsg = '参数名不得为空'
-            }
-            newState.widgetFormList[index].errorMsg = '参数名不得为空'
-          } else if (/[^\w]/g.test(item?.config?.paramKey)){
-            hasError = true
-            if (newState.selectWidgetItem?.key === item.key){
-              newState.selectWidgetItem!.errorMsg = '只允许输入大小写字母、下划线及数字'
-            }
-            newState.widgetFormList[index]!.errorMsg = '只允许输入大小写字母、下划线及数字'
-          }
         })
-      }
-      if (hasError || [...(new Set(paramsKeyList))].length < paramsKeyList.length || paramsKeyList.length < widgetFormList.length){
-        dispatch({
-          type: ActionType.SET_GLOBAL,
-          payload: newState
-        })
-        message.warn('请检查各题目参数名是否按要求定义', 2)
-        return
       }
       if (globalConfig.showRegister){
         paramsList.push({

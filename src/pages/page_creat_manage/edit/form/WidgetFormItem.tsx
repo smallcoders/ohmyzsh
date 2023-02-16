@@ -154,6 +154,11 @@ const WidgetFormItem: FC<Props> = (props) => {
               ...widgetFormItem,
               key: `${widgetFormItem.type}_${uuid}`
             }
+            // 自动生成参数提交
+            const configKeys = Object.keys(newItem.config || {})
+            if (configKeys.indexOf('paramKey') !== -1){
+              newItem.config.paramKey = `${widgetFormItem.type}_${key}`
+            }
             newChildNodes.splice(newIndex, 0, newItem)
             dispatch({
               type: ActionType.SET_WIDGET_FORM_LIST,
@@ -199,6 +204,11 @@ const WidgetFormItem: FC<Props> = (props) => {
         if (newList[index].key === currentKey) {
           newItem = cloneDeep(newList[index])
           newItem.key = `${item.type}_${+new Date()}`
+          // 自动生成参数提交
+          const configKeys = Object.keys(newItem.config || {})
+          if (configKeys.indexOf('paramKey') !== -1 && newItem.config){
+            newItem.config.paramKey = newItem.key
+          }
           newList.splice(index, 0, newItem)
           if (newList[index].childNodes) {
             newList[index].childNodes = handleWidgetFormItem(newList[index].childNodes!)

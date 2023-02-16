@@ -100,6 +100,11 @@ const WidgetForm: FC<Props> = (props) => {
               ...widgetFormItem,
               key: `${widgetFormItem.type}_${key}`
             }
+            // 自动生成参数提交
+            const configKeys = Object.keys(newItem.config || {})
+            if (configKeys.indexOf('paramKey') !== -1){
+              newItem.config.paramKey = `${widgetFormItem.type}_${key}`
+            }
 
             widgetFormList.splice(newIndex, 0, newItem)
 

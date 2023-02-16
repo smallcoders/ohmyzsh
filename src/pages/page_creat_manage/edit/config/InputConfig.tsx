@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import {
   Checkbox,
   Form,
@@ -8,13 +8,10 @@ import {
 } from 'antd';
 import questionIcon from '@/assets/page_creat_manage/question_icon.png'
 import { useConfig } from '../hooks/hooks'
-import { DesignContext } from '../store';
 import { regOptions } from '../utils/options'
 
 const InputConfig = () => {
   const { selectWidgetItem, handleChange } = useConfig()
-  const { state } = useContext(DesignContext)
-  const { widgetFormList } = state
   const [showLengthInput, setShowLengthInput] = useState<boolean>(false)
   return (
     <>
@@ -39,37 +36,6 @@ const InputConfig = () => {
         >
           显示标题
         </Checkbox>
-      </Form.Item>
-      <Form.Item
-        required
-        label="参数名"
-        tooltip="此项用于统计数据时定义字段，只允许输入大小写字母、下划线及数字"
-      >
-        {selectWidgetItem?.errorMsg && <div className="config-error-msg">{selectWidgetItem.errorMsg}</div>}
-        <Input
-          value={selectWidgetItem?.config?.paramKey}
-          onBlur={(e) => {
-            if(!e.target.value){
-              handleChange('参数名不得为空', 'errorMsg')
-              return
-            } else if(/[^\w]/g.test(e.target.value)){
-              handleChange('只允许输入大小写字母、下划线及数字', 'errorMsg')
-              return
-            } {
-              const repeatParam = widgetFormList.filter((item: any) => {
-                return item.key !== selectWidgetItem!.key && item.config.paramKey === selectWidgetItem!.config!.paramKey
-              })
-              if (repeatParam.length){
-                handleChange('此参数名已存在，请更换', 'errorMsg')
-              } else {
-                handleChange('', 'errorMsg')
-              }
-            }
-          }}
-          onChange={(event) => {
-            handleChange(event.target.value, 'config.paramKey')
-          }}
-        />
       </Form.Item>
       <Form.Item label="描述信息" >
         <Input.TextArea
