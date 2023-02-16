@@ -173,7 +173,7 @@ export default () => {
           </Form.Item>
           <div className="publish-type-desc">
             {
-              publishType === '公开发布' ? `使用此方式发布${templateInfo.tmpType === 1 ? '网页' : '表单'}，访问时不需要登录` : `使用此方法发布${templateInfo.tmpType === '1' ? '网页' : '表单'}，访问时需要登录羚羊平台账号`
+              publishType === '公开发布' ? `使用此方式发布${templateInfo.tmpType === 1 ? '网页' : '表单'}，访问时不需要登录` : `使用此方法发布${templateInfo.tmpType === 1 ? '网页' : '表单'}，访问时需要登录羚羊平台账号`
             }
           </div>
           {
