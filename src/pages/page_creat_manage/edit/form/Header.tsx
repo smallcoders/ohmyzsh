@@ -21,7 +21,7 @@ const Header = (props: any) => {
   const history: any = useHistory();
   const tmpType = history.location.query?.type
   const checkParams = () => {
-    const { widgetFormList, globalConfig, id } =  state;
+    const { widgetFormList, globalConfig, id, webGlobalConfig } =  state;
     const newState = cloneDeep(state)
     const paramsList: any = []
     const paramsKeyList: string[] = []
@@ -30,55 +30,57 @@ const Header = (props: any) => {
       return;
     }
     let hasError = false
-    if (widgetFormList.length){
-      widgetFormList.forEach((item, index) => {
-        if (item?.config?.paramKey){
-          paramsKeyList.push(item?.config?.paramKey)
-          paramsList.push({
-            paramName: item.config?.paramKey,
-            paramType: item.config?.paramType,
-            paramDesc: item?.config?.paramDesc
-          })
-        }
-        if (!(item?.config?.paramKey)){
-          hasError = true
-          if (newState.selectWidgetItem?.key === item.key){
-            newState.selectWidgetItem!.errorMsg = '参数名不得为空'
+    if (tmpType !== '1'){
+      if (widgetFormList.length){
+        widgetFormList.forEach((item, index) => {
+          if (item?.config?.paramKey){
+            paramsKeyList.push(item?.config?.paramKey)
+            paramsList.push({
+              paramName: item.config?.paramKey,
+              paramType: item.config?.paramType,
+              paramDesc: item?.config?.paramDesc
+            })
           }
-          newState.widgetFormList[index].errorMsg = '参数名不得为空'
-        } else if (/[^\w]/g.test(item?.config?.paramKey)){
-          hasError = true
-          if (newState.selectWidgetItem?.key === item.key){
-            newState.selectWidgetItem!.errorMsg = '只允许输入大小写字母、下划线及数字'
+          if (!(item?.config?.paramKey)){
+            hasError = true
+            if (newState.selectWidgetItem?.key === item.key){
+              newState.selectWidgetItem!.errorMsg = '参数名不得为空'
+            }
+            newState.widgetFormList[index].errorMsg = '参数名不得为空'
+          } else if (/[^\w]/g.test(item?.config?.paramKey)){
+            hasError = true
+            if (newState.selectWidgetItem?.key === item.key){
+              newState.selectWidgetItem!.errorMsg = '只允许输入大小写字母、下划线及数字'
+            }
+            newState.widgetFormList[index]!.errorMsg = '只允许输入大小写字母、下划线及数字'
           }
-          newState.widgetFormList[index]!.errorMsg = '只允许输入大小写字母、下划线及数字'
-        }
-      })
-    }
-    if (hasError || [...(new Set(paramsKeyList))].length < paramsKeyList.length || paramsKeyList.length < widgetFormList.length){
-      dispatch({
-        type: ActionType.SET_GLOBAL,
-        payload: newState
-      })
-      message.warn('请检查各题目参数名是否按要求定义', 2)
-      return
-    }
-    if (globalConfig.showRegister){
-      paramsList.push({
-        paramName: 'registerName',
-        paramType: 'string',
-        paramDesc: '注册姓名'
-      })
-      paramsList.push({
-        paramName: 'registerPhone',
-        paramType: 'string',
-        paramDesc: '注册手机号码'
-      })
+        })
+      }
+      if (hasError || [...(new Set(paramsKeyList))].length < paramsKeyList.length || paramsKeyList.length < widgetFormList.length){
+        dispatch({
+          type: ActionType.SET_GLOBAL,
+          payload: newState
+        })
+        message.warn('请检查各题目参数名是否按要求定义', 2)
+        return
+      }
+      if (globalConfig.showRegister){
+        paramsList.push({
+          paramName: 'registerName',
+          paramType: 'string',
+          paramDesc: '注册姓名'
+        })
+        paramsList.push({
+          paramName: 'registerPhone',
+          paramType: 'string',
+          paramDesc: '注册手机号码'
+        })
+      }
     }
     const data = {
       config: {
-        tmpName: globalConfig.pageName,
-        tmpDesc: globalConfig.pageDesc,
+        tmpName: tmpType === '1' ? webGlobalConfig.pageName : globalConfig.pageName,
+        tmpDesc: tmpType === '1' ? webGlobalConfig.pageDesc : globalConfig.pageDesc,
         tmpJson: JSON.stringify(state),
         repeatAble: 1,
         tmpType: tmpType === '1' ? 1 : 0,
@@ -135,7 +137,7 @@ const Header = (props: any) => {
           callback(data.config.tmpJson, 'publish')
         }
         antdMessage.success(`发布成功`);
-        history.replace(`${routeName.PAGE_CREAT_MANAGE_PUBLISH}?id=${id || res.result}`);
+        history.replace(`${routeName.PAGE_CREAT_MANAGE_PUBLISH}?id=${id || res.result}&type=${tmpType || ''}`);
       } else {
         antdMessage.error(`${res.message}`);
       }

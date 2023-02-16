@@ -175,6 +175,13 @@ const TitleConfig = () => {
         <Input.TextArea
           maxLength={300}
           value={config?.subTitle?.text}
+          onBlur={(event) => {
+            if (!event.target.value){
+              handleChange(24, 'config.paddingBottom')
+            } else {
+              handleChange(0, 'config.paddingBottom')
+            }
+          }}
           onChange={(event) => handleChange(event.target.value, 'config.subTitle.text')}
         />
       </Form.Item>

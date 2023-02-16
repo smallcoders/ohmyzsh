@@ -154,11 +154,11 @@ export default () => {
             <img src={previewIcon} alt='' /><span>预览</span>
           </div>
         </div>
-        <div className="title">{templateInfo.tmpType === '1' ? '网页' : '表单'}发布</div>
+        <div className="title">{templateInfo.tmpType === 1 ? '网页' : '表单'}发布</div>
       </div>
       <div className="content">
         <div className="result-content">
-          <div className="status"><img src={successIcon} alt='' />表单已发布</div>
+          <div className="status"><img src={successIcon} alt='' />{templateInfo.tmpType === 1 ? '网页' : '表单'}已发布</div>
           <div className="desc">可在运营模板配置列表对表单进行管理</div>
         </div>
         <div className="main-content">
@@ -173,7 +173,7 @@ export default () => {
           </Form.Item>
           <div className="publish-type-desc">
             {
-              publishType === '公开发布' ? `使用此方式发布${templateInfo.tmpType === '1' ? '网页' : '表单'}，访问时不需要登录` : `使用此方法发布${templateInfo.tmpType === '1' ? '网页' : '表单'}，访问时需要登录羚羊平台账号`
+              publishType === '公开发布' ? `使用此方式发布${templateInfo.tmpType === 1 ? '网页' : '表单'}，访问时不需要登录` : `使用此方法发布${templateInfo.tmpType === '1' ? '网页' : '表单'}，访问时需要登录羚羊平台账号`
             }
           </div>
           {

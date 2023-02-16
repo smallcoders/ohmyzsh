@@ -1353,7 +1353,7 @@ export const webComponentsList: ComponentGroup[] = [
             inputColor: '#1E232A',
             lineHeight: 22,
             textAlign: 'center',
-            paddingTop: 64,
+            paddingTop: 12,
             paddingBottom: 24,
           }
         },
