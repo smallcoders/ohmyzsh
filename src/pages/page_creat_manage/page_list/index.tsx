@@ -302,6 +302,20 @@ export default () => {
       width: 250,
     },
     {
+      title: 'pv',
+      dataIndex: 'pv',
+      render: (pv: string) => {
+        return <span>{pv || '--'}</span>
+      }
+    },
+    {
+      title: 'uv',
+      dataIndex: 'uv',
+      render: (uv: string) => {
+        return <span>{uv || '--'}</span>
+      }
+    },
+    {
       title: '模板状态',
       dataIndex: 'state',
       width: 100,
