@@ -76,7 +76,7 @@ export default () => {
     totalCount: 0,
     pageTotal: 0,
   });
-  const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize, templateType: number = 0) => {
+  const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize, templateType: number = tmpType) => {
     try {
       const { result, totalCount, pageTotal, code, message } = await getPageList({
         pageIndex,
@@ -154,7 +154,7 @@ export default () => {
             const { totalCount, pageIndex, pageSize } = pageInfo
             const newTotal = totalCount - 1;
             const newPageTotal = Math.ceil(newTotal / pageSize)
-            getPage(pageIndex >  newPageTotal ? newPageTotal : pageIndex)
+            getPage(pageIndex >  newPageTotal ? newPageTotal : pageIndex, pageSize, tmpType)
           } else {
             antdMessage.error(`${res.message}`);
           }
@@ -188,7 +188,7 @@ export default () => {
         }).then((res) => {
           if (res.code === 0){
             antdMessage.success(`下架成功`);
-            getPage(pageInfo.pageIndex)
+            getPage(pageInfo.pageIndex, pageInfo.pageSize, tmpType)
           } else {
             antdMessage.error(`${res.message}`);
           }
