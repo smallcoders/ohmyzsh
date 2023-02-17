@@ -1,7 +1,7 @@
 import { message, Upload } from 'antd';
 import type { RcFile, UploadChangeParam, UploadFile, UploadProps } from 'antd/lib/upload/interface';
 import type { ReactNode, RefAttributes } from 'react';
-import { useEffect } from 'react';
+import { useState } from 'react';
 import './upload-form.less';
 
 const UploadForm = (
@@ -13,9 +13,17 @@ const UploadForm = (
       isSkip?: boolean;
     },
 ) => {
+  const [uploadStatus, setUploadStatus] = useState<boolean>(false)
   const handleChange = (info: UploadChangeParam<UploadFile<any>>) => {
     const newFileList = [...info.fileList] as any;
     // 2. Read from response and show file link
+    if (newFileList?.[0]?.status === "uploading"){
+      setUploadStatus(true)
+    }
+    console.log(newFileList?.[0]?.status, '123123123')
+    if (newFileList?.[0]?.status === "done"){
+      setUploadStatus(false)
+    }
     newFileList?.map((file: any) => {
       if (file.response) {
         props.onChange?.(file.response);
@@ -23,10 +31,6 @@ const UploadForm = (
       return file;
     });
   };
-
-  useEffect(() => {
-    console.log(props.value);
-  }, [props.value]);
 
   const beforeUpload = (file: RcFile, files: RcFile[]) => {
     if (props.beforeUpload) {
@@ -70,7 +74,11 @@ const UploadForm = (
 
   const isOpen = props?.maxCount ? (props.value?.length || 0) < props?.maxCount : true;
   return (
-    <>
+    <div onClick={() => {
+      if (uploadStatus){
+        message.warn(`视频上传中，请稍后`);
+      }
+    }}>
       {props.tooltip}
       <Upload
         {...props}
@@ -79,11 +87,11 @@ const UploadForm = (
         onChange={handleChange}
         beforeUpload={beforeUpload}
         onRemove={onRemove}
-        openFileDialogOnClick={isOpen}
+        openFileDialogOnClick={!uploadStatus && isOpen}
       >
         {props.children}
       </Upload>
-    </>
+    </div>
   );
 };
 export default UploadForm;

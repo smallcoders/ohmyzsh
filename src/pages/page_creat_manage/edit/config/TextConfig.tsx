@@ -12,7 +12,7 @@ export const fontWeightOptions = [
   }
 ]
 
-const colorMapList = ["#CCDFFF","#DEE5FF","#BCDFFF","#0A309E","#D1EAFF"]
+const colorMapList = ["#1E232A","#556377","#8290A6","#C4CAD5","#0068FF"]
 
 const TextConfig = () => {
   const { selectWidgetItem, handleChange } = useConfig()
