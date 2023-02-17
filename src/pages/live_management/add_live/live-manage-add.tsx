@@ -359,7 +359,7 @@ export default () => {
                 ]}
               >
                 {isDetail ? (
-                  <Image src={editingItem?.shareImagePath} width={200} />
+                  <Image src={editingItem?.coverImagePath} width={200} />
                 ) : (
                   <UploadForm
                   listType="picture-card"
@@ -388,7 +388,7 @@ export default () => {
                 ]}
               >
                 {isDetail ? (
-                  <Image src={editingItem?.backgroundImagePath} width={200} />
+                  <Image src={editingItem?.shareImagePath} width={200} />
                 ) : (
                   <UploadForm
                   listType="picture-card"
@@ -417,7 +417,7 @@ export default () => {
                 ]}
               >
                 {isDetail ? (
-                  <Image src={editingItem?.coverImagePath} width={200} />
+                  <Image src={editingItem?.backgroundImagePath} width={200} />
                 ) : (
                   <UploadForm
                   listType="picture-card"
