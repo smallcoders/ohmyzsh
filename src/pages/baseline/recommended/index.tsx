@@ -11,7 +11,6 @@ import {
   InputNumber,
   Tag
 } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
@@ -138,19 +137,19 @@ export default () => {
     );
   };
 
-  const onDelete = async (id: string) => {
-    try {
-      const updateStateResult = await deleteTag(id);
-      if (updateStateResult.code === 0) {
-        message.success(`删除成功`);
-        getPage();
-      } else {
-        message.error(`删除失败，请重试`);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // const onDelete = async (id: string) => {
+  //   try {
+  //     const updateStateResult = await deleteTag(id);
+  //     if (updateStateResult.code === 0) {
+  //       message.success(`删除成功`);
+  //       getPage();
+  //     } else {
+  //       message.error(`删除失败，请重试`);
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   const columns = [
     {
