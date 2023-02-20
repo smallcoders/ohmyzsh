@@ -20,6 +20,7 @@ import type Common from '@/types/common';
 import type NeedVerify from '@/types/user-config-need-verify';
 import { routeName } from '../../../../config/routes';
 import { deleteBid, getBidPage, onOffShelvesById } from '@/services/baseline';
+import moment from 'moment';
 const sc = scopedClasses('science-technology-manage-creative-need');
 const sourceObj = {
   TENDERING_SOURCE1: '剑鱼标讯'
@@ -113,7 +114,7 @@ export default () => {
       dataIndex: 'sort',
       width: 80,
       render: (_: any, _record: any, index: number) =>
-      pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
+        pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
       title: '公告标题',
@@ -171,17 +172,20 @@ export default () => {
       title: '内容状态',
       dataIndex: 'status',
       isEllipsis: true,
+      render: (_: number) => _ === 0 ? '下架' : '上架',
       width: 150,
     },
     {
       title: '发布时间',
       dataIndex: 'publishTime',
+      render: (_: string) => _ ? moment(_).format('YYYY-MM-DD HH:mm:ss') : '--',
       isEllipsis: true,
       width: 150,
     },
     {
       title: '上架时间',
       dataIndex: 'updateTime',
+      render: (_: string) => _ ? moment(_).format('YYYY-MM-DD HH:mm:ss') : '--',
       isEllipsis: true,
       width: 150,
     },
@@ -199,35 +203,24 @@ export default () => {
               Modal.confirm({
                 title: '删除数据',
                 content: '删除后，系统将不再推荐该内容，确定删除？',
-                onOk: () => { onDelete(record) },
+                onOk: () => { onDelete(record?.id) },
                 okText: '删除'
               })
             }}>
               删除
             </Button>
             <Button
+              style={{ padding: 0 }}
               type="link"
               onClick={() => {
-                window.open(routeName.BASELINE_CONTENT_MANAGE_DETAIL);
+                window.open(routeName.BASELINE_BID_MANAGE_DETAIL + `?id=${record?.id}`);
               }}
             >
               详情
             </Button>
-            <Button
+            {record?.status === 1 ? <Button
               type="link"
-              onClick={() => {
-                Modal.confirm({
-                  title: '提示',
-                  content: '确定将内容上架？',
-                  onOk: () => { onOffShelves(record.id, true) },
-                  okText: '上架'
-                })
-              }}
-            >
-              下架
-            </Button>
-            <Button
-              type="link"
+              style={{ padding: 0 }}
               onClick={() => {
                 Modal.confirm({
                   title: '提示',
@@ -237,8 +230,22 @@ export default () => {
                 })
               }}
             >
+              下架
+            </Button> : <Button
+              type="link"
+              style={{ padding: 0 }}
+              onClick={() => {
+                Modal.confirm({
+                  title: '提示',
+                  content: '确定将内容上架？',
+                  onOk: () => { onOffShelves(record.id, true) },
+                  okText: '上架'
+                })
+              }}
+            >
               上架
-            </Button>
+            </Button>}
+
           </Space>
           // </Access>
         )
