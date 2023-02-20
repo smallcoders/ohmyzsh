@@ -1,12 +1,13 @@
 import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
 import { PageContainer } from '@ant-design/pro-layout';
-import React, {useState} from "react";
-import {Button, Col, Form, Input, Row, Select, Space} from "antd";
-import type LogoutVerify from "@/types/user-config-logout-verify";
+import React, {useEffect, useState} from "react";
+import {Button, Col, Form, Input, InputNumber, message, Popconfirm, Row, Select} from "antd";
 import SelfTable from "@/components/self_table";
 import moment from "moment/moment";
 import type Common from "@/types/common";
+import {deleteHotRecommend, editHotRecommend, queryHotRecommend} from "@/services/topic";
+import {InfoOutlined} from "@ant-design/icons";
 
 export default () => {
   const sc = scopedClasses('baseline-topic');
@@ -15,13 +16,14 @@ export default () => {
     wrapperCol: { span: 16 },
   };
   const [searchForm] = Form.useForm();
-  // const [dataSource, setDataSource] = useState<any>([]);
+  const [dataSource, setDataSource] = useState<any>([]);
   const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
     pageIndex: 1,
     pageSize: 10,
-    totalCount: 1,
+    totalCount: 0,
     pageTotal: 0,
   });
+  const [weightForm] = Form.useForm();
   const [searchContent, setSearChContent] = useState<any>({});
   const useSearchNode = (): React.ReactNode => {
     return (
@@ -29,17 +31,17 @@ export default () => {
         <Form {...formLayout} form={searchForm}>
           <Row>
             <Col span={6}>
-              <Form.Item name="topicName" label="话题名称">
+              <Form.Item name="topic" label="话题名称">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
             <Col span={6}>
-              <Form.Item name="publisher" label="发布人">
+              <Form.Item name="publicUserName" label="发布人">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
             <Col span={6}>
-              <Form.Item name="publishState" label="发布状态">
+              <Form.Item name="enable" label="发布状态">
                 <Select placeholder="请选择" allowClear style={{ width: '200px'}}>
                   <Select.Option value={0}>已发布</Select.Option>
                   <Select.Option value={1}>未发布</Select.Option>
@@ -73,41 +75,92 @@ export default () => {
       </div>
     );
   };
-  const dataSource = [{
-    cellStyleMap: {},
-    id: 103,
-    topicName: "话题名称话题名称话题名称",
-    publishState: 0,
-    invoiceTypeStr: null,
-    associatedContent: 100,
-    weight: 100,
-    totalPriceDou: 0,
-    publisher: 0,
-    invoiceFormStr: null,
-    publishTime: 1666317739000
-  }]
+  const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
+    try {
+      const { result, totalCount, pageTotal, code } = await queryHotRecommend({
+        pageIndex,
+        pageSize,
+        ...searchContent,
+      });
+      if (code === 0) {
+        setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
+        setDataSource(result);
+      } else {
+        message.error(`请求分页数据失败`);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    getPage();
+  }, [searchContent]);
+  const remove = async (id: string) => {
+    try {
+      const removeRes = await deleteHotRecommend(id);
+      if (removeRes.code === 0) {
+        message.success(`删除成功`);
+        getPage();
+      } else {
+        message.error(`删除失败，原因:{${removeRes.message}}`);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  // 上下架
+  const editState = async (id: string, updatedState: number) => {
+    try {
+      const tooltipMessage = updatedState === 0 ? '下架' : '上架';
+      const updateStateResult = await editHotRecommend({ id, enable: updatedState });
+      if (updateStateResult.code === 0) {
+        message.success(`${tooltipMessage}成功`);
+        getPage();
+      } else {
+        message.error(`${tooltipMessage}失败，原因:{${updateStateResult.message}}`);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  // 编辑权重
+  const editSort = async (id: string, value: number) => {
+    console.log(id, value);
+    const editRes = await editHotRecommend({
+      id: id,
+      weight: value
+    })
+    if (editRes.code === 0) {
+      message.success(`编辑权重成功！`);
+      getPage();
+    } else {
+      message.error(`编辑权重失败，原因:{${editRes.message}}`);
+    }
+  }
   const columns = [
     {
       title: '序号',
       dataIndex: 'sort',
       width: 80,
-      render: (_: any, _record: LogoutVerify.Content, index: number) =>
+      render: (_: any, _record: any, index: number) =>
         pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
       title: '话题名称',
-      dataIndex: 'topicName',
+      dataIndex: 'topic',
       isEllipsis: true,
       width: 200,
     },
     {
       title: '发布状态',
-      dataIndex: 'publishState',
+      dataIndex: 'enable',
       width: 100,
+      render: (_: any, _record: any) =>
+        _record.enable ? '上架':'下架'
     },
     {
       title: '关联内容数',
-      dataIndex: 'associatedContent',
+      dataIndex: 'contentCount',
       width: 120,
     },
     {
@@ -117,12 +170,12 @@ export default () => {
     },
     {
       title: '发布人',
-      dataIndex: 'publisher',
+      dataIndex: 'publishUserName',
       width: 100,
     },
     {
       title: '发布时间',
-      dataIndex: 'publishTime',
+      dataIndex: 'createTime',
       width: 190,
       render: (_: string) => moment(_).format('YYYY-MM-DD HH:mm:ss'),
     },
@@ -135,30 +188,79 @@ export default () => {
         return (
           <div className={sc('container-option')}>
               <Button type="link" onClick={() => {
-                window.open(`/purchase-manage/order-manage/detail?id=${record.orderNo}&type=2`)
+                window.open(`/baseline/baseline-topic-manage/detail?recommendId=${record?.id}`)
               }}>
                 详情
               </Button>
+            {record.enable && (
               <Button type="link" onClick={() => {
-                window.open(`/purchase-manage/order-manage/detail?id=${record.orderNo}&type=2`)
+                window.open(`/baseline/baseline-topic-manage/add?id=${record?.id}`)
               }}>
                 编辑
               </Button>
-            <Button type="link" onClick={() => {
-              window.open(`/purchase-manage/order-manage/detail?id=${record.orderNo}&type=2`)
-            }}>
-              上架
-            </Button>
-            <Button type="link" onClick={() => {
-              window.open(`/purchase-manage/order-manage/detail?id=${record.orderNo}&type=2`)
-            }}>
-              权重设置
-            </Button>
-              <Button type="link" onClick={() => {
-                window.open(`/purchase-manage/order-manage/detail?id=${record.orderNo}&type=2`)
-              }}>
+            )}
+            {record.enable ? (
+              <Popconfirm
+                title="确定下架么？"
+                okText="下架"
+                cancelText="取消"
+                onConfirm={() => editState(record.id as string, 0)}
+              >
+                <Button type="link">下架</Button>
+              </Popconfirm>
+            )
+            : (
+              <Popconfirm
+                title="确定上架么？"
+                okText="上架"
+                cancelText="取消"
+                onConfirm={() => editState(record.id as string, 1)}
+              >
+                <Button type="link" >上架</Button>
+              </Popconfirm>
+            )}
+            <Popconfirm
+              placement="topRight"
+              title={
+                <>
+                  <Form form={weightForm} {...formLayout} style={{width:'300px'}}>
+                    <Form.Item
+                      style={{flexFlow:'column'}}
+                      name={'weight'}
+                      label="权重设置">
+                      <InputNumber style={{width:'280px'}} placeholder={'请输入1~100的整数，数字越大排名越小'} min={1} max={100} />
+                    </Form.Item>
+                  </Form>
+                </>
+              }
+              icon={<InfoOutlined style={{ display: 'none' }} />}
+              okText="确定"
+              cancelText="取消"
+              onConfirm={() => {
+                editSort(record.id, weightForm.getFieldValue('weight'))
+              }}
+            >
+              <Button
+                type="link"
+                onClick={() => {
+                  weightForm.setFieldsValue({ weight: record.sort })
+                }}
+              >
+                权重设置
+              </Button>
+            </Popconfirm>
+            {!record.enable && (
+              <Popconfirm
+                title="确定删除么？"
+                okText="确定"
+                cancelText="取消"
+                onConfirm={() => remove(record.id as string)}
+              >
+              <Button type="link" >
                 删除
               </Button>
+              </Popconfirm>
+              )}
           </div>
         )
       },
@@ -172,6 +274,9 @@ export default () => {
         <Button
           type="primary"
           key="addStyle"
+          onClick={()=>{
+            window.open(`/baseline/baseline-topic-manage/add`)
+          }}
         >
           新增话题
         </Button>
@@ -186,6 +291,7 @@ export default () => {
             pageInfo.totalCount === 0
               ? false
               : {
+                onChange: getPage,
                 total: pageInfo.totalCount,
                 current: pageInfo.pageIndex,
                 pageSize: pageInfo.pageSize,
