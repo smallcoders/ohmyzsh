@@ -219,6 +219,8 @@
   BASELINE_TAG_MANAGE: 'baseline-tag-manage',
   BASELINE_TAG_MANAGE_DETAIL: 'baseline-bid-tag-detail',
   BASELINE_TOPIC_MANAGE: 'baseline-topic-manage',
+  BASELINE_RECOMMENDED_MANAGE_DETAIL: 'baseline-recommended-detail',
+  BASELINE_RECOMMENDED_MANAGE: 'baseline-recommended'
 };
 
 export default [
@@ -345,6 +347,17 @@ export default [
         name: '话题管理',
         component: './baseline/topic/index',
       },
+      {
+        path: routeName.BASELINE_RECOMMENDED_MANAGE_DETAIL,
+        name: '推荐位详情',
+        component: './baseline/recommended/detail',
+        hideInBreadcrumb: true,
+      },
+      {
+        path: routeName.BASELINE_RECOMMENDED_MANAGE,
+        name: '推荐位管理',
+        component: './baseline/recommended/index',
+      }
     ],
   },
   {
