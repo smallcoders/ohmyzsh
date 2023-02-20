@@ -206,16 +206,23 @@ const ImageConfig = () => {
                   }}
                   noUploadText={true}
                 />
-                <Input
-                  value={option.link}
-                  maxLength={50}
-                  placeholder="https://"
-                  onChange={(event) => {
-                    const newConfigImgList = clone(selectWidgetItem!.config!.imgList)
-                    newConfigImgList[id].link = event.target.value
-                    handleChange(newConfigImgList, 'config.imgList')
-                  }}
-                />
+                <div>
+                  <Tooltip
+                    title={option.link}
+                  >
+                    <Input
+                      value={option.link}
+                      maxLength={50}
+                      className="ellipsis"
+                      placeholder="https://"
+                      onChange={(event) => {
+                        const newConfigImgList = clone(selectWidgetItem!.config!.imgList)
+                        newConfigImgList[id].link = event.target.value
+                        handleChange(newConfigImgList, 'config.imgList')
+                      }}
+                    />
+                  </Tooltip>
+                </div>
                 {
                   config?.imgStyle !== 'matrix' &&
                   <Button
