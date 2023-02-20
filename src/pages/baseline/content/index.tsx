@@ -8,6 +8,7 @@ import {
   message,
   Space,
   Modal,
+  Tooltip,
 } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
@@ -161,6 +162,13 @@ export default () => {
       title: '标题',
       dataIndex: 'title',
       isEllipsis: true,
+      render: (_: any, record: any) => <div style={{display: 'flex', gap: 10}}>
+        <span>
+          {_}
+        </span>
+        {record?.isTop && <div style={{ background: '#169BD5', color: '#FFF', padding: '0 2px', borderRadius: '2px' }}>已置顶</div>}
+        {record?.riskInfo && <Tooltip title={record?.riskInfo}><div style={{ background: '#D7001A', color: '#FFF', padding: '0 2px', borderRadius: '2px' }}>风险</div></Tooltip>}
+      </div>,
       width: 300,
     },
     {

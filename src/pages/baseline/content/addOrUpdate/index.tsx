@@ -1,5 +1,5 @@
-import { message, Image, Button, Form, Select, Input } from 'antd';
-import { history } from 'umi';
+import { message, Image, Button, Form, Select, Input, Breadcrumb } from 'antd';
+import { history, Link } from 'umi';
 import { useState, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import scopedClasses from '@/utils/scopedClasses';
@@ -12,7 +12,6 @@ const sc = scopedClasses('science-technology-manage-creative-detail');
 
 export default () => {
   const [loading, setLoading] = useState<boolean>(false);
-  const [detail, setDetail] = useState<any>({});
   const [tags, setTags] = useState<any>([]);
   const [types, setTypes] = useState<any>([]);
   const id = history.location.query?.id as string;
@@ -21,7 +20,18 @@ export default () => {
       try {
         const res = await getArticleDetail(id);
         if (res.code === 0) {
-          setDetail(res.result);
+          const detail = res?.result
+
+          form.setFieldsValue({
+            title: detail?.title,
+            source: detail?.source,
+            sourceUrl: detail?.sourceUrl,
+            author: detail?.author,
+            keywords: detail?.keywords,
+            types: detail?.types?.length > 0 ? detail?.types?.map(p => p.id) : undefined,
+            labels: detail?.labels?.length > 0 ? detail?.labels?.map(p => p.id) : undefined,
+            content: detail?.content,
+          })
         } else {
           throw new Error(res.message);
         }
@@ -73,6 +83,22 @@ export default () => {
 
   return (
     <PageContainer loading={loading}
+    header={{
+      title: id ? `内容编辑` : '添加内容',
+      breadcrumb: (
+        <Breadcrumb>
+          <Breadcrumb.Item>
+            <Link to="/baseline">基线管理</Link>
+          </Breadcrumb.Item>
+          <Breadcrumb.Item>
+            <Link to="/apply-manage/app-resource">内容管理 </Link>
+          </Breadcrumb.Item>
+          <Breadcrumb.Item>
+            {id ? `内容编辑` : '添加内容'}
+          </Breadcrumb.Item>
+        </Breadcrumb>
+      ),
+    }}
       footer={[
         <Button type="primary" onClick={() => onSubmit(1)}>立即上架</Button>,
         <Button onClick={() => onSubmit(2)}>暂存</Button>,

@@ -34,7 +34,7 @@ import type Common from '@/types/common';
 import type NeedVerify from '@/types/user-config-need-verify';
 import { getAreaTree } from '@/services/area';
 import { routeName } from '../../../../config/routes';
-import { addTag, deleteTag, editTag } from '@/services/baseline';
+import { addTag, deleteTag, editTag, getTagPage } from '@/services/baseline';
 const sc = scopedClasses('science-technology-manage-creative-need');
 const sourceEnum = {
   SYSTEM: '系统提取', MANUAL: '人工提取', OTHER: '其他来源'
@@ -73,9 +73,6 @@ export default () => {
     }
   }, [])
 
-  const [weightVisible, setWeightVistble] = useState(false);
-
-  const [currentId, setCurrentId] = useState<string>('');
 
   const formLayout = {
     labelCol: { span: 6 },
@@ -83,8 +80,8 @@ export default () => {
   };
 
   const formLayout2 = {
-    labelCol: { span: 4 },
-    wrapperCol: { span: 20 },
+    labelCol: { span: 6 },
+    wrapperCol: { span: 16 },
   };
 
   const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
@@ -99,7 +96,7 @@ export default () => {
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     setLoading(true);
     try {
-      const { result, totalCount, pageTotal, code } = await getCreativePage({
+      const { result, totalCount, pageTotal, code } = await getTagPage({
         pageIndex,
         pageSize,
         ...searchContent,
@@ -132,13 +129,19 @@ export default () => {
     prepare();
   }, []);
 
-  const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [modal, setModal] = useState<{
+    visible: boolean,
+    detail: any
+  }>({
+    visible: false,
+    detail: {}
+  });
   const [editForm] = Form.useForm<{ keyword: any; keywordOther: string }>();
-  const newKeywords = Form.useWatch('keyword', editForm);
   const handleOk = async () => {
     editForm
       .validateFields()
       .then(async (value) => {
+        const currentId = modal?.detail?.id
         const submitRes = await (currentId ? editTag({
           id: currentId,
           ...value,
@@ -147,7 +150,10 @@ export default () => {
         }));
         if (submitRes.code === 0) {
           message.success(`操作成功！`);
-          setModalVisible(false);
+          setModal({
+            visible: false,
+            detail: {}
+          });
           editForm.resetFields();
           getPage();
         } else {
@@ -158,14 +164,14 @@ export default () => {
   };
 
   const handleCancel = () => {
-    setModalVisible(false);
+    setModal({ visible: false, detail: {} });
   };
   const useModal = (): React.ReactNode => {
     return (
       <Modal
         title={'新增/编辑标签'}
         width="600px"
-        visible={modalVisible}
+        visible={modal.visible}
         maskClosable={false}
         onOk={handleOk}
         onCancel={handleCancel}
@@ -227,6 +233,8 @@ export default () => {
       title: '序号',
       dataIndex: 'sort',
       width: 80,
+      render: (_: any, _record: any, index: number) =>
+        pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
       title: '标签名称',
@@ -237,14 +245,13 @@ export default () => {
       title: '来源',
       dataIndex: 'source',
       isEllipsis: true,
-      render: (_: string[]) => (_ || []).join(','),
       width: 300,
     },
     {
       title: '是否兴趣标签',
       dataIndex: 'coldStartSelect',
-      render: (_: string[]) => (_ || []).join(',') || '/',
       isEllipsis: true,
+      render: (_: boolean) => _ ? '是' : '否',
       width: 300,
     },
     {
@@ -255,15 +262,14 @@ export default () => {
     },
     {
       title: '关联内容数',
-      dataIndex: 'LinkedCount',
+      dataIndex: 'linkedCount',
       width: 200,
-      render: (_: string) => moment(_).format('YYYY-MM-DD HH:mm:ss'),
     },
     {
       title: '创建时间',
-      dataIndex: 'state',
+      dataIndex: 'createTime',
       width: 200,
-      render: (_: string) => moment(_).format('YYYY-MM-DD HH:mm:ss'),
+      render: (_: string) => _ ? moment(_).format('YYYY-MM-DD HH:mm:ss') : '--',
     },
     {
       title: '操作',
@@ -279,7 +285,12 @@ export default () => {
                 type="link"
                 style={{ padding: 0 }}
                 onClick={() => {
-                  window.open(routeName.BASELINE_CONTENT_MANAGE_ADDORUPDATE);
+                  setModal({ visible: true, detail: record })
+                  editForm.setFieldsValue({
+                    labelName: record?.labelName,
+                    weight: record?.weight,
+                    isColdStart: record?.coldStartSelect,
+                  })
                 }}
               >
                 编辑
@@ -289,7 +300,7 @@ export default () => {
                 Modal.confirm({
                   title: '删除标签',
                   content: '删除该标签后，与该标签绑定的关系全部解散，确定删除？',
-                  onOk: () => { onDelete(record) },
+                  onOk: () => { onDelete(record?.id) },
                   okText: '删除'
                 })
               }}>
@@ -299,7 +310,7 @@ export default () => {
                 type="link"
                 style={{ padding: 0 }}
                 onClick={() => {
-                  window.open(routeName.BASELINE_TAG_MANAGE_DETAIL);
+                  window.open(routeName.BASELINE_TAG_MANAGE_DETAIL + `?id=${record?.id}`);
                 }}
               >
                 详情
@@ -350,7 +361,7 @@ export default () => {
           <Row>
             <Col span={6}>
               <Form.Item name="weight" label="权重">
-                <InputNumber placeholder="请输入" />
+                <InputNumber placeholder="请输入" style={{ width: '100%' }} />
               </Form.Item>
             </Col>
             <Col offset={14} span={4}>
@@ -390,7 +401,7 @@ export default () => {
         <div className="title">
           <span>标签列表(共{pageInfo.totalCount || 0}条)</span>
           <Access accessible={access['P_SM_XQGL']}>
-            <Button type='primary' icon={<PlusOutlined />} onClick={() => { setModalVisible(true) }}>
+            <Button type='primary' icon={<PlusOutlined />} onClick={() => { setModal({ visible: true, detail: {} }) }}>
               新增
             </Button>
           </Access>
