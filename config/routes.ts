@@ -218,6 +218,7 @@
   BASELINE_BID_MANAGE_DETAIL: 'baseline-bid-manage-detail',
   BASELINE_TAG_MANAGE: 'baseline-tag-manage',
   BASELINE_TAG_MANAGE_DETAIL: 'baseline-bid-tag-detail',
+  BASELINE_TOPIC_MANAGE: 'baseline-topic-manage',
 };
 
 export default [
@@ -336,6 +337,13 @@ export default [
         path: routeName.BASELINE_TAG_MANAGE_DETAIL,
         name: '内容标签详情',
         component: './baseline/tag/detail',
+      },
+      {
+        path: routeName.BASELINE_TOPIC_MANAGE,
+        // code: 'M_OD_GMV',
+        // access: 'M_OD_GMV',
+        name: '话题管理',
+        component: './baseline/topic/index',
       },
     ],
   },
