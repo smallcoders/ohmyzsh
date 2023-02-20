@@ -14,7 +14,6 @@ import {
   Tooltip,
 } from 'antd';
 import { CaretDownOutlined, CaretUpOutlined, DownOutlined } from '@ant-design/icons';
-import type { TableRowSelection } from 'antd/es/table/interface';
 import { PageContainer } from '@ant-design/pro-layout';
 import { ProFormDigitRange } from '@ant-design/pro-components';
 import './index.less';
@@ -27,7 +26,7 @@ import SelfTable from '@/components/self_table';
 import { UploadOutlined } from '@ant-design/icons';
 import FormEdit from '@/components/FormEdit';
 import BankingLoan from '@/types/banking-loan.d';
-import { history, useHistory } from 'umi';
+import { history } from 'umi';
 import { regFenToYuan, regYuanToFen } from '@/utils/util';
 import {
   getLoanRecordList,
@@ -67,10 +66,6 @@ export default ({ loanType, name }: { loanType: number; name: string }) => {
   /**
    * 新建窗口的弹窗
    *  */
-  // const dialogFormLayout = {
-  //   labelCol: { span: 3 },
-  //   wrapperCol: { span: 18 },
-  // };
   const [form] = Form.useForm();
   const [createModalVisible, setModalVisible] = useState<boolean>(false);
   const [editingItem, setEditingItem] = useState<BankingLoan.Content>({});
@@ -88,7 +83,6 @@ export default ({ loanType, name }: { loanType: number; name: string }) => {
     totalCount: 0,
     pageTotal: 0,
   });
-  // const historys = useHistory();
   useEffect(() => {
     console.log('unlisten');
     const unlisten = history.listen((historyLocation, action) => {
@@ -686,14 +680,29 @@ export default ({ loanType, name }: { loanType: number; name: string }) => {
       <div className={sc('container-table')}>
         <div className={sc('container-table-header')}>
           <div className="title">
-            <Dropdown overlay={menuProps}>
-              <Button size="large">
-                <Space>
+            <div className="button-box">
+              <Dropdown overlay={menuProps}>
+                <Button size="large">
                   导出
                   <DownOutlined />
-                </Space>
-              </Button>
-            </Dropdown>
+                </Button>
+              </Dropdown>
+              <Dropdown overlay={<Menu>
+                <Menu.Item onClick={() => {
+                  if (!selectedRowKeys.length) {
+                    message.warning('请选择数据');
+                    return;
+                  }
+                }}>
+                  删除选中结果
+                </Menu.Item>
+              </Menu>}>
+                <Button size="large">
+                  批量删除
+                  <DownOutlined />
+                </Button>
+              </Dropdown>
+            </div>
             <div className="tips">
               <span style={{ marginRight: 20 }}>
                 累计授信金额：{regFenToYuan(totalAmount.creditTotal)}万元

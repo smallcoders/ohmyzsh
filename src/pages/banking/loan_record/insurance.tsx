@@ -14,9 +14,7 @@ import {
   Tooltip,
 } from 'antd';
 import { CaretDownOutlined, CaretUpOutlined, DownOutlined } from '@ant-design/icons';
-import type { TableRowSelection } from 'antd/es/table/interface';
 import { PageContainer } from '@ant-design/pro-layout';
-import { ProFormDigitRange } from '@ant-design/pro-components';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
@@ -27,18 +25,16 @@ import SelfTable from '@/components/self_table';
 import { UploadOutlined } from '@ant-design/icons';
 import FormEdit from '@/components/FormEdit';
 import BankingLoan from '@/types/banking-loan.d';
-import { history, useHistory } from 'umi';
+import { history } from 'umi';
 import { regFenToYuan, regYuanToFen } from '@/utils/util';
 import {
   getLoanRecordList,
   queryBankList,
   loanRecordExport,
   takeNotes,
-  getTakeMoneyDetail,
 } from '@/services/banking-loan';
 
 const sc = scopedClasses('loan-record-list');
-const { DataSourcesTrans } = BankingLoan;
 
 export default () => {
   const [dataSource, setDataSource] = useState<BankingLoan.Content[]>([]);
@@ -74,10 +70,6 @@ export default () => {
   /**
    * 新建窗口的弹窗
    *  */
-  // const dialogFormLayout = {
-  //   labelCol: { span: 3 },
-  //   wrapperCol: { span: 18 },
-  // };
   const [form] = Form.useForm();
   const [createModalVisible, setModalVisible] = useState<boolean>(false);
   const [editingItem, setEditingItem] = useState<BankingLoan.Content>({});
@@ -85,7 +77,6 @@ export default () => {
     form.resetFields();
     if (editingItem.id) setEditingItem({});
   };
-  const [totalAmount, setTotalAmount] = useState<BankingLoan.totalAmountContent>({});
   const [bankList, setBankList] = useState<{ bank: string }[]>([]);
   const [isMore, setIsMore] = useState<boolean>(false);
 
@@ -245,41 +236,6 @@ export default () => {
       </Modal>
     );
   };
-
-  // const getStep = async (p: BankingLoan.Content, type: number): Promise<any> => {
-  //   const { id, creditStatus } = p;
-  //   if (creditStatus === '已授信') {
-  //     // 供应链e贷产品没有还款信息
-  //     if (!type) {
-  //       return 3;
-  //     }
-  //     try {
-  //       const { result, code } = await getTakeMoneyDetail({
-  //         pageIndex: 1,
-  //         pageSize: 10,
-  //         creditId: id,
-  //       });
-  //       if (code === 0) {
-  //         if (
-  //           result?.takeMoneyInfo?.some(
-  //             (item: BankingLoan.TakeMoneyInfoContent) => item.status == '放款成功',
-  //           )
-  //         ) {
-  //           return 6;
-  //         } else {
-  //           return 5;
-  //         }
-  //       } else {
-  //         message.error(`放款判断失败`);
-  //       }
-  //     } catch (error) {
-  //       console.log(error);
-  //       return 0;
-  //     }
-  //   } else {
-  //     return 2;
-  //   }
-  // };
   const columns = [
     {
       title: '序号',
@@ -636,12 +592,21 @@ export default () => {
                 </Space>
               </Button>
             </Dropdown>
-            {/* <div className="tips">
-              <span style={{ marginRight: 20 }}>
-                累计授信金额：{regFenToYuan(totalAmount.creditTotal)}万元
-              </span>
-              <span>累计放款金额：{regFenToYuan(totalAmount.takeTotal)}万元</span>
-            </div> */}
+            <Dropdown overlay={<Menu>
+              <Menu.Item onClick={() => {
+                if (!selectedRowKeys.length) {
+                  message.warning('请选择数据');
+                  return;
+                }
+              }}>
+                删除选中结果
+              </Menu.Item>
+            </Menu>}>
+              <Button size="large">
+                批量删除
+                <DownOutlined />
+              </Button>
+            </Dropdown>
           </div>
         </div>
         <div className={sc('container-table-body')}>
