@@ -82,7 +82,7 @@ const ImageConfig = () => {
               getImageList(1, 'main')
             }}
           >
-            正文
+            文本
           </div>
           <div
             className={config?.imgStyle === 'matrix' ? 'img-style-item active' : 'img-style-item'}
