@@ -93,6 +93,24 @@ export default () => {
   const getCode = (isMobile: boolean) => {
     return (
       <div>
+        <div style={{display: 'none'}}>
+          <QRCode
+            value={getLink(isMobile)}
+            renderAs={'canvas'}
+            size={1000}
+            bgColor={'#FFFFFF'}
+            fgColor={'#000000'}
+            level="H"
+            id="download-canvas"
+            includeMargin={true}
+            imageSettings={{
+              src: logo2,
+              width: 200,
+              height: 200,
+              excavate: true,
+            }}
+          />
+        </div>
         <QRCode
           value={getLink(isMobile)}
           renderAs={'canvas'}
@@ -111,7 +129,7 @@ export default () => {
         />
         <div className="download-btn"
              onClick={() => {
-               const canvas: any = document.querySelector('#canvas');
+               const canvas: any = document.querySelector('#download-canvas');
                // 创建一个 a 标签，并设置 href 和 download 属性
                const el = document.createElement('a');
                // 设置 href 为图片经过 base64 编码后的字符串，默认为 png 格式
