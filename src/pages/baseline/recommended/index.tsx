@@ -5,77 +5,49 @@ import {
   Select,
   Row,
   Col,
-  DatePicker,
   message,
   Space,
-  Popconfirm,
-  TreeSelect,
   Modal,
-  Checkbox,
   InputNumber,
+  Tag
 } from 'antd';
-import { PlusCircleOutlined, PlusOutlined, UploadOutlined } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 import SelfTable from '@/components/self_table';
+import { routeName } from '../../../../config/routes';
 import { Access, useAccess } from 'umi';
 import {
-  getCreativePage, //分页数据
-  getKeywords, //关键词枚举
-  getCreativeTypes, // 应用行业
-  updateKeyword, // 关键词编辑
-  updateConversion, // 完成转化
-  updateSort,
-} from '@/services/creative-demand';
-import type Common from '@/types/common';
-import type NeedVerify from '@/types/user-config-need-verify';
-import { getAreaTree } from '@/services/area';
-import { routeName } from '../../../../config/routes';
-import { addTag, deleteTag, editTag } from '@/services/baseline';
+  recommendForUserPage,
+  addRecommendForUserPage,
+  editRecommendForUserPage,
+} from '@/services/baseline';
 const sc = scopedClasses('science-technology-manage-creative-need');
-const sourceEnum = {
-  SYSTEM: '系统提取', MANUAL: '人工提取', OTHER: '其他来源'
-};
-enum Edge {
-  HOME = 0, // 新闻咨询首页
-}
+
+
 export default () => {
   const [loading, setLoading] = useState<boolean>(false);
-  const [dataSource, setDataSource] = useState<NeedVerify.Content[]>([]);
-  const [types, setTypes] = useState<any[]>([]);
-  const [keywords, setKeywords] = useState<any[]>([]); // 关键词数据
-  const [searchContent, setSearChContent] = useState<{
-    name?: string; // 标题
-    createTimeStart?: string; // 提交开始时间
-    state?: string; // 状态
-    createTimeEnd?: string; // 提交结束时间
-    typeId?: number; // 行业类型id 三级类型
-    industryTypeId?: string; // 所属行业
-  }>({});
-  // 拿到当前角色的access权限兑现
-  const access = useAccess()
-  // 当前页面的对应权限key
-  const [edge, setEdge] = useState<Edge.HOME>(Edge.HOME);
-  // 页面权限
-  const permissions = {
-    [Edge.HOME]: 'PQ_SM_XQGL', // 科产管理-创新需求管理页面查询
-  }
-  useEffect(() => {
-    for (const key in permissions) {
-      const permission = permissions[key]
-      if (Object.prototype.hasOwnProperty.call(access, permission)) {
-        setEdge(key as any)
-        break
-      }
-    }
-  }, [])
+  const [dataSource, setDataSource] = useState([]);
+  const [modalVisible, setModalVisible] = useState<boolean>(false)
 
-  const [weightVisible, setWeightVistble] = useState(false);
+  const [searchContent, setSearChContent] = useState({
 
-  const [currentId, setCurrentId] = useState<string>('');
+  })
+
+
+    // 拿到当前角色的access权限兑现
+    const access = useAccess()
+
+  const [pageInfo, setPageInfo] = useState({
+    pageIndex: 1,
+    pageSize: 20,
+    totalCount: 0,
+    pageTotal: 0,
+  });
+
 
   const formLayout = {
     labelCol: { span: 6 },
@@ -87,19 +59,10 @@ export default () => {
     wrapperCol: { span: 20 },
   };
 
-  const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
-    pageIndex: 1,
-    pageSize: 20,
-    totalCount: 0,
-    pageTotal: 0,
-  });
-
-  const [areaOptions, setAreaOptions] = useState<any>([]);
-
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     setLoading(true);
     try {
-      const { result, totalCount, pageTotal, code } = await getCreativePage({
+      const { result, totalCount, pageTotal, code } = await recommendForUserPage({
         pageIndex,
         pageSize,
         ...searchContent,
@@ -118,47 +81,14 @@ export default () => {
     }
   };
 
-  const prepare = async () => {
-    try {
-      const res = await Promise.all([getKeywords(), getCreativeTypes(), getAreaTree({})]);
-      setKeywords(res[0].result || []);
-      setTypes(res[1].result || []);
-      setAreaOptions(res[2].children || []);
-    } catch (error) {
-      message.error('获取数据失败');
-    }
-  };
-  useEffect(() => {
-    prepare();
-  }, []);
-
-  const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [editForm] = Form.useForm<{ keyword: any; keywordOther: string }>();
-  const newKeywords = Form.useWatch('keyword', editForm);
-  const handleOk = async () => {
-    editForm
-      .validateFields()
-      .then(async (value) => {
-        const submitRes = await (currentId ? editTag({
-          id: currentId,
-          ...value,
-        }) : addTag({
-          ...value,
-        }));
-        if (submitRes.code === 0) {
-          message.success(`操作成功！`);
-          setModalVisible(false);
-          editForm.resetFields();
-          getPage();
-        } else {
-          message.error(`操作失败，原因:{${submitRes.message}}`);
-        }
-      })
-      .catch(() => { });
-  };
+
+  const handleOk = () => {
+
+  }
 
   const handleCancel = () => {
-    setModalVisible(false);
+
   };
   const useModal = (): React.ReactNode => {
     return (
@@ -229,39 +159,42 @@ export default () => {
       width: 80,
     },
     {
-      title: '标签名称',
-      dataIndex: 'labelName',
+      title: '标题',
+      dataIndex: 'title',
       width: 300,
     },
     {
-      title: '来源',
-      dataIndex: 'source',
+      title: '发布状态',
+      dataIndex: 'enable',
+      render: (_: boolean) => _ ? '上架' : '下架',
+      width: 100,
+    },
+    {
+      title: '推荐范围',
+      dataIndex: 'enable',
+      render: (_: string[]) => _.map((item) => <Tag key={item}>{item}</Tag>),
       isEllipsis: true,
-      render: (_: string[]) => (_ || []).join(','),
-      width: 300,
+      width: 200,
     },
     {
-      title: '是否兴趣标签',
-      dataIndex: 'coldStartSelect',
-      render: (_: string[]) => (_ || []).join(',') || '/',
-      isEllipsis: true,
-      width: 300,
-    },
-    {
-      title: '标签权重',
+      title: '权重',
       dataIndex: 'weight',
       isEllipsis: true,
       width: 150,
     },
     {
-      title: '关联内容数',
-      dataIndex: 'LinkedCount',
-      width: 200,
-      render: (_: string) => moment(_).format('YYYY-MM-DD HH:mm:ss'),
+      title: '推荐阅读量',
+      dataIndex: 'readingCount',
+      width: 100,
     },
     {
-      title: '创建时间',
-      dataIndex: 'state',
+      title: '操作人',
+      dataIndex: 'operatorUserId',
+      width: 200,
+    },
+    {
+      title: '操作时间',
+      dataIndex: 'updateTime',
       width: 200,
       render: (_: string) => moment(_).format('YYYY-MM-DD HH:mm:ss'),
     },
@@ -284,17 +217,6 @@ export default () => {
               >
                 编辑
               </Button>
-
-              <Button type="link" style={{ padding: 0 }} onClick={() => {
-                Modal.confirm({
-                  title: '删除标签',
-                  content: '删除该标签后，与该标签绑定的关系全部解散，确定删除？',
-                  onOk: () => { onDelete(record) },
-                  okText: '删除'
-                })
-              }}>
-                删除
-              </Button>
               <Button
                 type="link"
                 style={{ padding: 0 }}
@@ -303,6 +225,9 @@ export default () => {
                 }}
               >
                 详情
+              </Button>
+              <Button type="link" >
+
               </Button>
             </Space>
           </Access>
@@ -324,36 +249,25 @@ export default () => {
         <Form {...formLayout} form={searchForm}>
           <Row>
             <Col span={6}>
-              <Form.Item name="labelName" label="标签名称">
+              <Form.Item name="labelName" label="内容标题">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
             <Col span={6}>
-              <Form.Item name="operatorUserName" label="操作人">
-                <Input placeholder="请输入" />
-              </Form.Item>
-            </Col>
-            <Col span={6}>
-              <Form.Item name="areaCode" label="来源">
+              <Form.Item name="areaCode" label="发布状态">
                 <Select placeholder="请选择" allowClear>
-                  {Object.entries(sourceEnum).map((p) => {
-                    return (
-                      <Select.Option key={p[0]} value={p[0]}>
-                        {p[1]}
+                      <Select.Option key={0} value={0}>
+                        下架
                       </Select.Option>
-                    );
-                  })}
+                      <Select.Option key={1} value={1}>
+                        上架
+                      </Select.Option>
+
                 </Select>
               </Form.Item>
             </Col>
-          </Row>
-          <Row>
-            <Col span={6}>
-              <Form.Item name="weight" label="权重">
-                <InputNumber placeholder="请输入" />
-              </Form.Item>
-            </Col>
-            <Col offset={14} span={4}>
+            <Col offset={6} span={6}>
+              <div  style={{textAlign: 'right'}}>
               <Button
                 style={{ marginRight: 20 }}
                 type="primary"
@@ -366,6 +280,7 @@ export default () => {
                 查询
               </Button>
               <Button
+                style={{ marginRight: 32 }}
                 type="primary"
                 key="reset"
                 onClick={() => {
@@ -375,6 +290,7 @@ export default () => {
               >
                 重置
               </Button>
+              </div>
             </Col>
           </Row>
         </Form>
@@ -388,10 +304,9 @@ export default () => {
       {useSearchNode()}
       <div className={sc('container-table-header')}>
         <div className="title">
-          <span>标签列表(共{pageInfo.totalCount || 0}条)</span>
           <Access accessible={access['P_SM_XQGL']}>
-            <Button type='primary' icon={<PlusOutlined />} onClick={() => { setModalVisible(true) }}>
-              新增
+            <Button type="primary" onClick={() => { setModalVisible(true) }}>
+              选择推荐内容
             </Button>
           </Access>
         </div>
