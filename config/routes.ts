@@ -219,6 +219,8 @@
   BASELINE_TAG_MANAGE: '/baseline/baseline-tag-manage',
   BASELINE_TAG_MANAGE_DETAIL: '/baseline/baseline-tag-manage/detail',
   BASELINE_TOPIC_MANAGE: 'baseline-topic-manage',
+  BASELINE_RECOMMENDED_MANAGE_DETAIL: 'baseline-recommended-detail',
+  BASELINE_RECOMMENDED_MANAGE: 'baseline-recommended',
   BASELINE_TOPIC_MANAGE_DETAIL: 'baseline-topic-manage/detail',
   BASELINE_TOPIC_MANAGE_ADD: 'baseline-topic-manage/add',
 };
@@ -397,7 +399,17 @@ export default [
         name: '新增',
         component: './baseline/topic/add',
       },
-
+      {
+        path: routeName.BASELINE_RECOMMENDED_MANAGE_DETAIL,
+        name: '推荐位详情',
+        component: './baseline/recommended/detail',
+        hideInMenu: true,
+      },
+      {
+        path: routeName.BASELINE_RECOMMENDED_MANAGE,
+        name: '推荐位管理',
+        component: './baseline/recommended/index',
+      },
     ],
   },
   {
