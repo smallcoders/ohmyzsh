@@ -220,8 +220,11 @@
   BASELINE_TAG_MANAGE_DETAIL: 'baseline-bid-tag-detail',
   BASELINE_TOPIC_MANAGE: 'baseline-topic-manage',
   BASELINE_RECOMMENDED_MANAGE_DETAIL: 'baseline-recommended-detail',
-  BASELINE_RECOMMENDED_MANAGE: 'baseline-recommended'
+  BASELINE_RECOMMENDED_MANAGE: 'baseline-recommended',
+  BASELINE_TOPIC_MANAGE_DETAIL: 'baseline-topic-manage/detail',
+  BASELINE_TOPIC_MANAGE_ADD: 'baseline-topic-manage/add',
 };
+
 
 export default [
   {
@@ -342,22 +345,37 @@ export default [
       },
       {
         path: routeName.BASELINE_TOPIC_MANAGE,
-        // code: 'M_OD_GMV',
-        // access: 'M_OD_GMV',
+        // code: 'M_HRM_HTGL',
+        // access: 'M_HRM_HTGL',
         name: '话题管理',
         component: './baseline/topic/index',
+      },
+      {
+        path: routeName.BASELINE_TOPIC_MANAGE_DETAIL,
+        // code: 'M_HRM_XQ',
+        // access: 'M_HRM_XQ',
+        hideInMenu: true,
+        name: '详情',
+        component: './baseline/topic/detail',
+      },{
+        path: routeName.BASELINE_TOPIC_MANAGE_ADD,
+        // code: 'M_OD_GMV',
+        // access: 'M_OD_GMV',
+        hideInMenu: true,
+        name: '新增',
+        component: './baseline/topic/add',
       },
       {
         path: routeName.BASELINE_RECOMMENDED_MANAGE_DETAIL,
         name: '推荐位详情',
         component: './baseline/recommended/detail',
-        hideInBreadcrumb: true,
+        hideInMenu: true,
       },
       {
         path: routeName.BASELINE_RECOMMENDED_MANAGE,
         name: '推荐位管理',
         component: './baseline/recommended/index',
-      }
+      },
     ],
   },
   {
