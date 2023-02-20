@@ -142,7 +142,7 @@ export default () => {
   const handleDelete = (record: record) => {
     Modal.confirm({
       title: '提示',
-      content: tmpType === 1 ? '下架后用户将不能访问此网页，确认删除？' : '删除后用户将不能填写，表单及其数据也将无法恢复，确认删除？',
+      content: tmpType === 1 ? '删除后用户将不能访问此网页，确认删除？' : '删除后用户将不能填写，表单及其数据也将无法恢复，确认删除？',
       okText: '删除',
       onOk: () => {
         modifyTemplateState({
