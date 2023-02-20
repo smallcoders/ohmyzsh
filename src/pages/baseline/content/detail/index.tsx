@@ -12,7 +12,7 @@ import { getArticleDetail, getArticleStatisticPage } from '@/services/baseline';
 import Common from '@/types/common';
 
 const sc = scopedClasses('science-technology-manage-creative-detail');
-
+const operaObj = { ADD: '新增', MODIFY: '修改', DOWN: '下架', UP: '上架', DELETE: '删除', TOPPING: '置顶', CANCEL_TOPPING: '取消置顶', AUDIT: '自动审核', STAGING: '暂存' }
 export default () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [detail, setDetail] = useState<any>({});
@@ -147,7 +147,7 @@ export default () => {
               </div>
               <div className={sc('container-desc')}>
                 <span>标签：</span>
-                <span>{detail?.labels?.length > 0 ? detail?.labels.join('，') : '--'}</span>
+                <span>{detail?.labels ? detail?.types?.map(p => p.labelName)?.join('，') : '--'}</span>
               </div>
               <div className={sc('container-desc')}>
                 <span>来源：</span>
@@ -211,7 +211,7 @@ export default () => {
                   <span style={{ marginLeft: 10 }}>{p?.userName}</span>
                 </div>
 
-                <span>{p?.autoAuditResult}</span>
+                <span>{operaObj[p?.operation] || '--'}</span>
                 <span>{p?.createTime}</span>
               </div>
             })

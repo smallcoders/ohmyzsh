@@ -190,6 +190,7 @@ export default () => {
     {
       title: '标签',
       dataIndex: 'labels',
+      render: (_: any[]) => _?.length > 0 ? _?.map(p => p.labelName).join(',') : '--',
       width: 200,
     },
 
