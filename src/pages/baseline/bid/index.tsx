@@ -1,424 +1,381 @@
-import type { RadioChangeEvent } from 'antd';
-import { Col, Row, Button, DatePicker, Modal, message } from 'antd';
-import { ArrowUpOutlined, PlusOutlined, MinusOutlined } from '@ant-design/icons';
-import moment from 'moment';
-import type { Moment } from 'moment';
-import scopedClasses from '@/utils/scopedClasses';
-import React, { useState, useEffect } from 'react';
-import * as echarts from 'echarts';
+import {
+  Button,
+  Input,
+  Form,
+  Select,
+  Row,
+  Col,
+  DatePicker,
+  message,
+  Space,
+  Modal,
+} from 'antd';
+import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
-import { getAddedDataYesterday, getStatistics } from '@/services/home';
-import { useHistory } from 'react-router-dom';
-import { routeName } from '@/../config/routes';
-import { divide } from 'lodash';
+import scopedClasses from '@/utils/scopedClasses';
+import React, { useEffect, useState } from 'react';
+import SelfTable from '@/components/self_table';
 import { Access, useAccess } from 'umi';
-
-const sc = scopedClasses('home-page');
-const { RangePicker } = DatePicker;
-
-const options = [
-  { label: '最近7天', value: '1' },
-  { label: '最近30天', value: '2' },
-  { label: '最近90天', value: '3' },
-];
-const pageOptions = [
-  { label: '全站', value: '1' },
-  { label: '首页', value: '2' },
-  { label: '应用列表', value: '3' },
-  { label: '政策首页', value: '4' },
-  { label: '诊断首页', value: '5' },
-  { label: '需求列表', value: '6' },
-  { label: '解决方案列表', value: '7' },
-  { label: '科产首页', value: '8' },
-];
-const statisticsType = {
-  USER: '用户注册数量',
-  ENTERPRISE: '企业认证数量',
-  EXPERT: '专家数量',
-  ENTERPRISE_DEMAND: '企业需求数量',
-  CREATIVE_DEMAND: '创新需求数量',
-  CREATIVE_ACHIEVEMENT: '科技成果数量',
-  APP: '应用数量',
-  SOLUTION: '解决方案数量',
+import type Common from '@/types/common';
+import type NeedVerify from '@/types/user-config-need-verify';
+import { routeName } from '../../../../config/routes';
+import { deleteBid, getBidPage, onOffShelvesById } from '@/services/baseline';
+const sc = scopedClasses('science-technology-manage-creative-need');
+const sourceObj = {
+  TENDERING_SOURCE1: '剑鱼标讯'
 };
 
-type RangeValue = [Moment | null, Moment | null] | null;
+const industryData = {
+  INDUATRIAL_1: '新能源汽车', INDUATRIAL_2: '新一代信息技术', 'INDUATRIAL_3': '人工智能', INDUATRIAL_4: '数字创意', INDUATRIAL_5: '高端装备制造', INDUATRIAL_6: '新材料', INDUATRIAL_7: '新能源', INDUATRIAL_8: '节能环保', INDUATRIAL_9: '智能家电', INDUATRIAL_10: '生命健康', INDUATRIAL_11: '绿色食品'
+}
+
+const subTypeObj = { TENDERING_1: '拟建', TENDERING_2: '采购意向', TENDERING_3: '预告', TENDERING_4: '预审', TENDERING_5: '预审结果', TENDERING_6: '论证意见', TENDERING_7: '需求公示', TENDERING_8: '变更', TENDERING_9: '邀标', TENDERING_10: '询价', TENDERING_11: '竞谈', TENDERING_12: '单一', TENDERING_13: '竞价', TENDERING_14: '招标', TENDERING_15: '废标', TENDERING_16: '流标', TENDERING_17: '结果变更', TENDERING_18: '中标', TENDERING_19: '成交', TENDERING_20: '合同', TENDERING_21: '验收', TENDERING_22: '违规', TENDERING_23: '其它' }
 
 export default () => {
-  const history = useHistory();
-  const [addedDataYesterday, setAddedDataYesterday] = useState<any>({});
-  const [statistics, setStatistics] = useState<any>([]);
-  const [quicklyDate, setQuicklyDate] = useState('1');
-  const [dates, setDates] = useState<RangeValue>(null);
-  const [hackValue, setHackValue] = useState<RangeValue>(null);
-  const [value, setValue] = useState<RangeValue>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [dataSource, setDataSource] = useState<NeedVerify.Content[]>([]);
+  const [searchContent, setSearChContent] = useState<any>({});
   // 拿到当前角色的access权限兑现
   const access = useAccess()
-  const disabledDate = (current: Moment) => {
-    if (!dates) {
-      return false;
-    }
-    const tooLate = dates[0] && current.diff(dates[0], 'days') > 90;
-    const tooEarly = dates[1] && dates[1].diff(current, 'days') > 90;
-    return !!tooEarly || !!tooLate || current > moment().startOf('day');
-  };
-  const onOpenChange = (open: boolean) => {
-    if (open) {
-      setHackValue([null, null]);
-      setDates([null, null]);
-    } else {
-      setHackValue(null);
-    }
-  };
-  const changeQuicklyDate = ({ target: { value } }: RadioChangeEvent) => {
-    console.log('date checked', value);
-    setQuicklyDate(value);
+
+  useEffect(() => {
+  }, [])
+
+
+  const formLayout = {
+    labelCol: { span: 6 },
+    wrapperCol: { span: 16 },
   };
 
-  const [pageType, setPageType] = useState('1');
-  const changePageType = ({ target: { value } }: RadioChangeEvent) => {
-    console.log('page checked', value);
-    setPageType(value);
-  };
+  const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
+    pageIndex: 1,
+    pageSize: 20,
+    totalCount: 0,
+    pageTotal: 0,
+  });
 
-  const chartShow = () => {
-    let myChart = echarts.init(document.getElementById('charts'));
-    myChart.setOption({
-      tooltip: {
-        trigger: 'axis',
-        axisPointer: {
-          type: 'cross',
-          label: {
-            backgroundColor: '#6a7985',
-          },
-        },
-        backgroundColor: 'rgba(0,0,0,.7)',
-        textStyle: {
-          color: '#fff',
-        },
-      },
-      legend: {
-        data: ['浏览次数（次）', '浏览人数（人）'],
-        bottom: '5px',
-      },
-      xAxis: {
-        type: 'category',
-        data: [
-          '2022-07-27',
-          '2022-07-28',
-          '2022-07-29',
-          '2022-07-30',
-          '2022-07-31',
-          '2022-08-01',
-          '2022-08-02',
-        ],
-      },
-      yAxis: {
-        type: 'value',
-        max: 400,
-        splitNumber: 1,
-      },
-      series: [
-        {
-          name: '浏览次数（次）',
-          data: [150, 230, 224, 218, 135, 147, 260],
-          type: 'line',
-        },
-        {
-          name: '浏览人数（人）',
-          data: [50, 330, 124, 298, 175, 197, 60],
-          type: 'line',
-        },
-      ],
-    });
-  };
 
-  const prepare = async () => {
+  const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
+    setLoading(true);
     try {
-      const res = await Promise.all([getAddedDataYesterday(), getStatistics()]);
-      if (res[0].code === 0) {
-        setAddedDataYesterday(res[0].result || {});
+      const { result, totalCount, pageTotal, code } = await getBidPage({
+        pageIndex,
+        pageSize,
+        ...searchContent,
+      });
+      if (code === 0) {
+        setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
+        setDataSource(result);
+        setLoading(false);
       } else {
-        throw new Error("");
-      }
-      if (res[1].code === 0) {
-        setStatistics(res[1].result || []);
-      } else {
-        throw new Error("");
+        message.error(`请求分页数据失败`);
+        setLoading(false);
       }
     } catch (error) {
       console.log(error);
-      message.error('服务器错误');
+      setLoading(false);
     }
   };
-  useEffect(() => {
-    prepare();
-    // chartShow();
-  }, []);
 
-  const {
-    diagnosisIntentionCount,
-    appConsultationCount,
-    solutionIntentionCount,
-    expertConsultationCount,
-    liveIntentionCount,
-  } = addedDataYesterday || {};
-
-  const handleDataStatistic = (item: any) => {
-    console.log('e',item)
-    const { type } = item || {}
-    switch (type) {
-      case 'USER':
-        if (!access['M_UM_YHXX']) {
-          setModalOpen(true)
-          return
-        }
-        history.push(`${routeName.USER_INFO_INDEX}`);
-        break;
-      case 'ENTERPRISE':
-        // history.push(`${routeName.LOGOUT_RECORD}`);
-        break;
-      case 'EXPERT':
-        if (!access['M_UM_ZJZY']) {
-          setModalOpen(true)
-          return
-        }
-        history.push(`/user-config/expert-manage/index?type=M_UM_ZJZY`);
-        break;
-      case 'ENTERPRISE_DEMAND':
-        if (!access['M_SD_XQ']) {
-          setModalOpen(true)
-          return
-        }
-        history.push(`${routeName.DEMAND_MANAGEMENT_INDEX}`);
-        break;
-      case 'CREATIVE_DEMAND':
-        if (!access['M_SM_XQGL']) {
-          setModalOpen(true)
-          return
-        }
-        history.push(`/science-technology-manage/creative-need-manage`);
-        break;
-      case 'CREATIVE_ACHIEVEMENT':
-        if (!access['M_SM_CGGL']) {
-          setModalOpen(true)
-          return
-        }
-        history.push(`/science-technology-manage/achievements-manage`);
-        break;
-      case 'APP':
-        if (!access['M_AM_YYZY']) {
-          setModalOpen(true)
-          return
-        }
-        history.push(`/apply-manage/app-resource/index`);
-        break;
-      case 'SOLUTION':
-        if (!access['M_SD_FW']) {
-          setModalOpen(true)
-          return
-        }
-        history.push(`/supply-demand-setting/solution/index?type=M_SD_FW`);
-        break;
-    
-      default:
-        break;
-    }
-  }
-
-  const [modalOpen, setModalOpen] = useState<boolean>(false)
-  const handleModalOk = () => {
-    setModalOpen(false)
-  }
-  const motal = (
-    <Modal 
-      width="300px" 
-      title="提示" 
-      visible={modalOpen} 
-      onOk={handleModalOk}
-      footer={[
-        <Button key="ensure" type="primary" onClick={handleModalOk}>
-          我知道了
-        </Button>
-      ]
+  const onDelete = async (id: string) => {
+    try {
+      const updateStateResult = await deleteBid({ id });
+      if (updateStateResult.code === 0) {
+        message.success(`设置成功`);
+        getPage();
+      } else {
+        message.error(`操作失败，请重试`);
       }
-    >
-      <p>您没有此页面查看权限，若需要查看，</p>
-      <p>请联系权限配置管理员进行权限分配</p>
-    </Modal>
-  )
-
-  const handleAddItem = (item: any) => {
-    switch (item) {
-      case '诊断意向报名':
-        if (!access['M_DM_ZDBM']) {
-          setModalOpen(true)
-          return
-        }
-        history.push(`/diagnose-manage/diagnostic-tasks/index?type=M_DM_ZDBM`);
-        break;
-      case '应用咨询记录':
-        if (!access['M_AM_ZXJL']) {
-          setModalOpen(true)
-          return
-        }
-        history.push(`/apply-manage/consult-record`);
-        break;
-      case '服务意向消息':
-        if (!access['M_SD_FWXX']) {
-          setModalOpen(true)
-          return
-        }
-        history.push(`/supply-demand-setting/solution/index?type=M_SD_FWXX`);
-        break;
-      case '专家咨询记录':
-        if (!access['M_UM_ZJZX']) {
-          setModalOpen(true)
-          return
-        }
-        history.push(`/user-config/expert-manage/index?type=M_UM_ZJZX`);
-        break;
-      case '直播意向管理':
-        if (!access['M_LM_ZBYX']) {
-          setModalOpen(true)
-          return
-        }
-        history.push(`/live-management/intention-collect`);
-        break;
+    } catch (error) {
+      console.log(error);
     }
-  }
+  };
+
+  const onOffShelves = async (id: string, isShelves: boolean) => {
+    const tooleMessage = isShelves ? "上架" : "下架"
+    try {
+      const updateStateResult = await onOffShelvesById({ id, isShelves });
+      if (updateStateResult.code === 0) {
+        message.success(`${tooleMessage}成功`);
+        getPage();
+      } else {
+        message.error(`操作失败，请重试`);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+
+  const columns = [
+    {
+      title: '序号',
+      dataIndex: 'sort',
+      width: 80,
+    },
+    {
+      title: '公告标题',
+      dataIndex: 'title',
+      width: 300,
+    },
+    {
+      title: '来源',
+      dataIndex: 'biddingSource',
+      isEllipsis: true,
+      render: (_: string[]) => (_ || []).join(','),
+      width: 300,
+    },
+    {
+      title: '公告类别',
+      dataIndex: 'subTypeEnum',
+      render: (_: string[]) => (_ || []).join(',') || '/',
+      isEllipsis: true,
+      width: 300,
+    },
+    {
+      title: '项目编号',
+      dataIndex: 'projectCode',
+      isEllipsis: true,
+      width: 150,
+    },
+    {
+      title: '项目名称',
+      dataIndex: 'projectName',
+      width: 200,
+    },
+    {
+      title: '采购单位名称',
+      dataIndex: 'buyer',
+      width: 200,
+    },
+
+    {
+      title: '行业',
+      dataIndex: 'buyerClass',
+      isEllipsis: true,
+      width: 150,
+    },
+    {
+      title: '产业链',
+      dataIndex: 'industrial',
+      isEllipsis: true,
+      width: 150,
+    },
+    {
+      title: '标签',
+      dataIndex: 'label',
+      isEllipsis: true,
+      width: 150,
+    },
+    {
+      title: '内容状态',
+      dataIndex: 'status',
+      isEllipsis: true,
+      width: 150,
+    },
+    {
+      title: '发布时间',
+      dataIndex: 'publishTime',
+      isEllipsis: true,
+      width: 150,
+    },
+    {
+      title: '上架时间',
+      dataIndex: 'updateTime',
+      isEllipsis: true,
+      width: 150,
+    },
+    {
+      title: '操作',
+      width: 180,
+      dataIndex: 'option',
+      fixed: 'right',
+      render: (_: any, record: any) => {
+        // const accessible = access?.[permissions?.[edge].replace(new RegExp("Q"), "")]
+        return (
+          // <Access accessible={accessible}>
+          <Space wrap>
+            <Button type="link" style={{ padding: 0 }} onClick={() => {
+              Modal.confirm({
+                title: '删除数据',
+                content: '删除后，系统将不再推荐该内容，确定删除？',
+                onOk: () => { onDelete(record) },
+                okText: '删除'
+              })
+            }}>
+              删除
+            </Button>
+            <Button
+              type="link"
+              onClick={() => {
+                window.open(routeName.BASELINE_CONTENT_MANAGE_DETAIL);
+              }}
+            >
+              详情
+            </Button>
+            <Button
+              type="link"
+              onClick={() => {
+                Modal.confirm({
+                  title: '提示',
+                  content: '确定将内容上架？',
+                  onOk: () => { onOffShelves(record.id, true) },
+                  okText: '上架'
+                })
+              }}
+            >
+              下架
+            </Button>
+            <Button
+              type="link"
+              onClick={() => {
+                Modal.confirm({
+                  title: '提示',
+                  content: '确定将内容下架？',
+                  onOk: () => { onOffShelves(record.id, false) },
+                  okText: '下架'
+                })
+              }}
+            >
+              上架
+            </Button>
+          </Space>
+          // </Access>
+        )
+      },
+    },
+  ].filter(p => p);
+
+  useEffect(() => {
+    getPage();
+  }, [searchContent]);
+
+  const [searchForm] = Form.useForm();
+  const useSearchNode = (): React.ReactNode => {
+    return (
+      <div className={sc('container-search')}>
+        <Form {...formLayout} form={searchForm}>
+          <Row>
+            <Col span={6}>
+              <Form.Item name="name" label="标题">
+                <Input placeholder="请输入" />
+              </Form.Item>
+            </Col>
+            <Col span={6}>
+              <Form.Item name="status" label="内容状态">
+                <Select placeholder="请选择" allowClear>
+                  <Select.Option value={true}>
+                    已上架
+                  </Select.Option>
+                  <Select.Option value={false}>
+                    已下架
+                  </Select.Option>
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={6}>
+              <Form.Item name="subTypeEnum" label="公告类别">
+                <Select placeholder="请选择" allowClear>
+                  {Object.entries(subTypeObj).map((p) => (
+                    <Select.Option key={p[0] + p[1]} value={Number(p[0])}>
+                      {p[1]}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={6}>
+              <Form.Item name="biddingSource" label="来源">
+                <Select placeholder="请选择" allowClear>
+                  {Object.entries(sourceObj).map((p) => (
+                    <Select.Option key={p[0] + p[1]} value={Number(p[0])}>
+                      {p[1]}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row>
+            <Col span={6}>
+              <Form.Item name="industrial" label="产业链">
+                <Select placeholder="请选择" allowClear>
+                  {Object.entries(industryData).map((p) => (
+                    <Select.Option key={p[0] + p[1]} value={Number(p[0])}>
+                      {p[1]}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={6}>
+              <Form.Item name="buyer" label="采购单位名称">
+                <Input placeholder="请输入" />
+              </Form.Item>
+            </Col>
+            <Col span={6}>
+              <Form.Item name="projectCode" label="项目编号">
+                <Input placeholder="请输入" />
+              </Form.Item>
+            </Col>
+            <Col offset={2} span={4}>
+              <Button
+                style={{ marginRight: 20 }}
+                type="primary"
+                key="search"
+                onClick={() => {
+                  const search = searchForm.getFieldsValue();
+                  setSearChContent(search);
+                }}
+              >
+                查询
+              </Button>
+              <Button
+                type="primary"
+                key="reset"
+                onClick={() => {
+                  searchForm.resetFields();
+                  setSearChContent({});
+                }}
+              >
+                重置
+              </Button>
+            </Col>
+          </Row>
+        </Form>
+      </div>
+    );
+  };
 
   return (
-    <>
-      <div className={sc('container')}>
-        <h3>业务咨询昨日新增数据</h3>
-        <Row gutter={40}>
-          <Col span={4} offset={2}>
-            <div className={sc('container-add-item')} onClick={() => {handleAddItem('诊断意向报名')}}>
-              <p>诊断意向报名</p>
-              <ArrowUpOutlined style={{ color: 'red' }} />
-              <strong>{diagnosisIntentionCount || 0}</strong>
-            </div>
-          </Col>
-          <Col span={4}>
-            <div className={sc('container-add-item')} onClick={() => {handleAddItem('应用咨询记录')}}>
-              <p>应用咨询记录</p>
-              <ArrowUpOutlined style={{ color: 'red' }} />
-              <strong>{appConsultationCount || 0}</strong>
-            </div>
-          </Col>
-          <Col span={4}>
-            <div className={sc('container-add-item')} onClick={() => {handleAddItem('服务意向消息')}}>
-              <p>服务意向消息</p>
-              <ArrowUpOutlined style={{ color: 'red' }} />
-              <strong>{solutionIntentionCount || 0}</strong>
-            </div>
-          </Col>
-          <Col span={4}>
-            <div className={sc('container-add-item')} onClick={() => {handleAddItem('专家咨询记录')}}>
-              <p>专家咨询记录</p>
-              <ArrowUpOutlined style={{ color: 'red' }} />
-              <strong>{expertConsultationCount || 0}</strong>
-            </div>
-          </Col>
-          <Col span={4}>
-            <div className={sc('container-add-item')} onClick={() => {handleAddItem('直播意向管理')}}>
-              <p>直播意向管理</p>
-              <ArrowUpOutlined style={{ color: 'red' }} />
-              <strong>{liveIntentionCount || 0}</strong>
-            </div>
-          </Col>
-        </Row>
+    <PageContainer className={sc('container')}>
+      {useSearchNode()}
+      <div className={sc('container-table-header')}>
+        <div className="title">
+          {/* <span>风险列表(共{pageInfo.totalCount || 0}条)</span> */}
+        </div>
       </div>
-      <div className={sc('container')}>
-        <h3>平台关键数据统计</h3>
-        <Row gutter={40}>
-          {statistics?.map((item: any) => {
-            const { type, todayCount, yesterdayChangeCount, weekChangeCount, monthChangeCount } =
-              item || {};
-            return (
-              <Col span={4}>
-                <div className={sc('container-statistic-item')} onClick={()=>{handleDataStatistic(item)}}>
-                  <p>{statisticsType[type]}</p>
-                  <strong>{todayCount}</strong>
-                  <p className={sc('container-statistic-item-content')}>
-                    日
-                    <span
-                      style={{
-                        position: 'absolute',
-                        left: '55%',
-                      }}
-                    >
-                      {yesterdayChangeCount >= 0 ? <PlusOutlined /> : <MinusOutlined />}
-                      {yesterdayChangeCount >= 0 ? yesterdayChangeCount : -yesterdayChangeCount}
-                    </span>
-                  </p>
-                  <p className={sc('container-statistic-item-content')}>
-                    周
-                    <span
-                      style={{
-                        position: 'absolute',
-                        left: '55%',
-                      }}
-                    >
-                      {weekChangeCount >= 0 ? <PlusOutlined /> : <MinusOutlined />}
-                      {weekChangeCount >= 0 ? weekChangeCount : -weekChangeCount}
-                    </span>
-                  </p>
-                  <p className={sc('container-statistic-item-content')}>
-                    月
-                    <span
-                      style={{
-                        position: 'absolute',
-                        left: '55%',
-                      }}
-                    >
-                      {monthChangeCount >= 0 ? <PlusOutlined /> : <MinusOutlined />}
-                      {monthChangeCount >= 0 ? monthChangeCount : -monthChangeCount}
-                    </span>
-                  </p>
-                </div>
-              </Col>
-            );
-          })}
-        </Row>
+      <div className={sc('container-table-body')}>
+        <SelfTable
+          loading={loading}
+          bordered
+          scroll={{ x: 1400 }}
+          columns={columns}
+          dataSource={dataSource}
+          pagination={
+            pageInfo.totalCount === 0
+              ? false
+              : {
+                onChange: getPage,
+                total: pageInfo.totalCount,
+                current: pageInfo.pageIndex,
+                pageSize: pageInfo.pageSize,
+                showTotal: (total: number) =>
+                  `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
+              }
+          }
+        />
       </div>
-      {/* <div className={sc('container')}>
-                <h3>页面流量统计</h3>
-                <div className={sc('container-search')}>
-                    <div className={sc('container-search-item')}>
-                        <label>数据时间：</label>
-                        <Radio.Group
-                            options={options}
-                            onChange={changeQuicklyDate}
-                            value={quicklyDate}
-                            optionType="button"
-                            buttonStyle="solid"
-                        />
-                        <RangePicker 
-                            value={hackValue || value}
-                            disabledDate={disabledDate} 
-                            onCalendarChange={val => setDates(val)}
-                            onChange={val => setValue(val)}
-                            onOpenChange={onOpenChange}
-                            style={{marginLeft: 8}}
-                        />
-                    </div>
-                    <div className={sc('container-search-item')}>
-                        <label>统计页面：</label>
-                        <Radio.Group
-                            options={pageOptions}
-                            onChange={changePageType}
-                            value={pageType}
-                            optionType="button"
-                            buttonStyle="solid"
-                        />
-                        <Input placeholder="请输入要查看页面流量的页面地址" style={{width: 256, marginLeft: 8}}/>
-                    </div>
-                </div>
-                <div id='charts' style={{width: '100%', height: 500}}></div>
-            </div> */}
-        {motal}
-    </>
+    </PageContainer>
   );
 };
