@@ -112,6 +112,8 @@ export default () => {
       title: '序号',
       dataIndex: 'sort',
       width: 80,
+      render: (_: any, _record: any, index: number) =>
+      pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
       title: '公告标题',
@@ -122,13 +124,11 @@ export default () => {
       title: '来源',
       dataIndex: 'biddingSource',
       isEllipsis: true,
-      render: (_: string[]) => (_ || []).join(','),
       width: 300,
     },
     {
       title: '公告类别',
       dataIndex: 'subTypeEnum',
-      render: (_: string[]) => (_ || []).join(',') || '/',
       isEllipsis: true,
       width: 300,
     },

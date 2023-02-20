@@ -210,14 +210,14 @@
   OPERATE_DATA_GMV: '/operate-data/gmv',
   OPERATE_DATA_FINANCEORDER: '/operate-data/finance-order',
 
-  BASELINE: 'baseline',
-  BASELINE_CONTENT_MANAGE: 'baseline-content-manage',
-  BASELINE_CONTENT_MANAGE_DETAIL: 'baseline-content-manage-detail',
-  BASELINE_CONTENT_MANAGE_ADDORUPDATE: 'baseline-content-manage-addorupdate',
-  BASELINE_BID_MANAGE: 'baseline-bid-manage',
-  BASELINE_BID_MANAGE_DETAIL: 'baseline-bid-manage-detail',
-  BASELINE_TAG_MANAGE: 'baseline-tag-manage',
-  BASELINE_TAG_MANAGE_DETAIL: 'baseline-bid-tag-detail',
+  BASELINE: '/baseline',
+  BASELINE_CONTENT_MANAGE: '/baseline/baseline-content-manage',
+  BASELINE_CONTENT_MANAGE_DETAIL: '/baseline/baseline-content-manage/detail',
+  BASELINE_CONTENT_MANAGE_ADDORUPDATE: '/baseline/baseline-content-manage/addorupdate',
+  BASELINE_BID_MANAGE: '/baseline/baseline-bid-manage',
+  BASELINE_BID_MANAGE_DETAIL: '/baseline/baseline-bid-manage/detail',
+  BASELINE_TAG_MANAGE: '/baseline/baseline-tag-manage',
+  BASELINE_TAG_MANAGE_DETAIL: '/baseline/baseline-tag-manage/detail',
   BASELINE_TOPIC_MANAGE: 'baseline-topic-manage',
 };
 
@@ -299,44 +299,78 @@ export default [
       },
       {
         path: routeName.BASELINE_CONTENT_MANAGE,
-        // code: 'M_OD_GMV',
-        // access: 'M_OD_GMV',
         name: '内容管理',
-        component: './baseline/content',
-      },
-      {
-        path: routeName.BASELINE_CONTENT_MANAGE_ADDORUPDATE,
-        name: '新增内容',
-        component: './baseline/content/addOrUpdate',
-      },
-      {
-        path: routeName.BASELINE_CONTENT_MANAGE_DETAIL,
-        name: '内容详情',
-        component: './baseline/content/detail',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.BASELINE_CONTENT_MANAGE,
+            redirect: routeName.BASELINE_CONTENT_MANAGE + '/index',
+          },
+          {
+            path: routeName.BASELINE_CONTENT_MANAGE + '/index',
+            name: '内容管理',
+            hideInBreadcrumb: true,
+            component: './baseline/content',
+          },
+          {
+            path: routeName.BASELINE_CONTENT_MANAGE_ADDORUPDATE,
+            name: '新增内容',
+            hideInBreadcrumb: true,
+            component: './baseline/content/addOrUpdate',
+          },
+          {
+            path: routeName.BASELINE_CONTENT_MANAGE_DETAIL,
+            name: '内容详情',
+            hideInBreadcrumb: true,
+            component: './baseline/content/detail',
+          },
+        ],
       },
       {
         path: routeName.BASELINE_BID_MANAGE,
-        // code: 'M_OD_GMV',
-        // access: 'M_OD_GMV',
         name: '招投标管理',
-        component: './baseline/bid',
-      },
-      {
-        path: routeName.BASELINE_BID_MANAGE_DETAIL,
-        name: '招投标详情',
-        component: './baseline/bid/detail',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.BASELINE_BID_MANAGE,
+            redirect: routeName.BASELINE_BID_MANAGE + '/index',
+          },
+          {
+            path: routeName.BASELINE_BID_MANAGE + '/index',
+            name: '招投标管理',
+            hideInBreadcrumb: true,
+            component: './baseline/bid',
+          },
+          {
+            path: routeName.BASELINE_BID_MANAGE_DETAIL,
+            name: '内容详情',
+            hideInBreadcrumb: true,
+            component: './baseline/bid/detail',
+          },
+        ],
       },
       {
         path: routeName.BASELINE_TAG_MANAGE,
-        // code: 'M_OD_GMV',
-        // access: 'M_OD_GMV',
         name: '内容标签管理',
-        component: './baseline/tag',
-      },
-      {
-        path: routeName.BASELINE_TAG_MANAGE_DETAIL,
-        name: '内容标签详情',
-        component: './baseline/tag/detail',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.BASELINE_TAG_MANAGE,
+            redirect: routeName.BASELINE_TAG_MANAGE + '/index',
+          },
+          {
+            path: routeName.BASELINE_TAG_MANAGE + '/index',
+            name: '内容标签管理',
+            hideInBreadcrumb: true,
+            component: './baseline/tag',
+          },
+          {
+            path: routeName.BASELINE_TAG_MANAGE_DETAIL,
+            name: '内容标签详情',
+            hideInBreadcrumb: true,
+            component: './baseline/tag/detail',
+          },
+        ],
       },
       {
         path: routeName.BASELINE_TOPIC_MANAGE,

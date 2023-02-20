@@ -16,9 +16,10 @@ const sc = scopedClasses('science-technology-manage-creative-detail');
 export default () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [detail, setDetail] = useState<any>({});
+  const id = history.location.query?.id as string;
 
   const prepare = async () => {
-    const id = history.location.query?.id as string;
+    setLoading(true);
     if (id) {
       try {
         const res = await getTagDetail(id);
@@ -54,26 +55,25 @@ export default () => {
   }, [activeKey]);
 
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
-    setLoading(true);
+
     try {
       const { result, totalCount, pageTotal, code } = await (activeKey == 1 ? getTagUserPage({
+        labelId: id,
         pageIndex,
         pageSize
       }) : getTagContentPage({
+        labelId: id,
         pageIndex,
         pageSize,
       }));
       if (code === 0) {
         setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
         setDataSource(result);
-        setLoading(false);
       } else {
         message.error(`请求分页数据失败`);
-        setLoading(false);
       }
     } catch (error) {
       console.log(error);
-      setLoading(false);
     }
   };
   const userColumns = [
@@ -81,29 +81,32 @@ export default () => {
       title: '序号',
       dataIndex: 'sort',
       width: 80,
+      render: (_: any, _record: any, index: number) =>
+        pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
       title: '用户名',
       dataIndex: 'userName',
-      width: 300,
+      width: 150,
     },
     {
       title: '用户id',
       dataIndex: 'userId',
       isEllipsis: true,
-      width: 150,
+      width: 200,
     },
     {
       title: '注册时间',
       dataIndex: 'registrationTime',
       isEllipsis: true,
-      width: 150,
+      width: 300,
     },
     {
       title: '用户标签',
       dataIndex: 'labels',
+      render: (_: any[]) => _?.length > 0 ? _?.map(p => p.labelName).join(',') : '--',
       isEllipsis: true,
-      width: 150,
+      width: 300,
     },
   ];
   const contentColumns = [
@@ -111,11 +114,13 @@ export default () => {
       title: '序号',
       dataIndex: 'sort',
       width: 80,
+      render: (_: any, _record: any, index: number) =>
+        pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
       title: '标题',
       dataIndex: 'title',
-      width: 300,
+      width: 200,
     },
     {
       title: '浏览量',
@@ -126,7 +131,8 @@ export default () => {
       title: '资讯标签',
       dataIndex: 'labels',
       isEllipsis: true,
-      width: 150,
+      render: (_: any[]) => _?.length > 0 ? _?.map(p => p.labelName).join(',') : '--',
+      width: 300,
     },
     {
       title: '操作',
@@ -139,7 +145,7 @@ export default () => {
             type="link"
             style={{ padding: 0 }}
             onClick={() => {
-              window.open(routeName.BASELINE_CONTENT_MANAGE_ADDORUPDATE);
+              window.open(routeName.BASELINE_CONTENT_MANAGE_DETAIL + `?id=${record?.id}`);
             }}
           >
             内容详情
@@ -159,19 +165,19 @@ export default () => {
       <div className={sc('container')}>
         <div className={sc('container-desc')}>
           <span>标签名称：</span>
-          <span>{detail?.name || '--'}</span>
+          <span>{detail?.labelName || '--'}</span>
         </div>
         <div className={sc('container-desc')}>
           <span>来源：</span>
-          <span>{detail?.typeName || '--'}</span>
+          <span>{detail?.source || '--'}</span>
         </div>
         <div className={sc('container-desc')}>
           <span>用途：</span>
-          <span>{detail?.industryTypeNames ? detail?.industryTypeNames.join('，') : '--'}</span>
+          <span>{detail?.coldStartSelect ? '兴趣标签、' : ''}内容标签</span>
         </div>
         <div className={sc('container-desc')}>
           <span>标签权重：</span>
-          <span>{detail?.typeName || '--'}</span>
+          <span>{detail?.weight || '--'}</span>
         </div>
       </div>
 

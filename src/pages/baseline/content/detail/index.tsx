@@ -23,7 +23,6 @@ export default () => {
         const res = await getArticleDetail(id);
         if (res.code === 0) {
           setDetail(res?.result);
-          console.log('res===>', res)
         } else {
           throw new Error(res.message);
         }
@@ -49,6 +48,7 @@ export default () => {
     totalCount: 0,
     pageTotal: 0,
   });
+  const [total, setTotal] = useState<number>(0);
 
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     setLoading(true);
@@ -60,7 +60,8 @@ export default () => {
       });
       if (code === 0) {
         setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
-        setDataSource(result);
+        setDataSource(result?.statistics || []);
+        setTotal(result?.totalBrowseCount || 0);
         setLoading(false);
       } else {
         message.error(`请求分页数据失败`);
@@ -76,6 +77,8 @@ export default () => {
       title: '序号',
       dataIndex: 'sort',
       width: 80,
+      render: (_: any, _record: any, index: number) =>
+        pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
       title: '用户名',
@@ -143,11 +146,11 @@ export default () => {
               </div>
               <div className={sc('container-desc')}>
                 <span>内容类型：</span>
-                <span>{detail?.types ? detail?.types?.map(p => p.typeName)?.join('，') : '--'}</span>
+                <span>{detail?.types?.length > 0 ? detail?.types?.map(p => p.typeName)?.join('，') : '--'}</span>
               </div>
               <div className={sc('container-desc')}>
                 <span>标签：</span>
-                <span>{detail?.labels ? detail?.types?.map(p => p.labelName)?.join('，') : '--'}</span>
+                <span>{detail?.labels?.length > 0 ? detail?.labels?.map(p => p.labelName)?.join('，') : '--'}</span>
               </div>
               <div className={sc('container-desc')}>
                 <span>来源：</span>
@@ -159,7 +162,11 @@ export default () => {
               </div>
               <div className={sc('container-desc')}>
                 <span>内容详情：</span>
-                <span>{detail?.content ? '隐藏' : '公开'}</span>
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: detail?.content || '--',
+                  }}
+                />
               </div>
               <div className={sc('container-desc')}>
                 <span>内容原址：</span>
@@ -175,7 +182,7 @@ export default () => {
                 详情浏览总次数
               </span>
               <span style={{ fontSize: '16px' }}>
-                2123123
+                {total}
               </span>
             </div>
             <div style={{ padding: 10 }}>
