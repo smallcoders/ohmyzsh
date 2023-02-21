@@ -220,7 +220,7 @@ export default () => {
                 详情
               </Button>
             <Access accessible={access['PU_BLM_HTGL']}>
-            {record.enable && (
+            {!record.enable && (
               <Button type="link" onClick={() => {
                 history.push(`/baseline/baseline-topic-manage/add?id=${record?.id}&contentCount=${record?.contentCount}`)
               }}>
