@@ -97,15 +97,16 @@ export default () => {
     },
     {
       title: '用户停留时长',
-      dataIndex: 'registrationTime',
+      dataIndex: 'browseTime',
       isEllipsis: true,
       width: 150,
     },
     {
       title: '用户标签',
-      dataIndex: 'labels',
+      dataIndex: 'labelList',
       isEllipsis: true,
       width: 150,
+      render: (_: any[]) => _?.length === 0 ? '/' :  _?.map((item: any) => <Tag key={item.id}>{item.labelName}</Tag>),
     },
   ];
 

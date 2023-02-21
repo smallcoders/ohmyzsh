@@ -6,7 +6,7 @@ import type Common from "@/types/common";
 import { getArticlePage, getArticleType } from "@/services/baseline";
 import {routeName} from "../../../../../config/routes";
 
-import {Button, Col, Form, Input, Row, Modal, Select, message} from "antd";
+import {Button, Col, Form, Input, Row, Modal, Select, message, Tag} from "antd";
 import SelfTable from "@/components/self_table";
 const statusObj = {
   0: '下架',
@@ -125,17 +125,18 @@ export default (props: any) => {
         dataIndex: 'keywords',
         isEllipsis: true,
         width: 300,
+        render: (val: string) => JSON.parse(val || `['--']`).join('、')
       },
       {
         title: '内容类型',
         dataIndex: 'types',
-        render: (_: any[]) => _?.length > 0 ? _?.map(p => p.typeName).join(',') : '--',
+        render: (_: any[]) => _?.length > 0 ? _?.map(p => p.typeName).join('、') : '--',
         width: 200,
       },
       {
         title: '标签',
         dataIndex: 'labels',
-        render: (_: any[]) => _?.length > 0 ? _?.map(p => p.labelName).join(',') : '--',
+        render: (_: any[]) => _?.length === 0 ? '/' :  _?.map((item: any) => <Tag key={item.id}>{item.labelName}</Tag>),
         width: 200,
       },
 

@@ -36,7 +36,6 @@ export default () => {
   const [modalVisible, setModalVisible] = useState<boolean>(false)
   const [content, setContent] = useState<any>({})
   const [labels, setLabels] = useState([])
-  const [articleList, setArticleList] = useState([])
   const [contentModalVisible, setContentModalVisible] = useState(false)
   const [currentSelect, setCurrentSelect] = useState({})
   let  isEdit = false
@@ -270,20 +269,6 @@ export default () => {
     );
   };
 
-  // const onDelete = async (id: string) => {
-  //   try {
-  //     const updateStateResult = await deleteTag(id);
-  //     if (updateStateResult.code === 0) {
-  //       message.success(`删除成功`);
-  //       getPage();
-  //     } else {
-  //       message.error(`删除失败，请重试`);
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-
   const columns = [
     {
       title: '序号',
@@ -319,7 +304,7 @@ export default () => {
     {
       title: '推荐阅读量',
       dataIndex: 'readingCount',
-      width: 150,
+      width: 150
     },
     {
       title: '操作人',
@@ -370,7 +355,9 @@ export default () => {
                 cancelText="取消"
                 onConfirm={() => editState(record as any, 0)}
               >
-                <Button type="link">下架</Button>
+                <Button type="link"
+                  style={{ padding: 0 }}
+                >下架</Button>
               </Popconfirm>
             )
             : (
@@ -380,7 +367,9 @@ export default () => {
                 cancelText="取消"
                 onConfirm={() => editState(record as any, 1)}
               >
-                <Button type="link" >上架</Button>
+                <Button type="link"
+                  style={{ padding: 0 }}
+                >上架</Button>
               </Popconfirm>
             )}
             </Space>
