@@ -291,35 +291,37 @@ export default [
   },
   {
     path: routeName.BASELINE,
-    // code: 'M_OD',
-    // access: 'M_OD',
+    access: 'M_BLM',
     name: '基线管理',
     icon: 'hdd',
     routes: [
       {
         path: routeName.BASELINE,
-        // code: 'M_OD_GMV',
-        // access: 'M_OD_GMV',
+        access: 'M_BLM_NRGL',
         redirect: routeName.BASELINE_CONTENT_MANAGE,
       },
       {
         path: routeName.BASELINE_CONTENT_MANAGE,
         name: '内容管理',
+        access: 'M_BLM_NRGL',
         hideChildrenInMenu: true,
         routes: [
           {
+            access: 'M_BLM_NRGL',
             path: routeName.BASELINE_CONTENT_MANAGE,
             redirect: routeName.BASELINE_CONTENT_MANAGE + '/index',
           },
           {
             path: routeName.BASELINE_CONTENT_MANAGE + '/index',
             name: '内容管理',
+            access: 'M_BLM_NRGL',
             hideInBreadcrumb: true,
             component: './baseline/content',
           },
           {
             path: routeName.BASELINE_CONTENT_MANAGE_ADDORUPDATE,
             name: '新增内容',
+            access: 'PA_BLM_NRGL',
             hideInBreadcrumb: true,
             component: './baseline/content/addOrUpdate',
           },
@@ -334,16 +336,19 @@ export default [
       {
         path: routeName.BASELINE_BID_MANAGE,
         name: '招投标管理',
+        access: 'M_BLM_ZTBGL',
         hideChildrenInMenu: true,
         routes: [
           {
             path: routeName.BASELINE_BID_MANAGE,
+            access: 'M_BLM_ZTBGL',
             redirect: routeName.BASELINE_BID_MANAGE + '/index',
           },
           {
             path: routeName.BASELINE_BID_MANAGE + '/index',
             name: '招投标管理',
             hideInBreadcrumb: true,
+            access: 'M_BLM_ZTBGL',
             component: './baseline/bid',
           },
           {
@@ -357,14 +362,17 @@ export default [
       {
         path: routeName.BASELINE_TAG_MANAGE,
         name: '内容标签管理',
+        access: 'M_BLM_NRBQGL',
         hideChildrenInMenu: true,
         routes: [
           {
             path: routeName.BASELINE_TAG_MANAGE,
+            access: 'M_BLM_NRBQGL',
             redirect: routeName.BASELINE_TAG_MANAGE + '/index',
           },
           {
             path: routeName.BASELINE_TAG_MANAGE + '/index',
+            access: 'M_BLM_NRBQGL',
             name: '内容标签管理',
             hideInBreadcrumb: true,
             component: './baseline/tag',
@@ -379,22 +387,20 @@ export default [
       },
       {
         path: routeName.BASELINE_TOPIC_MANAGE,
-        // code: 'M_HRM_HTGL',
-        // access: 'M_HRM_HTGL',
+        code: 'M_HRM_HTGL',
+        access: 'M_HRM_HTGL',
         name: '话题管理',
         component: './baseline/topic/index',
       },
       {
         path: routeName.BASELINE_TOPIC_MANAGE_DETAIL,
-        // code: 'M_HRM_XQ',
-        // access: 'M_HRM_XQ',
+        code: 'M_HRM_XQ',
+        access: 'M_HRM_XQ',
         hideInMenu: true,
         name: '详情',
         component: './baseline/topic/detail',
       },{
         path: routeName.BASELINE_TOPIC_MANAGE_ADD,
-        // code: 'M_OD_GMV',
-        // access: 'M_OD_GMV',
         hideInMenu: true,
         name: '新增',
         component: './baseline/topic/add',

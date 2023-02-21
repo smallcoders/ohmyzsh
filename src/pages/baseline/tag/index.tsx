@@ -277,10 +277,10 @@ export default () => {
       dataIndex: 'option',
       fixed: 'right',
       render: (_: any, record: any) => {
-        const accessible = access?.[permissions?.[edge].replace(new RegExp("Q"), "")]
         return (
-          <Access accessible={accessible}>
-            <Space wrap>
+
+          <Space wrap>
+            <Access accessible={access['PU_BLM_NRBQGL']}>
               <Button
                 type="link"
                 style={{ padding: 0 }}
@@ -295,7 +295,7 @@ export default () => {
               >
                 编辑
               </Button>
-
+            </Access>            <Access accessible={access['PD_BLM_NRBQGL']}>
               <Button type="link" style={{ padding: 0 }} onClick={() => {
                 Modal.confirm({
                   title: '删除标签',
@@ -306,6 +306,7 @@ export default () => {
               }}>
                 删除
               </Button>
+            </Access>
               <Button
                 type="link"
                 style={{ padding: 0 }}
@@ -315,8 +316,7 @@ export default () => {
               >
                 详情
               </Button>
-            </Space>
-          </Access>
+          </Space>
         )
 
 
@@ -400,7 +400,7 @@ export default () => {
       <div className={sc('container-table-header')}>
         <div className="title">
           <span>标签列表(共{pageInfo.totalCount || 0}条)</span>
-          <Access accessible={access['P_SM_XQGL']}>
+          <Access accessible={access['PA_BLM_NRBQGL']}>
             <Button type='primary' icon={<PlusOutlined />} onClick={() => { setModal({ visible: true, detail: {} }) }}>
               新增
             </Button>

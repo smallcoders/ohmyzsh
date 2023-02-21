@@ -22,7 +22,7 @@ import type Common from '@/types/common';
 import type NeedVerify from '@/types/user-config-need-verify';
 import { routeName } from '../../../../config/routes';
 import { stubFalse } from 'lodash';
-import { deleteArticle, getArticlePage, getArticleTags, getArticleType, isTopArticle, onOffShelvesArticle } from '@/services/baseline';
+import { deleteArticle, getArticlePage, getArticleRiskCount, getArticleTags, getArticleType, isTopArticle, onOffShelvesArticle } from '@/services/baseline';
 const sc = scopedClasses('science-technology-manage-creative-need');
 const statusObj = {
   0: '下架',
@@ -34,16 +34,9 @@ export default () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [dataSource, setDataSource] = useState<NeedVerify.Content[]>([]);
   const [types, setTypes] = useState<any[]>([]);
-  const [searchContent, setSearChContent] = useState<{
-    name?: string; // 标题
-    createTimeStart?: string; // 提交开始时间
-    state?: string; // 状态
-    createTimeEnd?: string; // 提交结束时间
-    typeId?: number; // 行业类型id 三级类型
-    industryTypeId?: string; // 所属行业
-  }>({});
+  const [searchContent, setSearChContent] = useState<any>({});
   // 拿到当前角色的access权限兑现
-  // const access = useAccess()
+  const access = useAccess()
   // // 当前页面的对应权限key
   // useEffect(() => {
   //   for (const key in permissions) {
@@ -70,18 +63,21 @@ export default () => {
   });
 
   const [tags, setTags] = useState<any>([]);
-
+  const [riskCount, setRiskCount] = useState<number>(0);
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     setLoading(true);
     try {
-      const { result, totalCount, pageTotal, code } = await getArticlePage({
+      const [res1, res2] = await Promise.all([getArticlePage({
         pageIndex,
         pageSize,
         ...searchContent,
-      });
+      }), getArticleRiskCount(searchContent)])
+      const { result, totalCount, pageTotal, code } = res1
+
       if (code === 0) {
         setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
         setDataSource(result);
+        setRiskCount(res2?.result || 0)
         setLoading(false);
       } else {
         message.error(`请求分页数据失败`);
@@ -161,13 +157,12 @@ export default () => {
     {
       title: '标题',
       dataIndex: 'title',
-      isEllipsis: true,
-      render: (_: any, record: any) => <div style={{display: 'flex', gap: 10}}>
+      render: (_: any, record: any) => <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
         <span>
           {_}
         </span>
-        {record?.isTop && <div style={{ background: '#169BD5', color: '#FFF', padding: '0 2px', borderRadius: '2px' }}>已置顶</div>}
-        {record?.riskInfo && <Tooltip title={record?.riskInfo}><div style={{ background: '#D7001A', color: '#FFF', padding: '0 2px', borderRadius: '2px' }}>风险</div></Tooltip>}
+        {record?.isTop && <div style={{ background: '#169BD5', color: '#FFF', padding: '0 2px', borderRadius: '2px', whiteSpace: 'nowrap' }}>已置顶</div>}
+        {record?.riskInfo && <Tooltip title={record?.riskInfo}><div style={{ background: '#D7001A', color: '#FFF', padding: '0 2px', borderRadius: '2px', whiteSpace: 'nowrap' }}>风险</div></Tooltip>}
       </div>,
       width: 300,
     },
@@ -233,6 +228,7 @@ export default () => {
       title: '审核备注',
       dataIndex: 'auditCommon',
       isEllipsis: true,
+      render: (_: boolean) => _ ? '审核通过' : '审核不通过',
       width: 200,
     },
     {
@@ -243,30 +239,33 @@ export default () => {
       render: (_: any, record: any) => {
         // const accessible = access?.[permissions?.[edge].replace(new RegExp("Q"), "")]
         return (
-          // <Access accessible={accessible}>
           <Space wrap>
             {record?.status == 2 &&
               <>
-                <Button
-                  type="link"
-                  style={{ padding: 0 }}
-                  onClick={() => {
-                    window.open(routeName.BASELINE_CONTENT_MANAGE_ADDORUPDATE + `?id=${record?.id}`);
-                  }}
-                >
-                  编辑
-                </Button>
-
-                <Button type="link" style={{ padding: 0 }} onClick={() => {
-                  Modal.confirm({
-                    title: '删除数据',
-                    content: '删除该内容后，系统将不再推荐该内容，确定删除？',
-                    onOk: () => { onDelete(record?.id) },
-                    okText: '删除'
-                  })
-                }}>
-                  删除
-                </Button></>
+                <Access accessible={access['P_BLM_NRGL']}>
+                  <Button
+                    type="link"
+                    style={{ padding: 0 }}
+                    onClick={() => {
+                      window.open(routeName.BASELINE_CONTENT_MANAGE_ADDORUPDATE + `?id=${record?.id}`);
+                    }}
+                  >
+                    编辑
+                  </Button>
+                </Access>
+                <Access accessible={access['PD_BLM_NRGL']}>
+                  <Button type="link" style={{ padding: 0 }} onClick={() => {
+                    Modal.confirm({
+                      title: '删除数据',
+                      content: '删除该内容后，系统将不再推荐该内容，确定删除？',
+                      onOk: () => { onDelete(record?.id) },
+                      okText: '删除'
+                    })
+                  }}>
+                    删除
+                  </Button>
+                </Access>
+              </>
             }
             {record?.status == 1 &&
               <>
@@ -279,37 +278,41 @@ export default () => {
                 >
                   详情
                 </Button>
-                <Button
-                  style={{ padding: 0 }}
-                  type="link"
-                  onClick={() => {
-                    Modal.confirm({
-                      title: '提示',
-                      content: '确定将内容下架？',
-                      onOk: () => { onOffShelves(record.id, 0) },
-                      okText: '下架'
-                    })
-                  }}
-                >
-                  下架
-                </Button>
-                {record?.isTop ? <Button
-                  style={{ padding: 0 }}
-                  type="link"
-                  onClick={() => {
-                    isTop(record.id, false)
-                  }}
-                >
-                  取消置顶
-                </Button> : <Button
-                  style={{ padding: 0 }}
-                  type="link"
-                  onClick={() => {
-                    isTop(record.id, true)
-                  }}
-                >
-                  置顶
-                </Button>}
+                <Access accessible={access['P_BLM_NRGL']}>
+                  <Button
+                    style={{ padding: 0 }}
+                    type="link"
+                    onClick={() => {
+                      Modal.confirm({
+                        title: '提示',
+                        content: '确定将内容下架？',
+                        onOk: () => { onOffShelves(record.id, 0) },
+                        okText: '下架'
+                      })
+                    }}
+                  >
+                    下架
+                  </Button>
+                </Access>
+                <Access accessible={access['P_BLM_NRGL']}>
+                  {record?.isTop ? <Button
+                    style={{ padding: 0 }}
+                    type="link"
+                    onClick={() => {
+                      isTop(record.id, false)
+                    }}
+                  >
+                    取消置顶
+                  </Button> : <Button
+                    style={{ padding: 0 }}
+                    type="link"
+                    onClick={() => {
+                      isTop(record.id, true)
+                    }}
+                  >
+                    置顶
+                  </Button>}
+                </Access>
               </>
             }
 
@@ -324,7 +327,8 @@ export default () => {
                 >
                   详情
                 </Button>
-                {record?.auditCommon ? <Button
+
+                {record?.auditCommon ? <Access accessible={access['P_BLM_NRGL']}><Button
                   type="link"
                   style={{ padding: 0 }}
                   onClick={() => {
@@ -337,8 +341,8 @@ export default () => {
                   }}
                 >
                   上架
-                </Button> : <>
-                  <Button
+                </Button></Access> : <>
+                  <Access accessible={access['P_BLM_NRGL']}> <Button
                     type="link"
                     style={{ padding: 0 }}
                     onClick={() => {
@@ -347,8 +351,8 @@ export default () => {
                   >
                     编辑
                   </Button>
-
-                  <Button type="link" style={{ padding: 0 }} onClick={() => {
+                  </Access>
+                  <Access accessible={access['P_BLM_NRGL']}><Button type="link" style={{ padding: 0 }} onClick={() => {
                     Modal.confirm({
                       title: '删除数据',
                       content: '删除该内容后，系统将不再推荐该内容，确定删除？',
@@ -357,7 +361,7 @@ export default () => {
                     })
                   }}>
                     删除
-                  </Button>
+                  </Button></Access>
                 </>
                 }
               </>
@@ -471,12 +475,12 @@ export default () => {
       {useSearchNode()}
       <div className={sc('container-table-header')}>
         <div className="title">
-          <span>风险列表(共{pageInfo.totalCount || 0}条)</span>
-          {/* <Access accessible={access['P_SM_XQGL']}> */}
-          <Button type='primary' icon={<PlusOutlined />} onClick={() => { window.open(routeName.BASELINE_CONTENT_MANAGE_ADDORUPDATE); }}>
-            新增
-          </Button>
-          {/* </Access> */}
+          <span>风险列表(共{riskCount >= 10000 ? '10000+' : riskCount || 0}条)</span>
+          <Access accessible={access['PA_BLM_NRGL']}>
+            <Button type='primary' icon={<PlusOutlined />} onClick={() => { window.open(routeName.BASELINE_CONTENT_MANAGE_ADDORUPDATE); }}>
+              新增
+            </Button>
+          </Access>
         </div>
       </div>
       <div className={sc('container-table-body')}>

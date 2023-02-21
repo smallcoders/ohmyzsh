@@ -9,8 +9,27 @@ import type Common from "@/types/common";
 import {deleteHotRecommend, editHotRecommend, queryHotRecommend} from "@/services/topic";
 import {InfoOutlined} from "@ant-design/icons";
 import {history} from "@@/core/history";
+import {useAccess,Access} from "@@/plugin-access/access";
 
 export default () => {
+  // // 拿到当前角色的access权限兑现
+  const access = useAccess()
+  console.log(access)
+  // // 当前页面的对应权限key
+  // const [edge, setEdge] = useState<Edge.HOME>(Edge.HOME);
+  // // 页面权限
+  // const permissions = {
+  //   [Edge.HOME]: 'PQ_BLM_HTGL', // 话题管理
+  // }
+  // useEffect(() => {
+  //   for (const key in permissions) {
+  //     const permission = permissions[key]
+  //     if (Object.prototype.hasOwnProperty.call(access, permission)) {
+  //       setEdge(key as any)
+  //       break
+  //     }
+  //   }
+  // },[])
   const sc = scopedClasses('baseline-topic');
   const formLayout = {
     labelCol: { span: 6 },
@@ -44,14 +63,14 @@ export default () => {
             <Col span={6}>
               <Form.Item name="enable" label="发布状态">
                 <Select placeholder="请选择" allowClear style={{ width: '200px'}}>
-                  <Select.Option value={0}>未发布</Select.Option>
-                  <Select.Option value={1}>已发布</Select.Option>
+                  <Select.Option value={0}>下架</Select.Option>
+                  <Select.Option value={1}>上架</Select.Option>
                 </Select>
               </Form.Item>
             </Col>
             <Col span={4}>
               <Button
-                style={{ margin:'0 20px' }}
+                style={{ marginRight:'20px' }}
                 type="primary"
                 key="search"
                 onClick={() => {
@@ -200,6 +219,7 @@ export default () => {
               }}>
                 详情
               </Button>
+            <Access accessible={access['PU_BLM_HTGL']}>
             {record.enable && (
               <Button type="link" onClick={() => {
                 history.push(`/baseline/baseline-topic-manage/add?id=${record?.id}&contentCount=${record?.contentCount}`)
@@ -207,6 +227,7 @@ export default () => {
                 编辑
               </Button>
             )}
+            </Access>
             {record.enable ? (
               <Popconfirm
                 title="确定下架么？"
@@ -236,7 +257,7 @@ export default () => {
                       style={{flexFlow:'column'}}
                       name={'weight'}
                       label="权重设置">
-                      <InputNumber style={{width:'280px'}} placeholder={'请输入1~100的整数，数字越大排名越小'} min={1} max={100} />
+                      <InputNumber style={{width:'280px'}} placeholder={'请输入1~100的整数，权重越大，展示越靠前'} min={1} max={100} />
                     </Form.Item>
                   </Form>
                 </>
@@ -257,6 +278,7 @@ export default () => {
                 权重设置
               </Button>
             </Popconfirm>
+            <Access accessible={access['PD_BLM_HTGL']}>
             {!record.enable && (
               <Popconfirm
                 title="确定删除么？"
@@ -269,6 +291,7 @@ export default () => {
               </Button>
               </Popconfirm>
               )}
+            </Access>
           </div>
         )
       },
@@ -279,6 +302,8 @@ export default () => {
     <PageContainer className={sc('container')}>
       {useSearchNode()}
       <div className={sc('container-table-header')}>
+        {/*{access.PA_BLM_HTGL && {*/}
+        <Access accessible={access['PA_BLM_HTGL']}>
         <Button
           type="primary"
           key="addStyle"
@@ -288,6 +313,7 @@ export default () => {
         >
           新增话题
         </Button>
+        </Access>
       </div>
       <div className={sc('container-table-body')}>
         <SelfTable

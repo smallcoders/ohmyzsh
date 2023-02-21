@@ -1,12 +1,12 @@
-import { message, Image, Button, Form, Select, Input, Breadcrumb } from 'antd';
-import { history, Link } from 'umi';
+import { message, Image, Button, Form, Select, Input, Breadcrumb, Modal } from 'antd';
+import { Access, history, Link, Prompt, useAccess } from 'umi';
 import { useState, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
-import { getDemandDetail } from '@/services/creative-demand';
 import FormEdit from '@/components/FormEdit';
-import { addArticle, editArticle, getArticleDetail, getArticleTags, getArticleType } from '@/services/baseline';
+import { addArticle, auditArticle, editArticle, getArticleDetail, getArticleTags, getArticleType } from '@/services/baseline';
+import { routeName } from '../../../../../config/routes';
 
 const sc = scopedClasses('science-technology-manage-creative-detail');
 
@@ -15,6 +15,7 @@ export default () => {
   const [tags, setTags] = useState<any>([]);
   const [types, setTypes] = useState<any>([]);
   const id = history.location.query?.id as string;
+  const access = useAccess()
   const prepare = async () => {
     if (id) {
       try {
@@ -53,9 +54,17 @@ export default () => {
       message.error('获取数据失败');
     }
   }
+  const listener = (e: any) => {
+    e.preventDefault();
+    e.returnValue = '离开当前页后，所编辑的数据将不可恢复';
+  };
 
   useEffect(() => {
     prepare();
+    window.addEventListener('beforeunload', listener);
+    return () => {
+      window.removeEventListener('beforeunload', listener);
+    };
   }, []);
 
   const [form] = Form.useForm();
@@ -66,15 +75,55 @@ export default () => {
 
   const onSubmit = async (status: number) => {
     try {
+      const data = form.getFieldsValue()
+
+      const cb = async () => {
+        const res = await (id ? editArticle({ id, ...data, status }) : addArticle({ ...data, status }))
+        if (res?.code == 0) {
+          message.success('操作成功')
+        } else {
+          message.error(res?.message || '操作失败')
+        }
+      }
+
       if (status == 1) {
         await form.validateFields()
-      }
-      const data = form.getFieldsValue()
-      const res = await (id ? editArticle({ id, ...data, status }) : addArticle({ ...data, status }))
-      if (res?.code == 0) {
-        message.success('操作成功')
+        Modal.confirm({
+          title: '提示',
+          content: '确定将内容上架？',
+          onOk: async () => {
+            beforeUp(data.content, cb)
+          },
+          onCancel: () => {
+            return
+          },
+          okText: '上架'
+        })
       } else {
-        message.error(res?.message || '操作失败')
+        cb()
+      }
+
+    } catch (error) {
+      console.log(' error ', error)
+    }
+  }
+
+  const beforeUp = async (content: string, cb: () => void) => {
+    try {
+      const res = await auditArticle(content)
+      if (res?.result) {
+        Modal.confirm({
+          title: '风险提示',
+          content: res?.result,
+          onOk: async () => {
+            cb()
+          },
+          onCancel: () => {
+          },
+          okText: '上架'
+        })
+      } else {
+        cb()
       }
     } catch (error) {
       console.log(' error ', error)
@@ -83,28 +132,32 @@ export default () => {
 
   return (
     <PageContainer loading={loading}
-    header={{
-      title: id ? `内容编辑` : '添加内容',
-      breadcrumb: (
-        <Breadcrumb>
-          <Breadcrumb.Item>
-            <Link to="/baseline">基线管理</Link>
-          </Breadcrumb.Item>
-          <Breadcrumb.Item>
-            <Link to="/apply-manage/app-resource">内容管理 </Link>
-          </Breadcrumb.Item>
-          <Breadcrumb.Item>
-            {id ? `内容编辑` : '添加内容'}
-          </Breadcrumb.Item>
-        </Breadcrumb>
-      ),
-    }}
+      header={{
+        title: id ? `内容编辑` : '添加内容',
+        breadcrumb: (
+          <Breadcrumb>
+            <Breadcrumb.Item>
+              <Link to="/baseline">基线管理</Link>
+            </Breadcrumb.Item>
+            <Breadcrumb.Item>
+              <Link to="/apply-manage/app-resource">内容管理 </Link>
+            </Breadcrumb.Item>
+            <Breadcrumb.Item>
+              {id ? `内容编辑` : '添加内容'}
+            </Breadcrumb.Item>
+          </Breadcrumb>
+        ),
+      }}
       footer={[
-        <Button type="primary" onClick={() => onSubmit(1)}>立即上架</Button>,
-        <Button onClick={() => onSubmit(2)}>暂存</Button>,
-        <Button onClick={() => history.push('/service-config/creative-need-manage')}>返回</Button>,
+        <Access accessible={access['PA_BLM_NRGL']}> <Button type="primary" onClick={() => onSubmit(1)}>立即上架</Button></Access>,
+        <Access accessible={access['PA_BLM_NRGL']}><Button onClick={() => onSubmit(2)}>暂存</Button></Access>,
+        <Button onClick={() => history.push(routeName.BASELINE_CONTENT_MANAGE)}>返回</Button>,
       ]}
     >
+      <Prompt
+        when={true}
+        message={'离开此页面，将不会保存当前编辑的内容，确认离开吗？'}
+      />
       <div className={sc('container')}>
         <Form
           form={form}

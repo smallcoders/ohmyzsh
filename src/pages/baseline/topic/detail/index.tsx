@@ -91,16 +91,16 @@ export default () => {
             }}>
               详情
             </Button>
-            <Popconfirm
-              title="确定删除么？"
-              okText="确定"
-              cancelText="取消"
-              onConfirm={() => remove(record?.articleId as number)}
-            >
-              <Button type="link" >
-                删除
-              </Button>
-            </Popconfirm>
+            {/*<Popconfirm*/}
+            {/*  title="确定删除么？"*/}
+            {/*  okText="确定"*/}
+            {/*  cancelText="取消"*/}
+            {/*  onConfirm={() => remove(record?.articleId as number)}*/}
+            {/*>*/}
+            {/*  <Button type="link" >*/}
+            {/*    删除*/}
+            {/*  </Button>*/}
+            {/*</Popconfirm>*/}
           </div>
         )
       },
