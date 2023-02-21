@@ -23,17 +23,22 @@ import {
   recommendForUserPage,
   addRecommendForUserPage,
   editRecommendForUserPage,
+  getArticleTags
 } from '@/services/baseline';
-const sc = scopedClasses('science-technology-manage-creative-need');
+const sc = scopedClasses('recommends-manage-creative-need');
 
 
 export default () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [dataSource, setDataSource] = useState([]);
-  const [modalVisible, setModalVisible] = useState<boolean>(false)
+  const [modalVisible, setModalVisible] = useState<boolean>(true)
+  const [content, setContent] = useState<any>({})
+  const [labels, setLabels] = useState([])
+  const [articleList, setArticleList] = useState([])
 
   const [searchContent, setSearChContent] = useState({
-
+    title: '',
+    enable: undefined
   })
 
 
@@ -80,19 +85,42 @@ export default () => {
     }
   };
 
-  const [editForm] = Form.useForm<{ keyword: any; keywordOther: string }>();
+  const [editForm] = Form.useForm();
 
   const handleOk = () => {
 
   }
 
-  const handleCancel = () => {
+  const handleSave = () => {
 
+  }
+
+  const handleSelect = () => {
+
+  }
+
+  const handleCancel = () => {
+    setModalVisible(false)
   };
+
+  useEffect(() => {
+    editForm.setFieldsValue({
+      title: content?.title,
+      weight: content?.weight,
+      labels: content?.labels
+    })
+  }, [content])
+
   const useModal = (): React.ReactNode => {
+    if (labels.length === 0) {
+      getArticleTags().then((res) => {
+        console.log('res =>', res)
+        setLabels(res.result)
+      })
+    }
     return (
       <Modal
-        title={'新增/编辑标签'}
+        title={ content.id ? '编辑推荐' : '新增推荐'}
         width="600px"
         visible={modalVisible}
         maskClosable={false}
@@ -102,35 +130,43 @@ export default () => {
           <Button key="back" onClick={handleCancel}>
             取消
           </Button>,
-          <Button key="link" type="primary" onClick={handleOk}>
-            确定
+          <Button key="save" onClick={handleSave}>
+            保存
           </Button>,
+          <Button key="link" type="primary" onClick={handleOk}>
+            上架
+          </Button>
         ]}
       >
         <Form {...formLayout2} form={editForm}>
           <Form.Item
-            name="labelName"
-            label="标签名称"
+            name="title"
+            label="内容"
             rules={[{ required: true }]}
           >
-            <Input placeholder='请输入' maxLength={10} />
+           <Input disabled  onClick={handleSelect} />
           </Form.Item>
           <Form.Item
             name="weight"
-            label="标签权重"
+            label="权重"
             rules={[{ required: true }]}
           >
-            <InputNumber style={{ width: '100%' }} placeholder='请输入1～100的整数，数字越大排名越小' max={100} min={1} />
+            <InputNumber style={{ width: '100%' }} placeholder='请输入1～100的整数，数字越大排名越小' step={1} max={100} min={1} />
           </Form.Item>
           <Form.Item
-            name="isColdStart"
-            label="是否兴趣标签"
+            name="labels"
+            label="推荐范围"
             rules={[{ required: true }]}
           >
-            <Select placeholder="请选择" allowClear>
-              <Select.Option value={true}>是</Select.Option>
-              <Select.Option value={false}>否</Select.Option>
-            </Select>
+            <Select
+              mode="multiple"
+              placeholder="请选择"
+              allowClear
+              options={labels}
+              fieldNames={{
+                label: 'labelName',
+                value: 'id'
+              }}/>
           </Form.Item>
         </Form>
       </Modal>
@@ -156,6 +192,8 @@ export default () => {
       title: '序号',
       dataIndex: 'sort',
       width: 80,
+      render: (_: any, _record: any, index: number) =>
+      pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
       title: '标题',
@@ -170,10 +208,10 @@ export default () => {
     },
     {
       title: '推荐范围',
-      dataIndex: 'enable',
-      render: (_: string[]) => _.map((item) => <Tag key={item}>{item}</Tag>),
+      dataIndex: 'list',
+      render: (_: string[]) => _?.length === 0 ? '/' :  _?.map((item: any) => <Tag key={item.id}>{item.labelName}</Tag>),
       isEllipsis: true,
-      width: 200,
+      width: 280,
     },
     {
       title: '权重',
@@ -184,7 +222,7 @@ export default () => {
     {
       title: '推荐阅读量',
       dataIndex: 'readingCount',
-      width: 100,
+      width: 150,
     },
     {
       title: '操作人',
@@ -203,15 +241,15 @@ export default () => {
       dataIndex: 'option',
       fixed: 'right',
       render: (_: any, record: any) => {
-        const accessible = access?.[permissions?.[edge].replace(new RegExp("Q"), "")]
         return (
-          <Access accessible={accessible}>
+          <Access accessible={access['P_SM_XQGL']}>
             <Space wrap>
               <Button
                 type="link"
                 style={{ padding: 0 }}
                 onClick={() => {
-                  window.open(routeName.BASELINE_CONTENT_MANAGE_ADDORUPDATE);
+                    setModalVisible(true)
+                    setContent(record)
                 }}
               >
                 编辑
@@ -225,9 +263,11 @@ export default () => {
               >
                 详情
               </Button>
-              <Button type="link" >
-
-              </Button>
+              { record.enable === 1 ?
+                <Button type="link" >
+                  删除
+                </Button> : null
+              }
             </Space>
           </Access>
         )
@@ -248,12 +288,12 @@ export default () => {
         <Form {...formLayout} form={searchForm}>
           <Row>
             <Col span={6}>
-              <Form.Item name="labelName" label="内容标题">
+              <Form.Item name="title" label="内容标题">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
             <Col span={6}>
-              <Form.Item name="areaCode" label="发布状态">
+              <Form.Item name="enable" label="发布状态">
                 <Select placeholder="请选择" allowClear>
                       <Select.Option key={0} value={0}>
                         下架
