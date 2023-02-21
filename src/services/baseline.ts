@@ -196,22 +196,30 @@ export async function recommendForUserPage (data?: any) {
   });
 }
 // 新增推荐位
-export async function addRecommendForUserPage(params?: any) {
+export async function addRecommendForUserPage(data?: any) {
   return request<any>('/antelope-industrial/mng/recommendForUser/add', {
-    method: 'get',
-    params,
+    method: 'post',
+    data,
   });
 }
 // 修改推荐位（是否启用，推荐位和标签的
-export async function editRecommendForUserPage(params?: any) {
+export async function editRecommendForUserPage(data?: any) {
   return request<any>('/antelope-industrial/mng/recommendForUser/edit', {
+    method: 'post',
+    data,
+  });
+}
+// 推荐位详情
+export async function detailRecommendForUserPage(params?: any) {
+  return request<any>('/antelope-industrial/mng/recommendForUser/detail', {
     method: 'get',
     params,
   });
 }
-// 推荐位详情
-export async function detailRecommendForUserPage(data?: any) {
-  return request<any>('/antelope-industrial/mng/recommendForUser/detail', {
+
+// 用户浏览详情
+export function getUserDetailBrowse(data?: any) {
+  return request<any>('/antelope-industrial/mng/userDetail', {
     method: 'post',
     data,
   });
