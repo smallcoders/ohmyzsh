@@ -1,35 +1,107 @@
 .diagnose-service-report {
-    h3.title {
-        margin: 16px 0 32px 0;
-        height: 32px;
-        font-size: 24px;
-        font-family: MicrosoftYaHei, MicrosoftYaHei-Bold;
-        font-weight: 700;
+  h3.title {
+    height: 32px;
+    margin: 16px 0 32px 0;
+    color: #1e232a;
+    font-weight: 700;
+    font-size: 24px;
+    font-family: MicrosoftYaHei, MicrosoftYaHei-Bold;
+    line-height: 32px;
+    text-align: left;
+  }
+  .content-wrapper {
+    padding: 24px 32px;
+    background-color: #fff;
+    h3 {
+      color: #1e232a;
+      font-weight: 700;
+      font-size: 20px;
+      font-family: MicrosoftYaHei, MicrosoftYaHei-Bold;
+      text-align: left;
+    }
+    // .ant-pro-card-body {
+    //     padding: 24px;
+    // }
+  }
+  .empty-status {
+    margin: auto;
+    padding: 56px 0 200px;
+    text-align: center;
+    p {
+      margin-top: 8px;
+      color: #8290a6;
+    }
+  }
+}
+
+.diagnosis-server-detail-drawer {
+  .ant-drawer-title {
+    height: 28px;
+    color: #1e232a;
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 28px;
+  }
+  .diagnosis-status-header {
+    display: flex;
+    align-items: center;
+    padding-bottom: 24px;
+  }
+  .empty-status {
+    margin: auto;
+    padding: 56px 0 200px;
+    text-align: center;
+    p {
+      margin-top: 8px;
+      color: #8290a6;
+    }
+  }
+}
+
+.diagnosis-result-report-modal {
+  .ant-modal-body {
+    padding-top: 32px;
+    padding-bottom: 40px;
+    text-align: center;
+  }
+  .modal-title {
+    font-weight: 700;
+  }
+  ul {
+    margin: 0;
+    padding: 0;
+    li {
+      display: flex;
+      margin-bottom: 16px;
+      color: #556377;
+      label {
+        width: 144px;
+        color: #8290a6;
+        text-align: right;
+      }
+      .file-wrapper {
+        flex: 1;
+        overflow: hidden;
+      }
+    }
+    li:nth-of-type(n + 2) {
+      .file-wrapper {
+        color: #0068ff;
         text-align: left;
-        color: #1e232a;
-        line-height: 32px;
-    }
-    .content-wrapper {
-        padding: 24px 32px;
-        background-color: #fff;
-        h3 {
-            font-size: 20px;
-            font-family: MicrosoftYaHei, MicrosoftYaHei-Bold;
-            font-weight: 700;
-            text-align: left;
-            color: #1e232a;
+        .file-item {
+          margin-bottom: 5px;
+          color: #0068ff;
+          cursor: pointer;
+          span:first-of-type {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+          }
         }
-        // .ant-pro-card-body {
-        //     padding: 24px;
-        // }
+      }
     }
-    .empty-status {
-        margin: auto;
-        text-align: center;
-        padding: 56px 0 200px;
-        p {
-          margin-top: 8px;
-          color: #8290a6;
-        }
+    li:last-of-type {
+      margin-bottom: 40px;
     }
+  }
 }

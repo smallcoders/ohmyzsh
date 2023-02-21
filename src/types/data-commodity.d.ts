@@ -108,5 +108,14 @@ namespace DataCommodity {
     createTime: string;
     operateUser: string;
   };
+
+  export type DiagnosisServiceDetailType = {
+    enterpriseId: string;
+    enterpriseName: string;
+    serviceStartTime: string;
+    serviceEndTime: string;
+    recordNo: string;
+    diagnosed: string;
+  };
 }
 export default DataCommodity;
