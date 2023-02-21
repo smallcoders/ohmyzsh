@@ -420,7 +420,7 @@ export default () => {
                 message: `必填`,
               },
             ]}>
-              <InputNumber step={1} style={{width:'100%'}} placeholder="请输入1~100的整数，数字越大排名越小" min={1} max={100}/>
+              <InputNumber step={1} style={{width:'100%'}} placeholder="请输入1~100的整数，数字越大排名越靠前" min={1} max={100}/>
             </Form.Item>
           </Col>
         </Row>
