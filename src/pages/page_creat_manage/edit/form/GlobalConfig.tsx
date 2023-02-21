@@ -108,7 +108,7 @@ const GlobalConfig: FC = () => {
             >
               <Form.Item>
                 <Radio.Group
-                  defaultValue={globalConfig?.formStyle}
+                  value={globalConfig?.formStyle || 'split'}
                   options={
                     [
                       {label: '题目分割（问卷类表单建议选择此样式）', value: 'split'},
