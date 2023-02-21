@@ -57,6 +57,7 @@ const VideoConfig = () => {
                 listType="picture-card"
                 className="avatar-uploader"
                 maxSize={10}
+                noNeedUpload
                 showUploadList={false}
                 accept=".bmp,.gif,.png,.jpeg,.jpg"
                 value={config?.coverImageUrl}

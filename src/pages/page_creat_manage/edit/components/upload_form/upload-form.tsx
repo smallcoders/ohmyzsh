@@ -31,7 +31,8 @@ const UploadForm = (
       maxSize?: number;
       changeLoading?: (loaidng: boolean) => void;
       maxSizeKb?: number;
-      noUploadText?: boolean
+      noUploadText?: boolean,
+      noNeedUpload?: boolean
     },
 ) => {
   const [fileId, setFileId] = useState<string | undefined | any>();
@@ -74,17 +75,19 @@ const UploadForm = (
     if (info.file.status === 'done') {
       const uploadResponse = info?.file?.response;
       if (uploadResponse?.code === 0 && uploadResponse.result) {
-        getImageSize(uploadResponse.result.path).then((res: any) => {
-          uploadMaterial([{
-            originalName: uploadResponse.result.name,
-            fileId: uploadResponse.result.id,
-            photoUrl: uploadResponse.result.path,
-            photoWidth: res.width,
-            photoHeight: res.height
-          }]).then((result) => {
-            console.log(result)
+        if (!props.noNeedUpload){
+          getImageSize(uploadResponse.result.path).then((res: any) => {
+            uploadMaterial([{
+              originalName: uploadResponse.result.name,
+              fileId: uploadResponse.result.id,
+              photoUrl: uploadResponse.result.path,
+              photoWidth: res.width,
+              photoHeight: res.height
+            }]).then((result) => {
+              console.log(result)
+            })
           })
-        })
+        }
         setFileId(uploadResponse.result);
         const value: any = props.needName
           ? uploadResponse.result + '_+*%' + info?.file?.name
