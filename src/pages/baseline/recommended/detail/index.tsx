@@ -1,13 +1,12 @@
-import { message, Image, Button, Table, Steps, Avatar, Tabs } from 'antd';
+import { message, Button, Tag } from 'antd';
 import { history } from 'umi';
 import { useState, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
-import { detailRecommendForUserPage } from '@/services/baseline';
+import moment from "moment/moment";
+import { detailRecommendForUserPage, getArticleDetail, getUserDetailBrowse } from '@/services/baseline';
 import SelfTable from '@/components/self_table';
-import { getTagContentPage, getTagDetail, getTagUserPage } from '@/services/baseline';
-import { routeName } from '../../../../../config/routes';
 import Common from '@/types/common';
 
 const sc = scopedClasses('science-technology-manage-creative-detail');
@@ -19,13 +18,14 @@ export default () => {
 
   const prepare = async () => {
     const id = history.location.query?.id as string;
+    const industrialArticleId = history.location.query?.industrialArticleId as string
     if (id) {
       try {
-        const res = await detailRecommendForUserPage(id);
-        if (res.code === 0) {
-          setDetail(res.result);
+        const [res1, res2] = await Promise.all([detailRecommendForUserPage({id}), getArticleDetail(industrialArticleId)]);
+        if (res1.code === 0 && res2.code === 0) {
+          setDetail(Object.assign(res1.result, res2.result));
         } else {
-          throw new Error(res.message);
+          throw new Error(res1.message);
         }
       } catch (error) {
         message.error('服务器错误');
@@ -51,10 +51,12 @@ export default () => {
 
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     setLoading(true);
+    const id = history.location.query?.id as string;
     try {
-      const { result, totalCount, pageTotal, code } = await getTagUserPage({
+      const { result, totalCount, pageTotal, code } = await getUserDetailBrowse({
         pageIndex,
-        pageSize
+        pageSize,
+        id
       })
       if (code === 0) {
         setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
@@ -79,6 +81,8 @@ export default () => {
       title: '序号',
       dataIndex: 'sort',
       width: 80,
+      render: (_: any, _record: any, index: number) =>
+      pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
       title: '用户名',
@@ -121,50 +125,50 @@ export default () => {
         </div>
         <div className={sc('container-desc')}>
           <span>作者：</span>
-          <span>{detail?.typeName || '--'}</span>
+          <span>{detail?.author || '--'}</span>
         </div>
         <div className={sc('container-desc')}>
           <span>关键词：</span>
-          <span>{detail?.typeName || '--'}</span>
+          <span>{JSON.parse(detail?.keywords || '["--"]').join('、')}</span>
         </div>
         <div className={sc('container-desc')}>
           <span>内容类型：</span>
-          <span>{detail?.typeName || '--'}</span>
+          <span>{detail?.types?.map((item: any) => item.typeName)?.join('、') || '--'}</span>
         </div>
         <div className={sc('container-desc')}>
           <span>标签：</span>
-          <span>{detail?.typeName || '--'}</span>
+          <span>{detail?.labels?.length > 0 ? detail?.labels?.map((item: any) => <Tag key={item.id}>{item.labelName}</Tag>) : '--'}</span>
         </div>
         <div className={sc('container-desc')}>
           <span>来源：</span>
-          <span>{detail?.typeName || '--'}</span>
+          <span>{detail?.source || '--'}</span>
         </div>
         <div className={sc('container-desc')}>
           <span>发布时间：</span>
-          <span>{detail?.typeName || '--'}</span>
+          <span>{detail?.publishTime? moment(detail?.publishTime).format('YYYY-MM-DD HH:mm:ss') : '--'}</span>
         </div>
         <div className={sc('container-desc')}>
           <span>内容详情：</span>
-          <span>{detail?.typeName || '--'}</span>
+          <span dangerouslySetInnerHTML={{__html: detail.content}}></span>
         </div>
         <div className={sc('container-desc')}>
           <span>网页原址：</span>
-          <span>{detail?.typeName || '--'}</span>
+          <span>{detail?.sourceUrl || '--'}</span>
         </div>
         <div className={sc('container-title')}>推荐阅读信息</div>
         <div className={sc('container-desc')}>
           <span>推荐范围：</span>
-          <span>{detail?.typeName || '--'}</span>
+          <span>{ detail?.labelList?.join()}</span>
         </div>
         <div className={sc('container-desc')}>
           <span>推荐阅读量：</span>
-          <span>1024（总阅读量2022）</span>
+          <span>{ detail.browseCount || 0}（总阅读量{ detail.totalBrowseCount || 0 }）</span>
         </div>
         <div className={sc('container-desc')}>
           <span>推荐转发量：</span>
-          <span>12（总转发量20）</span>
+          <span>{ detail?.forWardCount || 0 }（总转发量{ detail.totalForWardCount || 0 }）</span>
         </div>
-        <div className={sc('container-title')}>用户浏览详情</div>
+        <div className={sc('container-title')} style={{ marginBottom: '20px'}}>用户浏览详情</div>
         <SelfTable
             loading={loading}
             bordered

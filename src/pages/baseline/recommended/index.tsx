@@ -9,7 +9,8 @@ import {
   Space,
   Modal,
   InputNumber,
-  Tag
+  Tag,
+  Popconfirm
 } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
@@ -25,16 +26,20 @@ import {
   editRecommendForUserPage,
   getArticleTags
 } from '@/services/baseline';
+import ContentSelect from './contentSelect/index'
 const sc = scopedClasses('recommends-manage-creative-need');
 
 
 export default () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [dataSource, setDataSource] = useState([]);
-  const [modalVisible, setModalVisible] = useState<boolean>(true)
+  const [modalVisible, setModalVisible] = useState<boolean>(false)
   const [content, setContent] = useState<any>({})
   const [labels, setLabels] = useState([])
   const [articleList, setArticleList] = useState([])
+  const [contentModalVisible, setContentModalVisible] = useState(false)
+  const [currentSelect, setCurrentSelect] = useState({})
+  let  isEdit = false
 
   const [searchContent, setSearChContent] = useState({
     title: '',
@@ -87,20 +92,101 @@ export default () => {
 
   const [editForm] = Form.useForm();
 
-  const handleOk = () => {
-
+  const handleOk = async () => {
+    const currentVal = await editForm.validateFields()
+    const currentContent = currentSelect?.[0] || content
+    console.log(currentContent, currentVal)
+    if (isEdit) {
+      editRecommendForUserPage({
+        uuid: currentContent.uuid,
+        id: currentContent.id,
+        weight: currentVal.weight,
+        labelIds: currentVal.labels,
+        enable: 1
+      }).then(({ code }) => {
+        if (code === 0) {
+          message.success('上架成功')
+          setModalVisible(false)
+          getPage()
+        }
+      })
+      return
+    }
+    addRecommendForUserPage({
+      uuid: currentContent.uuid,
+      industrialArticleId: currentContent.id,
+      weight: currentVal.weight,
+      labelIds: currentVal.labels,
+      enable: 1
+    }).then(({ code }) => {
+      if (code === 0) {
+        message.success('上架成功')
+        setModalVisible(false)
+        getPage()
+      }
+    })
   }
 
-  const handleSave = () => {
-
+  const handleSave = async () => {
+    const currentVal = await editForm.validateFields()
+    const currentContent = currentSelect?.[0] || content
+    if (isEdit) {
+      editRecommendForUserPage({
+        uuid: currentContent.uuid,
+        id: currentContent.id,
+        weight: currentVal.weight,
+        labelIds: currentVal.labels,
+        enable: 0
+      }).then(({ code }) => {
+        if (code === 0) {
+          message.success('保存成功')
+          setModalVisible(false)
+          getPage()
+        }
+      })
+      return
+    }
+    addRecommendForUserPage({
+      uuid: currentContent.uuid,
+      weight: currentVal.weight,
+      labelIds: currentVal.labels,
+      industrialArticleId: currentContent.id,
+      enable: 0
+    }).then(({ code }) => {
+      if (code === 0) {
+        message.success('保存成功')
+        setModalVisible(false)
+        getPage()
+      }
+    })
   }
 
   const handleSelect = () => {
-
+    setContentModalVisible(true)
+    setCurrentSelect([content])
   }
 
   const handleCancel = () => {
     setModalVisible(false)
+  };
+
+
+  // 上下架
+  const editState = async (e: any, updatedState: number) => {
+    try {
+      const {id, weight, labels: labelIds } = e
+      console.log('e =>', e)
+      const tooltipMessage = updatedState === 0 ? '下架' : '上架';
+      const updateStateResult = await editRecommendForUserPage({  id, weight, labelIds, enable: updatedState });
+      if (updateStateResult.code === 0) {
+        message.success(`${tooltipMessage}成功`);
+        getPage();
+      } else {
+        message.error(`${tooltipMessage}失败，原因:{${updateStateResult.message}}`);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   useEffect(() => {
@@ -110,6 +196,17 @@ export default () => {
       labels: content?.labels
     })
   }, [content])
+
+  useEffect(() => {
+    const currentContent = currentSelect?.[0]
+    console.log('currentContent =>', currentContent)
+    if (!currentContent) return
+    editForm.setFieldsValue({
+      title: currentContent?.title,
+      weight: currentContent?.weight,
+      labels: currentContent?.labels?.map((item: any) => item.id)
+    })
+  }, [currentSelect])
 
   const useModal = (): React.ReactNode => {
     if (labels.length === 0) {
@@ -144,7 +241,7 @@ export default () => {
             label="内容"
             rules={[{ required: true }]}
           >
-           <Input disabled  onClick={handleSelect} />
+           <Input  onClick={() => handleSelect()} />
           </Form.Item>
           <Form.Item
             name="weight"
@@ -203,7 +300,7 @@ export default () => {
     {
       title: '发布状态',
       dataIndex: 'enable',
-      render: (_: boolean) => _ ? '上架' : '下架',
+      render: (_: number) => _ ? '上架' : '下架',
       width: 100,
     },
     {
@@ -244,30 +341,48 @@ export default () => {
         return (
           <Access accessible={access['P_SM_XQGL']}>
             <Space wrap>
-              <Button
+              { !record.enable ? <Button
                 type="link"
                 style={{ padding: 0 }}
                 onClick={() => {
+                    isEdit = true
                     setModalVisible(true)
                     setContent(record)
                 }}
               >
                 编辑
-              </Button>
+              </Button> : null}
+
               <Button
                 type="link"
                 style={{ padding: 0 }}
                 onClick={() => {
-                  window.open(routeName.BASELINE_TAG_MANAGE_DETAIL);
+                  window.open(routeName.BASELINE_RECOMMENDED_MANAGE_DETAIL + `?id=${record.id}&industrialArticleId=${record.industrialArticleId}`);
                 }}
               >
                 详情
               </Button>
-              { record.enable === 1 ?
-                <Button type="link" >
-                  删除
-                </Button> : null
-              }
+
+              {record.enable ? (
+              <Popconfirm
+                title="确定下架么？"
+                okText="下架"
+                cancelText="取消"
+                onConfirm={() => editState(record as any, 0)}
+              >
+                <Button type="link">下架</Button>
+              </Popconfirm>
+            )
+            : (
+              <Popconfirm
+                title="确定上架么？"
+                okText="上架"
+                cancelText="取消"
+                onConfirm={() => editState(record as any, 1)}
+              >
+                <Button type="link" >上架</Button>
+              </Popconfirm>
+            )}
             </Space>
           </Access>
         )
@@ -344,7 +459,7 @@ export default () => {
       <div className={sc('container-table-header')}>
         <div className="title">
           <Access accessible={access['P_SM_XQGL']}>
-            <Button type="primary" onClick={() => { setModalVisible(true) }}>
+            <Button type="primary" onClick={() => { isEdit = false; setModalVisible(true); setContent({}) }}>
               选择推荐内容
             </Button>
           </Access>
@@ -372,6 +487,7 @@ export default () => {
         />
       </div>
       {useModal()}
+      <ContentSelect visible={contentModalVisible} setContentModalVisible={setContentModalVisible} setCurrentSelect={setCurrentSelect} currentSelect={currentSelect} />
     </PageContainer>
   );
 };
