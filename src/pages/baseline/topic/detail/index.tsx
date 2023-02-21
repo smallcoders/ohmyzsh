@@ -26,6 +26,14 @@ export default () => {
       if (res.code === 0){
         setHotRecommendDetail(res?.result || {})
         setDataSource(res?.result.list)
+        setPageInfo(
+          {
+            pageIndex: res?.result.pageIndex,
+            pageSize: res?.result.pageSize,
+            totalCount: res?.result.contentCount,
+            pageTotal: 0,
+          }
+        )
       }
     })
   }
@@ -141,11 +149,12 @@ export default () => {
                 pageInfo.totalCount === 0
                   ? false
                   : {
+                    onChange:getHotRecommendDetailById,
                     total: pageInfo.totalCount,
                     current: pageInfo.pageIndex,
                     pageSize: pageInfo.pageSize,
                     showTotal: (total: number) =>
-                      `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
+                      `共${total}条记录 第${pageInfo.pageIndex}/${Math.ceil(pageInfo.totalCount / pageInfo.pageSize) || 1}页`,
                   }
               }
             />

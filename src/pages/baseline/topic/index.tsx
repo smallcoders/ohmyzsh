@@ -8,6 +8,7 @@ import moment from "moment/moment";
 import type Common from "@/types/common";
 import {deleteHotRecommend, editHotRecommend, queryHotRecommend} from "@/services/topic";
 import {InfoOutlined} from "@ant-design/icons";
+import {history} from "@@/core/history";
 
 export default () => {
   const sc = scopedClasses('baseline-topic');
@@ -43,8 +44,8 @@ export default () => {
             <Col span={6}>
               <Form.Item name="enable" label="发布状态">
                 <Select placeholder="请选择" allowClear style={{ width: '200px'}}>
-                  <Select.Option value={0}>已发布</Select.Option>
-                  <Select.Option value={1}>未发布</Select.Option>
+                  <Select.Option value={0}>未发布</Select.Option>
+                  <Select.Option value={1}>已发布</Select.Option>
                 </Select>
               </Form.Item>
             </Col>
@@ -109,10 +110,11 @@ export default () => {
     }
   };
   // 上下架
-  const editState = async (id: string, updatedState: number) => {
+  const editState = async (e: any, updatedState: number) => {
     try {
+      const {id,topic,weight} = e
       const tooltipMessage = updatedState === 0 ? '下架' : '上架';
-      const updateStateResult = await editHotRecommend({ id, enable: updatedState });
+      const updateStateResult = await editHotRecommend({  id, topic, weight, enable: updatedState });
       if (updateStateResult.code === 0) {
         message.success(`${tooltipMessage}成功`);
         getPage();
@@ -124,17 +126,23 @@ export default () => {
     }
   };
   // 编辑权重
-  const editSort = async (id: string, value: number) => {
-    console.log(id, value);
-    const editRes = await editHotRecommend({
-      id: id,
-      weight: value
-    })
-    if (editRes.code === 0) {
-      message.success(`编辑权重成功！`);
-      getPage();
-    } else {
-      message.error(`编辑权重失败，原因:{${editRes.message}}`);
+  const editSort = async (e: any, value: number) => {
+    try {
+      const {id, topic,enable } = e
+      const editRes = await editHotRecommend({
+        id,
+        topic,
+        weight:value,
+        enable,
+      })
+      if (editRes.code === 0) {
+        message.success(`编辑权重成功！`);
+        getPage();
+      } else {
+        message.error(`编辑权重失败，原因:{${editRes.message}}`);
+      }
+    }catch (err) {
+      console.log(err)
     }
   }
   const columns = [
@@ -188,13 +196,13 @@ export default () => {
         return (
           <div className={sc('container-option')}>
               <Button type="link" onClick={() => {
-                window.open(`/baseline/baseline-topic-manage/detail?recommendId=${record?.id}`)
+                history.push(`/baseline/baseline-topic-manage/detail?recommendId=${record?.id}`)
               }}>
                 详情
               </Button>
             {record.enable && (
               <Button type="link" onClick={() => {
-                window.open(`/baseline/baseline-topic-manage/add?id=${record?.id}`)
+                history.push(`/baseline/baseline-topic-manage/add?id=${record?.id}&contentCount=${record?.contentCount}`)
               }}>
                 编辑
               </Button>
@@ -204,7 +212,7 @@ export default () => {
                 title="确定下架么？"
                 okText="下架"
                 cancelText="取消"
-                onConfirm={() => editState(record.id as string, 0)}
+                onConfirm={() => editState(record as any, 0)}
               >
                 <Button type="link">下架</Button>
               </Popconfirm>
@@ -214,7 +222,7 @@ export default () => {
                 title="确定上架么？"
                 okText="上架"
                 cancelText="取消"
-                onConfirm={() => editState(record.id as string, 1)}
+                onConfirm={() => editState(record as any, 1)}
               >
                 <Button type="link" >上架</Button>
               </Popconfirm>
@@ -237,7 +245,7 @@ export default () => {
               okText="确定"
               cancelText="取消"
               onConfirm={() => {
-                editSort(record.id, weightForm.getFieldValue('weight'))
+                editSort(record, weightForm.getFieldValue('weight'))
               }}
             >
               <Button
@@ -275,7 +283,7 @@ export default () => {
           type="primary"
           key="addStyle"
           onClick={()=>{
-            window.open(`/baseline/baseline-topic-manage/add`)
+            history.push(`/baseline/baseline-topic-manage/add`)
           }}
         >
           新增话题
