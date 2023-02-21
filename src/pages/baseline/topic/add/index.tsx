@@ -9,10 +9,9 @@ import {history} from "@@/core/history";
 import moment from "moment/moment";
 import {routeName} from "../../../../../config/routes";
 import type { PaginationProps } from 'antd';
-import {deleteArticle, getArticlePage, getArticleType} from "@/services/baseline";
-import {addHotRecommend, editHotRecommend, getHotRecommendDetail, queryByIds} from "@/services/topic";
+import { getArticlePage, getArticleType} from "@/services/baseline";
+import {addHotRecommend, getHotRecommendDetail, queryByIds} from "@/services/topic";
 import {Link} from "umi";
-import {data} from "browserslist";
 const sc = scopedClasses('baseline-topic-add');
 const statusObj = {
   0: '下架',
@@ -135,7 +134,9 @@ export default () => {
           message.error(`${submitRes.message}`);
         }
       })
-      .catch(() => {});
+      .catch((e) => {
+        console.log(e)
+      });
   };
 
   const onChange: PaginationProps['onChange'] = (pageNumber) => {
@@ -344,8 +345,6 @@ export default () => {
     );
   };
   const onSelectChange = (newSelectedRowKeys: React.Key[],selectedRows: any[]) => {
-    console.log(newSelectedRowKeys)
-    console.log(selectedRows)
       setselectRowKeys(newSelectedRowKeys);
       setSelectRows(selectedRows)
        setPageInfo({
@@ -427,10 +426,19 @@ export default () => {
         </Row>
         <Row className={'title'}>
           <Col span={24}>
-            <Form.Item name="content" label="关联内容" rules={[
+            <Form.Item name="title" required label="关联内容"
+                       rules={[
               {
                 required: true,
-                message: `必填`,
+                message: '必填',
+                validator: () => {
+                  if (
+                    dataSource.length!==0
+                  ) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(new Error('必填'));
+                },
               },
             ]}>
               <Button
