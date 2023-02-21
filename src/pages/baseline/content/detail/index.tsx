@@ -10,6 +10,8 @@ import VerifyInfoDetail from '@/components/verify_info_detail/verify-info-detail
 import { UserOutlined } from '@ant-design/icons';
 import { getArticleDetail, getArticleStatisticPage } from '@/services/baseline';
 import Common from '@/types/common';
+import moment from 'moment';
+import { routeName } from '../../../../../config/routes';
 
 const sc = scopedClasses('science-technology-manage-creative-detail');
 const operaObj = { ADD: '新增', MODIFY: '修改', DOWN: '下架', UP: '上架', DELETE: '删除', TOPPING: '置顶', CANCEL_TOPPING: '取消置顶', AUDIT: '自动审核', STAGING: '暂存' }
@@ -56,6 +58,7 @@ export default () => {
       const { result, totalCount, pageTotal, code } = await getArticleStatisticPage({
         pageIndex,
         pageSize,
+        targetType: 'ARTICLE',
         articleId: id
       });
       if (code === 0) {
@@ -125,7 +128,7 @@ export default () => {
       tabActiveKey={activeKey}
       onTabChange={(key: string) => setActiveKey(key)}
       footer={[
-        <Button onClick={() => history.push('/service-config/creative-need-manage')}>返回</Button>,
+        <Button onClick={() => history.push(routeName.BASELINE_CONTENT_MANAGE)}>返回</Button>,
       ]}
     >
       <div className='content'>
@@ -158,7 +161,7 @@ export default () => {
               </div>
               <div className={sc('container-desc')}>
                 <span>发布时间：</span>
-                <span>{detail?.publishTime || '--'}</span>
+                <span>{detail?.publishTime ? moment(detail?.publishTime).format('YYYY-MM-DD HH:mm:ss') : '--'}</span>
               </div>
               <div className={sc('container-desc')}>
                 <span>内容详情：</span>
@@ -170,14 +173,14 @@ export default () => {
               </div>
               <div className={sc('container-desc')}>
                 <span>内容原址：</span>
-                <span>{detail?.sourceUrl || '--'}</span>
+                <span>{detail?.sourceUrl ? <a href={detail?.sourceUrl} target="_blank">{detail?.sourceUrl}</a> : '--'}</span>
               </div>
             </div>
           </>
         }
         {
           activeKey === '2' && <>
-            <div style={{ display: 'flex', gap: 50, fontWeight: 'bold', padding: 10 }}>
+            <div style={{ display: 'flex', gap: 50, fontWeight: 'bold', padding: 10, alignItems: 'center' }}>
               <span style={{ fontSize: '20px' }}>
                 详情浏览总次数
               </span>

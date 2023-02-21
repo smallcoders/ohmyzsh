@@ -42,6 +42,14 @@ export async function getArticlePage(data?: { [key: string]: any }) {
         data,
     });
 }
+export async function getArticleRiskCount(data?: { [key: string]: any }) {
+    return request<any>('/antelope-industrial/article/query/count', {
+        method: 'post',
+        data,
+    });
+}
+
+
 
 // 文章详情
 export async function getArticleDetail(id: string) {
@@ -63,6 +71,16 @@ export async function addArticle(data?: { [key: string]: any }) {
     return request<any>('/antelope-industrial/mng/article/add', {
         method: 'post',
         data,
+    });
+}
+
+// 风险审核
+export async function auditArticle(content: string) {
+    return request<any>(`/antelope-industrial/article/audit`, {
+        method: 'post',
+        data:{
+            content
+        }
     });
 }
 

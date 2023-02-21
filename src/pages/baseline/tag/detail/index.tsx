@@ -159,7 +159,7 @@ export default () => {
   return (
     <PageContainer loading={loading}
       footer={[
-        <Button onClick={() => history.push('/service-config/creative-need-manage')}>返回</Button>,
+        <Button onClick={() => history.push(routeName.BASELINE_TAG_MANAGE)}>返回</Button>,
       ]}
     >
       <div className={sc('container')}>

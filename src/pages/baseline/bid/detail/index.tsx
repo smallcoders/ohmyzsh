@@ -6,16 +6,17 @@ import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
 import SelfTable from '@/components/self_table';
 import { UserOutlined } from '@ant-design/icons';
-import { getBidDetail } from '@/services/baseline';
-
+import { getArticleStatisticPage, getBidDetail } from '@/services/baseline';
+import moment from 'moment';
+import { routeName } from '../../../../../config/routes';
 const sc = scopedClasses('science-technology-manage-creative-detail');
-
+const operaObj = { ADD: '新增', MODIFY: '修改', DOWN: '下架', UP: '上架', DELETE: '删除', TOPPING: '置顶', CANCEL_TOPPING: '取消置顶', AUDIT: '自动审核', STAGING: '暂存' }
 export default () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [detail, setDetail] = useState<any>({});
+  const id = history.location.query?.id as string;
 
   const prepare = async () => {
-    const id = history.location.query?.id as string;
     if (id) {
       try {
         const res = await getBidDetail({ id });
@@ -34,11 +35,12 @@ export default () => {
 
   useEffect(() => {
     prepare();
+    getPage()
   }, []);
   const [activeKey, setActiveKey] = useState<any>(
     '1'
   );
-
+  const [total, setTotal] = useState<number>(0);
   const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
     pageIndex: 1,
     pageSize: 20,
@@ -49,13 +51,16 @@ export default () => {
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     setLoading(true);
     try {
-      const { result, totalCount, pageTotal, code } = await getCreativePage({
+      const { result, totalCount, pageTotal, code } = await getArticleStatisticPage({
         pageIndex,
         pageSize,
+        targetType: 'TENDERING_BIDDING',
+        articleId: id
       });
       if (code === 0) {
         setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
-        setDataSource(result);
+        setDataSource(result?.statistics || []);
+        setTotal(result?.totalBrowseCount || 0);
         setLoading(false);
       } else {
         message.error(`请求分页数据失败`);
@@ -71,27 +76,30 @@ export default () => {
       title: '序号',
       dataIndex: 'sort',
       width: 80,
+      render: (_: any, _record: any, index: number) =>
+        pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
       title: '用户名',
-      dataIndex: 'name',
-      width: 300,
+      dataIndex: 'userName',
+      width: 200,
     },
     {
       title: '用户id',
-      dataIndex: 'areaName',
+      dataIndex: 'userId',
       isEllipsis: true,
-      width: 150,
+      width: 200,
     },
     {
       title: '用户停留时间',
-      dataIndex: 'areaName',
+      dataIndex: 'browseDuration',
       isEllipsis: true,
+      render: (_: number) => _ + 's',
       width: 150,
     },
     {
       title: '用户标签',
-      dataIndex: 'areaName',
+      dataIndex: 'labels',
       isEllipsis: true,
       width: 150,
     },
@@ -117,7 +125,7 @@ export default () => {
       tabActiveKey={activeKey}
       onTabChange={(key: string) => setActiveKey(key)}
       footer={[
-        <Button onClick={() => history.push('/service-config/creative-need-manage')}>返回</Button>,
+        <Button onClick={() => history.push(routeName.BASELINE_BID_MANAGE)}>返回</Button>,
       ]}
     >
       <div className='content'>
@@ -221,20 +229,18 @@ export default () => {
             </div>
             <div>
               <div className={sc('container-title')}>公告详情</div>
-              <div>
-                {detail?.details || '--'}
-              </div>
+              <div dangerouslySetInnerHTML={{ __html: detail?.details || '--' }} />
             </div>
           </>
         }
         {
           activeKey === '2' && <>
-            <div style={{ display: 'flex', gap: 50, fontWeight: 'bold', padding: 10 }}>
+            <div style={{ display: 'flex', gap: 50, fontWeight: 'bold', padding: 10, alignItems: 'center' }}>
               <span style={{ fontSize: '20px' }}>
                 详情浏览总次数
               </span>
               <span style={{ fontSize: '16px' }}>
-                2123123
+                {total}
               </span>
             </div>
             <div style={{ padding: 10 }}>
@@ -263,15 +269,15 @@ export default () => {
         }
         {
           activeKey === '3' && <>
-            {[1, 2, 3].map(p => {
+            {detail?.operationRecords?.map(p => {
               return <div style={{ display: 'flex', gap: 50, marginBottom: 20, alignItems: 'center' }}>
                 <div>
                   <Avatar icon={<UserOutlined />} />
-                  <span style={{ marginLeft: 10 }}>运营人员</span>
+                  <span style={{ marginLeft: 10 }}>{p?.userName}</span>
                 </div>
 
-                <span>上架</span>
-                <span>2022-02-02 05:23</span>
+                <span>{operaObj[p?.operation] || '--'}</span>
+                <span>{p?.createTime ? moment(p?.createTime).format('YYYY-MM-DD HH:mm:ss') : '--'}</span>
               </div>
             })
             }

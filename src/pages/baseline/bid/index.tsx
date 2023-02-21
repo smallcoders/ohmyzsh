@@ -82,7 +82,7 @@ export default () => {
     try {
       const updateStateResult = await deleteBid({ id });
       if (updateStateResult.code === 0) {
-        message.success(`设置成功`);
+        message.success(`操作成功`);
         getPage();
       } else {
         message.error(`操作失败，请重试`);
@@ -119,7 +119,8 @@ export default () => {
     {
       title: '公告标题',
       dataIndex: 'title',
-      width: 300,
+      isEllipsis: true,
+      width: 400,
     },
     {
       title: '来源',
@@ -142,12 +143,14 @@ export default () => {
     {
       title: '项目名称',
       dataIndex: 'projectName',
+      isEllipsis: true,
       width: 200,
     },
     {
       title: '采购单位名称',
       dataIndex: 'buyer',
-      width: 200,
+      isEllipsis: true,
+      width: 300,
     },
 
     {
@@ -180,18 +183,18 @@ export default () => {
       dataIndex: 'publishTime',
       render: (_: string) => _ ? moment(_).format('YYYY-MM-DD HH:mm:ss') : '--',
       isEllipsis: true,
-      width: 150,
+      width: 250,
     },
     {
       title: '上架时间',
       dataIndex: 'updateTime',
       render: (_: string) => _ ? moment(_).format('YYYY-MM-DD HH:mm:ss') : '--',
       isEllipsis: true,
-      width: 150,
+      width: 250,
     },
     {
       title: '操作',
-      width: 180,
+      width: 200,
       dataIndex: 'option',
       fixed: 'right',
       render: (_: any, record: any) => {
@@ -199,6 +202,7 @@ export default () => {
         return (
           // <Access accessible={accessible}>
           <Space wrap>
+            <Access accessible={access['PD_BLM_ZTBGL']}>
             <Button type="link" style={{ padding: 0 }} onClick={() => {
               Modal.confirm({
                 title: '删除数据',
@@ -209,6 +213,7 @@ export default () => {
             }}>
               删除
             </Button>
+            </Access>
             <Button
               style={{ padding: 0 }}
               type="link"
@@ -218,6 +223,7 @@ export default () => {
             >
               详情
             </Button>
+            <Access accessible={access['PU_BLM_ZTBGL']}>
             {record?.status === 1 ? <Button
               type="link"
               style={{ padding: 0 }}
@@ -245,9 +251,8 @@ export default () => {
             >
               上架
             </Button>}
-
+            </Access>
           </Space>
-          // </Access>
         )
       },
     },
@@ -366,7 +371,7 @@ export default () => {
         <SelfTable
           loading={loading}
           bordered
-          scroll={{ x: 1400 }}
+          scroll={{ x: 3030 }}
           columns={columns}
           dataSource={dataSource}
           pagination={
