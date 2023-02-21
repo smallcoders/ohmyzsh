@@ -13,7 +13,7 @@
       height: 104px;
     }
     .progress {
-      .title {
+      .progress-title {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -82,19 +82,123 @@
       }
       .table-header {
         background: #081f5b;
+        color: #FFFCFC;
+        padding: 10px 0 12px;
+        text-align: center;
       }
       .table-header,.table-item {
         display: flex;
         justify-content: space-between;
         align-items: center;
       }
+      .table-item {
+        border-bottom: 1px solid #081f5b;
+        padding: 10px 0 12px;
+        color: #fff;
+      }
+      .title {
+        width: 50%;
+        flex-shrink: 0;
+      }
     }
   }
   .middle-content {
     flex: 1;
+    margin-left: 30px;
+    .middle-title {
+      padding-top: 104px;
+      height: 45px;
+      font-size: 32px;
+      font-weight: bold;
+      text-align: center;
+      color: #00c2ff;
+    }
+    .data-summary {
+      margin-top: 30px;
+      height: 158px;
+    }
+    .map {
+      height: 502px;
+    }
+    .middle-bottom {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+    .rate-analysis,.amount-analysis {
+      flex: 1;
+    }
+    .analysis-pie {
+      height: 180px;
+    }
+    .analysis-title {
+      color: #0068ff;
+      font-size: 18px;
+      padding-bottom: 11px;
+      border-bottom: 1px solid #0068ff;
+    }
   }
   .right-content {
+    padding-top: 104px;
     width: 388px;
     margin-left: 30px;
+    .bank-list-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #0068ff;
+      padding-bottom: 10px;
+      color: #0068ff;
+      font-size: 18px;
+      line-height: 24px;
+    }
+    .bank-list-item {
+      margin-top: 15px;
+    }
+    .list-item-desc {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 5px;
+      .left-desc {
+        span {
+          font-size: 14px;
+          font-weight: bold;
+          font-style: italic;
+          color: #ff0909;
+          display: inline-block;
+          vertical-align: middle;
+          &:last-child {
+            color: #fff;
+            font-size: 18px;
+            font-style: normal;
+            margin-left: 4px;
+          }
+        }
+      }
+    }
+    .bar {
+      background: rgba(255,255,255,0.10);
+      height: 11px;
+      .real-rate {
+        background: #00C2FF;
+        height: 100%;
+      }
+    }
+    .transform-analysis {
+      margin-top: 36px;
+      .analysis-title {
+        color: #0068ff;
+        font-size: 18px;
+        padding-bottom: 11px;
+        border-bottom: 1px solid #0068ff;
+      }
+      .analysis-funnel {
+        width: 100%;
+        height: 300px;
+        margin-top: 25px;
+        padding-bottom: 60px;
+      }
+    }
   }
 }
