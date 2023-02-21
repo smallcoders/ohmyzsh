@@ -1,5 +1,5 @@
-import { message, Button, Tag } from 'antd';
-import { history } from 'umi';
+import { message, Button, Tag, Breadcrumb} from 'antd';
+import { history, Link } from 'umi';
 import { useState, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import scopedClasses from '@/utils/scopedClasses';
@@ -8,6 +8,7 @@ import moment from "moment/moment";
 import { detailRecommendForUserPage, getArticleDetail, getUserDetailBrowse } from '@/services/baseline';
 import SelfTable from '@/components/self_table';
 import Common from '@/types/common';
+import { routeName } from '@/../config/routes'
 
 const sc = scopedClasses('science-technology-manage-creative-detail');
 
@@ -114,6 +115,21 @@ export default () => {
 
   return (
     <PageContainer loading={loading}
+    header={{
+      breadcrumb: (
+        <Breadcrumb>
+          <Breadcrumb.Item>
+            <Link to={routeName.BASELINE}>基线管理</Link>
+          </Breadcrumb.Item>
+          <Breadcrumb.Item>
+            <Link to={routeName.BASELINE_RECOMMENDED_MANAGE}>推荐位管理</Link>
+          </Breadcrumb.Item>
+          <Breadcrumb.Item>
+            <Link to={routeName.BASELINE_RECOMMENDED_MANAGE_DETAIL}>详情</Link>
+          </Breadcrumb.Item>
+        </Breadcrumb>
+      ),
+    }}
       footer={[
         <Button key="back" onClick={() => history.push('/service-config/creative-need-manage')}>返回</Button>,
       ]}
