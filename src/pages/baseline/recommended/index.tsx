@@ -324,20 +324,21 @@ export default () => {
       fixed: 'right',
       render: (_: any, record: any) => {
         return (
-          <Access accessible={access['P_SM_XQGL']}>
-            <Space wrap>
-              { !record.enable ? <Button
-                type="link"
-                style={{ padding: 0 }}
-                onClick={() => {
-                    isEdit = true
-                    setModalVisible(true)
-                    setContent(record)
-                }}
-              >
-                编辑
-              </Button> : null}
 
+            <Space wrap>
+              <Access accessible={access['PU_BLM_TJWGL']}>
+                { !record.enable ? <Button
+                  type="link"
+                  style={{ padding: 0 }}
+                  onClick={() => {
+                      isEdit = true
+                      setModalVisible(true)
+                      setContent(record)
+                  }}
+                >
+                  编辑
+                </Button> : null}
+              </Access>
               <Button
                 type="link"
                 style={{ padding: 0 }}
@@ -373,7 +374,6 @@ export default () => {
               </Popconfirm>
             )}
             </Space>
-          </Access>
         )
 
 
@@ -447,7 +447,7 @@ export default () => {
       {useSearchNode()}
       <div className={sc('container-table-header')}>
         <div className="title">
-          <Access accessible={access['P_SM_XQGL']}>
+          <Access accessible={access['PA_BLM_TJWGL']}>
             <Button type="primary" onClick={() => { isEdit = false; setModalVisible(true); setContent({}) }}>
               选择推荐内容
             </Button>
