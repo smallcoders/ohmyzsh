@@ -184,3 +184,35 @@ export async function deleteTag(id: string) {
         method: 'post',
     });
 }
+
+// 推荐位管理 - 列表
+export async function recommendForUserPage (data?: any) {
+   return request<any>('/antelope-industrial/mng/recommendForUser/page', {
+    method: 'post',
+    data,
+    headers: {
+      'rpc-tag': 'local-dev'
+    }
+  });
+}
+// 新增推荐位
+export async function addRecommendForUserPage(params?: any) {
+  return request<any>('/antelope-industrial/mng/recommendForUser/add', {
+    method: 'get',
+    params,
+  });
+}
+// 修改推荐位（是否启用，推荐位和标签的
+export async function editRecommendForUserPage(params?: any) {
+  return request<any>('/antelope-industrial/mng/recommendForUser/edit', {
+    method: 'get',
+    params,
+  });
+}
+// 推荐位详情
+export async function detailRecommendForUserPage(data?: any) {
+  return request<any>('/antelope-industrial/mng/recommendForUser/detail', {
+    method: 'post',
+    data,
+  });
+}

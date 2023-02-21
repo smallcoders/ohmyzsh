@@ -8,19 +8,26 @@ import { request } from 'umi';
 export async function editHotRecommend(data?: any) {
   return request<any>('/antelope-industrial/mng/hotRecommends/editHotRecommend', {
     method: 'post',
-    data,
-    headers:{'rpc-tag':'local-dev'}
+    data
   });
 }
 
+/**
+ * 添加
+ */
+export async function addHotRecommend(data?: any) {
+  return request<any>('/antelope-industrial/mng/hotRecommends/addHotRecommend', {
+    method: 'post',
+    data
+  });
+}
 /**
  * 分页查询热门推荐
  */
 export async function queryHotRecommend(data?: any) {
   return request<any>('/antelope-industrial/mng/hotRecommends/queryPage', {
     method: 'post',
-    data,
-    headers:{'rpc-tag':'local-dev'}
+    data
   });
 }
 
@@ -30,8 +37,7 @@ export async function queryHotRecommend(data?: any) {
 export async function getHotRecommendDetail(data?: any) {
   return request<any>('/antelope-industrial/mng/hotRecommends/getHotRecommendDetail', {
     method: 'post',
-    data,
-    headers:{'rpc-tag':'local-dev'}
+    data
   });
 }
 
@@ -40,8 +46,7 @@ export async function getHotRecommendDetail(data?: any) {
  */
 export async function deleteHotRecommend(id?: any) {
   return request<any>(`/antelope-industrial/mng/hotRecommends/deleteHotRecommend?id=${id}`, {
-    method: 'DELETE',
-    headers: {'rpc-tag': 'local-dev'}
+    method: 'DELETE'
   });
 }
 
@@ -50,7 +55,16 @@ export async function deleteHotRecommend(id?: any) {
  */
 export async function deleteRelation(id?: any) {
   return request<any>(`/antelope-industrial/mng/hotRecommends/deleteRelation?id=${id}`, {
-    method: 'DELETE',
-    headers:{'rpc-tag':'local-dev'}
+    method: 'DELETE'
+  });
+}
+
+/**
+ * 通过id数组查询文章列表
+ */
+export async function queryByIds(data?: any) {
+  return request<any>('/antelope-industrial/mng/article/queryByIds', {
+    method: 'post',
+    data
   });
 }
