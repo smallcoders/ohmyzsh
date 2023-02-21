@@ -168,10 +168,13 @@ export async function deleteTag(id: string) {
 }
 
 // 推荐位管理 - 列表
-export async function recommendForUserPage (params?: any) {
+export async function recommendForUserPage (data?: any) {
    return request<any>('/antelope-industrial/mng/recommendForUser/page', {
-    method: 'get',
-    params,
+    method: 'post',
+    data,
+    headers: {
+      'rpc-tag': 'local-dev'
+    }
   });
 }
 // 新增推荐位
