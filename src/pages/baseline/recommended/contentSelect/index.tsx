@@ -46,9 +46,7 @@ export default (props: any) => {
     prepare();
   }, []);
 
-  useEffect(() => {
-    setModalVisible(props.visible)
-  }, [props.visible])
+
 
   useEffect(() => {
     setSelectRowKeys([props.currentSelect.uuid])
@@ -66,6 +64,8 @@ export default (props: any) => {
     selectedRowKeys:selectRowKeys,
     onChange: onSelectChange,
   };
+
+
 
     // 获取选择管理内容详情页
     const getPage = async (pageIndex: number = 1, pageSize = pageSelectInfo.pageSize) => {
@@ -89,6 +89,16 @@ export default (props: any) => {
         setLoading(false);
       }
     };
+
+    useEffect(() => {
+      setPageSelectInfo({
+        ...pageSelectInfo,
+        pageIndex: 1,
+      })
+      setModalVisible(props.visible)
+      getPage()
+    }, [props.visible])
+
     useEffect(() => {
       getPage();
     }, [searchContent]);
@@ -107,71 +117,54 @@ export default (props: any) => {
         dataIndex: 'title',
         isEllipsis: true,
         width: 300,
+        render: (_: any) => _ || '/'
       },
       {
         title: '来源',
         dataIndex: 'source',
         isEllipsis: true,
         width: 300,
+        render: (_: any) => _ || '/'
       },
       {
         title: '作者',
         dataIndex: 'author',
         isEllipsis: true,
         width: 150,
+        render: (_: any) => _ || '/'
       },
       {
         title: '关键词',
         dataIndex: 'keywords',
         isEllipsis: true,
         width: 300,
-        render: (val: string) => JSON.parse(val || `['--']`).join('、')
+        render: (val: string) => JSON.parse(val || JSON.stringify(['/'])).join('、')
       },
       {
         title: '内容类型',
         dataIndex: 'types',
-        render: (_: any[]) => _?.length > 0 ? _?.map(p => p.typeName).join('、') : '--',
+        render: (_: any[]) => _?.length > 0 ? _?.map(p => p.typeName).join('、') : '/',
         width: 200,
       },
       {
         title: '标签',
         dataIndex: 'labels',
         render: (_: any[]) => _?.length === 0 ? '/' :  _?.map((item: any) => <Tag key={item.id}>{item.labelName}</Tag>),
-        width: 200,
-      },
-
-      {
-        title: '内容状态',
-        dataIndex: 'status',
-        isEllipsis: true,
-        render: (_: string) => {
-          return (
-            <div className={`state${_}`}>
-              {Object.prototype.hasOwnProperty.call(statusObj, _) ? statusObj[_] : '--'}
-            </div>
-          );
-        },
-        width: 150,
+        width: 300,
       },
       {
         title: '发布时间',
         dataIndex: 'publishTime',
         isEllipsis: true,
-        render: (_: string) => _ ? moment(_).format('YYYY-MM-DD HH:mm:ss') : '--',
+        render: (_: string) => _ ? moment(_).format('YYYY-MM-DD HH:mm:ss') : '/',
         width: 250,
       },
       {
         title: '上架时间',
         dataIndex: 'createTime',
         isEllipsis: true,
-        render: (_: string) => _ ? moment(_).format('YYYY-MM-DD HH:mm:ss') : '--',
+        render: (_: string) => _ ? moment(_).format('YYYY-MM-DD HH:mm:ss') : '/',
         width: 250,
-      },
-      {
-        title: '审核备注',
-        dataIndex: 'auditCommon',
-        isEllipsis: true,
-        width: 200,
       },
       {
         title: '操作',

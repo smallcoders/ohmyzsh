@@ -326,6 +326,17 @@ export default () => {
         return (
 
             <Space wrap>
+
+              <Button
+                type="link"
+                style={{ padding: 0 }}
+                onClick={() => {
+                  window.open(routeName.BASELINE_RECOMMENDED_MANAGE_DETAIL + `?id=${record.id}&industrialArticleId=${record.industrialArticleId}`);
+                }}
+              >
+                详情
+              </Button>
+
               <Access accessible={access['PU_BLM_TJWGL']}>
                 { !record.enable ? <Button
                   type="link"
@@ -339,15 +350,7 @@ export default () => {
                   编辑
                 </Button> : null}
               </Access>
-              <Button
-                type="link"
-                style={{ padding: 0 }}
-                onClick={() => {
-                  window.open(routeName.BASELINE_RECOMMENDED_MANAGE_DETAIL + `?id=${record.id}&industrialArticleId=${record.industrialArticleId}`);
-                }}
-              >
-                详情
-              </Button>
+
 
               {record.enable ? (
               <Popconfirm

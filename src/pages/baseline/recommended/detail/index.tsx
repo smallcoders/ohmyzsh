@@ -175,7 +175,7 @@ export default () => {
         <div className={sc('container-title')}>推荐阅读信息</div>
         <div className={sc('container-desc')}>
           <span>推荐范围：</span>
-          <span>{ detail?.labelList?.join()}</span>
+          <span>{ detail?.labelList?.length > 0 ? detail?.labelList?.map((item: any) => <Tag key={item.id}>{item.labelName}</Tag>) : '--'}</span>
         </div>
         <div className={sc('container-desc')}>
           <span>推荐阅读量：</span>
