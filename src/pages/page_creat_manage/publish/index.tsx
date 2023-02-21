@@ -97,7 +97,7 @@ export default () => {
           <QRCode
             value={getLink(isMobile)}
             renderAs={'canvas'}
-            size={1000}
+            size={200}
             bgColor={'#FFFFFF'}
             fgColor={'#000000'}
             level="H"
@@ -105,8 +105,8 @@ export default () => {
             includeMargin={true}
             imageSettings={{
               src: logo2,
-              width: 200,
-              height: 200,
+              width: 50,
+              height: 50,
               excavate: true,
             }}
           />
