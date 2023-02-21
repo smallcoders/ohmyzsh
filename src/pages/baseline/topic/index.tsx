@@ -44,14 +44,14 @@ export default () => {
             <Col span={6}>
               <Form.Item name="enable" label="发布状态">
                 <Select placeholder="请选择" allowClear style={{ width: '200px'}}>
-                  <Select.Option value={0}>未发布</Select.Option>
-                  <Select.Option value={1}>已发布</Select.Option>
+                  <Select.Option value={0}>下架</Select.Option>
+                  <Select.Option value={1}>上架</Select.Option>
                 </Select>
               </Form.Item>
             </Col>
             <Col span={4}>
               <Button
-                style={{ margin:'0 20px' }}
+                style={{ marginRight:'20px' }}
                 type="primary"
                 key="search"
                 onClick={() => {

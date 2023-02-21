@@ -428,6 +428,10 @@ export default () => {
         <Row className={'title'}>
           <Col span={24}>
             <Form.Item name="content" label="关联内容" rules={[
+              {
+                required: true,
+                message: `必填`,
+              },
             ]}>
               <Button
                 type="primary"
