@@ -43,7 +43,7 @@ export async function getArticlePage(data?: { [key: string]: any }) {
     });
 }
 export async function getArticleRiskCount(data?: { [key: string]: any }) {
-    return request<any>('/antelope-industrial/article/query/count', {
+    return request<any>('/antelope-industrial/mng/article/query/count', {
         method: 'post',
         data,
     });
@@ -76,7 +76,7 @@ export async function addArticle(data?: { [key: string]: any }) {
 
 // 风险审核
 export async function auditArticle(content: string) {
-    return request<any>(`/antelope-industrial/article/audit`, {
+    return request<any>(`/antelope-industrial/mng/article/audit`, {
         method: 'post',
         data:{
             content

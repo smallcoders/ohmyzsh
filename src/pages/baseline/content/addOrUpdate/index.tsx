@@ -76,33 +76,39 @@ export default () => {
   const onSubmit = async (status: number) => {
     try {
       const data = form.getFieldsValue()
+
+      const cb = async () => {
+        const res = await (id ? editArticle({ id, ...data, status }) : addArticle({ ...data, status }))
+        if (res?.code == 0) {
+          message.success('操作成功')
+        } else {
+          message.error(res?.message || '操作失败')
+        }
+      }
+
       if (status == 1) {
         await form.validateFields()
         Modal.confirm({
           title: '提示',
           content: '确定将内容上架？',
           onOk: async () => {
-            if (!(await beforeUp(data.content))) throw new Error('风险问题')
+            beforeUp(data.content, cb)
           },
           onCancel: () => {
-            throw new Error('取消了')
+            return
           },
           okText: '上架'
         })
-
-      }
-      const res = await (id ? editArticle({ id, ...data, status }) : addArticle({ ...data, status }))
-      if (res?.code == 0) {
-        message.success('操作成功')
       } else {
-        message.error(res?.message || '操作失败')
+        cb()
       }
+
     } catch (error) {
       console.log(' error ', error)
     }
   }
 
-  const beforeUp = async (content: string) => {
+  const beforeUp = async (content: string, cb: () => void) => {
     try {
       const res = await auditArticle(content)
       if (res?.result) {
@@ -110,16 +116,14 @@ export default () => {
           title: '风险提示',
           content: res?.result,
           onOk: async () => {
-            return true
+            cb()
           },
           onCancel: () => {
-            return false
           },
           okText: '上架'
         })
-        return false
       } else {
-        return true
+        cb()
       }
     } catch (error) {
       console.log(' error ', error)
