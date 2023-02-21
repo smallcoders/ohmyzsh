@@ -149,6 +149,7 @@
   FINANCIAL_CUSTOMERS_MANAGE_INDEX: '/banking/financial_customers_manage/index',
   FINANCIAL_CUSTOMERS_MANAGE_DETAIL: '/banking/financial_customers_manage/detail',
   FINANCIAL_CUSTOMERS_MANAGE_EDIT: '/banking/financial_customers_manage/edit',
+  FINANCIAL_DATA_OVERVIEW: '/banking/financial_data_overview',
 
   // 产品管理
   PRODUCT_MANAGEMENT: '/banking/product_management',
@@ -271,7 +272,7 @@ export default [
         name: '用户认证数据',
         component: './operate_data/data_manage/index',
       },
-      
+
     ],
   },
   // {
@@ -1450,7 +1451,7 @@ export default [
             access: 'M_OA_CJHD',
             component: './operation_activity/activity_project/detail/spring-detail',
           },
-          
+
         ],
       },
       {
@@ -2068,6 +2069,15 @@ export default [
         access: 'M_FM_GYSGL',
         component: './banking/supplier-management',
       },
+      {
+        path: '/banking/financial_data_overview',
+        name: '金融数据概况',
+        code: 'M_FM_GYSGL',
+        access: 'M_FM_GYSGL',
+        component: './banking/financial_data_overview',
+        layout: false
+      },
+
     ],
   },
   {

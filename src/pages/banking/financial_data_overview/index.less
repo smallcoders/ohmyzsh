@@ -1,0 +1,100 @@
+.financial_data_overview {
+  min-height: 100vh;
+  display: flex;
+  padding: 0 38px;
+  justify-content: space-between;
+  align-items: flex-start;
+  background: #0b132d;;
+  .left-content {
+    margin-left: 30px;
+    width: 388px;
+    .date {
+      padding-top: 30px;
+      height: 104px;
+    }
+    .progress {
+      .title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #0068ff;
+        padding-bottom: 10px;
+        .text {
+          color: #0068ff;
+          font-size: 18px;
+          line-height: 24px;
+        }
+        .edit-btn {
+          font-size: 14px;
+        }
+      }
+      .progress-detail-list {
+        margin-top: 36px;
+        .financing-info {
+          margin-top: 44px;
+          &:first-child {
+            margin-top: 0;
+          }
+        }
+        .desc {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          .desc-title {
+            color: #ddd;
+          }
+          .desc-amount {
+            span {
+              font-size: 15px;
+              color: #fff;
+              &:last-child {
+                color: #0068ff;
+              }
+            }
+          }
+        }
+        .progress-bar {
+          background: rgba(255,255,255,0.10);
+          height: 32px;
+          margin-top: 5px;
+          padding: 4px 6px;
+          .current {
+            background: #0068ff;
+            text-align: right;
+            height: 100%;
+            color:  #181f38;
+            font-size: 15px;
+            padding-right: 3px;
+          }
+        }
+      }
+    }
+    .product-rank-list {
+      margin-top: 50px;
+      .rank-title {
+        color: #0068ff;
+        font-size: 18px;
+        padding-bottom: 11px;
+        border-bottom: 1px solid #0068ff;
+      }
+      .rank-list-table {
+        margin-top: 20px;
+      }
+      .table-header {
+        background: #081f5b;
+      }
+      .table-header,.table-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+    }
+  }
+  .middle-content {
+    flex: 1;
+  }
+  .right-content {
+    width: 388px;
+    margin-left: 30px;
+  }
+}
