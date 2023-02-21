@@ -52,12 +52,12 @@ export default () => {
           <Row>
             <Col span={6}>
               <Form.Item name="topic" label="话题名称">
-                <Input placeholder="请输入" />
+                <Input placeholder="请输入" allowClear  autoComplete="off"/>
               </Form.Item>
             </Col>
             <Col span={6}>
               <Form.Item name="publicUserName" label="发布人">
-                <Input placeholder="请输入" />
+                <Input placeholder="请输入" allowClear  autoComplete="off"/>
               </Form.Item>
             </Col>
             <Col span={6}>
@@ -257,7 +257,7 @@ export default () => {
                       style={{flexFlow:'column'}}
                       name={'weight'}
                       label="权重设置">
-                      <InputNumber style={{width:'280px'}} placeholder={'请输入1~100的整数，权重越大，展示越靠前'} min={1} max={100} />
+                      <InputNumber step={1} style={{width:'280px'}} placeholder={'请输入1~100的整数，数字越大排名越靠前'} min={1} max={100} />
                     </Form.Item>
                   </Form>
                 </>
