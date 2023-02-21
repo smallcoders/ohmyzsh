@@ -1,13 +1,14 @@
 import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
 import { PageContainer } from '@ant-design/pro-layout';
-import React, {useEffect, useState} from "react";
-import {Button, Col, message, Popconfirm, Row} from "antd";
+import {useEffect, useState} from "react";
+import {Button, Col, message, Row} from "antd";
 import SelfTable from "@/components/self_table";
 import type LogoutVerify from "@/types/user-config-logout-verify";
 import type Common from "@/types/common";
 import {deleteRelation, getHotRecommendDetail} from "@/services/topic";
 import {history} from "@@/core/history";
+import {routeName} from "../../../../../config/routes";
 
 export default () => {
   const sc = scopedClasses('baseline-topic-detail');
@@ -40,19 +41,6 @@ export default () => {
   useEffect(() => {
     getHotRecommendDetailById();
   }, []);
-  const remove = async (id: number) => {
-    try {
-      const removeRes = await deleteRelation(id);
-      if (removeRes.code === 0) {
-        message.success(`删除成功`);
-        getHotRecommendDetailById();
-      } else {
-        message.error(`删除失败，原因:{${removeRes.message}}`);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   const columns = [
     {
@@ -87,20 +75,10 @@ export default () => {
         return (
           <div className={sc('container-option')}>
             <Button type="link" onClick={() => {
-              window.open(`/baseline/baseline-topic-manage/detail?type=2`)
+              window.open(routeName.BASELINE_CONTENT_MANAGE_DETAIL + `?id=${record?.id}`);
             }}>
               详情
             </Button>
-            {/*<Popconfirm*/}
-            {/*  title="确定删除么？"*/}
-            {/*  okText="确定"*/}
-            {/*  cancelText="取消"*/}
-            {/*  onConfirm={() => remove(record?.articleId as number)}*/}
-            {/*>*/}
-            {/*  <Button type="link" >*/}
-            {/*    删除*/}
-            {/*  </Button>*/}
-            {/*</Popconfirm>*/}
           </div>
         )
       },
