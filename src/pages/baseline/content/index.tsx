@@ -219,9 +219,9 @@ export default () => {
     },
     {
       title: '上架时间',
-      dataIndex: 'createTime',
+      dataIndex: 'updateTime',
       isEllipsis: true,
-      render: (_: string) => _ ? moment(_).format('YYYY-MM-DD HH:mm:ss') : '--',
+      render: (_: string, record: any) => record?.status == 1 && _ ? moment(_).format('YYYY-MM-DD HH:mm:ss') : '--',
       width: 250,
     },
     {
