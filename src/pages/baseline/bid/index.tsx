@@ -27,7 +27,7 @@ const sourceObj = {
 };
 
 const industryData = {
-  INDUATRIAL_1: '新能源汽车', INDUATRIAL_2: '新一代信息技术', 'INDUATRIAL_3': '人工智能', INDUATRIAL_4: '数字创意', INDUATRIAL_5: '高端装备制造', INDUATRIAL_6: '新材料', INDUATRIAL_7: '新能源', INDUATRIAL_8: '节能环保', INDUATRIAL_9: '智能家电', INDUATRIAL_10: '生命健康', INDUATRIAL_11: '绿色食品'
+  INDUATRIAL_0: '其他', INDUATRIAL_1: '新能源汽车', INDUATRIAL_2: '新一代信息技术', 'INDUATRIAL_3': '人工智能', INDUATRIAL_4: '数字创意', INDUATRIAL_5: '高端装备制造', INDUATRIAL_6: '新材料', INDUATRIAL_7: '新能源', INDUATRIAL_8: '节能环保', INDUATRIAL_9: '智能家电', INDUATRIAL_10: '生命健康', INDUATRIAL_11: '绿色食品'
 }
 
 const subTypeObj = { TENDERING_1: '拟建', TENDERING_2: '采购意向', TENDERING_3: '预告', TENDERING_4: '预审', TENDERING_5: '预审结果', TENDERING_6: '论证意见', TENDERING_7: '需求公示', TENDERING_8: '变更', TENDERING_9: '邀标', TENDERING_10: '询价', TENDERING_11: '竞谈', TENDERING_12: '单一', TENDERING_13: '竞价', TENDERING_14: '招标', TENDERING_15: '废标', TENDERING_16: '流标', TENDERING_17: '结果变更', TENDERING_18: '中标', TENDERING_19: '成交', TENDERING_20: '合同', TENDERING_21: '验收', TENDERING_22: '违规', TENDERING_23: '其它' }
@@ -203,16 +203,16 @@ export default () => {
           // <Access accessible={accessible}>
           <Space wrap>
             <Access accessible={access['PD_BLM_ZTBGL']}>
-            <Button type="link" style={{ padding: 0 }} onClick={() => {
-              Modal.confirm({
-                title: '删除数据',
-                content: '删除后，系统将不再推荐该内容，确定删除？',
-                onOk: () => { onDelete(record?.id) },
-                okText: '删除'
-              })
-            }}>
-              删除
-            </Button>
+              <Button type="link" style={{ padding: 0 }} onClick={() => {
+                Modal.confirm({
+                  title: '删除数据',
+                  content: '删除后，系统将不再推荐该内容，确定删除？',
+                  onOk: () => { onDelete(record?.id) },
+                  okText: '删除'
+                })
+              }}>
+                删除
+              </Button>
             </Access>
             <Button
               style={{ padding: 0 }}
@@ -224,33 +224,33 @@ export default () => {
               详情
             </Button>
             <Access accessible={access['PU_BLM_ZTBGL']}>
-            {record?.status === 1 ? <Button
-              type="link"
-              style={{ padding: 0 }}
-              onClick={() => {
-                Modal.confirm({
-                  title: '提示',
-                  content: '确定将内容下架？',
-                  onOk: () => { onOffShelves(record.id, false) },
-                  okText: '下架'
-                })
-              }}
-            >
-              下架
-            </Button> : <Button
-              type="link"
-              style={{ padding: 0 }}
-              onClick={() => {
-                Modal.confirm({
-                  title: '提示',
-                  content: '确定将内容上架？',
-                  onOk: () => { onOffShelves(record.id, true) },
-                  okText: '上架'
-                })
-              }}
-            >
-              上架
-            </Button>}
+              {record?.status === 1 ? <Button
+                type="link"
+                style={{ padding: 0 }}
+                onClick={() => {
+                  Modal.confirm({
+                    title: '提示',
+                    content: '确定将内容下架？',
+                    onOk: () => { onOffShelves(record.id, false) },
+                    okText: '下架'
+                  })
+                }}
+              >
+                下架
+              </Button> : <Button
+                type="link"
+                style={{ padding: 0 }}
+                onClick={() => {
+                  Modal.confirm({
+                    title: '提示',
+                    content: '确定将内容上架？',
+                    onOk: () => { onOffShelves(record.id, true) },
+                    okText: '上架'
+                  })
+                }}
+              >
+                上架
+              </Button>}
             </Access>
           </Space>
         )
@@ -289,7 +289,7 @@ export default () => {
               <Form.Item name="subTypeEnum" label="公告类别">
                 <Select placeholder="请选择" allowClear>
                   {Object.entries(subTypeObj).map((p) => (
-                    <Select.Option key={p[0] + p[1]} value={Number(p[0])}>
+                    <Select.Option key={p[0] + p[1]} value={p[0]}>
                       {p[1]}
                     </Select.Option>
                   ))}
@@ -300,7 +300,7 @@ export default () => {
               <Form.Item name="biddingSource" label="来源">
                 <Select placeholder="请选择" allowClear>
                   {Object.entries(sourceObj).map((p) => (
-                    <Select.Option key={p[0] + p[1]} value={Number(p[0])}>
+                    <Select.Option key={p[0] + p[1]} value={p[0]}>
                       {p[1]}
                     </Select.Option>
                   ))}
@@ -313,7 +313,7 @@ export default () => {
               <Form.Item name="industrial" label="产业链">
                 <Select placeholder="请选择" allowClear>
                   {Object.entries(industryData).map((p) => (
-                    <Select.Option key={p[0] + p[1]} value={Number(p[0])}>
+                    <Select.Option key={p[0] + p[1]} value={p[0]}>
                       {p[1]}
                     </Select.Option>
                   ))}
