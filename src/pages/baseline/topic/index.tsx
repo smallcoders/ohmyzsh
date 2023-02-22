@@ -14,22 +14,6 @@ import {useAccess,Access} from "@@/plugin-access/access";
 export default () => {
   // // 拿到当前角色的access权限兑现
   const access = useAccess()
-  console.log(access)
-  // // 当前页面的对应权限key
-  // const [edge, setEdge] = useState<Edge.HOME>(Edge.HOME);
-  // // 页面权限
-  // const permissions = {
-  //   [Edge.HOME]: 'PQ_BLM_HTGL', // 话题管理
-  // }
-  // useEffect(() => {
-  //   for (const key in permissions) {
-  //     const permission = permissions[key]
-  //     if (Object.prototype.hasOwnProperty.call(access, permission)) {
-  //       setEdge(key as any)
-  //       break
-  //     }
-  //   }
-  // },[])
   const sc = scopedClasses('baseline-topic');
   const formLayout = {
     labelCol: { span: 6 },
@@ -304,7 +288,6 @@ export default () => {
     <PageContainer className={sc('container')}>
       {useSearchNode()}
       <div className={sc('container-table-header')}>
-        {/*{access.PA_BLM_HTGL && {*/}
         <Access accessible={access['PA_BLM_HTGL']}>
         <Button
           type="primary"
