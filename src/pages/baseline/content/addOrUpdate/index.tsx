@@ -86,6 +86,7 @@ export default () => {
         const res = await (id ? editArticle({ id, ...data, status }) : addArticle({ ...data, status }))
         if (res?.code == 0) {
           message.success('操作成功')
+          status == 1 && history.push(routeName.BASELINE_CONTENT_MANAGE)
         } else {
           message.error(res?.message || '操作失败')
         }

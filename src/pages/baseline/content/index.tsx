@@ -475,7 +475,7 @@ export default () => {
       {useSearchNode()}
       <div className={sc('container-table-header')}>
         <div className="title">
-          <span>风险列表(共{riskCount >= 10000 ? '10000+' : riskCount || 0}条)</span>
+          <span>风险资讯(<span style={{ color: 'red' }}>{riskCount >= 10000 ? '10000+' : riskCount || 0}</span>条)</span>
           <Access accessible={access['PA_BLM_NRGL']}>
             <Button type='primary' icon={<PlusOutlined />} onClick={() => { window.open(routeName.BASELINE_CONTENT_MANAGE_ADDORUPDATE); }}>
               新增
