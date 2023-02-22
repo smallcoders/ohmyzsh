@@ -88,7 +88,12 @@ export default () => {
 
 
   return (
-    <PageContainer className={sc('container')}>
+    <PageContainer className={sc('container')}
+    footer={[
+          <Button style={{marginRight:'40px'}} onClick={() =>{
+          history.goBack()}
+          }>返回</Button>
+    ]}>
       <div className='topic-detail'>
         <Row className={'title'}>
           <Col span={4}>

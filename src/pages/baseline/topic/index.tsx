@@ -101,6 +101,7 @@ export default () => {
   useEffect(() => {
     getPage();
   }, [searchContent]);
+
   //删除
   const remove = async (id: string) => {
     try {
@@ -244,7 +245,9 @@ export default () => {
                       style={{flexFlow:'column'}}
                       name={'weight'}
                       label="权重设置">
-                      <InputNumber step={1} style={{width:'280px'}} placeholder={'请输入1~100的整数，数字越大排名越靠前'} min={1} max={100} />
+                      <InputNumber step={1} style={{width:'280px'}}
+                     precision={0}
+                      placeholder={'请输入1~100的整数，数字越大排名越靠前'} min={1} max={100} />
                     </Form.Item>
                   </Form>
                 </>
@@ -311,6 +314,7 @@ export default () => {
               ? false
               : {
                 onChange: getPage,
+                showSizeChanger: true,
                 total: pageInfo.totalCount,
                 current: pageInfo.pageIndex,
                 pageSize: pageInfo.pageSize,

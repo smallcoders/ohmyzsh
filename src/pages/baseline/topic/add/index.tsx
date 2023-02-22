@@ -10,7 +10,7 @@ import moment from "moment/moment";
 import {routeName} from "../../../../../config/routes";
 import type { PaginationProps } from 'antd';
 import { getArticlePage, getArticleType} from "@/services/baseline";
-import {addHotRecommend, getHotRecommendDetail, queryByIds} from "@/services/topic";
+import {addHotRecommend,editHotRecommend, getHotRecommendDetail, queryByIds} from "@/services/topic";
 import {Link} from "umi";
 const sc = scopedClasses('baseline-topic-add');
 const statusObj = {
@@ -120,13 +120,18 @@ export default () => {
       .validateFields()
       .then(async (value) => {
         const {topic,weight}=value
-        const submitRes = await addHotRecommend({
+        const submitRes =   !query?.id ? await addHotRecommend({
           topic,
           weight,
           enable:1,
-          id:query?.id,
           articleIds:selectRowKeys
-        });
+        }):await editHotRecommend({
+          id:query?.id,
+          topic,
+          weight,
+          enable:1,
+          articleIds:selectRowKeys
+        })
         if (submitRes.code === 0) {
           history.goBack()
           message.success(state==1?'上架成功':'暂存成功')
@@ -139,10 +144,10 @@ export default () => {
       });
   };
   // 关联内容改变页码
-  const onChange: PaginationProps['onChange'] = (pageNumber) => {
+  const onChange: PaginationProps['onChange'] = (pageIndex,pageSize) => {
     setPageInfo({
-      pageIndex: pageNumber,
-      pageSize: 5,
+      pageIndex,
+      pageSize,
       totalCount: dataSource.length || 0,
     })
   };
@@ -153,8 +158,8 @@ export default () => {
     setSelectRowKeys(newRowKeys)
     setDataSource(newDataSource)
     setPageInfo({
-      pageIndex: 1,
-      pageSize: 5,
+      pageIndex: pageInfo.pageIndex,
+      pageSize: pageInfo.pageSize,
       totalCount: newDataSource.length || 0,
     })
   }
@@ -424,7 +429,7 @@ export default () => {
                 message: `必填`,
               },
             ]}>
-              <InputNumber step={1} style={{width:'100%'}} placeholder="请输入1~100的整数，数字越大排名越靠前" min={1} max={100}/>
+              <InputNumber step={1} style={{width:'100%'}} precision={0} placeholder="请输入1~100的整数，数字越大排名越靠前" min={1} max={100}/>
             </Form.Item>
           </Col>
         </Row>
@@ -463,8 +468,10 @@ export default () => {
                   pageInfo.totalCount === 0
                     ? false
                     : {
+
                       onChange: onChange,
                       total: pageInfo.totalCount,
+                      showSizeChanger: true,
                       current: pageInfo.pageIndex,
                       pageSize: pageInfo.pageSize,
                       showTotal: (total: number) =>
@@ -492,11 +499,15 @@ export default () => {
                 pageSize: 5,
                 totalCount: [...selectRows].length || 0,
               })
-            queryByIds([...selectRowKeys]).then(res=>{
-              if (res.code === 0){
-                setDataSource(res?.result)
+              if([...selectRows].length===0){
+                message.error(`至少勾选一个内容`);
+              }else{
+                queryByIds([...selectRowKeys]).then(res=>{
+                  if (res.code === 0){
+                    setDataSource(res?.result)
+                  }
+                })
               }
-            })
             setModalVisible(false);
           }}
         >
