@@ -96,7 +96,8 @@ export default (props: any) => {
         pageIndex: 1,
       })
       setModalVisible(props.visible)
-      getPage()
+      searchForm.resetFields()
+      setSearChContent({});
     }, [props.visible])
 
     useEffect(() => {
@@ -251,6 +252,10 @@ export default (props: any) => {
     centered
     destroyOnClose
     onOk={() => {
+      if (selectRows.length === 0) {
+        message.error('请选择数据')
+        return
+      }
       props.setCurrentSelect(selectRows)
       props.setContentModalVisible(false);
     }}
