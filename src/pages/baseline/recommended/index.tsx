@@ -28,7 +28,7 @@ import {
 } from '@/services/baseline';
 import ContentSelect from './contentSelect/index'
 const sc = scopedClasses('recommends-manage-creative-need');
-
+let  isEdit = false
 
 export default () => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -38,7 +38,7 @@ export default () => {
   const [labels, setLabels] = useState([])
   const [contentModalVisible, setContentModalVisible] = useState(false)
   const [currentSelect, setCurrentSelect] = useState({})
-  let  isEdit = false
+
 
   const [searchContent, setSearChContent] = useState({
     title: '',
@@ -95,6 +95,7 @@ export default () => {
     const currentVal = await editForm.validateFields()
     const currentContent = currentSelect?.[0] || content
     console.log(currentContent, currentVal)
+    console.log('isEdit =>', isEdit)
     if (isEdit) {
       editRecommendForUserPage({
         uuid: currentContent.uuid,
@@ -102,33 +103,45 @@ export default () => {
         weight: currentVal.weight,
         labelIds: currentVal.labels,
         enable: 1
-      }).then(({ code }) => {
+      }).then(({ code, message: msg }) => {
         if (code === 0) {
           message.success('上架成功')
           setModalVisible(false)
           getPage()
         }
+        if (code === 1403) {
+          message.error(msg)
+        }
+      }).catch((error) => {
+        console.log('error =>', error)
       })
       return
     }
     addRecommendForUserPage({
       uuid: currentContent.uuid,
-      industrialArticleId: currentContent.id,
+      industrialArticleId: currentContent.industrialArticleId || currentContent.id,
       weight: currentVal.weight,
       labelIds: currentVal.labels,
       enable: 1
-    }).then(({ code }) => {
+    }).then(({ code, message: msg }) => {
       if (code === 0) {
         message.success('上架成功')
         setModalVisible(false)
         getPage()
       }
+      if (code === 1403) {
+        message.error(msg)
+      }
+    }).catch((error) => {
+      console.log('error =>', error)
     })
   }
 
   const handleSave = async () => {
     const currentVal = await editForm.validateFields()
     const currentContent = currentSelect?.[0] || content
+    console.log('isEdit =>', isEdit)
+    console.log('currentContent =>', currentContent)
     if (isEdit) {
       editRecommendForUserPage({
         uuid: currentContent.uuid,
@@ -136,12 +149,17 @@ export default () => {
         weight: currentVal.weight,
         labelIds: currentVal.labels,
         enable: 0
-      }).then(({ code }) => {
+      }).then(({ code, message: msg }) => {
         if (code === 0) {
           message.success('保存成功')
           setModalVisible(false)
           getPage()
         }
+        if (code === 1403) {
+          message.error(msg)
+        }
+      }).catch((error) => {
+        console.log('error =>', error)
       })
       return
     }
@@ -149,14 +167,19 @@ export default () => {
       uuid: currentContent.uuid,
       weight: currentVal.weight,
       labelIds: currentVal.labels,
-      industrialArticleId: currentContent.id,
+      industrialArticleId: isEdit ? content.industrialArticleId : currentContent.id,
       enable: 0
-    }).then(({ code }) => {
+    }).then(({ code, message: msg }) => {
       if (code === 0) {
         message.success('保存成功')
         setModalVisible(false)
         getPage()
       }
+      if (code === 1403) {
+        message.error(msg)
+      }
+    }).catch((error) => {
+      console.log('error =>', error)
     })
   }
 
@@ -173,7 +196,7 @@ export default () => {
   // 上下架
   const editState = async (e: any, updatedState: number) => {
     try {
-      const {id, weight, labels: labelIds } = e
+      const { id, weight, labels: labelIds } = e
       console.log('e =>', e)
       const tooltipMessage = updatedState === 0 ? '下架' : '上架';
       const updateStateResult = await editRecommendForUserPage({  id, weight, labelIds, enable: updatedState });
