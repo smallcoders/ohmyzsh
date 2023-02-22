@@ -2,11 +2,11 @@ import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
 import { PageContainer } from '@ant-design/pro-layout';
 import {useEffect, useState} from "react";
-import {Button, Col, message, Row} from "antd";
+import {Button, Col, Row} from "antd";
 import SelfTable from "@/components/self_table";
 import type LogoutVerify from "@/types/user-config-logout-verify";
 import type Common from "@/types/common";
-import {deleteRelation, getHotRecommendDetail} from "@/services/topic";
+import {getHotRecommendDetail} from "@/services/topic";
 import {history} from "@@/core/history";
 import {routeName} from "../../../../../config/routes";
 
@@ -21,6 +21,7 @@ export default () => {
   const [dataSource, setDataSource] = useState<any>([]);
   const [hotRecommendDetail,setHotRecommendDetail] = useState<any>({});
   const { recommendId } = history.location.query as any;
+  //获取热门话题的详情
   const getHotRecommendDetailById = (pageIndex: number = 1, pageSize = pageInfo.pageSize) =>{
     getHotRecommendDetail({id:recommendId, pageIndex,
       pageSize,}).then(res=>{

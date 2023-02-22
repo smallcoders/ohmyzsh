@@ -28,7 +28,7 @@ export default () => {
   };
   const [searchForm] = Form.useForm();
   const [form] = Form.useForm();
-  const [selectRowKeys, setselectRowKeys] = useState<any>([])
+  const [selectRowKeys, setSelectRowKeys] = useState<any>([])
   const [selectRows, setSelectRows] = useState<any>([])
   const [dataSource, setDataSource] = useState<any>([]);
   const [searchContent, setSearChContent] = useState<any>({});
@@ -45,6 +45,8 @@ export default () => {
     totalCount: 0,
   });
 
+  // 方法
+//获取文章类型
   const prepare = async () => {
     try {
       const res = await getArticleType();
@@ -53,10 +55,7 @@ export default () => {
       message.error('获取数据失败');
     }
   };
-  useEffect(() => {
-    prepare();
-  }, []);
-
+//获取热门话题详情
   const { query } = history.location as any;
   const getHotRecommendDetailById = (pageIndex: number = 1, pageSize = query?.contentCount) =>{
     getHotRecommendDetail({id:query?.id, pageIndex,
@@ -68,7 +67,7 @@ export default () => {
         setSelectRows(res?.result.list)
         const newArray: any = []
            res?.result.list.forEach((item: any)=>{newArray.push(item.articleId)})
-        setselectRowKeys([...newArray])
+        setSelectRowKeys([...newArray])
         queryByIds([...newArray]).then(result=>{
           if (result.code === 0){
             setDataSource(result?.result)
@@ -86,6 +85,7 @@ export default () => {
 
   useEffect(() => {
     getHotRecommendDetailById();
+    prepare();
   }, []);
 
   // 获取选择管理内容详情页
@@ -138,7 +138,7 @@ export default () => {
         console.log(e)
       });
   };
-
+  // 关联内容改变页码
   const onChange: PaginationProps['onChange'] = (pageNumber) => {
     setPageInfo({
       pageIndex: pageNumber,
@@ -146,11 +146,12 @@ export default () => {
       totalCount: dataSource.length || 0,
     })
   };
+  //选择的关联内容删除
   const reMove = (record: any) => {
-      const newRowKeys = selectRowKeys.filter((item: any) =>{ return item !== record})
-      const newDataSource = dataSource.filter((item: any) =>{ return item.id !== record})
-      setselectRowKeys(newRowKeys)
-      setDataSource(newDataSource)
+    const newRowKeys = selectRowKeys.filter((item: any) =>{ return item !== record})
+    const newDataSource = dataSource.filter((item: any) =>{ return item.id !== record})
+    setSelectRowKeys(newRowKeys)
+    setDataSource(newDataSource)
     setPageInfo({
       pageIndex: 1,
       pageSize: 5,
@@ -158,6 +159,76 @@ export default () => {
     })
   }
 
+  // 选择文章的搜索
+  const useSearchNode = (): React.ReactNode => {
+    return (
+      <div className={sc('container-search')}>
+        <Form {...formLayout} form={searchForm}>
+          <Row>
+            <Col span={6}>
+              <Form.Item name="title" label="标题">
+                <Input placeholder="请输入" allowClear  autoComplete="off"/>
+              </Form.Item>
+            </Col>
+            <Col span={6}>
+              <Form.Item name="type" label="类型选择">
+                <Select placeholder="请选择" allowClear style={{ width: '200px'}}>
+                  {types?.map((item: any) => (
+                    <Select.Option key={item?.id} value={Number(item?.id)}>
+                      {item?.typeName}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={6}>
+              <Form.Item name="publisher" label="标签">
+                <Input placeholder="请输入" allowClear  autoComplete="off"/>
+              </Form.Item>
+            </Col>
+            <Col span={6}>
+              <Button
+                style={{ margin:'0 20px' }}
+                type="primary"
+                key="search"
+                onClick={() => {
+                  const search = searchForm.getFieldsValue();
+                  setSearChContent(search);
+                }}
+              >
+                查询
+              </Button>
+              <Button
+                key="reset"
+                onClick={() => {
+                  searchForm.resetFields();
+                  setSearChContent({});
+                }}
+              >
+                重置
+              </Button>
+            </Col>
+          </Row>
+        </Form>
+      </div>
+    );
+  };
+  //选择文章
+  const onSelectChange = (newSelectedRowKeys: React.Key[],selectedRows: any[]) => {
+      setSelectRowKeys(newSelectedRowKeys);
+      setSelectRows(selectedRows)
+       setPageInfo({
+            pageIndex: 1,
+            pageSize: 5,
+            totalCount:selectedRows.length || 0,
+          })
+  };
+  const rowSelection = {
+    preserveSelectedRowKeys: true,
+    selectedRowKeys:selectRowKeys,
+    onChange: onSelectChange,
+  };
+  //新增话题的table表头数据
   const columns = [
     {
       title: '序号',
@@ -185,16 +256,17 @@ export default () => {
             }}>
               详情
             </Button>
-        <Button type="link" onClick={() => {
-            reMove( record.id as string)
-        }}>
-          删除
-        </Button>
+            <Button type="link" onClick={() => {
+              reMove( record.id as string)
+            }}>
+              删除
+            </Button>
           </div>
         )
       },
     },
   ];
+  // 新增话题的关联内容的文章table表头数据
   const contentSelectColumns = [
     {
       title: '序号',
@@ -291,74 +363,6 @@ export default () => {
       },
     },
   ];
-  const useSearchNode = (): React.ReactNode => {
-    return (
-      <div className={sc('container-search')}>
-        <Form {...formLayout} form={searchForm}>
-          <Row>
-            <Col span={6}>
-              <Form.Item name="title" label="标题">
-                <Input placeholder="请输入" allowClear  autoComplete="off"/>
-              </Form.Item>
-            </Col>
-            <Col span={6}>
-              <Form.Item name="type" label="类型选择">
-                <Select placeholder="请选择" allowClear style={{ width: '200px'}}>
-                  {types?.map((item: any) => (
-                    <Select.Option key={item?.id} value={Number(item?.id)}>
-                      {item?.typeName}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={6}>
-              <Form.Item name="publisher" label="标签">
-                <Input placeholder="请输入" allowClear  autoComplete="off"/>
-              </Form.Item>
-            </Col>
-            <Col span={6}>
-              <Button
-                style={{ margin:'0 20px' }}
-                type="primary"
-                key="search"
-                onClick={() => {
-                  const search = searchForm.getFieldsValue();
-                  setSearChContent(search);
-                }}
-              >
-                查询
-              </Button>
-              <Button
-                key="reset"
-                onClick={() => {
-                  searchForm.resetFields();
-                  setSearChContent({});
-                }}
-              >
-                重置
-              </Button>
-            </Col>
-          </Row>
-        </Form>
-      </div>
-    );
-  };
-  const onSelectChange = (newSelectedRowKeys: React.Key[],selectedRows: any[]) => {
-      setselectRowKeys(newSelectedRowKeys);
-      setSelectRows(selectedRows)
-       setPageInfo({
-            pageIndex: 1,
-            pageSize: 5,
-            totalCount:selectedRows.length || 0,
-          })
-  };
-
-  const rowSelection = {
-    preserveSelectedRowKeys: true,
-    selectedRowKeys:selectRowKeys,
-    onChange: onSelectChange,
-  };
   return (
     <PageContainer className={sc('container')}
                    header={{

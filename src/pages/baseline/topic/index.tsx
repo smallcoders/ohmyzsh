@@ -45,6 +45,7 @@ export default () => {
   });
   const [weightForm] = Form.useForm();
   const [searchContent, setSearChContent] = useState<any>({});
+  // 搜索模块
   const useSearchNode = (): React.ReactNode => {
     return (
       <div className={sc('container-search')}>
@@ -95,6 +96,7 @@ export default () => {
       </div>
     );
   };
+  // 获取分页数据
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     try {
       const { result, totalCount, pageTotal, code } = await queryHotRecommend({
@@ -115,6 +117,7 @@ export default () => {
   useEffect(() => {
     getPage();
   }, [searchContent]);
+  //删除
   const remove = async (id: string) => {
     try {
       const removeRes = await deleteHotRecommend(id);
@@ -297,7 +300,6 @@ export default () => {
       },
     },
   ];
-
   return (
     <PageContainer className={sc('container')}>
       {useSearchNode()}
