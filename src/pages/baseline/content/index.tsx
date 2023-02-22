@@ -109,7 +109,7 @@ export default () => {
         message.success(`删除成功`);
         getPage();
       } else {
-        message.error(`操作失败，请重试`);
+        message.error(updateStateResult?.message || `操作失败，请重试`);
       }
     } catch (error) {
       console.log(error);
@@ -124,7 +124,7 @@ export default () => {
         message.success(`${tooleMessage}成功`);
         getPage();
       } else {
-        message.error(`操作失败，请重试`);
+        message.error(updateStateResult?.message || `操作失败，请重试`);
       }
     } catch (error) {
       console.log(error);
@@ -139,7 +139,7 @@ export default () => {
         message.success(`${tooleMessage}成功`);
         getPage();
       } else {
-        message.error(`操作失败，请重试`);
+        message.error(updateStateResult?.message || `操作失败，请重试`);
       }
     } catch (error) {
       console.log(error);
@@ -219,9 +219,9 @@ export default () => {
     },
     {
       title: '上架时间',
-      dataIndex: 'createTime',
+      dataIndex: 'updateTime',
       isEllipsis: true,
-      render: (_: string) => _ ? moment(_).format('YYYY-MM-DD HH:mm:ss') : '--',
+      render: (_: string, record: any) => record?.status == 1 && _ ? moment(_).format('YYYY-MM-DD HH:mm:ss') : '--',
       width: 250,
     },
     {
@@ -475,7 +475,7 @@ export default () => {
       {useSearchNode()}
       <div className={sc('container-table-header')}>
         <div className="title">
-          <span>风险列表(共{riskCount >= 10000 ? '10000+' : riskCount || 0}条)</span>
+          <span>风险资讯(<span style={{ color: 'red' }}>{riskCount >= 10000 ? '10000+' : riskCount || 0}</span>条)</span>
           <Access accessible={access['PA_BLM_NRGL']}>
             <Button type='primary' icon={<PlusOutlined />} onClick={() => { window.open(routeName.BASELINE_CONTENT_MANAGE_ADDORUPDATE); }}>
               新增
