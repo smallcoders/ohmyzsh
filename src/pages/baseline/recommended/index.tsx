@@ -247,7 +247,7 @@ export default () => {
             label="权重"
             rules={[{ required: true }]}
           >
-            <InputNumber style={{ width: '100%' }} placeholder='请输入1～100的整数，数字越大排名越小' step={1} max={100} min={1} />
+            <InputNumber style={{ width: '100%' }} placeholder='请输入1～100的整数，数字越大排名越小' precision={0} step={1} max={100} min={0} />
           </Form.Item>
           <Form.Item
             name="labels"
