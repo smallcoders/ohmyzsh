@@ -1,4 +1,4 @@
-import { message, Image, Button, Form, Select, Input, Breadcrumb, Modal } from 'antd';
+import { message, Image, Button, Form, Select, Input, Breadcrumb, Modal, DatePicker } from 'antd';
 import { Access, history, Link, Prompt, useAccess } from 'umi';
 import { useState, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
@@ -7,6 +7,7 @@ import './index.less';
 import FormEdit from '@/components/FormEdit';
 import { addArticle, auditArticle, editArticle, getArticleDetail, getArticleTags, getArticleType } from '@/services/baseline';
 import { routeName } from '../../../../../config/routes';
+import moment from 'moment';
 
 const sc = scopedClasses('science-technology-manage-creative-detail');
 
@@ -32,6 +33,7 @@ export default () => {
             types: detail?.types?.length > 0 ? detail?.types?.map(p => p.id) : undefined,
             labels: detail?.labels?.length > 0 ? detail?.labels?.map(p => p.id) : undefined,
             content: detail?.content,
+            publishTime: detail?.publishTime ? moment(detail?.publishTime) : undefined
           })
         } else {
           throw new Error(res.message);
@@ -76,6 +78,9 @@ export default () => {
   const onSubmit = async (status: number) => {
     try {
       const data = form.getFieldsValue()
+      if (data.publishTime) {
+        data.publishTime = moment(data.publishTime).valueOf()
+      }
 
       const cb = async () => {
         const res = await (id ? editArticle({ id, ...data, status }) : addArticle({ ...data, status }))
@@ -120,7 +125,8 @@ export default () => {
           },
           onCancel: () => {
           },
-          okText: '上架'
+          okText: '继续上架',
+          cancelText: '返回更改'
         })
       } else {
         cb()
@@ -194,11 +200,18 @@ export default () => {
             <Input maxLength={35} placeholder="请输入" allowClear />
           </Form.Item>
           <Form.Item
+            label="内容发布时间"
+            name="publishTime"
+            rules={[{ required: true, message: '请选择' }]}
+          >
+            <DatePicker showTime />
+          </Form.Item>
+          <Form.Item
             label="内容类型"
             name="types"
             rules={[{ required: true, message: '请输入' }]}
           >
-            <Select mode="tags" placeholder="请选择" allowClear>
+            <Select mode="multiple" placeholder="请选择" allowClear>
               {types?.map((item: any) => (
                 <Select.Option key={item?.id} value={Number(item?.id)}>
                   {item?.typeName}
@@ -211,7 +224,7 @@ export default () => {
             name="labels"
             rules={[{ required: true, message: '请输入' }]}
           >
-            <Select mode="tags" placeholder="请选择" allowClear >
+            <Select mode="multiple" placeholder="请选择" allowClear >
               {tags?.map((item: any) => (
                 <Select.Option key={item?.id} value={Number(item?.id)}>
                   {item?.labelName}
