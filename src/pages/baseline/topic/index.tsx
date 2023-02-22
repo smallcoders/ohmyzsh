@@ -81,7 +81,7 @@ export default () => {
     );
   };
   // 获取分页数据
-  const getPage = async (pageIndex: number = pageInfo.pageIndex, pageSize = pageInfo.pageSize) => {
+  const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     try {
       const { result, totalCount, pageTotal, code } = await queryHotRecommend({
         pageIndex,
