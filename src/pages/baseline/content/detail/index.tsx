@@ -221,8 +221,12 @@ export default () => {
                   <span style={{ marginLeft: 10 }}>{p?.userName}</span>
                 </div>
 
-                <span>{operaObj[p?.operation] || '--'}</span>
-                <span>{p?.createTime}</span>
+                <div style={{ display: 'grid' }}>
+                  <span style={{ color: p?.autoAuditResult ? 'red' : 'initial' }}>{operaObj[p?.operation] || '--'}</span>
+                  {p?.autoAuditResult && <span style={{ color: 'red' }}>{p?.autoAuditResult}</span>}
+                </div>
+
+                <span>{p?.createTime ? moment(p?.createTime).format('YYYY-MM-DD HH:mm:ss') : '--'}</span>
               </div>
             })
             }
