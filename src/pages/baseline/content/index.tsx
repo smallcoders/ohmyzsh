@@ -109,7 +109,7 @@ export default () => {
         message.success(`删除成功`);
         getPage();
       } else {
-        message.error(`操作失败，请重试`);
+        message.error(updateStateResult?.message || `操作失败，请重试`);
       }
     } catch (error) {
       console.log(error);
@@ -124,7 +124,7 @@ export default () => {
         message.success(`${tooleMessage}成功`);
         getPage();
       } else {
-        message.error(`操作失败，请重试`);
+        message.error(updateStateResult?.message || `操作失败，请重试`);
       }
     } catch (error) {
       console.log(error);
@@ -139,7 +139,7 @@ export default () => {
         message.success(`${tooleMessage}成功`);
         getPage();
       } else {
-        message.error(`操作失败，请重试`);
+        message.error(updateStateResult?.message || `操作失败，请重试`);
       }
     } catch (error) {
       console.log(error);
