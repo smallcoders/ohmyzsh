@@ -170,12 +170,14 @@ export default () => {
       title: '来源',
       dataIndex: 'source',
       isEllipsis: true,
+      render: (_: any[]) => _ || '--',
       width: 300,
     },
     {
       title: '作者',
       dataIndex: 'author',
       isEllipsis: true,
+      render: (_: any[]) => _ || '--',
       width: 150,
     },
     {
@@ -183,6 +185,7 @@ export default () => {
       dataIndex: 'keywords',
       isEllipsis: true,
       width: 300,
+      render: (_: any[]) => _ || '--',
     },
     {
       title: '内容类型',
@@ -433,7 +436,7 @@ export default () => {
               <Form.Item name="riskInfo" label="风险标识">
                 <Select placeholder="请选择" allowClear>
                   <Select.Option value={true}>有</Select.Option>
-                  <Select.Option value={stubFalse}>没有</Select.Option>
+                  <Select.Option value={false}>没有</Select.Option>
                 </Select>
               </Form.Item>
             </Col>

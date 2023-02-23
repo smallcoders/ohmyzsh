@@ -196,12 +196,14 @@ export default () => {
     {
       title: '标签名称',
       dataIndex: 'labelName',
+      render: (_: any[]) => _ || '--',
       width: 300,
     },
     {
       title: '来源',
       dataIndex: 'source',
       isEllipsis: true,
+      render: (_: any[]) => _ || '--',
       width: 300,
     },
     {
@@ -215,6 +217,7 @@ export default () => {
       title: '标签权重',
       dataIndex: 'weight',
       isEllipsis: true,
+
       width: 150,
     },
     {
