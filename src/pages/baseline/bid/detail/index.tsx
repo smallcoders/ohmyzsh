@@ -162,7 +162,7 @@ export default () => {
               </div>
               <div className={sc('container-desc')}>
                 <span>发布时间：</span>
-                <span>{detail?.publishTime || '--'}</span>
+                <span>{detail?.publishTime ? moment(detail?.publishTime).format('YYYY-MM-DD HH:mm:ss') : '--'}</span>
               </div>
               <div className={sc('container-desc')}>
                 <span>项目编号：</span>
@@ -179,7 +179,7 @@ export default () => {
               </div>
               <div className={sc('container-desc')}>
                 <span>开标时间：</span>
-                <span>{detail?.bidOpenTime || '--'}</span>
+                <span>{detail?.bidOpenTime ? moment(detail?.bidOpenTime).format('YYYY-MM-DD HH:mm:ss') : '--'}</span>
               </div>
               <div className={sc('container-desc')}>
                 <span>预算金额（万元）：</span>
