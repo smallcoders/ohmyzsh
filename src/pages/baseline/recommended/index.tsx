@@ -8,18 +8,19 @@ import {
   message,
   Space,
   Modal,
-  InputNumber,
   Tag,
-  Popconfirm
+  Popconfirm,
+  InputNumber
 } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef} from 'react';
 import moment from 'moment';
 import SelfTable from '@/components/self_table';
 import { routeName } from '../../../../config/routes';
 import { Access, useAccess } from 'umi';
+import { isEmpty } from 'lodash';
 import {
   recommendForUserPage,
   addRecommendForUserPage,
@@ -34,10 +35,10 @@ export default () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [dataSource, setDataSource] = useState([]);
   const [modalVisible, setModalVisible] = useState<boolean>(false)
-  const [content, setContent] = useState<any>({})
   const [labels, setLabels] = useState([])
   const [contentModalVisible, setContentModalVisible] = useState(false)
-  const [currentSelect, setCurrentSelect] = useState({})
+  const [currentSelect, setCurrentSelect] = useState<any>({})
+  const weightRef = useRef()
 
 
   const [searchContent, setSearChContent] = useState({
@@ -93,14 +94,14 @@ export default () => {
 
   const handleOk = async () => {
     const currentVal = await editForm.validateFields()
-    const currentContent = currentSelect?.[0] || content
-    console.log(currentContent, currentVal)
+
+    console.log(currentSelect, currentVal)
     console.log('isEdit =>', isEdit)
     if (isEdit) {
       editRecommendForUserPage({
-        uuid: currentContent.uuid,
-        id: currentContent.id,
-        weight: currentVal.weight,
+        uuid: currentSelect.uuid,
+        id: currentSelect.id,
+        weight: +currentVal.weight,
         labelIds: currentVal.labels,
         enable: 1
       }).then(({ code, message: msg }) => {
@@ -118,9 +119,9 @@ export default () => {
       return
     }
     addRecommendForUserPage({
-      uuid: currentContent.uuid,
-      industrialArticleId: currentContent.industrialArticleId || currentContent.id,
-      weight: currentVal.weight,
+      uuid: currentSelect.uuid,
+      industrialArticleId: currentSelect.industrialArticleId || currentSelect.id,
+      weight: +currentVal.weight,
       labelIds: currentVal.labels,
       enable: 1
     }).then(({ code, message: msg }) => {
@@ -139,14 +140,12 @@ export default () => {
 
   const handleSave = async () => {
     const currentVal = await editForm.validateFields()
-    const currentContent = currentSelect?.[0] || content
-    console.log('isEdit =>', isEdit)
-    console.log('currentContent =>', currentContent)
+    console.log('currentContent =>', currentSelect)
     if (isEdit) {
       editRecommendForUserPage({
-        uuid: currentContent.uuid,
-        id: currentContent.id,
-        weight: currentVal.weight,
+        uuid: currentSelect.uuid,
+        id: currentSelect.id,
+        weight: +currentVal.weight,
         labelIds: currentVal.labels,
         enable: 0
       }).then(({ code, message: msg }) => {
@@ -164,10 +163,10 @@ export default () => {
       return
     }
     addRecommendForUserPage({
-      uuid: currentContent.uuid,
-      weight: currentVal.weight,
+      uuid: currentSelect.uuid,
+      weight: +currentVal.weight,
       labelIds: currentVal.labels,
-      industrialArticleId: isEdit ? content.industrialArticleId : currentContent.id,
+      industrialArticleId: isEdit ? currentSelect.industrialArticleId : currentSelect.id,
       enable: 0
     }).then(({ code, message: msg }) => {
       if (code === 0) {
@@ -185,13 +184,12 @@ export default () => {
 
   const handleSelect = () => {
     setContentModalVisible(true)
-    setCurrentSelect([content])
+    // setCurrentSelect()
   }
 
   const handleCancel = () => {
     setModalVisible(false)
   };
-
 
   // 上下架
   const editState = async (e: any, updatedState: number) => {
@@ -213,22 +211,26 @@ export default () => {
 
   useEffect(() => {
     editForm.setFieldsValue({
-      title: content?.title,
-      weight: content?.weight,
-      labels: content?.labels
-    })
-  }, [content])
-
-  useEffect(() => {
-    const currentContent = currentSelect?.[0]
-    console.log('currentContent =>', currentContent)
-    if (!currentContent) return
-    editForm.setFieldsValue({
-      title: currentContent?.title,
-      weight: currentContent?.weight,
-      labels: currentContent?.labels?.map((item: any) => item.id)
+      title: currentSelect?.title,
+      weight: currentSelect?.weight,
+      labels: currentSelect?.labels
     })
   }, [currentSelect])
+
+  useEffect(() => {
+    console.log('currentSelect =>', currentSelect)
+    if (isEmpty(currentSelect)) return
+    editForm.setFieldsValue({
+      title: currentSelect?.title,
+      weight: currentSelect?.weight,
+      labels: currentSelect?.labels
+    })
+  }, [currentSelect])
+
+
+  useEffect(() => {
+    console.log(weightRef.current)
+  }, [])
 
   const useModal = (): React.ReactNode => {
     if (labels.length === 0) {
@@ -237,9 +239,20 @@ export default () => {
         setLabels(res.result)
       })
     }
+
+    let prevVal = ''
+    const handleInput = (event: any) => {
+      console.log(event.target.value)
+      const val = event.target.value
+      if ((/^\d{0,}/g.test(val))) {
+        // weightRef.current.input.value = +prevVal
+        return
+      }
+      prevVal = val
+    }
     return (
       <Modal
-        title={ content.id ? '编辑推荐' : '新增推荐'}
+        title={ currentSelect.id ? '编辑推荐' : '新增推荐'}
         width="600px"
         visible={modalVisible}
         maskClosable={false}
@@ -261,9 +274,9 @@ export default () => {
           <Form.Item
             name="title"
             label="内容"
-            rules={[{ required: true }]}
+            rules={[{ required: true, message: '请选择内容' }]}
           >
-           <Input  onClick={() => handleSelect()} />
+           <Input readOnly onClick={() => handleSelect()} />
           </Form.Item>
           <Form.Item
             name="weight"
@@ -275,7 +288,7 @@ export default () => {
           <Form.Item
             name="labels"
             label="推荐范围"
-            rules={[{ required: true }]}
+            rules={[{ required: true, message: '请选择推荐范围' }]}
           >
             <Select
               mode="multiple"
@@ -367,7 +380,8 @@ export default () => {
                   onClick={() => {
                       isEdit = true
                       setModalVisible(true)
-                      setContent(record)
+                      // editForm.resetFields()
+                        setCurrentSelect(record)
                   }}
                 >
                   编辑
@@ -474,7 +488,7 @@ export default () => {
       <div className={sc('container-table-header')}>
         <div className="title">
           <Access accessible={access['PA_BLM_TJWGL']}>
-            <Button type="primary" onClick={() => { isEdit = false; setModalVisible(true); setContent({}) }}>
+            <Button type="primary" onClick={() => { isEdit = false; setModalVisible(true); setCurrentSelect({}); editForm.resetFields() }}>
               选择推荐内容
             </Button>
           </Access>

@@ -9,6 +9,7 @@ import { detailRecommendForUserPage, getArticleDetail, getUserDetailBrowse } fro
 import SelfTable from '@/components/self_table';
 import Common from '@/types/common';
 import { routeName } from '@/../config/routes'
+import { jsonTransform } from '@/utils/util'
 
 const sc = scopedClasses('science-technology-manage-creative-detail');
 
@@ -146,7 +147,7 @@ export default () => {
         </div>
         <div className={sc('container-desc')}>
           <span>关键词：</span>
-          <span>{JSON.parse(detail?.keywords || '["--"]').join('、')}</span>
+          <span>{jsonTransform(detail?.keywords)}</span>
         </div>
         <div className={sc('container-desc')}>
           <span>内容类型：</span>

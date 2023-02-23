@@ -5,13 +5,11 @@ import moment from "moment/moment";
 import type Common from "@/types/common";
 import { getArticlePage, getArticleType } from "@/services/baseline";
 import {routeName} from "../../../../../config/routes";
+import { isEmpty } from "lodash";
+import { jsonTransform } from '@/utils/util'
 
 import {Button, Col, Form, Input, Row, Modal, Select, message, Tag} from "antd";
 import SelfTable from "@/components/self_table";
-const statusObj = {
-  0: '下架',
-  1: '上架',
-};
 
 export default (props: any) => {
   const [modalVisible, setModalVisible] = useState(props.visible)
@@ -49,8 +47,8 @@ export default (props: any) => {
 
 
   useEffect(() => {
-    setSelectRowKeys([props.currentSelect.uuid])
-    setSelectRows([props.currentSelect])
+    setSelectRowKeys([props.currentSelect.id])
+    setSelectRows(isEmpty(props.currentSelect) ? [] : [props.currentSelect])
   }, [props.currentSelect])
 
   const onSelectChange = (newSelectedRowKeys: React.Key[],selectedRows: any[]) => {
@@ -75,6 +73,7 @@ export default (props: any) => {
           pageIndex,
           pageSize,
           ...searchContent,
+          status: '1'
         });
         if (code === 0) {
           setPageSelectInfo({ totalCount, pageTotal, pageIndex, pageSize });
@@ -97,6 +96,8 @@ export default (props: any) => {
       })
       setModalVisible(props.visible)
       searchForm.resetFields()
+      setSelectRowKeys(props.currentSelect.id ? [props.currentSelect.id] : [])
+      setSelectRows(props.currentSelect)
       setSearChContent({});
     }, [props.visible])
 
@@ -139,7 +140,7 @@ export default (props: any) => {
         dataIndex: 'keywords',
         isEllipsis: true,
         width: 300,
-        render: (val: string) => JSON.parse(val || JSON.stringify(['/'])).join('、')
+        render: (val: string) => jsonTransform(val)
       },
       {
         title: '内容类型',
@@ -197,7 +198,7 @@ export default (props: any) => {
               </Form.Item>
             </Col>
             <Col span={6}>
-              <Form.Item name="publishState" label="类型选择">
+              <Form.Item name="type" label="类型选择">
                 <Select placeholder="请选择" allowClear style={{ width: '200px'}}>
                   {types?.map((item: any) => (
                     <Select.Option key={item?.id} value={Number(item?.id)}>
@@ -208,7 +209,7 @@ export default (props: any) => {
               </Form.Item>
             </Col>
             <Col span={6}>
-              <Form.Item name="publisher" label="标签">
+              <Form.Item name="labels" label="标签">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
@@ -249,14 +250,18 @@ export default (props: any) => {
     onCancel={() => {
       props.setContentModalVisible(false);
     }}
+    bodyStyle={{
+      height: '600px',
+      overflow: 'auto'
+    }}
     centered
     destroyOnClose
     onOk={() => {
-      if (selectRows.length === 0) {
+      if (isEmpty(selectRows)) {
         message.error('请选择数据')
         return
       }
-      props.setCurrentSelect(selectRows)
+      props.setCurrentSelect(selectRows[0])
       props.setContentModalVisible(false);
     }}
   >
@@ -267,8 +272,9 @@ export default (props: any) => {
         type: 'radio',
         ...rowSelection,
       }}
+      style={{maxHeight: '500px'}}
       scroll={{ x: 1480 }}
-      rowKey={'uuid'}
+      rowKey={'id'}
       pagination={
         pageSelectInfo.totalCount === 0
           ? false

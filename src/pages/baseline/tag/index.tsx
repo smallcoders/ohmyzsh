@@ -22,31 +22,18 @@ import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 import SelfTable from '@/components/self_table';
 import { Access, useAccess } from 'umi';
-import {
-  getCreativePage, //分页数据
-  getKeywords, //关键词枚举
-  getCreativeTypes, // 应用行业
-  updateKeyword, // 关键词编辑
-  updateConversion, // 完成转化
-  updateSort,
-} from '@/services/creative-demand';
 import type Common from '@/types/common';
 import type NeedVerify from '@/types/user-config-need-verify';
-import { getAreaTree } from '@/services/area';
 import { routeName } from '../../../../config/routes';
 import { addTag, deleteTag, editTag, getTagPage } from '@/services/baseline';
 const sc = scopedClasses('science-technology-manage-creative-need');
 const sourceEnum = {
-  SYSTEM: '系统提取', MANUAL: '人工提取', OTHER: '其他来源'
+  SYSTEM: '系统提取', MANUAL: '人工'
+  //, OTHER: '其他来源'
 };
-enum Edge {
-  HOME = 0, // 新闻咨询首页
-}
 export default () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [dataSource, setDataSource] = useState<NeedVerify.Content[]>([]);
-  const [types, setTypes] = useState<any[]>([]);
-  const [keywords, setKeywords] = useState<any[]>([]); // 关键词数据
   const [searchContent, setSearChContent] = useState<{
     name?: string; // 标题
     createTimeStart?: string; // 提交开始时间
@@ -57,22 +44,6 @@ export default () => {
   }>({});
   // 拿到当前角色的access权限兑现
   const access = useAccess()
-  // 当前页面的对应权限key
-  const [edge, setEdge] = useState<Edge.HOME>(Edge.HOME);
-  // 页面权限
-  const permissions = {
-    [Edge.HOME]: 'PQ_SM_XQGL', // 科产管理-创新需求管理页面查询
-  }
-  useEffect(() => {
-    for (const key in permissions) {
-      const permission = permissions[key]
-      if (Object.prototype.hasOwnProperty.call(access, permission)) {
-        setEdge(key as any)
-        break
-      }
-    }
-  }, [])
-
 
   const formLayout = {
     labelCol: { span: 6 },
@@ -91,7 +62,6 @@ export default () => {
     pageTotal: 0,
   });
 
-  const [areaOptions, setAreaOptions] = useState<any>([]);
 
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     setLoading(true);
@@ -114,20 +84,6 @@ export default () => {
       setLoading(false);
     }
   };
-
-  const prepare = async () => {
-    try {
-      const res = await Promise.all([getKeywords(), getCreativeTypes(), getAreaTree({})]);
-      setKeywords(res[0].result || []);
-      setTypes(res[1].result || []);
-      setAreaOptions(res[2].children || []);
-    } catch (error) {
-      message.error('获取数据失败');
-    }
-  };
-  useEffect(() => {
-    prepare();
-  }, []);
 
   const [modal, setModal] = useState<{
     visible: boolean,
