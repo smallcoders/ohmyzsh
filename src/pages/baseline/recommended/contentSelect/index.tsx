@@ -249,10 +249,6 @@ export default (props: any) => {
     onCancel={() => {
       props.setContentModalVisible(false);
     }}
-    bodyStyle={{
-      height: '600px',
-      overflow: 'auto'
-    }}
     centered
     destroyOnClose
     onOk={() => {
@@ -271,8 +267,7 @@ export default (props: any) => {
         type: 'radio',
         ...rowSelection,
       }}
-      style={{maxHeight: '500px'}}
-      scroll={{ x: 1480 }}
+      scroll={{ x: 1480, y: 400 }}
       rowKey={'id'}
       pagination={
         pageSelectInfo.totalCount === 0
