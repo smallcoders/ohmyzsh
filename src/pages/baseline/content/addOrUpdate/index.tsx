@@ -87,6 +87,7 @@ export default () => {
         if (res?.code == 0) {
           message.success('操作成功')
           status == 1 && history.push(routeName.BASELINE_CONTENT_MANAGE)
+          setIsClosejumpTooltip(false);
         } else {
           message.error(res?.message || '操作失败')
         }
@@ -136,7 +137,7 @@ export default () => {
       console.log(' error ', error)
     }
   }
-
+  const [isClosejumpTooltip, setIsClosejumpTooltip] = useState<boolean>(true);
   return (
     <PageContainer loading={loading}
       header={{
@@ -162,7 +163,7 @@ export default () => {
       ]}
     >
       <Prompt
-        when={true}
+        when={isClosejumpTooltip}
         message={'离开此页面，将不会保存当前编辑的内容，确认离开吗？'}
       />
       <div className={sc('container')}>
