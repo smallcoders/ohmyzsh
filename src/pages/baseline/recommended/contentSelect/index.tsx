@@ -198,7 +198,7 @@ export default (props: any) => {
               </Form.Item>
             </Col>
             <Col span={6}>
-              <Form.Item name="publishState" label="类型选择">
+              <Form.Item name="type" label="类型选择">
                 <Select placeholder="请选择" allowClear style={{ width: '200px'}}>
                   {types?.map((item: any) => (
                     <Select.Option key={item?.id} value={Number(item?.id)}>
@@ -209,7 +209,7 @@ export default (props: any) => {
               </Form.Item>
             </Col>
             <Col span={6}>
-              <Form.Item name="publisher" label="标签">
+              <Form.Item name="labels" label="标签">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
@@ -250,6 +250,10 @@ export default (props: any) => {
     onCancel={() => {
       props.setContentModalVisible(false);
     }}
+    bodyStyle={{
+      height: '600px',
+      overflow: 'auto'
+    }}
     centered
     destroyOnClose
     onOk={() => {
@@ -268,6 +272,7 @@ export default (props: any) => {
         type: 'radio',
         ...rowSelection,
       }}
+      style={{maxHeight: '500px'}}
       scroll={{ x: 1480 }}
       rowKey={'id'}
       pagination={

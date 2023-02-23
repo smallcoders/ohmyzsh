@@ -191,7 +191,6 @@ export default () => {
     setModalVisible(false)
   };
 
-
   // 上下架
   const editState = async (e: any, updatedState: number) => {
     try {
@@ -224,7 +223,7 @@ export default () => {
     editForm.setFieldsValue({
       title: currentSelect?.title,
       weight: currentSelect?.weight,
-      labels: currentSelect?.labels?.map((item: any) => item.id)
+      labels: currentSelect?.labels
     })
   }, [currentSelect])
 
@@ -345,7 +344,7 @@ export default () => {
     },
     {
       title: '操作人',
-      dataIndex: 'operatorUserId',
+      dataIndex: 'userName',
       width: 200,
     },
     {
@@ -381,7 +380,8 @@ export default () => {
                   onClick={() => {
                       isEdit = true
                       setModalVisible(true)
-                      setCurrentSelect(record)
+                      // editForm.resetFields()
+                        setCurrentSelect(record)
                   }}
                 >
                   编辑
@@ -488,7 +488,7 @@ export default () => {
       <div className={sc('container-table-header')}>
         <div className="title">
           <Access accessible={access['PA_BLM_TJWGL']}>
-            <Button type="primary" onClick={() => { isEdit = false; setModalVisible(true); setCurrentSelect({}) }}>
+            <Button type="primary" onClick={() => { isEdit = false; setModalVisible(true); setCurrentSelect({}); editForm.resetFields() }}>
               选择推荐内容
             </Button>
           </Access>
