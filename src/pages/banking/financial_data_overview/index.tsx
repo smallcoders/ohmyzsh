@@ -5,8 +5,10 @@ import {
 import * as echarts from 'echarts';
 import moment from 'moment';
 import { useEffect, useRef, useState } from 'react';
-import { getCockPit } from '@/services/financial_data_overview';
+import { getCockPit, getSummaryAndMap } from '@/services/financial_data_overview';
 import scopedClasses from '@/utils/scopedClasses';
+import { customToFixed, formatPrice } from '@/utils/util';
+
 import Map from './components/map'
 import './index.less';
 const sc = scopedClasses('financial-data-overview');
@@ -16,28 +18,47 @@ export default () => {
   const analysisFunnel = useRef<any>(null)
   const analysisPie = useRef<any>(null)
   const analysisStackLine = useRef<any>(null)
+  const analysisFunnelEcharts = useRef<any>(null)
+  const analysisPieEcharts = useRef<any>(null)
+  const analysisStackLineEcharts = useRef<any>(null)
+  const [ mainInfo, setMainInfo ] = useState<any>(null)
+  const [mapAndOverViewInfo, setMapAndOverViewInfo] = useState<any>({overviewVO: null, mapVO: null})
   const [time, setTime] = useState<any>({
     startDate: moment('2023-01-01', 'YYYY-MM-DD'),
     endDate: moment(new Date(), 'YYYY-MM-DD')
   })
 
+  // 获取静态数据  目标  地图  总览
   const getMainInfo = () => {
-    console.log(moment(time.startDate).format('YYYY-MM-DD'))
-    getCockPit({startDate: moment(time.startDate).format('YYYY-MM-DD'), endDate: moment(time.endDate).format('YYYY-MM-DD')}).then((res) => {
-      console.log(res)
+    getCockPit().then((res) => {
+      if (res.result) {
+        if (res.code === 0) {
+          setMapAndOverViewInfo(res.result)
+        }
+      }
     })
   }
 
-  useEffect(() => {
-    getMainInfo()
-  }, [])
-
-  const renderAmountAnalysis = () => {
+  const renderAmountAnalysis = (monthlyAnalysisVO: any) => {
     if (analysisStackLine.current){
-      const myChart = echarts.init(analysisStackLine.current);
+      if (!analysisStackLineEcharts.current) {
+        analysisStackLineEcharts.current = echarts.init(analysisStackLine.current)
+      }
+      const xAxisData = monthlyAnalysisVO.map((item: any) => {
+        return item?.month?.split('-')[1]
+      })
       const option = {
         tooltip: {
-          trigger: 'axis'
+          trigger: 'axis',
+          formatter: (params: any) => {
+            return `${(params[0]?.data || {}).time} <br/> 申请金额：${params[0].value || '0.00'}万元 <br/> 授信金额: ${params[1].value || '0.00'}`
+          },
+          backgroundColor: '#0A1943',
+          textStyle: {
+            color: '#fff',
+            fontWeight: 'bold',
+          },
+          borderColor: '#0A1943'
         },
         legend: {
           data: ['申请金额', '授信金额'],
@@ -58,7 +79,7 @@ export default () => {
         xAxis: {
           type: 'category',
           boundaryGap: true,
-          data: ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'],
+          data: xAxisData,
           axisLine: {
             lineStyle: {
               color: 'rgba(255,255,255,0.15)',
@@ -95,26 +116,46 @@ export default () => {
           {
             name: '申请金额',
             type: 'line',
-            data:[220, 182, 191, 234, 290, 330, 310, 191, 234, 290, 330, 310]
+            data: monthlyAnalysisVO?.map((item: any) => {
+              return {
+                value: customToFixed(`${item?.applyAmount / 1000000}`),
+                name: '授信金额',
+                time: item?.month
+              }
+            }) || []
           },
           {
             name: '授信金额',
             type: 'line',
-            data: [120, 132, 101, 134, 90, 230, 210, 101, 134, 90, 230, 210]
+            data: monthlyAnalysisVO?.map((item: any) => {
+              return {
+                value: customToFixed(`${item?.creditAmount / 1000000}`),
+                name: '授信金额',
+                time: item?.month
+              }
+            }) || []
           }
         ]
       };
-      myChart.setOption(option);
+      analysisStackLineEcharts.current.setOption(option);
     }
   }
 
   const renderTransformAnalysis = () => {
     if (analysisFunnel.current){
-      const myChart = echarts.init(analysisFunnel.current);
+      if (!analysisFunnelEcharts.current) {
+        analysisFunnelEcharts.current = echarts.init(analysisFunnel.current)
+      }
       const option = {
         tooltip: {
           trigger: 'item',
-          formatter: '{b} <br/>{c}'
+          formatter: '{b} <br/>{c}',
+          backgroundColor: '#0A1943',
+          textStyle: {
+            color: '#fff',
+            fontWeight: 'bold',
+          },
+          borderColor: '#0A1943'
         },
         color: ["#037BF4", "#019FE9", "#048BD6", "#0362A5", "#023488"],
         height: '100%',
@@ -160,19 +201,49 @@ export default () => {
           }
         ]
       };
-      myChart.setOption(option);
+      analysisFunnelEcharts.current.setOption(option);
     }
   }
 
-  const renderRateAnalysis = () => {
+  const renderRateAnalysis = (creditRatioVO: any) => {
     if (analysisPie.current){
-      const myChart = echarts.init(analysisPie.current);
-      const amount = '12,330'
-      const a = 800
+      if (!analysisPieEcharts.current) {
+        analysisPieEcharts.current = echarts.init(analysisPie.current)
+      }
+      let amount: number | string = 0
+      const data = [
+        { value: 0.00, name: '贷款业务', rate: '0.00%' },
+        { value: 0.00, name: '租赁业务', rate: '0.00%' },
+        { value: 0.00, name: '保险业务', rate: '0.00%'  }
+      ]
+      creditRatioVO.forEach((item: any) => {
+        amount += item.amount || 0
+        if (item.type === 1) {
+          data[0].value = Number(customToFixed(`${item.amount / 1000000}`))
+          data[0].rate = item.rate
+        }
+        if (item.type === 3) {
+          data[1].value = Number(customToFixed(`${item.amount / 1000000}`))
+          data[1].rate = item.rate
+        }
+        if (item.type === 5) {
+          data[2].value = Number(customToFixed(`${item.amount / 1000000}`))
+          data[2].rate = item.rate
+        }
+      })
+      amount = formatPrice(customToFixed(`${amount / 1000000}`))
       const option = {
         tooltip: {
           trigger: 'item',
-          formatter: `{b} <br/> {c}万元 <br/> 占比${a}`
+          formatter: (params: any) => {
+            return `${params.name} <br/> 金额：${params.value}万元 <br/> 占比: ${params?.data?.rate || '0.00%'}`
+          },
+          backgroundColor: '#0A1943',
+          borderColor: '#0A1943',
+          textStyle: {
+            color: '#fff',
+            fontWeight: 'bold',
+          }
         },
         legend: {
           orient: 'vertical',
@@ -183,13 +254,13 @@ export default () => {
           top: '10%',
           formatter: (name: string) => {
             if (name === '保险业务'){
-              return `${name} ${800 / 20000} \n {blue|${a}万元}`
+              return `${name} \n ${data[2]?.rate || '0.00%'} {blue|${data[2].value}万元}`
             }
             if (name === '租赁业务'){
-              return `${name} ${800 / 20000} \n {blue|${a}万元}`
+              return `${name} \n ${data[1]?.rate || '0.00%'}  {blue|${data[1].value}万元}`
             }
             if (name === '贷款业务'){
-              return `${name} ${800 / 20000} \n {blue|${a}万元}`
+              return `${name} \n ${data[0]?.rate || '0.00%'}  {blue|${data[0].value}万元}`
             }
             return ''
           },
@@ -198,7 +269,7 @@ export default () => {
             lineHeight: 20,
             rich: {
               blue: {
-                color: '#00C2FF',
+                color: '#47DBFF',
               }
             },
           }
@@ -226,7 +297,7 @@ export default () => {
             emphasis: {
               disabled: true
             },
-            center: ['30%', '50%'],
+            center: ['26%', '50%'],
             labelLine: {
               show: false
             },
@@ -234,29 +305,60 @@ export default () => {
             itemStyle: {
               borderWidth: 0
             },
-            data: [
-              { value: 900.00, name: '贷款业务' },
-              { value: 360.00, name: '租赁业务' },
-              { value: 360.00, name: '保险业务' },
-            ]
+            data
           }
         ],
         markPoint: {
           symbol: 'pin',
         }
       };
-      myChart.setOption(option);
+      analysisPieEcharts.current.setOption(option);
+    }
+  }
+
+  // 获取 时间控制的数据
+  const getChangeMainInfo = (date: any) => {
+    getSummaryAndMap({startDate: moment(date.startDate).format('YYYY-MM-DD'), endDate: moment(date.endDate).format('YYYY-MM-DD')}).then((res) => {
+      if (res.result) {
+        if (res.code === 0) {
+          setMainInfo(res.result)
+          renderRateAnalysis(res.result.creditRatioVO)
+          renderAmountAnalysis(res.result.monthlyAnalysisVO)
+        }
+      }
+    })
+  }
+
+  const selectTime = (date: any) => {
+    if (date?.[0] && date?.[1]){
+      const startDate = moment(date[0], 'YYYY-MM-DD')
+      const endDate = moment(date[1], 'YYYY-MM-DD')
+      setTime({
+        startDate,
+        endDate,
+      })
+      getChangeMainInfo({
+        startDate,
+        endDate
+      })
     }
   }
 
   useEffect(() => {
-    renderRateAnalysis()
+    getMainInfo()
+    getChangeMainInfo(time)
+  }, [])
+
+  useEffect(() => {
     renderTransformAnalysis()
-    renderAmountAnalysis()
   }, [])
 
 
-  const screenWidth = document.body.clientWidth / 1920 * 460
+   const {overviewVO = {},  mapVO = {} , targetProgressVO = {} } = mapAndOverViewInfo || {}
+  const { productHotVO, bankCreditRankVO } = mainInfo || {}
+
+
+  const screenWidth = document.body.clientWidth / 1920 * 420
   return <div className={sc()}>
     <div className="middle-title">羚羊数字金融驾驶舱</div>
     <div className="content" style={{padding: `0 ${document.body.clientWidth / 1920 * 20}px`}}>
@@ -268,6 +370,7 @@ export default () => {
               allowClear={false}
               suffixIcon={null}
               bordered={false}
+              onChange={selectTime}
               separator={<span>至</span>}
               defaultValue={[time.startDate, time.endDate]}
               disabledDate={(current) => {
@@ -276,37 +379,31 @@ export default () => {
             />
           </div>
           <div className="progress-title">
-            <div className="text">23年目标完成进度</div>
+            <div className="text">{targetProgressVO.targetName}</div>
             <div className="edit-btn"><span className="icon" /><span>设置</span></div>
           </div>
           <div className="progress-detail-list">
-            <div className="financing-info">
-              <div className="desc">
-                <div className="desc-title">融资流水</div>
-                <div className="desc-amount"><span>1,234</span><span>/200000万元</span></div>
-              </div>
-              <div className="progress-bar">
-                <div className="current" style={{width: '35.00%'}}>35.00%</div>
-              </div>
-            </div>
-            <div className="financing-info">
-              <div className="desc">
-                <div className="desc-title">融资流水</div>
-                <div className="desc-amount"><span>1,234</span><span>/200000万元</span></div>
-              </div>
-              <div className="progress-bar">
-                <div className="current" style={{width: '35.00%'}}>35.00%</div>
-              </div>
-            </div>
-            <div className="financing-info">
-              <div className="desc">
-                <div className="desc-title">融资流水</div>
-                <div className="desc-amount"><span>1,234</span><span>/200000万元</span></div>
-              </div>
-              <div className="progress-bar">
-                <div className="current" style={{width: '35.00%'}}>35.00%</div>
-              </div>
-            </div>
+            {
+              targetProgressVO?.list?.map((item: any, index: number) => {
+                  return (
+                    <div className="financing-info" key={index}>
+                      <div className="desc">
+                        <div className="desc-title">
+                          {
+                            item.type === 1 ? '融资流水' : item.type === 2 ? '分润金额' : '项目合同额'
+                          }
+                        </div>
+                        <div className="desc-amount">
+                          <span>{formatPrice(customToFixed(`${item.occupyAmount / 1000000}`, 0))}</span><span>/{formatPrice(customToFixed(`${item.targetAmount / 1000000}`, 0))}万元</span>
+                        </div>
+                      </div>
+                      <div className="progress-bar">
+                        <div style={item.occupyAmount === 0 ? {paddingRight: 0, width: `${item.rate}`} : {width: `${item.rate}`}} className="current">{item.rate}</div>
+                      </div>
+                    </div>
+                  )
+              })
+            }
           </div>
           <div className="product-rank-list">
             <div className="rank-title">金融产品热度排名</div>
@@ -318,19 +415,19 @@ export default () => {
               </div>
               <div className="table-body">
                 {
-                  [1,2,4,4,5,6,7].map((item, index: number) => {
+                  productHotVO && productHotVO.map((item: any, index: number) => {
                     return <div className="table-item" key={index}>
                         <div className="title">
                           {
                             index > 2 ? <span className="index">{index + 1}</span> :
                               <span className={`index-${index + 1}`} />
                           }
-                          <Tooltip title="产品名称">
-                            <span>产品名称</span>
+                          <Tooltip title={item.name} placement="topLeft">
+                            <span>{item.name}</span>
                           </Tooltip>
                         </div>
-                        <div className="apply-amount">123,45</div>
-                        <div className="credit-amount">123,45</div>
+                        <div className="apply-amount">{formatPrice(`${item.applyNum || 0}`)}</div>
+                        <div className="credit-amount">{formatPrice(`${item.creditNum || 0}`)}</div>
                       </div>
                   })
                 }
@@ -341,46 +438,29 @@ export default () => {
       </div>
       <div className="middle-content">
         <div className="data-summary">
-          <div className="item">
-            <div className="data-title">
-              注册企业<span>(家)</span>
-            </div>
-            <div className="amount">22,355</div>
-            <div className="change-amount">近三日: +20</div>
-            <div className="change-amount">较上月: <span>+20</span></div>
-          </div>
-          <div className="item">
-            <div className="data-title">
-              融资申请金额<span>(万元)</span>
-            </div>
-            <div className="amount">22,355</div>
-            <div className="change-amount">近三日: +20</div>
-            <div className="change-amount">较上月: <span>+20</span></div>
-          </div>
-          <div className="item">
-            <div className="data-title">
-              授信金额<span>(万元)</span>
-            </div>
-            <div className="amount">22,355</div>
-            <div className="change-amount">近三日: +20</div>
-            <div className="change-amount">较上月: <span>+20</span></div>
-          </div>
-          <div className="item">
-            <div className="data-title">
-              金融客户<span>(个)</span>
-            </div>
-            <div className="amount">22,355</div>
-            <div className="change-amount">近三日: +20</div>
-            <div className="change-amount">较上月: <span>+20</span></div>
-          </div>
-          <div className="item">
-            <div className="data-title">
-              金融诊断<span>(次)</span>
-            </div>
-            <div className="amount">22,355</div>
-            <div className="change-amount">近三日: +20</div>
-            <div className="change-amount">较上月: <span>+20</span></div>
-          </div>
+          {
+            overviewVO && overviewVO.map((item: any, index: number) => {
+              return (
+                <div className="item" key={index}>
+                  <div className="data-title">
+                    {
+                      item.type === 1 ? <>注册企业<span>(家)</span></> : item.type === 2 ? <>融资申请金额<span>(万元)</span></>
+                        : item.type == 3 ? <>授信金额<span>(万元)</span></> : item.type === 4 ? <>金融客户<span>(个)</span></>
+                          : <>金融诊断<span>(次)</span></>
+                    }
+
+                  </div>
+                  <div className="amount">{item.type === 2 || item.type === 3 ? formatPrice(customToFixed(`${item.num / 1000000}`)) : item.num }</div>
+                  <div className="change-amount">
+                    近三日: +{item.type === 2 || item.type === 3 ? formatPrice(customToFixed(`${item.threeDay / 1000000}`)) : item.threeDay }
+                  </div>
+                  <div className="change-amount">
+                    较上月: <span>+{item.type === 2 || item.type === 3 ? formatPrice(customToFixed(`${item.thisMonth / 1000000}`)) : item.thisMonth }</span>
+                  </div>
+                </div>
+              )
+            })
+          }
         </div>
         <div className="map" style={{paddingLeft: `${document.body.clientWidth / 1920 * 36}px`}}>
           <Map />
@@ -427,14 +507,14 @@ export default () => {
           <div className="bank-list-title">金融机构排名</div>
           <div className="list-box">
             {
-              [1,2,3,4,5,6,6,8].map((item, index: number) => {
+              bankCreditRankVO && bankCreditRankVO.map((item: any, index: number) => {
                 return <div className="bank-list-item" key={index}>
                     <div className="list-item-desc">
-                      <div className="left-desc"><span>{index + 1}</span><span>中国银行</span></div>
-                      <div className="amount">12000万元</div>
+                      <div className="left-desc"><span>{index + 1}</span><span>{item.name}</span></div>
+                      <div className="amount">{formatPrice(customToFixed(`${item.amount / 1000000 || 0}`))}万元</div>
                     </div>
                     <div className="bar">
-                      <div style={{width: '45%'}} className="real-rate" />
+                      <div style={{width: index === 0 ? '95' : `${(item.amount / (bankCreditRankVO[0].amount / 95 * 100) * 100).toFixed(2)}%`}} className="real-rate" />
                     </div>
                   </div>
               })

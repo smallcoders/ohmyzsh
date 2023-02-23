@@ -1,9 +1,9 @@
 .financial-data-overview {
-  background-image: url("../../../assets/financial/financial_data_overview_bg.png");
   background-repeat: no-repeat;
   background-position: center;
   background-size: 100% 100%;
   background-color: #02061c;
+  background-image: url("../../../assets/financial/financial_data_overview_bg.png");
   .middle-title {
     height: 94px;
     font-size: 40px;
@@ -198,7 +198,7 @@
         text-align: center;
       }
       .title {
-        width: 54%;
+        width: 50%;
         flex-shrink: 0;
       }
       .table-body {
@@ -265,7 +265,7 @@
       align-items: center;
       .item {
         background: rgba(114,139,255,0.10);
-        margin-right: 12px;
+        margin-right: 7px;
         padding: 18px 0;
         flex: 1;
         &:last-child {
@@ -477,7 +477,7 @@
         position: relative;
         &::after {
           position: absolute;
-          right: 0;
+          right: -5px;
           top: -2px;
           content: '';
           width: 5px;
@@ -718,6 +718,20 @@
   }
   .ant-picker-cell {
     color: #fff;
+    &.ant-picker-cell-disabled{
+      &::before {
+        background: transparent;
+      }
+      &:not(.ant-picker-cell-range-end){
+        .ant-picker-cell-inner {
+          color: rgba(255,255,255, 0.25);
+        }
+      }
+    }
+  }
+  .ant-picker-cell:hover:not(.ant-picker-cell-selected):not(.ant-picker-cell-range-start):not(.ant-picker-cell-range-end):not(.ant-picker-cell-range-hover-start):not(.ant-picker-cell-range-hover-end) .ant-picker-cell-inner {
+    background: #47DBFF;
+    color: #000;
   }
   .ant-picker-cell-in-view.ant-picker-cell-in-range{
     &::before {
@@ -734,5 +748,42 @@
     color: #fff;
     font-weight: bold;
     font-size: 14px;
+  }
+  .ant-picker-cell-in-view.ant-picker-cell-range-start:not(.ant-picker-cell-range-start-single)::before,
+  .ant-picker-cell-in-view.ant-picker-cell-range-end:not(.ant-picker-cell-range-end-single)::before {
+    background: #000;
+  }
+  .ant-picker-cell-in-view.ant-picker-cell-selected .ant-picker-cell-inner,
+  .ant-picker-cell-in-view.ant-picker-cell-range-start .ant-picker-cell-inner,
+  .ant-picker-cell-in-view.ant-picker-cell-range-end .ant-picker-cell-inner {
+    background: #000;
+    border: 1px solid #47DBFF;
+    border-radius: 2px;
+  }
+
+  .ant-picker-date-panel .ant-picker-cell-in-view.ant-picker-cell-in-range.ant-picker-cell-range-hover-start .ant-picker-cell-inner,
+  .ant-picker-date-panel .ant-picker-cell-in-view.ant-picker-cell-in-range.ant-picker-cell-range-hover-end .ant-picker-cell-inner {
+    color: #000;
+    background: #47DBFF;
+  }
+
+  .ant-picker-date-panel .ant-picker-cell-in-view.ant-picker-cell-in-range.ant-picker-cell-range-hover-start.ant-picker-cell-range-hover-edge-end::before
+  {
+    color: #000;
+    background: #47DBFF;
+  }
+  .ant-picker-date-panel .ant-picker-cell-in-view.ant-picker-cell-in-range.ant-picker-cell-range-hover-start .ant-picker-cell-inner::before,
+  .ant-picker-date-panel .ant-picker-cell-in-view.ant-picker-cell-in-range.ant-picker-cell-range-hover-end .ant-picker-cell-inner::before {
+    background: transparent;
+  }
+  .ant-picker-date-panel .ant-picker-cell-in-view.ant-picker-cell-in-range.ant-picker-cell-range-hover-start .ant-picker-cell-inner::after,
+  .ant-picker-date-panel .ant-picker-cell-in-view.ant-picker-cell-in-range.ant-picker-cell-range-hover-end .ant-picker-cell-inner::after {
+    background: transparent;
+  }
+  .ant-picker-cell:hover:not(.ant-picker-cell-in-view) .ant-picker-cell-inner{
+    background: transparent;
+  }
+  .ant-picker-range-arrow::before {
+    background: #0A1943;
   }
 }

@@ -235,3 +235,25 @@ export const customToFixed = (num: string, len = 2) => {
   }
   return parseFloat(newNum).toFixed(len);
 };
+
+//数值转千分位，可保留小数
+export const formatPrice = (num: string) => {
+  let newVal = num.replace(/[^\d|\.]/g, '')
+  if (newVal.length > 1 && newVal[0] === '0' && newVal[1] !== '.'){
+    newVal = newVal.slice(1)
+  }
+  const hasDot = /\./.test(newVal)
+  const newValArr = newVal.split('.')
+  const newVal0 = newValArr[0] ? newValArr[0]
+    .split('')
+    .reverse()
+    .reduce((prev, next, index) => {
+      return (index % 3 ? next : `${next},`) + prev
+    }, '') : '0'
+  return (
+    newVal0.substring(0, newVal0.length - 1) +
+    (hasDot ? '.' : '') +
+    (newValArr[1] ? newValArr[1] : '')
+  )
+}
+
