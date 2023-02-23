@@ -31,6 +31,13 @@ import ContentSelect from './contentSelect/index'
 const sc = scopedClasses('recommends-manage-creative-need');
 let  isEdit = false
 
+function labelsDiffFormat(labels: any) {
+   if (typeof labels?.[0] === 'object' ) {
+    return labels.map((item: any) => item.id)
+   }
+   return labels
+}
+
 export default () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [dataSource, setDataSource] = useState([]);
@@ -39,6 +46,7 @@ export default () => {
   const [contentModalVisible, setContentModalVisible] = useState(false)
   const [currentSelect, setCurrentSelect] = useState<any>({})
   const weightRef = useRef()
+
 
 
   const [searchContent, setSearChContent] = useState({
@@ -102,7 +110,7 @@ export default () => {
         uuid: currentSelect.uuid,
         id: currentSelect.id,
         weight: +currentVal.weight,
-        labelIds: currentVal.labels,
+        labelIds: labelsDiffFormat(currentVal.labels),
         enable: 1
       }).then(({ code, message: msg }) => {
         if (code === 0) {
@@ -122,7 +130,7 @@ export default () => {
       uuid: currentSelect.uuid,
       industrialArticleId: currentSelect.industrialArticleId || currentSelect.id,
       weight: +currentVal.weight,
-      labelIds: currentVal.labels,
+      labelIds: labelsDiffFormat(currentVal.labels),
       enable: 1
     }).then(({ code, message: msg }) => {
       if (code === 0) {
@@ -146,7 +154,7 @@ export default () => {
         uuid: currentSelect.uuid,
         id: currentSelect.id,
         weight: +currentVal.weight,
-        labelIds: currentVal.labels,
+        labelIds: labelsDiffFormat(currentVal.labels),
         enable: 0
       }).then(({ code, message: msg }) => {
         if (code === 0) {
@@ -165,7 +173,7 @@ export default () => {
     addRecommendForUserPage({
       uuid: currentSelect.uuid,
       weight: +currentVal.weight,
-      labelIds: currentVal.labels,
+      labelIds: labelsDiffFormat(currentVal.labels),
       industrialArticleId: isEdit ? currentSelect.industrialArticleId : currentSelect.id,
       enable: 0
     }).then(({ code, message: msg }) => {
@@ -213,7 +221,7 @@ export default () => {
     editForm.setFieldsValue({
       title: currentSelect?.title,
       weight: currentSelect?.weight,
-      labels: currentSelect?.labels
+      labels: labelsDiffFormat(currentSelect?.labels)
     })
   }, [currentSelect])
 
@@ -223,7 +231,7 @@ export default () => {
     editForm.setFieldsValue({
       title: currentSelect?.title,
       weight: currentSelect?.weight,
-      labels: currentSelect?.labels
+      labels: labelsDiffFormat(currentSelect?.labels)
     })
   }, [currentSelect])
 
@@ -416,8 +424,6 @@ export default () => {
             )}
             </Space>
         )
-
-
       },
     },
   ].filter(p => p);
