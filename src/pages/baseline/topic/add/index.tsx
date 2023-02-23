@@ -511,8 +511,8 @@ export default () => {
                     setDataSource(res?.result)
                   }
                 })
+                setModalVisible(false);
               }
-            setModalVisible(false);
           }}
         >
           {useSearchNode()}
