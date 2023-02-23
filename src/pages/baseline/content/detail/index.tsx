@@ -98,11 +98,13 @@ export default () => {
       title: '用户停留时间',
       dataIndex: 'browseDuration',
       isEllipsis: true,
+      render: (_: number) => _ + 's',
       width: 150,
     },
     {
       title: '用户标签',
       dataIndex: 'labels',
+      render: (_: any[]) => _?.length > 0 ? _?.map(p => p.labelName).join(',') : '--',
       isEllipsis: true,
       width: 150,
     },
