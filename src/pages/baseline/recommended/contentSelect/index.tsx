@@ -283,6 +283,7 @@ export default (props: any) => {
             total: pageSelectInfo.totalCount,
             current: pageSelectInfo.pageIndex,
             pageSize: pageSelectInfo.pageSize,
+            pageSizeOptions: [5, 10, 20, 50, 100],
             showTotal: (total: number) =>
               `共${total}条记录 第${pageSelectInfo.pageIndex}/${pageSelectInfo.pageTotal || 1}页`,
           }

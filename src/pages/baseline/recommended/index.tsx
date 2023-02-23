@@ -240,19 +240,20 @@ export default () => {
       })
     }
 
-    let prevVal = ''
-    const handleInput = (event: any) => {
-      console.log(event.target.value)
-      const val = event.target.value
-      if ((/^\d{0,}/g.test(val))) {
-        // weightRef.current.input.value = +prevVal
-        return
-      }
-      prevVal = val
-    }
+    // let prevVal = ''
+    // const handleInput = (event: any) => {
+    //   console.log(event.target.value)
+    //   const val = event.target.value
+    //   if ((/^\d{0,}/g.test(val))) {
+    //     // weightRef.current.input.value = +prevVal
+    //     return
+    //   }
+    //   prevVal = val
+    // }
+
     return (
       <Modal
-        title={ currentSelect.id ? '编辑推荐' : '新增推荐'}
+        title={ isEdit ? '编辑推荐' : '新增推荐'}
         width="600px"
         visible={modalVisible}
         maskClosable={false}
