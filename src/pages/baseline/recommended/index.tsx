@@ -32,10 +32,14 @@ const sc = scopedClasses('recommends-manage-creative-need');
 let  isEdit = false
 
 function labelsDiffFormat(labels: any) {
-   if (typeof labels?.[0] === 'object' ) {
-    return labels.map((item: any) => item.id)
-   }
-   return labels
+  try {
+    if (typeof labels?.[0] === 'object' ) {
+      return labels.map((item: any) => item.id)
+     }
+     return labels
+  } catch (error) {
+    return []
+  }
 }
 
 export default () => {
