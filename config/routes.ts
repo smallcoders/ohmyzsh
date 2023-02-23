@@ -35,7 +35,7 @@
   PAGE_CREAT_MANAGE_PAGE_DATA: '/operation-activity/page_creat_manage/manage/page_data',
 
   // 素材库管理
-  MATERIAL_LIBRARY_MANAGE:'/operation-activity/material-library-manage/index',
+  MATERIAL_LIBRARY_MANAGE: '/operation-activity/material-library-manage/index',
 
   DEMAND_MANAGEMENT_FEEDBACK: '/supply-demand-setting/demand-manage/feedback', // 需求管理详情
   ACCOUNT: '/system-config/account', // 账号管理
@@ -207,9 +207,24 @@
 
   //运营数据
   OPERATE_DATA_USER: '/operate-data/user',
-  OPERATE_DATA_GMV:  '/operate-data/gmv',
-  OPERATE_DATA_FINANCEORDER:  '/operate-data/finance-order',
+  OPERATE_DATA_GMV: '/operate-data/gmv',
+  OPERATE_DATA_FINANCEORDER: '/operate-data/finance-order',
+
+  BASELINE: '/baseline',
+  BASELINE_CONTENT_MANAGE: '/baseline/baseline-content-manage',
+  BASELINE_CONTENT_MANAGE_DETAIL: '/baseline/baseline-content-manage/detail',
+  BASELINE_CONTENT_MANAGE_ADDORUPDATE: '/baseline/baseline-content-manage/addorupdate',
+  BASELINE_BID_MANAGE: '/baseline/baseline-bid-manage',
+  BASELINE_BID_MANAGE_DETAIL: '/baseline/baseline-bid-manage/detail',
+  BASELINE_TAG_MANAGE: '/baseline/baseline-tag-manage',
+  BASELINE_TAG_MANAGE_DETAIL: '/baseline/baseline-tag-manage/detail',
+  BASELINE_TOPIC_MANAGE: 'baseline-topic-manage',
+  BASELINE_RECOMMENDED_MANAGE_DETAIL: 'baseline-recommended-detail',
+  BASELINE_RECOMMENDED_MANAGE: 'baseline-recommended',
+  BASELINE_TOPIC_MANAGE_DETAIL: 'baseline-topic-manage/detail',
+  BASELINE_TOPIC_MANAGE_ADD: 'baseline-topic-manage/add',
 };
+
 
 export default [
   {
@@ -271,651 +286,142 @@ export default [
         name: '用户认证数据',
         component: './operate_data/data_manage/index',
       },
-      
+
     ],
   },
-  // {
-  //   path: '/service-config',
-  //   name: '服务配置',
-  //   icon: 'unordered-list',
-  //   access: 'SERVICE_CONFIG',
-  //   routes: [
-  //     {
-  //       path: '/service-config',
-  //       redirect: '/service-config/banner',
-  //     },
-  //     {
-  //       path: '/service-config/banner',
-  //       name: 'banner',
-  //       access: 'M_PC_B',
-  //       component: './service_config/banner',
-  //     },
-  //     {
-  //       path: routeName.DATA_COLUMN,
-  //       name: '数据栏',
-  //       component: './service_config/data_column',
-  //     },
-  //     {
-  //       path: '/service-config/course-manage',
-  //       name: '课程管理',
-  //       hideChildrenInMenu: true,
-  //       routes: [
-  //         {
-  //           path: '/service-config/course-manage',
-  //           redirect: routeName.COURSE_MANAGE,
-  //         },
-  //         {
-  //           path: routeName.COURSE_MANAGE,
-  //           hideInBreadcrumb: true,
-  //           name: '课程管理',
-  //           component: './service_config/course_manage',
-  //         },
-  //         {
-  //           path: routeName.ADD_COURSE,
-  //           name: '课程操作',
-  //           component: './service_config/add_course',
-  //         },
-  //       ],
-  //     },
-
-  //     {
-  //       path: '/service-config/app-manage',
-  //       name: '应用管理',
-  //       hideChildrenInMenu: true,
-  //       routes: [
-  //         {
-  //           path: '/service-config/app-manage',
-  //           redirect: routeName.APP_MANAGE,
-  //         },
-  //         {
-  //           path: routeName.APP_MANAGE,
-  //           hideInBreadcrumb: true,
-  //           name: '应用管理',
-  //           component: './service_config/app_manage',
-  //         },
-  //         {
-  //           path: routeName.DATA_ANALYSIS,
-  //           name: '综合采购数据分析',
-  //           component: './service_config/data_analysis',
-  //         },
-  //         {
-  //           path: routeName.ADD_APP_RESOURCE,
-  //           name: '新增应用',
-  //           component: './service_config/add_resource',
-  //         },
-  //       ],
-  //     },
-  //     {
-  //       path: '/service-config/digital-application',
-  //       name: '数字化应用',
-  //       hideChildrenInMenu: true,
-  //       routes: [
-  //         {
-  //           path: '/service-config/digital-application',
-  //           redirect: routeName.DIGITAL_APPLICATION,
-  //         },
-  //         {
-  //           path: routeName.DIGITAL_APPLICATION,
-  //           hideInBreadcrumb: true,
-  //           name: '数字化应用',
-  //           component: './service_config/digital_application',
-  //         },
-  //         {
-  //           path: routeName.DIGITAL_APPLICATION_PUSH_DETAIL,
-  //           name: '推送详情',
-  //           component: './service_config/digital_application/app_push/app_push_detail',
-  //         },
-  //         {
-  //           path: routeName.DIGITAL_APPLICATION_DETAIL,
-  //           name: '应用详情',
-  //           component: './service_config/digital_application/app_detail',
-  //         },
-  //       ],
-  //     },
-  //     {
-  //       path: '/service-config/achievements-manage',
-  //       name: '科技成果管理',
-  //       hideChildrenInMenu: true,
-  //       routes: [
-  //         {
-  //           path: '/service-config/achievements-manage',
-  //           redirect: '/service-config/achievements-manage/index',
-  //         },
-  //         {
-  //           path: '/service-config/achievements-manage/index',
-  //           name: '科技成果管理',
-  //           hideInBreadcrumb: true,
-  //           component: './service_config/achievements_manage',
-  //         },
-  //         {
-  //           path: '/service-config/achievements-manage/detail',
-  //           name: '科技成果详情',
-  //           component: './service_config/achievements_manage/detail',
-  //         },
-  //         {
-  //           path: '/service-config/achievements-manage/multi-upload',
-  //           name: '批量导入科技成果',
-  //           component: './service_config/achievements_manage/multi_upload',
-  //         },
-  //       ],
-  //     },
-  //     {
-  //       path: '/service-config/creative-need-manage',
-  //       name: '创新需求管理',
-  //       hideChildrenInMenu: true,
-  //       routes: [
-  //         {
-  //           path: '/service-config/creative-need-manage',
-  //           redirect: '/service-config/creative-need-manage/index',
-  //         },
-  //         {
-  //           path: '/service-config/creative-need-manage/index',
-  //           name: '创新需求管理',
-  //           hideInBreadcrumb: true,
-  //           component: './service_config/creative_need_manage/index',
-  //         },
-  //         {
-  //           path: '/service-config/creative-need-manage/detail',
-  //           name: '创新需求详情',
-  //           component: './service_config/creative_need_manage/detail',
-  //         },
-  //       ],
-  //     },
-  //     {
-  //       path: routeName.SOLUTION,
-  //       name: '服务管理',
-  //       hideChildrenInMenu: true,
-  //       routes: [
-  //         {
-  //           path: routeName.SOLUTION,
-  //           redirect: routeName.SOLUTION_INDEX,
-  //         },
-  //         {
-  //           path: routeName.SOLUTION_INDEX,
-  //           name: '服务方案',
-  //           hideInBreadcrumb: true,
-  //           component: './service_config/solution',
-  //         },
-  //         {
-  //           path: routeName.SOLUTION_DETAIL,
-  //           name: '服务详情',
-  //           component: './service_config/solution/detail',
-  //         },
-  //       ],
-  //     },
-  //     // {
-  //     //   path: routeName.ORG_TYPE_MANAGE,
-  //     //   name: '机构类型管理',
-  //     //   component: './service_config/org_type_manage',
-  //     // },
-  //     {
-  //       path: routeName.EXPERT_MANAGE,
-  //       name: '专家管理',
-  //       hideChildrenInMenu: true,
-  //       routes: [
-  //         {
-  //           path: routeName.EXPERT_MANAGE,
-  //           redirect: routeName.EXPERT_MANAGE_INDEX,
-  //         },
-  //         {
-  //           path: routeName.EXPERT_MANAGE_INDEX,
-  //           name: '专家管理',
-  //           hideInBreadcrumb: true,
-  //           component: './service_config/expert_manage',
-  //         },
-  //         {
-  //           path: routeName.EXPERT_MANAGE_DETAIL,
-  //           name: '专家详情',
-  //           component: './service_config/expert_manage/expert_detail',
-  //         },
-  //       ],
-  //     },
-  //     // {
-  //     //   path: '/service-config/requirement-management',
-  //     //   // path: routeName.REQUIREMENT_MANAGEMENT,
-  //     //   name: '需求管理',
-  //     //   hideChildrenInMenu: true,
-  //     //   routes: [
-  //     //     {
-  //     //       path: '/service-config/requirement-management',
-  //     //       redirect: '/service-config/requirement-management/index',
-  //     //       // path: routeName.REQUIREMENT_MANAGEMENT,
-  //     //       // redirect: routeName.REQUIREMENT_MANAGEMENT_INDEX,
-  //     //     },
-  //     //     {
-  //     //       path: '/service-config/requirement-management/index',
-  //     //       // path: routeName.REQUIREMENT_MANAGEMENT_INDEX,
-  //     //       name: '需求管理',
-  //     //       hideInBreadcrumb: true,
-  //     //       component: './service_config/requirement_management/index',
-  //     //     },
-  //     //     {
-  //     //       path: '/service-config/requirement-management/detail',
-  //     //       // path: routeName.REQUIREMENT_MANAGEMENT_DETAIL,
-  //     //       name: '需求详情',
-  //     //       component: './service_config/requirement_management/detail',
-  //     //     },
-  //     //   ],
-  //     // },
-  //     {
-  //       path: routeName.NEWS,
-  //       name: '新闻资讯',
-  //       component: './service_config/news',
-  //     },
-  //     {
-  //       path: routeName.INDUSTRY_TOPIC,
-  //       name: '产业专题',
-  //       component: './service_config/industry_topic',
-  //     }
-  //   ],
-  // },
-  // {
-  //   path: '/operate-data',
-  //   name: '运营数据',
-  //   icon: 'desktop',
-  //   access: 'SERVICE_CONFIG',
-  //   routes: [
-  //     {
-  //       path: '/operate-data',
-  //       redirect: '/operate-data/data-manage/index',
-  //     },
-
-  //     // {
-  //     //   path: '/operate-data/data-display',
-  //     //   name: '数据展示',
-  //     //   component: './operate_data/data_display',
-  //     // },
-  //     {
-  //       path: '/operate-data/data-manage',
-  //       name: '数据管理',
-  //       hideChildrenInMenu: true,
-  //       routes: [
-  //         {
-  //           path: '/operate-data/data-manage',
-  //           redirect: '/operate-data/data-manage/index',
-  //         },
-  //         {
-  //           path: '/operate-data/data-manage/index',
-  //           name: '数据管理',
-  //           hideInBreadcrumb: true,
-  //           component: './operate_data/data_manage/index',
-  //         },
-  //         {
-  //           path: '/operate-data/data-manage/detail',
-  //           name: '认证信息详情',
-  //           component: './operate_data/data_manage/detail',
-  //         },
-  //       ],
-  //     },
-  //   ],
-  // },
-  // {
-  //   path: '/user-config',
-  //   name: '用户管理',
-  //   icon: 'user',
-  //   access: 'SERVICE_CONFIG',
-  //   routes: [
-  //     {
-  //       path: '/user-config',
-  //       redirect: routeName.USER_INFO,
-  //       // redirect: routeName.AUTHENTICATION_INFO_INDEX,
-  //     },
-  //     // {
-  //     //   path: routeName.AUTHENTICATION_INFO,
-  //     //   name: '认证信息',
-  //     //   hideChildrenInMenu: true,
-  //     //   routes: [
-  //     //     {
-  //     //       path: routeName.AUTHENTICATION_INFO,
-  //     //       redirect: routeName.AUTHENTICATION_INFO_INDEX,
-  //     //     },
-  //     //     {
-  //     //       path: routeName.AUTHENTICATION_INFO_INDEX,
-  //     //       name: '认证信息',
-  //     //       hideInBreadcrumb: true,
-  //     //       component: './user_config/authentication_info',
-  //     //     },
-  //     //     {
-  //     //       path: routeName.AUTHENTICATION_INFO_DETAIL,
-  //     //       name: '认证信息详情',
-  //     //       component: './user_config/authentication_info/detail',
-  //     //     },
-  //     //   ],
-  //     // },
-  //     {
-  //       path: routeName.USER_INFO,
-  //       name: '用户信息',
-  //       hideChildrenInMenu: true,
-  //       routes: [
-  //         {
-  //           path: routeName.USER_INFO,
-  //           redirect: routeName.USER_INFO_INDEX,
-  //         },
-  //         {
-  //           path: routeName.USER_INFO_INDEX,
-  //           name: '用户信息',
-  //           hideInBreadcrumb: true,
-  //           component: './user_config/user_info',
-  //         },
-  //         {
-  //           path: routeName.USER_INFO_DETAIL,
-  //           name: '用户详情',
-  //           component: './user_config/user_info/detail',
-  //         },
-  //       ],
-  //     },
-  //     {
-  //       path: routeName.LOGOUT_RECORD,
-  //       name: '注销记录',
-  //       component: './user_config/logout_record',
-  //     },
-  //     {
-  //       path: routeName.USER_FEEDBACK,
-  //       name: '用户反馈',
-  //       component: './user_config/user_feedback',
-  //     },
-  //     {
-  //       path: routeName.ORG_MANAGE,
-  //       name: '组织管理',
-  //       component: './user_config/org_manage',
-  //     },
-  //     {
-  //       path: routeName.COMMISSIONER_SERVICE,
-  //       name: '专员服务记录',
-  //       component: './user_config/commissioner_service',
-  //     },
-  //     {
-  //       path: routeName.ADMIN_ACCOUNT_DISTRIBUTOR,
-  //       name: '科产管理员配置',
-  //       component: './user_config/admin_account_distributor',
-  //     },
-  //     {
-  //       path: '/user-config/tags-management',
-  //       name: '账号标签管理',
-  //       component: './user_config/tags_management',
-  //     },
-  //     {
-  //       path: routeName.REPORT_RECORD_VERIFY,
-  //       name: '举报记录',
-  //       hideChildrenInMenu: true,
-  //       routes: [
-  //         {
-  //           path: routeName.REPORT_RECORD_VERIFY,
-  //           redirect: routeName.REPORT_RECORD_VERIFY_INDEX,
-  //         },
-  //         {
-  //           path: routeName.REPORT_RECORD_VERIFY_INDEX,
-  //           name: '举报记录',
-  //           hideInBreadcrumb: true,
-  //           component: './user_config/report_record_verify',
-  //         },
-  //         {
-  //           path: routeName.REPORT_RECORD_VERIFY_DETAIL,
-  //           name: '举报记录详情',
-  //           // ⭐ 未处理
-  //           component: './user_config/report_record_verify/components/detail',
-  //         },
-  //       ],
-  //     },
-  //   ],
-  // },
-  // {
-  //   path: '/verify-agency',
-  //   name: '审核待办',
-  //   icon: 'control',
-  //   access: 'M_AT',
-  //   code: 'M_AT',
-  //   routes: [
-  //     {
-  //       path: '/verify-agency',
-  //       access: 'M_AT_FWZY',
-  //       code: 'M_AT_FWZY',
-  //       redirect: routeName.SERVICE_COMMISSIONER_VERIFY,
-  //       // redirect: routeName.LOGOUT_VERIFY,
-  //     },
-  //     // {
-  //     //   path: routeName.LOGOUT_VERIFY,
-  //     //   name: '注销审核',
-  //     //   component: './verify_agency/logout_verify',
-  //     // },
-  //     {
-  //       path: routeName.SERVICE_COMMISSIONER_VERIFY,
-  //       code: 'M_AT_FWZY',
-  //       access: 'M_AT_FWZY',
-  //       name: '服务专员审核',
-  //       component: './verify_agency/service_commissioner_verify',
-  //     },
-  //     {
-  //       path: routeName.CREATIVE_VERIFY,
-  //       code: 'M_AT_KJCG',
-  //       access: 'M_AT_KJCG',
-  //       name: '科技成果审核',
-  //       hideChildrenInMenu: true,
-  //       routes: [
-  //         {
-  //           path: routeName.CREATIVE_VERIFY,
-  //           redirect: routeName.CREATIVE_VERIFY_INDEX,
-  //         },
-  //         {
-  //           path: routeName.CREATIVE_VERIFY_INDEX,
-  //           name: '科技成果审核',
-  //           hideInBreadcrumb: true,
-  //           component: './verify_agency/creative_verify',
-  //         },
-  //         {
-  //           path: routeName.CREATIVE_VERIFY_DETAIL,
-  //           name: '科技成果详情',
-  //           component: './verify_agency/creative_verify/detail',
-  //         },
-  //       ],
-  //     },
-  //     {
-  //       path: routeName.NEED_VERIFY,
-  //       name: '创新需求审核',
-  //       hideChildrenInMenu: true,
-  //       routes: [
-  //         {
-  //           path: routeName.NEED_VERIFY,
-  //           redirect: routeName.NEED_VERIFY_INDEX,
-  //         },
-  //         {
-  //           path: routeName.NEED_VERIFY_INDEX,
-  //           name: '创新需求审核',
-  //           hideInBreadcrumb: true,
-  //           component: './verify_agency/need_verify',
-  //         },
-  //         {
-  //           path: routeName.NEED_VERIFY_DETAIL,
-  //           name: '创新需求详情',
-  //           component: './verify_agency/need_verify/detail',
-  //         },
-  //       ],
-  //     },
-  //     {
-  //       path: routeName.SERVICE_PROGRAMME_VERIFY,
-  //       name: '服务方案审核',
-  //       hideChildrenInMenu: true,
-  //       routes: [
-  //         {
-  //           path: routeName.SERVICE_PROGRAMME_VERIFY,
-  //           redirect: routeName.SERVICE_PROGRAMME_VERIFY_INDEX,
-  //         },
-  //         {
-  //           path: routeName.SERVICE_PROGRAMME_VERIFY_INDEX,
-  //           name: '服务方案审核',
-  //           hideInBreadcrumb: true,
-  //           component: './verify_agency/service_programme_verify',
-  //         },
-  //         {
-  //           path: routeName.SERVICE_PROGRAMME_VERIFY_DETAIL,
-  //           name: '审核详情',
-  //           component: './verify_agency/service_programme_verify/detail',
-  //         },
-  //       ],
-  //     },
-  //     {
-  //       path: routeName.OFFICE_REQUIREMENT_VERIFY,
-  //       name: '企业需求审核',
-  //       hideChildrenInMenu: true,
-  //       routes: [
-  //         {
-  //           path: routeName.OFFICE_REQUIREMENT_VERIFY,
-  //           redirect: routeName.OFFICE_REQUIREMENT_VERIFY_INDEX,
-  //         },
-  //         {
-  //           path: routeName.OFFICE_REQUIREMENT_VERIFY_INDEX,
-  //           name: '企业需求审核',
-  //           hideInBreadcrumb: true,
-  //           component: './verify_agency/office_requirement_verify/index',
-  //         },
-  //         {
-  //           path: routeName.OFFICE_REQUIREMENT_VERIFY_DETAIL,
-  //           name: '审核详情',
-  //           component: './verify_agency/office_requirement_verify/detail',
-  //         },
-  //       ],
-  //     },
-  //     {
-  //       path: routeName.ENTERPRISE_ADMIN_VERIFY,
-  //       name: '组织管理员审核',
-  //       hideChildrenInMenu: true,
-  //       routes: [
-  //         {
-  //           path: routeName.ENTERPRISE_ADMIN_VERIFY,
-  //           redirect: routeName.ENTERPRISE_ADMIN_VERIFY_INDEX,
-  //         },
-  //         {
-  //           path: routeName.ENTERPRISE_ADMIN_VERIFY_INDEX,
-  //           name: '组织管理员审核',
-  //           hideInBreadcrumb: true,
-  //           component: './verify_agency/enterprise_admin_verify',
-  //         },
-  //         {
-  //           path: routeName.ENTERPRISE_ADMIN_VERIFY_DETAIL,
-  //           name: '组织管理员审核详情',
-  //           component: './verify_agency/enterprise_admin_verify/components/detail',
-  //         },
-  //       ],
-  //     },
-  //     {
-  //       path: routeName.ENTERPRISE_INFO_VERIFY,
-  //       name: '组织信息审核',
-  //       hideChildrenInMenu: true,
-  //       routes: [
-  //         {
-  //           path: routeName.ENTERPRISE_INFO_VERIFY,
-  //           redirect: routeName.ENTERPRISE_INFO_VERIFY_INDEX,
-  //         },
-  //         {
-  //           path: routeName.ENTERPRISE_INFO_VERIFY_INDEX,
-  //           name: '组织信息审核',
-  //           hideInBreadcrumb: true,
-  //           component: './verify_agency/enterprise_info_verify',
-  //         },
-  //         {
-  //           path: routeName.ENTERPRISE_INFO_VERIFY_DETAIL,
-  //           name: '组织信息审核详情',
-  //           component: './verify_agency/enterprise_info_verify/components/detail',
-  //         },
-  //       ],
-  //     },
-  //     {
-  //       path: routeName.EXPERT_AUTH_VERIFY,
-  //       name: '专家认证审核',
-  //       hideChildrenInMenu: true,
-  //       routes: [
-  //         {
-  //           path: routeName.EXPERT_AUTH_VERIFY,
-  //           redirect: routeName.EXPERT_AUTH_VERIFY_INDEX,
-  //         },
-  //         {
-  //           path: routeName.EXPERT_AUTH_VERIFY_INDEX,
-  //           name: '专家认证审核',
-  //           hideInBreadcrumb: true,
-  //           component: './verify_agency/expert_auth_verify',
-  //         },
-  //         {
-  //           path: routeName.EXPERT_AUTH_VERIFY_DETAIL,
-  //           name: '专家认证审核详情',
-  //           component: './verify_agency/expert_auth_verify/components/detail',
-  //         },
-  //       ],
-  //     },
-  //     {
-  //       path: routeName.LEAVE_WORD_VERIFY,
-  //       name: '留言审核',
-  //       hideChildrenInMenu: true,
-  //       routes: [
-  //         {
-  //           path: routeName.LEAVE_WORD_VERIFY,
-  //           redirect: routeName.LEAVE_WORD_VERIFY_INDEX,
-  //         },
-  //         {
-  //           path: routeName.LEAVE_WORD_VERIFY_INDEX,
-  //           name: '留言审核',
-  //           hideInBreadcrumb: true,
-  //           component: './verify_agency/leave_word_verify',
-  //         },
-  //         {
-  //           path: routeName.LEAVE_WORD_VERIFY_DETAIL,
-  //           name: '留言审核详情',
-  //           component: './verify_agency/leave_word_verify/components/detail',
-  //         },
-  //       ],
-  //     },
-  //     {
-  //       path: routeName.GOODS_VERIFY,
-  //       name: '数字化商品审核',
-  //       hideChildrenInMenu: true,
-  //       routes: [
-  //         {
-  //           path: routeName.GOODS_VERIFY,
-  //           redirect: routeName.GOODS_VERIFY_INDEX,
-  //         },
-  //         {
-  //           path: routeName.GOODS_VERIFY_INDEX,
-  //           name: '数字化商品审核',
-  //           hideInBreadcrumb: true,
-  //           component: './verify_agency/goods_verify',
-  //         },
-  //         {
-  //           path: routeName.GOODS_VERIFY_DETAIL,
-  //           name: '数字化商品详情',
-  //           component: './verify_agency/goods_verify/detail',
-  //         },
-  //       ],
-  //     },
-  //   ],
-  // },
-  // {
-  //   path: '/recommended',
-  //   name: '推荐管理',
-  //   icon: 'setting',
-  //   access: 'BANKING',
-  //   routes: [
-  //     {
-  //       path: '/recommended',
-  //       redirect: routeName.RECOMMENDED_HOT_WORDS,
-  //     },
-  //     {
-  //       path: routeName.RECOMMENDED_HOT_WORDS,
-  //       name: '推荐管理',
-  //       hideChildrenInMenu: true,
-  //       routes: [
-  //         {
-  //           path: routeName.RECOMMENDED_HOT_WORDS,
-  //           redirect: routeName.RECOMMENDED_HOT_WORDS_INDEX,
-  //         },
-  //         {
-  //           path: routeName.RECOMMENDED_HOT_WORDS_INDEX,
-  //           hideInBreadcrumb: true,
-  //           name: '推荐管理',
-  //           component: './recommended_manage/hot_words/index',
-  //         },
-  //       ],
-  //     },
-  //   ],
-  // },
+  {
+    path: routeName.BASELINE,
+    access: 'M_BLM',
+    name: '基线管理',
+    icon: 'hdd',
+    routes: [
+      {
+        path: routeName.BASELINE,
+        access: 'M_BLM_NRGL',
+        redirect: routeName.BASELINE_CONTENT_MANAGE,
+      },
+      {
+        path: routeName.BASELINE_CONTENT_MANAGE,
+        name: '内容管理',
+        access: 'M_BLM_NRGL',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            access: 'M_BLM_NRGL',
+            path: routeName.BASELINE_CONTENT_MANAGE,
+            redirect: routeName.BASELINE_CONTENT_MANAGE + '/index',
+          },
+          {
+            path: routeName.BASELINE_CONTENT_MANAGE + '/index',
+            name: '内容管理',
+            access: 'M_BLM_NRGL',
+            hideInBreadcrumb: true,
+            component: './baseline/content',
+          },
+          {
+            path: routeName.BASELINE_CONTENT_MANAGE_ADDORUPDATE,
+            name: '新增内容',
+            access: 'PA_BLM_NRGL',
+            hideInBreadcrumb: true,
+            component: './baseline/content/addOrUpdate',
+          },
+          {
+            path: routeName.BASELINE_CONTENT_MANAGE_DETAIL,
+            name: '内容详情',
+            hideInBreadcrumb: true,
+            component: './baseline/content/detail',
+          },
+        ],
+      },
+      {
+        path: routeName.BASELINE_BID_MANAGE,
+        name: '招投标管理',
+        access: 'M_BLM_ZTBGL',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.BASELINE_BID_MANAGE,
+            access: 'M_BLM_ZTBGL',
+            redirect: routeName.BASELINE_BID_MANAGE + '/index',
+          },
+          {
+            path: routeName.BASELINE_BID_MANAGE + '/index',
+            name: '招投标管理',
+            hideInBreadcrumb: true,
+            access: 'M_BLM_ZTBGL',
+            component: './baseline/bid',
+          },
+          {
+            path: routeName.BASELINE_BID_MANAGE_DETAIL,
+            name: '内容详情',
+            hideInBreadcrumb: true,
+            component: './baseline/bid/detail',
+          },
+        ],
+      },
+      {
+        path: routeName.BASELINE_TAG_MANAGE,
+        name: '内容标签管理',
+        access: 'M_BLM_NRBQGL',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.BASELINE_TAG_MANAGE,
+            access: 'M_BLM_NRBQGL',
+            redirect: routeName.BASELINE_TAG_MANAGE + '/index',
+          },
+          {
+            path: routeName.BASELINE_TAG_MANAGE + '/index',
+            access: 'M_BLM_NRBQGL',
+            name: '内容标签管理',
+            hideInBreadcrumb: true,
+            component: './baseline/tag',
+          },
+          {
+            path: routeName.BASELINE_TAG_MANAGE_DETAIL,
+            name: '内容标签详情',
+            hideInBreadcrumb: true,
+            component: './baseline/tag/detail',
+          },
+        ],
+      },
+      {
+        path: routeName.BASELINE_TOPIC_MANAGE,
+        code: 'M_BLM_HTGL',
+        access: 'M_BLM_HTGL',
+        name: '话题管理',
+        component: './baseline/topic/index',
+      },
+      {
+        path: routeName.BASELINE_TOPIC_MANAGE_DETAIL,
+        // code: 'M_HRM_XQ',
+        // access: 'M_HRM_XQ',
+        hideInMenu: true,
+        name: '详情',
+        component: './baseline/topic/detail',
+      },{
+        path: routeName.BASELINE_TOPIC_MANAGE_ADD,
+        hideInMenu: true,
+        name: '新增',
+        component: './baseline/topic/add',
+      },
+      {
+        path: routeName.BASELINE_RECOMMENDED_MANAGE,
+        name: '推荐位管理',
+        code: 'M_BLM_TJWGL',
+        access: 'M_BLM_TJWGL',
+        component: './baseline/recommended/index',
+      },
+      {
+        path: routeName.BASELINE_RECOMMENDED_MANAGE_DETAIL,
+        name: '推荐位详情',
+        code: 'M_BLM_TJWGL',
+        access: 'M_BLM_TJWGL',
+        component: './baseline/recommended/detail',
+        hideInMenu: true,
+      },
+    ],
+  },
   {
     path: '/verify-agency',
     name: '审核待办',
@@ -1450,7 +956,7 @@ export default [
             access: 'M_OA_CJHD',
             component: './operation_activity/activity_project/detail/spring-detail',
           },
-          
+
         ],
       },
       {
