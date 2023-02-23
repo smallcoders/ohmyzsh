@@ -470,6 +470,7 @@ export default () => {
                     ? false
                     : {
                       onChange: onChange,
+                      pageSizeOptions:[5,10,20,50,100],
                       total: pageInfo.totalCount,
                       showSizeChanger: true,
                       current: pageInfo.pageIndex,
@@ -529,6 +530,7 @@ export default () => {
                 ? false
                 : {
                   onChange: getPage ,
+                  pageSizeOptions:[5,10,20,50,100],
                   total: pageSelectInfo.totalCount,
                   current: pageSelectInfo.pageIndex,
                   pageSize: pageSelectInfo.pageSize,
