@@ -96,6 +96,7 @@ export default () => {
         pageIndex,
         pageSize,
         ...searchContent,
+        status:'1'
       });
       if (code === 0) {
         setPageSelectInfo({ totalCount, pageTotal, pageIndex, pageSize });
