@@ -337,16 +337,17 @@ export default () => {
       render: (_: string) => _ ? moment(_).format('YYYY-MM-DD HH:mm:ss') : '--',
       width: 250,
     },
-    {
+   {
       title: '上架时间',
-      dataIndex: 'createTime',
+      dataIndex: 'updateTime',
       isEllipsis: true,
-      render: (_: string) => _ ? moment(_).format('YYYY-MM-DD HH:mm:ss') : '--',
+      render: (_: string, record: any) => record?.status == 1 && _ ? moment(_).format('YYYY-MM-DD HH:mm:ss') : '--',
       width: 250,
     },
     {
       title: '审核备注',
       dataIndex: 'auditCommon',
+      render: (_: boolean) => _ ? '审核通过' : '审核不通过',
       isEllipsis: true,
       width: 200,
     },
