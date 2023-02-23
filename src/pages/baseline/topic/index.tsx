@@ -190,7 +190,7 @@ export default () => {
     },
     {
       title: '发布时间',
-      dataIndex: 'createTime',
+      dataIndex: 'updateTime',
       width: 190,
       render: (_: string) => moment(_).format('YYYY-MM-DD HH:mm:ss'),
     },
