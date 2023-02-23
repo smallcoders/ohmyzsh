@@ -9,8 +9,7 @@ import {
   Space,
   Modal,
   Tag,
-  Popconfirm,
-  InputNumber
+  Popconfirm
 } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
@@ -21,6 +20,7 @@ import SelfTable from '@/components/self_table';
 import { routeName } from '../../../../config/routes';
 import { Access, useAccess } from 'umi';
 import { isEmpty } from 'lodash';
+import useLimit from '@/hooks/useLimit'
 import {
   recommendForUserPage,
   addRecommendForUserPage,
@@ -133,7 +133,7 @@ export default () => {
     addRecommendForUserPage({
       uuid: currentSelect.uuid,
       industrialArticleId: currentSelect.industrialArticleId || currentSelect.id,
-      weight: +currentVal.weight,
+      weight: +(currentVal.weight ?? 0),
       labelIds: labelsDiffFormat(currentVal.labels),
       enable: 1
     }).then(({ code, message: msg }) => {
@@ -222,6 +222,7 @@ export default () => {
   };
 
   useEffect(() => {
+    console.log('currentSelect?.weight => ', Number(currentSelect.weight), currentSelect.weight)
     editForm.setFieldsValue({
       title: currentSelect?.title,
       weight: currentSelect?.weight,
@@ -240,9 +241,7 @@ export default () => {
   }, [currentSelect])
 
 
-  useEffect(() => {
-    console.log(weightRef.current)
-  }, [])
+
 
   const useModal = (): React.ReactNode => {
     if (labels.length === 0) {
@@ -252,16 +251,6 @@ export default () => {
       })
     }
 
-    // let prevVal = ''
-    // const handleInput = (event: any) => {
-    //   console.log(event.target.value)
-    //   const val = event.target.value
-    //   if ((/^\d{0,}/g.test(val))) {
-    //     // weightRef.current.input.value = +prevVal
-    //     return
-    //   }
-    //   prevVal = val
-    // }
 
     return (
       <Modal
@@ -296,7 +285,7 @@ export default () => {
             label="权重"
             rules={[{ required: true }]}
           >
-            <InputNumber style={{ width: '100%' }} placeholder='请输入1～100的整数，数字越大排名越小' precision={0} step={1} max={100} min={0} />
+            <Input ref={weightRef} style={{ width: '100%' }} placeholder='请输入1～100的整数，数字越大排名越小' onInput={useLimit(weightRef)} />
           </Form.Item>
           <Form.Item
             name="labels"
