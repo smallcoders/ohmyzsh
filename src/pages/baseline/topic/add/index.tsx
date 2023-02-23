@@ -492,6 +492,10 @@ export default () => {
           onCancel={() => {
             setModalVisible(false);
           }}
+          bodyStyle={{
+            height: '600px',
+            overflow: 'auto'
+          }}
           centered
           destroyOnClose
           onOk={() => {
