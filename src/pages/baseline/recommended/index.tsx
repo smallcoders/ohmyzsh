@@ -344,7 +344,7 @@ export default () => {
     },
     {
       title: '操作人',
-      dataIndex: 'operatorUserId',
+      dataIndex: 'userName',
       width: 200,
     },
     {
