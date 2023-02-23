@@ -107,7 +107,6 @@ export default () => {
         setLoading(false);
       }
     } catch (error) {
-      console.log(error);
       setLoading(false);
     }
   };
@@ -469,7 +468,6 @@ export default () => {
                   pageInfo.totalCount === 0
                     ? false
                     : {
-
                       onChange: onChange,
                       total: pageInfo.totalCount,
                       showSizeChanger: true,
@@ -491,6 +489,10 @@ export default () => {
           width={1200}
           onCancel={() => {
             setModalVisible(false);
+          }}
+          bodyStyle={{
+            height: '500px',
+            overflow: 'auto'
           }}
           centered
           destroyOnClose
