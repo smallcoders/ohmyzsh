@@ -215,7 +215,6 @@ export default () => {
                 编辑
               </Button>
             )}
-            </Access>
             {record.enable ? (
               <Popconfirm
                 title="确定下架么？"
@@ -245,8 +244,10 @@ export default () => {
                       style={{flexFlow:'column'}}
                       name={'weight'}
                       label="权重设置">
-                      <InputNumber step={1} style={{width:'280px'}}
-                     precision={0}
+                      <InputNumber
+                      step={1}
+                      style={{width:'280px'}}
+                      precision={0}
                       placeholder={'请输入1~100的整数，数字越大排名越靠前'} min={1} max={100} />
                     </Form.Item>
                   </Form>
@@ -268,6 +269,7 @@ export default () => {
                 权重设置
               </Button>
             </Popconfirm>
+            </Access>
             <Access accessible={access['PD_BLM_HTGL']}>
             {!record.enable && (
               <Popconfirm
