@@ -165,11 +165,12 @@ export default () => {
 
   const handleCancel = () => {
     setModal({ visible: false, detail: {} });
+    editForm.resetFields()
   };
   const useModal = (): React.ReactNode => {
     return (
       <Modal
-        title={'新增/编辑标签'}
+        title={modal?.detail?.id ? '编辑标签' : '新增标签'}
         width="600px"
         visible={modal.visible}
         maskClosable={false}
@@ -307,15 +308,15 @@ export default () => {
                 删除
               </Button>
             </Access>
-              <Button
-                type="link"
-                style={{ padding: 0 }}
-                onClick={() => {
-                  window.open(routeName.BASELINE_TAG_MANAGE_DETAIL + `?id=${record?.id}`);
-                }}
-              >
-                详情
-              </Button>
+            <Button
+              type="link"
+              style={{ padding: 0 }}
+              onClick={() => {
+                window.open(routeName.BASELINE_TAG_MANAGE_DETAIL + `?id=${record?.id}`);
+              }}
+            >
+              详情
+            </Button>
           </Space>
         )
 
@@ -340,11 +341,6 @@ export default () => {
               </Form.Item>
             </Col>
             <Col span={6}>
-              <Form.Item name="operatorUserName" label="操作人">
-                <Input placeholder="请输入" />
-              </Form.Item>
-            </Col>
-            <Col span={6}>
               <Form.Item name="areaCode" label="来源">
                 <Select placeholder="请选择" allowClear>
                   {Object.entries(sourceEnum).map((p) => {
@@ -364,7 +360,7 @@ export default () => {
                 <InputNumber placeholder="请输入" style={{ width: '100%' }} />
               </Form.Item>
             </Col>
-            <Col offset={14} span={4}>
+            <Col offset={2} span={4}>
               <Button
                 style={{ marginRight: 20 }}
                 type="primary"

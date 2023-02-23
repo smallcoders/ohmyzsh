@@ -1,5 +1,5 @@
 import { message, Image, Button, Table, Steps, Avatar } from 'antd';
-import { history } from 'umi';
+import { Access, history, useAccess } from 'umi';
 import { useState, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import scopedClasses from '@/utils/scopedClasses';
@@ -108,7 +108,7 @@ export default () => {
     },
   ];
   const [dataSource, setDataSource] = useState<any[]>([]);
-
+  const access = useAccess()
   return (
     <PageContainer loading={loading}
       tabList={[
@@ -129,6 +129,16 @@ export default () => {
       onTabChange={(key: string) => setActiveKey(key)}
       footer={[
         <Button onClick={() => history.push(routeName.BASELINE_CONTENT_MANAGE)}>返回</Button>,
+        <Access accessible={access['P_BLM_NRGL'] && (detail?.status == 2 || ((!detail?.auditCommon) && detail?.status == 0))}>
+          <Button
+            type="default"
+            onClick={() => {
+              window.open(routeName.BASELINE_CONTENT_MANAGE_ADDORUPDATE + `?id=${id}`);
+            }}
+          >
+            编辑
+          </Button>
+        </Access>
       ]}
     >
       <div className='content'>
