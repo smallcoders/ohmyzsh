@@ -82,11 +82,13 @@ export default () => {
     {
       title: '用户名',
       dataIndex: 'userName',
+      render: (_: any[]) => _ || '--',
       width: 200,
     },
     {
       title: '用户id',
       dataIndex: 'loginName',
+      render: (_: any[]) => _ || '--',
       isEllipsis: true,
       width: 200,
     },

@@ -87,17 +87,20 @@ export default () => {
     {
       title: '用户名',
       dataIndex: 'userName',
+      render: (_: any[]) => _ || '--',
       width: 150,
     },
     {
       title: '用户id',
-      dataIndex: 'userId',
+      dataIndex: 'loginName',
       isEllipsis: true,
+      render: (_: any[]) => _ || '--',
       width: 200,
     },
     {
       title: '注册时间',
       dataIndex: 'registrationTime',
+      render: (_: any[]) => _ || '--',
       isEllipsis: true,
       width: 300,
     },
@@ -120,6 +123,7 @@ export default () => {
     {
       title: '标题',
       dataIndex: 'title',
+      render: (_: any[]) => _ || '--',
       width: 200,
     },
     {
