@@ -296,7 +296,8 @@ export default () => {
               >
                 编辑
               </Button>
-            </Access>            <Access accessible={access['PD_BLM_NRBQGL']}>
+            </Access>
+            <Access accessible={access['PD_BLM_NRBQGL']}>
               <Button type="link" style={{ padding: 0 }} onClick={() => {
                 Modal.confirm({
                   title: '删除标签',
