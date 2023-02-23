@@ -187,7 +187,7 @@ export default () => {
               </Form.Item>
             </Col>
             <Col span={6}>
-              <Form.Item name="publisher" label="标签">
+              <Form.Item name="labels" label="标签">
                 <Input placeholder="请输入" allowClear  autoComplete="off"/>
               </Form.Item>
             </Col>
