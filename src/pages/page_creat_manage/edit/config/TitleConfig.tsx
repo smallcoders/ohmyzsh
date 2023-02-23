@@ -253,7 +253,7 @@ const TitleConfig = () => {
               <div
                 className={config?.textAlign === 'left' ? 'left active' : 'left'}
                 onClick={() => {
-                  handleChange('left', 'config.textAlign')
+                  handleChange('left', 'config.subTitle.textAlign')
                 }}
               />
             </Tooltip>
@@ -261,7 +261,7 @@ const TitleConfig = () => {
               <div
                 className={config?.textAlign === 'center' ? 'center active' : 'center'}
                 onClick={() => {
-                  handleChange('center', 'config.textAlign')
+                  handleChange('center', 'config.subTitle.textAlign')
                 }}
               />
             </Tooltip>
@@ -269,7 +269,7 @@ const TitleConfig = () => {
               <div
                 className={config?.textAlign === 'right' ? 'right active' : 'right'}
                 onClick={() => {
-                  handleChange('right', 'config.textAlign')
+                  handleChange('right', 'config.subTitle.textAlign')
                 }}
               />
             </Tooltip>
@@ -277,7 +277,7 @@ const TitleConfig = () => {
               <div
                 className={config?.textAlign === 'justifyAlign' ? 'justify-align active' : 'justify-align'}
                 onClick={() => {
-                  handleChange('justifyAlign', 'config.textAlign')
+                  handleChange('justifyAlign', 'config.subTitle.textAlign')
                 }}
               />
             </Tooltip>

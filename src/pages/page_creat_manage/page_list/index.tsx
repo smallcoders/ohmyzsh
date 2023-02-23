@@ -510,7 +510,7 @@ export default () => {
             }}>表单模版</div><div onClick={() => {
               window.open(`${routeName.PAGE_CREAT_MANAGE_EDIT}?type=1`);
             }}>网页模版</div></div>}
-            trigger={['click', 'hover']}
+            trigger={['hover']}
           >
             <Button
               type="primary"

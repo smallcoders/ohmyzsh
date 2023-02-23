@@ -1,4 +1,4 @@
-import { FC, useContext, useMemo, useState } from 'react'
+import { FC, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Form, Input, Popover } from 'antd';
 import { DesignContext } from '../store'
 import { ActionType } from '../store/action'
@@ -11,6 +11,12 @@ const GlobalConfig: FC = () => {
     dispatch
   } = useContext(DesignContext)
   const [bgColorOpen, setBgColorOpen] = useState<boolean>(false)
+  const inputRef = useRef<any>(null);
+  useEffect(() => {
+    if (inputRef?.current){
+      inputRef.current.focus()
+    }
+  }, [])
 
 
   const handleGlobalConfigChange = <T extends keyof typeof webGlobalConfig>(fieldName: T, value: typeof webGlobalConfig[T]) => {
@@ -71,6 +77,10 @@ const GlobalConfig: FC = () => {
             <Form.Item label="网页名称" required >
               <Input
                 maxLength={20}
+                ref={inputRef}
+                onFocus={() => {
+                  inputRef.current?.select()
+                }}
                 value={webGlobalConfig?.pageName}
                 onChange={(event) => handleGlobalConfigChange('pageName',event.target.value)}
                 onBlur={(event) => {
