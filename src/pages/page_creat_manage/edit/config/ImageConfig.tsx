@@ -180,7 +180,7 @@ const ImageConfig = () => {
       </Form.Item>
       <div>
         <div>
-          多图上传
+          图片上传
           <Tooltip title="点击图片缩略图区域可上传图片,缩略图后方输入框可设置图片跳转链接">
             <img className="question-icon" src={questionIcon} alt='' />
           </Tooltip>
