@@ -168,6 +168,7 @@ const WidgetForm: FC<Props> = (props) => {
             {state.widgetFormList.map((widgetFormItem) => (
               <WidgetFormItem editWidth={editWidth} areaCodeOptions={areaCodeOptions} key={widgetFormItem.key} item={widgetFormItem} formInstance={formInstance} />
             ))}
+            <div style={{width: '100%', height: '110px'}} />
           </div>
         </Form>
       </div>

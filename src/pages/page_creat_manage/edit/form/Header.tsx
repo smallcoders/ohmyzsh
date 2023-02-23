@@ -124,7 +124,7 @@ const Header = (props: any) => {
   return (
     <>
       <Layout.Header className="btn-bar">
-        <Space>{state.globalConfig?.pageName}</Space>
+        <Space>{tmpType === '1' ? state.webGlobalConfig.pageName : state.globalConfig?.pageName}</Space>
         <div className="middle-title">
           {tmpType === '1' ? '网页设计' : '表单设计'}
         </div>

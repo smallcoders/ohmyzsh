@@ -83,7 +83,7 @@ const GlobalConfig: FC = () => {
             <Form.Item label="描述信息" >
               <Input.TextArea maxLength={50} value={webGlobalConfig?.pageDesc} onChange={(event) => handleGlobalConfigChange('pageDesc',event.target.value)} />
             </Form.Item>
-            <Form.Item label="表单背景" >
+            <Form.Item label="网页背景" >
               <div className="config-item">
                 <div className="config-item-label">网页背景:</div>
                 <div className="flex">
