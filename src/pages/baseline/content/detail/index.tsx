@@ -1,5 +1,5 @@
 import { message, Image, Button, Table, Steps, Avatar } from 'antd';
-import { history } from 'umi';
+import { Access, history, useAccess } from 'umi';
 import { useState, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import scopedClasses from '@/utils/scopedClasses';
@@ -98,17 +98,19 @@ export default () => {
       title: '用户停留时间',
       dataIndex: 'browseDuration',
       isEllipsis: true,
+      render: (_: number) => _ + 's',
       width: 150,
     },
     {
       title: '用户标签',
       dataIndex: 'labels',
+      render: (_: any[]) => _?.length > 0 ? _?.map(p => p.labelName).join(',') : '--',
       isEllipsis: true,
       width: 150,
     },
   ];
   const [dataSource, setDataSource] = useState<any[]>([]);
-
+  const access = useAccess()
   return (
     <PageContainer loading={loading}
       tabList={[
@@ -129,6 +131,16 @@ export default () => {
       onTabChange={(key: string) => setActiveKey(key)}
       footer={[
         <Button onClick={() => history.push(routeName.BASELINE_CONTENT_MANAGE)}>返回</Button>,
+        <Access accessible={access['P_BLM_NRGL'] && (detail?.status == 2 || ((!detail?.auditCommon) && detail?.status == 0))}>
+          <Button
+            type="default"
+            onClick={() => {
+              window.open(routeName.BASELINE_CONTENT_MANAGE_ADDORUPDATE + `?id=${id}`);
+            }}
+          >
+            编辑
+          </Button>
+        </Access>
       ]}
     >
       <div className='content'>

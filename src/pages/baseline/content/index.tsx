@@ -352,7 +352,7 @@ export default () => {
                     编辑
                   </Button>
                   </Access>
-                  <Access accessible={access['P_BLM_NRGL']}><Button type="link" style={{ padding: 0 }} onClick={() => {
+                  <Access accessible={access['PD_BLM_NRGL']}><Button type="link" style={{ padding: 0 }} onClick={() => {
                     Modal.confirm({
                       title: '删除数据',
                       content: '删除该内容后，系统将不再推荐该内容，确定删除？',

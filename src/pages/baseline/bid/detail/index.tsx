@@ -101,6 +101,7 @@ export default () => {
       title: '用户标签',
       dataIndex: 'labels',
       isEllipsis: true,
+      render: (_: any[]) => _?.length > 0 ? _?.map(p => p.labelName).join(',') : '--',
       width: 150,
     },
   ];
