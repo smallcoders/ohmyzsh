@@ -271,7 +271,9 @@ export default function ReportDetailDrawer(p: ReportDetailDrawerPropstype) {
       valueType: 'textarea',
       render: (_, record) => (
         <>{`${
-          !record?.['diagnosed'] ? '暂无' : `${record?.serviceStartTime}~${record?.serviceEndTime}`
+          !record?.['diagnosed']
+            ? '暂无'
+            : `${record?.serviceStartTime ?? '--'}~${record?.serviceEndTime ?? '--'}`
         }`}</>
       ),
     },
