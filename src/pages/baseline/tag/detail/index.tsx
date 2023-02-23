@@ -172,8 +172,8 @@ export default () => {
           <span>{detail?.source || '--'}</span>
         </div>
         <div className={sc('container-desc')}>
-          <span>用途：</span>
-          <span>{detail?.coldStartSelect ? '兴趣标签、' : ''}内容标签</span>
+          <span>是否兴趣标签：</span>
+          <span>{detail?.coldStartSelect ? '是' : '否'}</span>
         </div>
         <div className={sc('container-desc')}>
           <span>标签权重：</span>

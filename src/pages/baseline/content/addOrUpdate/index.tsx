@@ -72,7 +72,7 @@ export default () => {
   const [form] = Form.useForm();
   const formLayout = {
     labelCol: { span: 2 },
-    wrapperCol: { span: 4 },
+    wrapperCol: { span: 5 },
   };
 
   const onSubmit = async (status: number) => {
@@ -147,7 +147,7 @@ export default () => {
               <Link to="/baseline">基线管理</Link>
             </Breadcrumb.Item>
             <Breadcrumb.Item>
-              <Link to="/apply-manage/app-resource">内容管理 </Link>
+              <Link to="/baseline">内容管理</Link>
             </Breadcrumb.Item>
             <Breadcrumb.Item>
               {id ? `内容编辑` : '添加内容'}
@@ -198,14 +198,14 @@ export default () => {
             label="关键词"
             name="keywords"
           >
-            <Input maxLength={35} placeholder="请输入" allowClear />
+            <Input maxLength={35} placeholder="请输入,多个关键词之间请使用英文逗号分隔" allowClear />
           </Form.Item>
           <Form.Item
             label="内容发布时间"
             name="publishTime"
             rules={[{ required: true, message: '请选择' }]}
           >
-            <DatePicker showTime />
+            <DatePicker showTime style={{ width: '100%' }} />
           </Form.Item>
           <Form.Item
             label="内容类型"

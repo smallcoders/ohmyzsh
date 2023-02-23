@@ -101,6 +101,7 @@ export default () => {
       title: '用户标签',
       dataIndex: 'labels',
       isEllipsis: true,
+      render: (_: any[]) => _?.length > 0 ? _?.map(p => p.labelName).join(',') : '--',
       width: 150,
     },
   ];
@@ -139,7 +140,7 @@ export default () => {
               </div>
               <div className={sc('container-desc')}>
                 <span>公告类型：</span>
-                <span>{detail?.subType || '--'}</span>
+                <span>{detail?.subTypeName || '--'}</span>
               </div>
               <div className={sc('container-desc')}>
                 <span>省份：</span>
@@ -155,7 +156,7 @@ export default () => {
               </div>
               <div className={sc('container-desc')}>
                 <span>产业链：</span>
-                <span>{detail?.startDate || '--'}</span>
+                <span>{detail?.industrialChain || '--'}</span>
               </div>
               <div className={sc('container-desc')}>
                 <span>发布时间：</span>
@@ -188,7 +189,7 @@ export default () => {
               </div>
               <div className={sc('container-desc')}>
                 <span>公告地址：</span>
-                <span>{detail?.href || '--'}</span>
+                <span>{detail?.href ? <a href={detail?.href} target="_blank">{detail?.href}</a> : '--'}</span>
               </div>
 
               <div className={sc('container-title')}>采购单位信息</div>
@@ -220,7 +221,7 @@ export default () => {
               </div>
               <div className={sc('container-desc')}>
                 <span>中标单位联系电话：</span>
-                <span>{detail?.companyPhone || '--'}</span>
+                <span>{detail?.winnerTel || '--'}</span>
               </div>
               <div className={sc('container-desc')}>
                 <span>中标单位电子邮箱：</span>
@@ -229,7 +230,7 @@ export default () => {
             </div>
             <div>
               <div className={sc('container-title')}>公告详情</div>
-              <div dangerouslySetInnerHTML={{ __html: detail?.details || '--' }} />
+              <div dangerouslySetInnerHTML={{ __html: detail?.detail || '--' }} />
             </div>
           </>
         }
