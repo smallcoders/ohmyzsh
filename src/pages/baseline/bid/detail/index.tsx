@@ -86,7 +86,7 @@ export default () => {
     },
     {
       title: '用户id',
-      dataIndex: 'userId',
+      dataIndex: 'loginName',
       isEllipsis: true,
       width: 200,
     },
