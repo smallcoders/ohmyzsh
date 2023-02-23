@@ -72,8 +72,7 @@ export default (props: any) => {
         const { result, totalCount, pageTotal, code } = await getArticlePage({
           pageIndex,
           pageSize,
-          ...searchContent,
-          status: '1'
+          ...searchContent
         });
         if (code === 0) {
           setPageSelectInfo({ totalCount, pageTotal, pageIndex, pageSize });
