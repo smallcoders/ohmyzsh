@@ -732,6 +732,9 @@
     color: #fff;
     border-bottom: 1px solid rgba(219,223,230,0.2);
   }
+  .ant-picker-panel {
+    border-bottom-color: rgba(219,223,230,0.2);
+  }
   .ant-picker-content th {
     color: #fff;
     font-weight: bold;
@@ -816,6 +819,7 @@
   }
   .ant-modal-body {
     height: 384px;
+    position: relative;
   }
   .ant-modal-content {
     background: #0A1943;
@@ -868,7 +872,8 @@
     }
   }
   .over-modal-content {
-    position: relative;
+    height: 290px;
+    overflow: auto;
     .form-box {
       width: 100%;
     }
@@ -885,9 +890,9 @@
         line-height: 48px;
         padding-left: 8px;
         background: rgba(87,129,255,0.12);
-        border-top: 1px solid rgba(230,235,242, 0.2);
         border-right: 1px solid rgba(230,235,242, 0.2);
         border-bottom: 1px solid rgba(230,235,242, 0.2);
+        border-top: 1px solid rgba(230,235,242, 0.2);
         span {
           color: #FF4F17;
         }
@@ -908,6 +913,8 @@
       justify-content: flex-start;
       .form-item {
         flex: 1;
+        flex-shrink: 0;
+        width: 224px;
         padding: 12px 8px 0 12px;
         border-right: 1px solid rgba(230,235,242, 0.2);
         border-bottom: 1px solid rgba(230,235,242, 0.2);
@@ -923,6 +930,43 @@
         .ant-select-arrow {
           color: rgba(230,235,242, 0.4);
         }
+        .ant-picker {
+          width: 100%;
+          background: #0A1943;
+          border-color: rgba(230,235,242, 0.2);
+        }
+        .ant-input {
+          border-color: rgba(230,235,242, 0.2);
+          background: #0A1943;
+          color: #fff;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
+        .ant-picker-input > input {
+          color: #fff;
+        }
+        .ant-select:not(.ant-select-customize-input) .ant-select-selector {
+          background: #0A1943;
+          border: 1px solid rgba(255,255,255,0.20);
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          font-size: 16px;
+          color: #fff;
+          line-height: 24px;
+          box-shadow: none;
+        }
+        .ant-input-affix-wrapper {
+          background: #0A1943;
+          border: 1px solid rgba(255,255,255,0.20);
+        }
+        .ant-input-suffix {
+          color: #fff;
+        }
+        .ant-input-affix-wrapper-status-error.ant-input-affix-wrapper:hover {
+          background: #0A1943;
+        }
       }
       .delete-btn {
         width: 84px;
@@ -934,39 +978,22 @@
         text-align: center;
         border-right: 1px solid rgba(230,235,242, 0.2);
         border-bottom: 1px solid rgba(230,235,242, 0.2);
-      }
-      .ant-select:not(.ant-select-customize-input) .ant-select-selector {
-        background: #0A1943;
-        border: 1px solid rgba(255,255,255,0.20);
-        font-size: 16px;
-        color: rgba(255,255,255,0.30);
-        line-height: 24px;
-        box-shadow: none;
-      }
-      .ant-input-affix-wrapper {
-        background: #0A1943;
-        border: 1px solid rgba(255,255,255,0.20);
-      }
-      .ant-input {
-        background: #0A1943;
-      }
-      .ant-input-suffix {
-        color: #fff;
-      }
-      .ant-input-affix-wrapper-status-error.ant-input-affix-wrapper:hover {
-        background: #0A1943;
+        cursor: pointer;
+        &.disabled {
+          color: rgba(255,255,255,0.20);
+        }
       }
     }
   }
   .add-btn {
     position: absolute;
-    left: 0;
-    bottom: 0;
+    left: 24px;
+    bottom: 10px;
     border: 1px solid rgba(219,223,230, 0.2);
     border-radius: 2px;
     font-size: 16px;
     font-weight: 400;
     color: rgba(255,255,255,0.8);
-    padding: 14px;
+    padding: 8px 17px;
   }
 }

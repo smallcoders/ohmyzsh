@@ -22,6 +22,7 @@ export default () => {
   const analysisFunnelEcharts = useRef<any>(null)
   const analysisPieEcharts = useRef<any>(null)
   const analysisStackLineEcharts = useRef<any>(null)
+  const modalRef = useRef<any>(null)
   const [ mainInfo, setMainInfo ] = useState<any>(null)
   const [currentCityCode, setCurrentCityCode] = useState<number>(340100)
   const [mapAndOverViewInfo, setMapAndOverViewInfo] = useState<any>({overviewVO: null, mapVO: null})
@@ -381,13 +382,15 @@ export default () => {
               separator={<span>至</span>}
               defaultValue={[time.startDate, time.endDate]}
               disabledDate={(current) => {
-                return current && current > moment().subtract(1, 'day') || current < moment('2023-01-01')
+                return current && current > moment().subtract(0, 'day') || current < moment('2023-01-01')
               }}
             />
           </div>
           <div className="progress-title">
             <div className="text">{targetProgressVO.targetName}</div>
-            <div className="edit-btn"><span className="icon" /><span>设置</span></div>
+            <div className="edit-btn" onClick={() => {
+              modalRef.current.openModal()
+            }}><span className="icon" /><span>设置</span></div>
           </div>
           <div className="progress-detail-list">
             {
@@ -547,6 +550,6 @@ export default () => {
         </div>
       </div>
     </div>
-    <OverViewModal />
+    <OverViewModal ref={modalRef} />
   </div>;
 };

@@ -21,3 +21,26 @@ export async function getShareProfit() {
     method: 'get',
   });
 }
+
+
+/** 获取 机构列表 */
+export async function queryBank() {
+  return request<any>('/antelope-finance/bank/mng/queryBank', {
+    method: 'get',
+  });
+}
+
+/** 获取产品 */
+export async function getProduct() {
+  return request<any>('/antelope-finance/product/getProductByBankId', {
+    method: 'get',
+  });
+}
+
+
+/** 获取合同金额 */
+export async function getProjectContract() {
+  return request<any>('/antelope-finance/mng/cockpit/getProjectContract', {
+    method: 'get',
+  });
+}
