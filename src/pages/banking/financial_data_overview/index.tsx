@@ -1,5 +1,5 @@
 import {
-  DatePicker,
+  DatePicker, Popover,
   Tooltip,
 } from 'antd';
 import * as echarts from 'echarts';
@@ -12,8 +12,6 @@ import OverViewModal from './components/OverViewModal'
 import Map from './components/map'
 import './index.less';
 const sc = scopedClasses('financial-data-overview');
-
-
 export default () => {
   const analysisFunnel = useRef<any>(null)
   const analysisPie = useRef<any>(null)
@@ -388,9 +386,34 @@ export default () => {
           </div>
           <div className="progress-title">
             <div className="text">{targetProgressVO.targetName}</div>
-            <div className="edit-btn" onClick={() => {
-              modalRef.current.openModal()
-            }}><span className="icon" /><span>设置</span></div>
+
+            <Popover
+              placement="bottomLeft"
+              overlayClassName="edit-btn-popover"
+              content={
+                <>
+                  <div
+                    onClick={() => {
+                      modalRef.current.openModal()
+                    }}
+                  >
+                    设置分润金额
+                  </div>
+                  <div
+                    onClick={() => {
+                      modalRef.current.openModal()
+                    }}
+                  >
+                    设置项目金额
+                  </div>
+                </>
+              }
+              trigger="click"
+            >
+              <div className="edit-btn"><span className="icon" /><span>设置</span></div>
+            </Popover>
+
+
           </div>
           <div className="progress-detail-list">
             {
