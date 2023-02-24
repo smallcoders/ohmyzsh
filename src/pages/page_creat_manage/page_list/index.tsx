@@ -305,14 +305,14 @@ export default () => {
       title: 'pv',
       dataIndex: 'pv',
       render: (pv: string) => {
-        return <span>{pv || '0'}</span>
+        return <span>{pv || '--'}</span>
       }
     },
     {
       title: 'uv',
       dataIndex: 'uv',
       render: (uv: string) => {
-        return <span>{uv || '0'}</span>
+        return <span>{uv || '--'}</span>
       }
     },
     {
