@@ -388,7 +388,7 @@ export default () => {
             <div className="text">{targetProgressVO.targetName}</div>
 
             <Popover
-              placement="bottomLeft"
+              placement="bottomRight"
               overlayClassName="edit-btn-popover"
               content={
                 <>
