@@ -95,7 +95,7 @@ const GlobalConfig: FC = () => {
             </Form.Item>
             <Form.Item label="网页背景" >
               <div className="config-item">
-                <div className="config-item-label">网页背景:</div>
+                <div className="config-item-label">背景底色:</div>
                 <div className="flex">
                   <Popover
                     placement="topLeft"

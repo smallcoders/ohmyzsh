@@ -99,6 +99,7 @@ const DesignForm = () => {
         when={isChanged()}
         message={`${tmpType === '1' ? '网页' : '表单'}设计有修改，是否直接离开`}
       />
+      <div style={{height: '48px', width: '100%'}} className="occupancy" />
       <div className="top-header">
         <div className="top-header-right" onClick={() => {
           history.push('/');
@@ -109,6 +110,7 @@ const DesignForm = () => {
         <GlobalHeaderRight />
       </div>
       <Header callback={callback} areaCodeOptions={areaCodeOptions} />
+      <div style={{height: '48px', width: '100%'}} className="occupancy" />
       <Layout className="fc-container">
         <Sider theme="light" className="components-container" width={250} style={{ overflow: 'auto' }}>
           <div className="components">
