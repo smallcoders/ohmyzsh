@@ -256,7 +256,7 @@ const TitleConfig = () => {
           <div className="flex align">
             <Tooltip title="左对齐" placement="bottomLeft">
               <div
-                className={config?.textAlign === 'left' ? 'left active' : 'left'}
+                className={config?.subTitle?.textAlign === 'left' ? 'left active' : 'left'}
                 onClick={() => {
                   handleChange('left', 'config.subTitle.textAlign')
                 }}
@@ -264,7 +264,7 @@ const TitleConfig = () => {
             </Tooltip>
             <Tooltip title="居中对齐" placement="bottomLeft">
               <div
-                className={config?.textAlign === 'center' ? 'center active' : 'center'}
+                className={config?.subTitle?.textAlign === 'center' ? 'center active' : 'center'}
                 onClick={() => {
                   handleChange('center', 'config.subTitle.textAlign')
                 }}
@@ -272,7 +272,7 @@ const TitleConfig = () => {
             </Tooltip>
             <Tooltip title="右对齐" placement="bottomLeft">
               <div
-                className={config?.textAlign === 'right' ? 'right active' : 'right'}
+                className={config?.subTitle?.textAlign === 'right' ? 'right active' : 'right'}
                 onClick={() => {
                   handleChange('right', 'config.subTitle.textAlign')
                 }}
@@ -280,7 +280,7 @@ const TitleConfig = () => {
             </Tooltip>
             <Tooltip title="两端对齐" placement="bottomLeft">
               <div
-                className={config?.textAlign === 'justifyAlign' ? 'justify-align active' : 'justify-align'}
+                className={config?.subTitle?.textAlign === 'justifyAlign' ? 'justify-align active' : 'justify-align'}
                 onClick={() => {
                   handleChange('justifyAlign', 'config.subTitle.textAlign')
                 }}
