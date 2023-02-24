@@ -94,13 +94,15 @@ function ViewDiagnosisResultModal(p: ViewDiagnosisResultPropstype) {
     const data: any[] = [];
     for (let key in diagnosisResultInfo) {
       const docs = diagnosisResultInfo[key];
-      console.log('docs: ', docs);
-      if (Array.isArray(docs)) {
-        docs.forEach((doc) => {
-          data.push(Object.assign({}, doc));
-        });
-      } else {
-        (Object.keys(docs) ?? {}).length > 0 && data.push(Object.assign({}, docs));
+      // console.log('docs: ', docs);
+      if (docs) {
+        if (Array.isArray(docs)) {
+          docs.forEach((doc) => {
+            data.push(Object.assign({}, doc));
+          });
+        } else {
+          (Object.keys(docs) ?? {}).length > 0 && data.push(Object.assign({}, docs));
+        }
       }
     }
 
