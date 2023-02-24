@@ -247,7 +247,7 @@ const ImageConfig = () => {
           ))}
         </ul>
         {
-          config?.imgStyle !== 'matrix' &&
+          config?.imgStyle !== 'matrix' && config?.isCarousel &&
           <Button
             className="insert-btn"
             type="link"

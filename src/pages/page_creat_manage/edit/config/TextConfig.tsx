@@ -60,6 +60,11 @@ const TextConfig = () => {
           }}
           ref={inputRef}
           maxLength={300}
+          onBlur={(event) => {
+            if(!event.target.value){
+              handleChange('文本', 'config.text')
+            }
+          }}
           value={config?.text}
           onChange={(event) => handleChange(event.target.value, 'config.text')}
         />

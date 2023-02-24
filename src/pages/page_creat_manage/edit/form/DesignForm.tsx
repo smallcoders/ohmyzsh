@@ -108,42 +108,40 @@ const DesignForm = () => {
         </div>
         <GlobalHeaderRight />
       </div>
-      <div>
-        <Header callback={callback} areaCodeOptions={areaCodeOptions} />
-        <Layout className="fc-container">
-          <Sider theme="light" className="components-container" width={250} style={{ overflow: 'auto' }}>
-            <div className="components">
-              {(tmpType === '1' ? webComponentsList : formComponentsList).map((componentGroup) => (
-                <ComponentsGroup key="基础字段" componentGroup={componentGroup} />
-              ))}
-            </div>
-          </Sider>
-          <Layout className="center-container">
-            <Content className="widget-empty">
-              <Layout>
-                <WidgetForm areaCodeOptions={areaCodeOptions} formInstance={formInstance} />
-              </Layout>
-            </Content>
-          </Layout>
-          <Sider className="widget-config-container" theme="light" width={320}>
+      <Header callback={callback} areaCodeOptions={areaCodeOptions} />
+      <Layout className="fc-container">
+        <Sider theme="light" className="components-container" width={250} style={{ overflow: 'auto' }}>
+          <div className="components">
+            {(tmpType === '1' ? webComponentsList : formComponentsList).map((componentGroup) => (
+              <ComponentsGroup key="基础字段" componentGroup={componentGroup} />
+            ))}
+          </div>
+        </Sider>
+        <Layout className="center-container">
+          <Content className="widget-empty">
             <Layout>
-              <>
-                <Layout.Header>
-                  <div className={`config-tab ${currentTab === 'Local' && 'active'}`} onClick={() => setCurrentTab('Local')}>
-                    字段属性
-                  </div>
-                  <div className={`config-tab ${currentTab === 'Global' && 'active'}`} onClick={() => setCurrentTab('Global')}>
-                    {tmpType === '1' ? '网页属性' : '表单属性' }
-                  </div>
-                </Layout.Header>
-                <Content className="config-content">
-                  {currentTab === 'Local' ? <WidgetConfig /> : tmpType === '1' ? <WebGlobalConfig /> : <GlobalConfig />}
-                </Content>
-              </>
+              <WidgetForm areaCodeOptions={areaCodeOptions} formInstance={formInstance} />
             </Layout>
-          </Sider>
+          </Content>
         </Layout>
-      </div>
+        <Sider className="widget-config-container" theme="light" width={320}>
+          <Layout>
+            <>
+              <Layout.Header>
+                <div className={`config-tab ${currentTab === 'Local' && 'active'}`} onClick={() => setCurrentTab('Local')}>
+                  字段属性
+                </div>
+                <div className={`config-tab ${currentTab === 'Global' && 'active'}`} onClick={() => setCurrentTab('Global')}>
+                  {tmpType === '1' ? '网页属性' : '表单属性' }
+                </div>
+              </Layout.Header>
+              <Content className="config-content">
+                {currentTab === 'Local' ? <WidgetConfig /> : tmpType === '1' ? <WebGlobalConfig /> : <GlobalConfig />}
+              </Content>
+            </>
+          </Layout>
+        </Sider>
+      </Layout>
     </div>
   )
 }

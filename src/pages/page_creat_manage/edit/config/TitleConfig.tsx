@@ -69,6 +69,11 @@ const TitleConfig = () => {
           ref={inputRef}
           maxLength={300}
           value={config?.text}
+          onBlur={(event) => {
+            if(!event.target.value){
+              handleChange('主标题', 'config.text')
+            }
+          }}
           onChange={(event) => handleChange(event.target.value, 'config.text')}
         />
       </Form.Item>

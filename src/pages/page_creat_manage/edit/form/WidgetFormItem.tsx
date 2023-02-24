@@ -32,6 +32,7 @@ import { DesignContext } from '../store'
 import { ActionType } from '../store/action'
 import { Component } from '../config'
 import { removeDomNode, createNewWidgetFormList } from '../utils'
+import { history } from 'umi';
 
 interface Props {
   item: Component
@@ -52,6 +53,7 @@ const WidgetFormItem: FC<Props> = (props) => {
     areaCodeOptions,
     editWidth
   } = props
+  const tmpType = history.location.query?.type as string
 
   const {
     state: { widgetFormList, selectWidgetItem },
@@ -315,14 +317,20 @@ const WidgetFormItem: FC<Props> = (props) => {
         {selectWidgetItem?.key === key && (
           <>
             <div className="widget-view-action">
-              <Popconfirm placement="bottomRight" title='确定删除该字段及对应表单数据？' onConfirm={(e) => {
-                handleDeleteClick(e)
-              }} okText="删除" cancelText="取消">
-                <div>
-                  <img className="img-icon" src={deleteIcon} alt='' />
-                  <span>删除</span>
-                </div>
-              </Popconfirm>
+              {
+                tmpType === '1' ?
+                  <div onClick={handleDeleteClick}>
+                    <img className="img-icon" src={deleteIcon} alt='' />
+                    <span>删除</span>
+                  </div> : <Popconfirm placement="bottomRight" title='确定删除该字段及对应表单数据？' onConfirm={(e) => {
+                  handleDeleteClick(e)
+                }} okText="删除" cancelText="取消">
+                  <div>
+                    <img className="img-icon" src={deleteIcon} alt='' />
+                    <span>删除</span>
+                  </div>
+                </Popconfirm>
+              }
               <div onClick={handleCopyClick}>
                 <img className="img-icon" src={copyIcon} alt='' />
                 <span>复制</span>
