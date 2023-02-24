@@ -85,7 +85,7 @@ export default () => {
           setModalOpen(true)
           return
         }
-        history.push(`${routeName.ORG_MANAGE_INDEX}`);
+        history.push(`${routeName.ORG_MANAGE_INDEX}?type=${'1'}`);
         break;
       case 'EXPERT':
         if (!access['M_UM_ZJZY']) {
