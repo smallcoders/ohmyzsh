@@ -8,7 +8,7 @@ import { useEffect, useRef, useState } from 'react';
 import { getCockPit, getSummaryAndMap } from '@/services/financial_data_overview';
 import scopedClasses from '@/utils/scopedClasses';
 import { customToFixed, formatPrice } from '@/utils/util';
-
+import OverViewModal from './components/OverViewModal'
 import Map from './components/map'
 import './index.less';
 const sc = scopedClasses('financial-data-overview');
@@ -18,10 +18,12 @@ export default () => {
   const analysisFunnel = useRef<any>(null)
   const analysisPie = useRef<any>(null)
   const analysisStackLine = useRef<any>(null)
+  const cityInfoRef = useRef<any>(null)
   const analysisFunnelEcharts = useRef<any>(null)
   const analysisPieEcharts = useRef<any>(null)
   const analysisStackLineEcharts = useRef<any>(null)
   const [ mainInfo, setMainInfo ] = useState<any>(null)
+  const [currentCityCode, setCurrentCityCode] = useState<number>(340100)
   const [mapAndOverViewInfo, setMapAndOverViewInfo] = useState<any>({overviewVO: null, mapVO: null})
   const [time, setTime] = useState<any>({
     startDate: moment('2023-01-01', 'YYYY-MM-DD'),
@@ -354,9 +356,14 @@ export default () => {
   }, [])
 
 
-   const {overviewVO = {},  mapVO = {} , targetProgressVO = {} } = mapAndOverViewInfo || {}
+
+
+  const {overviewVO = {},  mapVO = [] , targetProgressVO = {} } = mapAndOverViewInfo || {}
   const { productHotVO, bankCreditRankVO } = mainInfo || {}
 
+  const currentMapVO = mapVO?.find((item: any) => {
+    return item.cityCode === currentCityCode
+  })
 
   const screenWidth = document.body.clientWidth / 1920 * 420
   return <div className={sc()}>
@@ -450,12 +457,12 @@ export default () => {
                     }
 
                   </div>
-                  <div className="amount">{item.type === 2 || item.type === 3 ? formatPrice(customToFixed(`${item.num / 1000000}`)) : item.num }</div>
+                  <div className="amount">{item.type === 2 || item.type === 3 ? formatPrice(customToFixed(`${item.num / 1000000}`)) : formatPrice(`${item.num || 0}`) }</div>
                   <div className="change-amount">
-                    近三日: +{item.type === 2 || item.type === 3 ? formatPrice(customToFixed(`${item.threeDay / 1000000}`)) : item.threeDay }
+                    近三日: +{item.type === 2 || item.type === 3 ? formatPrice(customToFixed(`${item.threeDay / 1000000}`)) : formatPrice(`${item.threeDay || 0}`) }
                   </div>
                   <div className="change-amount">
-                    较上月: <span>+{item.type === 2 || item.type === 3 ? formatPrice(customToFixed(`${item.thisMonth / 1000000}`)) : item.thisMonth }</span>
+                    较上月: <span>+{item.type === 2 || item.type === 3 ? formatPrice(customToFixed(`${item.thisMonth / 1000000}`)) : formatPrice(`${item.thisMonth || 0}`) }</span>
                   </div>
                 </div>
               )
@@ -463,13 +470,20 @@ export default () => {
           }
         </div>
         <div className="map" style={{paddingLeft: `${document.body.clientWidth / 1920 * 36}px`}}>
-          <Map />
-          <div className="city-info" style={{marginLeft: `${document.body.clientWidth / 1920 * 24}px`}}>
+          <div className="line2" style={{
+            left: `${document.body.clientWidth / 1920 * 36 + 357}px`,
+            right: `${cityInfoRef.current?.offsetWidth || 412}px`
+          }} />
+          <div className="map-box">
+            <Map getCityInfo={setCurrentCityCode} />
+            <div className="line1" />
+          </div>
+          <div ref={cityInfoRef} className="city-info" style={{marginLeft: `${document.body.clientWidth / 1920 * 24}px`}}>
             <div className="city-info-title">
               <div className="circle">
                 <div className="inner-circle"/>
               </div>
-              合肥市
+              {currentMapVO && currentMapVO.cityName || '合肥市'}
             </div>
             <div className="city-info-desc">
               <div className="city-info-header">
@@ -479,12 +493,14 @@ export default () => {
               </div>
               <div className="city-info-body">
                 {
-                  [1,2,3,4,5,6,7].map((item, index: number) => {
-                    return <div className="info-item" key={index}>
-                        <div className="info-name">融资申请金额 <span>(家)</span></div>
-                        <div className="info-amount">37,654</div>
-                        <div className="last">+50</div>
+                  currentMapVO && currentMapVO.mapDetailVO?.map((item: any, index: number) => {
+                    return (
+                      <div className="info-item" key={index}>
+                        <div className="info-name">{item.name}</div>
+                        <div className="info-amount">{index > 2 ? formatPrice(customToFixed(`${item.num / 1000000}`)) : formatPrice(`${item.num || 0}`)}</div>
+                        <div className="last">+{index > 2 ? formatPrice(customToFixed(`${item.thisMonth / 1000000}`)) : formatPrice(`${item.thisMonth || 0}`)}</div>
                       </div>
+                    )
                   })
                 }
               </div>
@@ -514,7 +530,7 @@ export default () => {
                       <div className="amount">{formatPrice(customToFixed(`${item.amount / 1000000 || 0}`))}万元</div>
                     </div>
                     <div className="bar">
-                      <div style={{width: index === 0 ? '95' : `${(item.amount / (bankCreditRankVO[0].amount / 95 * 100) * 100).toFixed(2)}%`}} className="real-rate" />
+                      <div style={{width: index === 0 ? '95%' : `${(item.amount / (bankCreditRankVO[0].amount / 95 * 100) * 100).toFixed(2)}%`}} className="real-rate" />
                     </div>
                   </div>
               })
@@ -531,5 +547,6 @@ export default () => {
         </div>
       </div>
     </div>
+    <OverViewModal />
   </div>;
 };

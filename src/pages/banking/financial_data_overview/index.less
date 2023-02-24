@@ -552,11 +552,31 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
+    position: relative;
+    .map-box {
+      position: relative;
+    }
     .city-info {
       flex: 1;
       margin-top: 50px;
       background: rgba(114,139,255,0.10);
-      max-width: 372px;
+      max-width: 412px;
+      position: relative;
+    }
+    .line2 {
+      position: absolute;
+      top: 70px;
+      height: 1px;
+      background: #47DBFF;
+    }
+    .line1 {
+      position: absolute;
+      width: 140px;
+      height: 1px;
+      top: 120px;
+      transform: rotate(-45deg);
+      right: 25px;
+      background: #47DBFF;
     }
     .city-info-title {
       position: relative;
@@ -619,7 +639,7 @@
       }
     }
     .info-name {
-      width: 52%;
+      width: 45%;
       padding-left: 8px;
       flex-shrink: 0;
       white-space: nowrap;
@@ -785,5 +805,168 @@
   }
   .ant-picker-range-arrow::before {
     background: #0A1943;
+  }
+}
+
+
+
+.data-over-view-modal {
+  .ant-modal-close {
+    color: rgba(230,235,242, 0.4);
+  }
+  .ant-modal-body {
+    height: 384px;
+  }
+  .ant-modal-content {
+    background: #0A1943;
+  }
+  .ant-modal-header {
+    background: #0A1943;
+    border-bottom-color: rgba(230,235,242, 0.2);
+    padding-left: 40px;
+  }
+  .title-table-box {
+    opacity: 0.6;
+    font-size: 16px;
+    color: rgba(255,255,255,0.6);
+    line-height: 24px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    .share-amount {
+      margin-right: 64px;
+    }
+    .share-amount,.contract-amount {
+      cursor: pointer;
+      &.active {
+        color: #47DBFF;
+        position: relative;
+        &::after {
+          position: absolute;
+          content: '';
+          right: 0;
+          bottom: -16px;
+          left: 0;
+          height: 2px;
+          background: #47DBFF;
+        }
+      }
+    }
+  }
+  .ant-modal-footer {
+    border-color: rgba(230,235,242, 0.2);
+    .ant-btn-default {
+      background: #0A1943;
+      color: #fff;
+      border-color: rgba(230,235,242, 0.2);
+    }
+    .ant-btn-primary {
+      background: #47DBFF;
+      color: #0B1738;
+      box-shadow: none;
+      border-color: #0B1738;
+    }
+  }
+  .over-modal-content {
+    position: relative;
+    .form-box {
+      width: 100%;
+    }
+    .form-box-title {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      border-radius: 2px 2px 0 0;
+      div {
+        font-size: 16px;
+        font-weight: 400;
+        text-align: left;
+        color: #fff;
+        line-height: 48px;
+        padding-left: 8px;
+        background: rgba(87,129,255,0.12);
+        border-top: 1px solid rgba(230,235,242, 0.2);
+        border-right: 1px solid rgba(230,235,242, 0.2);
+        border-bottom: 1px solid rgba(230,235,242, 0.2);
+        span {
+          color: #FF4F17;
+        }
+      }
+      .title-item {
+        flex: 1;
+        &:first-child {
+          border-left: 1px solid rgba(230,235,242, 0.2);
+        }
+      }
+      .operation {
+        width: 84px;
+      }
+    }
+    .form-item-box {
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-start;
+      .form-item {
+        flex: 1;
+        padding: 12px 8px 0 12px;
+        border-right: 1px solid rgba(230,235,242, 0.2);
+        border-bottom: 1px solid rgba(230,235,242, 0.2);
+        &:first-child {
+          border-left: 1px solid rgba(230,235,242, 0.2);
+        }
+        .ant-form-item {
+          margin-bottom: 0;
+        }
+        .ant-form-item-control {
+          height: 56px;
+        }
+        .ant-select-arrow {
+          color: rgba(230,235,242, 0.4);
+        }
+      }
+      .delete-btn {
+        width: 84px;
+        flex-shrink: 0;
+        font-size: 16px;
+        color: #47dbff;
+        padding-top: 16px;
+        height: 69px;
+        text-align: center;
+        border-right: 1px solid rgba(230,235,242, 0.2);
+        border-bottom: 1px solid rgba(230,235,242, 0.2);
+      }
+      .ant-select:not(.ant-select-customize-input) .ant-select-selector {
+        background: #0A1943;
+        border: 1px solid rgba(255,255,255,0.20);
+        font-size: 16px;
+        color: rgba(255,255,255,0.30);
+        line-height: 24px;
+        box-shadow: none;
+      }
+      .ant-input-affix-wrapper {
+        background: #0A1943;
+        border: 1px solid rgba(255,255,255,0.20);
+      }
+      .ant-input {
+        background: #0A1943;
+      }
+      .ant-input-suffix {
+        color: #fff;
+      }
+      .ant-input-affix-wrapper-status-error.ant-input-affix-wrapper:hover {
+        background: #0A1943;
+      }
+    }
+  }
+  .add-btn {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    border: 1px solid rgba(219,223,230, 0.2);
+    border-radius: 2px;
+    font-size: 16px;
+    font-weight: 400;
+    color: rgba(255,255,255,0.8);
+    padding: 14px;
   }
 }

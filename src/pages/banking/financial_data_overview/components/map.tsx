@@ -12,6 +12,9 @@ export default (props: any) => {
   const [currentArea, setCurrentArea] = useState<any>(null)
 
   const changeArea = (code: number) => {
+    if (props.getCityInfo){
+      props.getCityInfo(code)
+    }
     setCurrentArea(code)
   }
 
@@ -61,12 +64,12 @@ export default (props: any) => {
   return (
     <div className="map-area" style={style}>
       <div className="map-area-content">
-        <Image width={677} height={849} preview={false} src={AnHuiProvince} />
+        <Image width={403} height={508} preview={false} src={AnHuiProvince} />
         <div className='map-area-content-area'>
           <svg
-            width="677px"
-            height="849px"
-            viewBox="0 0 677 849"
+            width="403px"
+            height="508px"
+            viewBox="0 0 403 508"
             version="1.1"
             xmlns="http://www.w3.org/2000/svg"
           >
