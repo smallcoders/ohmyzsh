@@ -31,8 +31,8 @@ export async function queryBank() {
 }
 
 /** 获取产品 */
-export async function getProduct() {
-  return request<any>('/antelope-finance/product/getProductByBankId', {
+export async function getProduct(bankId: number) {
+  return request<any>(`/antelope-finance/product/getProductByBankId?bankId=${bankId}`, {
     method: 'get',
   });
 }
