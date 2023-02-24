@@ -1,15 +1,17 @@
 import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
 import { PageContainer } from '@ant-design/pro-layout';
-import React, {useEffect, useState} from "react";
-import {Button, Col, Form, Input, InputNumber, message, Popconfirm, Row, Select} from "antd";
+import React, {useEffect, useState,useRef} from "react";
+import {Button, Col, Form, Input, message, Popconfirm, Row, Select} from "antd";
 import SelfTable from "@/components/self_table";
 import moment from "moment/moment";
 import type Common from "@/types/common";
 import {deleteHotRecommend, editHotRecommend, queryHotRecommend} from "@/services/topic";
 import {InfoOutlined} from "@ant-design/icons";
 import {history} from "@@/core/history";
+import useLimit from '@/hooks/useLimit'
 import {useAccess,Access} from "@@/plugin-access/access";
+
 
 export default () => {
   // // 拿到当前角色的access权限兑现
@@ -19,6 +21,7 @@ export default () => {
     labelCol: { span: 6 },
     wrapperCol: { span: 16 },
   };
+  const weightRef = useRef()
   const [searchForm] = Form.useForm();
   const [dataSource, setDataSource] = useState<any>([]);
   const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
@@ -133,13 +136,13 @@ export default () => {
     }
   };
   // 编辑权重
-  const editSort = async (e: any, value: number) => {
+  const editSort = async (e: any, value: string) => {
     try {
       const {id, topic,enable } = e
       const editRes = await editHotRecommend({
         id,
         topic,
-        weight:value,
+        weight:parseInt(value),
         enable,
       })
       if (editRes.code === 0) {
@@ -244,11 +247,7 @@ export default () => {
                       style={{flexFlow:'column'}}
                       name={'weight'}
                       label="权重设置">
-                      <InputNumber
-                      step={1}
-                      style={{width:'280px'}}
-                      precision={0}
-                      placeholder={'请输入1~100的整数，数字越大排名越靠前'} min={1} max={100} />
+                      <Input ref={weightRef} style={{ width: '300px' }} placeholder='请输入1～100的整数，数字越大排名越小' onInput={useLimit(weightRef)} />
                     </Form.Item>
                   </Form>
                 </>
@@ -257,6 +256,7 @@ export default () => {
               okText="确定"
               cancelText="取消"
               onConfirm={() => {
+                if(!weightForm.getFieldValue('weight')) return
                 editSort(record, weightForm.getFieldValue('weight'))
               }}
             >

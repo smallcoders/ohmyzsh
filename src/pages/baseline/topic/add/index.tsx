@@ -1,8 +1,8 @@
 import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
 import { PageContainer } from '@ant-design/pro-layout';
-import React, {useEffect, useState} from "react";
-import {Button, Col, Form, Input, Row, Modal, Select, message, InputNumber, Breadcrumb} from "antd";
+import React, {useEffect, useState,useRef} from "react";
+import {Button, Col, Form, Input, Row, Modal, Select, message, Breadcrumb} from "antd";
 import SelfTable from "@/components/self_table";
 import type Common from "@/types/common";
 import {history} from "@@/core/history";
@@ -10,6 +10,7 @@ import moment from "moment/moment";
 import {routeName} from "../../../../../config/routes";
 import type { PaginationProps } from 'antd';
 import { getArticlePage, getArticleType} from "@/services/baseline";
+import useLimit from '@/hooks/useLimit'
 import {addHotRecommend,editHotRecommend, getHotRecommendDetail, queryByIds} from "@/services/topic";
 import {Link} from "umi";
 const sc = scopedClasses('baseline-topic-add');
@@ -18,6 +19,7 @@ const statusObj = {
   1: '上架',
 };
 export default () => {
+  const weightRef = useRef()
   const [formIsChange, setFormIsChange] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [types, setTypes] = useState<any[]>([]);
@@ -122,13 +124,13 @@ export default () => {
         const {topic,weight}=value
         const submitRes =   !query?.id ? await addHotRecommend({
           topic,
-          weight,
+          weight:parseInt(weight),
           enable:1,
           articleIds:selectRowKeys
         }):await editHotRecommend({
           id:query?.id,
           topic,
-          weight,
+          weight:parseInt(weight),
           enable:1,
           articleIds:selectRowKeys
         })
@@ -430,7 +432,7 @@ export default () => {
                 message: `必填`,
               },
             ]}>
-              <InputNumber step={1} style={{width:'100%'}} precision={0} placeholder="请输入1~100的整数，数字越大排名越靠前" min={1} max={100}/>
+               <Input ref={weightRef} placeholder='请输入1～100的整数，数字越大排名越小' onInput={useLimit(weightRef)} />
             </Form.Item>
           </Col>
         </Row>
