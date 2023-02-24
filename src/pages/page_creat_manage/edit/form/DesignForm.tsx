@@ -45,6 +45,8 @@ const DesignForm = forwardRef<DesignFormRef, DesignFormProps>((props, ref) => {
     e.returnValue = '';
   };
   useEffect(() => {
+    document.documentElement.scrollTop = 0
+    document.body.scrollTop = 0
     listAllAreaCode().then((res) => {
       if (res?.result){
         const {result} = res
