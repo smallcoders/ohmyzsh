@@ -31,7 +31,7 @@ import {
   getLoanRecordList,
   queryBankList,
   loanRecordExport,
-  takeNotes,
+  takeNotes, delBatchLoanRecord,
 } from '@/services/banking-loan';
 
 const sc = scopedClasses('loan-record-list');
@@ -583,7 +583,7 @@ export default () => {
       {useSearchNode()}
       <div className={sc('container-table')}>
         <div className={sc('container-table-header')}>
-          <div className="title">
+          <div className="title insurance">
             <Dropdown overlay={menuProps}>
               <Button size="large">
                 <Space>
@@ -598,6 +598,15 @@ export default () => {
                   message.warning('请选择数据');
                   return;
                 }
+                delBatchLoanRecord(selectedRowKeys.join(',')).then((res) => {
+                  if (res.code === 0){
+                    const pageIndex = dataSource.length === selectedRowKeys.length && pageInfo.pageTotal === pageInfo.pageIndex ?
+                      pageInfo.pageIndex - 1 :  pageInfo.pageIndex
+                    getPage(pageIndex)
+                  } else {
+                    message.warning(res.message)
+                  }
+                })
               }}>
                 删除选中结果
               </Menu.Item>

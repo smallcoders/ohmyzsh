@@ -5,7 +5,7 @@ import {
 import * as echarts from 'echarts';
 import moment from 'moment';
 import { useEffect, useRef, useState } from 'react';
-import { getCockPit, getSummaryAndMap } from '@/services/financial_data_overview';
+import { getCockPit, getSummaryAndMap, queryCVR } from '@/services/financial_data_overview';
 import scopedClasses from '@/utils/scopedClasses';
 import { customToFixed, formatPrice } from '@/utils/util';
 import OverViewModal from './components/OverViewModal'
@@ -23,6 +23,7 @@ export default () => {
   const modalRef = useRef<any>(null)
   const [ mainInfo, setMainInfo ] = useState<any>(null)
   const [currentCityCode, setCurrentCityCode] = useState<number>(340100)
+  const [cvrList, setCvrList] = useState<number[]>([])
   const [mapAndOverViewInfo, setMapAndOverViewInfo] = useState<any>({overviewVO: null, mapVO: null})
   const [time, setTime] = useState<any>({
     startDate: moment('2023-01-01', 'YYYY-MM-DD'),
@@ -142,7 +143,7 @@ export default () => {
     }
   }
 
-  const renderTransformAnalysis = () => {
+  const renderTransformAnalysis = (params: number[]) => {
     if (analysisFunnel.current){
       if (!analysisFunnelEcharts.current) {
         analysisFunnelEcharts.current = echarts.init(analysisFunnel.current)
@@ -168,8 +169,8 @@ export default () => {
             top: 0,
             bottom: 0,
             width: '100%',
-            min: 2000,
-            max: 23456,
+            min: params[4],
+            max: params[0],
             minSize: '10%',
             maxSize: '100%',
             sort: 'descending',
@@ -193,11 +194,11 @@ export default () => {
               borderWidth: 0
             },
             data: [
-              { value: 23456, name: '金融服务用户量' },
-              { value: 8900, name: '查看产品用户量' },
-              { value: 5000, name: '产品申请用户量' },
-              { value: 3800, name: '授信通过用户量' },
-              { value: 2000, name: '授信放款用户量' }
+              { value: params[0], name: '金融服务用户量' },
+              { value: params[1], name: '查看产品用户量' },
+              { value: params[2], name: '产品申请用户量' },
+              { value: params[3], name: '授信通过用户量' },
+              { value: params[4], name: '授信放款用户量' }
             ]
           }
         ]
@@ -319,12 +320,21 @@ export default () => {
 
   // 获取 时间控制的数据
   const getChangeMainInfo = (date: any) => {
-    getSummaryAndMap({startDate: moment(date.startDate).format('YYYY-MM-DD'), endDate: moment(date.endDate).format('YYYY-MM-DD')}).then((res) => {
+    const params = {startDate: moment(date.startDate).format('YYYY-MM-DD'), endDate: moment(date.endDate).format('YYYY-MM-DD')}
+    getSummaryAndMap(params).then((res) => {
       if (res.result) {
         if (res.code === 0) {
           setMainInfo(res.result)
           renderRateAnalysis(res.result.creditRatioVO)
           renderAmountAnalysis(res.result.monthlyAnalysisVO)
+        }
+      }
+    })
+    queryCVR(params).then((res) => {
+      if (res.result) {
+        if (res.code === 0 && res.result) {
+          setCvrList(res.result)
+          renderTransformAnalysis(res.result)
         }
       }
     })
@@ -348,10 +358,6 @@ export default () => {
   useEffect(() => {
     getMainInfo()
     getChangeMainInfo(time)
-  }, [])
-
-  useEffect(() => {
-    renderTransformAnalysis()
   }, [])
 
 
@@ -394,21 +400,21 @@ export default () => {
                 <>
                   <div
                     onClick={() => {
-                      modalRef.current.openModal()
+                      modalRef.current.openModal(1)
                     }}
                   >
                     设置分润金额
                   </div>
                   <div
                     onClick={() => {
-                      modalRef.current.openModal()
+                      modalRef.current.openModal(2)
                     }}
                   >
-                    设置项目金额
+                    设置项目合同额
                   </div>
                 </>
               }
-              trigger="click"
+              trigger="hover"
             >
               <div className="edit-btn"><span className="icon" /><span>设置</span></div>
             </Popover>
@@ -565,14 +571,18 @@ export default () => {
         </div>
         <div className="transform-analysis">
           <div className="analysis-title">金融服务转化分析</div>
-          <div className="rate-1"><span className="line"/>Rate: 46.88%</div>
-          <div className="rate-2"><span className="line"/>Rate: 46.88%</div>
-          <div className="rate-3"><span className="line"/>Rate: 46.88%</div>
-          <div className="rate-4"><span className="line"/>Rate: 46.88%</div>
+          {
+            cvrList.length > 0 && <>
+              <div className="rate-1"><span className="line"/>Rate: {(cvrList[1] / cvrList[0] * 100).toFixed(2)}%</div>
+              <div className="rate-2"><span className="line"/>Rate: {(cvrList[2] / cvrList[1] * 100).toFixed(2)}%</div>
+              <div className="rate-3"><span className="line"/>Rate: {(cvrList[3] / cvrList[2] * 100).toFixed(2)}%</div>
+              <div className="rate-4"><span className="line"/>Rate: {(cvrList[4] / cvrList[3] * 100).toFixed(2)}%</div>
+            </>
+          }
           <div ref={analysisFunnel} className="analysis-funnel" />
         </div>
       </div>
     </div>
-    <OverViewModal ref={modalRef} />
+    <OverViewModal successCallBack={getMainInfo} ref={modalRef} />
   </div>;
 };

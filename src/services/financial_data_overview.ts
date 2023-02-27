@@ -15,6 +15,14 @@ export async function getSummaryAndMap(data?: { [key: string]: any }) {
   });
 }
 
+/** 获取 金融转化 */
+export async function queryCVR(data?: { [key: string]: any }) {
+  return request<any>('/antelope-finance/mng/cockpit/queryCVR', {
+    method: 'post',
+    data,
+  });
+}
+
 /** 获取 分润金额 */
 export async function getShareProfit() {
   return request<any>('/antelope-finance/mng/cockpit/getShareProfit', {
@@ -42,5 +50,22 @@ export async function getProduct(bankId: number) {
 export async function getProjectContract() {
   return request<any>('/antelope-finance/mng/cockpit/getProjectContract', {
     method: 'get',
+  });
+}
+
+/** 新增或者修改分润金额 */
+export async function addOrUpdateShareProfit(data?: { [key: string]: any }) {
+  return request<any>('/antelope-finance/mng/cockpit/addOrUpdateShareProfit', {
+    method: 'post',
+    data
+  });
+}
+
+
+/** 新增或者修改合同金额 */
+export async function addOrUpdateProjectContract(data?: { [key: string]: any }) {
+  return request<any>('/antelope-finance/mng/cockpit/addOrUpdateProjectContract', {
+    method: 'post',
+    data
   });
 }

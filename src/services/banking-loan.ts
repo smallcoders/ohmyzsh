@@ -212,3 +212,15 @@ export async function getTakeDetail(params: { [key: string]: any }) {
     params,
   });
 }
+
+
+/**
+ * 批量删除
+ * @param params
+ * @returns
+ */
+export async function delBatchLoanRecord(ids: string) {
+  return request<any>(`/antelope-finance/loanRecord/mng/delBatchIds?ids=${ids}`, {
+    method: 'get',
+  });
+}

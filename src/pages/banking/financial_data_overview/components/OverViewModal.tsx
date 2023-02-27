@@ -1,35 +1,41 @@
-import { useState, useEffect, useImperativeHandle, forwardRef } from 'react'
-import { Modal, Form, Select, Input, DatePicker } from 'antd';
-import { queryBank, getProduct, getProjectContract, getShareProfit } from '@/services/financial_data_overview';
+import { useState, useImperativeHandle, forwardRef } from 'react'
+import { Modal, Form, Select, Input, DatePicker, message} from 'antd';
+import {
+  queryBank,
+  getProduct,
+  getProjectContract,
+  getShareProfit,
+  addOrUpdateShareProfit,
+  addOrUpdateProjectContract
+} from '@/services/financial_data_overview';
 import moment from 'moment';
 import { customToFixed } from '@/utils/util';
-import { disabled } from 'glamor';
+
+const decimalsVerifyReg = /^(([1-9]{1}\d{0,5})|(0{1}))(\.\d{1,4})?$/
 
 export default forwardRef((props: any, ref: any) => {
-  const [shareAmountForm] = Form.useForm()
-  const [contractAmountForm] = Form.useForm()
+  const [form] = Form.useForm()
 
   const [activeTab, setActiveTab] = useState<number>(1)
   const [visible, setVisible] = useState<boolean>(false)
   const [bankList, setBankList]= useState<any[]>([])
+  const [idMap, setIdMap]= useState<any>({})
   const [productOptionsMap, setProductOptionsMap] = useState<any>({})
-  const [shareFormItemList, setShareFormItemList]= useState<number[]>([1])
+  const [formItemList, setFormItemList]= useState<number[]>([1])
 
   const reset = () => {
     setVisible(false)
-    setShareFormItemList([1])
+    setFormItemList([1])
+    setIdMap({})
     setProductOptionsMap([])
     setBankList([])
     setActiveTab(1)
-    shareAmountForm.resetFields()
-    contractAmountForm.resetFields()
+    form.resetFields()
   }
 
   const handleAdd = () => {
-    if (activeTab === 1){
-      const newOrgAssets = [...shareFormItemList, (shareFormItemList[shareFormItemList.length - 1] || 0) + 1]
-      setShareFormItemList(newOrgAssets)
-    }
+    const newOrgAssets = [...formItemList, (formItemList[formItemList.length - 1] || 0) + 1]
+    setFormItemList(newOrgAssets)
   }
 
 
@@ -50,32 +56,52 @@ export default forwardRef((props: any, ref: any) => {
 
 
   useImperativeHandle(ref, () => ({
-    openModal: async () => {
-      queryBank().then((res) => {
-        if (res.code === 0 && res.result?.bank){
-          setBankList(res.result.bank.map((item: any) => {
-            return {value: item.id, label: item.name}
-          }))
-        }
-      })
-      getProjectContract().then((res) => {
-        if (res.code === 0 && res.result?.length){
-          const shareFormObj = {}
-          setShareFormItemList(
+    openModal: async (tabIndex: number) => {
+      setActiveTab(tabIndex || 1)
+      if (tabIndex === 1){
+        queryBank().then((res) => {
+          if (res.code === 0 && res.result?.bank){
+            setBankList(res.result.bank.map((item: any) => {
+              return {value: item.id, label: item.name}
+            }))
+          }
+        })
+        getShareProfit().then((res) => {
+          if (res.code === 0 && res.result?.length){
+            const formObj = {}
+            const newShareProfitIdMap = {}
+            setFormItemList(
+              res.result.map((item: any, index: number) => {
+                formObj[`bankId_${index+ 1}`] = item.bankId
+                formObj[`productId_${index+ 1}`] = item.productId
+                formObj[`amount_${index+ 1}`] = customToFixed(`${item.amount / 1000000} || '`)
+                newShareProfitIdMap[`id_${index+1}`] = item.id
+                getProductList(item.bankId)
+                return index + 1
+              })
+            )
+            setIdMap(newShareProfitIdMap)
+            form.setFieldsValue({...formObj})
+          }
+        })
+      } else {
+        getProjectContract().then((res) => {
+          const formObj = {}
+          const newProjectContractIdMap = {}
+          setFormItemList(
             res.result.map((item: any, index: number) => {
-              shareFormObj[`bankId_${index+ 1}`] = item.bankId
-              shareFormObj[`productId_${index+ 1}`] = item.productId
-              shareFormObj[`amount_${index+ 1}`] = item.amount
+              formObj[`projectName_${index+ 1}`] = item.projectName
+              formObj[`signDate_${index+ 1}`] = moment(item.signDate)
+              formObj[`amount_${index+ 1}`] = customToFixed(`${item.amount / 1000000} || '`)
+              newProjectContractIdMap[`id_${index+1}`] = item.id
               getProductList(item.bankId)
               return index + 1
             })
           )
-          shareAmountForm.setFieldsValue({...shareFormObj})
-        }
-      })
-      getShareProfit().then((res) => {
-        console.log(res)
-      })
+          setIdMap(newProjectContractIdMap)
+          form.setFieldsValue({...formObj})
+        })
+      }
       setVisible(true)
     },
   }))
@@ -85,100 +111,126 @@ export default forwardRef((props: any, ref: any) => {
   const renderTitle = () => {
     return (
       <div className="title-table-box">
-        <div
-          className={activeTab === 1 ? "share-amount active" : 'share-amount'}
-          onClick={() => {
-            setActiveTab(1)
-          }}
-        >
-          分润金额
-        </div>
-        <div
-          className={activeTab === 2 ? "contract-amount active" : 'contract-amount'}
-          onClick={() => {
-            setActiveTab(2)
-          }}
-        >
-          项目合同额
-        </div>
+        {
+          activeTab === 1 ?
+            <div
+              className="share-amount"
+              onClick={() => {
+                setActiveTab(1)
+              }}
+            >
+              分润金额
+            </div> :
+            <div
+              className="contract-amount"
+              onClick={() => {
+                setActiveTab(2)
+              }}
+            >
+              项目合同额
+            </div>
+        }
       </div>
     )
   }
 
   const handleSubmit = () => {
     if (activeTab === 1){
-      shareAmountForm.validateFields().then(async (values) => {
-        // todo
-        const {
-          urgencyRemark,
-          amount,
-          term,
-          purpose,
-          purposeRemark,
-          urgency,
-          revenue,
-          qualification,
-        } = values
-        const orgAssetsDTO = []
+      form.validateFields().then(async (values) => {
+        const shareAmountInfoList = []
         const indexList = []
         for (const key in values) {
-          if (key.indexOf('type') !== -1) {
-            orgAssetsDTO.push({})
-            indexList.push(Number(key.replace('type_', '')))
+          if (key.indexOf('bankId') !== -1) {
+            shareAmountInfoList.push({})
+            indexList.push(Number(key.replace('bankId_', '')))
           }
         }
         indexList.sort((a, b) => {
           return a - b
         })
         for (const key in values) {
-          if (key.indexOf('type') !== -1) {
-            const keyIndex = Number(key.replace('type_', ''))
+          if (key.indexOf('bankId') !== -1) {
+            const keyIndex = Number(key.replace('bankId_', ''))
             const findIndex = indexList.findIndex((item) => item === keyIndex)
-            orgAssetsDTO[findIndex]['type'] = values[key]
-          }
-          if (key.indexOf('cost') !== -1) {
-            const keyIndex = Number(key.replace('cost_', ''))
-            const findIndex = indexList.findIndex((item) => item === keyIndex)
-            orgAssetsDTO[findIndex]['cost'] = Math.ceil(values[key].replace(/,/g, '') * 1000000)
-          }
-          if (key.indexOf('buyTime') !== -1) {
-            const keyIndex = Number(key.replace('buyTime_', ''))
-            const findIndex = indexList.findIndex((item) => item === keyIndex)
-            orgAssetsDTO[findIndex]['buyTime'] = dayjs(values[key]).format('YYYY-MM-DD')
-          }
-          if (key.indexOf('clear') !== -1) {
-            const keyIndex = Number(key.replace('clear_', ''))
-            const findIndex = indexList.findIndex((item) => item === keyIndex)
-            orgAssetsDTO[findIndex]['clear'] = values[key]
-          }
-        }
-        const params = {
-          urgencyRemark: dayjs(urgencyRemark).format('YYYY-MM-DD'),
-          urgency,
-          term,
-          purpose,
-          purposeRemark,
-          orgAssetsDTO,
-          revenue,
-          qualification: qualification?.length ? qualification.join(',') : '',
-          amount: Math.ceil(amount.replace(/,/g, '') * 1000000),
-        }
-        httpExactDiagnose(params)
-          .then((res) => {
-            if (res.code == 0) {
-              if (props.callBack) {
-                props.callBack(res.result)
-              }
-              onCancel()
-            } else {
-              message.warn(res.message)
+            if (idMap[`id_${keyIndex}`]) {
+              shareAmountInfoList[findIndex]['id'] = idMap[`id_${keyIndex}`]
             }
-          })
+            shareAmountInfoList[findIndex]['bankId'] = values[key]
+          }
+          if (key.indexOf('productId') !== -1) {
+            const keyIndex = Number(key.replace('productId_', ''))
+            const findIndex = indexList.findIndex((item) => item === keyIndex)
+            shareAmountInfoList[findIndex]['productId'] = values[key]
+          }
+          if (key.indexOf('amount') !== -1) {
+            const keyIndex = Number(key.replace('amount_', ''))
+            const findIndex = indexList.findIndex((item) => item === keyIndex)
+            shareAmountInfoList[findIndex]['amount'] = Math.ceil(Number(`${values[key]}`.replace(/,/g, '')) * 1000000)
+          }
+        }
+        addOrUpdateShareProfit(shareAmountInfoList).then((res) => {
+          if (res.code == 0) {
+            if (props.successCallBack) {
+              props.successCallBack()
+            }
+            reset()
+          } else {
+            message.error(res.message)
+          }
+        })
           .catch(() => {
-            message.warn('系统异常,请重试')
+            message.error('系统异常,请重试')
           })
       })
 
+    } else {
+      form.validateFields().then(async (values) => {
+        const projectContractInfoList = []
+        const indexList = []
+        for (const key in values) {
+          if (key.indexOf('projectName') !== -1) {
+            projectContractInfoList.push({})
+            indexList.push(Number(key.replace('projectName_', '')))
+          }
+        }
+        indexList.sort((a, b) => {
+          return a - b
+        })
+        for (const key in values) {
+          if (key.indexOf('projectName') !== -1) {
+            const keyIndex = Number(key.replace('projectName_', ''))
+            const findIndex = indexList.findIndex((item) => item === keyIndex)
+            if (idMap[`id_${keyIndex}`]) {
+              projectContractInfoList[findIndex]['id'] = idMap[`id_${keyIndex}`]
+            }
+            projectContractInfoList[findIndex]['projectName'] = values[key]
+          }
+          if (key.indexOf('signDate') !== -1) {
+            const keyIndex = Number(key.replace('signDate_', ''))
+            const findIndex = indexList.findIndex((item) => item === keyIndex)
+            projectContractInfoList[findIndex]['signDate'] = moment(values[key]).format('YYYY-MM-DD')
+          }
+          if (key.indexOf('amount') !== -1) {
+            const keyIndex = Number(key.replace('amount_', ''))
+            const findIndex = indexList.findIndex((item) => item === keyIndex)
+            projectContractInfoList[findIndex]['amount'] = Math.ceil(Number(`${values[key]}`.replace(/,/g, '')) * 1000000)
+          }
+        }
+
+        addOrUpdateProjectContract(projectContractInfoList).then((res) => {
+          if (res.code == 0) {
+            if (props.successCallBack) {
+              props.successCallBack()
+            }
+            reset()
+          } else {
+            message.error(res.message)
+          }
+        })
+          .catch(() => {
+            message.error('系统异常,请重试')
+          })
+      })
     }
   }
 
@@ -203,9 +255,10 @@ export default forwardRef((props: any, ref: any) => {
             <div className="title-item"><span>*</span>{activeTab === 1 ? '分润金额' : '项目合同额'}</div>
             <div className="operation"><span>*</span>操作</div>
           </div>
-          <Form name="share-amount-form" form={shareAmountForm} style={{display: activeTab === 1 ? 'block': 'none'}}>
+          <Form name="share-amount-form" form={form}>
               {
-                shareFormItemList.map((item: any, index: number) => {
+                activeTab === 1 ?
+                formItemList.map((item: any, index: number) => {
                   return (
                     <div className="form-item-box" key={index}>
                       <div className="form-item">
@@ -219,7 +272,7 @@ export default forwardRef((props: any, ref: any) => {
                             options={bankList}
                             placeholder="请选择"
                             onChange={(value) => {
-                              shareAmountForm.resetFields([`productId_${item}`])
+                              form.resetFields([`productId_${item}`])
                               getProductList(value)
                             }}
                           />
@@ -233,7 +286,7 @@ export default forwardRef((props: any, ref: any) => {
                           rules={[{ required: true, message: '金融产品必选' }]}
                         >
                           <Select
-                            options={productOptionsMap[shareAmountForm.getFieldValue(`bankId_${item}`)] || []}
+                            options={productOptionsMap[form.getFieldValue(`bankId_${item}`)] || []}
                             placeholder="请选择"
                           />
                         </Form.Item>
@@ -242,69 +295,90 @@ export default forwardRef((props: any, ref: any) => {
                         <Form.Item
                           name={`amount_${item}`}
                           validateTrigger="onBlur"
+                          rules={[
+                            {
+                              validator(rule, value) {
+                                if (!value) {
+                                  return Promise.reject('分润金额必填')
+                                } else if (!Number(value.replace(/,/g, ''))) {
+                                  return Promise.reject('分润金额必须大于0')
+                                } else if (!decimalsVerifyReg.test(value.replace(/,/g, ''))) {
+                                  return Promise.reject('整数至多6位数字，小数点后至多4位数字')
+                                }
+                                return Promise.resolve()
+                              },
+                            },
+                          ]}
                           required
-                          rules={[{ required: true, message: '分润金额必填' }]}
                         >
                           <Input placeholder="请输入" suffix="万元" maxLength={11} />
                         </Form.Item>
                       </div>
                       <div onClick={() => {
-                        if (shareFormItemList.length > 1){
-                          shareFormItemList.splice(index, 1)
-                          setShareFormItemList([...shareFormItemList])
+                        if (formItemList.length > 1){
+                          formItemList.splice(index, 1)
+                          setFormItemList([...formItemList])
                         }
-                      }} className={`delete-btn ${shareFormItemList.length === 1 ? 'disabled' : ''}`}>删除</div>
+                      }} className={`delete-btn ${formItemList.length === 1 ? 'disabled' : ''}`}>删除</div>
                     </div>
                   )
-                })
+                }) : formItemList.map((item: any, index: number) => {
+                    return (
+                      <div className="form-item-box" key={index}>
+                        <div className="form-item">
+                          <Form.Item
+                            name={`projectName_${item}`}
+                            validateTrigger="onBlur"
+                            required
+                            rules={[{ required: true, message: '项目名称' }]}
+                          >
+                            <Input placeholder="请输入" maxLength={100} />
+                          </Form.Item>
+                        </div>
+                        <div className="form-item">
+                          <Form.Item
+                            name={`signDate_${item}`}
+                            validateTrigger="onBlur"
+                            required
+                            rules={[{ required: true, message: '合同签订时间必选' }]}
+                          >
+                            <DatePicker
+                              dropdownClassName="financial-overview-time"
+                              disabledDate={(current) =>
+                                current && current > moment().subtract(0, 'day')
+                              }
+                            />
+                          </Form.Item>
+                        </div>
+                        <div className="form-item">
+                          <Form.Item
+                            name={`amount_${item}`}
+                            validateTrigger="onBlur"
+                            required
+                            rules={[
+                              {
+                                validator(rule, value) {
+                                  if (!value) {
+                                    return Promise.reject('合同金额必填')
+                                  } else if (!Number(value.replace(/,/g, ''))) {
+                                    return Promise.reject('合同金额必须大于0')
+                                  } else if (!decimalsVerifyReg.test(value.replace(/,/g, ''))) {
+                                    return Promise.reject('整数至多6位数字，小数点后至多4位数字')
+                                  }
+                                  return Promise.resolve()
+                                },
+                              },
+                            ]}
+                          >
+                            <Input placeholder="请输入" suffix="万元" maxLength={11} />
+                          </Form.Item>
+                        </div>
+                        <div className="delete-btn disabled">删除</div>
+                      </div>
+                    )
+                  })
               }
             </Form>
-          <Form name="contract-amount-form" form={contractAmountForm} style={{display: activeTab === 2 ? 'block': 'none'}}>
-            {
-              [1,2, 4,5,6,7].map((item: any, index: number) => {
-                return (
-                  <div className="form-item-box" key={index}>
-                    <div className="form-item">
-                      <Form.Item
-                        name="name"
-                        validateTrigger="onBlur"
-                        required
-                        rules={[{ required: true, message: '金融机构必选' }]}
-                      >
-                        <Input placeholder="请输入" maxLength={100} />
-                      </Form.Item>
-                    </div>
-                    <div className="form-item">
-                      <Form.Item
-                        name="time"
-                        validateTrigger="onBlur"
-                        required
-                        rules={[{ required: true, message: '合同签订时间必选' }]}
-                      >
-                        <DatePicker
-                          dropdownClassName="financial-overview-time"
-                          disabledDate={(current) =>
-                            current && current > moment().subtract(0, 'day')
-                          }
-                        />
-                      </Form.Item>
-                    </div>
-                    <div className="form-item">
-                      <Form.Item
-                        name="amount"
-                        validateTrigger="onBlur"
-                        required
-                        rules={[{ required: true, message: '分润金额必填' }]}
-                      >
-                        <Input placeholder="请输入" suffix="万元" maxLength={11} />
-                      </Form.Item>
-                    </div>
-                    <div className="delete-btn disabled">删除</div>
-                  </div>
-                )
-              })
-            }
-          </Form>
         </div>
       </div>
       <div

@@ -35,6 +35,7 @@ import {
   loanRecordExport,
   takeNotes,
   getTakeMoneyDetail,
+  delBatchLoanRecord
 } from '@/services/banking-loan';
 
 const sc = scopedClasses('loan-record-list');
@@ -693,6 +694,16 @@ export default ({ loanType, name }: { loanType: number; name: string }) => {
                     message.warning('请选择数据');
                     return;
                   }
+                  delBatchLoanRecord(selectedRowKeys.join(',')).then((res) => {
+                    if (res.code === 0){
+                      const pageIndex = dataSource.length === selectedRowKeys.length && pageInfo.pageTotal === pageInfo.pageIndex ?
+                        pageInfo.pageIndex - 1 :  pageInfo.pageIndex
+                      getPage(pageIndex)
+                    } else {
+                      message.warning(res.message)
+                    }
+                  })
+
                 }}>
                   删除选中结果
                 </Menu.Item>
