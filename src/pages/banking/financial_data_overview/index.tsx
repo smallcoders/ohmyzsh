@@ -342,6 +342,7 @@ export default () => {
 
   const selectTime = (date: any) => {
     if (date?.[0] && date?.[1]){
+
       const startDate = moment(date[0], 'YYYY-MM-DD')
       const endDate = moment(date[1], 'YYYY-MM-DD')
       setTime({
