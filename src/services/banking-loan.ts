@@ -219,8 +219,8 @@ export async function getTakeDetail(params: { [key: string]: any }) {
  * @param params
  * @returns
  */
-export async function delBatchLoanRecord(ids: string) {
-  return request<any>(`/antelope-finance/loanRecord/mng/delBatchIds?ids=${ids}`, {
+export async function delBatchLoanRecord(ids: string, type: number) {
+  return request<any>(`/antelope-finance/loanRecord/mng/delBatchIds?ids=${ids}&type=${type}`, {
     method: 'get',
   });
 }

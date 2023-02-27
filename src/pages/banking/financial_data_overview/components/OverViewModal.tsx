@@ -53,6 +53,9 @@ export default forwardRef((props: any, ref: any) => {
         cacheProductOptionsMap.current = newProductOptionsMap
         setProductOptionsMap(newProductOptionsMap)
       }
+      if (res.code !== 0){
+        message.error(res.message)
+      }
     })
   }
 

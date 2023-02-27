@@ -1,6 +1,7 @@
 import {
   DatePicker, Popover,
   Tooltip,
+  message
 } from 'antd';
 import * as echarts from 'echarts';
 import moment from 'moment';
@@ -33,10 +34,12 @@ export default () => {
   // 获取静态数据  目标  地图  总览
   const getMainInfo = () => {
     getCockPit().then((res) => {
-      if (res.result) {
-        if (res.code === 0) {
+      if (res.code === 0) {
+        if (res.result){
           setMapAndOverViewInfo(res.result)
         }
+      } else {
+        message.error(res.message)
       }
     })
   }
@@ -322,20 +325,22 @@ export default () => {
   const getChangeMainInfo = (date: any) => {
     const params = {startDate: moment(date.startDate).format('YYYY-MM-DD'), endDate: moment(date.endDate).format('YYYY-MM-DD')}
     getSummaryAndMap(params).then((res) => {
-      if (res.result) {
-        if (res.code === 0) {
-          setMainInfo(res.result)
-          renderRateAnalysis(res.result.creditRatioVO)
-          renderAmountAnalysis(res.result.monthlyAnalysisVO)
-        }
+      if (res.code === 0 && res.result) {
+        setMainInfo(res.result)
+        renderRateAnalysis(res.result.creditRatioVO)
+        renderAmountAnalysis(res.result.monthlyAnalysisVO)
+      }
+      if (res.code !== 0){
+        message.error(res.message)
       }
     })
     queryCVR(params).then((res) => {
-      if (res.result) {
-        if (res.code === 0 && res.result) {
-          setCvrList(res.result)
-          renderTransformAnalysis(res.result)
-        }
+      if (res.code === 0 && res.result) {
+        setCvrList(res.result)
+        renderTransformAnalysis(res.result)
+      }
+      if (res.code !== 0){
+        message.error(res.message)
       }
     })
   }

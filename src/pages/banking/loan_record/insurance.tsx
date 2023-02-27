@@ -602,9 +602,9 @@ export default () => {
                     message.warning('请选择数据');
                     return;
                   }
-                  delBatchLoanRecord(selectedRowKeys.join(',')).then((res) => {
+                  delBatchLoanRecord(selectedRowKeys.join(','), 5).then((res) => {
                     if (res.code === 0){
-                      message.info('删除成功')
+                      message.success('删除成功')
                       const pageIndex = dataSource.length === selectedRowKeys.length && pageInfo.pageTotal === pageInfo.pageIndex ?
                         pageInfo.pageIndex - 1 > 0 ? pageInfo.pageIndex : 1 :  pageInfo.pageIndex
                       getPage(pageIndex)
