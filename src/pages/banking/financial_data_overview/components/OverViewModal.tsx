@@ -76,7 +76,7 @@ export default forwardRef((props: any, ref: any) => {
               res.result.map((item: any, index: number) => {
                 formObj[`bankId_${index+ 1}`] = item.bankId
                 formObj[`productId_${index+ 1}`] = item.productId
-                formObj[`amount_${index+ 1}`] = customToFixed(`${item.amount / 1000000} || '`)
+                formObj[`amount_${index+ 1}`] = customToFixed(`${item.amount / 1000000} || '`, 4)
                 newShareProfitIdMap[`id_${index+1}`] = item.id
                 getProductList(item.bankId)
                 return index + 1
@@ -94,7 +94,7 @@ export default forwardRef((props: any, ref: any) => {
             res.result.map((item: any, index: number) => {
               formObj[`projectName_${index+ 1}`] = item.projectName
               formObj[`signDate_${index+ 1}`] = moment(item.signDate)
-              formObj[`amount_${index+ 1}`] = customToFixed(`${item.amount / 1000000} || '`)
+              formObj[`amount_${index+ 1}`] = customToFixed(`${item.amount / 1000000} || '`, 4)
               newProjectContractIdMap[`id_${index+1}`] = item.id
               getProductList(item.bankId)
               return index + 1
