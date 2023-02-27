@@ -1905,7 +1905,8 @@ export default [
         code: 'M_FM_SJZL',
         access: 'M_FM_SJZL',
         component: './banking/financial_data_overview',
-        layout: false
+        layout: false,
+        target: '_blank',
       },
       {
         path: routeName.PRODUCT_TYPE,
