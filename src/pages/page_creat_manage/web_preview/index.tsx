@@ -1,26 +1,9 @@
-import { useEffect, useState } from 'react';
-import { message } from 'antd';
-import { getTemplatePageInfo } from '@/services/page-creat-manage';
+import { useState } from 'react';
 import ComponentItem from './ComponentItem';
-import { history } from 'umi';
 import './index.less'
 
 export default () => {
-  const id = history.location.query?.id as string;
-  const [templateInfo, setTemplateInfo] = useState<any>(id ? null : JSON.parse(localStorage.getItem('tmpInfo') || '{}'))
-  useEffect(() => {
-    if (id){
-      getTemplatePageInfo({
-        id
-      }).then((res) => {
-        if (res?.code === 0 && res?.result?.tmpJson){
-          setTemplateInfo(res?.result)
-        } else {
-          message.error(res?.message)
-        }
-      })
-    }
-  }, [])
+  const [templateInfo] = useState<any>(JSON.parse(localStorage.getItem('tmpInfo') || '{}'))
   const { tmpJson } = templateInfo || {}
   const json = JSON.parse(tmpJson || '{}')
   const widgetFormList = json.widgetFormList || []
