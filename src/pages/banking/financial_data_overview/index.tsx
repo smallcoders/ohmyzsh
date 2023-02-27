@@ -387,7 +387,7 @@ export default () => {
               separator={<span>至</span>}
               defaultValue={[time.startDate, time.endDate]}
               disabledDate={(current) => {
-                return current && current > moment().subtract(0, 'day') || current < moment('2023-01-01')
+                return current && current > moment().subtract(0, 'day')
               }}
             />
           </div>
@@ -579,10 +579,18 @@ export default () => {
           <div className="analysis-title">金融服务转化分析</div>
           {
             cvrList.length > 0 && <>
-              <div className="rate-1"><span className="line"/>Rate: {(cvrList[1] / cvrList[0] * 100).toFixed(2)}%</div>
-              <div className="rate-2"><span className="line"/>Rate: {(cvrList[2] / cvrList[1] * 100).toFixed(2)}%</div>
-              <div className="rate-3"><span className="line"/>Rate: {(cvrList[3] / cvrList[2] * 100).toFixed(2)}%</div>
-              <div className="rate-4"><span className="line"/>Rate: {(cvrList[4] / cvrList[3] * 100).toFixed(2)}%</div>
+              {
+                cvrList[0] > 0 ? <div className="rate-1"><span className="line"/>Rate: {(cvrList[1] / cvrList[0] * 100).toFixed(2)}%</div> : null
+              }
+              {
+                cvrList[1] > 0 ? <div className="rate-2"><span className="line"/>Rate: {(cvrList[2] / cvrList[1] * 100).toFixed(2)}%</div> : null
+              }
+              {
+                cvrList[2] > 0 ? <div className="rate-3"><span className="line"/>Rate: {(cvrList[3] / cvrList[2] * 100).toFixed(2)}%</div> : null
+              }
+              {
+                cvrList[3] > 0 ? <div className="rate-4"><span className="line"/>Rate: {(cvrList[4] / cvrList[3] * 100).toFixed(2)}%</div> : null
+              }
             </>
           }
           <div ref={analysisFunnel} className="analysis-funnel" />

@@ -294,6 +294,7 @@ export default forwardRef((props: any, ref: any) => {
                           <Select
                             showSearch
                             optionFilterProp="label"
+                            notFoundContent={form.getFieldValue(`bankId_${item}`) ? "暂无数据" : '请选择金融机构'}
                             dropdownClassName="product-list-select-drop"
                             options={productOptionsMap[form.getFieldValue(`bankId_${item}`)] || []}
                             placeholder="请选择"
@@ -403,4 +404,5 @@ export default forwardRef((props: any, ref: any) => {
       </div>
     </Modal>
   )
+
 })
