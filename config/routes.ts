@@ -1900,6 +1900,14 @@ export default [
         ],
       },
       {
+        path: routeName.FINANCIAL_DATA_OVERVIEW,
+        name: '金融数据概况',
+        code: 'M_FM_GYSGL',
+        access: 'M_FM_GYSGL',
+        component: './banking/financial_data_overview',
+        layout: false
+      },
+      {
         path: routeName.PRODUCT_TYPE,
         name: '产品类型',
         code: 'M_FM_CPLX',
@@ -2069,15 +2077,6 @@ export default [
         access: 'M_FM_GYSGL',
         component: './banking/supplier-management',
       },
-      {
-        path: '/banking/financial_data_overview',
-        name: '金融数据概况',
-        code: 'M_FM_GYSGL',
-        access: 'M_FM_GYSGL',
-        component: './banking/financial_data_overview',
-        layout: false
-      },
-
     ],
   },
   {

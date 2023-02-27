@@ -25,7 +25,7 @@ import SelfTable from '@/components/self_table';
 import { UploadOutlined } from '@ant-design/icons';
 import FormEdit from '@/components/FormEdit';
 import BankingLoan from '@/types/banking-loan.d';
-import { history } from 'umi';
+import { history, useAccess } from 'umi';
 import { regFenToYuan, regYuanToFen } from '@/utils/util';
 import {
   getLoanRecordList,
@@ -42,6 +42,8 @@ export default () => {
   const [searchForm] = Form.useForm();
   const name: string = 'INSURANCE';
   const loanType: number = 5;
+  // 拿到当前角色的access权限兑现
+  const access = useAccess()
   const creditStatusTrans = {
     7: '待审核',
     9: '待对接',
@@ -592,30 +594,33 @@ export default () => {
                 </Space>
               </Button>
             </Dropdown>
-            <Dropdown overlay={<Menu>
-              <Menu.Item onClick={() => {
-                if (!selectedRowKeys.length) {
-                  message.warning('请选择数据');
-                  return;
-                }
-                delBatchLoanRecord(selectedRowKeys.join(',')).then((res) => {
-                  if (res.code === 0){
-                    const pageIndex = dataSource.length === selectedRowKeys.length && pageInfo.pageTotal === pageInfo.pageIndex ?
-                      pageInfo.pageIndex - 1 :  pageInfo.pageIndex
-                    getPage(pageIndex)
-                  } else {
-                    message.warning(res.message)
+            {
+              access['P_FM_BXYW'] &&
+              <Dropdown overlay={<Menu>
+                <Menu.Item onClick={() => {
+                  if (!selectedRowKeys.length) {
+                    message.warning('请选择数据');
+                    return;
                   }
-                })
-              }}>
-                删除选中结果
-              </Menu.Item>
-            </Menu>}>
-              <Button size="large">
-                批量删除
-                <DownOutlined />
-              </Button>
-            </Dropdown>
+                  delBatchLoanRecord(selectedRowKeys.join(',')).then((res) => {
+                    if (res.code === 0){
+                      const pageIndex = dataSource.length === selectedRowKeys.length && pageInfo.pageTotal === pageInfo.pageIndex ?
+                        pageInfo.pageIndex - 1 > 0 ? pageInfo.pageIndex : 1 :  pageInfo.pageIndex
+                      getPage(pageIndex)
+                    } else {
+                      message.warning(res.message)
+                    }
+                  })
+                }}>
+                  删除选中结果
+                </Menu.Item>
+              </Menu>}>
+                <Button size="large">
+                  批量删除
+                  <DownOutlined />
+                </Button>
+              </Dropdown>
+            }
           </div>
         </div>
         <div className={sc('container-table-body')}>
