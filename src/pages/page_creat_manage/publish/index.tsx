@@ -97,7 +97,7 @@ export default () => {
           <QRCode
             value={getLink(isMobile)}
             renderAs={'canvas'}
-            size={200}
+            size={400}
             bgColor={'#FFFFFF'}
             fgColor={'#000000'}
             level="H"
