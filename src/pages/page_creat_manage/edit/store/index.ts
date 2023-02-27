@@ -37,10 +37,10 @@ const designReducer = (prevState: State, action: Action) => {
         ...prevState,
         widgetFormList: action.payload
       }
-    case ActionType.SET_ICON_SRC:
+    case ActionType.SET_WEB_GLOBAL_CONFIG:
       return {
         ...prevState,
-        iconSrc: action.payload
+        webGlobalConfig: action.payload
       }
     case ActionType.SET_GLOBAL_CONFIG:
       return {

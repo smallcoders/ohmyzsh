@@ -27,12 +27,17 @@ export const initState: State = {
     layout: 'vertical',
   },
   id: '',
+  webGlobalConfig: {
+    pageName: '未命名网页',
+    pageDesc: '',
+    bgColor: '#F7F9FE',
+    inputBgColor: '#F7F9FE'
+  }
 }
 
 export interface State {
   selectWidgetItem?: Component
   widgetFormList: Component[]
-  iconSrc?: string
   globalConfig: any
   formConfig: FormProps,
   [key: string]: any
