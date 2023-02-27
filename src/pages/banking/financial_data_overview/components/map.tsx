@@ -64,12 +64,12 @@ export default (props: any) => {
   return (
     <div className="map-area" style={style}>
       <div className="map-area-content">
-        <Image width={403} height={508} preview={false} src={AnHuiProvince} />
+        <Image width={406} height={509} preview={false} src={AnHuiProvince} />
         <div className='map-area-content-area'>
           <svg
-            width="403px"
-            height="508px"
-            viewBox="0 0 403 508"
+            width="406px"
+            height="509px"
+            viewBox="0 0 406 509"
             version="1.1"
             xmlns="http://www.w3.org/2000/svg"
           >

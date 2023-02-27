@@ -170,6 +170,7 @@ export default forwardRef((props: any, ref: any) => {
         }
         addOrUpdateShareProfit(shareAmountInfoList).then((res) => {
           if (res.code == 0) {
+            message.success('设置成功')
             if (props.successCallBack) {
               props.successCallBack()
             }
@@ -219,6 +220,7 @@ export default forwardRef((props: any, ref: any) => {
 
         addOrUpdateProjectContract(projectContractInfoList).then((res) => {
           if (res.code == 0) {
+            message.success('设置成功')
             if (props.successCallBack) {
               props.successCallBack()
             }
@@ -373,7 +375,12 @@ export default forwardRef((props: any, ref: any) => {
                             <Input placeholder="请输入" suffix="万元" maxLength={11} />
                           </Form.Item>
                         </div>
-                        <div className="delete-btn disabled">删除</div>
+                        <div onClick={() => {
+                          if (formItemList.length > 1){
+                            formItemList.splice(index, 1)
+                            setFormItemList([...formItemList])
+                          }
+                        }} className={`delete-btn ${formItemList.length === 1 ? 'disabled' : ''}`}>删除</div>
                       </div>
                     )
                   })

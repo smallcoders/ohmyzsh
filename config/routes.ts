@@ -1902,8 +1902,8 @@ export default [
       {
         path: routeName.FINANCIAL_DATA_OVERVIEW,
         name: '金融数据概况',
-        code: 'M_FM_GYSGL',
-        access: 'M_FM_GYSGL',
+        code: 'M_FM_SJZL',
+        access: 'M_FM_SJZL',
         component: './banking/financial_data_overview',
         layout: false
       },
