@@ -37,6 +37,9 @@
         font-weight: bold;
         padding: 6px 0 6px 6px;
         color: #47dbff;
+        &:hover{
+          background: rgba(71,219,255,0.36) !important;
+        }
         .ant-picker-range-separator {
           padding-left: 0;
         }
@@ -92,6 +95,9 @@
           justify-content: space-between;
           align-items: center;
           cursor: pointer;
+          &:hover {
+            background: rgba(71,219,255,0.36);
+          }
           span {
             display: inline-block;
             vertical-align: middle;
@@ -1014,5 +1020,19 @@
   }
   .ant-popover-arrow-content {
     --antd-arrow-background-color: #0A1943;
+  }
+}
+
+.bank-list-select-drop {
+  background: #0A1943;
+  .ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
+    color: #fff;
+    background: #1b2d50;
+  }
+  .ant-select-item {
+    color: #fff;
+  }
+  .ant-select-item-option-active:not(.ant-select-item-option-disabled) {
+    background: #1b2d50;
   }
 }

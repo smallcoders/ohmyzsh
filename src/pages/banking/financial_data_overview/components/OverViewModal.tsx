@@ -273,6 +273,7 @@ export default forwardRef((props: any, ref: any) => {
                           <Select
                             options={bankList}
                             placeholder="请选择"
+                            dropdownClassName="bank-list-select-drop"
                             onChange={(value) => {
                               form.resetFields([`productId_${item}`])
                               getProductList(value)
