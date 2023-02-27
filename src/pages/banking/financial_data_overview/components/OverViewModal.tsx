@@ -289,6 +289,7 @@ export default forwardRef((props: any, ref: any) => {
                           rules={[{ required: true, message: '金融产品必选' }]}
                         >
                           <Select
+                            dropdownClassName="product-list-select-drop"
                             options={productOptionsMap[form.getFieldValue(`bankId_${item}`)] || []}
                             placeholder="请选择"
                           />
