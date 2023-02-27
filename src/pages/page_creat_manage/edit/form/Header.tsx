@@ -137,7 +137,7 @@ const Header = (props: any) => {
                 state: 0,
               }))
               if (!newWinUrl || newWinUrl && newWinUrl?.closed){
-                const winUrl = window.open(`${routeName.PAGE_CREAT_MANAGE_WEB_PREVIEW}?id=${state.id || ''}&type=${tmpType || ''}`);
+                const winUrl = window.open(`${routeName.PAGE_CREAT_MANAGE_WEB_PREVIEW}?type=${tmpType || ''}`);
                 setNewWinUrl(winUrl)
               }
               if (newWinUrl && !newWinUrl.closed){
