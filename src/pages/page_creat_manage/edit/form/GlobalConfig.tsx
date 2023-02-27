@@ -153,7 +153,7 @@ const GlobalConfig: FC = () => {
                     }}
                   >
                     <div className="show-color">
-                      <span className="color" style={{background: `${globalConfig?.bgColor || 'F7F9FE'}`}} />
+                      <span className="color" style={{background: `${globalConfig?.bgColor || '#F7F9FE'}`}} />
                       颜色
                     </div>
                   </Popover>
