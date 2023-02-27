@@ -529,7 +529,12 @@ export default () => {
                   currentMapVO && currentMapVO.mapDetailVO?.map((item: any, index: number) => {
                     return (
                       <div className="info-item" key={index}>
-                        <div className="info-name">{item.name}</div>
+                        <div
+                          className="info-name"
+                          dangerouslySetInnerHTML={{__html: item.name?.replace(/\((.+?)\)/g, (res: string) => {
+                            return  `<span>${res}</span>`
+                          })}}
+                        />
                         <div className="info-amount">{index > 3 ? formatPrice(customToFixed(`${item.num / 1000000}`)) : formatPrice(`${item.num || 0}`)}</div>
                         <div className="last">+{index > 3 ? formatPrice(customToFixed(`${item.thisMonth / 1000000}`)) : formatPrice(`${item.thisMonth || 0}`)}</div>
                       </div>
