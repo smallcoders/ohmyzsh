@@ -274,6 +274,8 @@ export default forwardRef((props: any, ref: any) => {
                           <Select
                             options={bankList}
                             placeholder="请选择"
+                            showSearch
+                            optionFilterProp="label"
                             dropdownClassName="bank-list-select-drop"
                             onChange={(value) => {
                               form.resetFields([`productId_${item}`])
@@ -290,6 +292,8 @@ export default forwardRef((props: any, ref: any) => {
                           rules={[{ required: true, message: '金融产品必选' }]}
                         >
                           <Select
+                            showSearch
+                            optionFilterProp="label"
                             dropdownClassName="product-list-select-drop"
                             options={productOptionsMap[form.getFieldValue(`bankId_${item}`)] || []}
                             placeholder="请选择"
