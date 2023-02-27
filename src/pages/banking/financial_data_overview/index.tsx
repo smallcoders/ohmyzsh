@@ -53,14 +53,14 @@ export default () => {
         tooltip: {
           trigger: 'axis',
           formatter: (params: any) => {
-            return `${(params[0]?.data || {}).time} <br/> 申请金额：${params[0].value || '0.00'}万元 <br/> 授信金额: ${params[1].value || '0.00'}`
+            return `${(params[0]?.data || {}).time} <br/> 申请金额：${params[0].value || '0.00'}万元 <br/> 授信金额: ${params[1].value || '0.00'}万元`
           },
-          backgroundColor: '#0A1943',
+          backgroundColor: 'rgba(12,60,140, 0.98)',
           textStyle: {
             color: '#fff',
             fontWeight: 'bold',
           },
-          borderColor: '#0A1943'
+          borderColor: 'rgba(12,60,140, 0.98)'
         },
         legend: {
           data: ['申请金额', '授信金额'],
@@ -152,12 +152,12 @@ export default () => {
         tooltip: {
           trigger: 'item',
           formatter: '{b} <br/>{c}',
-          backgroundColor: '#0A1943',
+          backgroundColor: 'rgba(12,60,140, 0.98)',
           textStyle: {
             color: '#fff',
             fontWeight: 'bold',
           },
-          borderColor: '#0A1943'
+          borderColor: 'rgba(12,60,140, 0.98)'
         },
         color: ["#037BF4", "#019FE9", "#048BD6", "#0362A5", "#023488"],
         height: '100%',
@@ -240,8 +240,8 @@ export default () => {
           formatter: (params: any) => {
             return `${params.name} <br/> 金额：${params.value}万元 <br/> 占比: ${params?.data?.rate || '0.00%'}`
           },
-          backgroundColor: '#0A1943',
-          borderColor: '#0A1943',
+          backgroundColor: 'rgba(12,60,140, 0.98)',
+          borderColor: 'rgba(12,60,140, 0.98)',
           textStyle: {
             color: '#fff',
             fontWeight: 'bold',
