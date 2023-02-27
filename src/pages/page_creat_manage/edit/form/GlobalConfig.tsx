@@ -1,9 +1,9 @@
 import { FC, useContext, useMemo, useState } from 'react'
 import { Form, Input, Checkbox, Popover, Radio, Tooltip } from 'antd';
 import UploadForm from '../components/upload_form/upload-form';
+import questionIcon from '@/assets/page_creat_manage/question_icon.png';
 import { DesignContext } from '../store'
 import { ActionType } from '../store/action'
-import questionIcon from '@/assets/page_creat_manage/question_icon.png';
 
 const colorMapList = {
   bgColor: ["#CCDFFF","#DEE5FF","#BCDFFF","#0A309E","#D1EAFF"],
@@ -22,7 +22,6 @@ const GlobalConfig: FC = () => {
 
 
   const handleGlobalConfigChange = <T extends keyof typeof globalConfig>(fieldName: T, value: typeof globalConfig[T]) => {
-    console.log(fieldName, value)
     const action = {
       type: ActionType.SET_GLOBAL_CONFIG,
       payload: {
@@ -154,7 +153,7 @@ const GlobalConfig: FC = () => {
                     }}
                   >
                     <div className="show-color">
-                      <span className="color" style={{background: `${globalConfig?.bgColor || 'F7F9FE'}`}} />
+                      <span className="color" style={{background: `${globalConfig?.bgColor || '#F7F9FE'}`}} />
                       颜色
                     </div>
                   </Popover>
