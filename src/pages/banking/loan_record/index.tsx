@@ -691,7 +691,7 @@ export default ({ loanType, name }: { loanType: number; name: string }) => {
                 </Button>
               </Dropdown>
               {
-                ((access['P_FM_DKYW'] && loanType === 1) || (access['P_FM_DKYW'] && loanType === 3)) &&
+                ((access['P_FM_DKYW'] && loanType === 1) || (access['P_FM_ZLYW'] && loanType === 3)) &&
                 <Dropdown overlay={<Menu>
                   <Menu.Item onClick={() => {
                     if (!selectedRowKeys.length) {
@@ -700,6 +700,7 @@ export default ({ loanType, name }: { loanType: number; name: string }) => {
                     }
                     delBatchLoanRecord(selectedRowKeys.join(',')).then((res) => {
                       if (res.code === 0){
+                        message.info('删除成功')
                         const pageIndex = dataSource.length === selectedRowKeys.length && pageInfo.pageTotal === pageInfo.pageIndex ?
                           pageInfo.pageIndex - 1 > 0 ? pageInfo.pageIndex : 1 :  pageInfo.pageIndex
                         getPage(pageIndex)
