@@ -504,7 +504,7 @@ export default () => {
         </div>
         <div className="map" style={{paddingLeft: `${document.body.clientWidth / 1920 * 36}px`}}>
           <div className="line2" style={{
-            left: `${document.body.clientWidth / 1920 * 36 + 357}px`,
+            left: `${document.body.clientWidth / 1920 * 36 + 353}px`,
             right: `${cityInfoRef.current?.offsetWidth || 412}px`
           }} />
           <div className="map-box">
@@ -530,8 +530,8 @@ export default () => {
                     return (
                       <div className="info-item" key={index}>
                         <div className="info-name">{item.name}</div>
-                        <div className="info-amount">{index > 2 ? formatPrice(customToFixed(`${item.num / 1000000}`)) : formatPrice(`${item.num || 0}`)}</div>
-                        <div className="last">+{index > 2 ? formatPrice(customToFixed(`${item.thisMonth / 1000000}`)) : formatPrice(`${item.thisMonth || 0}`)}</div>
+                        <div className="info-amount">{index > 3 ? formatPrice(customToFixed(`${item.num / 1000000}`)) : formatPrice(`${item.num || 0}`)}</div>
+                        <div className="last">+{index > 3 ? formatPrice(customToFixed(`${item.thisMonth / 1000000}`)) : formatPrice(`${item.thisMonth || 0}`)}</div>
                       </div>
                     )
                   })
