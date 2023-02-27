@@ -1,4 +1,4 @@
-import { useState, useImperativeHandle, forwardRef } from 'react'
+import { useState, useImperativeHandle, forwardRef, useRef } from 'react';
 import { Modal, Form, Select, Input, DatePicker, message} from 'antd';
 import {
   queryBank,
@@ -21,6 +21,7 @@ export default forwardRef((props: any, ref: any) => {
   const [bankList, setBankList]= useState<any[]>([])
   const [idMap, setIdMap]= useState<any>({})
   const [productOptionsMap, setProductOptionsMap] = useState<any>({})
+  const cacheProductOptionsMap = useRef<any>({})
   const [formItemList, setFormItemList]= useState<number[]>([1])
 
   const reset = () => {
@@ -45,10 +46,11 @@ export default forwardRef((props: any, ref: any) => {
     }
     getProduct(id).then((res) => {
       if (res.code === 0 && res.result){
-        const newProductOptionsMap = {...productOptionsMap}
+        const newProductOptionsMap = {...cacheProductOptionsMap.current}
         newProductOptionsMap[id] = res.result.map((item: any) => {
           return {value: item.id, label: item.name}
         })
+        cacheProductOptionsMap.current = newProductOptionsMap
         setProductOptionsMap(newProductOptionsMap)
       }
     })
@@ -235,7 +237,6 @@ export default forwardRef((props: any, ref: any) => {
       })
     }
   }
-
   return (
     <Modal
       title={renderTitle()}
