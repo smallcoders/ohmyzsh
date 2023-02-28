@@ -443,7 +443,7 @@ export default () => {
                         </div>
                       </div>
                       <div className="progress-bar">
-                        <div style={item.occupyAmount === 0 ? {paddingRight: 0, width: `${item.occupyAmount > item.targetAmount ? '100%' : item.rate}`} : {width: `${item.rate}`}} className="current">{item.rate}</div>
+                        <div style={item.occupyAmount === 0 ? {paddingRight: 0, width: `${item.rate}`} : {width: `${item.occupyAmount > item.targetAmount ? '100%' : item.rate}`}} className="current">{item.rate}</div>
                       </div>
                     </div>
                   )

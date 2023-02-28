@@ -244,6 +244,7 @@ export default forwardRef((props: any, ref: any) => {
     <Modal
       title={renderTitle()}
       visible={visible}
+      maskClosable={false}
       onOk={() => {
         handleSubmit()
       }}
