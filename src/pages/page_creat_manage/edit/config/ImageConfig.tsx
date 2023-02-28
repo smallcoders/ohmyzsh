@@ -150,8 +150,10 @@ const ImageConfig = () => {
               value={config?.imgWidth}
               max={config?.imgStyle === 'banner' ? 1920 : 1200}
               min={1}
-              onChange={(value) => handleChange(value, 'config.imgWidth')}
-              controls={false}
+              onChange={(value) => {
+                handleChange(value, 'config.imgWidth')
+              }}
+              controls
               addonAfter={<span>W</span>}
               disabled={config?.imgStyle === 'matrix'}
             />
@@ -160,9 +162,11 @@ const ImageConfig = () => {
               value={config?.imgHeight}
               max={9999}
               min={1}
-              controls={false}
+              controls
               addonAfter={<span>H</span>}
-              onChange={(value) => handleChange(value, 'config.imgHeight')}
+              onChange={(value) => {
+                handleChange(value, 'config.imgHeight')
+              }}
             />
           </div>
         </div>

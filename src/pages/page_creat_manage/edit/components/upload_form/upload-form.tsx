@@ -206,6 +206,7 @@ const UploadForm = (
       <Modal
         width={700}
         title="选择图片"
+        className="material-modal-box"
         visible={isModalOpen}
         onOk={() => {
           if (props.onChange && selectImage){
