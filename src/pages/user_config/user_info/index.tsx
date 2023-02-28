@@ -209,6 +209,17 @@ export default () => {
       title: '所属组织',
       dataIndex: 'orgName',
       width: 100,
+      render: (_: any, record: any) => {
+        return (
+          <div className="org-name">
+            {_ || '--'}
+            {
+              (record?.orgNum > 1) &&
+              <span className="org-number">+{record?.orgNum}</span>
+            }
+          </div>
+        )
+      }
     },
     {
       title: '操作',
