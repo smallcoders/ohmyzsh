@@ -236,7 +236,7 @@ export default () => {
           data[2].rate = item.rate
         }
       })
-      amount = formatPrice(customToFixed(`${amount / 1000000}`))
+      amount = formatPrice(customToFixed(`${(amount || 0) / 1000000}`))
       const option = {
         tooltip: {
           trigger: 'item',
@@ -439,11 +439,11 @@ export default () => {
                           }
                         </div>
                         <div className="desc-amount">
-                          <span>{formatPrice(customToFixed(`${item.occupyAmount / 1000000}`, 0))}</span><span>/{formatPrice(customToFixed(`${item.targetAmount / 1000000}`, 0))}万元</span>
+                          <span>{formatPrice(customToFixed(`${(item.occupyAmount || 0) / 1000000}`, 0))}</span><span>/{formatPrice(customToFixed(`${item.targetAmount / 1000000}`, 0))}万元</span>
                         </div>
                       </div>
                       <div className="progress-bar">
-                        <div style={item.occupyAmount === 0 ? {paddingRight: 0, width: `${item.rate}`} : {width: `${item.rate}`}} className="current">{item.rate}</div>
+                        <div style={item.occupyAmount === 0 ? {paddingRight: 0, width: `${item.occupyAmount > item.targetAmount ? '100%' : item.rate}`} : {width: `${item.rate}`}} className="current">{item.rate}</div>
                       </div>
                     </div>
                   )

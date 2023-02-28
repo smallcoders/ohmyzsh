@@ -454,6 +454,12 @@
       line-height: 22px;
       margin-bottom: 10px;
       .left-desc {
+        white-space: nowrap;
+        max-width: 60%;
+        overflow: hidden;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
         span {
           font-size: 14px;
           font-weight: bold;
@@ -466,9 +472,16 @@
             font-style: italic;
             margin-right: 10px;
           }
+          &:last-child {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
         }
       }
       .amount {
+        white-space: nowrap;
         color: #47DBFF;
       }
     }
