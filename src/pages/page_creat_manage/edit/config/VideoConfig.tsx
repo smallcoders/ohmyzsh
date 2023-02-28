@@ -19,14 +19,12 @@ const VideoConfig = () => {
               max={1200}
               min={1}
               onChange={(value) => handleChange(value, 'config.videoAreaWidth')}
-              controls={false}
               addonAfter={<span>W</span>}
             />
             <InputNumber
               value={config?.videoAreaHeight}
               max={9999}
               min={1}
-              controls={false}
               addonAfter={<span>H</span>}
               onChange={(value) => handleChange(value, 'config.videoAreaHeight')}
             />
