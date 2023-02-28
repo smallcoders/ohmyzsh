@@ -437,7 +437,7 @@ export default () => {
           <Row>
             <Col span={4} offset={1}>
               <Form.Item name="tmpName" label="模板名称">
-                <Input placeholder="请输入" />
+                <Input placeholder="请输入" allowClear />
               </Form.Item>
             </Col>
             <Col span={4} offset={1}>
