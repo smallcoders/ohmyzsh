@@ -1,6 +1,6 @@
-import { message, Image, Button, Descriptions, Radio, Row, Col, Empty } from 'antd';
+import { message, Image, Button, Descriptions, Radio, Row, Col, Empty, Tabs } from 'antd';
 import { history } from 'umi';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import scopedClasses, { labelStyle, contentStyle } from '@/utils/scopedClasses';
 import './index.less';
@@ -9,7 +9,6 @@ import { getExpertAuthDetail, getOrgInfoAuthDetail, getUserDetail } from '@/serv
 import SelfTable from '@/components/self_table';
 import CommonTitle from '@/components/verify_steps/common_title';
 import VerifyStepsDetail from '@/components/verify_steps';
-import VerifyInfoDetail from '@/components/verify_info_detail/verify-info-detail';
 const sc = scopedClasses('user-config-user-detail');
 
 const scaleText = { 1: '0~50人', 2: '50~100人', 3: '100~200人', 4: '200~500人', 5: '500人以上' }
@@ -27,6 +26,7 @@ export default () => {
   const [expertDetail, setExpertDetail] = useState<any>({});
   const [detail, setDetail] = useState<any>({});
   const [auditList, setAuditList] = useState<any>([]);
+  const [orgList, setOrgList] = useState<any>([]);
 
   const [contentType, setContentType] = useState<number>(1)
   const {
@@ -52,7 +52,6 @@ export default () => {
     profitLastYear,
     creditRating,
     businessScope,
-    auditItemList,
   } = orgDetail || {};
   const {
     personalPhotoFile,
@@ -73,9 +72,34 @@ export default () => {
     fileList = [],
   } = expertDetail || {};
 
+  const getExpertAuthVerifyDetail = async (id: string) => {
+    try {
+      const { code, result, message: resultMsg } = await getExpertAuthDetail(id)
+      if (code === 0) {
+        setExpertDetail(result)
+      } else {
+        throw new Error(resultMsg)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const getEnterpriseInfoVerifyDetail = async (id: string) => {
+    try {
+      const { code, result, message: resultMsg } = await getOrgInfoAuthDetail(id)
+      if (code === 0) {
+        setOrgDetail(result)
+      } else {
+        throw new Error(resultMsg)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   const prepare = async () => {
     const id = history.location.query?.id as string;
-
     if (id) {
       try {
         const userRes = await getUserDetail(id)
@@ -106,8 +130,10 @@ export default () => {
           getExpertAuthVerifyDetail(userRes?.result?.expertId)
           setContentType(2)
         }
-        if (userRes?.result?.orgId) {
-          getEnterpriseInfoVerifyDetail(userRes?.result?.orgId)
+        if (userRes?.result?.orgSimpleList?.length) {
+          userRes?.result?.orgSimpleList.forEach((item: any) => {
+            getEnterpriseInfoVerifyDetail(item?.orgId)
+          })
           setContentType(1)
         }
         if (!userRes?.result?.expertId && !userRes?.result?.orgId) {
@@ -125,31 +151,6 @@ export default () => {
     prepare()
   }, [])
 
-  const getExpertAuthVerifyDetail = async (id: string) => {
-    try {
-      const { code, result, message } = await getExpertAuthDetail(id)
-      if (code === 0) {
-        setExpertDetail(result)
-      } else {
-        throw new Error(message)
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  const getEnterpriseInfoVerifyDetail = async (id: string) => {
-    try {
-      const { code, result, message } = await getOrgInfoAuthDetail(id)
-      if (code === 0) {
-        setOrgDetail(result)
-      } else {
-        throw new Error(message)
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }
 
   const basicContent1 = [
     {
@@ -172,7 +173,6 @@ export default () => {
     { label: '组织简介', value: aboutUs },
     { label: '组织核心能力', value: ability },
   ];
-
   const basicContent2 = [
     {
       label: '组织logo',
@@ -202,7 +202,7 @@ export default () => {
     },
     { label: '专家姓名', value: expertName },
     { label: '所属区域', value: (personProvince || '') + (personCity || '') },
-    { label: '专家类型', value: typeList?.map(item => item?.name)?.join('、') || '' },
+    { label: '专家类型', value: typeList?.map((item: any) => item?.name)?.join('、') || '' },
     { label: '产业方向', value: industryNameList?.join('、') || '' },
   ]
 
@@ -282,6 +282,7 @@ export default () => {
   return (
     <PageContainer
       loading={loading}
+      // className={sc('container')}
       footer={[
         <Button
           onClick={() => {
@@ -292,7 +293,6 @@ export default () => {
         </Button>,
       ]}
     >
-
       <div className='user-content' >
         <Row>
           <Col span={6}>
@@ -327,61 +327,51 @@ export default () => {
           }</div>
         </Row>
       </div>
-
       <Radio.Group style={{ margin: '20px 0' }} value={contentType} onChange={(e) => setContentType(e.target.value)}>
-        {detail?.orgId && <Radio.Button value={1}>组织信息</Radio.Button>}
+        {detail?.orgSimpleList?.length > 0 && <Radio.Button value={1}>组织信息</Radio.Button>}
         {detail?.expertId && <Radio.Button value={2}>专家信息</Radio.Button>}
       </Radio.Group>
-      {contentType == 1 && (orgDetail?.auditState == 3 ? <div className={sc('detail-container')} style={{position: 'relative'}}>
-       <div style={{position: 'absolute', right: 20, top: 20}}>认证时间：{orgDetail?.auditPassedTime||"--"}</div>
-        {infoAuthContent?.map((item, index) => {
-          return (
-            <div key={index}>
-              <div className={sc('header')}>{item?.title}</div>
-              <Descriptions column={1} labelStyle={labelStyle} contentStyle={contentStyle}>
-                {item?.content?.map((item, index: number) => {
+      <Tabs
+        defaultActiveKey="1"
+        tabPosition="top"
+        style={{ height: 220 }}
+      >
+        {[...Array(30).keys()].map(i => (
+          <Tabs.TabPane tab={`Tab-${i}`} key={i}>
+            {contentType == 2 && (expertDetail?.auditState == 3 ?
+              <div className={sc('detail-container')}  style={{position: 'relative'}}>
+                <div  style={{position: 'absolute', right: 20, top: 20}}>认证时间：{expertDetail?.auditPassedTime|| '--'}</div>
+                {expertInfoAuthContent?.map((item, index) => {
                   return (
-                    <Descriptions.Item key={item?.label || index} label={item?.label || null}>
-                      {item?.value || '--'}
-                    </Descriptions.Item>
+                    <div key={index}>
+                      <div className={sc('header')}>{item?.title}</div>
+                      <Descriptions column={1} labelStyle={labelStyle} contentStyle={contentStyle}>
+                        {item?.content?.map((it, idx: number) => {
+                          return (
+                            <Descriptions.Item key={it?.label || idx} label={it?.label || null}>
+                              {it?.value || '--'}
+                            </Descriptions.Item>
+                          )
+                        })}
+                      </Descriptions>
+                    </div>
                   )
                 })}
-              </Descriptions>
-            </div>
-          )
-        })}
-      </div> : <Empty description={'当前用户暂未完成组织信息认证'} />)}
-      {contentType == 2 && (expertDetail?.auditState == 3 ?
-        <div className={sc('detail-container')}  style={{position: 'relative'}}>
-          <div  style={{position: 'absolute', right: 20, top: 20}}>认证时间：{expertDetail?.auditPassedTime|| '--'}</div>
-          {expertInfoAuthContent?.map((item, index) => {
-            return (
-              <div key={index}>
-                <div className={sc('header')}>{item?.title}</div>
-                <Descriptions column={1} labelStyle={labelStyle} contentStyle={contentStyle}>
-                  {item?.content?.map((item, index: number) => {
-                    return (
-                      <Descriptions.Item key={item?.label || index} label={item?.label || null}>
-                        {item?.value || '--'}
-                      </Descriptions.Item>
-                    )
-                  })}
-                </Descriptions>
-              </div>
-            )
-          })}
-          {fileList?.length > 0 && (
-            <div className={sc('content')} style={{ paddingLeft: 100 }}>
-              <SelfTable
-                rowKey="id"
-                columns={fileColumns}
-                dataSource={fileList || []}
-                pagination={false}
-              />
-            </div>
-          )}
-        </div> : <Empty description={'当前用户暂未完成专家认证'} />)
-      }
+                {fileList?.length > 0 && (
+                  <div className={sc('content')} style={{ paddingLeft: 100 }}>
+                    <SelfTable
+                      rowKey="id"
+                      columns={fileColumns}
+                      dataSource={fileList || []}
+                      pagination={false}
+                    />
+                  </div>
+                )}
+              </div> : <Empty description={'当前用户暂未完成专家认证'} />)
+            }
+          </Tabs.TabPane>
+        ))}
+      </Tabs>
       {
         auditList && auditList?.length > 0 &&
         <div style={{ background: '#fff', marginTop: 20, paddingTop: 20, paddingLeft: 100 }}>
