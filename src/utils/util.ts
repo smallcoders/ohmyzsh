@@ -236,6 +236,20 @@ export const customToFixed = (num: string, len = 2) => {
   return parseFloat(newNum).toFixed(len);
 };
 
+/**
+ * 是否转换显示
+ * @param val
+ * @param prefix
+ * @returns
+ */
+export const jsonTransform = (val: any, prefix = '/') => {
+  try {
+    return JSON.parse(val || JSON.stringify([prefix])).join('、')
+  } catch (error) {
+    return val
+  }
+}
+
 //数值转千分位，可保留小数
 export const formatPrice = (num: string) => {
   let newVal = num.replace(/[^\d|\.]/g, '')

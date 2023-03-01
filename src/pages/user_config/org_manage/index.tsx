@@ -25,7 +25,7 @@ import {
 import { listAllAreaCode } from '@/services/common';
 import { PageContainer } from '@ant-design/pro-layout';
 import { getOrgManagePage, signOrgTag } from '@/services/org-type-manage';
-import { Access, useAccess } from 'umi';
+import { Access, useAccess,history } from 'umi';
 import {routeName} from "../../../../config/routes";
 const sc = scopedClasses('user-config-org-manage');
 enum Edge {
@@ -35,6 +35,8 @@ enum Edge {
 const { RangePicker } = DatePicker
 
 export default () => {
+  const [searchForm] = Form.useForm();
+  const { type } = history.location.query as any;
   const [dataSource, setDataSource] = useState<OrgManage.Content[]>([]);
   const [searchContent, setSearChContent] = useState<OrgManage.searchContent>({});
   const [activeTags, setActiveTags] = useState<OrgManage.OrgManageTypeEnum[]>([]);
@@ -48,6 +50,13 @@ export default () => {
   }
 
   useEffect(() => {
+    if (type) {
+      searchForm.setFieldsValue({
+        orgTypeId: type
+      })
+      const search = searchForm.getFieldsValue();
+      setSearChContent(search)
+    }
     for (const key in permissions) {
       const permission = permissions[key]
       if (Object.prototype.hasOwnProperty.call(access, permission)) {
@@ -237,7 +246,6 @@ export default () => {
   }, [searchContent]);
 
   const useSearchNode = (): React.ReactNode => {
-    const [searchForm] = Form.useForm();
     return (
       <div className={sc('container-search')}>
         <Form {...formLayout} form={searchForm}>

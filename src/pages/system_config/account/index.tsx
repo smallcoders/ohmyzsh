@@ -36,12 +36,12 @@ const AccountTable: React.FC = () => {
   const { initialState } = useModel('@@initialState');
   const { currentUser } = initialState || {};
   const [handle, setHandle] = useState<boolean>(false); // true展示， false隐藏。   默认隐藏
-  useEffect(()=>{
-    const {type = ''} = currentUser || {}
+  useEffect(() => {
+    const { type = '' } = currentUser || {}
     if (type && type === 'MANAGER_ADMIN') {
       setHandle(true)
     }
-  },[currentUser])
+  }, [currentUser])
 
   /**
    * 查询所有角色
@@ -56,7 +56,7 @@ const AccountTable: React.FC = () => {
             value: item?.id,
           }
         })
-        enable 
+        enable
           ? setUseListRoles(list || [])
           : setListRoles(list || [])
         return list
@@ -162,7 +162,7 @@ const AccountTable: React.FC = () => {
       title: '角色',
       dataIndex: 'roleId',
       valueType: 'select',
-      renderText: (text: any, record: any) => record.roles && record.roles.length > 0 ?  record.roles.map((p: any) => p.name): '--',
+      renderText: (text: any, record: any) => record.roles && record.roles.length > 0 ? record.roles.map((p: any) => p.name) : '--',
       request: async () => getListRolesData(false)
     },
     {
@@ -248,7 +248,7 @@ const AccountTable: React.FC = () => {
       title: '角色',
       dataIndex: 'roleId',
       valueType: 'select',
-      renderText: (text: any, record: any) => record.roles && record.roles.length > 0 ?  record.roles.map((p: any) => p.name): '--',
+      renderText: (text: any, record: any) => record.roles && record.roles.length > 0 ? record.roles.map((p: any) => p.name) : '--',
       request: async () => getListRolesData(false)
     },
     {
@@ -324,7 +324,7 @@ const AccountTable: React.FC = () => {
           labelCol={{ span: 6 }}
           visible={updateModalVisible}
           onVisibleChange={setUpdateModalVisible}
-          initialValues={{ loginName, name, roleIds:roles ? roles?.map((item: any) => { return{ label: item?.name, value: item?.id}}) : [], phone }}
+          initialValues={{ loginName, name, roleIds: roles ? roles?.map((item: any) => item?.id) : [], phone }}
           onFinish={async (value) =>
             await handleSave(false, { ...value, id } as Account.SaveAccountRequest)
           }
@@ -368,10 +368,10 @@ const AccountTable: React.FC = () => {
           span: 4,
           labelWidth: 70,
           optionRender: (searchConfig, formProps, dom) => [dom[1], dom[0]],
-          collapseRender:()=>false,
+          collapseRender: () => false,
         }}
         toolBarRender={() => [
-          handle  && 
+          handle &&
           <Button type="primary" key="createAccount" onClick={() => setCreateModalVisible(true)}>
             <PlusOutlined /> 新建账号
           </Button>,
@@ -381,7 +381,7 @@ const AccountTable: React.FC = () => {
           paginationRef.current = pagination;
           return result;
         }}
-        columns={ handle ? columns : columnsTwo}
+        columns={handle ? columns : columnsTwo}
         pagination={{ size: 'default', showQuickJumper: true, defaultPageSize: 10 }}
       />
       {renderAddModal()}

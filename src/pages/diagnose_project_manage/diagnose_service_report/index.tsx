@@ -1,16 +1,21 @@
 import { getActivityManageList } from '@/services/diagnose-service';
-import {
-  Image
-} from 'antd';
+import { Image, Button } from 'antd';
 import type DataCommodity from '@/types/data-commodity';
 import type DataPromotions from '@/types/data-promotions';
 import './index.less';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import { useRef, useState } from 'react';
-import icon1 from '@/assets/system/empty.png'
+import icon1 from '@/assets/system/empty.png';
+import ReportDetailDrawer from './ReportDetailDrawer';
 
 export default () => {
+  const [loadingObj, setLoadingObj] = useState<any>({});
+  const [tableData, setTableData] = useState<any>([]);
+  const [showTable, setShowTable] = useState(true);
+  const [isDetailPageShow, setIsDetailPageShow] = useState<boolean>(false);
+  const [diagnosisServiceDetail, setDiagnosisServiceDetail] = useState(null);
+
   const actionRef = useRef<ActionType>();
 
   const columns: ProColumns<DataPromotions.Promotions>[] = [
@@ -25,7 +30,7 @@ export default () => {
       dataIndex: 'projectName',
       valueType: 'textarea',
       hideInSearch: true,
-      render: (_: any, _record: any) => _record.projectName ? _record.projectName : '--'
+      render: (_: any, _record: any) => (_record.projectName ? _record.projectName : '--'),
     },
     {
       title: '服务时间',
@@ -58,25 +63,21 @@ export default () => {
     },
   ];
 
-  const [loadingObj, setLoadingObj] = useState<any>({});
-
-  const [tableData, setTableData] = useState<any>([]);
-
   const queryExpandedData = async (record: any, key: any) => {
     try {
-      const table = {...tableData};
-      const loading = {...loadingObj};
-      const data:any = record.list || [];
+      const table = { ...tableData };
+      const loading = { ...loadingObj };
+      const data: any = record.list || [];
       table[key] = data;
       loading[key] = false;
       setTableData(table);
       setLoadingObj(loading);
-    } catch(err) {
+    } catch (err) {
       console.log(err);
     }
   };
 
-  const onExpand = (expanded: any, record: any) => {
+  const onExpand = (_: any, record: any) => {
     const key = record?.packageNo;
     if (tableData[key]?.length) return;
     const loading = { ...loadingObj };
@@ -84,7 +85,18 @@ export default () => {
     setLoadingObj(loading);
     queryExpandedData(record, key);
   };
-  const [showTable, setShowTable] = useState(true)
+
+  const handleViewDetails = (info: any) => {
+    console.log('info: ', info);
+    setDiagnosisServiceDetail(info);
+    setIsDetailPageShow(true);
+  };
+
+  const handleCloseDetailDrawer = () => {
+    setIsDetailPageShow(false);
+    setDiagnosisServiceDetail(null);
+  };
+
   const expandedRowRender = (record: any) => {
     const _columns: ProColumns<DataCommodity.Commodity>[] = [
       {
@@ -105,7 +117,22 @@ export default () => {
       {
         title: '诊断完成率',
         dataIndex: 'finishRate',
-      }
+      },
+      {
+        title: '操作',
+        render: (_, record: DataCommodity.Commodity) =>
+          !record?.['enterpriseNum'] ? (
+            '--'
+          ) : (
+            <Button
+              type="link"
+              style={{ padding: 0 }}
+              onClick={handleViewDetails.bind(null, record)}
+            >
+              详情
+            </Button>
+          ),
+      },
     ];
     return (
       <ProTable
@@ -118,10 +145,11 @@ export default () => {
       />
     );
   };
+
   return (
-    <div className='diagnose-service-report'>
-      <h3 className='title'>诊断项目管理</h3>
-      <div className='content-wrapper'>
+    <div className="diagnose-service-report">
+      <h3 className="title">诊断项目管理</h3>
+      <div className="content-wrapper">
         <h3>诊断服务报表</h3>
         {showTable && (
           <ProTable
@@ -135,12 +163,12 @@ export default () => {
             actionRef={actionRef}
             request={async (pagination) => {
               const result = await getActivityManageList({
-                ...pagination
+                ...pagination,
               });
-              if(result && result.data && result.data.length > 0) {
-                setShowTable(true)
-              }else {
-                setShowTable(false)
+              if (result && result.data && result.data.length > 0) {
+                setShowTable(true);
+              } else {
+                setShowTable(false);
               }
               return result;
             }}
@@ -149,13 +177,17 @@ export default () => {
           />
         )}
         {!showTable && (
-          <div className='empty-status'>
-            <Image src={icon1} width={160}/>
+          <div className="empty-status">
+            <Image src={icon1} width={160} />
             <p>暂无数据</p>
           </div>
         )}
       </div>
-      
+      <ReportDetailDrawer
+        visible={isDetailPageShow}
+        onClose={handleCloseDetailDrawer}
+        diagnosisServiceDetail={diagnosisServiceDetail}
+      />
     </div>
   );
 };

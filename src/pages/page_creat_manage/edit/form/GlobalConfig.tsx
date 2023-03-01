@@ -1,9 +1,9 @@
 import { FC, useContext, useMemo, useState } from 'react'
 import { Form, Input, Checkbox, Popover, Radio, Tooltip } from 'antd';
 import UploadForm from '../components/upload_form/upload-form';
+import questionIcon from '@/assets/page_creat_manage/question_icon.png';
 import { DesignContext } from '../store'
 import { ActionType } from '../store/action'
-import questionIcon from '@/assets/page_creat_manage/question_icon.png';
 
 const colorMapList = {
   bgColor: ["#CCDFFF","#DEE5FF","#BCDFFF","#0A309E","#D1EAFF"],
@@ -22,7 +22,6 @@ const GlobalConfig: FC = () => {
 
 
   const handleGlobalConfigChange = <T extends keyof typeof globalConfig>(fieldName: T, value: typeof globalConfig[T]) => {
-    console.log(fieldName, value)
     const action = {
       type: ActionType.SET_GLOBAL_CONFIG,
       payload: {
@@ -109,7 +108,7 @@ const GlobalConfig: FC = () => {
             >
               <Form.Item>
                 <Radio.Group
-                  defaultValue={globalConfig?.formStyle}
+                  value={globalConfig?.formStyle || 'split'}
                   options={
                     [
                       {label: '题目分割（问卷类表单建议选择此样式）', value: 'split'},
@@ -154,7 +153,7 @@ const GlobalConfig: FC = () => {
                     }}
                   >
                     <div className="show-color">
-                      <span className="color" style={{background: `${globalConfig?.bgColor}`}} />
+                      <span className="color" style={{background: `${globalConfig?.bgColor || '#F7F9FE'}`}} />
                       颜色
                     </div>
                   </Popover>
@@ -162,7 +161,7 @@ const GlobalConfig: FC = () => {
                     <Form.Item>
                       <Input
                         maxLength={6}
-                        value={globalConfig?.inputBgColor.replace('#', '')}
+                        value={globalConfig?.inputBgColor?.replace('#', '') || 'F7F9FE'}
                         onChange={(e) => {
                           handleGlobalConfigChange('inputBgColor', `#${e.target.value.toUpperCase()}`)
                         }}
@@ -208,7 +207,7 @@ const GlobalConfig: FC = () => {
                     <div className="show-color" onClick={() => {
                       setTextColorOpen(true)
                     }}>
-                      <span className="color" style={{background: `${globalConfig?.textColor}`}} />
+                      <span className="color" style={{background: `${globalConfig?.textColor || '#FFFFFF'}`}} />
                       颜色
                     </div>
                   </Popover>
@@ -216,7 +215,7 @@ const GlobalConfig: FC = () => {
                     <Form.Item>
                       <Input
                         maxLength={6}
-                        value={globalConfig?.inputTextColor.replace('#', '')}
+                        value={globalConfig?.inputTextColor?.replace('#', '') || 'FFFFFF'}
                         onChange={(e) => {
                           handleGlobalConfigChange('inputTextColor', `#${e.target.value.toUpperCase()}`)
                         }}
@@ -250,7 +249,7 @@ const GlobalConfig: FC = () => {
                     <div className="show-color" onClick={() => {
                       setButtonBgColorOpen(true)
                     }}>
-                      <span className="color" style={{background: `${globalConfig?.btnBgColor}`}} />
+                      <span className="color" style={{background: `${globalConfig?.btnBgColor || '#0068FF'}`}} />
                       颜色
                     </div>
                   </Popover>
@@ -258,7 +257,7 @@ const GlobalConfig: FC = () => {
                     <Form.Item>
                       <Input
                         maxLength={6}
-                        value={globalConfig?.inputBtnBgColor.replace('#', '')}
+                        value={globalConfig?.inputBtnBgColor?.replace('#', '') || '0068FF'}
                         onChange={(e) => {
                           handleGlobalConfigChange('inputBtnBgColor', `#${e.target.value.toUpperCase()}`)
                         }}
