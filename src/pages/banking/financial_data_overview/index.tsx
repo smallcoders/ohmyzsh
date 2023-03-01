@@ -13,6 +13,19 @@ import OverViewModal from './components/OverViewModal'
 import Map from './components/map'
 import './index.less';
 const sc = scopedClasses('financial-data-overview');
+
+interface remAdaptionInfo {
+  originWidth?: number
+  minWidth?: number
+}
+
+function windowZoom(data: remAdaptionInfo): void {
+  const { originWidth = 3840, minWidth = 1280 } = data
+  const innerWidth = window.innerWidth
+  if (!innerWidth) return
+  document.querySelector('.financial-data-overview')?.setAttribute('style', `transform: scale(${Math.max(innerWidth, minWidth) / originWidth})`)
+}
+
 export default () => {
   const analysisFunnel = useRef<any>(null)
   const analysisPie = useRef<any>(null)
@@ -372,12 +385,17 @@ export default () => {
   }
 
   useEffect(() => {
+    windowZoom({ originWidth: 1920, minWidth: 1280 })
+    const handleChangeScale = () => {
+      windowZoom({ originWidth: 1920, minWidth: 1280 })
+    }
+    window.addEventListener('resize', handleChangeScale)
     document.body.setAttribute('style', 'background: #02061c')
-    document.querySelector('.financial-data-overview')?.setAttribute('style', `transform: scale(${document.body.clientWidth / 1920})`)
     getMainInfo()
     getChangeMainInfo(time)
     return () => {
       document.body.removeAttribute('style')
+      window.removeEventListener('resize', handleChangeScale)
     }
   }, [])
 
