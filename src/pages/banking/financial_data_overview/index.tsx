@@ -12,12 +12,10 @@ import { customToFixed, formatPrice } from '@/utils/util';
 import OverViewModal from './components/OverViewModal'
 import Map from './components/map'
 import './index.less';
-import { doc } from 'prettier';
 const sc = scopedClasses('financial-data-overview');
 export default () => {
   const analysisFunnel = useRef<any>(null)
   const analysisPie = useRef<any>(null)
-  const pageBox = useRef<any>(null)
   const analysisStackLine = useRef<any>(null)
   const cityInfoRef = useRef<any>(null)
   const analysisFunnelEcharts = useRef<any>(null)
