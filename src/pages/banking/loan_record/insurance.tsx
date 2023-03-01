@@ -14,9 +14,7 @@ import {
   Tooltip,
 } from 'antd';
 import { CaretDownOutlined, CaretUpOutlined, DownOutlined } from '@ant-design/icons';
-import type { TableRowSelection } from 'antd/es/table/interface';
 import { PageContainer } from '@ant-design/pro-layout';
-import { ProFormDigitRange } from '@ant-design/pro-components';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
@@ -27,18 +25,16 @@ import SelfTable from '@/components/self_table';
 import { UploadOutlined } from '@ant-design/icons';
 import FormEdit from '@/components/FormEdit';
 import BankingLoan from '@/types/banking-loan.d';
-import { history, useHistory } from 'umi';
+import { history, useAccess } from 'umi';
 import { regFenToYuan, regYuanToFen } from '@/utils/util';
 import {
   getLoanRecordList,
   queryBankList,
   loanRecordExport,
-  takeNotes,
-  getTakeMoneyDetail,
+  takeNotes, delBatchLoanRecord,
 } from '@/services/banking-loan';
 
 const sc = scopedClasses('loan-record-list');
-const { DataSourcesTrans } = BankingLoan;
 
 export default () => {
   const [dataSource, setDataSource] = useState<BankingLoan.Content[]>([]);
@@ -46,6 +42,8 @@ export default () => {
   const [searchForm] = Form.useForm();
   const name: string = 'INSURANCE';
   const loanType: number = 5;
+  // 拿到当前角色的access权限兑现
+  const access = useAccess()
   const creditStatusTrans = {
     7: '待审核',
     9: '待对接',
@@ -74,10 +72,6 @@ export default () => {
   /**
    * 新建窗口的弹窗
    *  */
-  // const dialogFormLayout = {
-  //   labelCol: { span: 3 },
-  //   wrapperCol: { span: 18 },
-  // };
   const [form] = Form.useForm();
   const [createModalVisible, setModalVisible] = useState<boolean>(false);
   const [editingItem, setEditingItem] = useState<BankingLoan.Content>({});
@@ -85,7 +79,6 @@ export default () => {
     form.resetFields();
     if (editingItem.id) setEditingItem({});
   };
-  const [totalAmount, setTotalAmount] = useState<BankingLoan.totalAmountContent>({});
   const [bankList, setBankList] = useState<{ bank: string }[]>([]);
   const [isMore, setIsMore] = useState<boolean>(false);
 
@@ -245,41 +238,6 @@ export default () => {
       </Modal>
     );
   };
-
-  // const getStep = async (p: BankingLoan.Content, type: number): Promise<any> => {
-  //   const { id, creditStatus } = p;
-  //   if (creditStatus === '已授信') {
-  //     // 供应链e贷产品没有还款信息
-  //     if (!type) {
-  //       return 3;
-  //     }
-  //     try {
-  //       const { result, code } = await getTakeMoneyDetail({
-  //         pageIndex: 1,
-  //         pageSize: 10,
-  //         creditId: id,
-  //       });
-  //       if (code === 0) {
-  //         if (
-  //           result?.takeMoneyInfo?.some(
-  //             (item: BankingLoan.TakeMoneyInfoContent) => item.status == '放款成功',
-  //           )
-  //         ) {
-  //           return 6;
-  //         } else {
-  //           return 5;
-  //         }
-  //       } else {
-  //         message.error(`放款判断失败`);
-  //       }
-  //     } catch (error) {
-  //       console.log(error);
-  //       return 0;
-  //     }
-  //   } else {
-  //     return 2;
-  //   }
-  // };
   const columns = [
     {
       title: '序号',
@@ -627,7 +585,7 @@ export default () => {
       {useSearchNode()}
       <div className={sc('container-table')}>
         <div className={sc('container-table-header')}>
-          <div className="title">
+          <div className="title insurance">
             <Dropdown overlay={menuProps}>
               <Button size="large">
                 <Space>
@@ -636,12 +594,38 @@ export default () => {
                 </Space>
               </Button>
             </Dropdown>
-            {/* <div className="tips">
-              <span style={{ marginRight: 20 }}>
-                累计授信金额：{regFenToYuan(totalAmount.creditTotal)}万元
-              </span>
-              <span>累计放款金额：{regFenToYuan(totalAmount.takeTotal)}万元</span>
-            </div> */}
+            {
+              access['P_FM_BXYW'] &&
+              <Dropdown overlay={<Menu>
+                <Menu.Item onClick={() => {
+                  if (!selectedRowKeys.length) {
+                    message.warning('请选择数据');
+                    return;
+                  }
+                  delBatchLoanRecord(selectedRowKeys.join(','), 5).then((res) => {
+                    if (res.code === 0){
+                      if(res.result === selectedRowKeys.length){
+                        message.success('删除成功')
+                      } else {
+                        message.error('只可删除【待审核】状态的数据')
+                      }
+                      const pageIndex = res.result === selectedRowKeys.length && pageInfo.pageTotal === pageInfo.pageIndex ?
+                        pageInfo.pageIndex - 1 > 0 ? pageInfo.pageIndex : 1 :  pageInfo.pageIndex
+                      getPage(pageIndex)
+                    } else {
+                      message.error(res.message)
+                    }
+                  })
+                }}>
+                  删除选中结果
+                </Menu.Item>
+              </Menu>}>
+                <Button size="large">
+                  批量删除
+                  <DownOutlined />
+                </Button>
+              </Dropdown>
+            }
           </div>
         </div>
         <div className={sc('container-table-body')}>
