@@ -16,6 +16,7 @@ const sc = scopedClasses('financial-data-overview');
 export default () => {
   const analysisFunnel = useRef<any>(null)
   const analysisPie = useRef<any>(null)
+  const pageBox = useRef<any>(null)
   const analysisStackLine = useRef<any>(null)
   const cityInfoRef = useRef<any>(null)
   const analysisFunnelEcharts = useRef<any>(null)
@@ -362,6 +363,7 @@ export default () => {
   }
 
   useEffect(() => {
+    document.querySelector('.financial-data-overview')?.setAttribute('style', `transform: scale(${document.body.clientWidth / 1920})`)
     getMainInfo()
     getChangeMainInfo(time)
   }, [])
@@ -375,61 +377,59 @@ export default () => {
   const currentMapVO = mapVO?.find((item: any) => {
     return item.cityCode === currentCityCode
   })
-
-  const screenWidth = document.body.clientWidth / 1920 * 420
-  return <div className={sc()}>
-    <div className="middle-title">羚羊数字金融驾驶舱</div>
-    <div className="content" style={{padding: `0 ${document.body.clientWidth / 1920 * 20}px`}}>
-      <div className="left-content" style={{width: `${screenWidth}px`}}>
-        <div className="progress">
-          <div className="date-box">
-            <DatePicker.RangePicker
-              dropdownClassName="financial-overview-time"
-              allowClear={false}
-              suffixIcon={null}
-              bordered={false}
-              onChange={selectTime}
-              separator={<span>至</span>}
-              defaultValue={[time.startDate, time.endDate]}
-              disabledDate={(current) => {
-                return current && current > moment().subtract(0, 'day')
-              }}
-            />
-          </div>
-          <div className="progress-title">
-            <div className="text">{targetProgressVO.targetName}</div>
-
-            <Popover
-              placement="bottomRight"
-              overlayClassName="edit-btn-popover"
-              content={
-                <>
-                  <div
-                    onClick={() => {
-                      modalRef.current.openModal(1)
-                    }}
-                  >
-                    设置分润金额
-                  </div>
-                  <div
-                    onClick={() => {
-                      modalRef.current.openModal(2)
-                    }}
-                  >
-                    设置项目合同额
-                  </div>
-                </>
-              }
-              trigger="hover"
-            >
-              <div className="edit-btn"><span className="icon" /><span>设置</span></div>
-            </Popover>
-
-
-          </div>
-          <div className="progress-detail-list">
-            {
-              targetProgressVO?.list?.map((item: any, index: number) => {
+  return (
+    <div className={sc()}>
+      <div className="middle-title">羚羊数字金融驾驶舱</div>
+      <div className="content">
+        <div className="left-content">
+          <div className="progress">
+            <div className="date-box">
+              <DatePicker.RangePicker
+                dropdownClassName="financial-overview-time"
+                allowClear={false}
+                suffixIcon={null}
+                bordered={false}
+                popupStyle={{transform: `scale(${document.body.clientWidth / 1920})`}}
+                onChange={selectTime}
+                separator={<span>至</span>}
+                defaultValue={[time.startDate, time.endDate]}
+                disabledDate={(current) => {
+                  return current && current > moment().subtract(0, 'day')
+                }}
+              />
+            </div>
+            <div className="progress-title">
+              <div className="text">{targetProgressVO.targetName}</div>
+              <Popover
+                placement="bottomRight"
+                overlayClassName="edit-btn-popover"
+                // overlayStyle={{transform: `scale(${document.body.clientWidth / 1920})`}}
+                content={
+                  <>
+                    <div
+                      onClick={() => {
+                        modalRef.current.openModal(1)
+                      }}
+                    >
+                      设置分润金额
+                    </div>
+                    <div
+                      onClick={() => {
+                        modalRef.current.openModal(2)
+                      }}
+                    >
+                      设置项目合同额
+                    </div>
+                  </>
+                }
+                trigger="click"
+              >
+                <div className="edit-btn"><span className="icon" /><span>设置</span></div>
+              </Popover>
+            </div>
+            <div className="progress-detail-list">
+              {
+                targetProgressVO?.list?.map((item: any, index: number) => {
                   return (
                     <div className="financing-info" key={index}>
                       <div className="desc">
@@ -447,21 +447,21 @@ export default () => {
                       </div>
                     </div>
                   )
-              })
-            }
-          </div>
-          <div className="product-rank-list">
-            <div className="rank-title">金融产品热度排名</div>
-            <div className="rank-list-table">
-              <div className="table-header">
-                <div className="title">产品</div>
-                <div className="apply-amount">申请笔数</div>
-                <div className="credit-amount">授信笔数</div>
-              </div>
-              <div className="table-body">
-                {
-                  productHotVO && productHotVO.map((item: any, index: number) => {
-                    return <div className="table-item" key={index}>
+                })
+              }
+            </div>
+            <div className="product-rank-list">
+              <div className="rank-title">金融产品热度排名</div>
+              <div className="rank-list-table">
+                <div className="table-header">
+                  <div className="title">产品</div>
+                  <div className="apply-amount">申请笔数</div>
+                  <div className="credit-amount">授信笔数</div>
+                </div>
+                <div className="table-body">
+                  {
+                    productHotVO && productHotVO.map((item: any, index: number) => {
+                      return <div className="table-item" key={index}>
                         <div className="title">
                           {
                             index > 2 ? <span className="index">{index + 1}</span> :
@@ -474,100 +474,100 @@ export default () => {
                         <div className="apply-amount">{formatPrice(`${item.applyNum || 0}`)}</div>
                         <div className="credit-amount">{formatPrice(`${item.creditNum || 0}`)}</div>
                       </div>
-                  })
-                }
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="middle-content">
-        <div className="data-summary">
-          {
-            overviewVO && overviewVO.map((item: any, index: number) => {
-              return (
-                <div className="item" key={index}>
-                  <div className="data-title">
-                    {
-                      item.type === 1 ? <>注册企业<span>(家)</span></> : item.type === 2 ? <>融资申请金额<span>(万元)</span></>
-                        : item.type == 3 ? <>授信金额<span>(万元)</span></> : item.type === 4 ? <>金融客户<span>(个)</span></>
-                          : <>金融诊断<span>(次)</span></>
-                    }
-
-                  </div>
-                  <div className="amount">{item.type === 2 || item.type === 3 ? formatPrice(customToFixed(`${item.num / 1000000}`)) : formatPrice(`${item.num || 0}`) }</div>
-                  <div className="change-amount">
-                    近三日: +{item.type === 2 || item.type === 3 ? formatPrice(customToFixed(`${item.threeDay / 1000000}`)) : formatPrice(`${item.threeDay || 0}`) }
-                  </div>
-                  <div className="change-amount">
-                    较上月: <span>+{item.type === 2 || item.type === 3 ? formatPrice(customToFixed(`${item.thisMonth / 1000000}`)) : formatPrice(`${item.thisMonth || 0}`) }</span>
-                  </div>
+                    })
+                  }
                 </div>
-              )
-            })
-          }
-        </div>
-        <div className="map" style={{paddingLeft: `${document.body.clientWidth / 1920 * 36}px`}}>
-          <div className="line2" style={{
-            left: `${document.body.clientWidth / 1920 * 36 + 353}px`,
-            right: `${cityInfoRef.current?.offsetWidth || 412}px`
-          }} />
-          <div className="map-box">
-            <Map getCityInfo={setCurrentCityCode} />
-            <div className="line1" />
-          </div>
-          <div ref={cityInfoRef} className="city-info" style={{marginLeft: `${document.body.clientWidth / 1920 * 24}px`}}>
-            <div className="city-info-title">
-              <div className="circle">
-                <div className="inner-circle"/>
-              </div>
-              {currentMapVO && currentMapVO.cityName || '合肥市'}
-            </div>
-            <div className="city-info-desc">
-              <div className="city-info-header">
-                <div className="info-name">名称</div>
-                <div className="info-amount">当前数据</div>
-                <div className="last">较上月</div>
-              </div>
-              <div className="city-info-body">
-                {
-                  currentMapVO && currentMapVO.mapDetailVO?.map((item: any, index: number) => {
-                    return (
-                      <div className="info-item" key={index}>
-                        <div
-                          className="info-name"
-                          dangerouslySetInnerHTML={{__html: item.name?.replace(/\((.+?)\)/g, (res: string) => {
-                            return  `<span>${res}</span>`
-                          })}}
-                        />
-                        <div className="info-amount">{index > 3 ? formatPrice(customToFixed(`${item.num / 1000000}`)) : formatPrice(`${item.num || 0}`)}</div>
-                        <div className="last">+{index > 3 ? formatPrice(customToFixed(`${item.thisMonth / 1000000}`)) : formatPrice(`${item.thisMonth || 0}`)}</div>
-                      </div>
-                    )
-                  })
-                }
               </div>
             </div>
           </div>
         </div>
-        <div className="middle-bottom">
-          <div className="rate-analysis">
-            <div className="analysis-title">各业务类型授信占比</div>
-            <div ref={analysisPie} className="analysis-pie" />
-          </div>
-          <div className="amount-analysis">
-            <div className="analysis-title">融资申请及授信月度分析</div>
-            <div ref={analysisStackLine} className="analysis-stack-line" />
-          </div>
-        </div>
-      </div>
-      <div className="right-content" style={{width: `${screenWidth}px`}}>
-        <div className="bank-list">
-          <div className="bank-list-title">金融机构排名</div>
-          <div className="list-box">
+        <div className="middle-content">
+          <div className="data-summary">
             {
-              bankCreditRankVO && bankCreditRankVO.map((item: any, index: number) => {
-                return <div className="bank-list-item" key={index}>
+              overviewVO && overviewVO.map((item: any, index: number) => {
+                return (
+                  <div className="item" key={index}>
+                    <div className="data-title">
+                      {
+                        item.type === 1 ? <>注册企业<span>(家)</span></> : item.type === 2 ? <>融资申请金额<span>(万元)</span></>
+                          : item.type == 3 ? <>授信金额<span>(万元)</span></> : item.type === 4 ? <>金融客户<span>(个)</span></>
+                            : <>金融诊断<span>(次)</span></>
+                      }
+
+                    </div>
+                    <div className="amount">{item.type === 2 || item.type === 3 ? formatPrice(customToFixed(`${item.num / 1000000}`)) : formatPrice(`${item.num || 0}`) }</div>
+                    <div className="change-amount">
+                      近三日: +{item.type === 2 || item.type === 3 ? formatPrice(customToFixed(`${item.threeDay / 1000000}`)) : formatPrice(`${item.threeDay || 0}`) }
+                    </div>
+                    <div className="change-amount">
+                      较上月: <span>+{item.type === 2 || item.type === 3 ? formatPrice(customToFixed(`${item.thisMonth / 1000000}`)) : formatPrice(`${item.thisMonth || 0}`) }</span>
+                    </div>
+                  </div>
+                )
+              })
+            }
+          </div>
+          <div className="map">
+            <div className="line2" style={{
+              left: `${document.body.clientWidth / 1920 * 36 + 353}px`,
+              right: `${cityInfoRef.current?.offsetWidth || 412}px`
+            }} />
+            <div className="map-box">
+              <Map getCityInfo={setCurrentCityCode} />
+              <div className="line1" />
+            </div>
+            <div ref={cityInfoRef} className="city-info">
+              <div className="city-info-title">
+                <div className="circle">
+                  <div className="inner-circle"/>
+                </div>
+                {currentMapVO && currentMapVO.cityName || '合肥市'}
+              </div>
+              <div className="city-info-desc">
+                <div className="city-info-header">
+                  <div className="info-name">名称</div>
+                  <div className="info-amount">当前数据</div>
+                  <div className="last">较上月</div>
+                </div>
+                <div className="city-info-body">
+                  {
+                    currentMapVO && currentMapVO.mapDetailVO?.map((item: any, index: number) => {
+                      return (
+                        <div className="info-item" key={index}>
+                          <div
+                            className="info-name"
+                            dangerouslySetInnerHTML={{__html: item.name?.replace(/\((.+?)\)/g, (res: string) => {
+                                return  `<span>${res}</span>`
+                              })}}
+                          />
+                          <div className="info-amount">{index > 3 ? formatPrice(customToFixed(`${item.num / 1000000}`)) : formatPrice(`${item.num || 0}`)}</div>
+                          <div className="last">+{index > 3 ? formatPrice(customToFixed(`${item.thisMonth / 1000000}`)) : formatPrice(`${item.thisMonth || 0}`)}</div>
+                        </div>
+                      )
+                    })
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="middle-bottom">
+            <div className="rate-analysis">
+              <div className="analysis-title">各业务类型授信占比</div>
+              <div ref={analysisPie} className="analysis-pie" />
+            </div>
+            <div className="amount-analysis">
+              <div className="analysis-title">融资申请及授信月度分析</div>
+              <div ref={analysisStackLine} className="analysis-stack-line" />
+            </div>
+          </div>
+        </div>
+        <div className="right-content">
+          <div className="bank-list">
+            <div className="bank-list-title">金融机构排名</div>
+            <div className="list-box">
+              {
+                bankCreditRankVO && bankCreditRankVO.map((item: any, index: number) => {
+                  return <div className="bank-list-item" key={index}>
                     <div className="list-item-desc">
                       <div className="left-desc"><span>{index + 1}</span><span>{item.name}</span></div>
                       <div className="amount">{formatPrice(customToFixed(`${item.amount / 1000000 || 0}`))}万元</div>
@@ -576,32 +576,33 @@ export default () => {
                       <div style={{width: index === 0 ? '95%' : `${(item.amount / (bankCreditRankVO[0].amount / 95 * 100) * 100).toFixed(2)}%`}} className="real-rate" />
                     </div>
                   </div>
-              })
+                })
+              }
+            </div>
+          </div>
+          <div className="transform-analysis">
+            <div className="analysis-title">金融服务转化分析</div>
+            {
+              cvrList.length > 0 && <>
+                {
+                  cvrList[0] > 0 ? <div className="rate-1"><span className="line"/>Rate: {(cvrList[1] / cvrList[0] * 100).toFixed(2)}%</div> : null
+                }
+                {
+                  cvrList[1] > 0 ? <div className="rate-2"><span className="line"/>Rate: {(cvrList[2] / cvrList[1] * 100).toFixed(2)}%</div> : null
+                }
+                {
+                  cvrList[2] > 0 ? <div className="rate-3"><span className="line"/>Rate: {(cvrList[3] / cvrList[2] * 100).toFixed(2)}%</div> : null
+                }
+                {
+                  cvrList[3] > 0 ? <div className="rate-4"><span className="line"/>Rate: {(cvrList[4] / cvrList[3] * 100).toFixed(2)}%</div> : null
+                }
+              </>
             }
+            <div ref={analysisFunnel} className="analysis-funnel" />
           </div>
         </div>
-        <div className="transform-analysis">
-          <div className="analysis-title">金融服务转化分析</div>
-          {
-            cvrList.length > 0 && <>
-              {
-                cvrList[0] > 0 ? <div className="rate-1"><span className="line"/>Rate: {(cvrList[1] / cvrList[0] * 100).toFixed(2)}%</div> : null
-              }
-              {
-                cvrList[1] > 0 ? <div className="rate-2"><span className="line"/>Rate: {(cvrList[2] / cvrList[1] * 100).toFixed(2)}%</div> : null
-              }
-              {
-                cvrList[2] > 0 ? <div className="rate-3"><span className="line"/>Rate: {(cvrList[3] / cvrList[2] * 100).toFixed(2)}%</div> : null
-              }
-              {
-                cvrList[3] > 0 ? <div className="rate-4"><span className="line"/>Rate: {(cvrList[4] / cvrList[3] * 100).toFixed(2)}%</div> : null
-              }
-            </>
-          }
-          <div ref={analysisFunnel} className="analysis-funnel" />
-        </div>
       </div>
+      <OverViewModal successCallBack={getMainInfo} ref={modalRef} />
     </div>
-    <OverViewModal successCallBack={getMainInfo} ref={modalRef} />
-  </div>;
+  )
 };

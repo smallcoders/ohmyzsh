@@ -605,7 +605,7 @@ export default () => {
                   delBatchLoanRecord(selectedRowKeys.join(','), 5).then((res) => {
                     if (res.code === 0){
                       message.success('删除成功')
-                      const pageIndex = dataSource.length === selectedRowKeys.length && pageInfo.pageTotal === pageInfo.pageIndex ?
+                      const pageIndex = res.result === selectedRowKeys.length && pageInfo.pageTotal === pageInfo.pageIndex ?
                         pageInfo.pageIndex - 1 > 0 ? pageInfo.pageIndex : 1 :  pageInfo.pageIndex
                       getPage(pageIndex)
                     } else {

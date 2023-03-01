@@ -1,4 +1,8 @@
 .financial-data-overview {
+  height: 1080px;
+  width: 1920px;
+  overflow: auto;
+  transform-origin: left top;
   background-repeat: no-repeat;
   background-position: center;
   background-size: 100% 100%;
@@ -20,9 +24,11 @@
     justify-content: space-between;
     align-items: flex-start;
     margin-top: 15px;
+    padding: 0 34px;
   }
   .left-content {
-    margin-right: 14px;
+    margin-right: 24px;
+    width: 460px;
     position: relative;
     .date-box {
       position: absolute;
@@ -351,7 +357,8 @@
     }
   }
   .right-content {
-    margin-left: 12px;
+    margin-left: 24px;
+    width: 460px;
     .bank-list {
       background: rgba(114,139,255,0.10);
       padding-bottom: 32px;
@@ -572,6 +579,7 @@
     justify-content: space-between;
     align-items: flex-start;
     position: relative;
+    padding-left: 46px;
     .map-box {
       position: relative;
     }
@@ -582,6 +590,7 @@
       max-width: 412px;
       position: relative;
       min-width: 303px;
+      margin-left: 36px;
     }
     .line2 {
       position: absolute;
@@ -1015,6 +1024,7 @@
 }
 
 .edit-btn-popover {
+  transform: scale(0.6);
   .ant-popover-inner {
     background: #0A1943;
     .ant-popover-inner-content {
