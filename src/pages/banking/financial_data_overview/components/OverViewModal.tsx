@@ -91,20 +91,21 @@ export default forwardRef((props: any, ref: any) => {
         })
       } else {
         getProjectContract().then((res) => {
-          const formObj = {}
-          const newProjectContractIdMap = {}
-          setFormItemList(
-            res.result.map((item: any, index: number) => {
-              formObj[`projectName_${index+ 1}`] = item.projectName
-              formObj[`signDate_${index+ 1}`] = moment(item.signDate)
-              formObj[`amount_${index+ 1}`] = customToFixed(`${item.amount / 1000000} || '`, 4)
-              newProjectContractIdMap[`id_${index+1}`] = item.id
-              getProductList(item.bankId)
-              return index + 1
-            })
-          )
-          setIdMap(newProjectContractIdMap)
-          form.setFieldsValue({...formObj})
+          if (res.code === 0 && res.result?.length){
+            const formObj = {}
+            const newProjectContractIdMap = {}
+            setFormItemList(
+              res.result.map((item: any, index: number) => {
+                formObj[`projectName_${index+ 1}`] = item.projectName
+                formObj[`signDate_${index+ 1}`] = moment(item.signDate)
+                formObj[`amount_${index+ 1}`] = customToFixed(`${item.amount / 1000000} || '`, 4)
+                newProjectContractIdMap[`id_${index+1}`] = item.id
+                return index + 1
+              })
+            )
+            setIdMap(newProjectContractIdMap)
+            form.setFieldsValue({...formObj})
+          }
         })
       }
       setVisible(true)
@@ -330,6 +331,7 @@ export default forwardRef((props: any, ref: any) => {
                       </div>
                       <div onClick={() => {
                         if (formItemList.length > 1){
+                          form.resetFields([`bankId_${item}`, `productId_${item}`, `amount_${item}`])
                           formItemList.splice(index, 1)
                           setFormItemList([...formItemList])
                         }
@@ -389,6 +391,7 @@ export default forwardRef((props: any, ref: any) => {
                         </div>
                         <div onClick={() => {
                           if (formItemList.length > 1){
+                            form.resetFields([`projectName_${item}`, `signDate_${item}`, `amount_${item}`])
                             formItemList.splice(index, 1)
                             setFormItemList([...formItemList])
                           }

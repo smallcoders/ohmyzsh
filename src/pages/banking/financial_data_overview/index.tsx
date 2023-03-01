@@ -12,6 +12,7 @@ import { customToFixed, formatPrice } from '@/utils/util';
 import OverViewModal from './components/OverViewModal'
 import Map from './components/map'
 import './index.less';
+import { doc } from 'prettier';
 const sc = scopedClasses('financial-data-overview');
 export default () => {
   const analysisFunnel = useRef<any>(null)
@@ -363,9 +364,13 @@ export default () => {
   }
 
   useEffect(() => {
+    document.body.setAttribute('style', 'background: #02061c')
     document.querySelector('.financial-data-overview')?.setAttribute('style', `transform: scale(${document.body.clientWidth / 1920})`)
     getMainInfo()
     getChangeMainInfo(time)
+    return () => {
+      document.body.removeAttribute('style')
+    }
   }, [])
 
 
@@ -389,7 +394,6 @@ export default () => {
                 allowClear={false}
                 suffixIcon={null}
                 bordered={false}
-                popupStyle={{transform: `scale(${document.body.clientWidth / 1920})`}}
                 onChange={selectTime}
                 separator={<span>至</span>}
                 defaultValue={[time.startDate, time.endDate]}
@@ -403,7 +407,6 @@ export default () => {
               <Popover
                 placement="bottomRight"
                 overlayClassName="edit-btn-popover"
-                // overlayStyle={{transform: `scale(${document.body.clientWidth / 1920})`}}
                 content={
                   <>
                     <div
@@ -422,7 +425,7 @@ export default () => {
                     </div>
                   </>
                 }
-                trigger="click"
+                trigger="hover"
               >
                 <div className="edit-btn"><span className="icon" /><span>设置</span></div>
               </Popover>
@@ -509,7 +512,7 @@ export default () => {
           </div>
           <div className="map">
             <div className="line2" style={{
-              left: `${document.body.clientWidth / 1920 * 36 + 353}px`,
+              left: `${398}px`,
               right: `${cityInfoRef.current?.offsetWidth || 412}px`
             }} />
             <div className="map-box">
