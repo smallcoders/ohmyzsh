@@ -64,7 +64,7 @@ export default {
       // pathRewrite: { '^/antelope-user': '' },
     },
     '/antelope-science/': {
-      target: 'http://172.30.35.217:10086',
+      target: 'http://172.30.35.227:10086',
       changeOrigin: true,
       pathRewrite: { '^': '' },
     },
