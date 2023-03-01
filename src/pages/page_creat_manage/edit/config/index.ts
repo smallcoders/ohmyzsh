@@ -1114,7 +1114,8 @@ export const componentsGroup: ComponentGroup[] = [
   }
 ]
 
-export const componentsGroupList: ComponentGroup[] = [{
+// 表单设计组件
+export const formComponentsList: ComponentGroup[] = [{
   title: "基础字段",
   components: [
     {
@@ -1129,7 +1130,6 @@ export const componentsGroupList: ComponentGroup[] = [{
         placeholder: undefined,
         paramKey: '',
         desc: '',
-        isParam: true,
         paramDesc: '单行文本',
         paramType: "string",
         showLabel: true,
@@ -1152,7 +1152,6 @@ export const componentsGroupList: ComponentGroup[] = [{
         required: false,
         paramKey: '',
         desc: '',
-        isParam: true,
         paramDesc: '多行文本',
         paramType: "string",
         showLabel: true,
@@ -1173,7 +1172,6 @@ export const componentsGroupList: ComponentGroup[] = [{
         defaultValue: '',
         paramKey: '',
         desc: '',
-        isParam: true,
         paramDesc: '单选按钮组',
         paramType: 'string',
         showLabel: true,
@@ -1196,7 +1194,6 @@ export const componentsGroupList: ComponentGroup[] = [{
         defaultValue: [],
         desc: '',
         paramKey: '',
-        isParam: true,
         paramDesc: '多选按钮组',
         paramType: 'string',
         showLabel: true,
@@ -1209,7 +1206,6 @@ export const componentsGroupList: ComponentGroup[] = [{
       hide: false,
       config: {
         paramKey: '',
-        isParam: true,
         paramDesc: '下拉框',
         paramType: 'string',
         allowClear: false,
@@ -1230,7 +1226,6 @@ export const componentsGroupList: ComponentGroup[] = [{
       hide: false,
       config: {
         paramKey: '',
-        isParam: true,
         paramDesc: '下拉复选框',
         paramType: 'string',
         allowClear: false,
@@ -1294,7 +1289,6 @@ export const componentsGroupList: ComponentGroup[] = [{
         allowClear: true,
         placeholder: undefined,
         paramKey: '',
-        isParam: true,
         paramDesc: '地址',
         paramType: '',
         showLabel: true,
@@ -1314,106 +1308,99 @@ export const componentsGroupList: ComponentGroup[] = [{
         showTime: false,
         desc: '',
         paramKey: '',
-        isParam: true,
         paramDesc: '日期时间',
         paramType: 'string',
         showLabel: true,
       },
     },
-    // {
-    //   label: '起止时间选择',
-    //   type: 'RangePicker',
-    //   config: {
-    //     picker: 'date',
-    //     allowClear: true,
-    //     placeholder: undefined,
-    //     format: 'YYYY-MM-DD',
-    //     showTime: false,
-    //     paramKey: '',
-    //     isParam: true,
-    //     paramDesc: '',
-    //     paramType: '',
-    //     showLabel: true,
-    //   },
-    //   formItemConfig: {
-    //     initialValue: [],
-    //     labelCol: undefined,
-    //     wrapperCol: undefined,
-    //     rules: [
-    //       {
-    //         required: false,
-    //         message: undefined,
-    //       }
-    //     ]
-    //   }
-    // },
-    // {
-    //   label: '按钮',
-    //   type: 'Button',
-    //   config: {
-    //     children: '按钮',
-    //     type: 'default',
-    //     size: "large"
-    //   }
-    // },
-    // {
-    //   label: '数字输入框',
-    //   type: 'InputNumber',
-    //   config: {
-    //     controls: true,
-    //     max: 1000,
-    //     min: 0,
-    //     precision: undefined,
-    //     step: 1,
-    //     paramKey: '',
-    //     isParam: true,
-    //     paramDesc: '',
-    //     paramType: '',
-    //     showLabel: true,
-    //   },
-    //   formItemConfig: {
-    //     initialValue: '',
-    //     labelCol: undefined,
-    //     wrapperCol: undefined,
-    //     rules: [
-    //       {
-    //         validateTrigger: 'onBlur',
-    //         required: false,
-    //         type: 'number',
-    //       }
-    //     ]
-    //   }
-    // },
-    // {
-    //   label: '上传',
-    //   type: 'Upload',
-    //   config: {
-    //     accept: '.jpg',
-    //     listType: 'text',
-    //     maxCount: undefined,
-    //     multiple: false,
-    //     openFileDialogOnClick: true,
-    //     paramKey: '',
-    //     isParam: true,
-    //     paramDesc: '',
-    //     paramType: '',
-    //     showLabel: true,
-    //   },
-    //   formItemConfig: {
-    //     initialValue: undefined,
-    //     labelCol: undefined,
-    //     wrapperCol: undefined,
-    //     rules: [
-    //       {
-    //         required: false,
-    //         message: undefined,
-    //       }
-    //     ]
-    //   }
-    // },
   ]
 }
 ]
+
+// 网页设计组件
+
+export const webComponentsList: ComponentGroup[] = [
+  {
+    title: '基础字段',
+    components: [
+      {
+        label: '标题',
+        type: 'Title',
+        errorMsg: '',
+        config: {
+          text: '主标题',
+          fontWeight: 'bold',
+          fontSize: 28,
+          color: '#1E232A',
+          inputColor: '#1E232A',
+          lineHeight: 36,
+          textAlign: 'center',
+          paddingTop: 64,
+          paddingBottom: 24,
+          subTitle: {
+            text: '',
+            fontWeight: 'normal',
+            fontSize: 14,
+            color: '#556377',
+            inputColor: '#556377',
+            lineHeight: 22,
+            textAlign: 'center',
+            paddingTop: 12,
+            paddingBottom: 24,
+          }
+        },
+      },
+      {
+        label: '文本',
+        type: 'Text',
+        errorMsg: '',
+        config: {
+          text: '文本',
+          fontWeight: 'normal',
+          fontSize: 14,
+          color: '#1E232A',
+          inputColor: '#1E232A',
+          lineHeight: 22,
+          textAlign: 'center',
+          paddingTop: 24,
+          paddingBottom: 24,
+        },
+      },
+      {
+        label: '图片',
+        type: 'Image',
+        errorMsg: '',
+        config: {
+          imgStyle: 'main',
+          imgWidth: 1200,
+          imgHeight: 300,
+          duration: 5,
+          imgList: [{
+            img: '',
+            link: '',
+            index: 0
+          }],
+          lineNumber: 2,
+          columnNumber: 4,
+          isCarousel: false
+        },
+      },
+      {
+        type: 'Video',
+        label: '视频',
+        errorMsg: '',
+        config: {
+          url: '',
+          videoAreaWidth: 1200,
+          videoAreaHeight: 675,
+          coverImageUrl: '',
+        },
+      },
+    ]
+  }
+]
+
+
 
 export type Component = {
   key?: string
