@@ -219,25 +219,32 @@ export default () => {
       }
       let amount: number | string = 0
       const data = [
-        { value: 0.00, name: '贷款业务', rate: '0.00%' },
-        { value: 0.00, name: '租赁业务', rate: '0.00%' },
-        { value: 0.00, name: '保险业务', rate: '0.00%'  }
+        { value: 0.00, name: '贷款业务', rate: '0.00%', amount: 0,  },
+        { value: 0.00, name: '租赁业务', rate: '0.00%', amount: 0,  },
+        { value: 0.00, name: '保险业务', rate: '0.00%', amount: 0,  }
       ]
       creditRatioVO.forEach((item: any) => {
         amount += item.amount || 0
         if (item.type === 1) {
           data[0].value = Number(customToFixed(`${item.amount / 1000000}`))
           data[0].rate = item.rate
+          data[0].amount = item.amount
         }
         if (item.type === 3) {
           data[1].value = Number(customToFixed(`${item.amount / 1000000}`))
           data[1].rate = item.rate
+          data[1].amount = item.amount
         }
         if (item.type === 5) {
           data[2].value = Number(customToFixed(`${item.amount / 1000000}`))
           data[2].rate = item.rate
+          data[2].amount = item.amount
         }
       })
+      data.sort((a, b) => {
+        return a.amount- b.amount
+      })
+      console.log(data)
       amount = formatPrice(customToFixed(`${(amount || 0) / 1000000}`))
       const option = {
         tooltip: {
@@ -260,14 +267,17 @@ export default () => {
           icon: "circle",
           top: '10%',
           formatter: (name: string) => {
+            const item = data.find((it) => {
+              return it.name === name
+            })
             if (name === '保险业务'){
-              return `${name} \n ${data[2]?.rate || '0.00%'} {blue|${data[2].value}万元}`
+              return `${name} \n ${item?.rate || '0.00%'} {blue|${item?.value}万元}`
             }
             if (name === '租赁业务'){
-              return `${name} \n ${data[1]?.rate || '0.00%'}  {blue|${data[1].value}万元}`
+              return `${name} \n ${item?.rate || '0.00%'}  {blue|${item?.value}万元}`
             }
             if (name === '贷款业务'){
-              return `${name} \n ${data[0]?.rate || '0.00%'}  {blue|${data[0].value}万元}`
+              return `${name} \n ${item?.rate || '0.00%'}  {blue|${item?.value}万元}`
             }
             return ''
           },
