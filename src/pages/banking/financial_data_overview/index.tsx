@@ -385,9 +385,9 @@ export default () => {
   }
 
   useEffect(() => {
-    windowZoom({ originWidth: 1920, minWidth: 1280 })
+    windowZoom({ originWidth: 1920, minWidth: 1200 })
     const handleChangeScale = () => {
-      windowZoom({ originWidth: 1920, minWidth: 1280 })
+      windowZoom({ originWidth: 1920, minWidth: 1200 })
     }
     window.addEventListener('resize', handleChangeScale)
     document.body.setAttribute('style', 'background: #02061c')
