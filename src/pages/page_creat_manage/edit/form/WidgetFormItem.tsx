@@ -20,16 +20,19 @@ import {
   Popconfirm,
   Select,
   DatePicker, Cascader,
+  Carousel
 } from 'antd';
 import Sortable from 'sortablejs'
 import { cloneDeep, isArray, isString } from 'lodash-es'
 import moment from 'moment'
 import deleteIcon from '@/assets/page_creat_manage/delete.png'
 import copyIcon from '@/assets/page_creat_manage/copy.png'
+import playIcon from '@/assets/page_creat_manage/play_icon.png'
 import { DesignContext } from '../store'
 import { ActionType } from '../store/action'
 import { Component } from '../config'
 import { removeDomNode, createNewWidgetFormList } from '../utils'
+import { history } from 'umi';
 
 interface Props {
   item: Component
@@ -38,7 +41,8 @@ interface Props {
     county: any[],
     city: any[],
     province: any[]
-  }
+  },
+  editWidth: number
 }
 
 const WidgetFormItem: FC<Props> = (props) => {
@@ -46,8 +50,10 @@ const WidgetFormItem: FC<Props> = (props) => {
     item,
     item: { key, type, label, config, childNodes, formItemConfig },
     formInstance,
-    areaCodeOptions
+    areaCodeOptions,
+    editWidth
   } = props
+  const tmpType = history.location.query?.type as string
 
   const {
     state: { widgetFormList, selectWidgetItem },
@@ -68,8 +74,11 @@ const WidgetFormItem: FC<Props> = (props) => {
   const [checkBoxValue, setCheckBoxValue] = useState<string[]>([])
 
   const [mulSelectValue, setMulSelectValue] = useState<string[]>([])
+  const [isPlay, setIsPlay] = useState<boolean>(false)
+  const [showControls, setShowControls] = useState<boolean>(false)
 
   const [imageSelectValue, setImageSelectValue] = useState<string[]>([])
+  const videoRef = useRef<any>(null)
 
   const commonProps: Record<string, any> = {
     ...config,
@@ -147,6 +156,11 @@ const WidgetFormItem: FC<Props> = (props) => {
               ...widgetFormItem,
               key: `${widgetFormItem.type}_${uuid}`
             }
+            // 自动生成参数提交
+            const configKeys = Object.keys(newItem.config || {})
+            if (configKeys.indexOf('paramKey') !== -1){
+              newItem.config.paramKey = `${widgetFormItem.type}_${key}`
+            }
             newChildNodes.splice(newIndex, 0, newItem)
             dispatch({
               type: ActionType.SET_WIDGET_FORM_LIST,
@@ -192,6 +206,11 @@ const WidgetFormItem: FC<Props> = (props) => {
         if (newList[index].key === currentKey) {
           newItem = cloneDeep(newList[index])
           newItem.key = `${item.type}_${+new Date()}`
+          // 自动生成参数提交
+          const configKeys = Object.keys(newItem.config || {})
+          if (configKeys.indexOf('paramKey') !== -1 && newItem.config){
+            newItem.config.paramKey = newItem.key
+          }
           newList.splice(index, 0, newItem)
           if (newList[index].childNodes) {
             newList[index].childNodes = handleWidgetFormItem(newList[index].childNodes!)
@@ -272,20 +291,46 @@ const WidgetFormItem: FC<Props> = (props) => {
       payload: undefined
     })
   }
+
+  const playVideo = (e: any, status: boolean) => {
+    if (!videoRef) return
+    if (!isPlay && e) {
+      e.stopPropagation()
+    }
+    // 只有播放，没有暂停
+    setIsPlay(status)
+  }
+  useEffect(() => {
+    if (!videoRef || !videoRef?.current){
+      return
+    }
+    if (isPlay){
+      videoRef.current.play()
+    } else {
+      videoRef.current.pause()
+    }
+  }, [isPlay])
+
   const renderActionIcon = () => {
     return (
       <>
         {selectWidgetItem?.key === key && (
           <>
             <div className="widget-view-action">
-              <Popconfirm placement="bottomRight" title='确定删除该字段及对应表单数据？' onConfirm={(e) => {
-                handleDeleteClick(e)
-              }} okText="删除" cancelText="取消">
-                <div>
-                  <img className="img-icon" src={deleteIcon} alt='' />
-                  <span>删除</span>
-                </div>
-              </Popconfirm>
+              {
+                tmpType === '1' ?
+                  <div onClick={handleDeleteClick}>
+                    <img className="img-icon" src={deleteIcon} alt='' />
+                    <span>删除</span>
+                  </div> : <Popconfirm placement="bottomRight" title='确定删除该字段及对应表单数据？' onConfirm={(e) => {
+                  handleDeleteClick(e)
+                }} okText="删除" cancelText="取消">
+                  <div>
+                    <img className="img-icon" src={deleteIcon} alt='' />
+                    <span>删除</span>
+                  </div>
+                </Popconfirm>
+              }
               <div onClick={handleCopyClick}>
                 <img className="img-icon" src={copyIcon} alt='' />
                 <span>复制</span>
@@ -304,7 +349,7 @@ const WidgetFormItem: FC<Props> = (props) => {
           {type === 'Row' && (
             <Row {...commonProps} ref={sortableGroupDecorator}>
               {childNodes?.map((widgetFormItem) => (
-                <WidgetFormItem areaCodeOptions={areaCodeOptions} key={widgetFormItem.key} item={widgetFormItem} formInstance={formInstance} />
+                <WidgetFormItem editWidth={editWidth} areaCodeOptions={areaCodeOptions} key={widgetFormItem.key} item={widgetFormItem} formInstance={formInstance} />
               ))}
               {renderActionIcon()}
             </Row>
@@ -312,7 +357,7 @@ const WidgetFormItem: FC<Props> = (props) => {
           {type === 'Col' && (
             <Col {...commonProps} ref={sortableGroupDecorator}>
               {childNodes?.map((widgetFormItem) => (
-                <WidgetFormItem areaCodeOptions={areaCodeOptions} key={widgetFormItem.key} item={widgetFormItem} formInstance={formInstance} />
+                <WidgetFormItem editWidth={editWidth} areaCodeOptions={areaCodeOptions} key={widgetFormItem.key} item={widgetFormItem} formInstance={formInstance} />
               ))}
               {renderActionIcon()}
             </Col>
@@ -321,7 +366,7 @@ const WidgetFormItem: FC<Props> = (props) => {
             <div className={className} ref={sortableGroupDecorator}>
               <Space {...commonProps}>
                 {childNodes?.map((widgetFormItem) => (
-                  <WidgetFormItem areaCodeOptions={areaCodeOptions} key={widgetFormItem.key} item={widgetFormItem} formInstance={formInstance} />
+                  <WidgetFormItem editWidth={editWidth} areaCodeOptions={areaCodeOptions} key={widgetFormItem.key} item={widgetFormItem} formInstance={formInstance} />
                 ))}
               </Space>
               {renderActionIcon()}
@@ -330,8 +375,265 @@ const WidgetFormItem: FC<Props> = (props) => {
         </span>
       )
     }
+    const imgWidth = type !== 'Image' ? 0 : config?.imgStyle === 'matrix' ?
+      `${1200 * editWidth / 1920}px` : `${config?.imgWidth * editWidth / 1920}px`
+    const imgHeight = type !== 'Image' ? 0 : config?.imgStyle === 'matrix' ?
+      `${config?.imgHeight * editWidth / 1920 * config.lineNumber + (config.lineNumber - 1) * 12}px` :  `${config?.imgHeight * editWidth / 1920}px`
     return (
       <div className={`${className}`} onClick={(event) => handleItemClick(event)}>
+        {
+          type === 'Title' && (
+            <div
+              style={{
+                fontWeight: config?.fontWeight,
+                fontSize: `${config?.fontSize}px`,
+                color: `${config?.color}`,
+                lineHeight: `${config?.lineHeight}px`,
+                textAlign: config?.textAlign === 'justifyAlign' ? 'left' : config?.textAlign,
+                paddingTop: `${config?.paddingTop * editWidth / 1920}px`,
+                paddingBottom: `${config?.paddingBottom * editWidth / 1920}px`,
+                width: `${1200 * editWidth / 1920}px`,
+                margin: '0 auto'
+              }}
+            >
+              {config?.text}
+            </div>
+          )
+        }
+        {
+          type === 'Title' && config?.subTitle?.text && (
+            <div
+              style={{
+                fontWeight: config?.subTitle?.fontWeight,
+                fontSize: `${config?.subTitle?.fontSize}px`,
+                color: `${config?.subTitle?.color}`,
+                lineHeight: `${config?.subTitle?.lineHeight}px`,
+                textAlign: config?.subTitle?.textAlign === 'justifyAlign' ? 'left' : config?.subTitle?.textAlign,
+                paddingTop: `${config?.subTitle?.paddingTop * editWidth / 1920}px`,
+                paddingBottom: `${config?.subTitle?.paddingBottom * editWidth / 1920}px`,
+                width: `${1200 * editWidth / 1920}px`,
+                margin: '0 auto'
+              }}
+            >
+              {config.subTitle.text}
+            </div>
+          )
+        }
+        {
+          type === 'Text' && (
+            <div
+              style={{
+                fontWeight: config?.fontWeight,
+                fontSize: `${config?.fontSize}px`,
+                color: `${config?.color}`,
+                lineHeight: `${config?.lineHeight}px`,
+                textAlign: config?.textAlign === 'justifyAlign' ? 'left' : config?.textAlign,
+                paddingTop: `${config?.paddingTop * editWidth / 1920}px`,
+                paddingBottom: `${config?.paddingBottom * editWidth / 1920}px`,
+                width: `${1200 * editWidth / 1920}px`,
+                margin: '0 auto'
+              }}
+            >
+              {config?.text}
+            </div>
+          )
+        }
+        {
+          type === 'Video' && (
+            <div
+              style={{
+                height: `${config?.videoAreaHeight * editWidth / 1920}px`,
+                width: `${config?.videoAreaWidth * editWidth / 1920}px`,
+                borderRadius: '8px'
+              }}
+              className="video-box"
+              onClick={e => {
+                playVideo(e, !isPlay)
+              }}
+            >
+              {
+                config?.url &&
+                <video
+                  src={config?.url}
+                  preload="true"
+                  width="100%"
+                  height="100%"
+                  muted
+                  loop={false}
+                  controls={showControls}
+                  onMouseEnter={() => {
+                  setShowControls(true)
+                }}
+                  onMouseLeave={() => {
+                  setShowControls(false)
+                }}
+                  ref={videoRef}
+                  // 隐藏下载按钮
+                  controlsList="nodownload"
+                  // 此属性在android设备播放视频时,导致自动全屏播放
+                  // x5-video-player-type="h5-page"
+                  /**
+                   * ios系统
+                   * 内联播放
+                   */
+                  playsInline
+                  /* eslint-disable-next-line react/no-unknown-property */
+                  webkit-playsinline="true"
+                  /**
+                   * 同层h5播放器
+                   * 网页内部同层播放
+                   * 视频上方显示html元素
+                   *  */
+                  /* eslint-disable-next-line react/no-unknown-property */
+                  x5-playsinline="true"
+                  onPause={e => {
+                  playVideo(e, false)
+                }}
+                  onEnded={e => {
+                  playVideo(e, false)
+                }}
+                  onPlay={e => {
+                  playVideo(e, true)
+                }}
+                  />
+              }
+              {
+                !isPlay?
+                  config?.coverImageUrl ?
+                    <img src={config.coverImageUrl} alt='' className="poster-img" />
+                    : <div className="mask" />
+                  : null
+              }
+              {!isPlay ? <img src={playIcon} className="play-icon" /> : null}
+            </div>
+          )
+        }
+        {
+          type === 'Image' &&
+            <div
+              style={{
+                height: imgHeight,
+                width: imgWidth,
+                borderRadius: config?.imgStyle === 'main' ? '8px' : '0'
+              }}
+              className={config?.imgStyle === 'matrix' ? "img-list-box matrix" : "img-list-box"}
+            >
+              {
+                config?.imgStyle === 'matrix' ?
+                  config?.imgList.map((imgItem: {index: number, link: string, img: string}, id: number) => {
+                    const marginBottom = id + 1 <= (config.lineNumber - 1) * config.columnNumber ? `${12 * editWidth / 1920}px` : '0'
+                    const marginRight = (id + 1) % config.columnNumber !== 0 ? config.columnNumber === 5 ? `${20 * editWidth / 1920}px` : `${24 * editWidth / 1920}px` : '0'
+                    return (
+                      <div
+                        className="img-item-box"
+                        key={id}
+                        style={{
+                          marginBottom,
+                          marginRight
+                        }}
+                      >
+                        {
+                          imgItem.img ?
+                            <img
+                              style={{
+                                height: config?.imgHeight * editWidth / 1920,
+                                width: config?.imgWidth * editWidth / 1920,
+                                objectFit: "cover",
+                                borderRadius: '4px'
+                              }}
+                              src={imgItem.img}
+                              onClick={() => {
+                                if (imgItem.link){
+                                  window.location.href = imgItem.link
+                                }
+                              }}
+                              alt=''
+                            /> :
+                            <div
+                              style={{
+                                height: config?.imgHeight * editWidth / 1920,
+                                width: config?.imgWidth * editWidth / 1920,
+                                background: 'ccc',
+                              }}
+                            />
+                        }
+                      </div>
+                    )
+                  }) :
+                config?.isCarousel?
+                  <Carousel
+                    autoplay
+                    autoplaySpeed={config?.duration * 1000}
+                  >
+                  {
+                    config?.imgList.map((imgItem: {index: number, link: string, img: string}, index: number) => {
+                      return (
+                        <div
+                          className="img-item-box"
+                          key={index}
+                        >
+                          {
+                            imgItem.img ?
+                              <img
+                                style={{
+                                  height: imgHeight,
+                                  width: imgWidth,
+                                  objectFit: "cover",
+                                  borderRadius: config?.imgStyle === 'main' ? '8px' : '0'
+                                }}
+                                src={imgItem.img}
+                                onClick={() => {
+                                  if (imgItem.link){
+                                    window.location.href = imgItem.link
+                                  }
+                                }}
+                                alt=''
+                              /> :
+                              <div
+                                style={{
+                                  height: imgHeight,
+                                  width: imgWidth,
+                                  background: 'ccc',
+                                }}
+                              />
+                          }
+                        </div>
+                      )
+                    })
+                  }
+                </Carousel> :
+                  <div
+                    className="img-item-box"
+                  >
+                    {
+                      config?.imgList[0].img ?
+                        <img
+                          style={{
+                            height: imgHeight,
+                            width: imgWidth,
+                            objectFit: "cover",
+                            borderRadius: config?.imgStyle === 'main' ? '8px' : '0'
+                          }}
+                          src={config?.imgList[0].img}
+                          onClick={() => {
+                            if (config?.imgList[0].link){
+                              window.location.href = config?.imgList[0].link
+                            }
+                          }}
+                          alt=''
+                        /> :
+                        <div
+                          style={{
+                            height: imgHeight,
+                            width: imgWidth,
+                            background: '#ccc',
+                          }}
+                        />
+                    }
+                  </div>
+              }
+            </div>
+        }
         {type === 'CheckboxGroup' && (
           <Form.Item label={config?.showLabel ? label : ''} required={config?.required}>
             {
