@@ -390,7 +390,7 @@ export default () => {
       windowZoom({ originWidth: 1920, minWidth: 1200 })
     }
     window.addEventListener('resize', handleChangeScale)
-    document.body.setAttribute('style', 'background: #02061c;overflow: hidden')
+    document.body.setAttribute('style', 'background: #02061c')
     getMainInfo()
     getChangeMainInfo(time)
     return () => {
