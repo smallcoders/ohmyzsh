@@ -69,7 +69,7 @@ export default () => {
         tooltip: {
           trigger: 'axis',
           formatter: (params: any) => {
-            return `${(params[0]?.data || {}).time} <br/> 申请金额：${params[0].value || '0.00'}万元 <br/> 授信金额: ${params[1].value || '0.00'}万元`
+            return `${(params[0]?.data || {}).time} <br/> 申请金额: ${params[0].value || '0.00'}万元 <br/> 授信金额: ${params[1].value || '0.00'}万元`
           },
           backgroundColor: 'rgba(12,60,140, 0.98)',
           textStyle: {
