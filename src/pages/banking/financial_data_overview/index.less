@@ -5,7 +5,7 @@
   transform-origin: left top;
   background-repeat: no-repeat;
   background-position: center;
-  background-size: 100% 100%;
+  background-size: cover;
   background-color: #02061c;
   background-image: url("../../../assets/financial/financial_data_overview_bg.png");
   &::-webkit-scrollbar {
@@ -67,6 +67,7 @@
     }
     .progress {
       background: rgba(114,139,255,0.10);
+      padding-bottom: 28px;
       .progress-title {
         position: relative;
         display: flex;
@@ -163,7 +164,7 @@
       }
     }
     .product-rank-list {
-      margin-top: 54px;
+      margin-top: 30px;
       background: rgba(114,139,255,0.10);
       .rank-title {
         position: relative;
@@ -219,6 +220,11 @@
       }
       .table-body {
         padding-left: 8px;
+        overflow: auto;
+        height: 534px;
+        &::-webkit-scrollbar {
+          display: none;
+        }
         .table-item {
           border-bottom: 1px solid rgba(58,91,123,0.37);
           padding: 13px 0;
@@ -330,11 +336,11 @@
     }
     .analysis-pie {
       padding: 0 20px 0;
-      height: 224px;
+      height: 234px;
     }
     .analysis-stack-line {
       padding: 6px 16px 0;
-      height: 224px;
+      height: 234px;
     }
     .analysis-title {
       position: relative;
@@ -364,11 +370,17 @@
     margin-left: 24px;
     width: 460px;
     .bank-list {
+      margin-top: 4px;
       background: rgba(114,139,255,0.10);
       padding-bottom: 32px;
     }
     .list-box {
       padding: 0 25px;
+      overflow: auto;
+      height: 506px;
+      &::-webkit-scrollbar {
+        display: none;
+      }
     }
     .bank-list-title {
       position: relative;
@@ -524,7 +536,7 @@
       padding-bottom: 28px;
       .rate-1,.rate-2,.rate-3,.rate-4{
         position: absolute;
-        right: -10px;
+        right: 2px;
         color: #fff;
         font-size: 12px;
         .line {
@@ -536,16 +548,16 @@
         }
       }
       .rate-1 {
-        top: 116px;
+        top: 110px;
       }
       .rate-2 {
-        top: 176px;
+        top: 164px;
       }
       .rate-3 {
-        top: 236px;
+        top: 224px;
       }
       .rate-4 {
-        top: 296px;
+        top: 284px;
       }
       .analysis-title {
         position: relative;
@@ -572,8 +584,8 @@
       }
       .analysis-funnel {
         width: 100%;
-        height: 300px;
-        margin-top: 25px;
+        height: 270px;
+        margin-top: 28px;
         padding: 0 24px;
       }
     }
@@ -846,12 +858,16 @@
 
 
 .data-over-view-modal {
+  .ant-modal {
+    top: calc(50vh - 259px);
+  }
   .ant-modal-close {
     color: rgba(230,235,242, 0.4);
   }
   .ant-modal-body {
     height: 384px;
     position: relative;
+    padding-top: 10px;
   }
   .ant-modal-content {
     background: #0A1943;
@@ -871,15 +887,6 @@
     align-items: center;
     .share-amount,.contract-amount {
       position: relative;
-      &::after {
-        position: absolute;
-        content: '';
-        right: 0;
-        bottom: -16px;
-        left: 0;
-        height: 2px;
-        background: #47DBFF;
-      }
     }
   }
   .ant-modal-footer {
@@ -898,11 +905,16 @@
   }
   .over-modal-content {
     height: 290px;
-    overflow: auto;
     .form-box {
+      height: 290px;
       width: 100%;
+      overflow: auto;
+      &::-webkit-scrollbar {
+        display: none;
+      }
     }
     .form-box-title {
+      width: 100%;
       display: flex;
       align-items: center;
       justify-content: flex-start;
@@ -1014,9 +1026,8 @@
     }
   }
   .add-btn {
-    position: absolute;
-    left: 24px;
-    bottom: 10px;
+    margin-bottom: 10px;
+    display: inline-block;
     border: 1px solid rgba(219,223,230, 0.2);
     border-radius: 2px;
     font-size: 16px;
