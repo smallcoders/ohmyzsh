@@ -88,7 +88,7 @@ export default function (
         {...uploadProps}
         disabled={disable}
         className="upload-image"
-        action="/antelope-manage/common/upload/record"
+        action="/antelope-common/common/file/upload/record"
         showUploadList={false}
         onChange={onFileChange}
         changeLoading={setLoading}

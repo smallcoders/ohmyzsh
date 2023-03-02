@@ -982,7 +982,7 @@ export default () => {
           <Upload
             maxCount={3}
             listType="picture-card"
-            action="/antelope-manage/common/upload/record"
+            action="/antelope-common/common/file/upload/record"
             onChange={handleChange2}
             onRemove={onRemove2}
             beforeUpload={beforeUpload}

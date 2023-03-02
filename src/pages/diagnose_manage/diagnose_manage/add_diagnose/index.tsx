@@ -1097,7 +1097,7 @@ export default () => {
 			setFiles([])
 		}
 		//   form.setFieldsValue({
-		// 	...record, 
+		// 	...record,
 		// 	videoId: [{uid: record.videoId, name: record.videoName+'.mp4', status: 'done',}],
 		// 	typeIds: record.typeIds ? record.typeIds.split(',').map(Number) : []
 		//   });
@@ -1288,7 +1288,7 @@ export default () => {
 			accept: ".pdf",
 			maxCount: 1,
 			maxSize: 30,
-			action: '/antelope-manage/common/upload/record',
+			action: '/antelope-common/common/file/upload/record',
 			onRemove: (file: UploadFile<any>) => {
 				const files_copy = [...files];
 				const existIndex = files_copy.findIndex((p) => p.storeId === file?.response?.result);
@@ -1930,7 +1930,7 @@ export default () => {
 								</div>
 								<div className={'diagnose-edit-wrapper'}>
 									<Form.Provider
-										//题目关联弹框完成选择后更新相关变量 
+										//题目关联弹框完成选择后更新相关变量
 										onFormFinish={(name, { values, forms }) => {
 											let indexRelate = values.currentTitle.split('.')[0] * 1 - 1
 											console.log(values, 'relatedForm-values');
@@ -1966,15 +1966,15 @@ export default () => {
 														options={industryData}
 														fieldNames={{ label: 'name', value: 'id' }}
 													/>
-													{/* <Select 
+													{/* <Select
 														mode="multiple"
 														allowClear
 														fieldNames={{ label: 'name', value: 'id' }}
 														onChange={(e) => {console.log(e)}}
 													>
 														{industryData && industryData.map((item: any) =>
-															<Option 
-																value={item.id} 
+															<Option
+																value={item.id}
 																key={item.id}
 															>
 																{item.name}

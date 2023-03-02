@@ -99,7 +99,7 @@ export async function listAllAreaCode() {
  */
 export async function uploadFile(data:any) {
   return request<Common.ResultCode & { result: { path: string } }>(
-    `/antelope-manage/common/upload/record`,
+    `/antelope-common/common/file/upload/record`,
     {
       method: 'POST',
       data,
