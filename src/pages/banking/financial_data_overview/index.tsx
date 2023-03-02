@@ -469,7 +469,7 @@ export default () => {
                           }
                         </div>
                         <div className="desc-amount">
-                          <span>{formatPrice(customToFixed(`${(item.occupyAmount || 0) / 1000000}`, 0))}</span><span>/{formatPrice(customToFixed(`${item.targetAmount / 1000000}`, 0))}万元</span>
+                          <span>{formatPrice(customToFixed(`${(item.occupyAmount || 0) / 1000000}`, 2))}</span><span>/{formatPrice(customToFixed(`${item.targetAmount / 1000000}`, 0))}万元</span>
                         </div>
                       </div>
                       <div className="progress-bar">
