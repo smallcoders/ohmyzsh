@@ -295,6 +295,7 @@ export default () => {
           textStyle: {
             color: '#fff',
             lineHeight: 20,
+            fontSize: 14,
             rich: {
               blue: {
                 color: '#47DBFF',
