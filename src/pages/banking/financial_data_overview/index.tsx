@@ -413,21 +413,21 @@ export default () => {
       <div className="middle-title">羚羊数字金融驾驶舱</div>
       <div className="content">
         <div className="left-content">
+          <div className="date-box">
+            <DatePicker.RangePicker
+              dropdownClassName="financial-overview-time"
+              allowClear={false}
+              suffixIcon={null}
+              bordered={false}
+              onChange={selectTime}
+              separator={<span>至</span>}
+              defaultValue={[time.startDate, time.endDate]}
+              disabledDate={(current) => {
+                return current && current > moment().subtract(0, 'day')
+              }}
+            />
+          </div>
           <div className="progress">
-            <div className="date-box">
-              <DatePicker.RangePicker
-                dropdownClassName="financial-overview-time"
-                allowClear={false}
-                suffixIcon={null}
-                bordered={false}
-                onChange={selectTime}
-                separator={<span>至</span>}
-                defaultValue={[time.startDate, time.endDate]}
-                disabledDate={(current) => {
-                  return current && current > moment().subtract(0, 'day')
-                }}
-              />
-            </div>
             <div className="progress-title">
               <div className="text">{targetProgressVO.targetName}</div>
               <Popover
@@ -479,33 +479,33 @@ export default () => {
                 })
               }
             </div>
-            <div className="product-rank-list">
-              <div className="rank-title">金融产品热度排名</div>
-              <div className="rank-list-table">
-                <div className="table-header">
-                  <div className="title">产品</div>
-                  <div className="apply-amount">申请笔数</div>
-                  <div className="credit-amount">授信笔数</div>
-                </div>
-                <div className="table-body">
-                  {
-                    productHotVO && productHotVO.map((item: any, index: number) => {
-                      return <div className="table-item" key={index}>
-                        <div className="title">
-                          {
-                            index > 2 ? <span className="index">{index + 1}</span> :
-                              <span className={`index-${index + 1}`} />
-                          }
-                          <Tooltip title={item.name} placement="topLeft">
-                            <span>{item.name}</span>
-                          </Tooltip>
-                        </div>
-                        <div className="apply-amount">{formatPrice(`${item.applyNum || 0}`)}</div>
-                        <div className="credit-amount">{formatPrice(`${item.creditNum || 0}`)}</div>
+          </div>
+          <div className="product-rank-list">
+            <div className="rank-title">金融产品热度排名</div>
+            <div className="rank-list-table">
+              <div className="table-header">
+                <div className="title">产品</div>
+                <div className="apply-amount">申请笔数</div>
+                <div className="credit-amount">授信笔数</div>
+              </div>
+              <div className="table-body">
+                {
+                  productHotVO && productHotVO.map((item: any, index: number) => {
+                    return <div className="table-item" key={index}>
+                      <div className="title">
+                        {
+                          index > 2 ? <span className="index">{index + 1}</span> :
+                            <span className={`index-${index + 1}`} />
+                        }
+                        <Tooltip title={item.name} placement="topLeft">
+                          <span>{item.name}</span>
+                        </Tooltip>
                       </div>
-                    })
-                  }
-                </div>
+                      <div className="apply-amount">{formatPrice(`${item.applyNum || 0}`)}</div>
+                      <div className="credit-amount">{formatPrice(`${item.creditNum || 0}`)}</div>
+                    </div>
+                  })
+                }
               </div>
             </div>
           </div>
@@ -592,7 +592,7 @@ export default () => {
         </div>
         <div className="right-content">
           <div className="bank-list">
-            <div className="bank-list-title">金融机构排名</div>
+            <div className="bank-list-title">金融机构授信排名</div>
             <div className="list-box">
               {
                 bankCreditRankVO && bankCreditRankVO.map((item: any, index: number) => {

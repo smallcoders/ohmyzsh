@@ -596,35 +596,28 @@ export default () => {
             </Dropdown>
             {
               access['P_FM_BXYW'] &&
-              <Dropdown overlay={<Menu>
-                <Menu.Item onClick={() => {
-                  if (!selectedRowKeys.length) {
-                    message.warning('请选择数据');
-                    return;
-                  }
-                  delBatchLoanRecord(selectedRowKeys.join(','), 5).then((res) => {
-                    if (res.code === 0){
-                      if(res.result === selectedRowKeys.length){
-                        message.success('删除成功')
-                      } else {
-                        message.error('只可删除【待审核】状态的数据')
-                      }
-                      const pageIndex = res.result === selectedRowKeys.length && pageInfo.pageTotal === pageInfo.pageIndex ?
-                        pageInfo.pageIndex - 1 > 0 ? pageInfo.pageIndex : 1 :  pageInfo.pageIndex
-                      getPage(pageIndex)
+              <Button size="large" onClick={() => {
+                if (!selectedRowKeys.length) {
+                  message.warning('请选择数据');
+                  return;
+                }
+                delBatchLoanRecord(selectedRowKeys.join(','), 5).then((res) => {
+                  if (res.code === 0){
+                    if(res.result === selectedRowKeys.length){
+                      message.success('删除成功')
                     } else {
-                      message.error(res.message)
+                      message.error('只可删除【待审核】状态的数据')
                     }
-                  })
-                }}>
-                  删除选中结果
-                </Menu.Item>
-              </Menu>}>
-                <Button size="large">
-                  批量删除
-                  <DownOutlined />
-                </Button>
-              </Dropdown>
+                    const pageIndex = res.result === selectedRowKeys.length && pageInfo.pageTotal === pageInfo.pageIndex ?
+                      pageInfo.pageIndex - 1 > 0 ? pageInfo.pageIndex : 1 :  pageInfo.pageIndex
+                    getPage(pageIndex)
+                  } else {
+                    message.error(res.message)
+                  }
+                })
+              }}>
+                批量删除
+              </Button>
             }
           </div>
         </div>

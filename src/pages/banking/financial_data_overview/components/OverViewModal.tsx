@@ -256,6 +256,12 @@ export default forwardRef((props: any, ref: any) => {
       wrapClassName="data-over-view-modal"
     >
       <div className="over-modal-content">
+        <div
+          className="add-btn bottom"
+          onClick={handleAdd}
+        >
+          +添加一行
+        </div>
         <div className="form-box">
           <div className="form-box-title">
             <div className="title-item"><span>*</span>{activeTab === 1 ? '金融机构' : '项目名称'}</div>
@@ -299,7 +305,7 @@ export default forwardRef((props: any, ref: any) => {
                           <Select
                             showSearch
                             optionFilterProp="label"
-                            notFoundContent={form.getFieldValue(`bankId_${item}`) ? "暂无数据" : '请选择金融机构'}
+                            notFoundContent={form.getFieldValue(`bankId_${item}`) ? "暂无数据" : '请先选择金融机构'}
                             dropdownClassName="product-list-select-drop"
                             options={productOptionsMap[form.getFieldValue(`bankId_${item}`)] || []}
                             placeholder="请选择"
@@ -402,12 +408,6 @@ export default forwardRef((props: any, ref: any) => {
               }
             </Form>
         </div>
-      </div>
-      <div
-        className="add-btn bottom"
-        onClick={handleAdd}
-      >
-        +添加一行
       </div>
     </Modal>
   )
