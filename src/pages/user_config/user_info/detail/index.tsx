@@ -348,7 +348,7 @@ export default () => {
         orgList.length > 1 && contentType === 1 ?
           <Tabs
             activeKey={`${currentTabKey}`}
-            tabBarStyle={{marginBottom: 0, background: '#fff' }}
+            tabBarStyle={{marginBottom: 0, background: '#fff', padding: '0 5px' }}
             tabPosition="top"
             style={{ height: 220}}
             onTabClick={(activeKey) => {
