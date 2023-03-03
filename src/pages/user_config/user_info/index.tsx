@@ -208,12 +208,12 @@ export default () => {
       title: '所属组织',
       dataIndex: 'orgName',
       width: 100,
-      render: (_: any, record: any) => {
+      render: (orgName: any, record: any) => {
         return (
           <div className="org-name">
-            {_ || '--'}
+            {orgName || '--'}
             {
-              (record?.orgNum > 1) &&
+              record?.orgNum > 1 && orgName &&
               <span className="org-number">+{record?.orgNum}</span>
             }
           </div>
