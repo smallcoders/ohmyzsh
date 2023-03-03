@@ -92,15 +92,15 @@ export default () => {
               actImgs.push(
                 {
                   uid: i.picId,
-                  name: 'image.png',  
+                  name: 'image.png',
                   status: 'done',
                   url: i.banner
                 }
               )
-            }) 
+            })
           }
           setEditingItem({
-            ...editItem, 
+            ...editItem,
             time: [moment(editItem.startTime), moment(editItem.endTime)],
             firstPic: editItem.firstPic&&editItem.firstPic.id ? [{uid: editItem.firstPic?.picId,name: 'image.png',  status: 'done',url: editItem.firstPic?.banner}] : [],
             otherPic: actImgs
@@ -215,7 +215,7 @@ export default () => {
             <a
               href="#!"
               onClick={(e) => {
-                e.preventDefault(); 
+                e.preventDefault();
                 history.push(`/purchase-manage/commodity-detail?id=${record.id}`);
               }}
             >
@@ -372,7 +372,7 @@ export default () => {
     if(selectedRowKeys) {
       selectedRowKeys.map((i: any) => {
         arr.push(JSON.parse(i))
-      }) 
+      })
     }
     let list = choosedProducts.concat(arr);
     let res: any = [];
@@ -492,8 +492,8 @@ export default () => {
               title={
                 <>
                   <Form form={weightForm}>
-                    <Form.Item 
-                      name={'weight'} 
+                    <Form.Item
+                      name={'weight'}
                       label="权重设置"
                       rules={[
                         {
@@ -547,13 +547,13 @@ export default () => {
       },
     },
   ];
-  
+
   const useModal = (): React.ReactNode => {
     const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
       // console.log('selectedRowKeys changed: ', newSelectedRowKeys);
       setSelectedRowKeys(newSelectedRowKeys);
     };
-  
+
     const rowSelection: TableRowSelection<DataType> = {
       preserveSelectedRowKeys: true, // 设置翻页保存key
       selectedRowKeys,
@@ -586,7 +586,7 @@ export default () => {
       setShowDataSource([...arr]);
     };
     const paginationProps = {
-      showTotal: () => 
+      showTotal: () =>
        `共${dataSource.length}条记录 第${pageInfo.pageSize}/${Math.ceil(dataSource.length / pageInfo.pageSize)}页`,
         current: pageInfo.pageIndex,
         pageSize: pageInfo.pageSize,
@@ -630,12 +630,12 @@ export default () => {
             dataSource={showDataSource}
             pagination={false}
           />
-          <Pagination 
+          <Pagination
             style={{marginTop: 10}}
-            current={pageInfo.pageIndex} 
-            onChange={changePage} 
+            current={pageInfo.pageIndex}
+            onChange={changePage}
             total={pageInfo.totalCount}
-            pageSize={pageInfo.pageSize} 
+            pageSize={pageInfo.pageSize}
           />
           {/* <Table
             bordered
@@ -705,8 +705,8 @@ export default () => {
     let arr = [...choosedProducts];
     let list = arr.map((item,index)=>
       index == currentSetIndex ? {
-        ...item, 
-        specs: priceDataSource, 
+        ...item,
+        specs: priceDataSource,
         salePricePart: minSalePrice.toFixed(2) + '~' + maxSalePrice.toFixed(2),
         originPricePart: maxOriginPrice != 0 ? (minOriginPrice.toFixed(2) + '~' + maxOriginPrice.toFixed(2)) : null
       } : item
@@ -852,7 +852,7 @@ export default () => {
       }),
     };
   });
-  
+
   const setPriceModal = (): React.ReactNode => {
     return (
       <Modal
@@ -963,7 +963,7 @@ export default () => {
   };
 
   return (
-    <PageContainer 
+    <PageContainer
       title={false}
       header={{
         title: isEditing ? `活动编辑` : '活动新增',
@@ -1008,7 +1008,7 @@ export default () => {
             allowClear
           />
         </Form.Item>
-        <Form.Item label="活动权重" name="sortNo" 
+        <Form.Item label="活动权重" name="sortNo"
           rules={[{
             validator(rule, value) {
               let r = /^100$|^(?:\d|[1-9]\d|1[0-4]\d)?$/.test(value);
@@ -1035,11 +1035,11 @@ export default () => {
           valuePropName="fileList"
           getValueFromEvent={normFile}
           extra={`${'图片格式仅支持JPG、PNG、JPEG,建议尺寸690*170px，大小在5M以下'}`}
-        > 
-          <Upload 
-            maxCount={1} 
+        >
+          <Upload
+            maxCount={1}
             listType="picture-card"
-            action='/antelope-manage/common/upload/record'
+            action='/antelope-common/common/file/upload/record'
             onChange={handleChange}
             onRemove={onRemove}
             accept=".bmp,.gif,.png,.jpeg,.jpg"
@@ -1056,10 +1056,10 @@ export default () => {
           extra={'图片格式仅支持JPG、PNG、JPEG,建议尺寸690*240px，大小在5M以下，支持3张图片'}
           rules={[{ required: true }]}
         >
-          <Upload 
+          <Upload
             maxCount={3}
             listType="picture-card"
-            action='/antelope-manage/common/upload/record'
+            action='/antelope-common/common/file/upload/record'
             onChange={handleChange2}
             onRemove={onRemove2}
             beforeUpload={beforeUpload}
@@ -1073,8 +1073,8 @@ export default () => {
         </Form.Item>
       </Form>
       <h1>活动商品</h1>
-      <Button 
-        type='primary' 
+      <Button
+        type='primary'
         onClick={() => {
           setModalVisible(true);
         }}>

@@ -33,6 +33,7 @@
   PAGE_CREAT_MANAGE_PUBLISH: '/operation-activity/page_creat_manage/manage/publish',
   PAGE_CREAT_MANAGE_PAGE_LIST: '/operation-activity/page_creat_manage/manage',
   PAGE_CREAT_MANAGE_PAGE_DATA: '/operation-activity/page_creat_manage/manage/page_data',
+  PAGE_CREAT_MANAGE_WEB_PREVIEW: '/operation-activity/page_creat_manage/manage/web_preview',
 
   // 素材库管理
   MATERIAL_LIBRARY_MANAGE: '/operation-activity/material-library-manage/index',
@@ -149,6 +150,7 @@
   FINANCIAL_CUSTOMERS_MANAGE_INDEX: '/banking/financial_customers_manage/index',
   FINANCIAL_CUSTOMERS_MANAGE_DETAIL: '/banking/financial_customers_manage/detail',
   FINANCIAL_CUSTOMERS_MANAGE_EDIT: '/banking/financial_customers_manage/edit',
+  FINANCIAL_DATA_OVERVIEW: '/banking/financial_data_overview',
 
   // 产品管理
   PRODUCT_MANAGEMENT: '/banking/product_management',
@@ -985,6 +987,13 @@ export default [
             component: './page_creat_manage/page_data/index',
           },
           {
+            path: routeName.PAGE_CREAT_MANAGE_WEB_PREVIEW,
+            name: '网页设计预览',
+            hideInMenu: true,
+            layout: false,
+            component: './page_creat_manage/web_preview/index',
+          },
+          {
             path: routeName.PAGE_CREAT_MANAGE_EDIT,
             name: '页面编辑',
             hideInMenu: true,
@@ -1307,6 +1316,15 @@ export default [
       //     },
       //   ],
       // },
+      {
+        path: routeName.FINANCIAL_DATA_OVERVIEW,
+        name: '金融数据概况',
+        code: 'M_FM_SJZL',
+        access: 'M_FM_SJZL',
+        component: './banking/financial_data_overview',
+        layout: false,
+        target: '_blank',
+      },
       {
         path: routeName.LOAN_RECORD,
         name: '贷款业务',

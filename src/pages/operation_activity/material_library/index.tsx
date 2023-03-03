@@ -7,7 +7,6 @@ import {
   Input,
   List,
   Card,
-  Image,
   Checkbox,
   Space,
   message,
@@ -26,7 +25,7 @@ import {
 import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import {
   totalNumber,
   listAll,
