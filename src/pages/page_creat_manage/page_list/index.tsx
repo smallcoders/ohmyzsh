@@ -152,8 +152,8 @@ export default () => {
           if (res.code === 0){
             antdMessage.success(`删除成功`);
             const { totalCount, pageIndex, pageSize } = pageInfo
-            const newTotal = totalCount - 1;
-            const newPageTotal = Math.ceil(newTotal / pageSize)
+            const newTotal = totalCount - 1 || 1;
+            const newPageTotal = Math.ceil(newTotal / pageSize) || 1
             getPage(pageIndex >  newPageTotal ? newPageTotal : pageIndex, pageSize, tmpType)
           } else {
             antdMessage.error(`${res.message}`);

@@ -591,7 +591,7 @@ export default () => {
   const uploadProps = {
     name: 'file',
     multiple: true,
-    action: '/antelope-manage/common/upload/record',
+    action: '/antelope-common/common/file/upload/record',
     onChange: handleChange,
     beforeUpload: beforeUpload,
     onDrop: (e: React.DragEvent) => {

@@ -14,7 +14,6 @@ import {
   Tooltip,
 } from 'antd';
 import { CaretDownOutlined, CaretUpOutlined, DownOutlined } from '@ant-design/icons';
-import type { TableRowSelection } from 'antd/es/table/interface';
 import { PageContainer } from '@ant-design/pro-layout';
 import { ProFormDigitRange } from '@ant-design/pro-components';
 import './index.less';
@@ -27,7 +26,7 @@ import SelfTable from '@/components/self_table';
 import { UploadOutlined } from '@ant-design/icons';
 import FormEdit from '@/components/FormEdit';
 import BankingLoan from '@/types/banking-loan.d';
-import { history, useHistory } from 'umi';
+import { history, useAccess } from 'umi';
 import { regFenToYuan, regYuanToFen } from '@/utils/util';
 import {
   getLoanRecordList,
@@ -36,6 +35,7 @@ import {
   loanRecordExport,
   takeNotes,
   getTakeMoneyDetail,
+  delBatchLoanRecord
 } from '@/services/banking-loan';
 
 const sc = scopedClasses('loan-record-list');
@@ -45,6 +45,8 @@ export default ({ loanType, name }: { loanType: number; name: string }) => {
   const [dataSource, setDataSource] = useState<BankingLoan.Content[]>([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const [searchForm] = Form.useForm();
+  // 拿到当前角色的access权限兑现
+  const access = useAccess()
   const [searchContent, setSearChContent] = useState<{
     applyNo?: string; // 业务申请编号
     orgName?: string; // 企业名称
@@ -67,10 +69,6 @@ export default ({ loanType, name }: { loanType: number; name: string }) => {
   /**
    * 新建窗口的弹窗
    *  */
-  // const dialogFormLayout = {
-  //   labelCol: { span: 3 },
-  //   wrapperCol: { span: 18 },
-  // };
   const [form] = Form.useForm();
   const [createModalVisible, setModalVisible] = useState<boolean>(false);
   const [editingItem, setEditingItem] = useState<BankingLoan.Content>({});
@@ -88,7 +86,6 @@ export default ({ loanType, name }: { loanType: number; name: string }) => {
     totalCount: 0,
     pageTotal: 0,
   });
-  // const historys = useHistory();
   useEffect(() => {
     console.log('unlisten');
     const unlisten = history.listen((historyLocation, action) => {
@@ -686,14 +683,40 @@ export default ({ loanType, name }: { loanType: number; name: string }) => {
       <div className={sc('container-table')}>
         <div className={sc('container-table-header')}>
           <div className="title">
-            <Dropdown overlay={menuProps}>
-              <Button size="large">
-                <Space>
+            <div className="button-box">
+              <Dropdown overlay={menuProps}>
+                <Button size="large">
                   导出
                   <DownOutlined />
-                </Space>
-              </Button>
-            </Dropdown>
+                </Button>
+              </Dropdown>
+              {
+                ((access['P_FM_DKYW'] && loanType === 1) || (access['P_FM_ZLYW'] && loanType === 3)) &&
+
+                <Button size="large" onClick={() => {
+                  if (!selectedRowKeys.length) {
+                    message.warning('请选择数据');
+                    return;
+                  }
+                  delBatchLoanRecord(selectedRowKeys.join(','), 5).then((res) => {
+                    if (res.code === 0){
+                      if(res.result === selectedRowKeys.length){
+                        message.success('删除成功')
+                      } else {
+                        message.error('只可删除【待授信】状态的数据')
+                      }
+                      const pageIndex = res.result === selectedRowKeys.length && pageInfo.pageTotal === pageInfo.pageIndex ?
+                        pageInfo.pageIndex - 1 > 0 ? pageInfo.pageIndex : 1 :  pageInfo.pageIndex
+                      getPage(pageIndex)
+                    } else {
+                      message.error(res.message)
+                    }
+                  })
+                }}>
+                  批量删除
+                </Button>
+              }
+            </div>
             <div className="tips">
               <span style={{ marginRight: 20 }}>
                 累计授信金额：{regFenToYuan(totalAmount.creditTotal)}万元

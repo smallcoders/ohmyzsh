@@ -90,7 +90,7 @@ export default () => {
     form.resetFields();
     setEditingItem({});
   };
-  
+
   // 置顶状态修改
   const updateTopStatus = async (id: string, status: boolean) => {
     let params = {id, isTop: status};
@@ -189,7 +189,7 @@ export default () => {
         <a
           href="#!"
           onClick={(e) => {
-            e.preventDefault(); 
+            e.preventDefault();
             window.open(`${routeName.WONDERFUL_VIDEO_MANAGEMENT_DETAIL}?id=${_record.id}`);
           }}
         >
@@ -230,7 +230,7 @@ export default () => {
       dataIndex: 'shareCount',
       width: 100,
       filterDropdown: (<div></div>),
-      filterIcon: 
+      filterIcon:
         <Tooltip placement="top" title="分享量=用户实际埋点数据+虚拟数据。括号中为虚拟数据">
           <QuestionCircleOutlined />
         </Tooltip>,
@@ -245,7 +245,7 @@ export default () => {
       dataIndex: 'goodCount',
       width: 100,
       filterDropdown: (<div></div>),
-      filterIcon: 
+      filterIcon:
         <Tooltip placement="top" title="点赞量=用户实际埋点数据+虚拟数据。括号中为虚拟数据">
           <QuestionCircleOutlined />
         </Tooltip>,
@@ -289,7 +289,7 @@ export default () => {
                 ]);
                 setModalVisible(true);
                 form.setFieldsValue({
-                  ...record, 
+                  ...record,
                   videoId: [{uid: record.videoId, name: record.videoName+'.mp4', status: 'done',}],
                   typeIds: record.typeIds ? record.typeIds.split(',').map(Number) : []
                 });
@@ -297,7 +297,7 @@ export default () => {
             >
               编辑
             </Button>
-            { 
+            {
               record.lineStatus ? (
                 <Popconfirm
                   title="确定下架么？"
@@ -339,8 +339,8 @@ export default () => {
                 </Popconfirm>
               )
             }
-             
-            { 
+
+            {
               !record.lineStatus && (
                 <Popconfirm
                   title="确定删除么？"
@@ -428,7 +428,7 @@ export default () => {
   const handleOk = async (lineStatus: boolean) => {
     addOrUpdate(lineStatus);
   };
-  
+
   const [uploadLoading, setUploadLoading] = useState<boolean>(false);
   const [files, setFiles] = useState<CourseManage.File[]>([]);
   const normFile = (e: any) => {
@@ -452,7 +452,7 @@ export default () => {
     accept: ".mp4",
     maxCount: 1,
     maxSize: 800,
-    action: '/antelope-manage/common/upload/record',
+    action: '/antelope-common/common/file/upload/record',
     onRemove: (file: UploadFile<any>) => {
       if (file.status === 'uploading' || file.status === 'error') {
         setUploadLoading(false);
@@ -486,7 +486,7 @@ export default () => {
       }
     }
   };
-  
+
   const useModal = (): React.ReactNode => {
     return (
       <Modal
@@ -521,7 +521,7 @@ export default () => {
         <Form {...formLayout} form={form} layout="horizontal"
           initialValues={
             {
-              shareVirtualCount: 0, 
+              shareVirtualCount: 0,
               goodVirtualCount: 0
             }
           }>
@@ -664,15 +664,15 @@ export default () => {
           </Row>
           <Row>
             <Col span={10} offset={2}>
-              <Form.Item 
-                name="shareVirtualCount" 
+              <Form.Item
+                name="shareVirtualCount"
                 label="虚拟分享量"
               >
                 <InputNumber min={0} />
               </Form.Item>
             </Col>
             <Col span={10}>
-              <Form.Item 
+              <Form.Item
                 name="goodVirtualCount"
                 label="虚拟点赞量">
                 <InputNumber min={0} />
@@ -681,7 +681,7 @@ export default () => {
           </Row>
           <Row>
             <Col span={16}>
-              <Form.Item 
+              <Form.Item
                 name="content"
                 label="内容概况">
                 <TextArea placeholder="请输入" maxLength={300} />
