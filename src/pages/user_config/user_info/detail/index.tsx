@@ -355,7 +355,6 @@ export default () => {
             activeKey={`${currentTabKey}`}
             tabBarStyle={{marginBottom: 0, background: '#fff', padding: '0 5px' }}
             tabPosition="top"
-            style={{ height: 220}}
             onTabClick={(activeKey) => {
               setCurrentTabKey(Number(activeKey))
             }}
