@@ -5,9 +5,10 @@ import { PageContainer } from '@ant-design/pro-layout';
 import scopedClasses, { labelStyle, contentStyle } from '@/utils/scopedClasses';
 import './index.less';
 import Common from '@/types/common.d';
+import CommonTitle from '@/components/verify_steps/common_title';
 import { getExpertAuthDetail, getOrgInfoAuthDetail, getUserDetail } from '@/services/user';
 import SelfTable from '@/components/self_table';
-import CommonTitle from '@/components/verify_steps/common_title';
+import { httpGetAuditList } from '@/services/audit';
 import VerifyStepsDetail from '@/components/verify_steps';
 const sc = scopedClasses('user-config-user-detail');
 
@@ -25,7 +26,6 @@ export default () => {
   const [expertDetail, setExpertDetail] = useState<any>({});
   const [currentTabKey, setCurrentTabKey] = useState<number>(0)
   const [detail, setDetail] = useState<any>({});
-  const [auditList, setAuditList] = useState<any>([]);
   const cacheOrgList = useRef<any>([])
   const [orgList, setOrgList] = useState<any>([]);
 
@@ -67,6 +67,33 @@ export default () => {
       const { code, result, message: resultMsg } = await getOrgInfoAuthDetail(id)
       if (code === 0) {
         cacheOrgList.current[index].orgDetail = result
+        if (result.auditId){
+          httpGetAuditList({auditId: result.auditId}).then((auditListResult) => {
+            if (auditListResult.code === 0){
+              cacheOrgList.current[index].auditList = auditListResult.result?.map((item: any) => {
+                return {
+                  title: (
+                    <CommonTitle
+                      title={item.userName}
+                      detail={VerifyListText[item.state] || ''}
+                      time={item.operationTime}
+                      special={
+                        item.state === Common.AuditStatus.AUDIT_PASSED ||
+                        item.state === Common.AuditStatus.AUDIT_REJECTED
+                      }
+                      reason={item.description}
+                      color={item.state === Common.AuditStatus.AUDIT_REJECTED ? '#FF65B3' : ''}
+                    />
+                  ),
+                  description: null,
+                  state: item.state,
+                }
+              }) || []
+              setOrgList([...cacheOrgList.current])
+            }
+          })
+
+        }
         setOrgList([...cacheOrgList.current])
       } else {
         throw new Error(resultMsg)
@@ -82,28 +109,6 @@ export default () => {
       try {
         const userRes = await getUserDetail(id)
         setDetail(userRes?.result)
-        setAuditList(
-          userRes?.result?.auditItemList?.map((item: any) => {
-            return {
-              title: (
-                <CommonTitle
-                  title={item.userName}
-                  detail={VerifyListText[item.state] || ''}
-                  time={item.operationTime}
-                  special={
-                    item.state === Common.AuditStatus.AUDIT_PASSED ||
-                    item.state === Common.AuditStatus.AUDIT_REJECTED
-                  }
-                  reason={item.description}
-                  color={item.state === Common.AuditStatus.AUDIT_REJECTED ? '#FF65B3' : ''}
-                />
-              ),
-              description: null,
-              state: item.state,
-            }
-          })
-        );
-
         if (userRes?.result?.expertId) {
           getExpertAuthVerifyDetail(userRes?.result?.expertId)
           setContentType(2)
@@ -400,6 +405,14 @@ export default () => {
                 <div key={index}>
                   <div className={sc('header')}>
                     {item?.title}
+                    {
+                      item?.title === '组织基本信息' &&
+                      <span
+                        className="current-role"
+                      >
+                        {orgList[currentTabKey]?.manager ? '组织管理员' : '组织其他成员'}
+                      </span>
+                    }
                   </div>
                   <Descriptions column={1} labelStyle={labelStyle} contentStyle={contentStyle}>
                     {item?.content?.map((it, idx: number) => {
@@ -447,9 +460,9 @@ export default () => {
         </div> : <Empty description={'当前用户暂未完成专家认证'} />)
       }
       {
-        auditList && auditList?.length > 0 &&
+        orgList[currentTabKey] && orgList[currentTabKey].auditList && orgList[currentTabKey].auditList?.length > 0 &&
         <div style={{ background: '#fff', marginTop: 20, paddingTop: 20, paddingLeft: 100 }}>
-          <VerifyStepsDetail list={auditList} />
+          <VerifyStepsDetail list={orgList[currentTabKey].auditList} />
         </div>
       }
     </PageContainer>

@@ -71,3 +71,11 @@ export function getListEnumsByKey(params: {
         params,
     })
 }
+
+/** 获取审核列表 */
+export async function httpGetAuditList(options?: { [key: string]: any }) {
+  return request<Common.ResultCode & { result: any[] }>('/antelope-manage/audit/query/list', {
+    method: 'GET',
+    params: { ...(options || {}) },
+  });
+}
