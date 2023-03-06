@@ -71,8 +71,8 @@ export default () => {
 
   const [form] = Form.useForm();
   const formLayout = {
-    labelCol: { span: 2 },
-    wrapperCol: { span: 5 },
+    labelCol: { span: 4 },
+    wrapperCol: { span: 8 },
   };
 
   const onSubmit = async (status: number) => {
@@ -178,7 +178,11 @@ export default () => {
             name="title"
             rules={[{ required: true, message: '请输入' }]}
           >
-            <Input maxLength={35} allowClear placeholder="请输入" />
+            <Input.TextArea
+                    placeholder="请输入"
+                    autoSize={{ minRows: 3, maxRows: 5 }}
+                    maxLength={200}
+                  />
           </Form.Item>
           <Form.Item
             label="来源"
