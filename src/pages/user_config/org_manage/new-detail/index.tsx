@@ -39,11 +39,11 @@ useEffect(() => {
             <div className='org-manage-info-col-label'>营业执照：</div>
             <div className='org-manage-info-col-title'>
               <div>(事业单位法人证书或统一信用代码证)</div>
+              {orgManageInfo?.businessLicenseUrl?
               <img
-              src={require('@/assets/banking_loan/delete.png')}
-              alt=""
+              src={orgManageInfo?.businessLicenseUrl}
               className="org-manage-info-col-title-img"
-            />
+            />:'--'}
             </div>
           </div>
           <div  className='org-manage-info-col'>
