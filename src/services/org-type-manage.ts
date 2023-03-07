@@ -60,6 +60,14 @@ export async function getOrgTypeOptions() {
   return request<{ result: { id: string; name: string }[] }>('/antelope-manage/org/type/options');
 }
 
+/**
+ * 查询组织详情
+ * */
+export async function getOrgDetail(orgId?: any) {
+  return request<any>(`/antelope-user/mng/org/detail?orgId=${orgId}`, {
+    method: 'get',
+  });
+}
 
 /**
  * 获取组织分页

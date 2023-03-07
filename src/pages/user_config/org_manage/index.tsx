@@ -175,7 +175,7 @@ export default () => {
             <Button
               type="link"
               onClick={() => {
-                window.open(`${routeName.ORG_MANAGE_NEW_DETAIL}?id=${record.id}`);
+                history.push(`${routeName.ORG_MANAGE_NEW_DETAIL}?id=${record.id}`);
               }}
             >
               详情
@@ -304,9 +304,9 @@ export default () => {
                 <Input placeholder="请输入" allowClear />
               </Form.Item>
             </Col>
-            <Col offset={6} span={4}>
+            <Col offset={18} span={4}>
               <Button
-                style={{ marginRight: 20 }}
+                style={{ marginRight: 20, marginBottom: 20 }}
                 type="primary"
                 key="search"
                 onClick={() => {
