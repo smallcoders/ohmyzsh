@@ -70,10 +70,10 @@ useEffect(() => {
             <div className='org-manage-info-col-label'>注册区域：</div>
             <div className='org-manage-info-col-title'>{orgManageInfo?.areaName || '--'}</div>
           </div>
-          <div  className='org-manage-info-col'>
+          {/* <div  className='org-manage-info-col'>
             <div className='org-manage-info-col-label'>注册时间：</div>
             <div className='org-manage-info-col-title'>{orgManageInfo?.registerDate || '--'}</div>
-          </div>
+          </div> */}
           <div  className='org-manage-info-col'>
             <div className='org-manage-info-col-label'>成立时间：</div>
             <div className='org-manage-info-col-title'>{orgManageInfo?.formedDate || '--'}</div>
