@@ -165,13 +165,21 @@ export default () => {
     },
     access['P_UM_ZZGL'] && {
       title: '操作',
-      width: 200,
+      width: 240,
       fixed: 'right',
       dataIndex: 'option',
       render: (_: any, record: OrgManage.Content) => {
         const accessible = access?.[permissions?.[edge].replace(new RegExp("Q"), "")]
         return <Access accessible={accessible}>
-          <Space size={20}>
+          <Space size={10}>
+            <Button
+              type="link"
+              onClick={() => {
+                history.push(`${routeName.ORG_MANAGE_NEW_DETAIL}?id=${record.id}`);
+              }}
+            >
+              详情
+            </Button>
             <Popconfirm
               icon={null}
               title={
@@ -291,9 +299,14 @@ export default () => {
                 <RangePicker showTime style={{ width: '100%' }} />
               </Form.Item>
             </Col>
-            <Col offset={12} span={4}>
+             <Col span={8}>
+              <Form.Item name="industryCategoryName" label="组织标签">
+                <Input placeholder="请输入" allowClear />
+              </Form.Item>
+            </Col>
+            <Col offset={18} span={4}>
               <Button
-                style={{ marginRight: 20 }}
+                style={{ marginRight: 20, marginBottom: 20 }}
                 type="primary"
                 key="search"
                 onClick={() => {
