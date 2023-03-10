@@ -22,9 +22,8 @@ import { routeName } from '@/../config/routes';
 import SelfTable from '@/components/self_table';
 import { UploadOutlined } from '@ant-design/icons';
 import { exportUserList } from '@/services/export';
-import {exportUsers, getAllChannelAndScene,getQueryUserManageRisky, getListEnumsByKey, getUserPage} from '@/services/user';
+import {getAllChannelAndScene,getQueryUserManageRisky, getListEnumsByKey, getUserPage} from '@/services/user';
 import User from '@/types/user.d';
-import {getAllChannel, getAllScene} from "@/services/opration-activity";
 import { handleAudit } from '@/services/audit';
 import type Activity from "@/types/operation-activity";
 const sc = scopedClasses('service-config-requirement-manage');
@@ -209,6 +208,17 @@ export default () => {
       title: '所属组织',
       dataIndex: 'orgName',
       width: 100,
+      render: (orgName: any, record: any) => {
+        return (
+          <div className="org-name">
+            {orgName || '--'}
+            {
+              record?.orgNum > 1 && orgName &&
+              <span className="org-number">+{record?.orgNum}</span>
+            }
+          </div>
+        )
+      }
     },
     {
       title: '操作',

@@ -397,7 +397,6 @@ export default () => {
               }}
             />
           </div>
-          <p>说明:可选择组织内员工或平台内无组织人员</p>
         </Modal>
     </PageContainer>
   );
