@@ -131,6 +131,7 @@
   // 贷款业务
   ORG_MANAGE_INDEX: '/user-config/org-manage/index',
   ORG_MANAGE_DETAIL: '/user-config/org-manage/detail',
+  ORG_MANAGE_NEW_DETAIL:'/user-config/org-manage/new-detail',
   // 贷款记录
   LOAN_RECORD: '/banking/loan_record',
   LOAN_RECORD_INDEX: '/banking/loan_record/index',
@@ -2129,6 +2130,11 @@ export default [
             path: routeName.ORG_MANAGE_DETAIL,
             name: '组织成员信息',
             component: './user_config/org_manage/detail',
+          },
+          {
+            path: routeName.ORG_MANAGE_NEW_DETAIL,
+            name: '详情',
+            component: './user_config/org_manage/new-detail',
           },
         ],
       },

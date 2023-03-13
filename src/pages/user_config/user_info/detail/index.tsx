@@ -1,15 +1,15 @@
-import { message, Image, Button, Descriptions, Radio, Row, Col, Empty } from 'antd';
+import { message, Image, Button, Descriptions, Radio, Row, Col, Empty, Tabs } from 'antd';
 import { history } from 'umi';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import scopedClasses, { labelStyle, contentStyle } from '@/utils/scopedClasses';
 import './index.less';
 import Common from '@/types/common.d';
+import CommonTitle from '@/components/verify_steps/common_title';
 import { getExpertAuthDetail, getOrgInfoAuthDetail, getUserDetail } from '@/services/user';
 import SelfTable from '@/components/self_table';
-import CommonTitle from '@/components/verify_steps/common_title';
+import { httpGetAuditList } from '@/services/audit';
 import VerifyStepsDetail from '@/components/verify_steps';
-import VerifyInfoDetail from '@/components/verify_info_detail/verify-info-detail';
 const sc = scopedClasses('user-config-user-detail');
 
 const scaleText = { 1: '0~50人', 2: '50~100人', 3: '100~200人', 4: '200~500人', 5: '500人以上' }
@@ -23,37 +23,13 @@ export const VerifyListText = {
 export const previewType = ['png', 'jpg', 'jpeg', 'jpeg2000', 'pdf'] // 可预览的格式
 export default () => {
   const [loading, setLoading] = useState<boolean>(false);
-  const [orgDetail, setOrgDetail] = useState<any>({});
   const [expertDetail, setExpertDetail] = useState<any>({});
+  const [currentTabKey, setCurrentTabKey] = useState<number>(0)
   const [detail, setDetail] = useState<any>({});
-  const [auditList, setAuditList] = useState<any>([]);
+  const cacheOrgList = useRef<any>([])
+  const [orgList, setOrgList] = useState<any>([]);
 
   const [contentType, setContentType] = useState<number>(1)
-  const {
-    businessLicenseFile,
-    orgTypeName,
-    orgName,
-    creditCode,
-    formedDate,
-    scale = 1,
-    phone,
-    provinceName, // 所属区域-省名称
-    cityName, // 所属区域-市名称
-    countyName, // 所属区域-县名称
-    address,
-    registeredCapital,
-    aboutUs,
-    ability,
-    coverFile,
-    businessType = 1,
-    legalName,
-    totalAssets,
-    revenueLastYear,
-    profitLastYear,
-    creditRating,
-    businessScope,
-    auditItemList,
-  } = orgDetail || {};
   const {
     personalPhotoFile,
     expertName,
@@ -73,44 +49,80 @@ export default () => {
     fileList = [],
   } = expertDetail || {};
 
+  const getExpertAuthVerifyDetail = async (id: string) => {
+    try {
+      const { code, result, message: resultMsg } = await getExpertAuthDetail(id)
+      if (code === 0) {
+        setExpertDetail(result)
+      } else {
+        throw new Error(resultMsg)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const getEnterpriseInfoVerifyDetail = async (id: string, index: number) => {
+    try {
+      const { code, result, message: resultMsg } = await getOrgInfoAuthDetail(id)
+      if (code === 0) {
+        cacheOrgList.current[index].orgDetail = result
+        if (result.auditId){
+          httpGetAuditList({auditId: result.auditId}).then((auditListResult) => {
+            if (auditListResult.code === 0){
+              cacheOrgList.current[index].auditList = auditListResult.result?.map((item: any) => {
+                return {
+                  title: (
+                    <CommonTitle
+                      title={item.userName}
+                      detail={VerifyListText[item.state] || ''}
+                      time={item.operationTime}
+                      special={
+                        item.state === Common.AuditStatus.AUDIT_PASSED ||
+                        item.state === Common.AuditStatus.AUDIT_REJECTED
+                      }
+                      reason={item.description}
+                      color={item.state === Common.AuditStatus.AUDIT_REJECTED ? '#FF65B3' : ''}
+                    />
+                  ),
+                  description: null,
+                  state: item.state,
+                }
+              }) || []
+              setOrgList([...cacheOrgList.current])
+            }
+          })
+
+        }
+        setOrgList([...cacheOrgList.current])
+      } else {
+        throw new Error(resultMsg)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   const prepare = async () => {
     const id = history.location.query?.id as string;
-
     if (id) {
       try {
         const userRes = await getUserDetail(id)
         setDetail(userRes?.result)
-        setAuditList(
-          userRes?.result?.auditItemList?.map((item: any) => {
-            return {
-              title: (
-                <CommonTitle
-                  title={item.userName}
-                  detail={VerifyListText[item.state] || ''}
-                  time={item.operationTime}
-                  special={
-                    item.state === Common.AuditStatus.AUDIT_PASSED ||
-                    item.state === Common.AuditStatus.AUDIT_REJECTED
-                  }
-                  reason={item.description}
-                  color={item.state === Common.AuditStatus.AUDIT_REJECTED ? '#FF65B3' : ''}
-                />
-              ),
-              description: null,
-              state: item.state,
-            }
-          })
-        );
-
         if (userRes?.result?.expertId) {
           getExpertAuthVerifyDetail(userRes?.result?.expertId)
           setContentType(2)
         }
-        if (userRes?.result?.orgId) {
-          getEnterpriseInfoVerifyDetail(userRes?.result?.orgId)
+        if (userRes?.result?.orgSimpleList?.length) {
+          const { orgSimpleList } = userRes?.result
+          orgSimpleList.forEach((item: any, index: number) => {
+            getEnterpriseInfoVerifyDetail(item?.orgId, index)
+          })
+          cacheOrgList.current = orgSimpleList
+          setOrgList(orgSimpleList)
           setContentType(1)
         }
-        if (!userRes?.result?.expertId && !userRes?.result?.orgId) {
+        if (!userRes?.result?.expertId && !userRes?.result?.orgSimpleList?.length) {
           setContentType(-1)
         }
       } catch (error) {
@@ -125,71 +137,75 @@ export default () => {
     prepare()
   }, [])
 
-  const getExpertAuthVerifyDetail = async (id: string) => {
-    try {
-      const { code, result, message } = await getExpertAuthDetail(id)
-      if (code === 0) {
-        setExpertDetail(result)
-      } else {
-        throw new Error(message)
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }
 
-  const getEnterpriseInfoVerifyDetail = async (id: string) => {
-    try {
-      const { code, result, message } = await getOrgInfoAuthDetail(id)
-      if (code === 0) {
-        setOrgDetail(result)
-      } else {
-        throw new Error(message)
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  const basicContent1 = [
-    {
-      label: '营业执照',
-      value: businessLicenseFile ? (
-        <Image className="img-photo" src={businessLicenseFile?.path} alt="营业执照" />
-      ) : (
-        ''
-      ),
-    },
-    { label: '组织类型', value: orgTypeName },
-    { label: '组织名称', value: orgName },
-    { label: '统一社会信用代码', value: creditCode },
-    { label: '成立时间', value: formedDate },
-    { label: '企业规模', value: scaleText[scale] },
-    { label: '联系电话', value: phone },
-    { label: '注册区域', value: (provinceName || '') + (cityName || '') + (countyName || '') },
-    { label: '详细地址', value: address },
-    { label: '注册资本', value: registeredCapital || registeredCapital === 0 ? registeredCapital + '万元' : '--' },
-    { label: '组织简介', value: aboutUs },
-    { label: '组织核心能力', value: ability },
-  ];
-
-  const basicContent2 = [
-    {
-      label: '组织logo',
-      value: coverFile ? (
-        <Image className="img-photo" src={coverFile?.path} alt="组织logo" />
-      ) : (
-        ''
-      ),
-    },
-    { label: '单位性质', value: businessTypeText[businessType] },
-    { label: '法人姓名', value: legalName },
-    { label: '总资产', value: totalAssets || totalAssets === 0 ? totalAssets + '万元' : '--' },
-    { label: '上年营收', value: revenueLastYear || revenueLastYear === 0 ? revenueLastYear + '万元' : '--' },
-    { label: '上年利润', value: profitLastYear || profitLastYear === 0 ? profitLastYear + '万元' : '--' },
-    { label: '信用等级', value: creditRating },
-    { label: '经营范围', value: businessScope },
-  ];
+  const getBasicContent1 = () => {
+    const {
+      businessLicenseFile,
+      orgTypeName,
+      orgName,
+      creditCode,
+      formedDate,
+      scale = 1,
+      phone,
+      provinceName, // 所属区域-省名称
+      cityName, // 所属区域-市名称
+      countyName, // 所属区域-县名称
+      address,
+      registeredCapital,
+      aboutUs,
+      ability,
+    } = cacheOrgList.current[currentTabKey]?.orgDetail || {};
+    return [
+      {
+        label: '营业执照',
+        value: businessLicenseFile ? (
+          <Image className="img-photo" src={businessLicenseFile?.path} alt="营业执照" />
+        ) : (
+          ''
+        ),
+      },
+      { label: '组织类型', value: orgTypeName },
+      { label: '组织名称', value: orgName },
+      { label: '统一社会信用代码', value: creditCode },
+      { label: '成立时间', value: formedDate },
+      { label: '企业规模', value: scaleText[scale] },
+      { label: '联系电话', value: phone },
+      { label: '注册区域', value: (provinceName || '') + (cityName || '') + (countyName || '') },
+      { label: '详细地址', value: address },
+      { label: '注册资本', value: registeredCapital || registeredCapital === 0 ? registeredCapital + '万元' : '--' },
+      { label: '组织简介', value: aboutUs },
+      { label: '组织核心能力', value: ability },
+    ]
+  };
+  const getBasicContent2 = () => {
+    const {
+      coverFile,
+      businessType = 1,
+      legalName,
+      totalAssets,
+      revenueLastYear,
+      profitLastYear,
+      creditRating,
+      businessScope,
+    } = cacheOrgList.current[currentTabKey]?.orgDetail || {};
+    return [
+      {
+        label: '组织logo',
+        value: coverFile ? (
+          <Image className="img-photo" src={coverFile?.path} alt="组织logo" />
+        ) : (
+          ''
+        ),
+      },
+      { label: '单位性质', value: businessTypeText[businessType] },
+      { label: '法人姓名', value: legalName },
+      { label: '总资产', value: totalAssets || totalAssets === 0 ? totalAssets + '万元' : '--' },
+      { label: '上年营收', value: revenueLastYear || revenueLastYear === 0 ? revenueLastYear + '万元' : '--' },
+      { label: '上年利润', value: profitLastYear || profitLastYear === 0 ? profitLastYear + '万元' : '--' },
+      { label: '信用等级', value: creditRating },
+      { label: '经营范围', value: businessScope },
+    ]
+  };
 
   const basicExpertContent1 = [
     {
@@ -202,7 +218,7 @@ export default () => {
     },
     { label: '专家姓名', value: expertName },
     { label: '所属区域', value: (personProvince || '') + (personCity || '') },
-    { label: '专家类型', value: typeList?.map(item => item?.name)?.join('、') || '' },
+    { label: '专家类型', value: typeList?.map((item: any) => item?.name)?.join('、') || '' },
     { label: '产业方向', value: industryNameList?.join('、') || '' },
   ]
 
@@ -275,13 +291,16 @@ export default () => {
     },
   ]
   const infoAuthContent = [
-    { title: '组织基本信息', content: basicContent1 },
-    { title: '其他信息', content: basicContent2 },
+    { title: '组织基本信息', content: getBasicContent1() },
+    { title: '其他信息', content: getBasicContent2() },
   ];
+
+  console.log(orgList, cacheOrgList, contentType, currentTabKey, orgList[currentTabKey]?.orgDetail?.auditState)
 
   return (
     <PageContainer
       loading={loading}
+      // className={sc('container')}
       footer={[
         <Button
           onClick={() => {
@@ -292,7 +311,6 @@ export default () => {
         </Button>,
       ]}
     >
-
       <div className='user-content' >
         <Row>
           <Col span={6}>
@@ -327,30 +345,88 @@ export default () => {
           }</div>
         </Row>
       </div>
-
       <Radio.Group style={{ margin: '20px 0' }} value={contentType} onChange={(e) => setContentType(e.target.value)}>
-        {detail?.orgId && <Radio.Button value={1}>组织信息</Radio.Button>}
+        {detail?.orgSimpleList?.length > 0 && <Radio.Button value={1}>组织信息</Radio.Button>}
         {detail?.expertId && <Radio.Button value={2}>专家信息</Radio.Button>}
       </Radio.Group>
-      {contentType == 1 && (orgDetail?.auditState == 3 ? <div className={sc('detail-container')} style={{position: 'relative'}}>
-       <div style={{position: 'absolute', right: 20, top: 20}}>认证时间：{orgDetail?.auditPassedTime||"--"}</div>
-        {infoAuthContent?.map((item, index) => {
-          return (
-            <div key={index}>
-              <div className={sc('header')}>{item?.title}</div>
-              <Descriptions column={1} labelStyle={labelStyle} contentStyle={contentStyle}>
-                {item?.content?.map((item, index: number) => {
-                  return (
-                    <Descriptions.Item key={item?.label || index} label={item?.label || null}>
-                      {item?.value || '--'}
-                    </Descriptions.Item>
-                  )
-                })}
-              </Descriptions>
-            </div>
-          )
-        })}
-      </div> : <Empty description={'当前用户暂未完成组织信息认证'} />)}
+      {
+        orgList.length > 1 && contentType === 1 ?
+          <Tabs
+            activeKey={`${currentTabKey}`}
+            tabBarStyle={{marginBottom: 0, background: '#fff', padding: '0 5px' }}
+            tabPosition="top"
+            onTabClick={(activeKey) => {
+              setCurrentTabKey(Number(activeKey))
+            }}
+          >
+            {orgList.map((orgItem: any, id: number) => {
+              return (
+                <Tabs.TabPane tab={orgItem.orgName} key={id}>
+                  {orgItem?.orgDetail?.auditState == 3 ?
+                    <div className={sc('detail-container')} style={{position: 'relative'}}>
+                      <div style={{position: 'absolute', right: 20, top: 20}}>认证时间：{orgItem.orgDetail?.auditPassedTime||"--"}</div>
+                      {infoAuthContent?.map((item, index) => {
+                        return (
+                          <div key={index}>
+                            <div className={sc('header')}>
+                              {item?.title}
+                              {
+                                item?.title === '组织基本信息' &&
+                                <span
+                                  className="current-role"
+                                >
+                                  {orgItem?.manager ? '组织管理员' : '组织其他成员'}
+                                </span>
+                              }
+                            </div>
+                            <Descriptions column={1} labelStyle={labelStyle} contentStyle={contentStyle}>
+                              {item?.content?.map((it, idx: number) => {
+                                return (
+                                  <Descriptions.Item key={it?.label || idx} label={it?.label || null}>
+                                    {it?.value || '--'}
+                                  </Descriptions.Item>
+                                )
+                              })}
+                            </Descriptions>
+                          </div>
+                        )
+                      })}
+                    </div>: <Empty description={'当前用户暂未完成组织信息认证'} />}
+                </Tabs.TabPane>
+              )
+            })}
+          </Tabs> :
+          contentType == 1 && (orgList[currentTabKey]?.orgDetail?.auditState == 3 ?
+          <div className={sc('detail-container')} style={{position: 'relative'}}>
+            <div style={{position: 'absolute', right: 20, top: 20}}>认证时间：{orgList[0]?.orgDetail?.auditPassedTime||"--"}</div>
+            {infoAuthContent?.map((item, index) => {
+              return (
+                <div key={index}>
+                  <div className={sc('header')}>
+                    {item?.title}
+                    {
+                      item?.title === '组织基本信息' &&
+                      <span
+                        className="current-role"
+                      >
+                        {orgList[currentTabKey]?.manager ? '组织管理员' : '组织其他成员'}
+                      </span>
+                    }
+                  </div>
+                  <Descriptions column={1} labelStyle={labelStyle} contentStyle={contentStyle}>
+                    {item?.content?.map((it, idx: number) => {
+                      return (
+                        <Descriptions.Item key={it?.label || idx} label={it?.label || null}>
+                          {it?.value || '--'}
+                        </Descriptions.Item>
+                      )
+                    })}
+                  </Descriptions>
+                </div>
+              )
+            })}
+          </div>: <Empty description={'当前用户暂未完成组织信息认证'} />)
+      }
       {contentType == 2 && (expertDetail?.auditState == 3 ?
         <div className={sc('detail-container')}  style={{position: 'relative'}}>
           <div  style={{position: 'absolute', right: 20, top: 20}}>认证时间：{expertDetail?.auditPassedTime|| '--'}</div>
@@ -359,10 +435,10 @@ export default () => {
               <div key={index}>
                 <div className={sc('header')}>{item?.title}</div>
                 <Descriptions column={1} labelStyle={labelStyle} contentStyle={contentStyle}>
-                  {item?.content?.map((item, index: number) => {
+                  {item?.content?.map((it, idx: number) => {
                     return (
-                      <Descriptions.Item key={item?.label || index} label={item?.label || null}>
-                        {item?.value || '--'}
+                      <Descriptions.Item key={it?.label || idx} label={it?.label || null}>
+                        {it?.value || '--'}
                       </Descriptions.Item>
                     )
                   })}
@@ -383,9 +459,9 @@ export default () => {
         </div> : <Empty description={'当前用户暂未完成专家认证'} />)
       }
       {
-        auditList && auditList?.length > 0 &&
+        orgList[currentTabKey] && orgList[currentTabKey].auditList && orgList[currentTabKey].auditList?.length > 0 &&
         <div style={{ background: '#fff', marginTop: 20, paddingTop: 20, paddingLeft: 100 }}>
-          <VerifyStepsDetail list={auditList} />
+          <VerifyStepsDetail list={orgList[currentTabKey].auditList} />
         </div>
       }
     </PageContainer>
