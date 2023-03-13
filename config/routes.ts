@@ -119,6 +119,10 @@
     '/operation-activity/local-propaganda/propaganda-config/detail-management', // 新增地市宣传页管理
   MANAGEMENT_ACTIVITIES: '/operation-activity/local-propaganda/management_activities', // 地市活动管理
 
+  //会议管理
+  CONFERENCE:'/conference-manage',
+  CONFERENCE_APPLY: '/conference-manage/apply',
+  CONFERENCE_APPLY_DETAIL: '/conference-manage/apply/detail',
   //金融服务管理
   BANKING_SERVICE: '/banking/banking_service_manage',
   BANKING_SERVICE_INDEX: '/banking/banking_service_manage/index',
@@ -421,6 +425,32 @@ export default [
         access: 'M_BLM_TJWGL',
         component: './baseline/recommended/detail',
         hideInMenu: true,
+      },
+    ],
+  },
+  {
+    path: routeName.CONFERENCE,
+    // access: 'M_BLM',
+    name: '会议管理',
+    icon: 'hdd',
+    routes: [
+      {
+        path: routeName.CONFERENCE,
+        // access: 'M_BLM_NRGL',
+        redirect: routeName.CONFERENCE_APPLY,
+      },
+      {
+        path: routeName.CONFERENCE_APPLY,
+        name: '会议报名',
+        // access: 'M_BLM_NRGL',
+        component: './conference-manage/apply/index',
+      },
+      {
+        path: routeName.CONFERENCE_APPLY_DETAIL,
+        name: '详情',
+        hideInMenu: true,
+        // access: 'M_BLM_NRGL',
+        component: './conference-manage/apply/detail',
       },
     ],
   },
