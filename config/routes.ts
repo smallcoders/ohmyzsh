@@ -71,6 +71,10 @@
   LEAVE_WORD_VERIFY_INDEX: '/verify-agency/leave_word_verify/index', // 留言审核
   LEAVE_WORD_VERIFY_DETAIL: '/verify-agency/leave_word_verify/detail', // 留言审核
 
+  VOUCHER_APPLY_VERIFY: '/verify-agency/voucher-apply-verify', // 消费券申领审核
+  VOUCHER_APPLY_VERIFY_INDEX: '/verify-agency/voucher-apply-verify/index', // 消费券申领审核
+  VOUCHER_APPLY_VERIFY_DETAIL: '/verify-agency/voucher-apply-verify/detail', // 消费券申领审核详情
+
   PURCHASE_MANAGE: '/purchase-manage/order-manage', // 订单管理
   PURCHASE_MANAGE_INDEX: '/purchase-manage/order-manage/index', // 订单管理列表
   PURCHASE_MANAGE_DETAIL: '/purchase-manage/order-manage/detail', // 订单管理详情
@@ -694,6 +698,34 @@ export default [
             path: routeName.LEAVE_WORD_VERIFY_DETAIL,
             name: '留言审核详情',
             component: './verify_agency/leave_word_verify/components/detail',
+          },
+        ],
+      },
+      {
+        path: routeName.VOUCHER_APPLY_VERIFY,
+        code: 'M_AT_XFQSL',
+        access: 'M_AT_XFQSL',
+        name: '消费券申领审核',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.VOUCHER_APPLY_VERIFY,
+            code: 'M_AT_XFQSL',
+            access: 'M_AT_XFQSL',
+            redirect: routeName.VOUCHER_APPLY_VERIFY_INDEX,
+          },
+          {
+            path: routeName.VOUCHER_APPLY_VERIFY_INDEX,
+            code: 'M_AT_XFQSL',
+            access: 'M_AT_XFQSL',
+            name: '消费券申领审核',
+            hideInBreadcrumb: true,
+            component: './verify_agency/voucher_apply_verify',
+          },
+          {
+            path: routeName.VOUCHER_APPLY_VERIFY_DETAIL,
+            name: '审核详情',
+            component: './verify_agency/voucher_apply_verify/detail',
           },
         ],
       },
