@@ -5,13 +5,12 @@ import scopedClasses from '@/utils/scopedClasses';
 import {Button, message as antdMessage,} from "antd";
 import  {useEffect, useState} from "react";
 import moment from 'moment';
+import {detailMeetingForUserPage,exportMeetingData} from "@/services/baseline";
 import {history} from "@@/core/history";
-import {exportData} from '@/services/page-creat-manage'
 const sc = scopedClasses('conference-detail');
 export default () => {
-  const [activeKey, setActiveKey] = useState<any>(
-    '1'
-  );
+  const [activeKey, setActiveKey] = useState<any>('1');
+  const { meetingId } = history.location.query as any;
   const [isExporting, setIsExporting] = useState<boolean>(false)
   const [dataSource, setDataSource] = useState<any>([]);
   const [detail, setDetail] = useState<any>({});
@@ -30,14 +29,14 @@ export default () => {
         pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
-      title: '用户名',
+      title: '姓名',
       dataIndex: 'topic',
       isEllipsis: true,
       width: 200,
     },
     {
       title: '会议名称',
-      dataIndex: 'topic',
+      dataIndex: 'name',
       isEllipsis: true,
       width: 200,
     },
@@ -59,12 +58,33 @@ export default () => {
   ];
   const currentTime = moment().format("YYYYMMDDHH:mm:ss");
   //方法
+  //获取会议详情
+  const getMeetingByMeetingId = (pageIndex: number = 1, pageSize = pageInfo.pageSize) =>{
+    detailMeetingForUserPage({meetingId, pageIndex,
+      pageSize,}).then(res=>{
+      if (res.code === 0){
+        setDetail(res?.result || {})
+        setPageInfo(
+          {
+            pageIndex: res?.result.pageIndex,
+            pageSize: res?.result.pageSize,
+            totalCount: res?.result.contentCount,
+            pageTotal: 0,
+          }
+        )
+      }
+    })
+  }
+  useEffect(() => {
+    getMeetingByMeetingId();
+  }, []);
+  
   const exportDataClick = () => {
     if (isExporting){
       return
     }
     setIsExporting(true)
-    exportData({tmpId:11,}).then((res) => {
+    exportMeetingData({meetingId}).then((res) => {
       setIsExporting(false)
       if (res?.data.size == 51) return antdMessage.warning('操作太过频繁，请稍后再试')
       const content = res?.data;
@@ -110,37 +130,33 @@ export default () => {
                </div>
               <div className={sc('container-desc')}>
                 <span>会议名称：</span>
-                <span>{detail?.author || '--'}</span>
+                <span>{detail?.name || '--'}</span>
               </div>
               <div className={sc('container-desc')}>
                 <span>会议主题：</span>
-                <span>{detail?.keywords || '--'}</span>
+                <span>{detail?.theme || '--'}</span>
               </div>
               <div className={sc('container-desc')}>
                 <span>会议地点：</span>
-                <span>{detail?.local || '--'}</span>
+                <span>{detail?.place || '--'}</span>
               </div>
               <div className={sc('container-desc')}>
                 <span>会议联系方式：</span>
-                <span>{detail?.labels || '--'}</span>
+                <span>{detail?.contact || '--'}</span>
               </div>
               <div className={sc('container-desc')}>
                 <span>会议时间：</span>
-                <span>{detail?.source || '--'}</span>
-              </div>
-              <div className={sc('container-desc')}>
-                <span>发布时间：</span>
-                <span>{detail?.publishTime ? moment(detail?.publishTime).format('YYYY-MM-DD HH:mm:ss') : '--'}</span>
+                <span>{detail?.time || '--'}</span>
               </div>
               <div className={sc('container-desc')}>
                 <span>权重：</span>
-                <span>{detail?.sourceUrl ? <a href={detail?.sourceUrl} target="_blank">{detail?.sourceUrl}</a> : '--'}</span>
+                <span>{detail?.weight ? <a href={detail?.sourceUrl} target="_blank">{detail?.sourceUrl}</a> : '--'}</span>
               </div>
               <div className={sc('container-desc')}>
                 <span>会议日程：</span>
                 <div
                   dangerouslySetInnerHTML={{
-                    __html: detail?.content || '--',
+                    __html: detail?.agenda || '--',
                   }}
                 />
               </div>

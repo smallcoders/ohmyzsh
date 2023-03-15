@@ -5,7 +5,7 @@ import React, {useEffect, useState,useRef} from "react";
 import {Button, Col, Form, Popconfirm, Input, message, Row, Select} from "antd";
 import SelfTable from "@/components/self_table";
 import type Common from "@/types/common";
-import {queryHotRecommend,editHotRecommend,deleteHotRecommend} from "@/services/topic";
+import {getMeetingPage,deleteMeeting,onShelfMeeting,offShelfMeeting,weightMeeting} from "@/services/baseline";
 import {history} from "@@/core/history";
 import {useAccess,Access} from "@@/plugin-access/access";
 import {InfoOutlined} from "@ant-design/icons";
@@ -37,20 +37,20 @@ export default () => {
         <Form {...formLayout} form={searchForm}>
           <Row>
             <Col span={6}>
-              <Form.Item name="topic" label="会议名称">
+              <Form.Item name="name" label="会议名称">
                 <Input placeholder="请输入" allowClear  autoComplete="off"/>
               </Form.Item>
             </Col>
             <Col span={6}>
-              <Form.Item name="publicUserName" label="会议主题">
-              <Select placeholder="请选择" allowClear style={{ width: '200px'}}>
+              <Form.Item name="theme" label="会议主题">
+              <Select placeholder="请输入" allowClear style={{ width: '200px'}}>
                   <Select.Option value={0}>下架</Select.Option>
                   <Select.Option value={1}>上架</Select.Option>
                 </Select>
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="enable" label="会议联系人">
+              <Form.Item name="contact" label="会议联系方式">
               <Input placeholder="请输入" allowClear  autoComplete="off"/>
               </Form.Item>
             </Col>
@@ -81,12 +81,11 @@ export default () => {
       </div>
     );
   };
-    // 上下架
-    const editState = async (e: any, updatedState: number) => {
+  // 上下架
+  const editState = async (meetingId: any, updatedState: number) => {
       try {
-        const {id,topic,weight} = e
         const tooltipMessage = updatedState === 0 ? '下架' : '上架';
-        const updateStateResult = await editHotRecommend({  id, topic, weight, enable: updatedState });
+        const updateStateResult = updatedState !== 0? await offShelfMeeting({meetingId}):await onShelfMeeting({meetingId})
         if (updateStateResult.code === 0) {
           message.success(`${tooltipMessage}成功`);
           getPage();
@@ -96,16 +95,13 @@ export default () => {
       } catch (error) {
         console.log(error);
       }
-    };
-    // 编辑权重
-    const editSort = async (e: any, value: string) => {
+  };
+  // 编辑权重
+  const editSort = async (id: any, value: string) => {
       try {
-        const {id, topic,enable } = e
-        const editRes = await editHotRecommend({
+        const editRes = await weightMeeting({
           id,
-          topic,
           weight:parseInt(value),
-          enable,
         })
         if (editRes.code === 0) {
           message.success(`编辑权重成功！`);
@@ -116,11 +112,11 @@ export default () => {
       }catch (err) {
         console.log(err)
       }
-    }
+  }
     //删除
-  const remove = async (id: string) => {
+  const remove = async (meetingId: string) => {
     try {
-      const removeRes = await deleteHotRecommend(id);
+      const removeRes = await deleteMeeting({meetingId});
       if (removeRes.code === 0) {
         message.success(`删除成功`);
         getPage();
@@ -134,7 +130,7 @@ export default () => {
   // 获取分页数据
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     try {
-      const { result, totalCount, pageTotal, code } = await queryHotRecommend({
+      const { result, totalCount, pageTotal, code } = await getMeetingPage({
         pageIndex,
         pageSize,
         ...searchContent,
@@ -162,29 +158,29 @@ export default () => {
     },
     {
       title: '会议页面名称',
-      dataIndex: 'topic',
+      dataIndex: 'title',
       isEllipsis: true,
       width: 200,
     },
     {
       title: '会议名称',
-      dataIndex: 'topic',
+      dataIndex: 'name',
       isEllipsis: true,
       width: 200,
     },
     {
       title: '会议主题',
-      dataIndex: 'contentCount',
+      dataIndex: 'theme',
       width: 120,
     },
     {
       title: '会议联系人',
-      dataIndex: 'weight',
+      dataIndex: 'contact',
       width: 120,
     },
     {
       title: '会议时间',
-      dataIndex: 'weight',
+      dataIndex: 'time',
       width: 120,
     },
     {
@@ -194,18 +190,27 @@ export default () => {
     },
     {
       title: '报名人数',
-      dataIndex: 'weight',
+      dataIndex: 'enrollNum',
       width: 120,
     },
     {
       title: '发布时间',
-      dataIndex: 'weight',
+      dataIndex: 'publishTime',
       width: 120,
     },
     {
       title: '内容状态',
-      dataIndex: 'weight',
+      dataIndex: 'state',
       width: 120,
+      render:(_: any, record: any)=>{
+        return(
+          <>
+          {record.state === 'ON_SHELF' && <div>上架中</div>}
+          {record.state === 'OFF_SHELF' && <div>已下架</div>}
+          {record.state === 'NOT_SUBMITTED' && <div>暂存</div>}
+          </>
+        )
+      }
     },
     {
       title: '操作',
@@ -215,36 +220,41 @@ export default () => {
       render: (_: any, record: any) => {
         return (
           <div className={sc('container-option')}>
+             {record.state !== 'NOT_SUBMITTED' &&
               <Button type="link" onClick={() => {
-                history.push(`/baseline/baseline-conference-manage/detail?id=${record.id}`)
+                history.push(`/baseline/baseline-conference-manage/detail?meetingId=${record.id}`)
               }}>
                 详情
-              </Button>
+              </Button>}
+              {record.state !== 'ON_SHELF' &&
               <Button type="link" onClick={() => {
-                history.push(`/baseline/baseline-conference-manage/edit?id=${record?.id}`)
+                history.push(`/baseline/baseline-conference-manage/edit?meetingId=${record?.id}`)
               }}>
                 编辑
               </Button>
-              {record.enable ? (
+              }
+              {record.state==='ON_SHELF' &&
               <Popconfirm
                 title="确定将内容下架？"
                 okText="下架"
                 cancelText="取消"
-                onConfirm={() => editState(record as any, 0)}
+                onConfirm={() => editState(record.id as any, 0)}
               >
                 <Button type="link">下架</Button>
               </Popconfirm>
-            )
-            : (
+            
+            }
+            {record.state==='OFF_SHELF' &&
               <Popconfirm
                 title="确定将内容上架？"
                 okText="上架"
                 cancelText="取消"
-                onConfirm={() => editState(record as any, 1)}
+                onConfirm={() => editState(record.id as any, 1)}
               >
                 <Button type="link" >上架</Button>
               </Popconfirm>
-            )}
+            }
+            {record.state !== 'NOT_SUBMITTED' &&
             <Popconfirm
               placement="topRight"
               title={
@@ -264,7 +274,7 @@ export default () => {
               cancelText="取消"
               onConfirm={() => {
                 if(!weightForm.getFieldValue('weight')) return
-                editSort(record, weightForm.getFieldValue('weight'))
+                editSort(record.id, weightForm.getFieldValue('weight'))
               }}
             >
               <Button
@@ -273,9 +283,11 @@ export default () => {
                   weightForm.setFieldsValue({ weight: record.sort })
                 }}
               >
-                权重设置
+                权重
               </Button>
             </Popconfirm>
+      }
+      {(record.state == 'NOT_SUBMITTED' || Number(record.enrollNum)>0) &&
               <Popconfirm
                 title="确定删除该会议内容？"
                 okText="确定"
@@ -285,7 +297,7 @@ export default () => {
               <Button type="link" >
                 删除
               </Button>
-              </Popconfirm>
+              </Popconfirm>}
               </div>
         )
       }

@@ -227,6 +227,7 @@
   BASELINE_RECOMMENDED_MANAGE: 'baseline-recommended',
   BASELINE_TOPIC_MANAGE_DETAIL: 'baseline-topic-manage/detail',
   BASELINE_TOPIC_MANAGE_ADD: 'baseline-topic-manage/add',
+  BASELINE_CONFERENCE_CARD:'baseline-card-manage',
   BASELINE_CONFERENCE_MANAGE: 'baseline-conference-manage',
   BASELINE_CONFERENCE_MANAGE_DETAIL: 'baseline-conference-manage/detail',
   BASELINE_CONFERENCE_MANAGE_EDIT: 'baseline-conference-manage/edit',
@@ -433,6 +434,13 @@ export default [
         // access: 'M_BLM_HTGL',
         name: '会议管理',
         component: './baseline/conference/index',
+      },
+      {
+        path: routeName.BASELINE_CONFERENCE_CARD,
+        // code: 'M_BLM_HTGL',
+        // access: 'M_BLM_HTGL',
+        name: '会议卡片设置',
+        component: './baseline/card/index',
       },
       {
         path: routeName.BASELINE_CONFERENCE_MANAGE_DETAIL,

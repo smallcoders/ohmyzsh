@@ -224,3 +224,90 @@ export function getUserDetailBrowse(data?: any) {
     data,
   });
 }
+//会议管理
+// 会议管理-分页查询
+export async function getMeetingPage(data?: { [key: string]: any }) {
+    return request<any>('/antelope-business/mng/meeting/page', {
+        method: 'post',
+        data,
+    });
+}
+
+// 会议详情
+export async function detailMeetingForUserPage(params?: any) {
+    return request<any>('/antelope-business/mng/meeting/detail', {
+      method: 'get',
+      params,
+    });
+  }
+
+// 会议管理-删除会议
+export async function deleteMeeting(meetingId?: any) {
+    return request<any>(`/antelope-business/mng/meeting/del?meetingId=${meetingId}`, {
+      method: 'DELETE',
+    });
+  }
+
+ //会议管理-会议上架
+export async function onShelfMeeting(data?: { [key: string]: any }) {
+    return request<any>('/antelope-business/mng/meeting/onShelf', {
+      method: 'put',
+      data,
+    });
+  }
+
+//会议管理-会议下架
+export async function offShelfMeeting(data?: { [key: string]: any }) {
+    return request<any>('/antelope-business/mng/meeting/offShelf', {
+      method: 'put',
+      data,
+    });
+  }
+
+ //会议管理-权重设置
+export async function weightMeeting(data?: { [key: string]: any }) {
+    return request<any>('/antelope-business/mng/meeting/weight', {
+      method: 'put',
+      data,
+    });
+  }
+
+// 会议管理-暂存/提交
+export async function saveMeeting(data?: { [key: string]: any }) {
+    return request<any>('/antelope-business/mng/meeting/save', {
+        method: 'post',
+        data,
+    });
+}
+
+//会议设置-保存设置
+export async function queryMeetingPageList(data?: { [key: string]: any }) {
+    return request<any>('/antelope-business/mng/meeting/enrollPage'),{
+        method:'post',
+        data
+    }
+}
+
+// 会议管理-报名列表导出
+export async function exportMeetingData(params?: any) {
+    return request<any>('/antelope-business/mng/meeting/enrollExport', {
+      method: 'get',
+      params,
+    });
+  }
+
+//会议设置-保存设置
+export async function saveMeetingConfig(data?: { [key: string]: any }) {
+    return request<any>('/antelope-business/mng/meeting/saveConfig'),{
+        method:'post',
+        data
+    }
+}
+
+// 会议设置-查询设置
+export async function queryMeetingConfig(params?: any) {
+    return request<any>('/antelope-business/mng/meeting/detailConfig', {
+      method: 'get',
+      params,
+    });
+  }
