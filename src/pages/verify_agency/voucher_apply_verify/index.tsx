@@ -21,26 +21,24 @@ import { routeName } from '@/../config/routes';
 import SelfTable from '@/components/self_table';
 import { history, Access, useAccess } from 'umi';
 import { getAreaTree } from '@/services/area';
-import { getProgrammeVerifyPage } from '@/services/service-programme-verify';
+import { getVoucherVerifyPage } from '@/services/service-programme-verify';
 const sc = scopedClasses('service-config-app-news');
 const stateObj = {
-  UN_CHECK: '待审核',
-  PASSED: '已通过',
-  REJECTED: '已拒绝',
+  0: '待审核',
+  1: '已通过',
+  2: '已拒绝',
 };
 enum Edge {
   HOME = 0, // 新闻咨询首页
 }
-import { renderSolutionType } from '../../service_config/solution/solution';
 export default () => {
   const [dataSource, setDataSource] = useState<any[]>([]);
   const [searchContent, setSearChContent] = useState<{
-    name?: string; // 标题
-    startDateTime?: string; // 提交开始时间
-    auditState?: number; // 状态： 3:通过 4:拒绝
-    userName?: string; // 用户名
-    endDateTime?: string; // 提交结束时间
-    typeId?: number; // 行业类型id 三级类型
+    orgName?: string; // 企业名称
+    applyTimeStart?: string; // 开始时间
+    auditState?: number; // 状态： 0:待审核 1:已通过 2:已拒绝
+    endDateTime?: string; // 结束时间
+    areaCode?: number; // 地市code
   }>({});
   // 拿到当前角色的access权限兑现
   const access = useAccess()
@@ -77,7 +75,7 @@ export default () => {
 
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     try {
-      const { result, totalCount, pageTotal, code } = await getProgrammeVerifyPage({
+      const { result, totalCount, pageTotal, code } = await getVoucherVerifyPage({
         pageIndex,
         pageSize,
         ...searchContent,
@@ -118,29 +116,23 @@ export default () => {
     },
     {
       title: '企业名称',
-      dataIndex: 'name',
+      dataIndex: 'orgName',
       render: (_: string, _record: any) => (
-        // <a
-        //   onClick={() => {
-        //     history.push(`${routeName.VOUCHER_APPLY_VERIFY_DETAIL}?id=${_record.id}&auditId=${_record.auditId}&state=${_record.checkEnum}`);
-        //   }}
-        // >
-          <span>{_}</span>
-        // </a>
+          <span>{_record.apply.orgName}</span>
       ),
       width: 200,
     },
     {
       title: '统一社会信用代码',
-      dataIndex: 'types',
+      dataIndex: 'id',
       isEllipsis: true,
-      render: (text: any, record: any) => renderSolutionType(record.types),
+      render: (_: any, _record: any) => <span>{_record.apply.creditCode}</span>,
       width: 180,
     },
     {
       title: '所属地市',
       dataIndex: 'areas',
-      render: (_: string, _record: any) => _record.areas?.map((e:any) => e.name).join('、'),
+      render: (_: string, _record: any) => _record.apply.cityName ? (_record.apply.cityName + '/' + _record.apply.countyName) : '--',
       isEllipsis: true,
       width: 180,
     },
@@ -148,30 +140,36 @@ export default () => {
       title: '申请时间',
       dataIndex: 'publishTime',
       width: 180,
-      render: (_: string) => {
-        return  _ ? moment(_).format('YYYY-MM-DD HH:mm:ss') : '--'
+      render: (_: string, _record: any) => {
+        return  _record.apply.applyTime ? moment(_record.apply.applyTime).format('YYYY-MM-DD HH:mm:ss') : '--'
       },
     },
     {
       title: '行业证明材料',
-      dataIndex: 'contactName',
+      dataIndex: 'industryFiles',
       isEllipsis: true,
       width: 200,
+      render: (_: string, _record: any) => {
+        return  _record.industryFiles ? _record.industryFiles.map((p: any) => p?.fileName).join(',') : '--'
+      },
     },
     {
       title: '企业营收证明&企业人数证明',
-      dataIndex: 'contactName',
+      dataIndex: 'incomeFiles',
       isEllipsis: true,
       width: 300,
+      render: (_: string, _record: any) => {
+        return  _record.incomeFiles ? _record.incomeFiles.map((p: any) => p?.fileName).join(',') : '--'
+      },
     },
     {
       title: '审核状态',
-      dataIndex: 'checkEnum',
+      dataIndex: 'pfAuditState',
       width: 160,
-      render: (_: string) => {
+      render: (_: string, _record: any) => {
         return (
-          <div className={`state${_}`}>
-            {Object.prototype.hasOwnProperty.call(stateObj, _) ? stateObj[_] : '--'}
+          <div className={`state${_record.apply.pfAuditState}`}>
+            {Object.prototype.hasOwnProperty.call(stateObj, _record.apply.pfAuditState) ? stateObj[_record.apply.pfAuditState] : '--'}
           </div>
         );
       },
@@ -183,13 +181,13 @@ export default () => {
       dataIndex: 'option',
       render: (_: any, record: any) => {
         const accessible = access?.[permissions?.[edge].replace(new RegExp("Q"), "")]
-        return record.checkEnum === 'UN_CHECK' ? (
+        return record.apply.pfAuditState === 0 ? (
           <Access accessible={accessible}>
             <Space size={20}>
               <a
                 href="javascript:void(0)"
                 onClick={() => {
-                  history.push(`${routeName.VOUCHER_APPLY_VERIFY_DETAIL}?id=${record.id}`);
+                  history.push(`${routeName.VOUCHER_APPLY_VERIFY_DETAIL}?id=${record.apply.id}&state=${record.apply.pfAuditState}`);
                 }}
               >
                 审核
@@ -200,19 +198,11 @@ export default () => {
           <a
             href="javascript:void(0)"
             onClick={() => {
-              history.push(`${routeName.VOUCHER_APPLY_VERIFY_DETAIL}?id=${record.id}`);
+              history.push(`${routeName.VOUCHER_APPLY_VERIFY_DETAIL}?id=${record.apply.id}&state=${record.apply.pfAuditState}`);
             }}
           >
             详情
           </a>
-          // <div style={{ display: 'grid' }}>
-          //   <span>
-          //     {record.auditTime
-          //       ? moment(record.auditTime).format('YYYY-MM-DD HH:mm:ss')
-          //       : '--'}
-          //   </span>
-          //   <span>操作人：{record.auditUserName}</span>
-          // </div>
         );
       },
     },
@@ -229,7 +219,7 @@ export default () => {
         <Form {...formLayout} form={searchForm}>
           <Row>
             <Col span={8}>
-              <Form.Item name="name" label="企业名称">
+              <Form.Item name="orgName" label="企业名称">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
@@ -246,17 +236,17 @@ export default () => {
             </Col>
             <Col span={8}>
               <Form.Item name="publishTimeSpan" label="申请时间">
-                <DatePicker.RangePicker allowClear showTime />
+                <DatePicker.RangePicker allowClear />
               </Form.Item>
             </Col>
           </Row>
           <Row>
             <Col span={8}>
-              <Form.Item name="checkEnum" label="审核状态">
+              <Form.Item name="auditState" label="审核状态">
                 <Select placeholder="请选择" allowClear>
-                  <Select.Option key={'UN_CHECK'} value={'UN_CHECK'}>待审核</Select.Option>
-                  <Select.Option key={'PASSED'} value={'PASSED'}>已通过</Select.Option>
-                  <Select.Option key={'REJECTED'} value={'REJECTED'}>已拒绝</Select.Option>
+                  <Select.Option key={'UN_CHECK'} value={0}>待审核</Select.Option>
+                  <Select.Option key={'PASSED'} value={1}>已通过</Select.Option>
+                  <Select.Option key={'REJECTED'} value={2}>已拒绝</Select.Option>
                 </Select>
               </Form.Item>
             </Col>
@@ -268,8 +258,8 @@ export default () => {
                 onClick={() => {
                   const search = searchForm.getFieldsValue();
                   if (search.publishTimeSpan) {
-                    search.startPublishTime = moment(search.publishTimeSpan[0]).format('YYYY-MM-DD HH:mm:ss');
-                    search.endPublishTime = moment(search.publishTimeSpan[1]).format('YYYY-MM-DD HH:mm:ss');
+                    search.applyTimeStart = moment(search.publishTimeSpan[0]).format('YYYY-MM-DD');
+                    search.applyTimeEnd = moment(search.publishTimeSpan[1]).format('YYYY-MM-DD');
                   }
                   delete search.publishTimeSpan
                   setSearChContent(search);
