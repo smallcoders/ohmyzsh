@@ -6,11 +6,8 @@ import {
   Row,
   Col,
   DatePicker,
-  InputNumber,
-  Modal,
   message,
   Space,
-  Radio,
 } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
@@ -24,11 +21,7 @@ import SelfTable from '@/components/self_table';
 import type DiagnosticRecord from '@/types/financial-diagnostic-record';
 import {
   getDiagnoseRecordList,
-  getLoanProList,
-  addCustomerDemand,
-  queryCustomerDemand,
 } from '@/services/financial-diagnostic-record';
-import { debounce } from 'lodash';
 const sc = scopedClasses('financial-diagnostic-record');
 
 export default () => {
@@ -46,12 +39,6 @@ export default () => {
     dateStart?: string; // 金融诊断时间起始
     dateEnd?: string; // 金融诊断时间结束
   }>({});
-  const [form] = Form.useForm();
-  const [remarksItem, setRemarksItem] = useState<DiagnosticRecord.Content>({});
-  const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const [addOrUpdateLoading, setAddOrUpdateLoading] = useState<boolean>(false);
-  const [isLoanDemand, setIsLoanDemand] = useState(true);
-  const [customerDemand, setCustomerDemand] = useState<DiagnosticRecord.CustomerDemand>({});
   const formLayout = {
     labelCol: { span: 7 },
     wrapperCol: { span: 16 },
@@ -79,28 +66,13 @@ export default () => {
       console.log(error);
     }
   };
-  const getCustomerDemand = async (id: number) => {
-    try {
-      const { code, result } = await queryCustomerDemand(id);
-      if (code === 0 && result !== null) {
-        setCustomerDemand(result);
-        form.setFieldsValue({
-          ...result,
-          amount: result?.amount === null ? null : (result?.amount / 1000000).toFixed(2),
-        });
-        setIsLoanDemand(result.loanDemand);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   useEffect(() => {
     getPage();
   }, [searchContent]);
 
   //贷款产品模糊搜索
-  const [options, setOptions] = useState([]);
+  // const [options, setOptions] = useState([]);
   const useSearchNode = (): React.ReactNode => {
     return (
       <div className={sc('container-search')}>
@@ -114,54 +86,6 @@ export default () => {
                 label="企业名称"
               >
                 <Input placeholder="请输入" />
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item
-                labelCol={{ span: 11 }}
-                wrapperCol={{ span: 13 }}
-                name="exclusiveService"
-                label="满足金融专属服务"
-              >
-                <Select placeholder="请选择" allowClear>
-                  <Select.Option value={true}>是</Select.Option>
-                  <Select.Option value={false}>否</Select.Option>
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item
-                labelCol={{ span: 9 }}
-                wrapperCol={{ span: 15 }}
-                name="linkCustomer"
-                label="是否对接客户"
-              >
-                <Select placeholder="请选择" allowClear>
-                  <Select.Option value={true}>是</Select.Option>
-                  <Select.Option value={false}>否</Select.Option>
-                </Select>
-              </Form.Item>
-            </Col>
-            <Col span={8}>
-              <Form.Item labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} label="产品申请数量">
-                <Input.Group compact>
-                  <Form.Item name="applyNumMin" style={{ width: 'calc(50% - 15px)' }}>
-                    <InputNumber min={1} placeholder="请输入" style={{ width: '100%' }} />
-                  </Form.Item>
-                  <Input
-                    style={{
-                      width: 30,
-                      borderRight: 0,
-                      pointerEvents: 'none',
-                      backgroundColor: '#fff',
-                    }}
-                    placeholder="~"
-                    disabled
-                  />
-                  <Form.Item name="applyNumMax" style={{ width: 'calc(50% - 15px)' }}>
-                    <InputNumber min={1} placeholder="请输入" style={{ width: '100%' }} />
-                  </Form.Item>
-                </Input.Group>
               </Form.Item>
             </Col>
             <Col span={8}>
@@ -185,6 +109,40 @@ export default () => {
                 label="金融诊断时间"
               >
                 <DatePicker.RangePicker style={{ width: '100%' }} allowClear />
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              <Form.Item
+                labelCol={{ span: 8 }}
+                wrapperCol={{ span: 16 }}
+                name="linkCustomer"
+                label="发布融资需求"
+              >
+                <Select placeholder="请选择" allowClear>
+                  <Select.Option value={true}>是</Select.Option>
+                  <Select.Option value={false}>否</Select.Option>
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              <Form.Item
+                labelCol={{ span: 11 }}
+                wrapperCol={{ span: 13 }}
+                name="exclusiveService"
+                label="需求状态"
+              >
+                <Select placeholder="请选择" allowClear>
+                  <Select.Option value={true}>是</Select.Option>
+                  <Select.Option value={false}>否</Select.Option>
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={8}>
+              <Form.Item labelCol={{ span: 9 }} wrapperCol={{ span: 15 }} label="需求负责人">
+                <Input
+                  maxLength={35}
+                  placeholder="请输入"
+                />
               </Form.Item>
             </Col>
           </Row>
@@ -225,166 +183,6 @@ export default () => {
       </div>
     );
   };
-
-  const handleSearch = debounce(async (value: string) => {
-    try {
-      const { result } = await getLoanProList({ productName: value });
-      // eslint-disable-next-line @typescript-eslint/no-shadow
-      const options = result?.map((item: { productId: string; productName: string }) => {
-        return {
-          value: item.productId,
-          label: item.productName,
-        };
-      });
-      setOptions(options);
-    } catch (error) {
-      console.log(error);
-    }
-  }, 200);
-
-  const selectProduct = async () => {
-    try {
-      const { result } = await getLoanProList({ productName: '' });
-      // eslint-disable-next-line @typescript-eslint/no-shadow
-      const options = result?.map((item: { productId: string; productName: string }) => {
-        return {
-          value: item.productId,
-          label: item.productName,
-        };
-      });
-      setOptions(options);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const clearForm = () => {
-    form.resetFields();
-    setModalVisible(false);
-    setIsLoanDemand(true);
-  };
-  // 备注确定
-  const onFinsh = async () => {
-    const values = await form.validateFields();
-    console.log(values);
-    console.log(remarksItem);
-    try {
-      setAddOrUpdateLoading(true);
-      const { code, message: resultMsg } = await addCustomerDemand({
-        ...values,
-        amount: values.amount * 1000000,
-        diagnoseId: remarksItem.id,
-        id: Object.keys(customerDemand).length === 0 ? null : customerDemand.id,
-      });
-      if (code === 0) {
-        message.success(`备注成功！`);
-        getPage();
-        clearForm();
-      } else {
-        message.error(`备注失败，原因:{${resultMsg}}`);
-      }
-      setAddOrUpdateLoading(false);
-    } catch (error) {
-      message.error(`备注失败，原因:{${error}}`);
-    }
-    setAddOrUpdateLoading(false);
-  };
-  const useModal = (): React.ReactNode => {
-    return (
-      <Modal
-        title="备注"
-        width="800px"
-        visible={modalVisible}
-        maskClosable={false}
-        className={sc('container-modal')}
-        okButtonProps={{ loading: addOrUpdateLoading }}
-        okText="确定"
-        onOk={() => {
-          onFinsh();
-        }}
-        onCancel={() => {
-          clearForm();
-        }}
-      >
-        <Row className="modal-title">
-          <Col span={10} offset={2}>
-            <label>金融诊断编号：</label>
-            {remarksItem.diagnoseNum}
-          </Col>
-          <Col span={10}>
-            <label>企业名称：</label>
-            {remarksItem.orgName}
-          </Col>
-        </Row>
-        <Form
-          form={form}
-          layout="horizontal"
-          labelCol={{ span: 6 }}
-          wrapperCol={{ span: 14 }}
-          className={sc('modal-form')}
-          validateTrigger="onBlur"
-        >
-          <Form.Item
-            label="客户贷款需求"
-            name="loanDemand"
-            initialValue={true}
-            rules={[{ required: true, message: '请选择' }]}
-          >
-            <Radio.Group
-              onChange={(e) => {
-                setIsLoanDemand(e.target.value);
-              }}
-            >
-              <Radio value={true}>有贷款需求</Radio>
-              <Radio value={false}>无贷款需求</Radio>
-            </Radio.Group>
-          </Form.Item>
-          {isLoanDemand ? (
-            <>
-              <Form.Item
-                name="amount"
-                label="拟融资额度"
-                rules={[{ required: true, message: '请填写拟融资额度' }]}
-              >
-                <InputNumber
-                  precision={2}
-                  max={999999.99}
-                  min={0}
-                  addonAfter="万元"
-                  style={{ width: '100%' }}
-                />
-              </Form.Item>
-              <Form.Item
-                name="term"
-                label="拟融资期限"
-                rules={[{ required: true, message: '请填写拟融资期限' }]}
-              >
-                <InputNumber min={1} precision={0} addonAfter="个月" style={{ width: '100%' }} />
-              </Form.Item>
-              <Form.Item
-                name="purpose"
-                label="融资用途"
-                rules={[{ required: true, message: '请填写融资用途' }]}
-              >
-                <Input />
-              </Form.Item>
-              <Form.Item name="recProduct" label="推荐金融产品">
-                <Select
-                  onSearch={handleSearch}
-                  showSearch
-                  allowClear
-                  filterOption={false}
-                  options={options}
-                  placeholder="请选择"
-                />
-              </Form.Item>
-            </>
-          ) : (
-            <></>
-          )}
-        </Form>
-      </Modal>
-    );
-  };
   const columns = [
     {
       title: '序号',
@@ -403,14 +201,6 @@ export default () => {
       dataIndex: 'orgName',
       isEllipsis: true,
       width: '150px',
-    },
-    {
-      title: '满足金融专属服务',
-      dataIndex: 'exclusiveService',
-      render: (exclusiveService: boolean) => {
-        return exclusiveService ? '是' : '否';
-      },
-      width: 140,
     },
     {
       title: '金融诊断类型',
@@ -444,18 +234,25 @@ export default () => {
       width: 120,
     },
     {
-      title: '是否对接客户',
-      dataIndex: 'linkCustomer',
-      render: (linkCustomer: boolean) => {
-        return linkCustomer ? '是' : '否';
-      },
-      width: 100,
+      title: '发布融资需求',
+      dataIndex: 'term',
+      width: 120,
+    },
+    {
+      title: '需求状态',
+      dataIndex: 'createTime',
+      width: 140,
+    },
+    {
+      title: '需求负责人',
+      dataIndex: 'applyNum',
+      width: 120,
     },
     {
       title: '操作',
       fixed: 'right',
       dataIndex: 'option',
-      width: 120,
+      width: 180,
       render: (_: any, record: DiagnosticRecord.Content) => {
         return (
           <Space>
@@ -473,13 +270,10 @@ export default () => {
                 size="small"
                 type="link"
                 onClick={async () => {
-                  await getCustomerDemand(record.id as number);
-                  setRemarksItem(record);
-                  selectProduct();
-                  setModalVisible(true);
+                  history.push(`${routeName.FINANCIAL_DIAGNOSTIC_RECORD_DEMAND}?id=${record.id}`);
                 }}
               >
-                备注
+                需求反馈
               </Button>
             ) : (
               <></>
@@ -522,7 +316,6 @@ export default () => {
           />
         </div>
       </div>
-      {useModal()}
     </PageContainer>
   );
 };

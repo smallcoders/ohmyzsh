@@ -1,8 +1,7 @@
 import { PageContainer } from '@ant-design/pro-layout';
 import scopedClasses from '@/utils/scopedClasses';
 import { Button, message, Table, Tag } from 'antd';
-import React, { useEffect, useState } from 'react';
-import { routeName } from '@/../config/routes';
+import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { queryDiagnoseDetail } from '@/services/financial-diagnostic-record';
 import type DiagnosticRecord from '@/types/financial-diagnostic-record';
@@ -10,7 +9,7 @@ import './index.less';
 const sc = scopedClasses('diagnostic-record-detail');
 export default () => {
   const history = useHistory();
-  const { id } = history.location?.query as any;
+  const { id } = (history.location as any)?.query;
   const [basicInfo, setBasicInfo] = useState<DiagnosticRecord.CustomerInfo>({});
   const [recordResult1, setRecordResult1] = useState<DiagnosticRecord.DiagnoseRecord>({});
   const [recordResult2, setRecordResult2] = useState<DiagnosticRecord.OrgAssets[]>([]);
@@ -20,10 +19,10 @@ export default () => {
       const { code, result } = await queryDiagnoseDetail(id);
       if (code === 0) {
         const { customerInfo, diagnoseRecord, orgAssets, diagnoseCreditVO } = result;
-        setBasicInfo(customerInfo);
-        setRecordResult1(diagnoseRecord);
-        setRecordResult2(orgAssets);
-        setApplyInfo(diagnoseCreditVO);
+        setBasicInfo(customerInfo || {});
+        setRecordResult1(diagnoseRecord || {});
+        setRecordResult2(orgAssets || []);
+        setApplyInfo(diagnoseCreditVO || []);
       } else {
         message.error('诊断详情获取失败');
       }
@@ -88,6 +87,7 @@ export default () => {
     { value: '4', name: '民营科技企业' },
     { value: '5', name: ' 专精特新企业' },
   ];
+  // @ts-ignore
   return (
     <PageContainer
       className={sc('pages')}
@@ -166,9 +166,9 @@ export default () => {
             <div className={sc('page-item-body-item')}>
               <div className={sc('page-item-body-item-label')}>融资用途：</div>
               <div className={sc('page-item-body-item-wrap')}>
-                {recordResult1?.purpose > 100000000
-                  ? recordResult1.purposeContent + ' - ' + recordResult1.purposeRemark
-                  : recordResult1.purposeContent}
+                {recordResult1?.purpose && recordResult1?.purpose !== 1000000
+                  ? recordResult1?.purposeContent + `${recordResult1?.purposeRemark ? '_' + recordResult1?.purposeRemark : ''}`
+                  : recordResult1?.purposeContent || '--'}
               </div>
             </div>
             <div className={sc('page-item-body-item')}>
@@ -197,6 +197,18 @@ export default () => {
             <div className={sc('page-item-body-item')}>
               <div className={sc('page-item-body-item-table')}>
                 <Table dataSource={recordResult2} columns={column1} pagination={false} />
+              </div>
+            </div>
+            <div className={sc('page-item-body-item')}>
+              <div className={sc('page-item-body-item-label')}>系统匹配产品：</div>
+            </div>
+            <div className={sc('page-item-body-item')}>
+              <div className={sc('page-item-body-item-table')}>
+                {
+                  recordResult2.length > 0 ?
+                    <Table dataSource={recordResult2} columns={column1} pagination={false} /> :
+                    '未匹配到合适产品'
+                }
               </div>
             </div>
           </div>

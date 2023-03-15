@@ -53,6 +53,9 @@ namespace DiagnosticRecord {
     applyNum?: number; //产品申请数量
     qualification?: string; //企业资质（多选，逗号隔开） 1 规上企业 2 高新技术企业 3 科技型中小企业 4 民营科技企业 5 专精特新企业
     revenueContent?: string;
+    urgency?: number; // 资金需求紧迫度  1  急需解决资金问题/近期有融资计划 2希望获得产品推介/近期无融资计划
+    urgencyRemark?: string; //到账时间
+    type?: number; // 1 快速诊断 2 精准诊断
   };
   export type OrgAssets = {
     typeContent?: string; //资产类型 1自有产权土地、2自有高价值设备
@@ -72,7 +75,7 @@ namespace DiagnosticRecord {
     diagnoseCreditVO?: DiagnoseCreditVO[]; //产品申请
   };
   export interface DiagnoseDetailData extends Common.ResultCode {
-    result: DiagnoseDetail[];
+    result: DiagnoseDetail;
   }
 }
 

@@ -5,9 +5,6 @@ import { request } from 'umi';
 export async function getBankTree() {
   return request<FinancialInstitution.ResultList>('/antelope-finance/bank/mng/queryBank', {
     method: 'get',
-    headers: {
-      'rpc-tag': 'jbxu5',
-    },
   });
 }
 
@@ -17,9 +14,6 @@ export async function getBankInfo(id: number) {
     `/antelope-finance/bank/mng/getBankById?id=${id}`,
     {
       method: 'get',
-      headers: {
-        'rpc-tag': 'jbxu5',
-      },
     },
   );
 }
@@ -28,9 +22,6 @@ export async function getBankInfo(id: number) {
 export async function getQueryBank2() {
   return request<FinancialInstitution.ResultBankInfo>('/antelope-finance/bank/mng/queryBank2', {
     method: 'get',
-    headers: {
-      'rpc-tag': 'jbxu5',
-    },
   });
 }
 
@@ -39,9 +30,6 @@ export async function saveOrUpdateInstitution(data?: Record<string, any>) {
   return request<FinancialInstitution.ResultsaveOrUpdate>('/antelope-finance/bank/mng/addBank', {
     method: 'post',
     data,
-    headers: {
-      'rpc-tag': 'jbxu5',
-    },
   });
 }
 
@@ -52,9 +40,6 @@ export async function saveOrUpdateInstitution(data?: Record<string, any>) {
 export async function removeBank(id: number) {
   return request<any>(`/antelope-finance/bank/mng/delBank?id=${id}`, {
     method: 'get',
-    headers: {
-      'rpc-tag': 'jbxu5',
-    },
   });
 }
 
@@ -65,8 +50,5 @@ export async function removeBank(id: number) {
 export async function queryCooperateOrg() {
   return request<any>(`/antelope-finance/bank/queryCooperateOrg`, {
     method: 'get',
-    headers: {
-      'rpc-tag': 'jbxu5',
-    },
   });
 }
