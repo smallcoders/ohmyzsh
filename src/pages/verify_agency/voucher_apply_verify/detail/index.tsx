@@ -6,6 +6,7 @@ import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
 import { getVoucherVerifyDetail, auditVoucherVerify } from '@/services/service-programme-verify';
 import VerifyStepsDetail from '@/components/verify_steps';
+import { routeName } from '@/../config/routes';
 import CommonTitle from '@/components/verify_steps/common_title';
 import VerifyDescription from '@/components/verify_steps/verify_description/verify-description';
 
@@ -112,7 +113,7 @@ export default () => {
   };
 
   const onBack = () => {
-    // history.back();
+    history.push(`${routeName.VOUCHER_APPLY_VERIFY}`);
   };
 
   // 提交
@@ -120,12 +121,13 @@ export default () => {
     form
       .validateFields()
       .then(async (value) => {
+        const { result, reason} = value
         setLoading(true);
         const tooltipMessage = '提交';
         const submitRes = await auditVoucherVerify({
           applyId: history.location.query?.id,
-          auditResult: 0
-          // ...value,
+          auditResult: result ? 1 : 0,
+          auditContent: reason
         });
         if (submitRes.code === 0) {
           message.success(`${tooltipMessage}成功`);
@@ -154,7 +156,7 @@ export default () => {
         </div>
         <div className={sc('container-desc')}>
           <span>所属地市：</span>
-          <span>{detail.apply?.cityName ? (detail.apply.cityName + '/' + detail.apply.countyName) : '--'}</span>
+          <span>{detail.apply?.cityName ? (detail.apply.provinceName + '/' + detail.apply.cityName + '/' + detail.apply.countyName) : '--'}</span>
         </div>
       </div>
       <div className={sc('container')}>

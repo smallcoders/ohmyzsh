@@ -23,11 +23,6 @@ import { history, Access, useAccess } from 'umi';
 import { getAreaTree } from '@/services/area';
 import { getVoucherVerifyPage } from '@/services/service-programme-verify';
 const sc = scopedClasses('service-config-app-news');
-const stateObj = {
-  0: '待审核',
-  1: '已通过',
-  2: '已拒绝',
-};
 enum Edge {
   HOME = 0, // 新闻咨询首页
 }
@@ -150,7 +145,9 @@ export default () => {
       isEllipsis: true,
       width: 200,
       render: (_: string, _record: any) => {
-        return  _record.industryFiles ? _record.industryFiles.map((p: any) => p?.fileName).join(',') : '--'
+        return  _record.industryFiles ? _record.industryFiles.map((p: any) => {
+          return <p><a href={p.path} target='_blank'>{p.fileName}</a></p>
+        }) : '--'
       },
     },
     {
@@ -159,7 +156,9 @@ export default () => {
       isEllipsis: true,
       width: 300,
       render: (_: string, _record: any) => {
-        return  _record.incomeFiles ? _record.incomeFiles.map((p: any) => p?.fileName).join(',') : '--'
+        return  _record.incomeFiles ? _record.incomeFiles.map((p: any) => {
+          return <p><a href={p.path} target='_blank'>{p.fileName}</a></p>
+        }) : '--'
       },
     },
     {
@@ -169,7 +168,7 @@ export default () => {
       render: (_: string, _record: any) => {
         return (
           <div className={`state${_record.apply.pfAuditState}`}>
-            {Object.prototype.hasOwnProperty.call(stateObj, _record.apply.pfAuditState) ? stateObj[_record.apply.pfAuditState] : '--'}
+            {_record.apply.pfAuditState == 0 ? '待审核' : _record.apply.pfAuditState == 1 ? '已通过' : _record.apply.pfAuditState == 2 ? '已拒绝' : '--'}
           </div>
         );
       },
