@@ -249,18 +249,18 @@ export async function deleteMeeting(meetingId?: any) {
   }
 
  //会议管理-会议上架
-export async function onShelfMeeting(data?: { [key: string]: any }) {
+export async function onShelfMeeting(params?: any) {
     return request<any>('/antelope-business/mng/meeting/onShelf', {
       method: 'put',
-      data,
+      params,
     });
   }
 
 //会议管理-会议下架
-export async function offShelfMeeting(data?: { [key: string]: any }) {
+export async function offShelfMeeting(params?: any) {
     return request<any>('/antelope-business/mng/meeting/offShelf', {
       method: 'put',
-      data,
+      params,
     });
   }
 
@@ -272,7 +272,7 @@ export async function weightMeeting(data?: { [key: string]: any }) {
     });
   }
 
-// 会议管理-暂存/提交
+// 会议管理-暂存
 export async function saveMeeting(data?: { [key: string]: any }) {
     return request<any>('/antelope-business/mng/meeting/save', {
         method: 'post',
@@ -280,12 +280,20 @@ export async function saveMeeting(data?: { [key: string]: any }) {
     });
 }
 
-//会议设置-保存设置
+// 会议管理-提交
+export async function submitMeeting(data?: { [key: string]: any }) {
+    return request<any>('/antelope-business/mng/meeting/submit', {
+        method: 'post',
+        data,
+    });
+}
+
+//会议管理-报名列表
 export async function queryMeetingPageList(data?: { [key: string]: any }) {
-    return request<any>('/antelope-business/mng/meeting/enrollPage'),{
+    return request<any>('/antelope-business/mng/meeting/enrollPage',{
         method:'post',
         data
-    }
+    })
 }
 
 // 会议管理-报名列表导出
@@ -293,20 +301,30 @@ export async function exportMeetingData(params?: any) {
     return request<any>('/antelope-business/mng/meeting/enrollExport', {
       method: 'get',
       params,
+      responseType: 'blob',
+      getResponse: true
     });
   }
 
 //会议设置-保存设置
 export async function saveMeetingConfig(data?: { [key: string]: any }) {
-    return request<any>('/antelope-business/mng/meeting/saveConfig'),{
+    return request<any>('/antelope-business/mng/meeting/saveConfig',{
         method:'post',
         data
-    }
+    })
 }
 
 // 会议设置-查询设置
 export async function queryMeetingConfig(params?: any) {
     return request<any>('/antelope-business/mng/meeting/detailConfig', {
+      method: 'get',
+      params,
+    });
+  }
+
+  // 会议管理-报名列表-表头
+export async function queryEnrollTableHead(params?: any) {
+    return request<any>('/antelope-business/mng/meeting/enrollTableHead', {
       method: 'get',
       params,
     });

@@ -2,7 +2,7 @@ import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
 import { PageContainer } from '@ant-design/pro-layout';
 import React, {useEffect, useState,useRef} from "react";
-import {Button, Col, Form, Popconfirm, Input, message, Row, Select} from "antd";
+import {Button, Col, Form, Popconfirm, Input, message, Row} from "antd";
 import SelfTable from "@/components/self_table";
 import type Common from "@/types/common";
 import {getMeetingPage,deleteMeeting,onShelfMeeting,offShelfMeeting,weightMeeting} from "@/services/baseline";
@@ -43,10 +43,7 @@ export default () => {
             </Col>
             <Col span={6}>
               <Form.Item name="theme" label="会议主题">
-              <Select placeholder="请输入" allowClear style={{ width: '200px'}}>
-                  <Select.Option value={0}>下架</Select.Option>
-                  <Select.Option value={1}>上架</Select.Option>
-                </Select>
+              <Input placeholder="请输入" allowClear  autoComplete="off"/>
               </Form.Item>
             </Col>
             <Col span={8}>
@@ -85,7 +82,7 @@ export default () => {
   const editState = async (meetingId: any, updatedState: number) => {
       try {
         const tooltipMessage = updatedState === 0 ? '下架' : '上架';
-        const updateStateResult = updatedState !== 0? await offShelfMeeting({meetingId}):await onShelfMeeting({meetingId})
+        const updateStateResult = updatedState === 0? await offShelfMeeting({meetingId}):await onShelfMeeting({meetingId})
         if (updateStateResult.code === 0) {
           message.success(`${tooltipMessage}成功`);
           getPage();
@@ -116,7 +113,7 @@ export default () => {
     //删除
   const remove = async (meetingId: string) => {
     try {
-      const removeRes = await deleteMeeting({meetingId});
+      const removeRes = await deleteMeeting(meetingId);
       if (removeRes.code === 0) {
         message.success(`删除成功`);
         getPage();
@@ -174,7 +171,7 @@ export default () => {
       width: 120,
     },
     {
-      title: '会议联系人',
+      title: '会议联系方式',
       dataIndex: 'contact',
       width: 120,
     },
@@ -192,11 +189,18 @@ export default () => {
       title: '报名人数',
       dataIndex: 'enrollNum',
       width: 120,
+      render:(_: any, record: any)=>{
+        return(
+          <>
+           <div>{record.enrollNum?record.enrollNum:'/'}</div>
+          </>
+        )
+      }
     },
     {
-      title: '发布时间',
-      dataIndex: 'publishTime',
-      width: 120,
+      title: '操作时间',
+      dataIndex: 'updateTime',
+      width: 200,
     },
     {
       title: '内容状态',
@@ -205,8 +209,8 @@ export default () => {
       render:(_: any, record: any)=>{
         return(
           <>
-          {record.state === 'ON_SHELF' && <div>上架中</div>}
-          {record.state === 'OFF_SHELF' && <div>已下架</div>}
+          {record.state === 'ON_SHELF' && <div>上架</div>}
+          {record.state === 'OFF_SHELF' && <div>下架</div>}
           {record.state === 'NOT_SUBMITTED' && <div>暂存</div>}
           </>
         )
@@ -287,10 +291,10 @@ export default () => {
               </Button>
             </Popconfirm>
       }
-      {(record.state == 'NOT_SUBMITTED' || Number(record.enrollNum)>0) &&
+      {(record.state == 'NOT_SUBMITTED') &&
               <Popconfirm
                 title="确定删除该会议内容？"
-                okText="确定"
+                okText="删除"
                 cancelText="取消"
                 onConfirm={() => remove(record.id as string)}
               >

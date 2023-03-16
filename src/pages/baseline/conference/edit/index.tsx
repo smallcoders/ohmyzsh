@@ -7,7 +7,7 @@ import moment from 'moment';
 import { history } from 'umi';
 import SelfTable from "@/components/self_table";
 import {Button, Form, Input,Popconfirm,DatePicker, Modal, message, Breadcrumb} from "antd";
-import {saveMeeting} from "@/services/baseline";
+import {saveMeeting,submitMeeting,detailMeetingForUserPage} from "@/services/baseline";
 import useLimit from '@/hooks/useLimit'
 import {Link} from "umi";
 import FormEdit from '@/components/FormEdit';
@@ -15,7 +15,7 @@ const sc = scopedClasses('baseline-conference-add');
 export default () => {
     const formLayout = {
         labelCol: { span: 4 },
-        wrapperCol: { span: 8 },
+        wrapperCol: { span:8 },
       };
   const weightRef = useRef()
   const [formIsChange, setFormIsChange] = useState<boolean>(false);
@@ -23,12 +23,6 @@ export default () => {
   const [expandAttributes, setExpandAttributes] = useState<any>([]);
   const [numb, setNumb] = useState<any>(0);
   const [form] = Form.useForm();
-  const [pageInfo, setPageInfo] = useState<any>({
-    pageIndex: 1,
-    pageSize: 10,
-    totalexpandAttributes: 0,
-    pageTotal: 0,
-  });
   const columns = [
     {
       title: '字段ID',
@@ -44,7 +38,7 @@ export default () => {
       render: (_: any, record: any) => {
         return (
           <div className={sc('container-option')}>
-               <Input onChange={(e:any)=>{record.name=e.target.value}} placeholder="请输入用户需填写的字段" style={{width:'300px',marginTop:'10px'}} maxLength={40}/> 
+               <Input defaultValue={record.name} onChange={(e:any)=>{record.name=e.target.value}} placeholder="请输入用户需填写的字段" style={{width:'300px',marginTop:'10px'}} maxLength={40}/> 
           </div>)}
     },
     {
@@ -63,7 +57,6 @@ export default () => {
                 const newArray=expandAttributes.filter((p:any)=>{
                   return p.key !== record.key
                 })
-                console.log(newArray);
                 setExpandAttributes([...newArray])
               }}
             >
@@ -74,21 +67,35 @@ export default () => {
   ];
   const { meetingId } = history.location.query as any;
   // 方法
+   //获取会议详情
+   const getMeetingByMeetingId = () =>{
+    detailMeetingForUserPage({meetingId}).then(res=>{
+      if (res.code === 0){
+        const newArr = res?.result.expandAttributes.map((p:any)=>{
+           p.key=p.id
+           return p
+        })
+        console.log(newArr);
+        setNumb(res?.result.expandIdBase)
+        setExpandAttributes(newArr)
+        form.setFieldsValue({time:[moment(res?.result.startTime), moment(res?.result.endTime)],...res?.result})
+      }
+    })
+  }
+  useEffect(() => {
+    meetingId&&getMeetingByMeetingId();
+  }, []);
   // 上架/暂存
   const addRecommend = async (submitFlag: Boolean) => {
     form
       .validateFields()
       .then(async (value) => {
-        const {time} = value
-        debugger
-        const startTime = moment(time[0]).format('YYYY-MM-DD  HH:mm');
-        const endTime = moment(time[1]).format('YYYY-MM-DD  HH:mm');
-        console.log({submitFlag,startTime,endTime,expandAttributes,...value})
-        debugger
-        const submitRes =  await saveMeeting({submitFlag,expandAttributes,startTime,endTime,...value})
+        const startTime = moment(value.time[0]).format('YYYY-MM-DD HH:mm:ss');
+        const endTime = moment(value.time[1]).format('YYYY-MM-DD HH:mm:ss');
+        const submitRes = submitFlag ?await submitMeeting({submitFlag,expandAttributes,startTime,endTime,...value,id:meetingId}):await saveMeeting({id:meetingId,submitFlag,expandAttributes,startTime,endTime,...value})
         if (submitRes.code === 0) {
           history.goBack()
-          message.success(submitFlag?'上架成功':'暂存成功')
+          message.success(submitFlag?'上架成功':'数据已暂存')
         } else {
           message.error(`${submitRes.message}`);
         }
@@ -162,7 +169,7 @@ export default () => {
           <Form.Item name="place" label="会议地点" >
                 <Input placeholder="请输入" maxLength={100}/>
               </Form.Item>
-              <Form.Item name="place" label="主办方" 
+              <Form.Item name="sponsor" label="主办方" 
                         rules={[
                            {
                              required: true,
@@ -185,7 +192,7 @@ export default () => {
                              message: `必填`,
                            },
                          ]}>
-                <DatePicker.RangePicker allowClear showTime format="YYYY-MM-DD HH:mm" />
+                <DatePicker.RangePicker style={{width:'100%'}} allowClear showTime format="YYYY-MM-DD HH:mm:ss" />
               </Form.Item>
             
             <Form.Item name="weight" label="权重" >
@@ -223,18 +230,7 @@ export default () => {
           bordered
           columns={columns}
           dataSource={expandAttributes}
-          pagination={
-            pageInfo.totalexpandAttributes === 0
-              ? false
-              : {
-                showSizeChanger: true,
-                total: pageInfo.totalexpandAttributes,
-                current: pageInfo.pageIndex,
-                pageSize: pageInfo.pageSize,
-                showTotal: (total: number) =>
-                  `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
-              }
-          }
+          pagination={null}
         />
       </div>
       <Modal

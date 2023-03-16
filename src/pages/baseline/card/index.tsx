@@ -2,8 +2,8 @@ import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
 import { PageContainer } from '@ant-design/pro-layout';
 import React, {useEffect, useState,useRef} from "react";
-import {message,Button,Modal,Form,Radio,Input} from "antd";
-import {getMeetingPage} from "@/services/baseline";
+import {message,Button,Modal,Form,Radio,InputNumber} from "antd";
+import {queryMeetingConfig,saveMeetingConfig} from "@/services/baseline";
 import {useAccess} from "@@/plugin-access/access";
 
 export default () => {
@@ -13,16 +13,14 @@ export default () => {
   const [searchForm] = Form.useForm();
   const [detail, setDetail] = useState<any>({});
   const [modalVisible, setModalVisible] = useState<any>(false);
-  // 获取分页数据
-  const getPage = async (pageIndex: number = 1, pageSize = 10) => {
+  // 获取数据
+  const getPage = async () => {
     try {
-      const res = await getMeetingPage({
-        pageIndex,
-        pageSize,
-      });
-      if (code === 0) {
+      const res = await queryMeetingConfig()
+      if (res.code === 0) {
+        setDetail(res?.result)
       } else {
-        message.error(`请求分页数据失败`);
+        message.error(`请求数据失败`);
       }
     } catch (error) {
       console.log(error);
@@ -31,18 +29,33 @@ export default () => {
   useEffect(() => {
     getPage();
   }, []);
- 
+//保存设置
+ const handleSave = async()=>{
+  const {show,position} = searchForm.getFieldsValue()
+  try {
+    const res = await saveMeetingConfig({show,position})
+      if(res.code === 0){
+        getPage();
+        setModalVisible(false)
+    } else {
+      message.error(`请求数据失败`);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+ }
+
   return (
     <PageContainer>
       <div className={sc('container')}>
         <div className={sc('container-desc')}>
           <span>会议卡片展示：</span>
-          <span>{detail?.title || '--'}</span>
+          {detail&&<span>{detail?.show?'是':'否'}</span>}
           <Button onClick={()=>{setModalVisible(true)}} style={{ marginLeft: '30px' }} type="primary">编辑 </Button>
       </div>
       <div className={sc('container-desc')}>
         <span>会议卡片展示位置：</span>
-        <span>{detail?.title || '--'}</span>
+        <span>{detail?.position || '--'}</span>
       </div>
     </div>
     <Modal
@@ -51,19 +64,17 @@ export default () => {
       visible={modalVisible}
       maskClosable={false}
       okText="确定"
-      onOk={() => {
-        const search = searchForm.getFieldsValue();
-        console.log(search)
-      } }>
+      onCancel={()=>{setModalVisible(false)}}
+      onOk={handleSave}>
   <Form  form={searchForm}>
-    <Form.Item name="isShow" label="是否展示："  initialValue={true}>
+    <Form.Item name="show" label="是否展示："  initialValue={true}>
       <Radio.Group defaultValue={true}  >
         <Radio value={true}>是</Radio>
         <Radio value={false}>否</Radio>
       </Radio.Group>
     </Form.Item>
-      <Form.Item name="loacl" label="展示位置：">
-      <Input placeholder="请输入1~30的数字" maxLength={100}/>
+      <Form.Item   help='请输入1~20的数字' name="position" label="展示位置：" initialValue={5} >
+      <InputNumber min={1} max={20} placeholder="请输入" style={{ width: '100%' }} />
       </Form.Item>
       </Form>
       </Modal>

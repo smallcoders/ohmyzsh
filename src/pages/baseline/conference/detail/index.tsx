@@ -2,96 +2,98 @@ import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
 import SelfTable from "@/components/self_table";
 import scopedClasses from '@/utils/scopedClasses';
-import {Button, message as antdMessage,} from "antd";
+import {Button, message} from "antd";
 import  {useEffect, useState} from "react";
 import moment from 'moment';
-import {detailMeetingForUserPage,exportMeetingData} from "@/services/baseline";
+import {detailMeetingForUserPage,exportMeetingData,queryMeetingPageList,queryEnrollTableHead} from "@/services/baseline";
 import {history} from "@@/core/history";
 const sc = scopedClasses('conference-detail');
 export default () => {
   const [activeKey, setActiveKey] = useState<any>('1');
   const { meetingId } = history.location.query as any;
   const [isExporting, setIsExporting] = useState<boolean>(false)
-  const [dataSource, setDataSource] = useState<any>([]);
-  const [detail, setDetail] = useState<any>({});
+  const [tableHeader, setTableHeader] = useState<any[]>([])
+  const [tableItems, setTableItems] = useState<any[]>([])
+  const [detail, setDetail] = useState<any>({})
   const [pageInfo, setPageInfo] = useState<any>({
     pageIndex: 1,
     pageSize: 10,
     totalCount: 0,
     pageTotal: 0,
   });
-  const columns = [
-    {
-      title: '序号',
-      dataIndex: 'sort',
-      width: 80,
-      render: (_: any, _record: any, index: number) =>
-        pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
-    },
-    {
-      title: '姓名',
-      dataIndex: 'topic',
-      isEllipsis: true,
-      width: 200,
-    },
-    {
-      title: '会议名称',
-      dataIndex: 'name',
-      isEllipsis: true,
-      width: 200,
-    },
-    {
-      title: '联系方式',
-      dataIndex: 'contentCount',
-      width: 120,
-    },
-    {
-      title: '填报时间',
-      dataIndex: 'weight',
-      width: 80,
-    },
-    {
-      title: '自定义值',
-      dataIndex: 'weight',
-      width: 80,
-    },
-  ];
-  const currentTime = moment().format("YYYYMMDDHH:mm:ss");
+   const currentTime =moment(new Date()).format('YYYYMMDD')
   //方法
   //获取会议详情
-  const getMeetingByMeetingId = (pageIndex: number = 1, pageSize = pageInfo.pageSize) =>{
-    detailMeetingForUserPage({meetingId, pageIndex,
-      pageSize,}).then(res=>{
+  const getMeetingByMeetingId = () =>{
+    detailMeetingForUserPage({meetingId}).then(res=>{
       if (res.code === 0){
         setDetail(res?.result || {})
-        setPageInfo(
-          {
-            pageIndex: res?.result.pageIndex,
-            pageSize: res?.result.pageSize,
-            totalCount: res?.result.contentCount,
-            pageTotal: 0,
-          }
-        )
+      }else {
+        throw new Error(res?.message);
+      }
+    })
+  }
+  //获取会议管理-报名列表-表头
+  const getEnrollTableHead = ()=>{
+    queryEnrollTableHead({meetingId}).then(res=>{
+      if(res.code === 0){
+        formatHeader(res?.result)
+      }else {
+        throw new Error(res?.message);
+      }
+    })
+  }
+  //获取会议管理-报名列表
+  const getMeetingList = (pageIndex: number = 1, pageSize = pageInfo.pageSize) =>{
+    queryMeetingPageList({meetingId, pageIndex,
+      pageSize,}).then(({ result, totalCount, pageTotal, code, message })=>{
+      if (code === 0){
+        setTableItems(result)
+        setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
+      }else {
+        throw new Error(message);
       }
     })
   }
   useEffect(() => {
-    getMeetingByMeetingId();
+    getEnrollTableHead()
+    getMeetingByMeetingId()
+    getMeetingList()
   }, []);
-  
+   // 表头处理
+   function formatHeader(tableHeader: any[]) {
+     // 插入序号, 合并序号列的单元格
+     tableHeader.splice(0, 0, {
+      title: '序号',
+      dataIndex: 'sort',
+      fixed: 'left',
+      width: 65,
+      render: (_: any, _record: any, index: number) => (Math.floor(index / 3)) + 1
+    })
+     // 动态表头处理
+     for (let i = 1, l = tableHeader.length; i < l; i++) {
+      const item = tableHeader[i]
+      item.title=item.name
+      item.dataIndex=item.id
+     }
+    setTableHeader(tableHeader)
+  }
+  //导出
   const exportDataClick = () => {
     if (isExporting){
       return
     }
     setIsExporting(true)
     exportMeetingData({meetingId}).then((res) => {
+      if (res?.data?.size == 51) return message.warning('操作太过频繁，请稍后再试')
       setIsExporting(false)
-      if (res?.data.size == 51) return antdMessage.warning('操作太过频繁，请稍后再试')
-      const content = res?.data;
-      const blob  = new Blob([content], {type: "application/vnd.ms-excel;charset=utf-8"});
+      const content = res.data;
+      const blob  = new Blob([content], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"});
       const fileName = `${detail?.name+'_'+currentTime}.xlsx`
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a')
+      console.log(url);
+      console.log(blob);
       link.style.display = 'none'
       link.href = url;
       link.setAttribute('download', fileName)
@@ -141,16 +143,20 @@ export default () => {
                 <span>{detail?.place || '--'}</span>
               </div>
               <div className={sc('container-desc')}>
+                <span>主办方：</span>
+                <span>{detail?.place || '--'}</span>
+              </div>
+              <div className={sc('container-desc')}>
                 <span>会议联系方式：</span>
                 <span>{detail?.contact || '--'}</span>
               </div>
               <div className={sc('container-desc')}>
                 <span>会议时间：</span>
-                <span>{detail?.time || '--'}</span>
+                <span>{detail?.startTime? (detail?.startTime +' ~'):'--'} {detail?.endTime}</span>
               </div>
               <div className={sc('container-desc')}>
                 <span>权重：</span>
-                <span>{detail?.weight ? <a href={detail?.sourceUrl} target="_blank">{detail?.sourceUrl}</a> : '--'}</span>
+                <span>{detail?.weight || '--'}</span>
               </div>
               <div className={sc('container-desc')}>
                 <span>会议日程：</span>
@@ -171,12 +177,13 @@ export default () => {
           <div className={sc('container-table')}>
           <SelfTable
           bordered
-          columns={columns}
-          dataSource={dataSource}
+          columns={tableHeader}
+          dataSource={tableItems}
           pagination={
             pageInfo.totalCount === 0
               ? false
               : {
+                onChange: getMeetingList,
                 showSizeChanger: true,
                 total: pageInfo.totalCount,
                 current: pageInfo.pageIndex,
