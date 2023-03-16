@@ -92,6 +92,9 @@ export default () => {
       .then(async (value) => {
         const startTime = moment(value.time[0]).format('YYYY-MM-DD HH:mm:ss');
         const endTime = moment(value.time[1]).format('YYYY-MM-DD HH:mm:ss');
+        if(!value.weight){
+          value.weight='1'
+        }
         const submitRes = submitFlag ?await submitMeeting({submitFlag,expandAttributes,startTime,endTime,...value,id:meetingId}):await saveMeeting({id:meetingId,submitFlag,expandAttributes,startTime,endTime,...value})
         if (submitRes.code === 0) {
           history.goBack()
