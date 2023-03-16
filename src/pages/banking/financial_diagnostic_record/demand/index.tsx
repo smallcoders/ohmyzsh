@@ -60,7 +60,7 @@ export default () => {
           bank: diagnoseRecord?.recommendBankId,
           product: creditInfo?.productId,
           creditTime: creditInfo?.startDate && creditInfo?.endDate ? [moment(creditInfo?.startDate), moment(creditInfo?.endDate)] : [],
-          creditAmount: typeof creditInfo?.creditAmount === 'number' && customToFixed(`${(creditInfo?.creditAmount || 0) / 1000000}`),
+          creditAmount: typeof creditInfo?.creditAmount === 'number' && creditInfo?.creditAmount > 0 ? customToFixed(`${(creditInfo?.creditAmount || 0) / 1000000}`) : '',
           startDate: creditInfo?.startDate,
           endDate: creditInfo?.endDate,
           rate: creditInfo?.rate?.replace('%', '') || '',
@@ -136,24 +136,6 @@ export default () => {
   const handleSave = async () => {
     await form.validateFields()
     const values = form.getFieldsValue()
-    // demandState: diagnoseRecord?.demandState,
-    //   bank: diagnoseRecord?.recommendBankId,
-    //   product: creditInfo?.productId,
-    //   creditTime: creditInfo?.startDate && creditInfo?.endDate ? [moment(creditInfo?.startDate), moment(creditInfo?.endDate)] : [],
-    //   creditAmount: typeof creditInfo?.creditAmount === 'number' && customToFixed(`${(creditInfo?.creditAmount || 0) / 1000000}`),
-    //   startDate: creditInfo?.startDate,
-    //   endDate: creditInfo?.endDate,
-    //   rate: creditInfo?.rate?.replace('%', '') || '',
-    //   refuseReason: creditInfo?.refuseReason,
-    //   contractNo: creditInfo?.contractNo,
-    //   workProve: creditInfo?.workProve?.split(',')?.map((item: string) => {
-    //   return {
-    //     uid: item,
-    //     name: item,
-    //     status: 'done',
-    //     url: `/antelope-common/common/file/download/${item}`
-    //   }
-
     const { demandState, creditTime, creditAmount, rate, refuseReason, contractNo, workProve, bank, product} = values;
     const data: any = { diagnoseId: id, busiStatus: demandState };
     if (demandState === 2) {
@@ -339,6 +321,8 @@ export default () => {
                   rules={[{ required: true, message: '请选择金融产品' }]}
                 >
                   <Select
+                    optionFilterProp="label"
+                    showSearch
                     placeholder='请选择金融产品'
                     notFoundContent={form.getFieldValue(`bank`) ? "暂无数据" : '请先选择金融机构'}
                     options={productOptionsMap[form.getFieldValue(`bank`)] || []}
@@ -363,6 +347,7 @@ export default () => {
                   <Form.Item
                     label="授信有效期"
                     name="creditTime"
+                    required
                     rules={[{ required: true, message: '请选择授信有效期' }]}
                   >
                     <DatePicker.RangePicker allowClear style={{ width: '100%' }} />
@@ -415,8 +400,8 @@ export default () => {
                     accept=".png,.jpg,.pdf,.xlsx,.xls,.doc"
                     showUploadList={true}
                     maxSize={30}
-                    onChange={(values) => {
-                      console.log(values)
+                    onChange={() => {
+                      form.validateFields(['workProve'])
                     }}
                   >
                     <Button icon={<UploadOutlined />}>上传文件</Button>
