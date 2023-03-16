@@ -179,12 +179,12 @@ export default () => {
     {
       title: '会议联系方式',
       dataIndex: 'contact',
-      width: 120,
+      width: 180,
     },
     {
       title: '会议时间',
       dataIndex: 'time',
-      width: 120,
+      width: 300,
     },
     {
       title: '权重',

@@ -78,7 +78,10 @@ export default () => {
         console.log(newArr);
         setNumb(res?.result.expandIdBase)
         setExpandAttributes(newArr)
-        form.setFieldsValue({time:[moment(res?.result.startTime), moment(res?.result.endTime)],...res?.result})
+        const time = [moment(res?.result.startTime), moment(res?.result.endTime)]
+       if (res?.result.startTime&&res?.result.endTime){
+        form.setFieldsValue({time,...res?.result})
+       }  else {form.setFieldsValue({...res?.result})}
       }
     })
   }
