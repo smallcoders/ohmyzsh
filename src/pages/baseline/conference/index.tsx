@@ -292,8 +292,6 @@ export default () => {
               </Button>
             </Popconfirm>
       }
-              </Access>
-      <Access accessible={access['PD_BLM_HTGL']}>
       {(record.state == 'NOT_SUBMITTED') &&
               <Popconfirm
                 title="确定删除该会议内容？"
