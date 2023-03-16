@@ -298,7 +298,7 @@ export default () => {
               </Button>
             </Popconfirm>
       }
-      {(record.state == 'NOT_SUBMITTED' || (record.state == 'ON_SHELF' && record?.enrollNum>0)) &&
+      {(record.state == 'NOT_SUBMITTED' || (record.state == 'OFF_SHELF' && record?.enrollNum===0)) &&
               <Popconfirm
                 title="确定删除该会议内容？"
                 okText="删除"
