@@ -87,11 +87,12 @@ export default () => {
   }, []);
   // 上架/暂存
   const addRecommend = async (submitFlag: Boolean) => {
-    form
+    if(submitFlag){
+      form
       .validateFields()
       .then(async (value) => {
-        const startTime = moment(value.time[0]).format('YYYY-MM-DD HH:mm:ss');
-        const endTime = moment(value.time[1]).format('YYYY-MM-DD HH:mm:ss');
+        const startTime = moment(value.time[0]).format('YYYY-MM-DD HH:mm');
+        const endTime = moment(value.time[1]).format('YYYY-MM-DD HH:mm');
         if(!value.weight){
           value.weight='1'
         }
@@ -106,6 +107,22 @@ export default () => {
       .catch((e) => {
         console.log(e)
       });
+    }else{
+        const value =  form.getFieldsValue()
+        const startTime =value.time? moment(value.time[0]).format('YYYY-MM-DD HH:mm'):''
+        const endTime = value.time?moment(value.time[1]).format('YYYY-MM-DD HH:mm'):''
+        if(!value.weight){
+          value.weight='1'
+        }
+        const submitRes = submitFlag ?await submitMeeting({submitFlag,expandAttributes,startTime,endTime,...value,id:meetingId}):await saveMeeting({id:meetingId,submitFlag,expandAttributes,startTime,endTime,...value})
+        if (submitRes.code === 0) {
+          history.goBack()
+          message.success(submitFlag?'上架成功':'数据已暂存')
+        } else {
+          message.error(`${submitRes.message}`);
+        }
+    }
+    
   };
  
   return (
@@ -195,7 +212,7 @@ export default () => {
                              message: `必填`,
                            },
                          ]}>
-                <DatePicker.RangePicker style={{width:'100%'}} allowClear showTime format="YYYY-MM-DD HH:mm:ss" />
+                <DatePicker.RangePicker style={{width:'100%'}} allowClear showTime format="YYYY-MM-DD HH:mm" />
               </Form.Item>
             
             <Form.Item name="weight" label="权重" >

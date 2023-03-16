@@ -134,7 +134,13 @@ export default () => {
       });
       if (code === 0) {
         setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
-        setDataSource(result);
+      const newArray =result.map((p:any)=>{
+          const time = p?.startTime + " ~ " + p?.endTime
+          p.time =p?.startTime?time:''
+          return p
+        })
+        
+        setDataSource(newArray);
       } else {
         message.error(`请求分页数据失败`);
       }
@@ -292,7 +298,7 @@ export default () => {
               </Button>
             </Popconfirm>
       }
-      {(record.state == 'NOT_SUBMITTED') &&
+      {(record.state == 'NOT_SUBMITTED' || (record.state == 'ON_SHELF' && record?.enrollNum>0)) &&
               <Popconfirm
                 title="确定删除该会议内容？"
                 okText="删除"

@@ -19,6 +19,7 @@ export default () => {
       const res = await queryMeetingConfig()
       if (res.code === 0) {
         setDetail(res?.result)
+        searchForm.setFieldsValue({...res?.result})
       } else {
         message.error(`请求数据失败`);
       }
