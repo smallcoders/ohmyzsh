@@ -1062,7 +1062,7 @@ export default () => {
                             detailInfo?.bankOperationInfoList?.map((item: any, k: any) => {
                               return (
                                 <p key={k} style={{ marginBottom: 0 }}>
-                                  {item.name} {item.mail}{' '}
+                                  {item.name} {item.email}{' '}
                                   {item.position === 1
                                     ? '运营人员'
                                     : item.position === 2

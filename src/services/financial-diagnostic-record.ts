@@ -53,3 +53,31 @@ export async function queryDiagnoseDetail(id: number) {
     },
   );
 }
+
+
+/**
+ * 需求反馈详情查询
+ * @param params
+ */
+export async function queryDemandDetail(id: number) {
+  return request<DiagnosticRecord.DemandDetailData>(
+    `/antelope-finance/diagnose/mng/queryDemandDetail?id=${id}`,
+    {
+      method: 'get',
+    },
+  );
+}
+
+
+/**
+ * 设置需求反馈
+ * @param params
+ */
+export async function setDemandCredit(data?: Record<string, any>) {
+  return request<any>(`/antelope-finance/diagnose/mng/setDemandCredit`,
+    {
+      method: 'post',
+      data,
+    },
+  );
+}

@@ -115,7 +115,7 @@ export default () => {
               <Form.Item
                 labelCol={{ span: 8 }}
                 wrapperCol={{ span: 16 }}
-                name="linkCustomer"
+                name="hasDemand"
                 label="发布融资需求"
               >
                 <Select placeholder="请选择" allowClear>
@@ -128,17 +128,14 @@ export default () => {
               <Form.Item
                 labelCol={{ span: 11 }}
                 wrapperCol={{ span: 13 }}
-                name="exclusiveService"
+                name="demandState"
                 label="需求状态"
               >
-                <Select placeholder="请选择" allowClear>
-                  <Select.Option value={true}>是</Select.Option>
-                  <Select.Option value={false}>否</Select.Option>
-                </Select>
+                <Select options={[{label: '待跟进', value: 1},{label: '已反馈至金融机构', value: 2},{label: '已授信', value: 3},{label: '授信失败', value: 4}]} placeholder="请选择" allowClear />
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item labelCol={{ span: 9 }} wrapperCol={{ span: 15 }} label="需求负责人">
+              <Form.Item name="picName" labelCol={{ span: 9 }} wrapperCol={{ span: 15 }} label="需求负责人">
                 <Input
                   maxLength={35}
                   placeholder="请输入"
@@ -153,14 +150,9 @@ export default () => {
               key="search"
               onClick={() => {
                 const search = searchForm.getFieldsValue();
-                console.log('search', search);
                 if (search.time) {
                   search.dateStart = moment(search.time[0]).format('YYYY-MM-DD');
                   search.dateEnd = moment(search.time[1]).format('YYYY-MM-DD');
-                }
-                if (search.applyNum) {
-                  search.applyNumMin = search.applyNum[0];
-                  search.applyNumMax = search.applyNum[1];
                 }
                 setSearChContent(search);
               }}
@@ -235,18 +227,27 @@ export default () => {
     },
     {
       title: '发布融资需求',
-      dataIndex: 'term',
+      dataIndex: 'hasDemand',
       width: 120,
+      render: (hasDemand: boolean) => {
+        return (hasDemand ? '是' : '否')
+      }
     },
     {
       title: '需求状态',
-      dataIndex: 'createTime',
+      dataIndex: 'demandStateContent',
       width: 140,
+      render: (demandStateContent: string, record: DiagnosticRecord.Content) => {
+        return (record.hasDemand && demandStateContent ? demandStateContent : '--')
+      }
     },
     {
       title: '需求负责人',
-      dataIndex: 'applyNum',
+      dataIndex: 'picNames',
       width: 120,
+      render: (picNames: string) => {
+        return (picNames || '--')
+      }
     },
     {
       title: '操作',
@@ -265,12 +266,12 @@ export default () => {
             >
               诊断详情
             </Button>
-            {record.exclusiveService && record.applyNum === 0 ? (
+            {record.hasDemand ? (
               <Button
                 size="small"
                 type="link"
                 onClick={async () => {
-                  history.push(`${routeName.FINANCIAL_DIAGNOSTIC_RECORD_DEMAND}?id=${record.id}`);
+                  history.push(`${routeName.FINANCIAL_DIAGNOSTIC_RECORD_DEMAND}?id=${record.demandId}`);
                 }}
               >
                 需求反馈
