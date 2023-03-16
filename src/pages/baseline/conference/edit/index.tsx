@@ -20,6 +20,7 @@ export default () => {
   const weightRef = useRef()
   const [formIsChange, setFormIsChange] = useState<boolean>(false);
   const [visible, setVisible] = useState<boolean>(false);
+  const [visibleAdd, setVisibleAdd] = useState<boolean>(false);
   const [expandAttributes, setExpandAttributes] = useState<any>([]);
   const [numb, setNumb] = useState<any>(0);
   const [form] = Form.useForm();
@@ -101,8 +102,8 @@ export default () => {
         }
         const submitRes = submitFlag ?await submitMeeting({submitFlag,expandAttributes,startTime,endTime,...value,id:meetingId}):await saveMeeting({id:meetingId,submitFlag,expandAttributes,startTime,endTime,...value})
         if (submitRes.code === 0) {
-          history.goBack()
           message.success(submitFlag?'上架成功':'数据已暂存')
+          history.goBack()
         } else {
           message.error(`${submitRes.message}`);
         }
@@ -147,9 +148,16 @@ export default () => {
                      ),
                    }}
                    footer={[
-                     <Button type='primary' onClick={() => {
-                       addRecommend(true)
-                     }}>上架</Button>,
+                     <Button onClick={() => {
+                      form
+                      .validateFields()
+                      .then(async () => {
+                        setVisibleAdd(true)
+                      })
+                      .catch((e) => {
+                        console.log(e)
+                      });
+                      }} type='primary'>上架</Button>,
                      <Button onClick={() => {
                         addRecommend(false)
                       }}>暂存</Button>,
@@ -271,6 +279,23 @@ export default () => {
             addRecommend(false)
             history.goBack()}}>
            暂存并离开
+         </Button>,
+        ]}
+      >
+        <p>数据未保存，是否仍要离开当前页面？</p>
+      </Modal>
+      <Modal
+        visible={visibleAdd}
+        title='提示'
+        footer={[
+          <Button key="back" onClick={() =>  setVisibleAdd(false)}>
+            取消
+          </Button>,
+           <Button key="submit" type="primary" 
+           onClick={() => { 
+            addRecommend(true)
+            }}>
+           上架
          </Button>,
         ]}
       >
