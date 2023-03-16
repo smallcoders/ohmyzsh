@@ -174,26 +174,31 @@ export default () => {
     {
       title: '会议主题',
       dataIndex: 'theme',
-      width: 120,
+      isEllipsis: true,
+      width: 200,
     },
     {
       title: '会议联系方式',
       dataIndex: 'contact',
+      isEllipsis: true,
       width: 180,
     },
     {
       title: '会议时间',
       dataIndex: 'time',
+      isEllipsis: true,
       width: 300,
     },
     {
       title: '权重',
       dataIndex: 'weight',
+      isEllipsis: true,
       width: 120,
     },
     {
       title: '报名人数',
       dataIndex: 'enrollNum',
+      isEllipsis: true,
       width: 120,
       render:(_: any, record: any)=>{
         return(
@@ -206,11 +211,13 @@ export default () => {
     {
       title: '操作时间',
       dataIndex: 'updateTime',
+      isEllipsis: true,
       width: 200,
     },
     {
       title: '内容状态',
       dataIndex: 'state',
+      isEllipsis: true,
       width: 120,
       render:(_: any, record: any)=>{
         return(
