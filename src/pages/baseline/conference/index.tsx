@@ -224,6 +224,7 @@ export default () => {
       render: (_: any, record: any) => {
         return (
           <div className={sc('container-option')}>
+            <Access accessible={access['PU_BLM_HYGL']}>
              {record.state !== 'NOT_SUBMITTED' &&
               <Button type="link" onClick={() => {
                 history.push(`/baseline/baseline-conference-manage/detail?meetingId=${record.id}`)
@@ -291,6 +292,8 @@ export default () => {
               </Button>
             </Popconfirm>
       }
+              </Access>
+      <Access accessible={access['PD_BLM_HTGL']}>
       {(record.state == 'NOT_SUBMITTED') &&
               <Popconfirm
                 title="确定删除该会议内容？"
@@ -302,6 +305,7 @@ export default () => {
                 删除
               </Button>
               </Popconfirm>}
+              </Access>
               </div>
         )
       }
@@ -311,7 +315,7 @@ export default () => {
     <PageContainer className={sc('container')}>
       {useSearchNode()}
       <div className={sc('container-table-header')}>
-        <Access accessible={access['PA_BLM_HTGL']}>
+        <Access accessible={access['PA_BLM_HYGL']}>
         <Button
           type="primary"
           key="addStyle"

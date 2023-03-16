@@ -4,7 +4,7 @@ import { PageContainer } from '@ant-design/pro-layout';
 import React, {useEffect, useState,useRef} from "react";
 import {message,Button,Modal,Form,Radio,InputNumber} from "antd";
 import {queryMeetingConfig,saveMeetingConfig} from "@/services/baseline";
-import {useAccess} from "@@/plugin-access/access";
+import {Access,useAccess} from "@@/plugin-access/access";
 
 export default () => {
   // // 拿到当前角色的access权限兑现
@@ -51,7 +51,9 @@ export default () => {
         <div className={sc('container-desc')}>
           <span>会议卡片展示：</span>
           {detail&&<span>{detail?.show?'是':'否'}</span>}
+          <Access accessible={access['PU_BLM_HYKPSZ']}>
           <Button onClick={()=>{setModalVisible(true)}} style={{ marginLeft: '30px' }} type="primary">编辑 </Button>
+          </Access>
       </div>
       <div className={sc('container-desc')}>
         <span>会议卡片展示位置：</span>
