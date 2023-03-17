@@ -2,7 +2,7 @@ import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
 import { PageContainer } from '@ant-design/pro-layout';
 import { PlusOutlined } from '@ant-design/icons';
-import React, {useEffect, useState,useRef} from "react";
+import  {useEffect, useState,useRef} from "react";
 import moment from 'moment';
 import { history } from 'umi';
 import SelfTable from "@/components/self_table";
@@ -17,7 +17,7 @@ export default () => {
         labelCol: { span: 4 },
         wrapperCol: { span:8 },
       };
-  const weightRef = useRef()
+  const weightRef = useRef<any>()
   const [formIsChange, setFormIsChange] = useState<boolean>(false);
   const [visible, setVisible] = useState<boolean>(false);
   const [visibleAdd, setVisibleAdd] = useState<boolean>(false);
@@ -39,7 +39,7 @@ export default () => {
       render: (_: any, record: any) => {
         return (
           <div className={sc('container-option')}>
-               <Input defaultValue={record.name} onChange={(e:any)=>{record.name=e.target.value}} placeholder="请输入用户需填写的字段" style={{width:'300px',marginTop:'10px'}} maxLength={40}/> 
+               <Input defaultValue={record.name} onChange={(e: any)=>{record.name=e.target.value}} placeholder="请输入用户需填写的字段" style={{width:'300px',marginTop:'10px'}} maxLength={40}/>
           </div>)}
     },
     {
@@ -55,7 +55,7 @@ export default () => {
               okText="确定"
               cancelText="取消"
               onConfirm={()=>{
-                const newArray=expandAttributes.filter((p:any)=>{
+                const newArray=expandAttributes.filter((p: any)=>{
                   return p.key !== record.key
                 })
                 setExpandAttributes([...newArray])
@@ -72,7 +72,7 @@ export default () => {
    const getMeetingByMeetingId = () =>{
     detailMeetingForUserPage({meetingId}).then(res=>{
       if (res.code === 0){
-        const newArr = res?.result.expandAttributes.map((p:any)=>{
+        const newArr = res?.result.expandAttributes.map((p: any)=>{
            p.key=p.id
            return p
         })
@@ -87,10 +87,10 @@ export default () => {
     })
   }
   useEffect(() => {
-    meetingId&&getMeetingByMeetingId();
+    meetingId && getMeetingByMeetingId();
   }, []);
   // 上架/暂存
-  const addRecommend = async (submitFlag: Boolean) => {
+  const addRecommend = async (submitFlag: boolean) => {
     if(submitFlag){
       form
       .validateFields()
@@ -126,9 +126,8 @@ export default () => {
           message.error(`${submitRes.message}`);
         }
     }
-    
   };
- 
+
   return (
     <PageContainer className={sc('container')}
                    header={{
@@ -172,8 +171,7 @@ export default () => {
         <Form form={form}  {...formLayout}  onValuesChange={() => {
           setFormIsChange(true);
         }}>
-              <Form.Item name="title" 
-              help='说明：在产业圈中显示，可以通过一句话展示会议概要'
+              <Form.Item name="title"
               label="页面标题"
                          rules={[
                            {
@@ -192,15 +190,15 @@ export default () => {
                          ]}>
                 <Input placeholder="请输入" maxLength={100}/>
               </Form.Item>
-      
+
               <Form.Item name="theme" label="会议主题" >
                 <Input placeholder="请输入" maxLength={100}/>
               </Form.Item>
-         
+
           <Form.Item name="place" label="会议地点" >
                 <Input placeholder="请输入" maxLength={100}/>
               </Form.Item>
-              <Form.Item name="sponsor" label="主办方" 
+              <Form.Item name="sponsor" label="主办方"
                         rules={[
                            {
                              required: true,
@@ -225,11 +223,11 @@ export default () => {
                          ]}>
                 <DatePicker.RangePicker style={{width:'100%'}} allowClear showTime format="YYYY-MM-DD HH:mm" />
               </Form.Item>
-            
+
             <Form.Item name="weight" label="权重" >
                <Input ref={weightRef} placeholder='请输入1～100的整数，数字越大排名越靠前' onInput={useLimit(weightRef)} />
             </Form.Item>
-       
+
           <Form.Item name="agenda" label="会议日程">
             <FormEdit width={624} />
           </Form.Item>
@@ -274,8 +272,8 @@ export default () => {
           <Button key="submit" onClick={() => history.goBack()}>
             直接离开
           </Button>,
-           <Button key="submit" type="primary" 
-           onClick={() => { 
+           <Button key="submit" type="primary"
+           onClick={() => {
             addRecommend(false)
             history.goBack()}}>
            暂存并离开
@@ -291,8 +289,8 @@ export default () => {
           <Button key="back" onClick={() =>  setVisibleAdd(false)}>
             取消
           </Button>,
-           <Button key="submit" type="primary" 
-           onClick={() => { 
+           <Button key="submit" type="primary"
+           onClick={() => {
             addRecommend(true)
             }}>
            上架

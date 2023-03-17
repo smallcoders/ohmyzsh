@@ -19,7 +19,7 @@ export default () => {
     labelCol: { span: 6 },
     wrapperCol: { span: 16 },
   };
-  const weightRef = useRef()
+  const weightRef = useRef<any>()
   const [weightForm] = Form.useForm();
   const [searchForm] = Form.useForm();
   const [dataSource, setDataSource] = useState<any>([]);
@@ -78,6 +78,33 @@ export default () => {
       </div>
     );
   };
+  // 获取分页数据
+  const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
+    try {
+      const { result, totalCount, pageTotal, code } = await getMeetingPage({
+        pageIndex,
+        pageSize,
+        ...searchContent,
+      });
+      if (code === 0) {
+        setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
+        const newArray =result.map((p:any)=>{
+          const time = p?.startTime + " ~ " + p?.endTime
+          p.time =p?.startTime?time:''
+          return p
+        })
+
+        setDataSource(newArray);
+      } else {
+        message.error(`请求分页数据失败`);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    getPage();
+  }, [searchContent]);
   // 上下架
   const editState = async (meetingId: any, updatedState: number) => {
       try {
@@ -85,7 +112,7 @@ export default () => {
         const updateStateResult = updatedState === 0? await offShelfMeeting({meetingId}):await onShelfMeeting({meetingId})
         if (updateStateResult.code === 0) {
           message.success(`${tooltipMessage}成功`);
-          getPage();
+          await getPage();
         } else {
           message.error(`${tooltipMessage}失败，原因:{${updateStateResult.message}}`);
         }
@@ -124,33 +151,7 @@ export default () => {
       console.log(error);
     }
   };
-  // 获取分页数据
-  const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
-    try {
-      const { result, totalCount, pageTotal, code } = await getMeetingPage({
-        pageIndex,
-        pageSize,
-        ...searchContent,
-      });
-      if (code === 0) {
-        setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
-      const newArray =result.map((p:any)=>{
-          const time = p?.startTime + " ~ " + p?.endTime
-          p.time =p?.startTime?time:''
-          return p
-        })
-        
-        setDataSource(newArray);
-      } else {
-        message.error(`请求分页数据失败`);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  useEffect(() => {
-    getPage();
-  }, [searchContent]);
+
   const columns = [
     {
       title: '序号',
@@ -260,7 +261,7 @@ export default () => {
               >
                 <Button type="link">下架</Button>
               </Popconfirm>
-            
+
             }
             {record.state==='OFF_SHELF' &&
               <Popconfirm

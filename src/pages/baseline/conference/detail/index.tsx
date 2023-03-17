@@ -46,12 +46,12 @@ export default () => {
   //获取会议管理-报名列表
   const getMeetingList = (pageIndex: number = 1, pageSize = pageInfo.pageSize) =>{
     queryMeetingPageList({meetingId, pageIndex,
-      pageSize,}).then(({ result, totalCount, pageTotal, code, message })=>{
-      if (code === 0){
-        setTableItems(result)
-        setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
+      pageSize,}).then(res=>{
+      if (res.code === 0){
+        setTableItems(res.result)
+        setPageInfo({ totalCount:res.totalCount, pageTotal:res.pageTotal, pageIndex, pageSize });
       }else {
-        throw new Error(message);
+        throw new Error(res.message);
       }
     })
   }
@@ -61,9 +61,9 @@ export default () => {
     getMeetingList()
   }, []);
    // 表头处理
-   function formatHeader(tableHeader: any[]) {
+   function formatHeader(tableHeaders: any[]) {
      // 插入序号, 合并序号列的单元格
-     tableHeader.splice(0, 0, {
+     tableHeaders.splice(0, 0, {
       title: '序号',
       dataIndex: 'sort',
       fixed: 'left',
@@ -71,12 +71,12 @@ export default () => {
       render: (_: any, _record: any, index: number) => (Math.floor(index / 3)) + 1
     })
      // 动态表头处理
-     for (let i = 1, l = tableHeader.length; i < l; i++) {
-      const item = tableHeader[i]
+     for (let i = 1, l = tableHeaders.length; i < l; i++) {
+      const item = tableHeaders[i]
       item.title=item.name
       item.dataIndex=item.id
      }
-    setTableHeader(tableHeader)
+    setTableHeader(tableHeaders)
   }
   //导出
   const exportDataClick = () => {
