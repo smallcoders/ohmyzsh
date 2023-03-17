@@ -119,6 +119,7 @@
     '/operation-activity/local-propaganda/propaganda-config/detail-management', // 新增地市宣传页管理
   MANAGEMENT_ACTIVITIES: '/operation-activity/local-propaganda/management_activities', // 地市活动管理
 
+  
   //金融服务管理
   BANKING_SERVICE: '/banking/banking_service_manage',
   BANKING_SERVICE_INDEX: '/banking/banking_service_manage/index',
@@ -226,6 +227,10 @@
   BASELINE_RECOMMENDED_MANAGE: 'baseline-recommended',
   BASELINE_TOPIC_MANAGE_DETAIL: 'baseline-topic-manage/detail',
   BASELINE_TOPIC_MANAGE_ADD: 'baseline-topic-manage/add',
+  BASELINE_CONFERENCE_CARD:'baseline-card-manage',
+  BASELINE_CONFERENCE_MANAGE: 'baseline-conference-manage',
+  BASELINE_CONFERENCE_MANAGE_DETAIL: 'baseline-conference-manage/detail',
+  BASELINE_CONFERENCE_MANAGE_EDIT: 'baseline-conference-manage/edit',
 };
 
 
@@ -422,6 +427,34 @@ export default [
         access: 'M_BLM_TJWGL',
         component: './baseline/recommended/detail',
         hideInMenu: true,
+      },
+       {
+        path: routeName.BASELINE_CONFERENCE_MANAGE,
+        code: 'M_BLM_HYGL',
+        access: 'M_BLM_HYGL',
+        name: '会议管理',
+        component: './baseline/conference/index',
+      },
+      {
+        path: routeName.BASELINE_CONFERENCE_CARD,
+        code: 'M_BLM_HYKPSZ',
+        access: 'M_BLM_HYKPSZ',
+        name: '会议卡片设置',
+        component: './baseline/card/index',
+      },
+      {
+        path: routeName.BASELINE_CONFERENCE_MANAGE_DETAIL,
+        // code: 'M_HRM_XQ',
+        // access: 'M_HRM_XQ',
+        hideInMenu: true,
+        name: '详情',
+        component: './baseline/conference/detail',
+      },
+      {
+        path: routeName.BASELINE_CONFERENCE_MANAGE_EDIT,
+        hideInMenu: true,
+        name: '新增',
+        component: './baseline/conference/edit',
       },
     ],
   },

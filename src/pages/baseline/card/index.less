@@ -1,0 +1,31 @@
+@prefix: conference-card;
+
+.@{prefix}-container {
+  padding: 20px;
+  background: #fff;
+  &-table{
+    margin-top: 20px;
+  }
+  &-title {
+    font-weight: bolder;
+    margin-top: 20px;
+    font-size: 18px;
+  }
+
+  &-desc {
+    display: flex;
+    line-height: 48px;
+
+    > :first-child {
+      display: block;
+      width: 150px;
+      text-align: right;
+    }
+
+    > :last-child {
+      font-weight: 600;
+      font-size: 16px;
+    }
+  }
+}
+
