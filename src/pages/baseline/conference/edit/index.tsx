@@ -366,7 +366,6 @@ export default () => {
             type="primary"
             onClick={() => {
               addRecommend(false);
-              history.goBack();
             }}
           >
             暂存并离开
