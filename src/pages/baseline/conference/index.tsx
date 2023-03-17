@@ -332,6 +332,8 @@ export default () => {
                   </Button>
                 </Popconfirm>
               )}
+            </Access>
+            <Access accessible={access.PD_BLM_HYGL}>
               {(record.state == 'NOT_SUBMITTED' ||
                 (record.state == 'OFF_SHELF' && record?.enrollNum === 0)) && (
                 <Popconfirm
