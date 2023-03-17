@@ -15,7 +15,6 @@ import {
 import { history } from '@@/core/history';
 import { useAccess, Access } from '@@/plugin-access/access';
 import { InfoOutlined } from '@ant-design/icons';
-import useLimit from '@/hooks/useLimit';
 
 export default () => {
   // // 拿到当前角色的access权限兑现
@@ -25,7 +24,6 @@ export default () => {
     labelCol: { span: 6 },
     wrapperCol: { span: 16 },
   };
-  const weightRef = useRef<any>();
   const [weightForm] = Form.useForm();
   const [searchForm] = Form.useForm();
   const [dataSource, setDataSource] = useState<any>([]);
@@ -312,12 +310,6 @@ export default () => {
                             placeholder="请输入1～100的整数，数字越大排名越靠前"
                             style={{ width: '300px' }}
                           />
-                          {/*<Input*/}
-                          {/*  ref={weightRef}*/}
-                          {/*  style={{ width: '300px' }}*/}
-                          {/*  placeholder="请输入1～100的整数，数字越大排名越靠前"*/}
-                          {/*  onInput={useLimit(weightRef)}*/}
-                          {/*/>*/}
                         </Form.Item>
                       </Form>
                     </>

@@ -150,7 +150,7 @@ export default () => {
             </div>
             <div className={sc('container-desc')}>
               <span>主办方：</span>
-              <span>{detail?.place || '--'}</span>
+              <span>{detail?.sponsor || '--'}</span>
             </div>
             <div className={sc('container-desc')}>
               <span>会议联系方式：</span>

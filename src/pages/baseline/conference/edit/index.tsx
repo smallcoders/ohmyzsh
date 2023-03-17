@@ -2,7 +2,7 @@ import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
 import { PageContainer } from '@ant-design/pro-layout';
 import { PlusOutlined } from '@ant-design/icons';
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import moment from 'moment';
 import { history } from 'umi';
 import SelfTable from '@/components/self_table';
@@ -18,7 +18,6 @@ import {
   InputNumber,
 } from 'antd';
 import { saveMeeting, submitMeeting, detailMeetingForUserPage } from '@/services/baseline';
-import useLimit from '@/hooks/useLimit';
 import { Link } from 'umi';
 import FormEdit from '@/components/FormEdit';
 const sc = scopedClasses('baseline-conference-add');
@@ -27,7 +26,6 @@ export default () => {
     labelCol: { span: 4 },
     wrapperCol: { span: 8 },
   };
-  const weightRef = useRef<any>();
   const [formIsChange, setFormIsChange] = useState<boolean>(false);
   const [visible, setVisible] = useState<boolean>(false);
   const [visibleAdd, setVisibleAdd] = useState<boolean>(false);
@@ -328,11 +326,6 @@ export default () => {
               placeholder="请输入1～100的整数，数字越大排名越靠前"
               style={{ width: '100%' }}
             />
-            {/*<Input*/}
-            {/*  ref={weightRef}*/}
-            {/*  placeholder="请输入1～100的整数，数字越大排名越靠前"*/}
-            {/*  onInput={useLimit(weightRef)}*/}
-            {/*/>*/}
           </Form.Item>
 
           <Form.Item name="agenda" label="会议日程">
