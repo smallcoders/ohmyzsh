@@ -1605,8 +1605,8 @@ export default [
       {
         path: routeName.FINANCIAL_NOTIFICATION,
         name: '金融待办通知',
-        code: 'M_FM_GYSGL',
-        access: 'M_FM_GYSGL',
+        code: 'M_FM_DBTZ',
+        access: 'M_FM_DBTZ',
         component: './banking/financial_notification/index',
       }
     ],
