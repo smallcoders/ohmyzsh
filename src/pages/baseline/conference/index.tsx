@@ -2,7 +2,7 @@ import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
 import { PageContainer } from '@ant-design/pro-layout';
 import React, { useEffect, useState, useRef } from 'react';
-import { Button, Col, Form, Popconfirm, Input, message, Row } from 'antd';
+import { Button, Col, Form, Popconfirm, Input, message, Row, InputNumber } from 'antd';
 import SelfTable from '@/components/self_table';
 import type Common from '@/types/common';
 import {
@@ -306,12 +306,18 @@ export default () => {
                     <>
                       <Form form={weightForm} {...formLayout} style={{ width: '300px' }}>
                         <Form.Item style={{ flexFlow: 'column' }} name={'weight'} label="权重设置">
-                          <Input
-                            ref={weightRef}
-                            style={{ width: '300px' }}
+                          <InputNumber
+                            min={1}
+                            max={100}
                             placeholder="请输入1～100的整数，数字越大排名越靠前"
-                            onInput={useLimit(weightRef)}
+                            style={{ width: '300px' }}
                           />
+                          {/*<Input*/}
+                          {/*  ref={weightRef}*/}
+                          {/*  style={{ width: '300px' }}*/}
+                          {/*  placeholder="请输入1～100的整数，数字越大排名越靠前"*/}
+                          {/*  onInput={useLimit(weightRef)}*/}
+                          {/*/>*/}
                         </Form.Item>
                       </Form>
                     </>

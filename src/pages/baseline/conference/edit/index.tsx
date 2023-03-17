@@ -2,11 +2,21 @@ import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
 import { PageContainer } from '@ant-design/pro-layout';
 import { PlusOutlined } from '@ant-design/icons';
-import { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import moment from 'moment';
 import { history } from 'umi';
 import SelfTable from '@/components/self_table';
-import { Button, Form, Input, Popconfirm, DatePicker, Modal, message, Breadcrumb } from 'antd';
+import {
+  Button,
+  Form,
+  Input,
+  Popconfirm,
+  DatePicker,
+  Modal,
+  message,
+  Breadcrumb,
+  InputNumber,
+} from 'antd';
 import { saveMeeting, submitMeeting, detailMeetingForUserPage } from '@/services/baseline';
 import useLimit from '@/hooks/useLimit';
 import { Link } from 'umi';
@@ -312,11 +322,17 @@ export default () => {
           </Form.Item>
 
           <Form.Item name="weight" label="权重">
-            <Input
-              ref={weightRef}
+            <InputNumber
+              min={1}
+              max={100}
               placeholder="请输入1～100的整数，数字越大排名越靠前"
-              onInput={useLimit(weightRef)}
+              style={{ width: '100%' }}
             />
+            {/*<Input*/}
+            {/*  ref={weightRef}*/}
+            {/*  placeholder="请输入1～100的整数，数字越大排名越靠前"*/}
+            {/*  onInput={useLimit(weightRef)}*/}
+            {/*/>*/}
           </Form.Item>
 
           <Form.Item name="agenda" label="会议日程">
