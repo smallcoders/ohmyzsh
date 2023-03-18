@@ -32,6 +32,7 @@ export default () => {
   const [expandAttributes, setExpandAttributes] = useState<any>([]);
   const [numb, setNumb] = useState<any>(0);
   const [form] = Form.useForm();
+  const { TextArea } = Input;
   const columns = [
     {
       title: '字段ID',
@@ -255,7 +256,7 @@ export default () => {
               },
             ]}
           >
-            <Input placeholder="请输入" maxLength={100} />
+            <TextArea autoSize={{ minRows: 1, maxRows: 5 }} placeholder="请输入" maxLength={100} />
           </Form.Item>
           <Form.Item
             name="name"
@@ -267,15 +268,15 @@ export default () => {
               },
             ]}
           >
-            <Input placeholder="请输入" maxLength={100} />
+            <TextArea autoSize={{ minRows: 1, maxRows: 5 }} placeholder="请输入" maxLength={100} />
           </Form.Item>
 
           <Form.Item name="theme" label="会议主题">
-            <Input placeholder="请输入" maxLength={100} />
+            <TextArea autoSize={{ minRows: 1, maxRows: 5 }} placeholder="请输入" maxLength={100} />
           </Form.Item>
 
           <Form.Item name="place" label="会议地点">
-            <Input placeholder="请输入" maxLength={100} />
+            <TextArea autoSize={{ minRows: 1, maxRows: 5 }} placeholder="请输入" maxLength={100} />
           </Form.Item>
           <Form.Item
             name="sponsor"
@@ -287,7 +288,7 @@ export default () => {
               },
             ]}
           >
-            <Input placeholder="请输入" maxLength={100} />
+            <TextArea autoSize={{ minRows: 1, maxRows: 5 }} placeholder="请输入" maxLength={100} />
           </Form.Item>
           <Form.Item
             name="contact"
@@ -299,7 +300,7 @@ export default () => {
               },
             ]}
           >
-            <Input placeholder="请输入" maxLength={100} />
+            <TextArea autoSize={{ minRows: 1, maxRows: 5 }} placeholder="请输入" maxLength={100} />
           </Form.Item>
           <Form.Item
             name="time"
