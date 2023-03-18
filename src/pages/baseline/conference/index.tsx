@@ -265,7 +265,7 @@ export default () => {
                   详情
                 </Button>
               )}
-              {record.state !== 'ON_SHELF' && (
+              {record.state !== 'NOT_SUBMITTED' && (
                 <Button
                   type="link"
                   onClick={() => {

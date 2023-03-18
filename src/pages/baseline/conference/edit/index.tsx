@@ -8,6 +8,8 @@ import { history } from 'umi';
 import SelfTable from '@/components/self_table';
 import {
   Button,
+  Space,
+  Card,
   Form,
   Input,
   Popconfirm,
@@ -30,8 +32,10 @@ export default () => {
   const [visible, setVisible] = useState<boolean>(false);
   const [visibleAdd, setVisibleAdd] = useState<boolean>(false);
   const [expandAttributes, setExpandAttributes] = useState<any>([]);
+  const [guestList, setGuestList] = useState<any>([]);
   const [numb, setNumb] = useState<any>(0);
   const [form] = Form.useForm();
+  const [guestForm] = Form.useForm();
   const { TextArea } = Input;
   const columns = [
     {
@@ -115,13 +119,12 @@ export default () => {
   // 上架/暂存
   const addRecommend = async (submitFlag: boolean) => {
     if (submitFlag) {
-      form
-        .validateFields()
+      Promise.all([form.validateFields(), guestForm.validateFields()])
         .then(async (value) => {
-          const startTime = moment(value.time[0]).format('YYYY-MM-DD HH:mm');
-          const endTime = moment(value.time[1]).format('YYYY-MM-DD HH:mm');
-          if (!value.weight) {
-            value.weight = '1';
+          const startTime = moment(value[0].time[0]).format('YYYY-MM-DD HH:mm');
+          const endTime = moment(value[0].time[1]).format('YYYY-MM-DD HH:mm');
+          if (!value[0].weight) {
+            value[0].weight = '1';
           }
           const submitRes = submitFlag
             ? await submitMeeting({
@@ -129,7 +132,8 @@ export default () => {
                 expandAttributes,
                 startTime,
                 endTime,
-                ...value,
+                ...value[0],
+                ...value[1],
                 id: meetingId,
               })
             : await saveMeeting({
@@ -138,7 +142,8 @@ export default () => {
                 expandAttributes,
                 startTime,
                 endTime,
-                ...value,
+                ...value[0],
+                ...value[1],
               });
           if (submitRes.code === 0) {
             message.success(submitFlag ? '上架成功' : '数据已暂存');
@@ -203,8 +208,7 @@ export default () => {
       footer={[
         <Button
           onClick={() => {
-            form
-              .validateFields()
+            Promise.all([form.validateFields(), guestForm.validateFields()])
               .then(async () => {
                 setVisibleAdd(true);
               })
@@ -328,17 +332,85 @@ export default () => {
               style={{ width: '100%' }}
             />
           </Form.Item>
-
           <Form.Item name="agenda" label="会议日程">
             <FormEdit width={624} />
           </Form.Item>
         </Form>
-        <div className={sc('container-table-body-title')}>用户报名填写信息</div>
-        <div>说明：最多可新增5个字段</div>
+        <div className={sc('container-table-body-title')}>嘉宾信息</div>
         <Button
           style={{ margin: '10px 0' }}
           type="primary"
-          disabled={expandAttributes.length >= 5}
+          disabled={guestList.length >= 20}
+          key="addStyle"
+          onClick={() => {}}
+        >
+          <PlusOutlined /> 新增
+        </Button>
+        <div>
+          <Space direction="vertical" size={16}>
+            <Form
+              form={guestForm}
+              {...formLayout}
+              onValuesChange={() => {
+                setFormIsChange(true);
+              }}
+            >
+              <Card
+                title="嘉宾1"
+                extra={
+                  <a
+                    onClick={() => {
+                      console.log('删除');
+                      console.log(form.getFieldsValue());
+                    }}
+                  >
+                    删除
+                  </a>
+                }
+                style={{ width: 600 }}
+              >
+                <Form.Item
+                  name="name"
+                  label="姓名"
+                  rules={[
+                    {
+                      required: true,
+                      message: `必填`,
+                    },
+                  ]}
+                >
+                  <TextArea
+                    autoSize={{ minRows: 1, maxRows: 4 }}
+                    placeholder="请输入"
+                    maxLength={100}
+                  />
+                </Form.Item>
+                <Form.Item
+                  name="introduction"
+                  label="嘉宾介绍"
+                  rules={[
+                    {
+                      required: true,
+                      message: `必填`,
+                    },
+                  ]}
+                >
+                  <TextArea
+                    autoSize={{ minRows: 2, maxRows: 10 }}
+                    placeholder="请输入"
+                    maxLength={200}
+                  />
+                </Form.Item>
+              </Card>
+            </Form>
+          </Space>
+        </div>
+        <div className={sc('container-table-body-title')}>用户报名填写信息</div>
+        <div>说明：最多可新增10个字段</div>
+        <Button
+          style={{ margin: '10px 0' }}
+          type="primary"
+          disabled={expandAttributes.length >= 10}
           key="addStyle"
           onClick={() => {
             setNumb(numb + 1);
