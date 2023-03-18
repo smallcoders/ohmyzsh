@@ -337,15 +337,7 @@ export default () => {
           </Form.Item>
         </Form>
         <div className={sc('container-table-body-title')}>嘉宾信息</div>
-        <Button
-          style={{ margin: '10px 0' }}
-          type="primary"
-          disabled={guestList.length >= 20}
-          key="addStyle"
-          onClick={() => {}}
-        >
-          <PlusOutlined /> 新增
-        </Button>
+
         <div>
           <Space direction="vertical" size={16}>
             <Form
@@ -355,22 +347,41 @@ export default () => {
                 setFormIsChange(true);
               }}
             >
-              <Card
-                title="嘉宾1"
+              <Form.List name="sights">
+              {(fields, { add, remove }) => (
+                <>
+              <Form.Item>
+                <Button
+                  style={{ margin: '10px 0' }}
+                  type="primary"
+                  disabled={guestList.length >= 20}
+                  key="addStyle"
+                  onClick={() => add()}
+                >
+                  <PlusOutlined /> 新增
+                </Button>
+              </Form.Item>
+              {fields.map((field, index) => (
+                <Card
+                key={field.key}
+                title={`嘉宾${index + 1}`}
                 extra={
                   <a
+                    key="del"
                     onClick={() => {
                       console.log('删除');
                       console.log(form.getFieldsValue());
+                      remove(field.name)
                     }}
                   >
                     删除
                   </a>
                 }
-                style={{ width: 600 }}
+                style={{ width: 600, marginBottom: '10px' }}
               >
                 <Form.Item
-                  name="name"
+                  {...field}
+                  name={[field.name, 'name']}
                   label="姓名"
                   rules={[
                     {
@@ -386,7 +397,7 @@ export default () => {
                   />
                 </Form.Item>
                 <Form.Item
-                  name="introduction"
+                  name={[field.name, 'introduction']}
                   label="嘉宾介绍"
                   rules={[
                     {
@@ -401,7 +412,11 @@ export default () => {
                     maxLength={200}
                   />
                 </Form.Item>
-              </Card>
+              </Card>))
+              }
+              </>
+              )}
+              </Form.List>
             </Form>
           </Space>
         </div>
