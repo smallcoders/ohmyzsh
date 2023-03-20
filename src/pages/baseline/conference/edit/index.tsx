@@ -809,7 +809,7 @@ export default () => {
       </div>
       <Modal
         visible={visibleUserInfo}
-        title="新增用户报名字段"
+        title={edit ? '新增' : '编辑' + '用户报名字段'}
         okText="确定"
         onCancel={() => {
           userForm.resetFields();
