@@ -253,7 +253,7 @@ export default () => {
             />
           </div>
           <div className={sc('container')}>
-            <div className={sc('container-title')}>嘉宾信息</div>
+            <div className={sc('container-title')}>会议资料</div>
             <div className={sc('container-desc')}>
               <span>可见权限：</span>
               <span>{detail.materialOpen ? '所有人可见' : '仅参会企业可见'}</span>
