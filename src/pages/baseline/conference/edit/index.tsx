@@ -30,7 +30,7 @@ import {
 } from '@/services/baseline';
 import { Link } from 'umi';
 import FormEdit from '@/components/FormEdit';
-import UploadFormFile from '@/components/upload_form';
+import UploadFormFile from '@/components/upload_form/upload-form-more';
 import { debounce } from 'lodash-es';
 import DebounceSelect from '@/pages/service_config/diagnostic_tasks/components/DebounceSelect';
 import { searchOrgInfo } from '@/services/diagnostic-tasks';
@@ -240,6 +240,7 @@ export default () => {
           return p;
         });
         guestForm.setFieldsValue({ guests: res?.result.guests });
+
         res?.result.materials?.map((e: any) => {
           e.organizationInfo = {
             key: e.organizaitonId,
@@ -248,6 +249,14 @@ export default () => {
           };
           return e;
         });
+        // res?.result.materials.forEach((item: any) => {
+        //   item.fileList = item.fileList.map((ele: any) => ({
+        //     uid: ele.id,
+        //     name: 'image.jpg',
+        //     status: 'done',
+        //     url: ele.path
+        //   }))
+        // })
         materialsForm.setFieldsValue({
           materials: res?.result.materials,
           materialOpen: res?.result.materialOpen,
@@ -758,10 +767,7 @@ export default () => {
                             maxCount={30}
                             accept=".png,.jpeg,.jpg"
                             multiple
-                            onChange={(e: any) => {
-                              console.log(e);
-                            }}
-                            isMore
+                            limit={30}
                             tooltip={
                               <span className={'tooltip'}>仅支持JPG、PNG、JPEG，并上传30张图</span>
                             }
