@@ -86,9 +86,9 @@ export default () => {
       render: (_: any, record: any) => {
         return (
           <>
-            {record.type === 'TEXT' && <div>上架</div>}
-            {record.type === 'RADIO' && <div>下架</div>}
-            {record.type === 'CHECKBOX' && <div>暂存</div>}
+            {record.type === 'TEXT' && <div>文本</div>}
+            {record.type === 'RADIO' && <div>单选</div>}
+            {record.type === 'CHECKBOX' && <div>多选</div>}
           </>
         );
       },
@@ -613,7 +613,7 @@ export default () => {
                           <TextArea
                             autoSize={{ minRows: 1, maxRows: 4 }}
                             placeholder="请输入"
-                            maxLength={100}
+                            maxLength={60}
                           />
                         </Form.Item>
                         <Form.Item
@@ -736,9 +736,9 @@ export default () => {
                           ]}
                         >
                           <TextArea
-                            autoSize={{ minRows: 1, maxRows: 4 }}
+                            autoSize={{ minRows: 1, maxRows: 6 }}
                             placeholder="请输入"
-                            maxLength={40}
+                            maxLength={100}
                             style={{ width: 600 }}
                           />
                         </Form.Item>
@@ -775,43 +775,6 @@ export default () => {
                             style={{ width: '100%' }}
                             defaultOptions={defaultOrgs}
                           />
-                          {/*<Select*/}
-                          {/*  // defaultValue={}*/}
-                          {/*  onChange={(newValue) => {*/}
-                          {/*    console.log(newValue);*/}
-                          {/*  }}*/}
-                          {/*  showSearch*/}
-                          {/*  // value={value}*/}
-                          {/*  placeholder={'请输入'}*/}
-                          {/*  defaultActiveFirstOption={false}*/}
-                          {/*  showArrow={false}*/}
-                          {/*  filterOption={false}*/}
-                          {/*  onSearch={handleSearchWorkUnit}*/}
-                          {/*  // onChange={handleChange}*/}
-                          {/*  notFoundContent={null}*/}
-                          {/*  options={(selectList || []).map((d: any) => ({*/}
-                          {/*    value: d.id,*/}
-                          {/*    label: d.name,*/}
-                          {/*  }))}*/}
-                          {/*/>*/}
-                          {/*<SelfAutoComplete*/}
-                          {/*  placeholder="请输入"*/}
-                          {/*  style={{ width: '300px' }}*/}
-                          {/*  maxLength={50}*/}
-                          {/*  searchWordsLength={3}*/}
-                          {/*  onSearch={handleSearchWorkUnit}*/}
-                          {/*  getPopupContainer={(triggerNode: any) => triggerNode}*/}
-                          {/*  initOptions={*/}
-                          {/*    detail?.orgId*/}
-                          {/*      ? [*/}
-                          {/*          {*/}
-                          {/*            id: detail?.orgId,*/}
-                          {/*            name: detail?.name,*/}
-                          {/*          },*/}
-                          {/*        ]*/}
-                          {/*      : []*/}
-                          {/*  }*/}
-                          {/*/>*/}
                         </Form.Item>
                       </Card>
                     ))}
@@ -986,7 +949,7 @@ export default () => {
                           <TextArea
                             autoSize={{ minRows: 1, maxRows: 4 }}
                             placeholder="请输入"
-                            maxLength={40}
+                            maxLength={200}
                           />
                         </Form.Item>
                         <a
@@ -1122,6 +1085,7 @@ export default () => {
                 showSearch
                 // value={value}
                 placeholder={'请输入'}
+                maxLength={100}
                 defaultActiveFirstOption={false}
                 showArrow={false}
                 filterOption={false}
@@ -1133,27 +1097,6 @@ export default () => {
                   label: d.name,
                 }))}
               />
-              {/*<SelfAutoComplete*/}
-              {/*  placeholder="请输入"*/}
-              {/*  style={{ width: '300px' }}*/}
-              {/*  maxLength={50}*/}
-              {/*  searchWordsLength={3}*/}
-              {/*  onSearch={handleSearchWorkUnit}*/}
-              {/*  onSelect={(e: any) => {*/}
-              {/*    console.log(e);*/}
-              {/*  }}*/}
-              {/*  getPopupContainer={(triggerNode: any) => triggerNode}*/}
-              {/*  initOptions={*/}
-              {/*    detail?.id*/}
-              {/*      ? [*/}
-              {/*          {*/}
-              {/*            id: detail?.id,*/}
-              {/*            name: detail?.name,*/}
-              {/*          },*/}
-              {/*        ]*/}
-              {/*      : []*/}
-              {/*  }*/}
-              {/*/>*/}
             </Form.Item>
           </Form>
         )}
@@ -1210,8 +1153,7 @@ export default () => {
             <TextArea
               autoSize={{ minRows: 3, maxRows: 10 }}
               style={{ width: 400 }}
-              showCount
-              maxLength={6000}
+              maxLength={200}
               placeholder="请输入"
             />
           </Form.Item>
