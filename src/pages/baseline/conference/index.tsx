@@ -183,6 +183,13 @@ export default () => {
     },
     {
       title: '会议主题',
+      dataIndex: 'sponsor',
+      isEllipsis: true,
+      width: 200,
+      render: (_: any[]) => _ || '--',
+    },
+    {
+      title: '主办方',
       dataIndex: 'theme',
       isEllipsis: true,
       width: 200,
@@ -265,18 +272,14 @@ export default () => {
                   详情
                 </Button>
               )}
-              {record.state !== 'NOT_SUBMITTED' && (
-                <Button
-                  type="link"
-                  onClick={() => {
-                    history.push(
-                      `/baseline/baseline-conference-manage/edit?meetingId=${record?.id}`,
-                    );
-                  }}
-                >
-                  编辑
-                </Button>
-              )}
+              <Button
+                type="link"
+                onClick={() => {
+                  history.push(`/baseline/baseline-conference-manage/edit?meetingId=${record?.id}`);
+                }}
+              >
+                编辑
+              </Button>
               {record.state === 'ON_SHELF' && (
                 <Popconfirm
                   title="确定将内容下架？"
