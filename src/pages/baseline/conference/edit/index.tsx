@@ -33,7 +33,6 @@ import FormEdit from '@/components/FormEdit';
 import UploadFormFile from '@/components/upload_form';
 import { debounce } from 'lodash-es';
 import DebounceSelect from '@/pages/service_config/diagnostic_tasks/components/DebounceSelect';
-import { searchOrgInfo } from '@/services/diagnostic-tasks';
 const sc = scopedClasses('baseline-conference-add');
 export default () => {
   const formLayout = {
@@ -1122,7 +1121,11 @@ export default () => {
                   [...organizationSimples, ...res?.result]?.forEach((item: any, index: any) => {
                     item.index = index + 1;
                   });
-                  setOrganizationSimples([...organizationSimples, ...res?.result]);
+                  const newArray =
+                    [...organizationSimples, ...res?.result]?.length > 300
+                      ? [...organizationSimples, ...res?.result].splice(300)
+                      : [...organizationSimples, ...res?.result];
+                  setOrganizationSimples(newArray);
                   importForm.resetFields();
                   setVisibleImport(false);
                 });
@@ -1153,7 +1156,8 @@ export default () => {
             <TextArea
               autoSize={{ minRows: 3, maxRows: 10 }}
               style={{ width: 400 }}
-              maxLength={200}
+              showCount
+              maxLength={6000}
               placeholder="请输入"
             />
           </Form.Item>
