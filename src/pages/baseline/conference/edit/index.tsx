@@ -2,7 +2,7 @@ import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
 import { PageContainer } from '@ant-design/pro-layout';
 import { PlusOutlined } from '@ant-design/icons';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import moment from 'moment';
 import { history } from 'umi';
 import SelfTable from '@/components/self_table';
@@ -121,7 +121,6 @@ export default () => {
                   return { name: e };
                 });
                 setEdit(false);
-                console.log({ options, ...record });
                 setExpandAttributeObj({ options: optionsArr, ...rest });
                 userForm.setFieldsValue({ options: optionsArr, ...rest });
                 setVisibleUserInfo(true);
@@ -331,6 +330,9 @@ export default () => {
             e.organizationId = e.organizationInfo.key;
             return e;
           });
+          const timer = setTimeout(function () {
+            message.warning('数据提交中，请耐心等待...');
+          }, 2000);
           const submitRes = await submitMeeting({
             expandAttributes,
             startTime,
@@ -341,6 +343,7 @@ export default () => {
             id: meetingId,
             organizationSimples,
           });
+          clearTimeout(timer);
           if (submitRes.code === 0) {
             message.success(submitFlag ? '上架成功' : '数据已暂存');
             history.goBack();
@@ -585,7 +588,7 @@ export default () => {
                         style={{ margin: '10px 0' }}
                         type="primary"
                         disabled={fields.length >= 20}
-                        key="addStyle"
+                        key="addStyle1"
                         onClick={() => add()}
                       >
                         <PlusOutlined /> 新增
@@ -655,7 +658,7 @@ export default () => {
           style={{ margin: '10px 0' }}
           type="primary"
           disabled={organizationSimples.length >= 300}
-          key="addStyle"
+          key="addStyle1"
           onClick={() => {
             setVisibleImport(true);
           }}
@@ -710,7 +713,7 @@ export default () => {
                         // style={{ margin: '10px 0' }}
                         type="primary"
                         disabled={fields.length >= 20}
-                        key="addStyle"
+                        key="addStyle3"
                         onClick={() => add()}
                       >
                         <PlusOutlined /> 新增
@@ -794,7 +797,7 @@ export default () => {
           style={{ margin: '10px 0' }}
           type="primary"
           disabled={expandAttributes.length >= 10}
-          key="addStyle"
+          key="addStyle4"
           onClick={() => {
             setEdit(true);
             setVisibleUserInfo(true);
@@ -929,7 +932,7 @@ export default () => {
                         // style={{ margin: '10px 0' }}
                         type="primary"
                         disabled={fields.length >= 20}
-                        key="addStyle"
+                        key="addStyle5"
                         onClick={() => add()}
                       >
                         <PlusOutlined /> 新增选项

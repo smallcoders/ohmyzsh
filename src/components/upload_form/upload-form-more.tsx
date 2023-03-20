@@ -1,11 +1,10 @@
-import {  PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
 import { message, Upload, Modal } from 'antd';
-import type { RcFile,  UploadProps } from 'antd/lib/upload/interface';
+import type { RcFile, UploadProps } from 'antd/lib/upload/interface';
 import type { ReactNode, RefAttributes } from 'react';
 import { useState, useEffect, useRef } from 'react';
 
 import './upload-form.less';
-
 
 const UploadForm = (
   props: JSX.IntrinsicAttributes &
@@ -18,20 +17,18 @@ const UploadForm = (
       limit?: number;
     },
 ) => {
-
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState('');
   const [previewTitle, setPreviewTitle] = useState('');
-  const [fileList, setFileList] = useState<any>([])
+  const [fileList, setFileList] = useState<any>([]);
 
   const getBase64 = (file: RcFile): Promise<string> =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = error => reject(error);
-  });
-
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+    });
 
   const uploadButton = (
     <div>
@@ -40,19 +37,20 @@ const UploadForm = (
     </div>
   );
 
-
   const isFirstRender = useRef(true);
 
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
       if (Array.isArray(props.value)) {
-        setFileList(props.value.map(item => ({
-          id: item,
-          name: 'image.jpg',
-          status: 'done',
-          url: `/antelope-common/common/file/download/${item}`
-        })))
+        setFileList(
+          props.value.map((item) => ({
+            id: item,
+            name: 'image.jpg',
+            status: 'done',
+            url: `/antelope-common/common/file/download/${item}`,
+          })),
+        );
       }
       return;
     }
@@ -105,17 +103,19 @@ const UploadForm = (
     return true;
   };
 
-  const handleChange = ({ fileList: newFileList}) => {
-    setFileList(newFileList)
-    if (newFileList.filter((item: any) => item.status !== 'done' || item.status === null).length === 0) {
+  const handleChange = ({ fileList: newFileList }) => {
+    setFileList(newFileList);
+    if (
+      newFileList.filter((item: any) => item.status !== 'done' || item.status === null).length === 0
+    ) {
       const arr = newFileList.map((item: any) => {
-        return item?.id ? item?.id : item?.response?.result
-      })
-      props?.onChange?.(arr)
-      return
+        return item?.id ? item?.id : item?.response?.result;
+      });
+      props?.onChange?.(arr);
+      message.success('上传成功');
+      return;
     }
-  }
-
+  };
 
   return (
     <>
@@ -128,10 +128,10 @@ const UploadForm = (
         beforeUpload={beforeUpload}
         onChange={handleChange}
         onPreview={handlePreview}
-        >
-          {fileList.length >= props.limit ? null : uploadButton}
-        </Upload>
-        <Modal visible={previewOpen} title={previewTitle} footer={null} onCancel={handleCancel}>
+      >
+        {fileList.length >= props.limit ? null : uploadButton}
+      </Upload>
+      <Modal visible={previewOpen} title={previewTitle} footer={null} onCancel={handleCancel}>
         <img alt="example" style={{ width: '100%' }} src={previewImage} />
       </Modal>
     </>
