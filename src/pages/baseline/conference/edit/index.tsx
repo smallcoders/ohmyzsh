@@ -248,7 +248,10 @@ export default () => {
           };
           return e;
         });
-        materialsForm.setFieldsValue({ materials: res?.result.materials });
+        materialsForm.setFieldsValue({
+          materials: res?.result.materials,
+          materialOpen: res?.result.materialOpen,
+        });
         setDetail(res?.result);
         setNumb(res?.result.expandIdBase);
         res?.result?.organizationSimples?.forEach((item: any, index: any) => {
