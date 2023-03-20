@@ -32,6 +32,8 @@ import { Link } from 'umi';
 import FormEdit from '@/components/FormEdit';
 import UploadFormFile from '@/components/upload_form';
 import { debounce } from 'lodash-es';
+import DebounceSelect from '@/pages/service_config/diagnostic_tasks/components/DebounceSelect';
+import { searchOrgInfo } from '@/services/diagnostic-tasks';
 const sc = scopedClasses('baseline-conference-add');
 export default () => {
   const formLayout = {
@@ -52,6 +54,7 @@ export default () => {
   const [visibleUserInfo, setVisibleUserInfo] = useState<boolean>(false);
   const [visibleImport, setVisibleImport] = useState<boolean>(false);
   const [visibleEdit, setVisibleEdit] = useState<boolean>(false);
+  const [visibleEditObj, setVisibleEditObj] = useState<any>({});
   const [expandAttributes, setExpandAttributes] = useState<any>([]);
   const [expandAttributeObj, setExpandAttributeObj] = useState<any>({});
   const [userType, setUserType] = useState<any>([]);
@@ -60,6 +63,7 @@ export default () => {
   const [numb, setNumb] = useState<any>(0);
   const [detail, setDetail] = useState<any>({});
   const [organizationSimples, setOrganizationSimples] = useState<any>([]);
+  const [defaultOrgs, setDefaultOrgs] = useState<{ label: string; value: string }[]>([]);
   const [form] = Form.useForm();
   const [guestForm] = Form.useForm();
   const [importForm] = Form.useForm();
@@ -203,8 +207,17 @@ export default () => {
               <Button
                 type="link"
                 onClick={() => {
-                  setVisibleEdit(true);
-                  editForm.setFieldsValue({ ...record });
+                  editForm.setFieldsValue({
+                    name: record.name,
+                    index: record.index,
+                    related: record.related,
+                  });
+                  setVisibleEditObj({
+                    name: record.name,
+                    index: record.index,
+                    related: record.related,
+                  });
+                  if (editForm.getFieldsValue()) setVisibleEdit(true);
                 }}
               >
                 修改
@@ -223,10 +236,18 @@ export default () => {
       if (res.code === 0) {
         const newArr = res?.result.expandAttributes.map((p: any) => {
           p.key = p.id;
-          p.optionKey = p.options ? p.options.map((e: any) => e).join('、') : '-';
+          p.optionKey = p?.options?.length ? p.options.map((e: any) => e).join('、') : '--';
           return p;
         });
         guestForm.setFieldsValue({ guests: res?.result.guests });
+        res?.result.materials?.map((e: any) => {
+          e.organizationInfo = {
+            key: e.organizaitonId,
+            label: e.organizationName,
+            value: e.organizaitonId,
+          };
+          return e;
+        });
         materialsForm.setFieldsValue({ materials: res?.result.materials });
         setDetail(res?.result);
         setNumb(res?.result.expandIdBase);
@@ -247,6 +268,14 @@ export default () => {
   useEffect(() => {
     meetingId && getMeetingByMeetingId();
   }, []);
+  const onSearchOrg = async (name: string) => {
+    return queryListSimple({ name, size: 10 }).then((body) =>
+      body.result.map((p: any) => ({
+        label: p.name,
+        value: p.id,
+      })),
+    );
+  };
   const handleSearchWorkUnit = debounce(
     async (value: string) => {
       if (value.length < 3) return;
@@ -287,15 +316,9 @@ export default () => {
           if (!value[0].weight) {
             value[0].weight = '1';
           }
-          console.log({
-            expandAttributes,
-            startTime,
-            endTime,
-            ...value[0],
-            ...value[1],
-            ...value[2],
-            id: meetingId,
-            organizationSimples,
+          value[2]?.materials?.map((e: any) => {
+            e.organizationId = e.organizationInfo.key;
+            return e;
           });
           const submitRes = await submitMeeting({
             expandAttributes,
@@ -324,6 +347,10 @@ export default () => {
         materialsForm.getFieldsValue(),
         userForm.getFieldsValue(),
       ];
+      value[2]?.materials?.map((e: any) => {
+        e.organizationId = e.organizationInfo.key;
+        return e;
+      });
       const startTime = value[0]?.time ? moment(value[0].time[0]).format('YYYY-MM-DD HH:mm') : '';
       const endTime = value[0]?.time ? moment(value[0].time[1]).format('YYYY-MM-DD HH:mm') : '';
       if (!value[0].weight) {
@@ -482,10 +509,10 @@ export default () => {
             <TextArea autoSize={{ minRows: 1, maxRows: 5 }} placeholder="请输入" maxLength={100} />
           </Form.Item>
           <Form.Item name="organizer" label="承办方">
-            <TextArea autoSize={{ minRows: 1, maxRows: 5 }} placeholder="请输入" maxLength={100} />
+            <TextArea autoSize={{ minRows: 1, maxRows: 10 }} placeholder="请输入" maxLength={200} />
           </Form.Item>
           <Form.Item name="coOrganizer" label="协办方">
-            <TextArea autoSize={{ minRows: 1, maxRows: 5 }} placeholder="请输入" maxLength={100} />
+            <TextArea autoSize={{ minRows: 1, maxRows: 10 }} placeholder="请输入" maxLength={200} />
           </Form.Item>
           <Form.Item
             name="contact"
@@ -616,7 +643,7 @@ export default () => {
         <Button
           style={{ margin: '10px 0' }}
           type="primary"
-          disabled={expandAttributes.length >= 10}
+          disabled={organizationSimples.length >= 300}
           key="addStyle"
           onClick={() => {
             setVisibleImport(true);
@@ -737,22 +764,33 @@ export default () => {
                             }
                           />
                         </Form.Item>
-                        <Form.Item name={[field.name, 'organizationId']} label="来源企业">
-                          <Select
+                        <Form.Item name={[field.name, 'organizationInfo']} label="来源企业">
+                          <DebounceSelect
                             showSearch
-                            // value={value}
-                            placeholder={'请输入'}
-                            defaultActiveFirstOption={false}
-                            showArrow={false}
-                            filterOption={false}
-                            onSearch={handleSearchWorkUnit}
-                            // onChange={handleChange}
-                            notFoundContent={null}
-                            options={(selectList || []).map((d: any) => ({
-                              value: d.id,
-                              label: d.name,
-                            }))}
+                            placeholder={'请输入搜索内容'}
+                            fetchOptions={onSearchOrg}
+                            style={{ width: '100%' }}
+                            defaultOptions={defaultOrgs}
                           />
+                          {/*<Select*/}
+                          {/*  // defaultValue={}*/}
+                          {/*  onChange={(newValue) => {*/}
+                          {/*    console.log(newValue);*/}
+                          {/*  }}*/}
+                          {/*  showSearch*/}
+                          {/*  // value={value}*/}
+                          {/*  placeholder={'请输入'}*/}
+                          {/*  defaultActiveFirstOption={false}*/}
+                          {/*  showArrow={false}*/}
+                          {/*  filterOption={false}*/}
+                          {/*  onSearch={handleSearchWorkUnit}*/}
+                          {/*  // onChange={handleChange}*/}
+                          {/*  notFoundContent={null}*/}
+                          {/*  options={(selectList || []).map((d: any) => ({*/}
+                          {/*    value: d.id,*/}
+                          {/*    label: d.name,*/}
+                          {/*  }))}*/}
+                          {/*/>*/}
                           {/*<SelfAutoComplete*/}
                           {/*  placeholder="请输入"*/}
                           {/*  style={{ width: '300px' }}*/}
@@ -805,7 +843,6 @@ export default () => {
         }}
         onOk={() => {
           userForm.validateFields().then(async (value) => {
-            console.log(expandAttributeObj);
             if (edit) {
               setNumb(numb + 1);
               let newNumber;
@@ -819,14 +856,14 @@ export default () => {
               const { type, name, options } = value;
               const optionKey = value.options
                 ? value.options.map((e: any) => e.name).join('、')
-                : '-';
+                : '--';
               expandAttributes.push({
                 optionKey,
                 key: newNumber,
                 id: newNumber,
                 type,
                 name,
-                options: options ? options.map((e: any) => e.name) : '',
+                options: options ? options.map((e: any) => e.name) : [],
               });
               setExpandAttributes([...expandAttributes]);
             } else {
@@ -837,7 +874,7 @@ export default () => {
                     : '-';
                   e.type = value.type;
                   e.name = value.name;
-                  e.options = value?.options ? value?.options.map((val: any) => val.name) : '';
+                  e.options = value?.options ? value?.options.map((val: any) => val.name) : null;
                 }
               });
               setExpandAttributes([...expandAttributes]);
@@ -1012,11 +1049,11 @@ export default () => {
               addRecommend(true);
             }}
           >
-            上架
+            {detail?.state === 'ON_SHELF' ? '确定' : '上架'}
           </Button>,
         ]}
       >
-        <p>确定上架当前内容？</p>
+        {detail?.state === 'ON_SHELF' ? <p>确定覆盖当前会议内容？</p> : <p>确定上架当前内容？</p>}
       </Modal>
       <Modal
         visible={visibleEdit}
@@ -1033,83 +1070,90 @@ export default () => {
             key="submit"
             type="primary"
             onClick={() => {
-              const newArray = organizationSimples.filter((p: any) => {
-                if (p.index == editForm.getFieldsValue().index) {
-                  p.name = editForm.getFieldsValue().NewName;
-                  return p;
-                }
+              editForm.validateFields().then(async (value) => {
+                queryConvertOrg({ name: value.NewName }).then((res) => {
+                  organizationSimples?.forEach((item: any) => {
+                    if (item.index === value.index) {
+                      item.organizationId = res?.result?.[0].organizationId;
+                      item.name = res?.result?.[0].name;
+                      item.related = res?.result?.[0].related;
+                    }
+                  });
+                  [...organizationSimples, ...res?.result]?.forEach((item: any, index: any) => {
+                    item.index = index + 1;
+                  });
+                  setOrganizationSimples([...organizationSimples]);
+                  editForm.resetFields();
+                  setVisibleEdit(false);
+                });
               });
-              newArray?.forEach((item: any, index: any) => {
-                item.index = index + 1;
-              });
-              setOrganizationSimples(newArray);
-              editForm.resetFields();
-              setVisibleEdit(false);
-              // addRecommend(true);
             }}
           >
             确定
           </Button>,
         ]}
       >
-        <Form
-          form={editForm}
-          {...formUserLayout}
-          onValuesChange={() => {
-            setFormIsChange(true);
-          }}
-        >
-          <Form.Item name="name" label="企业原名称">
-            {editForm.getFieldsValue().name}
-          </Form.Item>
-          <Form.Item
-            name="NewName"
-            label="企业名称"
-            rules={[
-              {
-                required: true,
-                message: `必填`,
-              },
-            ]}
+        {editForm.getFieldsValue() && (
+          <Form
+            form={editForm}
+            {...formUserLayout}
+            onValuesChange={() => {
+              setFormIsChange(true);
+            }}
           >
-            <Select
-              showSearch
-              // value={value}
-              placeholder={'请输入'}
-              defaultActiveFirstOption={false}
-              showArrow={false}
-              filterOption={false}
-              onSearch={handleSearchWorkUnit}
-              // onChange={handleChange}
-              notFoundContent={null}
-              options={(selectList || []).map((d: any) => ({
-                value: d.name,
-                label: d.id,
-              }))}
-            />
-            {/*<SelfAutoComplete*/}
-            {/*  placeholder="请输入"*/}
-            {/*  style={{ width: '300px' }}*/}
-            {/*  maxLength={50}*/}
-            {/*  searchWordsLength={3}*/}
-            {/*  onSearch={handleSearchWorkUnit}*/}
-            {/*  onSelect={(e: any) => {*/}
-            {/*    console.log(e);*/}
-            {/*  }}*/}
-            {/*  getPopupContainer={(triggerNode: any) => triggerNode}*/}
-            {/*  initOptions={*/}
-            {/*    detail?.id*/}
-            {/*      ? [*/}
-            {/*          {*/}
-            {/*            id: detail?.id,*/}
-            {/*            name: detail?.name,*/}
-            {/*          },*/}
-            {/*        ]*/}
-            {/*      : []*/}
-            {/*  }*/}
-            {/*/>*/}
-          </Form.Item>
-        </Form>
+            <Form.Item name="index" />
+            <Form.Item name="name" label="企业原名称">
+              {visibleEditObj.name}
+            </Form.Item>
+            <Form.Item
+              name="NewName"
+              label="企业名称"
+              rules={[
+                {
+                  required: true,
+                  message: `必填`,
+                },
+              ]}
+            >
+              <Select
+                showSearch
+                // value={value}
+                placeholder={'请输入'}
+                defaultActiveFirstOption={false}
+                showArrow={false}
+                filterOption={false}
+                onSearch={handleSearchWorkUnit}
+                // onChange={handleChange}
+                notFoundContent={null}
+                options={(selectList || []).map((d: any) => ({
+                  value: d.name,
+                  label: d.name,
+                }))}
+              />
+              {/*<SelfAutoComplete*/}
+              {/*  placeholder="请输入"*/}
+              {/*  style={{ width: '300px' }}*/}
+              {/*  maxLength={50}*/}
+              {/*  searchWordsLength={3}*/}
+              {/*  onSearch={handleSearchWorkUnit}*/}
+              {/*  onSelect={(e: any) => {*/}
+              {/*    console.log(e);*/}
+              {/*  }}*/}
+              {/*  getPopupContainer={(triggerNode: any) => triggerNode}*/}
+              {/*  initOptions={*/}
+              {/*    detail?.id*/}
+              {/*      ? [*/}
+              {/*          {*/}
+              {/*            id: detail?.id,*/}
+              {/*            name: detail?.name,*/}
+              {/*          },*/}
+              {/*        ]*/}
+              {/*      : []*/}
+              {/*  }*/}
+              {/*/>*/}
+            </Form.Item>
+          </Form>
+        )}
       </Modal>
       <Modal
         visible={visibleImport}

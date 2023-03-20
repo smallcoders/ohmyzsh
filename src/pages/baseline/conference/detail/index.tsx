@@ -2,8 +2,8 @@ import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
 import SelfTable from '@/components/self_table';
 import scopedClasses from '@/utils/scopedClasses';
-import { Button, message, Popconfirm } from 'antd';
-import React, { useEffect, useState } from 'react';
+import { Button, message } from 'antd';
+import { useEffect, useState } from 'react';
 import moment from 'moment';
 import {
   detailMeetingForUserPage,
