@@ -667,7 +667,7 @@ export default () => {
         </Button>
         <SelfTable
           bordered
-          scroll={{ y: 600 }}
+          scroll={{ y: 700 }}
           columns={columnsCovert}
           dataSource={organizationSimples}
           pagination={null}
@@ -771,7 +771,7 @@ export default () => {
                             multiple
                             limit={30}
                             tooltip={
-                              <span className={'tooltip'}>仅支持JPG、PNG、JPEG，并上传30张图</span>
+                              <span className={'tooltip'}>仅支持JPG、PNG、JPEG，最大30张图</span>
                             }
                           />
                         </Form.Item>
