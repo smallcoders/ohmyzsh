@@ -57,7 +57,6 @@ export default () => {
   const [expandAttributes, setExpandAttributes] = useState<any>([]);
   const [expandAttributeObj, setExpandAttributeObj] = useState<any>({});
   const [userType, setUserType] = useState<any>([]);
-  const [selectList, setSelectList] = useState<any>([]);
   const [edit, setEdit] = useState<any>(false);
   const [numb, setNumb] = useState<any>(0);
   const [detail, setDetail] = useState<any>({});
@@ -146,6 +145,7 @@ export default () => {
       },
     },
   ];
+  //参会单位表头数据
   const columnsCovert = [
     {
       title: '序号',
@@ -238,9 +238,7 @@ export default () => {
           return p;
         });
         guestForm.setFieldsValue({ guests: res?.result.guests });
-        console.log(res?.result.materials);
         res?.result.materials?.map((e: any) => {
-          console.log(e);
           e.organizationInfo = {
             key: e.organizationId,
             label: e.organizationName,
@@ -271,6 +269,7 @@ export default () => {
   useEffect(() => {
     meetingId && getMeetingByMeetingId();
   }, []);
+  // 搜索企业
   const onSearchOrg = async (name: string) => {
     return queryListSimple({ name, size: 10 }).then((body) =>
       body.result.map((p: any) => ({
@@ -279,15 +278,6 @@ export default () => {
       })),
     );
   };
-  const handleSearchWorkUnit = async (name: string) => {
-    return queryListSimple({ name, size: 10 }).then((body) =>
-      body.result.map((p: any) => ({
-        label: p.name,
-        value: p.id,
-      })),
-    );
-  };
-
   // 上架/暂存
   const addRecommend = async (submitFlag: boolean) => {
     if (submitFlag) {
@@ -1035,6 +1025,7 @@ export default () => {
                   setOrganizationSimples([...organizationSimples]);
                   editForm.resetFields();
                   setVisibleEdit(false);
+                  setDefaultOrgs([]);
                 });
               });
             }}
@@ -1072,22 +1063,6 @@ export default () => {
                 style={{ width: '100%' }}
                 defaultOptions={defaultOrgs}
               />
-              {/*<Select*/}
-              {/*  showSearch*/}
-              {/*  // value={value}*/}
-              {/*  placeholder={'请输入'}*/}
-              {/*  maxLength={100}*/}
-              {/*  defaultActiveFirstOption={false}*/}
-              {/*  showArrow={false}*/}
-              {/*  filterOption={false}*/}
-              {/*  onSearch={handleSearchWorkUnit}*/}
-              {/*  // onChange={handleChange}*/}
-              {/*  notFoundContent={null}*/}
-              {/*  options={(selectList || []).map((d: any) => ({*/}
-              {/*    value: d.name,*/}
-              {/*    label: d.name,*/}
-              {/*  }))}*/}
-              {/*/>*/}
             </Form.Item>
           </Form>
         )}
