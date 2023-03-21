@@ -8,30 +8,38 @@ import './upload-form.less';
 const UploadForm = (
   props: JSX.IntrinsicAttributes &
     UploadProps<any> & { children?: ReactNode } & RefAttributes<any> & { tooltip?: ReactNode } & {
-      value?: string;
+      value?: any;
       needName?: boolean;
       maxSize?: number;
       changeLoading?: (loaidng: boolean) => void;
       maxSizeKb?: number;
+      isMore?: boolean;
     },
 ) => {
   const [fileId, setFileId] = useState<string | undefined | any>();
   const [uploadLoading, setUploadLoading] = useState<boolean>(false);
-
+  console.log(props?.value);
   const uploadButton = (
     <div>
       <PlusOutlined />
       <div style={{ marginTop: 8 }}>上传</div>
     </div>
   );
-  const imgSrc = fileId?.path ? fileId?.path :
-    fileId ? `/antelope-common/common/file/download/${fileId}` : `${props?.value || ''}`?.indexOf('http') !== -1 ?
-      props.value : `/antelope-common/common/file/download/${props.value}`
+  const imgSrc = fileId?.path
+    ? fileId?.path
+    : fileId
+    ? `/antelope-common/common/file/download/${fileId}`
+    : `${props?.value || ''}`?.indexOf('http') !== -1
+    ? props.value
+    : `/antelope-common/common/file/download/${props.value}`;
+
   const reUpload = (
-    <div className={'reupload'}>
-      <img src={imgSrc} alt="图片损坏" />
-      <div>重新上传</div>
-    </div>
+    <>
+      <div className={'reupload'}>
+        <img src={imgSrc} alt="图片损坏" />
+        <div>重新上传</div>
+      </div>
+    </>
   );
 
   const handleChange = (info: UploadChangeParam<UploadFile<any>>) => {
@@ -60,7 +68,9 @@ const UploadForm = (
         const value: any = props.needName
           ? uploadResponse.result + '_+*%' + info?.file?.name
           : uploadResponse.result;
-        props.onChange?.(value);
+        props.onChange?.(
+          props.isMore ? (info.fileList as any)?.map((item: any) => item.response?.result) : value,
+        );
         setLoading(false);
         message.success('上传成功');
       } else {
@@ -104,8 +114,8 @@ const UploadForm = (
     }
     return true;
   };
-const p = {...props}
-delete p.value
+  const p = { ...props };
+  delete p.value;
   return (
     <>
       {props.tooltip}
