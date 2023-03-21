@@ -1001,7 +1001,11 @@ export default () => {
             <Button key="back" onClick={() => setVisible(false)}>
               取消
             </Button>
-            <Button key="submit" onClick={() => history.goBack()}>
+            <Button
+              type={detail?.state === 'ON_SHELF' ? 'primary' : 'default'}
+              key="submit"
+              onClick={() => history.goBack()}
+            >
               直接离开
             </Button>
             {detail?.state !== 'ON_SHELF' && (
