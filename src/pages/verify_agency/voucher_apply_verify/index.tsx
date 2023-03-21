@@ -23,9 +23,6 @@ import { history, Access, useAccess } from 'umi';
 import { getAreaTree } from '@/services/area';
 import { getVoucherVerifyPage } from '@/services/service-programme-verify';
 const sc = scopedClasses('service-config-app-news');
-enum Edge {
-  HOME = 0, // 新闻咨询首页
-}
 export default () => {
   const [dataSource, setDataSource] = useState<any[]>([]);
   const [searchContent, setSearChContent] = useState<{
@@ -37,22 +34,6 @@ export default () => {
   }>({});
   // 拿到当前角色的access权限兑现
   const access = useAccess()
-  // 当前页面的对应权限key
-  const [edge, setEdge] = useState<Edge.HOME>(Edge.HOME);
-  // 页面权限
-  const permissions = {
-    [Edge.HOME]: 'PQ_AT_FWFA', // 服务方案-页面查询
-  }
-
-  useEffect(() => {
-    for (const key in permissions) {
-      const permission = permissions[key]
-      if (Object.prototype.hasOwnProperty.call(access, permission)) {
-        setEdge(key as any)
-        break
-      }
-    }
-  },[])
 
   const formLayout = {
     labelCol: { span: 6 },
@@ -179,9 +160,8 @@ export default () => {
       fixed: 'right',
       dataIndex: 'option',
       render: (_: any, record: any) => {
-        const accessible = access?.[permissions?.[edge].replace(new RegExp("Q"), "")]
         return record.apply.pfAuditState === 0 ? (
-          <Access accessible={accessible}>
+          <Access accessible={access['P_AT_XFQ']}>
             <Space size={20}>
               <a
                 href="javascript:void(0)"

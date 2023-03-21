@@ -703,21 +703,21 @@ export default [
       },
       {
         path: routeName.VOUCHER_APPLY_VERIFY,
-        code: 'M_AT_XFQSL',
-        access: 'M_AT_XFQSL',
+        code: 'M_AT_XFQ',
+        access: 'M_AT_XFQ',
         name: '消费券申领审核',
         hideChildrenInMenu: true,
         routes: [
           {
             path: routeName.VOUCHER_APPLY_VERIFY,
-            code: 'M_AT_XFQSL',
-            access: 'M_AT_XFQSL',
+            code: 'M_AT_XFQ',
+            access: 'M_AT_XFQ',
             redirect: routeName.VOUCHER_APPLY_VERIFY_INDEX,
           },
           {
             path: routeName.VOUCHER_APPLY_VERIFY_INDEX,
-            code: 'M_AT_XFQSL',
-            access: 'M_AT_XFQSL',
+            code: 'M_AT_XFQ',
+            access: 'M_AT_XFQ',
             name: '消费券申领审核',
             hideInBreadcrumb: true,
             component: './verify_agency/voucher_apply_verify',
