@@ -279,25 +279,14 @@ export default () => {
       })),
     );
   };
-  const handleSearchWorkUnit = debounce(
-    async (value: string) => {
-      if (value.length < 3) return;
-      try {
-        const res = await queryListSimple({ name: value, size: 10 });
-        if (res?.code === 0) {
-          setSelectList(res?.result);
-        }
-        throw new Error();
-      } catch {
-        return Promise.reject([]);
-      }
-    },
-    500,
-    {
-      leading: true,
-      trailing: true,
-    },
-  );
+  const handleSearchWorkUnit = async (name: string) => {
+    return queryListSimple({ name, size: 10 }).then((body) =>
+      body.result.map((p: any) => ({
+        label: p.name,
+        value: p.id,
+      })),
+    );
+  };
 
   // 上架/暂存
   const addRecommend = async (submitFlag: boolean) => {
@@ -1032,10 +1021,10 @@ export default () => {
             type="primary"
             onClick={() => {
               editForm.validateFields().then(async (value) => {
-                queryConvertOrg({ name: value.NewName }).then((res) => {
+                queryConvertOrg({ name: value?.NewName?.label }).then((res) => {
                   organizationSimples?.forEach((item: any) => {
                     if (item.index === value.index) {
-                      item.organizationId = res?.result?.[0].organizationId;
+                      item.organizationId = res?.result?.[0].key;
                       item.name = res?.result?.[0].name;
                       item.related = res?.result?.[0].related;
                     }
@@ -1076,22 +1065,29 @@ export default () => {
                 },
               ]}
             >
-              <Select
+              <DebounceSelect
                 showSearch
-                // value={value}
-                placeholder={'请输入'}
-                maxLength={100}
-                defaultActiveFirstOption={false}
-                showArrow={false}
-                filterOption={false}
-                onSearch={handleSearchWorkUnit}
-                // onChange={handleChange}
-                notFoundContent={null}
-                options={(selectList || []).map((d: any) => ({
-                  value: d.name,
-                  label: d.name,
-                }))}
+                placeholder={'请输入搜索内容'}
+                fetchOptions={onSearchOrg}
+                style={{ width: '100%' }}
+                defaultOptions={defaultOrgs}
               />
+              {/*<Select*/}
+              {/*  showSearch*/}
+              {/*  // value={value}*/}
+              {/*  placeholder={'请输入'}*/}
+              {/*  maxLength={100}*/}
+              {/*  defaultActiveFirstOption={false}*/}
+              {/*  showArrow={false}*/}
+              {/*  filterOption={false}*/}
+              {/*  onSearch={handleSearchWorkUnit}*/}
+              {/*  // onChange={handleChange}*/}
+              {/*  notFoundContent={null}*/}
+              {/*  options={(selectList || []).map((d: any) => ({*/}
+              {/*    value: d.name,*/}
+              {/*    label: d.name,*/}
+              {/*  }))}*/}
+              {/*/>*/}
             </Form.Item>
           </Form>
         )}
