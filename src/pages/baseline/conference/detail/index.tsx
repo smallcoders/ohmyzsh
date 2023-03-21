@@ -39,9 +39,6 @@ export default () => {
       dataIndex: 'name',
       isEllipsis: true,
       width: 200,
-      // render: (_: any, record: any) => {
-      //   return <>{/*<div>{JSON.parse(record.name).name}</div>*/}</>;
-      // },
     },
     {
       title: '关联企业库',
@@ -71,12 +68,29 @@ export default () => {
         res?.result?.organizationSimples?.forEach((item: any, index: any) => {
           item.index = index + 1;
         });
-        console.log(res?.result?.organizationSimples);
         setOrganizationSimples(res?.result.organizationSimples);
       } else {
         throw new Error(res?.message);
       }
     });
+  };
+  // 表头处理
+  const formatHeader = (tableHeaders: any[]) => {
+    // 插入序号, 合并序号列的单元格
+    tableHeaders.splice(0, 0, {
+      title: '序号',
+      dataIndex: 'sort',
+      fixed: 'left',
+      width: 65,
+      render: (_: any, _record: any, index: number) => Math.floor(index / 3) + 1,
+    });
+    // 动态表头处理
+    for (let i = 1, l = tableHeaders.length; i < l; i++) {
+      const item = tableHeaders[i];
+      item.title = item.name;
+      item.dataIndex = item.id;
+    }
+    setTableHeader(tableHeaders);
   };
   //获取会议管理-报名列表-表头
   const getEnrollTableHead = () => {
@@ -104,24 +118,7 @@ export default () => {
     getMeetingByMeetingId();
     getMeetingList();
   }, []);
-  // 表头处理
-  function formatHeader(tableHeaders: any[]) {
-    // 插入序号, 合并序号列的单元格
-    tableHeaders.splice(0, 0, {
-      title: '序号',
-      dataIndex: 'sort',
-      fixed: 'left',
-      width: 65,
-      render: (_: any, _record: any, index: number) => Math.floor(index / 3) + 1,
-    });
-    // 动态表头处理
-    for (let i = 1, l = tableHeaders.length; i < l; i++) {
-      const item = tableHeaders[i];
-      item.title = item.name;
-      item.dataIndex = item.id;
-    }
-    setTableHeader(tableHeaders);
-  }
+
   //导出
   const exportDataClick = () => {
     if (isExporting) {
@@ -137,12 +134,10 @@ export default () => {
           type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8',
         });
         const fileName = `${detail?.name + '_' + currentTime}.xlsx`;
-        const url = window.URL.createObjectURL(blob);
+        const urlLink = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
-        console.log(url);
-        console.log(blob);
         link.style.display = 'none';
-        link.href = url;
+        link.href = urlLink;
         link.setAttribute('download', fileName);
         document.body.appendChild(link);
         link.click();
