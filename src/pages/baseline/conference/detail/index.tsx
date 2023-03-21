@@ -17,6 +17,7 @@ export default () => {
   const [activeKey, setActiveKey] = useState<any>('1');
   const { meetingId } = history.location.query as any;
   const [isExporting, setIsExporting] = useState<boolean>(false);
+  const [organizationSimples, setOrganizationSimples] = useState<any>([]);
   const [tableHeader, setTableHeader] = useState<any[]>([]);
   const [tableItems, setTableItems] = useState<any[]>([]);
   const [detail, setDetail] = useState<any>({});
@@ -26,6 +27,37 @@ export default () => {
     totalCount: 0,
     pageTotal: 0,
   });
+  const columnsCovert = [
+    {
+      title: '序号',
+      dataIndex: 'index',
+      isEllipsis: true,
+      width: 200,
+    },
+    {
+      title: '企业名称',
+      dataIndex: 'name',
+      isEllipsis: true,
+      width: 200,
+    },
+    {
+      title: '关联企业库',
+      dataIndex: 'related',
+      isEllipsis: true,
+      width: 200,
+      render: (_: any, record: any) => {
+        return (
+          <>
+            {record.related ? (
+              <div style={{ color: '#0068ff' }}>关联成功</div>
+            ) : (
+              <div style={{ color: 'red' }}>关联失败</div>
+            )}
+          </>
+        );
+      },
+    },
+  ];
   const currentTime = moment(new Date()).format('YYYYMMDD');
   //方法
   //获取会议详情
@@ -33,10 +65,32 @@ export default () => {
     detailMeetingForUserPage({ meetingId }).then((res) => {
       if (res.code === 0) {
         setDetail(res?.result || {});
+        res?.result?.organizationSimples?.forEach((item: any, index: any) => {
+          item.index = index + 1;
+        });
+        setOrganizationSimples(res?.result.organizationSimples);
       } else {
         throw new Error(res?.message);
       }
     });
+  };
+  // 表头处理
+  const formatHeader = (tableHeaders: any[]) => {
+    // 插入序号, 合并序号列的单元格
+    tableHeaders.splice(0, 0, {
+      title: '序号',
+      dataIndex: 'sort',
+      fixed: 'left',
+      width: 65,
+      render: (_: any, _record: any, index: number) => Math.floor(index / 3) + 1,
+    });
+    // 动态表头处理
+    for (let i = 1, l = tableHeaders.length; i < l; i++) {
+      const item = tableHeaders[i];
+      item.title = item.name;
+      item.dataIndex = item.id;
+    }
+    setTableHeader(tableHeaders);
   };
   //获取会议管理-报名列表-表头
   const getEnrollTableHead = () => {
@@ -64,24 +118,7 @@ export default () => {
     getMeetingByMeetingId();
     getMeetingList();
   }, []);
-  // 表头处理
-  function formatHeader(tableHeaders: any[]) {
-    // 插入序号, 合并序号列的单元格
-    tableHeaders.splice(0, 0, {
-      title: '序号',
-      dataIndex: 'sort',
-      fixed: 'left',
-      width: 65,
-      render: (_: any, _record: any, index: number) => Math.floor(index / 3) + 1,
-    });
-    // 动态表头处理
-    for (let i = 1, l = tableHeaders.length; i < l; i++) {
-      const item = tableHeaders[i];
-      item.title = item.name;
-      item.dataIndex = item.id;
-    }
-    setTableHeader(tableHeaders);
-  }
+
   //导出
   const exportDataClick = () => {
     if (isExporting) {
@@ -97,12 +134,10 @@ export default () => {
           type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8',
         });
         const fileName = `${detail?.name + '_' + currentTime}.xlsx`;
-        const url = window.URL.createObjectURL(blob);
+        const urlLink = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
-        console.log(url);
-        console.log(blob);
         link.style.display = 'none';
-        link.href = url;
+        link.href = urlLink;
         link.setAttribute('download', fileName);
         document.body.appendChild(link);
         link.click();
@@ -132,6 +167,7 @@ export default () => {
       {activeKey === '1' && (
         <>
           <div className={sc('container')}>
+            <div className={sc('container-title')}>会议基础信息</div>
             <div className={sc('container-desc')}>
               <span>页面标题：</span>
               <span>{detail?.title || '--'}</span>
@@ -151,6 +187,14 @@ export default () => {
             <div className={sc('container-desc')}>
               <span>主办方：</span>
               <span>{detail?.sponsor || '--'}</span>
+            </div>
+            <div className={sc('container-desc')}>
+              <span>承办方：</span>
+              <span>{detail?.organizer || '--'}</span>
+            </div>
+            <div className={sc('container-desc')}>
+              <span>协办方：</span>
+              <span>{detail?.coOrganizer || '--'}</span>
             </div>
             <div className={sc('container-desc')}>
               <span>会议联系方式：</span>
@@ -176,6 +220,69 @@ export default () => {
               />
             </div>
           </div>
+          <div className={sc('container')}>
+            <div className={sc('container-title')}>嘉宾信息</div>
+            {detail?.guests?.map((e: any) => {
+              return (
+                <>
+                  <div className={sc('container-desc')}>
+                    <span>嘉宾姓名：</span>
+                    <span>{e?.name || '--'}</span>
+                  </div>
+                  <div className={sc('container-desc')}>
+                    <span>嘉宾介绍：</span>
+                    <span>{e?.introduction || '--'}</span>
+                  </div>
+                </>
+              );
+            })}
+          </div>
+          <div className={sc('container')}>
+            <div className={sc('container-title')}>参会单位</div>
+            <SelfTable
+              bordered
+              scroll={{ y: 600 }}
+              columns={columnsCovert}
+              dataSource={organizationSimples}
+              pagination={null}
+            />
+          </div>
+          <div className={sc('container')}>
+            <div className={sc('container-title')}>会议资料</div>
+            <div className={sc('container-desc')}>
+              <span>可见权限：</span>
+              <span>{detail.materialOpen ? '所有人可见' : '仅参会企业可见'}</span>
+            </div>
+            {detail?.materials?.map((e: any) => {
+              return (
+                <>
+                  <div className={sc('container-desc')}>
+                    <span>材料名称：</span>
+                    <span>{e?.name || '--'}</span>
+                  </div>
+                  <div className={sc('container-desc')}>
+                    <span>材料内容：</span>
+                    <div>
+                      {!e?.fileIds && <span>--</span>}
+                      {e?.fileIds?.map((id: any) => {
+                        return (
+                          <img
+                            style={{ width: 200, height: 200 }}
+                            src={`/antelope-common/common/file/download/${id}`}
+                            alt="图片损坏"
+                          />
+                        );
+                      })}
+                    </div>
+                  </div>
+                  <div className={sc('container-desc')}>
+                    <span>来源企业：</span>
+                    <span>{e?.organizationName || '--'}</span>
+                  </div>
+                </>
+              );
+            })}
+          </div>
         </>
       )}
       {activeKey === '2' && (
@@ -186,6 +293,7 @@ export default () => {
             </Button>
             <div className={sc('container-table')}>
               <SelfTable
+                scroll={{ x: 1480 }}
                 bordered
                 columns={tableHeader}
                 dataSource={tableItems}
