@@ -827,6 +827,17 @@ export default () => {
         }}
         onOk={() => {
           userForm.validateFields().then(async (value) => {
+            if (value.type == 'RADIO' && value.options === undefined) {
+              message.error('请新增一个选项');
+              return;
+            }
+            if (
+              value.type == 'CHECKBOX' &&
+              (value.options === undefined || value.options.length < 2)
+            ) {
+              message.error('请新增两个选项');
+              return;
+            }
             if (edit) {
               setNumb(numb + 1);
               let newNumber;

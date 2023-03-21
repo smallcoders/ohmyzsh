@@ -251,7 +251,7 @@ export default () => {
             <div className={sc('container-title')}>会议资料</div>
             <div className={sc('container-desc')}>
               <span>可见权限：</span>
-              <span>{detail.materialOpen ? '所有人可见' : '仅参会企业可见'}</span>
+              <span>{!detail.materialOpen ? '仅参会企业可见' : '所有人可见'}</span>
             </div>
             {detail?.materials?.map((e: any) => {
               return (
