@@ -327,7 +327,7 @@ export default () => {
             value[0].weight = '1';
           }
           value[2]?.materials?.map((e: any) => {
-            e.organizationId = e.organizationInfo.key;
+            e.organizationId = e?.organizationInfo?.key;
             return e;
           });
           const timer = setTimeout(function () {
@@ -712,7 +712,7 @@ export default () => {
                       <Button
                         // style={{ margin: '10px 0' }}
                         type="primary"
-                        disabled={fields.length >= 20}
+                        disabled={fields.length >= 10}
                         key="addStyle3"
                         onClick={() => add()}
                       >
@@ -1132,7 +1132,7 @@ export default () => {
                   });
                   const newArray =
                     [...organizationSimples, ...res?.result]?.length > 300
-                      ? [...organizationSimples, ...res?.result].splice(300)
+                      ? [...organizationSimples, ...res?.result].splice(0, 300)
                       : [...organizationSimples, ...res?.result];
                   setOrganizationSimples(newArray);
                   importForm.resetFields();
