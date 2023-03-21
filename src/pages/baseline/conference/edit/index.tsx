@@ -398,7 +398,11 @@ export default () => {
             <>
               <Button
                 onClick={() => {
-                  Promise.all([form.validateFields(), guestForm.validateFields()])
+                  Promise.all([
+                    form.validateFields(),
+                    guestForm.validateFields(),
+                    materialsForm.validateFields(),
+                  ])
                     .then(async () => {
                       setVisibleAdd(true);
                     })
