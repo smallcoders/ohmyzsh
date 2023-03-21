@@ -997,21 +997,25 @@ export default () => {
           setVisible(false);
         }}
         footer={[
-          <Button key="back" onClick={() => setVisible(false)}>
-            取消
-          </Button>,
-          <Button key="submit" onClick={() => history.goBack()}>
-            直接离开
-          </Button>,
-          <Button
-            key="submit"
-            type="primary"
-            onClick={() => {
-              addRecommend(false);
-            }}
-          >
-            暂存并离开
-          </Button>,
+          <>
+            <Button key="back" onClick={() => setVisible(false)}>
+              取消
+            </Button>
+            <Button key="submit" onClick={() => history.goBack()}>
+              直接离开
+            </Button>
+            {detail?.state !== 'ON_SHELF' && (
+              <Button
+                key="submit"
+                type="primary"
+                onClick={() => {
+                  addRecommend(false);
+                }}
+              >
+                暂存并离开
+              </Button>
+            )}
+          </>,
         ]}
       >
         <p>数据未保存，是否仍要离开当前页面？</p>
