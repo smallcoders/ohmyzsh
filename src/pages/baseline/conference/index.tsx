@@ -183,14 +183,14 @@ export default () => {
     },
     {
       title: '会议主题',
-      dataIndex: 'sponsor',
+      dataIndex: 'theme',
       isEllipsis: true,
       width: 200,
       render: (_: any[]) => _ || '--',
     },
     {
       title: '主办方',
-      dataIndex: 'theme',
+      dataIndex: 'sponsor',
       isEllipsis: true,
       width: 200,
       render: (_: any[]) => _ || '--',
