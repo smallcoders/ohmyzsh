@@ -355,7 +355,6 @@ export default () => {
       }
     }
   };
-
   return (
     <PageContainer
       className={sc('container')}
@@ -436,343 +435,388 @@ export default () => {
       ]}
     >
       <div className={sc('container-table-body')}>
-        <div className={sc('container-table-body-title')}>会议信息</div>
-        <Form
-          form={form}
-          {...formLayout}
-          onValuesChange={() => {
-            setFormIsChange(true);
-          }}
-        >
-          <Form.Item
-            name="title"
-            label="页面标题"
-            rules={[
-              {
-                required: true,
-                message: `必填`,
-              },
-            ]}
-          >
-            <TextArea autoSize={{ minRows: 1, maxRows: 5 }} placeholder="请输入" maxLength={100} />
-          </Form.Item>
-          <Form.Item
-            name="name"
-            label="会议名称"
-            rules={[
-              {
-                required: true,
-                message: `必填`,
-              },
-            ]}
-          >
-            <TextArea autoSize={{ minRows: 1, maxRows: 5 }} placeholder="请输入" maxLength={100} />
-          </Form.Item>
-
-          <Form.Item name="theme" label="会议主题">
-            <TextArea autoSize={{ minRows: 1, maxRows: 5 }} placeholder="请输入" maxLength={100} />
-          </Form.Item>
-
-          <Form.Item name="place" label="会议地点">
-            <TextArea autoSize={{ minRows: 1, maxRows: 5 }} placeholder="请输入" maxLength={100} />
-          </Form.Item>
-          <Form.Item
-            name="sponsor"
-            label="主办方"
-            rules={[
-              {
-                required: true,
-                message: `必填`,
-              },
-            ]}
-          >
-            <TextArea autoSize={{ minRows: 1, maxRows: 5 }} placeholder="请输入" maxLength={100} />
-          </Form.Item>
-          <Form.Item name="organizer" label="承办方">
-            <TextArea autoSize={{ minRows: 1, maxRows: 10 }} placeholder="请输入" maxLength={200} />
-          </Form.Item>
-          <Form.Item name="coOrganizer" label="协办方">
-            <TextArea autoSize={{ minRows: 1, maxRows: 10 }} placeholder="请输入" maxLength={200} />
-          </Form.Item>
-          <Form.Item
-            name="contact"
-            label="会议联系方式"
-            rules={[
-              {
-                required: true,
-                message: `必填`,
-              },
-            ]}
-          >
-            <TextArea autoSize={{ minRows: 1, maxRows: 5 }} placeholder="请输入" maxLength={100} />
-          </Form.Item>
-          <Form.Item
-            name="time"
-            label="会议时间"
-            rules={[
-              {
-                required: true,
-                message: `必填`,
-              },
-            ]}
-          >
-            <DatePicker.RangePicker
-              style={{ width: '100%' }}
-              allowClear
-              showTime
-              format="YYYY-MM-DD HH:mm"
-            />
-          </Form.Item>
-
-          <Form.Item name="weight" label="权重">
-            <InputNumber
-              min={1}
-              max={100}
-              placeholder="请输入1～100的整数，数字越大排名越靠前"
-              style={{ width: '100%' }}
-            />
-          </Form.Item>
-          <Form.Item name="agenda" label="会议日程">
-            <FormEdit width={624} />
-          </Form.Item>
-        </Form>
-        <div className={sc('container-table-body-title')}>嘉宾信息</div>
+        {/*会议信息*/}
         <div>
-          <Space direction="vertical" size={16}>
-            <Form
-              form={guestForm}
-              {...formLayout}
-              onValuesChange={() => {
-                setFormIsChange(true);
-              }}
-            >
-              <Form.List name="guests">
-                {(fields, { add, remove }) => (
-                  <>
-                    <Form.Item>
-                      <Button
-                        style={{ margin: '10px 0' }}
-                        type="primary"
-                        disabled={fields.length >= 20}
-                        key="addStyle1"
-                        onClick={() => add()}
-                      >
-                        <PlusOutlined /> 新增
-                      </Button>
-                    </Form.Item>
-                    {fields.map((field, index) => (
-                      <Card
-                        key={field.key}
-                        title={`嘉宾${index + 1}`}
-                        extra={
-                          <a
-                            key="del"
-                            onClick={() => {
-                              remove(field.name);
-                            }}
-                          >
-                            删除
-                          </a>
-                        }
-                        style={{ width: 600, marginBottom: '10px' }}
-                      >
-                        <Form.Item
-                          {...field}
-                          name={[field.name, 'name']}
-                          label="姓名"
-                          rules={[
-                            {
-                              required: true,
-                              message: `必填`,
-                            },
-                          ]}
-                        >
-                          <TextArea
-                            autoSize={{ minRows: 1, maxRows: 4 }}
-                            placeholder="请输入"
-                            maxLength={60}
-                          />
-                        </Form.Item>
-                        <Form.Item
-                          name={[field.name, 'introduction']}
-                          label="嘉宾介绍"
-                          rules={[
-                            {
-                              required: true,
-                              message: `必填`,
-                            },
-                          ]}
-                        >
-                          <TextArea
-                            autoSize={{ minRows: 2, maxRows: 10 }}
-                            placeholder="请输入"
-                            maxLength={200}
-                          />
-                        </Form.Item>
-                      </Card>
-                    ))}
-                  </>
-                )}
-              </Form.List>
-            </Form>
-          </Space>
-        </div>
-        <div className={sc('container-table-body-title')}>
-          参会单位（共{organizationSimples.length}个）
-        </div>
-        <Button
-          style={{ margin: '10px 0' }}
-          type="primary"
-          disabled={organizationSimples.length >= 300}
-          key="addStyle1"
-          onClick={() => {
-            setVisibleImport(true);
-          }}
-        >
-          <PlusOutlined /> 导入
-        </Button>
-        <SelfTable
-          bordered
-          scroll={{ y: 700 }}
-          columns={columnsCovert}
-          dataSource={organizationSimples}
-          pagination={null}
-        />
-        <div className={sc('container-table-body-title')}>会议资料</div>
-        <Form
-          form={materialsForm}
-          onValuesChange={() => {
-            setFormIsChange(true);
-          }}
-        >
-          <Form.Item
-            name="materialOpen"
-            label="可见权限"
-            initialValue={true}
-            rules={[
-              {
-                required: true,
-                message: `必填`,
-              },
-            ]}
+          <div className={sc('container-table-body-title')}>会议信息</div>
+          <Form
+            form={form}
+            {...formLayout}
+            onValuesChange={() => {
+              setFormIsChange(true);
+            }}
           >
-            <Radio.Group>
-              <Radio value={true}>所有人可见</Radio>
-              <Radio value={false}>仅参会企业可见</Radio>
-            </Radio.Group>
-          </Form.Item>
-        </Form>
-        <div>
-          <Space direction="vertical" size={16}>
-            <Form
-              form={materialsForm}
-              {...formConferenceLayout}
-              onValuesChange={() => {
-                setFormIsChange(true);
-              }}
+            <Form.Item
+              name="title"
+              label="页面标题"
+              rules={[
+                {
+                  required: true,
+                  message: `必填`,
+                },
+              ]}
             >
-              <Form.List name="materials">
-                {(fields, { add, remove }) => (
-                  <>
-                    <Form.Item>
-                      <Button
-                        // style={{ margin: '10px 0' }}
-                        type="primary"
-                        disabled={fields.length >= 10}
-                        key="addStyle3"
-                        onClick={() => add()}
-                      >
-                        <PlusOutlined /> 新增
-                      </Button>
-                    </Form.Item>
-                    {fields.map((field, index) => (
-                      <Card
-                        key={field.key}
-                        title={`材料${index + 1}`}
-                        extra={
-                          <a
-                            key="del"
-                            onClick={() => {
-                              remove(field.name);
-                            }}
-                          >
-                            删除
-                          </a>
-                        }
-                        style={{ width: 600, marginBottom: '10px' }}
-                      >
-                        <Form.Item
-                          {...field}
-                          name={[field.name, 'name']}
-                          label="材料名称"
-                          rules={[
-                            {
-                              required: true,
-                              message: `必填`,
-                            },
-                          ]}
-                        >
-                          <TextArea
-                            autoSize={{ minRows: 1, maxRows: 6 }}
-                            placeholder="请输入"
-                            maxLength={100}
-                            style={{ width: 600 }}
-                          />
-                        </Form.Item>
-                        <Form.Item
-                          name={[field.name, 'fileIds']}
-                          label="会议材料"
-                          rules={[
-                            {
-                              required: true,
-                              message: `必填`,
-                            },
-                          ]}
-                        >
-                          <UploadFormFile
-                            listType="picture-card"
-                            className="avatar-uploader"
-                            maxCount={30}
-                            accept=".png,.jpeg,.jpg"
-                            multiple
-                            limit={30}
-                            tooltip={
-                              <span className={'tooltip'}>仅支持JPG、PNG、JPEG，最大30张图</span>
-                            }
-                          />
-                        </Form.Item>
-                        <Form.Item name={[field.name, 'organizationInfo']} label="来源企业">
-                          <DebounceSelect
-                            showSearch
-                            placeholder={'请输入搜索内容'}
-                            fetchOptions={onSearchOrg}
-                            style={{ width: '100%' }}
-                            defaultOptions={defaultOrgs}
-                          />
-                        </Form.Item>
-                      </Card>
-                    ))}
-                  </>
-                )}
-              </Form.List>
-            </Form>
-          </Space>
+              <TextArea
+                autoSize={{ minRows: 1, maxRows: 5 }}
+                placeholder="请输入"
+                maxLength={100}
+              />
+            </Form.Item>
+            <Form.Item
+              name="name"
+              label="会议名称"
+              rules={[
+                {
+                  required: true,
+                  message: `必填`,
+                },
+              ]}
+            >
+              <TextArea
+                autoSize={{ minRows: 1, maxRows: 5 }}
+                placeholder="请输入"
+                maxLength={100}
+              />
+            </Form.Item>
+            <Form.Item name="theme" label="会议主题">
+              <TextArea
+                autoSize={{ minRows: 1, maxRows: 5 }}
+                placeholder="请输入"
+                maxLength={100}
+              />
+            </Form.Item>
+            <Form.Item name="place" label="会议地点">
+              <TextArea
+                autoSize={{ minRows: 1, maxRows: 5 }}
+                placeholder="请输入"
+                maxLength={100}
+              />
+            </Form.Item>
+            <Form.Item
+              name="sponsor"
+              label="主办方"
+              rules={[
+                {
+                  required: true,
+                  message: `必填`,
+                },
+              ]}
+            >
+              <TextArea
+                autoSize={{ minRows: 1, maxRows: 5 }}
+                placeholder="请输入"
+                maxLength={100}
+              />
+            </Form.Item>
+            <Form.Item name="organizer" label="承办方">
+              <TextArea
+                autoSize={{ minRows: 1, maxRows: 10 }}
+                placeholder="请输入"
+                maxLength={200}
+              />
+            </Form.Item>
+            <Form.Item name="coOrganizer" label="协办方">
+              <TextArea
+                autoSize={{ minRows: 1, maxRows: 10 }}
+                placeholder="请输入"
+                maxLength={200}
+              />
+            </Form.Item>
+            <Form.Item
+              name="contact"
+              label="会议联系方式"
+              rules={[
+                {
+                  required: true,
+                  message: `必填`,
+                },
+              ]}
+            >
+              <TextArea
+                autoSize={{ minRows: 1, maxRows: 5 }}
+                placeholder="请输入"
+                maxLength={100}
+              />
+            </Form.Item>
+            <Form.Item
+              name="time"
+              label="会议时间"
+              rules={[
+                {
+                  required: true,
+                  message: `必填`,
+                },
+              ]}
+            >
+              <DatePicker.RangePicker
+                style={{ width: '100%' }}
+                allowClear
+                showTime
+                format="YYYY-MM-DD HH:mm"
+              />
+            </Form.Item>
+
+            <Form.Item name="weight" label="权重">
+              <InputNumber
+                min={1}
+                max={100}
+                placeholder="请输入1～100的整数，数字越大排名越靠前"
+                style={{ width: '100%' }}
+              />
+            </Form.Item>
+            <Form.Item name="agenda" label="会议日程">
+              <FormEdit width={624} />
+            </Form.Item>
+          </Form>
         </div>
-        <div className={sc('container-table-body-title')}>用户报名填写信息</div>
-        <Button
-          style={{ margin: '10px 0' }}
-          type="primary"
-          disabled={expandAttributes.length >= 10}
-          key="addStyle4"
-          onClick={() => {
-            setEdit(true);
-            setVisibleUserInfo(true);
-          }}
-        >
-          <PlusOutlined /> 新增
-        </Button>
-        <SelfTable bordered columns={columns} dataSource={expandAttributes} pagination={null} />
+        {/*嘉宾信息*/}
+        <div>
+          <div className={sc('container-table-body-title')}>嘉宾信息</div>
+          <div>
+            <Space direction="vertical" size={16}>
+              <Form
+                form={guestForm}
+                {...formLayout}
+                onValuesChange={() => {
+                  setFormIsChange(true);
+                }}
+              >
+                <Form.List name="guests">
+                  {(fields, { add, remove }) => (
+                    <>
+                      <Form.Item>
+                        <Button
+                          style={{ margin: '10px 0' }}
+                          type="primary"
+                          disabled={fields.length >= 20}
+                          key="addStyle1"
+                          onClick={() => add()}
+                        >
+                          <PlusOutlined /> 新增
+                        </Button>
+                      </Form.Item>
+                      {fields.map((field, index) => (
+                        <Card
+                          key={field.key}
+                          title={`嘉宾${index + 1}`}
+                          extra={
+                            <a
+                              key="del"
+                              onClick={() => {
+                                remove(field.name);
+                              }}
+                            >
+                              删除
+                            </a>
+                          }
+                          style={{ width: 600, marginBottom: '10px' }}
+                        >
+                          <Form.Item
+                            {...field}
+                            name={[field.name, 'name']}
+                            label="姓名"
+                            rules={[
+                              {
+                                required: true,
+                                message: `必填`,
+                              },
+                            ]}
+                          >
+                            <TextArea
+                              autoSize={{ minRows: 1, maxRows: 4 }}
+                              placeholder="请输入"
+                              maxLength={60}
+                            />
+                          </Form.Item>
+                          <Form.Item
+                            name={[field.name, 'introduction']}
+                            label="嘉宾介绍"
+                            rules={[
+                              {
+                                required: true,
+                                message: `必填`,
+                              },
+                            ]}
+                          >
+                            <TextArea
+                              autoSize={{ minRows: 2, maxRows: 10 }}
+                              placeholder="请输入"
+                              maxLength={200}
+                            />
+                          </Form.Item>
+                        </Card>
+                      ))}
+                    </>
+                  )}
+                </Form.List>
+              </Form>
+            </Space>
+          </div>
+        </div>
+        <div>
+          <div className={sc('container-table-body-title')}>
+            参会单位（共{organizationSimples.length}个）
+          </div>
+          <Button
+            style={{ margin: '10px 0' }}
+            type="primary"
+            disabled={organizationSimples.length >= 300}
+            key="addStyle1"
+            onClick={() => {
+              setVisibleImport(true);
+            }}
+          >
+            <PlusOutlined /> 导入
+          </Button>
+          <SelfTable
+            bordered
+            scroll={{ y: 700 }}
+            columns={columnsCovert}
+            dataSource={organizationSimples}
+            pagination={null}
+          />
+        </div>
+        {/*会议资料*/}
+        <div>
+          <div className={sc('container-table-body-title')}>会议资料</div>
+          <Form
+            form={materialsForm}
+            onValuesChange={() => {
+              setFormIsChange(true);
+            }}
+          >
+            <Form.Item
+              name="materialOpen"
+              label="可见权限"
+              initialValue={true}
+              rules={[
+                {
+                  required: true,
+                  message: `必填`,
+                },
+              ]}
+            >
+              <Radio.Group>
+                <Radio value={true}>所有人可见</Radio>
+                <Radio value={false}>仅参会企业可见</Radio>
+              </Radio.Group>
+            </Form.Item>
+          </Form>
+          <div>
+            <Space direction="vertical" size={16}>
+              <Form
+                form={materialsForm}
+                {...formConferenceLayout}
+                onValuesChange={() => {
+                  setFormIsChange(true);
+                }}
+              >
+                <Form.List name="materials">
+                  {(fields, { add, remove }) => (
+                    <>
+                      <Form.Item>
+                        <Button
+                          // style={{ margin: '10px 0' }}
+                          type="primary"
+                          disabled={fields.length >= 10}
+                          key="addStyle3"
+                          onClick={() => add()}
+                        >
+                          <PlusOutlined /> 新增
+                        </Button>
+                      </Form.Item>
+                      {fields.map((field, index) => (
+                        <Card
+                          key={field.key}
+                          title={`材料${index + 1}`}
+                          extra={
+                            <a
+                              key="del"
+                              onClick={() => {
+                                remove(field.name);
+                              }}
+                            >
+                              删除
+                            </a>
+                          }
+                          style={{ width: 600, marginBottom: '10px' }}
+                        >
+                          <Form.Item
+                            {...field}
+                            name={[field.name, 'name']}
+                            label="材料名称"
+                            rules={[
+                              {
+                                required: true,
+                                message: `必填`,
+                              },
+                            ]}
+                          >
+                            <TextArea
+                              autoSize={{ minRows: 1, maxRows: 6 }}
+                              placeholder="请输入"
+                              maxLength={100}
+                              style={{ width: 600 }}
+                            />
+                          </Form.Item>
+                          <Form.Item
+                            name={[field.name, 'fileIds']}
+                            label="会议材料"
+                            rules={[
+                              {
+                                required: true,
+                                message: `必填`,
+                              },
+                            ]}
+                          >
+                            <UploadFormFile
+                              listType="picture-card"
+                              className="avatar-uploader"
+                              maxCount={30}
+                              accept=".png,.jpeg,.jpg"
+                              multiple
+                              limit={30}
+                              tooltip={
+                                <span className={'tooltip'}>仅支持JPG、PNG、JPEG，最大30张图</span>
+                              }
+                            />
+                          </Form.Item>
+                          <Form.Item name={[field.name, 'organizationInfo']} label="来源企业">
+                            <DebounceSelect
+                              showSearch
+                              placeholder={'请输入搜索内容'}
+                              fetchOptions={onSearchOrg}
+                              style={{ width: '100%' }}
+                              defaultOptions={defaultOrgs}
+                            />
+                          </Form.Item>
+                        </Card>
+                      ))}
+                    </>
+                  )}
+                </Form.List>
+              </Form>
+            </Space>
+          </div>
+        </div>
+        {/*用户报名填写信息*/}
+        <div>
+          <div className={sc('container-table-body-title')}>用户报名填写信息</div>
+          <Button
+            style={{ margin: '10px 0' }}
+            type="primary"
+            disabled={expandAttributes.length >= 10}
+            key="addStyle4"
+            onClick={() => {
+              setEdit(true);
+              setVisibleUserInfo(true);
+            }}
+          >
+            <PlusOutlined /> 新增
+          </Button>
+          <SelfTable bordered columns={columns} dataSource={expandAttributes} pagination={null} />
+        </div>
       </div>
+      {/*用户报名填写信息弹窗*/}
       <Modal
         visible={visibleUserInfo}
         title={edit ? '新增' : '编辑' + '用户报名字段'}
@@ -1067,10 +1111,10 @@ export default () => {
           </Form>
         )}
       </Modal>
+      {/*参会单位的导入*/}
       <Modal
         visible={visibleImport}
         title="导入"
-        // bodyStyle={{ padding: 20, minWidth: 700 }}
         onCancel={() => {
           setVisibleImport(false);
           importForm.resetFields();
