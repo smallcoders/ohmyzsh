@@ -238,23 +238,16 @@ export default () => {
           return p;
         });
         guestForm.setFieldsValue({ guests: res?.result.guests });
-
+        console.log(res?.result.materials);
         res?.result.materials?.map((e: any) => {
+          console.log(e);
           e.organizationInfo = {
-            key: e.organizaitonId,
+            key: e.organizationId,
             label: e.organizationName,
-            value: e.organizaitonId,
+            value: e.organizationId,
           };
           return e;
         });
-        // res?.result.materials.forEach((item: any) => {
-        //   item.fileList = item.fileList.map((ele: any) => ({
-        //     uid: ele.id,
-        //     name: 'image.jpg',
-        //     status: 'done',
-        //     url: ele.path
-        //   }))
-        // })
         materialsForm.setFieldsValue({
           materials: res?.result.materials,
           materialOpen: res?.result.materialOpen,
@@ -293,12 +286,6 @@ export default () => {
         const res = await queryListSimple({ name: value, size: 10 });
         if (res?.code === 0) {
           setSelectList(res?.result);
-          // return Promise.resolve(
-          //   res?.result?.map((item: any) => ({
-          //     organizationId: item.id,
-          //     organizationName: item.name,
-          //   })),
-          // );
         }
         throw new Error();
       } catch {
@@ -343,8 +330,8 @@ export default () => {
             id: meetingId,
             organizationSimples,
           });
-          clearTimeout(timer);
           if (submitRes.code === 0) {
+            clearTimeout(timer);
             message.success(submitFlag ? '上架成功' : '数据已暂存');
             history.goBack();
           } else {
