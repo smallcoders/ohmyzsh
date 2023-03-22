@@ -81,3 +81,7 @@ export async function setDemandCredit(data?: Record<string, any>) {
     },
   );
 }
+
+export const httpQueryDiagnoseList = (data?: Record<string, any>) => {
+  return request<any>(`/antelope-finance/diagnose/mng/diagnosePageMng`, {data, method: 'post',})
+}

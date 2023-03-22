@@ -60,6 +60,7 @@ namespace DiagnosticRecord {
     type?: number; // 1 快速诊断 2 精准诊断
     demandState?: number // 需求状态
     recommendBankId?: number // 金融机构
+    exclusiveService?: boolean
   };
   export type OrgAssets = {
     typeContent?: string; //资产类型 1自有产权土地、2自有高价值设备
