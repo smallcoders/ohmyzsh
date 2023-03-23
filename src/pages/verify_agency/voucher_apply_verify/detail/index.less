@@ -1,0 +1,37 @@
+@prefix: user-config-kechuang;
+.@{prefix}-container {
+  padding: 20px;
+  background: #fff;
+  &-title {
+    font-weight: bolder;
+    font-size: 18px;
+  }
+  &-desc {
+    display: flex;
+    line-height: 40px;
+    font-size: 16px;
+    > :first-child {
+      flex: 1;
+      text-align: right;
+      color: #8290a6;
+    }
+    > :last-child {
+      flex: 5;
+      font-size: 16px;
+      margin-left: 12px;
+      color: #556377;
+    }
+    .cover-img {
+      text-align: left;
+      margin-left: 10%;
+    }
+  }
+  &-files {
+    line-height: 30px;
+    padding-left: 100px;
+    .label {
+      font-size: 16px;
+      color: #1e232a;
+    }
+  }
+}
