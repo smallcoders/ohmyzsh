@@ -1081,7 +1081,7 @@ export default () => {
                 queryConvertOrg({ name: value?.NewName?.label }).then((res) => {
                   organizationSimples?.forEach((item: any) => {
                     if (item.index === value.index) {
-                      item.organizationId = res?.result?.[0].key;
+                      item.organizationId = res?.result?.[0].organizationId;
                       item.name = res?.result?.[0].name;
                       item.related = res?.result?.[0].related;
                     }
