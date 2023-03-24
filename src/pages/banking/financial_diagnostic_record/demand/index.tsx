@@ -96,7 +96,7 @@ export default () => {
 
   const column1 = [
     {
-      title: '资产类型',
+      title: '资产类目',
       dataIndex: 'typeContent',
       key: 'typeContent',
       width: 240,
