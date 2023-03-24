@@ -278,22 +278,15 @@ export default () => {
                   }}
                   style={{whiteSpace: 'nowrap'}}
                   value={status}
-                  options={[
-                    {
-                      value: 1,
-                      label: '待跟进',
-                    }, {
-                      value: 2,
-                      label: '已反馈至金融机构',
-                    }, {
-                      value: 3,
-                      label: '已授信',
-                    }, {
-                      value: 4,
-                      label: '授信失败',
-                    }
-                  ]}
                 >
+                  {
+                    [{ value: 1, label: '待跟进', }, { value: 2, label: '已反馈至金融机构', }, { value: 3, label: '已授信', },
+                      { value: 4, label: '授信失败', }].map((item, index) => {
+                      return (
+                        <Radio disabled={item.value < (recordResult1?.demandState || 1)} value={item.value} key={index}>{item.label}</Radio>
+                      )
+                    })
+                  }
                 </Radio.Group>
               </Form.Item>
               {
@@ -397,7 +390,7 @@ export default () => {
                 >
                   <UploadFormFile
                     multiple
-                    accept=".png,.jpg,.pdf,.xlsx,.xls,.doc.docx"
+                    accept=".png,.jpg,.pdf,.xlsx,.xls,.doc,.docx,.jpeg"
                     showUploadList={true}
                     maxSize={30}
                     onChange={() => {
