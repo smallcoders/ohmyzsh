@@ -234,7 +234,7 @@ export default () => {
               </div>
             </div>
             <div className={sc('page-item-body-item')}>
-              <div className={sc('page-item-body-item-label')}>融资用途：</div>
+              <div className={sc('page-item-body-item-label')}>拟融资用途：</div>
               <div className={sc('page-item-body-item-wrap')}>
                 {recordResult1?.purpose && recordResult1?.purpose !== 1000000
                   ? recordResult1?.purposeContent + `${recordResult1?.purposeRemark ? '_' + recordResult1?.purposeRemark : ''}`

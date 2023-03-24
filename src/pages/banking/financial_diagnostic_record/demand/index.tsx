@@ -202,7 +202,7 @@ export default () => {
               recordResult1?.type !== 1 &&
               <>
                 <div className={sc('content-item-body-item')}>
-                  <div className={sc('content-item-body-item-label')}>融资用途：</div>
+                  <div className={sc('content-item-body-item-label')}>拟融资用途：</div>
                   <div className={sc('content-item-body-item-wrap')}>
                     {recordResult1?.purpose && recordResult1?.purpose !== 1000000
                       ? recordResult1?.purposeContent + `${recordResult1?.purposeRemark ? '_' + recordResult1?.purposeRemark : ''}`
@@ -397,7 +397,7 @@ export default () => {
                 >
                   <UploadFormFile
                     multiple
-                    accept=".png,.jpg,.pdf,.xlsx,.xls,.doc"
+                    accept=".png,.jpg,.pdf,.xlsx,.xls,.doc.docx"
                     showUploadList={true}
                     maxSize={30}
                     onChange={() => {
