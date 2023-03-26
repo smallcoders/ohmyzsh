@@ -1,8 +1,8 @@
 import { PageContainer } from '@ant-design/pro-layout';
 import scopedClasses from '@/utils/scopedClasses';
-import { Button, Radio, Switch, message } from 'antd';
+import { Radio, Switch, message } from 'antd';
 import { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+// import { useHistory } from 'react-router-dom';
 import dayjs from 'dayjs';
 import {
   queryNotice,
@@ -32,7 +32,7 @@ const contentList = [
   },
 ]
 export default () => {
-  const history = useHistory();
+  // const history = useHistory();
   const [list, setList] = useState<any>([])
   useEffect(() => {
     queryNotice().then((res) => {

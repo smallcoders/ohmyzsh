@@ -101,39 +101,6 @@ export default () => {
       });
     }
   };
-  const getTree = async () => {
-    try {
-      const { code, result } = await getBankTree();
-      if (code === 0) {
-        if (result === null) {
-          setContent(false);
-        } else {
-          setBankData(result);
-        }
-      }
-    } catch (error) {
-      antdMessage.error(`请求失败，原因:{${error}}`);
-    }
-  };
-  // 合作机构
-  const getCooperateOrg = async (status: string = 'edit') => {
-    try {
-      const { code, result } = await queryCooperateOrg();
-      if (code === 0) {
-        if (status === 'add') {
-          setSort(result[result.length - 1].sort + 1);
-          setCooperateOrgList([
-            ...result,
-            { name: modalFieldsValue.current.name, sort: result[result.length - 1].sort + 1 },
-          ]);
-        } else {
-          setCooperateOrgList([...result]);
-        }
-      }
-    } catch (error) {
-      antdMessage.error(`请求失败，原因:{${error}}`);
-    }
-  };
   // 详情
   const detailBankInfo = async (id: number, isAdd3 = 'no', node?: number) => {
     setDisabledFlag(false);
@@ -187,6 +154,39 @@ export default () => {
       antdMessage.error(`请求失败，原因:{${error}}`);
     }
   };
+  const getTree = async () => {
+    try {
+      const { code, result } = await getBankTree();
+      if (code === 0) {
+        if (result === null) {
+          setContent(false);
+        } else {
+          setBankData(result);
+        }
+      }
+    } catch (error) {
+      antdMessage.error(`请求失败，原因:{${error}}`);
+    }
+  };
+  // 合作机构
+  const getCooperateOrg = async (status: string = 'edit') => {
+    try {
+      const { code, result } = await queryCooperateOrg();
+      if (code === 0) {
+        if (status === 'add') {
+          setSort(result[result.length - 1].sort + 1);
+          setCooperateOrgList([
+            ...result,
+            { name: modalFieldsValue.current.name, sort: result[result.length - 1].sort + 1 },
+          ]);
+        } else {
+          setCooperateOrgList([...result]);
+        }
+      }
+    } catch (error) {
+      antdMessage.error(`请求失败，原因:{${error}}`);
+    }
+  };
   // #region 右表
   // 右表
   const natureOptions1 = [
@@ -212,6 +212,9 @@ export default () => {
   // 运营人员
 
   const addManager = () => {
+    if (bankOperationInfoList?.length === 10) {
+      return
+    }
     form.setFieldsValue({
       bankOperationInfoList: [
         ...bankOperationInfoList,
@@ -263,7 +266,7 @@ export default () => {
                 onChange={(event) => onManagerChange(index, 'name', event)}
                 placeholder="请输入姓名"
                 allowClear
-                maxLength={35}
+                maxLength={20}
               />
             </Form.Item>
           </Col>
@@ -361,7 +364,7 @@ export default () => {
                 onChange={(event) => onChange(index, 'name', event)}
                 placeholder="请输入姓名"
                 allowClear
-                maxLength={35}
+                maxLength={20}
               />
             </Form.Item>
           </Col>
@@ -519,9 +522,33 @@ export default () => {
       </span>
     </div>
   );
-
   useEffect(() => {
-    getTree();
+    try {
+      getBankTree().then((res) => {
+        const {code, result} = res
+        if (code === 0) {
+          if (result === null) {
+            setContent(false);
+          } else {
+            setBankData(result);
+            const firstBank: any = result?.bank?.[0] || []
+            if (firstBank.id) {
+              setIsAdd3Info({});
+              setBankUserInfoList([]);
+              setSelectTree(String(firstBank.id));
+              detailBankInfo(firstBank.id, 'no', firstBank.node).then(() => {
+                setDetail(true);
+                if (!firstPage) {
+                  setFirstPage(true);
+                }
+              });
+            }
+          }
+        }
+      });
+    } catch (error) {
+      antdMessage.error(`请求失败，原因:{${error}}`);
+    }
   }, []);
 
   const renderTreeNodes = (bank: any) => {
@@ -903,25 +930,25 @@ export default () => {
         breadcrumb: {},
       }}
       footer={[
-        <>
-          <Button
-            onClick={async () => {
-              await detailBankInfo(Number(selectTree), 'no');
-              setDetail(true);
-            }}
-          >
-            取消
-          </Button>
-          <Button
-            type="primary"
-            htmlType="submit"
-            onClick={() => {
-              addOrUpdate();
-            }}
-          >
-            保存
-          </Button>
-        </>,
+        <Button
+          key={1}
+          onClick={async () => {
+            await detailBankInfo(Number(selectTree), 'no');
+            setDetail(true);
+          }}
+        >
+          取消
+        </Button>,
+        <Button
+          key={2}
+          type="primary"
+          htmlType="submit"
+          onClick={() => {
+            addOrUpdate();
+          }}
+        >
+          保存
+        </Button>,
       ]}
     >
       {isContent ? (
