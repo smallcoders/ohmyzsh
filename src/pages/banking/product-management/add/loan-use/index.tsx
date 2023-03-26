@@ -1,20 +1,29 @@
 import { queryPurpose, addPurpose, delPurpose } from '@/services/banking-product';
 import { Input, message } from 'antd';
-import { number } from 'echarts';
-import { isDate } from 'lodash';
 import React, { useEffect, useRef, useState } from 'react';
 import './index.less';
 export default (props: { value?: string; onChange?: any }) => {
   const [purpose, setPurpose] = useState<any[]>([]);
-  const inputRef = useRef<InputRef>(null);
+  const inputRef = useRef<any>(null);
   const [inputVisible, setInputVisible] = useState(false);
   const [inputValue, setInputValue] = useState('');
-  const getPurpose = async (input: string) => {
+  const setPropsVal = (id: number) => {
+    console.log('setPropsVal', id, props.value);
+    let selected: any = props.value?.split(',') || [];
+    const ids = id.toString();
+    if (selected.includes(ids)) {
+      selected = selected?.filter((i: any) => i !== ids);
+    } else {
+      selected?.push(id);
+    }
+    props.onChange(selected?.join(','));
+  };
+  const getPurpose = async (input?: string) => {
     try {
       const data = await Promise.all([queryPurpose()]);
       setPurpose(data?.[0]?.result || []);
       if (input) {
-        data?.[0]?.result?.forEach((i) => {
+        data?.[0]?.result?.forEach((i: any) => {
           if (i.name === input) {
             setPropsVal(i.id);
           }
@@ -23,17 +32,6 @@ export default (props: { value?: string; onChange?: any }) => {
     } catch (error) {
       message.error('数据初始化错误');
     }
-  };
-  const setPropsVal = (id: number) => {
-    console.log('setPropsVal', id, props.value);
-    let selected = props.value?.split(',') || [];
-    const ids = id.toString();
-    if (selected.includes(ids)) {
-      selected = selected?.filter((i) => i !== ids);
-    } else {
-      selected?.push(id);
-    }
-    props.onChange(selected?.join(','));
   };
   useEffect(() => {
     getPurpose();
@@ -65,7 +63,7 @@ export default (props: { value?: string; onChange?: any }) => {
       setInputVisible(false);
     }
   };
-  const remove = (id) => {
+  const remove = (id: any) => {
     delPurpose({ id }).then((res) => {
       if (res.code === 0) {
         message.success('删除贷款用途成功');
@@ -84,6 +82,7 @@ export default (props: { value?: string; onChange?: any }) => {
       }
     });
   };
+  console.log(props.value, '00000')
   return (
     <div className="loan-use">
       {purpose?.map((item) => {

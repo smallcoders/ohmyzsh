@@ -144,11 +144,6 @@ export default () => {
         title: '金融待办通知',
         breadcrumb: {},
       }}
-      footer={[
-        <Button key="button" size="large" onClick={() => history.goBack()}>
-          返回
-        </Button>
-      ]}
     >
       <div className="table-title">
         金融待办通知

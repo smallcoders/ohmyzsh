@@ -14,71 +14,15 @@ import {
   ExclamationCircleOutlined,
   MinusCircleFilled,
 } from '@ant-design/icons';
-import dayjs from 'dayjs';
 import React, { useEffect, useRef, useState } from 'react';
-import { productTypeMap, guaranteeMethodMap, city } from '../constants';
-import { areaLabel } from '@/services/propaganda-config';
+import { guaranteeMethodMap, city } from '../constants';
 import scopedClasses from '@/utils/scopedClasses';
 import { getProductType, addProduct, queryBank, getProductInfo } from '@/services/banking-product';
 import { Prompt, history } from 'umi';
 import './index.less';
 import LoanUse from './loan-use/index';
 import { routeName } from '@/../config/routes';
-import { getOrgTypeList } from '@/services/org-type-manage';
-import { any } from 'glamor';
 const sc = scopedClasses('product-management-create');
-type FormValue = {
-  // baseInfo: {
-  //   name: string;
-  // };
-  // syncTableInfo: {
-  //   timeRange: [Dayjs, Dayjs];
-  //   title: string;
-  // };
-  id: number; // 主键
-  name: string; // 产品姓名
-  content: string; // 产品简介
-  bankName: string; // 所属金融机构
-  minAmount: number; // 最低额度
-  maxAmount: number; // 最高额度
-  amountDesc: string; // 额度文案
-  minTerm: number; // 最低期限（单位月）
-  maxTerm: number; //最高期限（单位月）
-  termDesc: string; // 期限文案
-  minRate: string; // 最低利率
-  maxRate: string; // 最高利率
-  rateDesc: string; // 利率文案
-  applyCondition: string; // 申请条件
-  openArea: string; // 开放地区
-  productFeature: string; // 产品特点
-  warrantType: string; // 担保方式 1-信用 ，2-抵押，3-质押，4-保证，多个逗号分隔
-  object: string; // 面向对象
-  isCirculationLoan: number; // 是否支持循环贷 0:否，1:是
-  isHot: number; // 是否热门 0:否，1:是
-  loanIds: string; // 贷款用途id
-  productProcessInfoList: ProductProcessInfoList; // 面向对象
-};
-type ProductProcessInfoList = {
-  id: number; // 主键
-  name: string; // 流程名称
-  step: number; // 步骤
-};
-const formValue: FormValue = {
-  // baseInfo: {
-  //   name: 'normal job',
-  // },
-  // syncTableInfo: {
-  //   timeRange: [dayjs().subtract(1, 'm'), dayjs()],
-  //   title: 'example table title',
-  // },
-};
-const waitTime = (time: number = 100) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(formValue);
-    }, time);
-  });
-};
 const ProductInfoAddOrEdit = () => {
   const { id } = history.location.query as any;
   const formMapRef = useRef<React.MutableRefObject<ProFormInstance<any> | undefined>[]>([]);
@@ -89,29 +33,6 @@ const ProductInfoAddOrEdit = () => {
   const [openAreas, setOpenAreas] = useState<any>([]);
   const [productTypeList, setProductTypeList] = useState<any[]>([]);
   const [bankList, setBankList] = useState<any[]>([]);
-  // const onCancel = (cb: any) => {
-  //   if (formIsChange) {
-  //     Modal.confirm({
-  //       title: '要在离开之前对填写的信息进行保存吗?',
-  //       icon: <ExclamationCircleOutlined />,
-  //       cancelText: '放弃修改并离开',
-  //       okText: '保存',
-  //       onCancel() {
-  //         if (cb) {
-  //           cb();
-  //         } else {
-  //           history.goBack();
-  //         }
-  //       },
-  //       onOk() {
-  //         const values = formMapRef.current[current]?.current?.getFieldsFormatValue?.();
-  //         saveProduct(values, 0, cb);
-  //       },
-  //     });
-  //   } else {
-  //     history.goBack();
-  //   }
-  // };
   useEffect(() => {
     getProductInfo({ id: currentId }).then((res) => {
       if (res.code === 0) {
@@ -206,25 +127,27 @@ const ProductInfoAddOrEdit = () => {
       value.typeDetailId = values.typeIds[1];
     }
 
-    addProduct({ ...value, id: currentId || '', state: flag }).then((res) => {
-      if (res.code === 0) {
-        setFormIsChange(false);
-        message.success('保存成功');
-        setCurrentId(res.result);
-        // 下一步
-        if (flag === 1 && current === 0) {
-          setCurrent(1);
-        } else {
-          if (cb) {
-            cb();
-          } else {
-            history.push(routeName.PRODUCT_MANAGEMENT);
-          }
-        }
-      } else {
-        message.error('保存失败！');
-      }
-    });
+    console.log(value)
+
+    // addProduct({ ...value, id: currentId || '', state: flag }).then((res) => {
+    //   if (res.code === 0) {
+    //     setFormIsChange(false);
+    //     message.success('保存成功');
+    //     setCurrentId(res.result);
+    //     // 下一步
+    //     if (flag === 1 && current === 0) {
+    //       setCurrent(1);
+    //     } else {
+    //       if (cb) {
+    //         cb();
+    //       } else {
+    //         history.push(routeName.PRODUCT_MANAGEMENT);
+    //       }
+    //     }
+    //   } else {
+    //     message.error('保存失败！');
+    //   }
+    // });
   };
   useEffect(() => {
     prepare();
@@ -332,26 +255,6 @@ const ProductInfoAddOrEdit = () => {
                 placeholder="请选择"
               />
             </Form.Item>
-            {/* <ProFormSelect
-              rules={[{ required: true }]}
-              label="产品类型"
-              name="typeId"
-              fieldProps={{
-                onChange: (value) => {
-                  productTypeList.forEach((item) => {
-                    if (item.id === value) {
-                      setProductType(item.name);
-                    }
-                  });
-                },
-              }}
-              options={productTypeList.map((p) => {
-                return {
-                  value: p.id,
-                  label: p.name,
-                };
-              })}
-            /> */}
             <ProFormSelect
               rules={[{ required: true }]}
               label="金融机构"
@@ -675,7 +578,6 @@ const ProductInfoAddOrEdit = () => {
       </PageContainer>
       <Prompt
         when={formIsChange}
-        // when={isClosejumpTooltip && topApps.length > 0}
         message={(location: any) => {
           Modal.confirm({
             title: '要在离开之前对填写的信息进行保存吗?',
@@ -701,8 +603,6 @@ const ProductInfoAddOrEdit = () => {
           return false;
         }}
       />
-
-      {/* </Spin> */}
     </>
   );
 };

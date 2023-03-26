@@ -66,14 +66,21 @@ export default () => {
           rate: creditInfo?.rate?.replace('%', '') || '',
           refuseReason: creditInfo?.refuseReason,
           contractNo: creditInfo?.contractNo,
-          workProve: creditInfo?.workProve?.split(',')?.map((item: string) => {
+          workProve: typeof creditInfo?.workProve === 'string' ? creditInfo?.workProve?.split(',')?.map((item: string) => {
             return {
               uid: item,
               name: item,
               status: 'done',
               url: `/antelope-common/common/file/download/${item}`
             }
-          }) || []
+          }) || [] : creditInfo?.workProve?.length ? creditInfo?.workProve?.map((item: any) => {
+            return {
+              uid: item.id,
+              name: item.fileName,
+              status: 'done',
+              url: `/antelope-common/common/file/download/${item}`
+            }
+          }) : []
         }
         form.setFieldsValue(formValues)
       } else {
