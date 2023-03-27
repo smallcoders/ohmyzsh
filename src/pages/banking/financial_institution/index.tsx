@@ -1250,9 +1250,12 @@ export default () => {
                     {
                       detailInfo?.node === 1 && <Form.Item label="羚羊运营">
                         {bankOperationInfoListItem}
-                        <Button onClick={addManager} className="add">
-                          + 添加
-                        </Button>
+                        {
+                          bankOperationInfoList.length < 10 &&
+                          <Button onClick={addManager} className="add">
+                            + 添加
+                          </Button>
+                        }
                       </Form.Item>
                     }
                     <Form.Item name="content" label="机构介绍">
