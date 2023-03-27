@@ -83,6 +83,7 @@ namespace DiagnosticRecord {
     diagnoseRecord?: DiagnoseRecord; //诊断信息
     orgAssets?: OrgAssets[]; //资产信息
     creditInfo?: any; //产品申请
+    workProve?: any
   };
   export interface DemandDetailData extends Common.ResultCode {
     result: DemandDetail;

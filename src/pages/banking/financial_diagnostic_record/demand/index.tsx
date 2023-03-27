@@ -48,7 +48,7 @@ export default () => {
     try {
       const { code, result } = await queryDemandDetail(id);
       if (code === 0) {
-        const { diagnoseRecord, orgAssets, creditInfo } = result;
+        const { diagnoseRecord, orgAssets, creditInfo, workProve } = result;
         setRecordResult1(diagnoseRecord || {});
         setRecordResult2(orgAssets || []);
         setStatus(diagnoseRecord?.demandState || 1)
@@ -66,21 +66,21 @@ export default () => {
           rate: creditInfo?.rate?.replace('%', '') || '',
           refuseReason: creditInfo?.refuseReason,
           contractNo: creditInfo?.contractNo,
-          workProve: typeof creditInfo?.workProve === 'string' ? creditInfo?.workProve?.split(',')?.map((item: string) => {
+          workProve: workProve?.length ? workProve?.map((item: any) => {
+            return {
+              uid: item.id,
+              name: item.fileName,
+              status: 'done',
+              url: `/antelope-common/common/file/download/${item.id}`
+            }
+          }) : creditInfo?.workProve?.split(',')?.map((item: string) => {
             return {
               uid: item,
               name: item,
               status: 'done',
               url: `/antelope-common/common/file/download/${item}`
             }
-          }) || [] : creditInfo?.workProve?.length ? creditInfo?.workProve?.map((item: any) => {
-            return {
-              uid: item.id,
-              name: item.fileName,
-              status: 'done',
-              url: `/antelope-common/common/file/download/${item}`
-            }
-          }) : []
+          })
         }
         form.setFieldsValue(formValues)
       } else {
