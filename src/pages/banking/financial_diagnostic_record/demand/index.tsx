@@ -349,6 +349,7 @@ export default () => {
                     label="授信有效期"
                     name="creditTime"
                     required
+                    validateTrigger="onBlur"
                     rules={[{ required: true, message: '请选择授信有效期' }]}
                   >
                     <DatePicker.RangePicker allowClear style={{ width: '100%' }} />

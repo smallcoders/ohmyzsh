@@ -147,8 +147,8 @@ export default ({ id, left, loanType }: Props) => {
               detail?.urls?.length === 2 &&
               <Col span={24}>
                 <span>已签署协议: </span>
-                <span style={{cursor: 'pointer', color: '#0068ff'}}>
-                  <span onClick={() => {window.open(detail?.urls?.[0])}}>《企业征信查询和使用授权书》</span>、<span onClick={() => {window.open(detail?.urls?.[1])}}>《个人征信查询和使用授权书》</span>
+                <span>
+                  <span style={{cursor: 'pointer', color: '#0068ff'}} onClick={() => {window.open(detail?.urls?.[0])}}>《企业征信查询和使用授权书》</span>、<span style={{cursor: 'pointer', color: '#0068ff'}} onClick={() => {window.open(detail?.urls?.[1])}}>《个人征信查询和使用授权书》</span>
                 </span>
               </Col>
             }
