@@ -291,7 +291,7 @@ export default () => {
                     [{ value: 1, label: '待跟进', }, { value: 2, label: '已反馈至金融机构', }, { value: 3, label: '已授信', },
                       { value: 4, label: '授信失败', }].map((item, index) => {
                       return (
-                        <Radio disabled={item.value < (recordResult1?.demandState || 1)} value={item.value} key={index}>{item.label}</Radio>
+                        <Radio disabled={recordResult1?.demandState === 3 ? item.value !== 3  : item.value < (recordResult1?.demandState || 1)} value={item.value} key={index}>{item.label}</Radio>
                       )
                     })
                   }
