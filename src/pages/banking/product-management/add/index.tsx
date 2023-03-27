@@ -129,25 +129,25 @@ const ProductInfoAddOrEdit = () => {
 
     console.log(value)
 
-    // addProduct({ ...value, id: currentId || '', state: flag }).then((res) => {
-    //   if (res.code === 0) {
-    //     setFormIsChange(false);
-    //     message.success('保存成功');
-    //     setCurrentId(res.result);
-    //     // 下一步
-    //     if (flag === 1 && current === 0) {
-    //       setCurrent(1);
-    //     } else {
-    //       if (cb) {
-    //         cb();
-    //       } else {
-    //         history.push(routeName.PRODUCT_MANAGEMENT);
-    //       }
-    //     }
-    //   } else {
-    //     message.error('保存失败！');
-    //   }
-    // });
+    addProduct({ ...value, id: currentId || '', state: flag }).then((res) => {
+      if (res.code === 0) {
+        setFormIsChange(false);
+        message.success('保存成功');
+        setCurrentId(res.result);
+        // 下一步
+        if (flag === 1 && current === 0) {
+          setCurrent(1);
+        } else {
+          if (cb) {
+            cb();
+          } else {
+            history.push(routeName.PRODUCT_MANAGEMENT);
+          }
+        }
+      } else {
+        message.error('保存失败！');
+      }
+    });
   };
   useEffect(() => {
     prepare();
