@@ -20,7 +20,7 @@ export default (props: { value?: string; onChange?: any }) => {
   };
   const getPurpose = async (input?: string) => {
     try {
-      const data = await queryPurpose();
+      const data = await Promise.all([queryPurpose()]);
       setPurpose(data?.[0]?.result || []);
       if (input) {
         data?.[0]?.result?.forEach((i: any) => {

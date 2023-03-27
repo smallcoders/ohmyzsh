@@ -34,7 +34,7 @@ const ProductInfoAddOrEdit = () => {
   const [productTypeList, setProductTypeList] = useState<any[]>([]);
   const [bankList, setBankList] = useState<any[]>([]);
   useEffect(() => {
-    getProductInfo({ id: currentId }).then((res) => {
+    getProductInfo({ id: currentId }).then(async (res) => {
       if (res.code === 0) {
         const {
           warrantType,
@@ -55,7 +55,7 @@ const ProductInfoAddOrEdit = () => {
         const Rate = minRate ? [minRate, maxRate] : null;
         const Term = minTerm ? [minTerm, maxTerm] : null;
         const typeIds = typeId ? [typeId, typeDetailId] : [];
-        productProcessInfoList?.sort((a, b) => a.step - b.step);
+        productProcessInfoList?.sort((a: any, b: any) => a.step - b.step);
         console.log('warrantType?.split(', ') || []', warrantType?.split(',') || []);
         // 编辑场景下需要使用formMapRef循环设置formData
         formMapRef?.current?.forEach((formInstanceRef) => {
@@ -160,7 +160,6 @@ const ProductInfoAddOrEdit = () => {
     wrapperCol: { span: 16 },
   };
   return (
-    // <Spin>
     <>
       <PageContainer
         className={sc('page')}
