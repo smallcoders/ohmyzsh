@@ -17,7 +17,7 @@ import {
 import React, { useEffect, useRef, useState } from 'react';
 import { guaranteeMethodMap, city } from '../constants';
 import scopedClasses from '@/utils/scopedClasses';
-import { getProductType, addProduct, queryBank, getProductInfo } from '@/services/banking-product';
+import { getProductType, addProduct, queryBank, getProductInfo, queryPurpose } from '@/services/banking-product';
 import { Prompt, history } from 'umi';
 import './index.less';
 import LoanUse from './loan-use/index';
@@ -56,7 +56,17 @@ const ProductInfoAddOrEdit = () => {
         const Term = minTerm ? [minTerm, maxTerm] : null;
         const typeIds = typeId ? [typeId, typeDetailId] : [];
         productProcessInfoList?.sort((a: any, b: any) => a.step - b.step);
-        console.log('warrantType?.split(', ') || []', warrantType?.split(',') || []);
+        let loanIds = ''
+        if (res.result.loanIds){
+          const { code, result: purposeList } = await queryPurpose() || {}
+          if (code === 0){
+            loanIds = ((purposeList || []).map((purposeItem: any) => {
+              return `${purposeItem.id}`
+            }) || []).filter((item: any) => {
+              return res.result.loanIds?.split(',').indexOf(item) !== -1
+            }).join(',')
+          }
+        }
         // 编辑场景下需要使用formMapRef循环设置formData
         formMapRef?.current?.forEach((formInstanceRef) => {
           formInstanceRef?.current?.setFieldsValue({
@@ -68,6 +78,7 @@ const ProductInfoAddOrEdit = () => {
             Rate,
             Term,
             typeIds,
+            loanIds
           });
         });
         setFormIsChange(false);
@@ -126,9 +137,6 @@ const ProductInfoAddOrEdit = () => {
       value.typeId = values.typeIds[0];
       value.typeDetailId = values.typeIds[1];
     }
-
-    console.log(value)
-
     addProduct({ ...value, id: currentId || '', state: flag }).then((res) => {
       if (res.code === 0) {
         setFormIsChange(false);
@@ -168,7 +176,7 @@ const ProductInfoAddOrEdit = () => {
           <>
             {current === 1 && (
               <Button
-                key="pre"
+                key="1"
                 onClick={() => {
                   setCurrent(0);
                 }}
@@ -177,9 +185,8 @@ const ProductInfoAddOrEdit = () => {
               </Button>
             )}
           </>,
-
           <Button
-            key="pre"
+            key="2"
             onClick={() => {
               history.goBack();
             }}
@@ -202,7 +209,6 @@ const ProductInfoAddOrEdit = () => {
               formMapRef.current[current]?.current
                 ?.validateFieldsReturnFormatValue?.()
                 .then((values) => {
-                  console.log('values', values);
                   saveProduct(values, 1, null);
                 });
             }}
@@ -218,8 +224,7 @@ const ProductInfoAddOrEdit = () => {
           current={current}
           onCurrentChange={(cur) => setCurrent(cur)}
           formMapRef={formMapRef}
-          onFinish={(values) => {
-            console.log(values);
+          onFinish={() => {
             return Promise.resolve(true);
           }}
           formProps={{
@@ -229,7 +234,6 @@ const ProductInfoAddOrEdit = () => {
             wrapperCol: { span: 10 },
             style: { width: '100%' },
             onValuesChange: () => {
-              console.log('onValuesChange');
               setFormIsChange(true);
             },
           }}
@@ -249,7 +253,6 @@ const ProductInfoAddOrEdit = () => {
                 onChange={(value, selectedOptions) => {
                   const labels = selectedOptions && selectedOptions[0];
                   setProductType(labels?.label);
-                  console.log(value, selectedOptions);
                 }}
                 placeholder="请选择"
               />
@@ -307,7 +310,6 @@ const ProductInfoAddOrEdit = () => {
                 allowClear
                 showArrow
                 onChange={(values) => {
-                  console.log(values);
                   setOpenAreas(values);
                 }}
                 placeholder="请选择"
@@ -375,7 +377,6 @@ const ProductInfoAddOrEdit = () => {
               rules={[
                 {
                   validator(rule, value) {
-                    console.log(rule, value);
                     if (value?.length) {
                       return Promise.resolve();
                     } else {
@@ -394,7 +395,6 @@ const ProductInfoAddOrEdit = () => {
               max={5}
             >
               {(f, index, action) => {
-                console.log(f, index, action);
                 return (
                   <div className={sc('form-step')}>
                     <div className={sc('form-step-label')}>第{index + 1}步：</div>
@@ -427,7 +427,6 @@ const ProductInfoAddOrEdit = () => {
                 { required: true },
                 {
                   validator(rule, value) {
-                    console.log(rule, value);
                     if (value[0] && value[1]) {
                       return Promise.resolve();
                     } else {
@@ -479,7 +478,6 @@ const ProductInfoAddOrEdit = () => {
                 { required: true },
                 {
                   validator(rule, value) {
-                    console.log(rule, value);
                     if (value[0] && value[1]) {
                       return Promise.resolve();
                     } else {
@@ -530,7 +528,6 @@ const ProductInfoAddOrEdit = () => {
                 { required: true },
                 {
                   validator(rule, value) {
-                    console.log(rule, value);
                     if (value[0] && value[1]) {
                       return Promise.resolve();
                     } else {
@@ -584,7 +581,6 @@ const ProductInfoAddOrEdit = () => {
             cancelText: '放弃修改并离开',
             okText: '保存',
             onCancel() {
-              console.log(location);
               setFormIsChange(false);
               setTimeout(() => {
                 history.push(location.pathname);

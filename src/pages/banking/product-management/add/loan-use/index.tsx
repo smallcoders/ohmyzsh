@@ -8,7 +8,6 @@ export default (props: { value?: string; onChange?: any }) => {
   const [inputVisible, setInputVisible] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const setPropsVal = (id: number) => {
-    console.log('setPropsVal', id, props.value);
     let selected: any = props.value?.split(',') || [];
     const ids = id.toString();
     if (selected.includes(ids)) {
@@ -82,7 +81,6 @@ export default (props: { value?: string; onChange?: any }) => {
       }
     });
   };
-  console.log(props.value, '00000')
   return (
     <div className="loan-use">
       {purpose?.map((item) => {
@@ -93,6 +91,7 @@ export default (props: { value?: string; onChange?: any }) => {
                 ? 'loan-use-item selected'
                 : 'loan-use-item'
             }
+            key={item.id}
           >
             <img
               src={require('@/assets/banking_loan/selected.png')}
