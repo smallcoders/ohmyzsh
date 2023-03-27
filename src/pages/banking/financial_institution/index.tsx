@@ -275,7 +275,7 @@ export default () => {
               name={['bankOperationInfoList', index, 'email']}
               rules={[
                 {
-                  pattern: /^[A-Za-z0-9\u4e00-\u9fa5]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/,
+                  pattern: /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/,
                   message: '请输入正确的邮箱地址',
                 },
               ]}
