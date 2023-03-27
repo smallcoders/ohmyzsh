@@ -116,6 +116,13 @@ export default () => {
       render: (rateDesc: string, record: any) => <span>{rateDesc || `${record.minRate}%起` || '--'}</span>,
     },
     {
+      key: 'termDesc',
+      title: '贷款期限',
+      width: 150,
+      dataIndex: 'termDesc',
+      render: (termDesc: string, record: any) => <span>{termDesc || `最长${record.maxTerm}个月` || '--'}</span>,
+    },
+    {
       key: 'warrantTypeContent',
       title: '担保方式',
       width: 150,

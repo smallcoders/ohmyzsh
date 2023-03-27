@@ -169,6 +169,7 @@ export default () => {
     setDemandCredit(data).then((res) => {
       if (res.code === 0){
         message.success('保存成功')
+        getDemandDetailInfo();
       } else {
         message.error(res.message)
       }
