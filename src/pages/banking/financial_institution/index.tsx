@@ -143,6 +143,9 @@ export default () => {
           if (result.bankOperationInfoList && result.bankOperationInfoList?.length > 0) {
             setBankOperationInfoList([...result.bankOperationInfoList]);
           }
+          if (!result.bankOperationInfoList || !result.bankOperationInfoList?.length){
+            setBankOperationInfoList([{name: '', email: '', position: null}])
+          }
         }
         if (result.nature === 1) {
           setBank2Show(true);
