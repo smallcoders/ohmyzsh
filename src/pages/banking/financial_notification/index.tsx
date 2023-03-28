@@ -25,10 +25,10 @@ const contentList = [
     content: '【融资需求待跟进】您好，<span class="blue">某某公司</span>已发布<span class="blue">100.00万元</span>的融资需求，请及时跟进并在1至3个工作日内向客户反馈需求匹配结果。',
   },
   {
-    content: `【待授信订单跟进提醒】您好，截止<span class="blue">${dayjs().format('YYYY年MM月DD')}日</span>，已有累计ç个待授信订单超过<span class="blue">N天</span>未更新，<span class="blue">XX金融机构X个</span>、<span class="blue">XX金融机构X个</span>，请及时关注。`,
+    content: `【待授信订单跟进提醒】您好，截止<span class="blue">${dayjs().format('YYYY年MM月DD')}日</span>，已有累计X个待授信订单超过<span class="blue">10天</span>未更新，<span class="blue">XX金融机构X个</span>、<span class="blue">XX金融机构X个</span>，请及时关注。`,
   },
   {
-    content: `【融资需求跟进提醒】您好，截止<span class="blue">${dayjs().format('YYYY年MM月DD')}日</span>，已有累计<span class="blue">X</span>个融资需求超过<span class="blue">N</span>天未更新，请及时关注。`,
+    content: `【融资需求跟进提醒】您好，截止<span class="blue">${dayjs().format('YYYY年MM月DD')}日</span>，已有累计<span class="blue">X</span>个融资需求超过<span class="blue">3天</span>未更新，请及时关注。`,
   },
 ]
 export default () => {
