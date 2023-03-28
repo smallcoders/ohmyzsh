@@ -106,7 +106,7 @@ export default () => {
                 setIsSet(true);
                 form.setFieldsValue({
                   ...customerInfo,
-                  amount: (customerInfo?.amount / 1000000).toFixed(2),
+                  amount: ((customerInfo?.amount || 0) / 1000000).toFixed(2),
                 });
               }}
             >

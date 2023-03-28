@@ -30,7 +30,6 @@ import {
   removeBank,
   queryCooperateOrg,
 } from '@/services/financial-institution';
-// import type { DirectoryTreeProps } from 'antd/es/tree';
 import type FinancialInstitution from '@/types/financial-institution';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useState, useEffect, useRef, useCallback } from 'react';
@@ -50,13 +49,14 @@ export default () => {
   const [form] = Form.useForm();
   const [modalForm] = Form.useForm();
   const [createModalVisible, setCreateModalVisible] = useState(false);
-  const [modalFormInfo, setModalFormInfo] = useState<FinancialInstitution.ModalFormInfo>({});
+  const [modalFormInfo, setModalFormInfo] = useState<any>({});
   const [isContent, setContent] = useState(true);
-  const [isRadio, setIsRadio] = useState(1);
+  const [isRadio, setIsRadio] = useState<any>(1);
   const [detailInfo, setDetailInfo] = useState<any>({});
   const [bankUserInfoList, setBankUserInfoList] = useState<FinancialInstitution.bankUserInfo[]>([
     { name: '', phone: '', position: null, id: null, bankId: null },
   ]);
+  const [bankOperationInfoList, setBankOperationInfoList] = useState<any>([{name: '', email: '', position: null}])
   const [isDetail, setDetail] = useState(false);
   const allBankInfo: any = useRef([]);
   const allBankOptions: any = useRef([]);
@@ -75,12 +75,12 @@ export default () => {
     { label: '部门主管', value: 2 },
     { label: '客户经理', value: 3 },
   ];
-  const [sort, setSort] = useState(null);
+  const [sort, setSort] = useState<any>(null);
   const [drawerVisible, setDrawerVisible] = useState(false);
   const [cooperateOrgList, setCooperateOrgList] = useState<FinancialInstitution.cooperateOrg[]>([]);
   const [firstPage, setFirstPage] = useState(false);
   const [modalType, setModalType] = useState('');
-  const [selectTree, setSelectTree] = useState<string>();
+  const [selectTree, setSelectTree] = useState<string>('');
   // 图片
   const logoImgFn = async (id: number) => {
     const { result, code } = await getFileInfo(String(id));
@@ -99,39 +99,6 @@ export default () => {
           value: item.id,
         });
       });
-    }
-  };
-  const getTree = async () => {
-    try {
-      const { code, result } = await getBankTree();
-      if (code === 0) {
-        if (result === null) {
-          setContent(false);
-        } else {
-          setBankData(result);
-        }
-      }
-    } catch (error) {
-      antdMessage.error(`请求失败，原因:{${error}}`);
-    }
-  };
-  // 合作机构
-  const getCooperateOrg = async (status: string = 'edit') => {
-    try {
-      const { code, result } = await queryCooperateOrg();
-      if (code === 0) {
-        if (status === 'add') {
-          setSort(result[result.length - 1].sort + 1);
-          setCooperateOrgList([
-            ...result,
-            { name: modalFieldsValue.current.name, sort: result[result.length - 1].sort + 1 },
-          ]);
-        } else {
-          setCooperateOrgList([...result]);
-        }
-      }
-    } catch (error) {
-      antdMessage.error(`请求失败，原因:{${error}}`);
     }
   };
   // 详情
@@ -173,11 +140,47 @@ export default () => {
           if (result.bankUserInfoList && result.bankUserInfoList?.length > 0) {
             setBankUserInfoList([...result.bankUserInfoList]);
           }
+          if (result.bankOperationInfoList && result.bankOperationInfoList?.length > 0) {
+            setBankOperationInfoList([...result.bankOperationInfoList]);
+          }
         }
         if (result.nature === 1) {
           setBank2Show(true);
         } else {
           setBank2Show(false);
+        }
+      }
+    } catch (error) {
+      antdMessage.error(`请求失败，原因:{${error}}`);
+    }
+  };
+  const getTree = async () => {
+    try {
+      const { code, result } = await getBankTree();
+      if (code === 0) {
+        if (result === null) {
+          setContent(false);
+        } else {
+          setBankData(result);
+        }
+      }
+    } catch (error) {
+      antdMessage.error(`请求失败，原因:{${error}}`);
+    }
+  };
+  // 合作机构
+  const getCooperateOrg = async (status: string = 'edit') => {
+    try {
+      const { code, result } = await queryCooperateOrg();
+      if (code === 0) {
+        if (status === 'add') {
+          setSort(result[result.length - 1].sort + 1);
+          setCooperateOrgList([
+            ...result,
+            { name: modalFieldsValue.current.name, sort: result[result.length - 1].sort + 1 },
+          ]);
+        } else {
+          setCooperateOrgList([...result]);
         }
       }
     } catch (error) {
@@ -204,9 +207,108 @@ export default () => {
       setBank2Show(true);
     } else {
       setBank2Show(false);
-      // form.setFieldValue({ bankNature: null });
     }
   };
+  // 运营人员
+
+  const addManager = () => {
+    if (bankOperationInfoList?.length === 10) {
+      return
+    }
+    form.setFieldsValue({
+      bankOperationInfoList: [
+        ...bankOperationInfoList,
+        { name: '', email: '', position: null },
+      ],
+    });
+    return setBankOperationInfoList([
+      ...bankOperationInfoList,
+      { name: '', email: '', position: null },
+    ]);
+  };
+  const delManager = (index: number) => {
+    form.setFieldsValue({
+      bankOperationInfoList: [...bankOperationInfoList.slice(0, index), ...bankOperationInfoList.slice(index + 1)],
+    });
+    return setBankOperationInfoList([
+      ...bankOperationInfoList.slice(0, index),
+      ...bankOperationInfoList.slice(index + 1),
+    ]);
+  };
+  const onManagerChange = (index: number, data: any, event: any) => {
+    const tempArray = [...bankOperationInfoList];
+    if (data === 'name')
+      tempArray[index] = {
+        ...tempArray[index],
+        name: event.target.value,
+      };
+    if (data === 'email')
+      tempArray[index] = {
+        ...tempArray[index],
+        email: event.target.value,
+      };
+    if (data === 'position')
+      tempArray[index] = {
+        ...tempArray[index],
+        position: event,
+      };
+    console.log(data, index, event, tempArray)
+    return setBankOperationInfoList(tempArray);
+  };
+
+  const bankOperationInfoListItem = bankOperationInfoList.map((item: any, index: number) => {
+    return (
+      <>
+        <Row key={index} className="agentInput">
+          <Col>
+            <Form.Item name={['bankOperationInfoList', index, 'name']}>
+              <Input
+                onChange={(event) => onManagerChange(index, 'name', event)}
+                placeholder="请输入姓名"
+                allowClear
+                maxLength={20}
+              />
+            </Form.Item>
+          </Col>
+          <Col>
+            <Form.Item
+              name={['bankOperationInfoList', index, 'email']}
+              rules={[
+                {
+                  pattern: /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/,
+                  message: '请输入正确的邮箱地址',
+                },
+              ]}
+            >
+              <Input
+                onChange={(event) => onManagerChange(index, 'email', event)}
+                placeholder="请输入邮箱地址"
+                allowClear
+                maxLength={100}
+              />
+            </Form.Item>
+          </Col>
+          <Col>
+            <Form.Item name={['bankOperationInfoList', index, 'position']}>
+              <Select
+                placeholder="请选择职位"
+                options={[
+                  { label: '运营人员', value: 1 },
+                  { label: '业务经理', value: 2 },
+                ]}
+                allowClear
+                onChange={(value) => onManagerChange(index, 'position', value)}
+              />
+            </Form.Item>
+          </Col>
+          <Col>
+            <img src={circle} alt="" onClick={() => delManager(index)} className="del" />
+          </Col>
+        </Row>
+      </>
+    );
+  });
+
   // 经办人
   const add = () => {
     form.setFieldsValue({
@@ -262,7 +364,7 @@ export default () => {
                 onChange={(event) => onChange(index, 'name', event)}
                 placeholder="请输入姓名"
                 allowClear
-                maxLength={35}
+                maxLength={20}
               />
             </Form.Item>
           </Col>
@@ -324,22 +426,16 @@ export default () => {
         {item.node === 0 || item.node === 1 ? (
           <p
             onClick={async () => {
-              // setDetail(false);
-              // setIsAdd3Info({});
-              // setDetailInfo({});
-              // form.resetFields();
               if (item.node === 0) {
                 setModalType('1');
               } else {
                 setModalType('2');
               }
               await getQueryBank2List();
-              // await getCooperateOrg();
               setCreateModalVisible(true);
               setModalFormInfo(item);
               if (item.node === 1) {
                 modalForm.setFieldsValue({ id: item.id });
-                // await detailBankInfo(item.id, '', item.node);
               }
             }}
           >
@@ -407,7 +503,7 @@ export default () => {
           setSelectTree(String(item.id));
           await detailBankInfo(item.id, 'no', item.node);
           setDetail(true);
-          if (firstPage === false) {
+          if (!firstPage) {
             setFirstPage(true);
           }
         }}
@@ -426,9 +522,33 @@ export default () => {
       </span>
     </div>
   );
-
   useEffect(() => {
-    getTree();
+    try {
+      getBankTree().then((res) => {
+        const {code, result} = res
+        if (code === 0) {
+          if (result === null) {
+            setContent(false);
+          } else {
+            setBankData(result);
+            const firstBank: any = result?.bank?.[0] || []
+            if (firstBank.id) {
+              setIsAdd3Info({});
+              setBankUserInfoList([]);
+              setSelectTree(String(firstBank.id));
+              detailBankInfo(firstBank.id, 'no', firstBank.node).then(() => {
+                setDetail(true);
+                if (!firstPage) {
+                  setFirstPage(true);
+                }
+              });
+            }
+          }
+        }
+      });
+    } catch (error) {
+      antdMessage.error(`请求失败，原因:{${error}}`);
+    }
   }, []);
 
   const renderTreeNodes = (bank: any) => {
@@ -473,6 +593,7 @@ export default () => {
                 ? values.productLogoImage
                 : await logoImgFn(values.productLogoImage),
             bankUserInfoList: bankUserInfoList,
+            bankOperationInfoList: bankOperationInfoList,
           })
         : saveOrUpdateInstitution({
             ...values,
@@ -484,6 +605,7 @@ export default () => {
             node:
               Object.keys(modalFormInfo).length == 0 ? selectObj.node + 1 : modalFormInfo.node + 1,
             bankUserInfoList: bankUserInfoList,
+            bankOperationInfoList: bankOperationInfoList,
             officialLogoImage:
               values.officialLogoImage?.indexOf('http') === 0
                 ? values.officialLogoImage
@@ -495,7 +617,7 @@ export default () => {
           }));
       if (code === 0) {
         message.success(Object.values(detailInfo).length > 0 ? '编辑成功' : '新增成功');
-        detailBankInfo(result as number, 'no');
+        detailBankInfo(result, 'no');
         setSelectTree(String(result));
         setModalFormInfo({});
         getTree();
@@ -549,10 +671,10 @@ export default () => {
             setIsRadio(1)
             setSort(null);
             setDetail(false);
-            if (firstPage === false) {
+            if (!firstPage) {
               setFirstPage(true);
             }
-            if (modalFormInfo.node === 1 && modalType === '2') {
+            if (modalFormInfo.node === 1 && modalType === '2' && modalFormInfo.id) {
               await detailBankInfo(modalFormInfo.id, 'yes', modalFormInfo.node);
             }
             if (modalType === '3') {
@@ -563,10 +685,6 @@ export default () => {
                 setSelectTree(String(nodeObj.id));
               }
             }
-            // if (Object.keys(changeSelectObj.current).length !== 0 && ) {
-            //   setSelectTree(String(changeSelectObj.current.value));
-            //   await detailBankInfo(changeSelectObj.current.value, 'yes', 1);
-            // }
             if (modalType === '1' || modalType === '2') {
               setSelectTree(String(modalFormInfo.id));
             }
@@ -609,14 +727,6 @@ export default () => {
                 },
               ]}
             >
-              {/* <Select
-                style={{ width: 368 }}
-                allowClear
-                options={allBankOptions.current}
-                onChange={(value) => {
-                  changeSelect.current = value;
-                }}
-              /> */}
               <Select
                 style={{ width: '100%' }}
                 onChange={(value, option) => {
@@ -820,25 +930,25 @@ export default () => {
         breadcrumb: {},
       }}
       footer={[
-        <>
-          <Button
-            onClick={async () => {
-              await detailBankInfo(Number(selectTree), 'no');
-              setDetail(true);
-            }}
-          >
-            取消
-          </Button>
-          <Button
-            type="primary"
-            htmlType="submit"
-            onClick={() => {
-              addOrUpdate();
-            }}
-          >
-            保存
-          </Button>
-        </>,
+        <Button
+          key={1}
+          onClick={async () => {
+            await detailBankInfo(Number(selectTree), 'no');
+            setDetail(true);
+          }}
+        >
+          取消
+        </Button>,
+        <Button
+          key={2}
+          type="primary"
+          htmlType="submit"
+          onClick={() => {
+            addOrUpdate();
+          }}
+        >
+          保存
+        </Button>,
       ]}
     >
       {isContent ? (
@@ -847,14 +957,11 @@ export default () => {
             <Col span={6} className={sc('container-left')}>
               <DirectoryTree
                 expandAction={false}
-                // onSelect={onSelect}
                 key="id"
                 icon={() => null}
                 defaultExpandAll
-                // height={800}
                 multiple
                 selectedKeys={[selectTree]}
-                // defaultSelectedKeys={["11"]}
               >
                 <TreeNode selectable title={getTitle(bankData)} key={bankData.id}>
                   {renderTreeNodes(bankData.bank)}
@@ -864,21 +971,10 @@ export default () => {
                 className="add"
                 size="large"
                 onClick={async () => {
-                  // setDetail(false);
-                  // setIsAdd3Info({});
-                  // setDetailInfo({});
-                  // form.resetFields();
                   setModalType('3');
                   await getQueryBank2List();
-                  // await getCooperateOrg();
                   setCreateModalVisible(true);
                   modalForm.setFieldsValue({ id: allBankInfo.current[0].id });
-                  // if (allBankInfo.current.length > 0) {
-                  //   const grade1 = allBankInfo.current.find(
-                  //     (item: { node: number }) => item.node === 0,
-                  //   );
-                  //   modalForm.setFieldsValue({ id: grade1.id });
-                  // }
                 }}
               >
                 <PlusOutlined />
@@ -886,7 +982,7 @@ export default () => {
               </Button>
             </Col>
 
-            {firstPage === false ? (
+            {!firstPage ? (
               <></>
             ) : (
               <Col span={18} className={sc('container-right')}>
@@ -982,6 +1078,30 @@ export default () => {
                         )}
                       </div>
                     </div>
+                    {
+                      detailInfo.node === 1 &&
+                      <div className="item">
+                        <label>运营人员 :</label>
+                        <div>
+                          {!detailInfo.bankOperationInfoList || detailInfo.bankOperationInfoList.length === 0 ? (
+                            <>--</>
+                          ) : (
+                            detailInfo?.bankOperationInfoList?.map((item: any, k: any) => {
+                              return (
+                                <p key={k} style={{ marginBottom: 0 }}>
+                                  {item.name} {item.email}{' '}
+                                  {item.position === 1
+                                    ? '运营人员'
+                                    : item.position === 2
+                                      ? '业务经理'
+                                      : '--'}
+                                </p>
+                              );
+                            })
+                          )}
+                        </div>
+                      </div>
+                    }
                     <div className="item">
                       <label>机构介绍 :</label>
                       <div dangerouslySetInnerHTML={{ __html: detailInfo?.content }} />
@@ -1127,6 +1247,17 @@ export default () => {
                         + 添加
                       </Button>
                     </Form.Item>
+                    {
+                      detailInfo?.node === 1 && <Form.Item label="羚羊运营">
+                        {bankOperationInfoListItem}
+                        {
+                          bankOperationInfoList.length < 10 &&
+                          <Button onClick={addManager} className="add">
+                            + 添加
+                          </Button>
+                        }
+                      </Form.Item>
+                    }
                     <Form.Item name="content" label="机构介绍">
                       <FormEdit width={624} />
                     </Form.Item>
