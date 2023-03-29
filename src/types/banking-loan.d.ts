@@ -164,6 +164,7 @@ namespace BankingLoan {
     financialOrg?: string; // 金融机构
     handleRecords?: handleRecords;
     address?: string; //单位地址
+    urls?: string[]
   };
   export type handleRecords = {
     failReason?: string; // 失败原因
