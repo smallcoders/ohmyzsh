@@ -224,3 +224,14 @@ export async function delBatchLoanRecord(ids: string, type: number) {
     method: 'get',
   });
 }
+
+/**
+ * 获取协议
+ * @returns
+ */
+export const getAgreement = (contractNo: string) => {
+  return request<any>(`/antelope-finance/axq/show?contractNo=${contractNo}`,{
+    responseType: 'blob',
+    getResponse: true,
+  })
+}
