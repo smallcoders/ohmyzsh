@@ -14,71 +14,15 @@ import {
   ExclamationCircleOutlined,
   MinusCircleFilled,
 } from '@ant-design/icons';
-import dayjs from 'dayjs';
 import React, { useEffect, useRef, useState } from 'react';
-import { productTypeMap, guaranteeMethodMap, city } from '../constants';
-import { areaLabel } from '@/services/propaganda-config';
+import { guaranteeMethodMap, city } from '../constants';
 import scopedClasses from '@/utils/scopedClasses';
-import { getProductType, addProduct, queryBank, getProductInfo } from '@/services/banking-product';
+import { getProductType, addProduct, queryBank, getProductInfo, queryPurpose } from '@/services/banking-product';
 import { Prompt, history } from 'umi';
 import './index.less';
 import LoanUse from './loan-use/index';
 import { routeName } from '@/../config/routes';
-import { getOrgTypeList } from '@/services/org-type-manage';
-import { any } from 'glamor';
 const sc = scopedClasses('product-management-create');
-type FormValue = {
-  // baseInfo: {
-  //   name: string;
-  // };
-  // syncTableInfo: {
-  //   timeRange: [Dayjs, Dayjs];
-  //   title: string;
-  // };
-  id: number; // 主键
-  name: string; // 产品姓名
-  content: string; // 产品简介
-  bankName: string; // 所属金融机构
-  minAmount: number; // 最低额度
-  maxAmount: number; // 最高额度
-  amountDesc: string; // 额度文案
-  minTerm: number; // 最低期限（单位月）
-  maxTerm: number; //最高期限（单位月）
-  termDesc: string; // 期限文案
-  minRate: string; // 最低利率
-  maxRate: string; // 最高利率
-  rateDesc: string; // 利率文案
-  applyCondition: string; // 申请条件
-  openArea: string; // 开放地区
-  productFeature: string; // 产品特点
-  warrantType: string; // 担保方式 1-信用 ，2-抵押，3-质押，4-保证，多个逗号分隔
-  object: string; // 面向对象
-  isCirculationLoan: number; // 是否支持循环贷 0:否，1:是
-  isHot: number; // 是否热门 0:否，1:是
-  loanIds: string; // 贷款用途id
-  productProcessInfoList: ProductProcessInfoList; // 面向对象
-};
-type ProductProcessInfoList = {
-  id: number; // 主键
-  name: string; // 流程名称
-  step: number; // 步骤
-};
-const formValue: FormValue = {
-  // baseInfo: {
-  //   name: 'normal job',
-  // },
-  // syncTableInfo: {
-  //   timeRange: [dayjs().subtract(1, 'm'), dayjs()],
-  //   title: 'example table title',
-  // },
-};
-const waitTime = (time: number = 100) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(formValue);
-    }, time);
-  });
-};
 const ProductInfoAddOrEdit = () => {
   const { id } = history.location.query as any;
   const formMapRef = useRef<React.MutableRefObject<ProFormInstance<any> | undefined>[]>([]);
@@ -89,31 +33,8 @@ const ProductInfoAddOrEdit = () => {
   const [openAreas, setOpenAreas] = useState<any>([]);
   const [productTypeList, setProductTypeList] = useState<any[]>([]);
   const [bankList, setBankList] = useState<any[]>([]);
-  // const onCancel = (cb: any) => {
-  //   if (formIsChange) {
-  //     Modal.confirm({
-  //       title: '要在离开之前对填写的信息进行保存吗?',
-  //       icon: <ExclamationCircleOutlined />,
-  //       cancelText: '放弃修改并离开',
-  //       okText: '保存',
-  //       onCancel() {
-  //         if (cb) {
-  //           cb();
-  //         } else {
-  //           history.goBack();
-  //         }
-  //       },
-  //       onOk() {
-  //         const values = formMapRef.current[current]?.current?.getFieldsFormatValue?.();
-  //         saveProduct(values, 0, cb);
-  //       },
-  //     });
-  //   } else {
-  //     history.goBack();
-  //   }
-  // };
   useEffect(() => {
-    getProductInfo({ id: currentId }).then((res) => {
+    getProductInfo({ id: currentId }).then(async (res) => {
       if (res.code === 0) {
         const {
           warrantType,
@@ -134,8 +55,18 @@ const ProductInfoAddOrEdit = () => {
         const Rate = minRate ? [minRate, maxRate] : null;
         const Term = minTerm ? [minTerm, maxTerm] : null;
         const typeIds = typeId ? [typeId, typeDetailId] : [];
-        productProcessInfoList?.sort((a, b) => a.step - b.step);
-        console.log('warrantType?.split(', ') || []', warrantType?.split(',') || []);
+        productProcessInfoList?.sort((a: any, b: any) => a.step - b.step);
+        let loanIds = ''
+        if (res.result.loanIds){
+          const { code, result: purposeList } = await queryPurpose() || {}
+          if (code === 0){
+            loanIds = ((purposeList || []).map((purposeItem: any) => {
+              return `${purposeItem.id}`
+            }) || []).filter((item: any) => {
+              return res.result.loanIds?.split(',').indexOf(item) !== -1
+            }).join(',')
+          }
+        }
         // 编辑场景下需要使用formMapRef循环设置formData
         formMapRef?.current?.forEach((formInstanceRef) => {
           formInstanceRef?.current?.setFieldsValue({
@@ -147,6 +78,7 @@ const ProductInfoAddOrEdit = () => {
             Rate,
             Term,
             typeIds,
+            loanIds
           });
         });
         setFormIsChange(false);
@@ -205,7 +137,6 @@ const ProductInfoAddOrEdit = () => {
       value.typeId = values.typeIds[0];
       value.typeDetailId = values.typeIds[1];
     }
-
     addProduct({ ...value, id: currentId || '', state: flag }).then((res) => {
       if (res.code === 0) {
         setFormIsChange(false);
@@ -237,7 +168,6 @@ const ProductInfoAddOrEdit = () => {
     wrapperCol: { span: 16 },
   };
   return (
-    // <Spin>
     <>
       <PageContainer
         className={sc('page')}
@@ -246,7 +176,7 @@ const ProductInfoAddOrEdit = () => {
           <>
             {current === 1 && (
               <Button
-                key="pre"
+                key="1"
                 onClick={() => {
                   setCurrent(0);
                 }}
@@ -255,9 +185,8 @@ const ProductInfoAddOrEdit = () => {
               </Button>
             )}
           </>,
-
           <Button
-            key="pre"
+            key="2"
             onClick={() => {
               history.goBack();
             }}
@@ -280,7 +209,6 @@ const ProductInfoAddOrEdit = () => {
               formMapRef.current[current]?.current
                 ?.validateFieldsReturnFormatValue?.()
                 .then((values) => {
-                  console.log('values', values);
                   saveProduct(values, 1, null);
                 });
             }}
@@ -296,8 +224,7 @@ const ProductInfoAddOrEdit = () => {
           current={current}
           onCurrentChange={(cur) => setCurrent(cur)}
           formMapRef={formMapRef}
-          onFinish={(values) => {
-            console.log(values);
+          onFinish={() => {
             return Promise.resolve(true);
           }}
           formProps={{
@@ -307,7 +234,6 @@ const ProductInfoAddOrEdit = () => {
             wrapperCol: { span: 10 },
             style: { width: '100%' },
             onValuesChange: () => {
-              console.log('onValuesChange');
               setFormIsChange(true);
             },
           }}
@@ -327,31 +253,10 @@ const ProductInfoAddOrEdit = () => {
                 onChange={(value, selectedOptions) => {
                   const labels = selectedOptions && selectedOptions[0];
                   setProductType(labels?.label);
-                  console.log(value, selectedOptions);
                 }}
                 placeholder="请选择"
               />
             </Form.Item>
-            {/* <ProFormSelect
-              rules={[{ required: true }]}
-              label="产品类型"
-              name="typeId"
-              fieldProps={{
-                onChange: (value) => {
-                  productTypeList.forEach((item) => {
-                    if (item.id === value) {
-                      setProductType(item.name);
-                    }
-                  });
-                },
-              }}
-              options={productTypeList.map((p) => {
-                return {
-                  value: p.id,
-                  label: p.name,
-                };
-              })}
-            /> */}
             <ProFormSelect
               rules={[{ required: true }]}
               label="金融机构"
@@ -405,7 +310,6 @@ const ProductInfoAddOrEdit = () => {
                 allowClear
                 showArrow
                 onChange={(values) => {
-                  console.log(values);
                   setOpenAreas(values);
                 }}
                 placeholder="请选择"
@@ -473,7 +377,6 @@ const ProductInfoAddOrEdit = () => {
               rules={[
                 {
                   validator(rule, value) {
-                    console.log(rule, value);
                     if (value?.length) {
                       return Promise.resolve();
                     } else {
@@ -492,7 +395,6 @@ const ProductInfoAddOrEdit = () => {
               max={5}
             >
               {(f, index, action) => {
-                console.log(f, index, action);
                 return (
                   <div className={sc('form-step')}>
                     <div className={sc('form-step-label')}>第{index + 1}步：</div>
@@ -525,7 +427,6 @@ const ProductInfoAddOrEdit = () => {
                 { required: true },
                 {
                   validator(rule, value) {
-                    console.log(rule, value);
                     if (value[0] && value[1]) {
                       return Promise.resolve();
                     } else {
@@ -577,7 +478,6 @@ const ProductInfoAddOrEdit = () => {
                 { required: true },
                 {
                   validator(rule, value) {
-                    console.log(rule, value);
                     if (value[0] && value[1]) {
                       return Promise.resolve();
                     } else {
@@ -628,7 +528,6 @@ const ProductInfoAddOrEdit = () => {
                 { required: true },
                 {
                   validator(rule, value) {
-                    console.log(rule, value);
                     if (value[0] && value[1]) {
                       return Promise.resolve();
                     } else {
@@ -675,7 +574,6 @@ const ProductInfoAddOrEdit = () => {
       </PageContainer>
       <Prompt
         when={formIsChange}
-        // when={isClosejumpTooltip && topApps.length > 0}
         message={(location: any) => {
           Modal.confirm({
             title: '要在离开之前对填写的信息进行保存吗?',
@@ -683,7 +581,6 @@ const ProductInfoAddOrEdit = () => {
             cancelText: '放弃修改并离开',
             okText: '保存',
             onCancel() {
-              console.log(location);
               setFormIsChange(false);
               setTimeout(() => {
                 history.push(location.pathname);
@@ -701,8 +598,6 @@ const ProductInfoAddOrEdit = () => {
           return false;
         }}
       />
-
-      {/* </Spin> */}
     </>
   );
 };

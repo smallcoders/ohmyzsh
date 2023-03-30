@@ -1,29 +1,31 @@
 import { PageContainer } from '@ant-design/pro-layout';
 import scopedClasses from '@/utils/scopedClasses';
 import { Button, message, Table, Tag } from 'antd';
-import React, { useEffect, useState } from 'react';
-import { routeName } from '@/../config/routes';
+import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { queryDiagnoseDetail } from '@/services/financial-diagnostic-record';
+import { queryDiagnoseDetail, httpQueryDiagnoseList } from '@/services/financial-diagnostic-record';
 import type DiagnosticRecord from '@/types/financial-diagnostic-record';
 import './index.less';
 const sc = scopedClasses('diagnostic-record-detail');
 export default () => {
   const history = useHistory();
-  const { id } = history.location?.query as any;
+  const { id } = (history.location as any)?.query;
   const [basicInfo, setBasicInfo] = useState<DiagnosticRecord.CustomerInfo>({});
   const [recordResult1, setRecordResult1] = useState<DiagnosticRecord.DiagnoseRecord>({});
   const [recordResult2, setRecordResult2] = useState<DiagnosticRecord.OrgAssets[]>([]);
   const [applyInfo, setApplyInfo] = useState<DiagnosticRecord.DiagnoseCreditVO[]>([]);
+  const [financialProductList, setFinancialProductList] = useState([])
+  const [pageInfo, setPageInfo] = useState<any>({ pageSize: 10, pageIndex: 1 })
+  const [total, setTotal] = useState<any>({ pageTotal: 0, totalCount: 0 })
   const getDiagnoseDetailInfo = async () => {
     try {
       const { code, result } = await queryDiagnoseDetail(id);
       if (code === 0) {
         const { customerInfo, diagnoseRecord, orgAssets, diagnoseCreditVO } = result;
-        setBasicInfo(customerInfo);
-        setRecordResult1(diagnoseRecord);
-        setRecordResult2(orgAssets);
-        setApplyInfo(diagnoseCreditVO);
+        setBasicInfo(customerInfo || {});
+        setRecordResult1(diagnoseRecord || {});
+        setRecordResult2(orgAssets || []);
+        setApplyInfo(diagnoseCreditVO || []);
       } else {
         message.error('诊断详情获取失败');
       }
@@ -31,7 +33,31 @@ export default () => {
       console.log(error);
     }
   };
+  const getProductList = (params: any) => {
+    if (params.id) {
+      httpQueryDiagnoseList({ ...params })
+        .then((res) => {
+          if (res.result) {
+            setFinancialProductList(res.result)
+            setTotal({ pageTotal: res.pageTotal, totalCount: res.totalCount })
+          } else {
+            message.error(res.message)
+          }
+        })
+        .catch(() => {
+          message.error('获取数据失败')
+        })
+    }
+  }
+  const onHandleTableChange = (pagination: any) => {
+    const { current, pageSize } = pagination
+    setPageInfo((prev: any) => {
+      return { ...prev, pageIndex: current, pageSize }
+    })
+    getProductList({ pageIndex: current, pageSize, id })
+  }
   useEffect(() => {
+    getProductList({ ...pageInfo, id })
     getDiagnoseDetailInfo();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -67,6 +93,50 @@ export default () => {
       },
     },
   ];
+  const columns: any[] = [
+    {
+      key: 'productName',
+      title: '金融产品',
+      width: 180,
+      dataIndex: 'productName',
+      render: (productName: string) => <span>{productName || '--'}</span>,
+    },
+    {
+      key: 'amountDesc',
+      title: '贷款额度',
+      width: 180,
+      dataIndex: 'amountDesc',
+      render: (amountDesc: string, record: any) => <span>{amountDesc || `最高${record.maxAmount / 1000000}万元` || '--'}</span>,
+    },
+    {
+      key: 'rateDesc',
+      title: '参考利率',
+      width: 160,
+      dataIndex: 'rateDesc',
+      render: (rateDesc: string, record: any) => <span>{rateDesc || `${record.minRate}%起` || '--'}</span>,
+    },
+    {
+      key: 'termDesc',
+      title: '贷款期限',
+      width: 150,
+      dataIndex: 'termDesc',
+      render: (termDesc: string, record: any) => <span>{termDesc || `最长${record.maxTerm}个月` || '--'}</span>,
+    },
+    {
+      key: 'warrantTypeContent',
+      title: '担保方式',
+      width: 150,
+      dataIndex: 'warrantTypeContent',
+      render: (warrantTypeContent: string) => <span>{warrantTypeContent || '--'}</span>,
+    },
+    {
+      key: 'bankName',
+      title: '金融机构',
+      width: 180,
+      dataIndex: 'bankName',
+      render: (bankName: string) => <span>{bankName || '--'}</span>,
+    },
+  ]
   const column2 = [
     {
       title: '业务申请编号',
@@ -88,6 +158,7 @@ export default () => {
     { value: '4', name: '民营科技企业' },
     { value: '5', name: ' 专精特新企业' },
   ];
+  // @ts-ignore
   return (
     <PageContainer
       className={sc('pages')}
@@ -150,6 +221,12 @@ export default () => {
               </div>
             </div>
             <div className={sc('page-item-body-item')}>
+              <div className={sc('page-item-body-item-label')}>满足金融专属服务：</div>
+              <div className={sc('page-item-body-item-wrap')}>
+                {recordResult1?.exclusiveService ? '是' : '否'}
+              </div>
+            </div>
+            <div className={sc('page-item-body-item')}>
               <div className={sc('page-item-body-item-label')}>拟融资金额：</div>
               <div className={sc('page-item-body-item-wrap')}>
                 {recordResult1?.amount
@@ -164,11 +241,11 @@ export default () => {
               </div>
             </div>
             <div className={sc('page-item-body-item')}>
-              <div className={sc('page-item-body-item-label')}>融资用途：</div>
+              <div className={sc('page-item-body-item-label')}>拟融资用途：</div>
               <div className={sc('page-item-body-item-wrap')}>
-                {recordResult1?.purpose > 100000000
-                  ? recordResult1.purposeContent + ' - ' + recordResult1.purposeRemark
-                  : recordResult1.purposeContent}
+                {recordResult1?.purpose && recordResult1?.purpose !== 1000000
+                  ? recordResult1?.purposeContent + `${recordResult1?.purposeRemark ? '_' + recordResult1?.purposeRemark : ''}`
+                  : recordResult1?.purposeContent || '--'}
               </div>
             </div>
             <div className={sc('page-item-body-item')}>
@@ -197,6 +274,35 @@ export default () => {
             <div className={sc('page-item-body-item')}>
               <div className={sc('page-item-body-item-table')}>
                 <Table dataSource={recordResult2} columns={column1} pagination={false} />
+              </div>
+            </div>
+            <div className={sc('page-item-body-item')}>
+              <div className={sc('page-item-body-item-label')}>系统匹配产品：</div>
+            </div>
+            <div className={sc('page-item-body-item')}>
+              <div className={sc('page-item-body-item-table')}>
+                {
+                  financialProductList.length > 0 ?
+                    <Table
+                      dataSource={financialProductList}
+                      onChange={onHandleTableChange}
+                      columns={columns}
+                      pagination={{
+                        pageSize: pageInfo.pageSize,
+                        showSizeChanger: false,
+                        hideOnSinglePage: false,
+                        total: total.totalCount,
+                        simple: false,
+                        current: pageInfo.pageIndex,
+                        showTotal(totalCount: number) {
+                          const currentPage = pageInfo.pageIndex
+                          const totalPage = Math.ceil(totalCount / pageInfo.pageSize)
+                          return `共 ${totalCount} 条     第 ${currentPage}/${totalPage} 页`
+                        },
+                      }}
+                    /> :
+                    '未匹配到合适产品'
+                }
               </div>
             </div>
           </div>
