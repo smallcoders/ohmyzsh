@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react';
 import type { UploadProps } from 'antd';
 import {
   Button,
+  Cascader,
   Col,
   Form,
   Input,
@@ -18,7 +19,7 @@ import {
 } from 'antd';
 import SelfTable from '@/components/self_table';
 import type Common from '@/types/common';
-import { deleteHotRecommend, queryHotRecommend } from '@/services/topic';
+import { deleteHotRecommend } from '@/services/topic';
 import {
   CloudUploadOutlined,
   FileExclamationOutlined,
@@ -30,10 +31,12 @@ import { useAccess, Access } from '@@/plugin-access/access';
 import { getTemplateFile } from '@/services/supplier';
 import { getFileInfo } from '@/services/common';
 import type { RcFile, UploadChangeParam } from 'antd/lib/upload/interface';
-import { exportMeetingData } from '@/services/baseline';
+import { queryGovPage, exportGov } from '@/services/baseline-info';
 import moment from 'moment/moment';
+import { getWholeAreaTree } from '@/services/area';
 
 export default () => {
+  const [areaOptions, setAreaOptions] = useState<any>([]);
   // // 拿到当前角色的access权限兑现
   const access = useAccess();
   const sc = scopedClasses('baseline-government');
@@ -59,25 +62,28 @@ export default () => {
         <Form {...formLayout} form={searchForm}>
           <Row>
             <Col span={6}>
-              <Form.Item name="topic" label="部门名称">
+              <Form.Item name="name" label="部门名称">
                 <Input placeholder="请输入" allowClear autoComplete="off" />
               </Form.Item>
             </Col>
             <Col span={6}>
-              <Form.Item name="publicUserName" label="级别">
+              <Form.Item name="districtCodeType" label="级别">
                 <Select placeholder="请选择" allowClear style={{ width: '200px' }}>
-                  <Select.Option value={0}>省级</Select.Option>
-                  <Select.Option value={1}>市级</Select.Option>
-                  <Select.Option value={1}>区县级</Select.Option>
+                  <Select.Option value={0}>未知</Select.Option>
+                  <Select.Option value={1}>省级</Select.Option>
+                  <Select.Option value={2}>市级</Select.Option>
+                  <Select.Option value={3}>区县级</Select.Option>
                 </Select>
               </Form.Item>
             </Col>
             <Col span={6}>
-              <Form.Item name="enable" label="所在区域">
-                <Select placeholder="请选择" allowClear style={{ width: '200px' }}>
-                  <Select.Option value={0}>合肥</Select.Option>
-                  <Select.Option value={1}>芜湖</Select.Option>
-                </Select>
+              <Form.Item name="areaCode" label="所在区域">
+                <Cascader
+                  fieldNames={{ label: 'name', value: 'code', children: 'nodes' }}
+                  options={areaOptions}
+                  getPopupContainer={(triggerNode) => triggerNode}
+                  placeholder="请选择"
+                />
               </Form.Item>
             </Col>
             <Col span={4}>
@@ -107,10 +113,17 @@ export default () => {
       </div>
     );
   };
+
+  useEffect(() => {
+    // 获取区域省+市下拉
+    getWholeAreaTree({ endLevel: 'COUNTY' }).then((data) => {
+      setAreaOptions(data || []);
+    });
+  }, []);
   // 获取分页数据
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     try {
-      const { result, totalCount, pageTotal, code } = await queryHotRecommend({
+      const { result, totalCount, pageTotal, code } = await queryGovPage({
         pageIndex,
         pageSize,
         ...searchContent,
@@ -127,6 +140,7 @@ export default () => {
   };
   useEffect(() => {
     getPage();
+    // 获取区域省+市下拉
   }, [searchContent]);
 
   //删除
@@ -153,24 +167,34 @@ export default () => {
     },
     {
       title: '部门名称',
-      dataIndex: 'topic',
+      dataIndex: 'name',
       isEllipsis: true,
       width: 200,
     },
     {
       title: ' 在线办理h5地址',
-      dataIndex: 'enable',
+      dataIndex: 'serviceUrl',
       width: 100,
       render: (_: any, _record: any) => (_record.enable ? '上架' : '下架'),
     },
     {
       title: '级别',
-      dataIndex: 'contentCount',
+      dataIndex: 'districtCodeType',
       width: 120,
+      render: (_: any, _record: any) => {
+        return (
+          <div>
+            {_record.districtCodeType == 0 && '未知'}
+            {_record.districtCodeType == 1 && '省级'}
+            {_record.districtCodeType == 2 && '市级'}
+            {_record.districtCodeType == 3 && '区县级'}
+          </div>
+        );
+      },
     },
     {
       title: '是否为热门',
-      dataIndex: 'weight',
+      dataIndex: 'hot',
       width: 80,
       render: (_: any, _record: any) => (_record.enable ? '热门' : '/'),
     },
@@ -205,14 +229,16 @@ export default () => {
               </Button>
             </Access>
             <Access accessible={access.PD_BLM_HTGL}>
-              <Popconfirm
-                title="确定删除该部门信息？"
-                okText="确定"
-                cancelText="取消"
-                onConfirm={() => remove(record.id as string)}
-              >
-                <Button type="link">删除</Button>
-              </Popconfirm>
+              {record.deletable && (
+                <Popconfirm
+                  title="确定删除该部门信息？"
+                  okText="确定"
+                  cancelText="取消"
+                  onConfirm={() => remove(record.id as string)}
+                >
+                  <Button type="link">删除</Button>
+                </Popconfirm>
+              )}
             </Access>
           </div>
         );
@@ -305,7 +331,7 @@ export default () => {
       return;
     }
     setIsExporting(true);
-    exportMeetingData({ meetingId: 1 })
+    exportGov()
       .then((res) => {
         if (res?.data?.size == 51) return message.warning('操作太过频繁，请稍后再试');
         setIsExporting(false);

@@ -332,7 +332,7 @@ export async function queryListSimple(params?: any) {
   });
 }
 
-//查询组织信息仅id、name
+//查询组织
 export async function queryConvertOrg(data?: Record<string, any>) {
   return request<any>('/antelope-business/mng/organization/convertOrg', {
     method: 'post',

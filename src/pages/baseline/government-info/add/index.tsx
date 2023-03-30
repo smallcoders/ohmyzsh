@@ -2,7 +2,18 @@ import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
 import { PageContainer } from '@ant-design/pro-layout';
 import React, { useEffect, useState } from 'react';
-import { Button, Form, Input, Modal, message, Breadcrumb, Switch, InputNumber, Card } from 'antd';
+import {
+  Button,
+  Form,
+  Input,
+  Modal,
+  message,
+  Breadcrumb,
+  Switch,
+  InputNumber,
+  Card,
+  Select,
+} from 'antd';
 import { history } from '@@/core/history';
 import { getArticleType } from '@/services/baseline';
 import { getHotRecommendDetail, queryByIds } from '@/services/topic';
@@ -117,7 +128,7 @@ export default () => {
           }}
         >
           <Form.Item
-            name="topic"
+            name="name"
             label="政府服务部门名称"
             rules={[
               {
@@ -129,7 +140,7 @@ export default () => {
             <TextArea autoSize={{ minRows: 1, maxRows: 10 }} placeholder="请输入" maxLength={100} />
           </Form.Item>
           <Form.Item
-            name="weight"
+            name="nameShort"
             label="服务部门简称"
             rules={[
               {
@@ -140,14 +151,14 @@ export default () => {
           >
             <TextArea autoSize={{ minRows: 1, maxRows: 10 }} placeholder="请输入" maxLength={60} />
           </Form.Item>
-          <Form.Item name="weight" label="id">
+          <Form.Item name="govId" label="id">
             <TextArea autoSize={{ minRows: 1, maxRows: 10 }} placeholder="请输入" maxLength={20} />
           </Form.Item>
-          <Form.Item name="weight" label="uuid">
+          <Form.Item name="govUuid" label="uuid">
             <TextArea autoSize={{ minRows: 1, maxRows: 10 }} placeholder="请输入" maxLength={20} />
           </Form.Item>
           <Form.Item
-            name="weight"
+            name="districtCodeType"
             label="级别"
             rules={[
               {
@@ -156,10 +167,15 @@ export default () => {
               },
             ]}
           >
-            <Input placeholder="请输入" />
+            <Select placeholder="请选择" allowClear style={{ width: '100%' }}>
+              <Select.Option value={0}>未知</Select.Option>
+              <Select.Option value={1}>省级</Select.Option>
+              <Select.Option value={2}>市级</Select.Option>
+              <Select.Option value={3}>区县级</Select.Option>
+            </Select>
           </Form.Item>
           <Form.Item
-            name="weight"
+            name="areaCode"
             label="所在区域"
             rules={[
               {
@@ -170,11 +186,11 @@ export default () => {
           >
             <Input placeholder="请输入" />
           </Form.Item>
-          <Form.Item name="weight" label="部门介绍">
+          <Form.Item name="aboutUs" label="部门介绍">
             <TextArea autoSize={{ minRows: 1, maxRows: 30 }} placeholder="请输入" maxLength={500} />
           </Form.Item>
           <Form.Item
-            name="weight"
+            name="serviceUrl"
             label="在线办理h5地址"
             rules={[
               {
@@ -186,7 +202,7 @@ export default () => {
             <TextArea autoSize={{ minRows: 1, maxRows: 10 }} placeholder="请输入" maxLength={20} />
           </Form.Item>
           <Form.Item
-            name="weight"
+            name="hot"
             label="是否热门"
             rules={[
               {
@@ -215,7 +231,7 @@ export default () => {
                   style={{ width: '100%' }}
                 />
               </Form.Item>
-              <Form.List name="guests">
+              <Form.List name="hotService">
                 {(fields, { add, remove }) => (
                   <>
                     <Form.Item name="top" label="热门服务">
@@ -263,7 +279,7 @@ export default () => {
                           />
                         </Form.Item>
                         <Form.Item
-                          name={[field.name, 'introduction']}
+                          name={[field.name, 'serviceUrl']}
                           label="服务h5地址"
                           rules={[
                             {
@@ -274,7 +290,7 @@ export default () => {
                         >
                           <TextArea autoSize={{ minRows: 2, maxRows: 10 }} placeholder="请输入" />
                         </Form.Item>
-                        <Form.Item name={[field.name, 'introduction']} label="服务权重">
+                        <Form.Item name={[field.name, 'weight']} label="服务权重">
                           <InputNumber
                             min={1}
                             max={100}
