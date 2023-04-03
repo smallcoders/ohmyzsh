@@ -3,6 +3,7 @@ import './index.less';
 import { PageContainer } from '@ant-design/pro-layout';
 import React, { useEffect, useState } from 'react';
 import type { UploadProps } from 'antd';
+import { debounce } from 'lodash';
 import {
   Button,
   Cascader,
@@ -19,7 +20,6 @@ import {
 } from 'antd';
 import SelfTable from '@/components/self_table';
 import type Common from '@/types/common';
-import { deleteHotRecommend } from '@/services/topic';
 import {
   CloudUploadOutlined,
   FileExclamationOutlined,
@@ -28,10 +28,9 @@ import {
 } from '@ant-design/icons';
 import { history } from '@@/core/history';
 import { useAccess, Access } from '@@/plugin-access/access';
-import { getTemplateFile } from '@/services/supplier';
 import { getFileInfo } from '@/services/common';
 import type { RcFile, UploadChangeParam } from 'antd/lib/upload/interface';
-import { queryGovPage, exportGov } from '@/services/baseline-info';
+import { queryGovPage, exportGov, delGov, getGovImportTemplate } from '@/services/baseline-info';
 import moment from 'moment/moment';
 import { getWholeAreaTree } from '@/services/area';
 
@@ -92,8 +91,12 @@ export default () => {
                 type="primary"
                 key="search"
                 onClick={() => {
-                  const search = searchForm.getFieldsValue();
-                  setSearChContent(search);
+                  const { districtCodeType, areaCode, name } = searchForm.getFieldsValue();
+                  setSearChContent({
+                    districtCodeType,
+                    areaCode: areaCode ? areaCode[2] : undefined,
+                    name,
+                  });
                 }}
               >
                 查询
@@ -144,9 +147,9 @@ export default () => {
   }, [searchContent]);
 
   //删除
-  const remove = async (id: string) => {
+  const remove = async (organizationId: any) => {
     try {
-      const removeRes = await deleteHotRecommend(id);
+      const removeRes = await delGov({ organizationId });
       if (removeRes.code === 0) {
         message.success(`删除成功`);
         getPage();
@@ -174,8 +177,8 @@ export default () => {
     {
       title: ' 在线办理h5地址',
       dataIndex: 'serviceUrl',
-      width: 100,
-      render: (_: any, _record: any) => (_record.enable ? '上架' : '下架'),
+      isEllipsis: true,
+      width: 200,
     },
     {
       title: '级别',
@@ -193,10 +196,16 @@ export default () => {
       },
     },
     {
+      title: ' 权重',
+      dataIndex: 'weight',
+      isEllipsis: true,
+      width: 200,
+    },
+    {
       title: '是否为热门',
       dataIndex: 'hot',
-      width: 80,
-      render: (_: any, _record: any) => (_record.enable ? '热门' : '/'),
+      width: 120,
+      render: (_: any, _record: any) => (_record.hot ? '热门' : '/'),
     },
     {
       title: '操作',
@@ -210,7 +219,7 @@ export default () => {
               type="link"
               onClick={() => {
                 history.push(
-                  `/baseline/baseline-government-manage/detail?recommendId=${record?.id}`,
+                  `/baseline/baseline-government-manage/detail?organizationId=${record?.organizationId}`,
                 );
               }}
             >
@@ -221,7 +230,7 @@ export default () => {
                 type="link"
                 onClick={() => {
                   history.push(
-                    `/baseline/baseline-government-manage/add?id=${record?.id}&contentCount=${record?.contentCount}`,
+                    `/baseline/baseline-government-manage/add?organizationId=${record?.organizationId}`,
                   );
                 }}
               >
@@ -234,7 +243,7 @@ export default () => {
                   title="确定删除该部门信息？"
                   okText="确定"
                   cancelText="取消"
-                  onConfirm={() => remove(record.id as string)}
+                  onConfirm={() => remove(record.organizationId as string)}
                 >
                   <Button type="link">删除</Button>
                 </Popconfirm>
@@ -268,14 +277,17 @@ export default () => {
     if (info.file.status === 'error') return;
     if (info.file.status === 'done') {
       try {
-        const { result } = info.file.response;
-        setUploadNum({
-          failNum: result.failNum,
-          successNum: result.successNum,
-          filePath: result.filePath,
-          progress: 'true',
-        });
+        const { code } = info.file.response;
+        if (code === 0) {
+          message.error(`导入成功`);
+          getPage();
+          setModalVisible(false);
+        } else {
+          setModalVisible(false);
+          message.error(`上传失败，原因:{${info.file.response.message}}`);
+        }
       } catch (error) {
+        console.log(error);
         message.error(`上传失败，原因:{${info.file.response.message}}`);
       }
     }
@@ -306,7 +318,7 @@ export default () => {
     name: 'file',
     multiple: true,
     accept: '.xlsx',
-    action: '/antelope-finance/mng/supplier/importSupplier',
+    action: '/antelope-business/mng/organization/gov/import',
     maxCount: 1,
     onRemove: () => false,
     onChange: handleChange,
@@ -326,15 +338,17 @@ export default () => {
   };
   //导出
   const currentTime = moment(new Date()).format('YYYYMMDD');
-  const exportDataClick = () => {
+  const exportDataClick = debounce(() => {
     if (isExporting) {
       return;
     }
     setIsExporting(true);
-    exportGov()
+    const { districtCodeType, areaCode, name } = searchForm.getFieldsValue();
+    exportGov({ districtCodeType, areaCode: areaCode ? areaCode[2] : undefined, name })
       .then((res) => {
         if (res?.data?.size == 51) return message.warning('操作太过频繁，请稍后再试');
         setIsExporting(false);
+        console.log(res, 4324213);
         const content = res.data;
         const blob = new Blob([content], {
           type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8',
@@ -352,7 +366,7 @@ export default () => {
       .catch(() => {
         setIsExporting(false);
       });
-  };
+  }, 5000);
   // 上传导入弹框
   const useModal = (): React.ReactNode => {
     return (
@@ -383,7 +397,7 @@ export default () => {
                 <span
                   style={{ color: 'rgba(143, 165, 255)', cursor: 'pointer' }}
                   onClick={async () => {
-                    const { code, result } = await getTemplateFile();
+                    const { code, result } = await getGovImportTemplate();
                     if (code === 0) {
                       const res = await getFileInfo(result);
                       console.log(res);

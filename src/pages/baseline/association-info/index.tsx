@@ -5,6 +5,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import type { UploadProps } from 'antd';
 import {
   Button,
+  Cascader,
   Col,
   Form,
   Input,
@@ -17,23 +18,25 @@ import {
   Upload,
 } from 'antd';
 import SelfTable from '@/components/self_table';
-import moment from 'moment/moment';
 import type Common from '@/types/common';
-import { deleteHotRecommend, editHotRecommend, queryHotRecommend } from '@/services/topic';
+import { deleteHotRecommend } from '@/services/topic';
 import {
   CloudUploadOutlined,
   FileExclamationOutlined,
   FileTextOutlined,
-  InfoOutlined,
   PlusOutlined,
 } from '@ant-design/icons';
 import { history } from '@@/core/history';
-import useLimit from '@/hooks/useLimit';
 import { useAccess, Access } from '@@/plugin-access/access';
 import type { RcFile, UploadChangeParam } from 'antd/lib/upload/interface';
-import { exportMeetingData } from '@/services/baseline';
 import { getTemplateFile } from '@/services/supplier';
 import { getFileInfo } from '@/services/common';
+import { getAhArea, getWholeAreaTree } from '@/services/area';
+import {
+  delAlliance,
+  getAllianceImportTemplate,
+  queryAlliancePage,
+} from '@/services/baseline-info';
 
 export default () => {
   // // 拿到当前角色的access权限兑现
@@ -43,7 +46,7 @@ export default () => {
     labelCol: { span: 6 },
     wrapperCol: { span: 16 },
   };
-  const [isExporting, setIsExporting] = useState<boolean>(false);
+  const [areaOptions, setAreaOptions] = useState<any>([]);
   const [createModalVisible, setModalVisible] = useState<boolean>(false);
   const [searchForm] = Form.useForm();
   const [dataSource, setDataSource] = useState<any>([]);
@@ -54,6 +57,11 @@ export default () => {
     pageTotal: 0,
   });
   const [searchContent, setSearChContent] = useState<any>({});
+  useEffect(() => {
+    getAhArea().then((res) => {
+      setAreaOptions(res);
+    });
+  }, []);
   // 搜索模块
   const useSearchNode = (): React.ReactNode => {
     return (
@@ -61,30 +69,33 @@ export default () => {
         <Form {...formLayout} form={searchForm}>
           <Row>
             <Col span={8}>
-              <Form.Item name="topic" label="协会名称">
+              <Form.Item name="name" label="协会名称">
                 <Input placeholder="请输入" allowClear autoComplete="off" />
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="topic" label="所属产业">
+              <Form.Item name="industryCategoryId" label="所属产业">
                 <Input placeholder="请输入" allowClear autoComplete="off" />
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="publicUserName" label="级别">
+              <Form.Item name="districtCodeType" label="级别">
                 <Select placeholder="请选择" allowClear style={{ width: '200px' }}>
-                  <Select.Option value={0}>省级</Select.Option>
-                  <Select.Option value={1}>市级</Select.Option>
-                  <Select.Option value={1}>区县级</Select.Option>
+                  <Select.Option value={0}>未知</Select.Option>
+                  <Select.Option value={1}>省级</Select.Option>
+                  <Select.Option value={2}>市级</Select.Option>
+                  <Select.Option value={3}>区县级</Select.Option>
                 </Select>
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="enable" label="所在区域">
-                <Select placeholder="请选择" allowClear style={{ width: '100%' }}>
-                  <Select.Option value={0}>合肥</Select.Option>
-                  <Select.Option value={1}>芜湖</Select.Option>
-                </Select>
+              <Form.Item name="areaCode" label="所在区域">
+                <Cascader
+                  fieldNames={{ label: 'name', value: 'code', children: 'nodes' }}
+                  options={areaOptions}
+                  getPopupContainer={(triggerNode) => triggerNode}
+                  placeholder="请选择"
+                />
               </Form.Item>
             </Col>
             <Col span={10}>
@@ -117,7 +128,7 @@ export default () => {
   // 获取分页数据
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     try {
-      const { result, totalCount, pageTotal, code } = await queryHotRecommend({
+      const { result, totalCount, pageTotal, code } = await queryAlliancePage({
         pageIndex,
         pageSize,
         ...searchContent,
@@ -137,9 +148,9 @@ export default () => {
   }, [searchContent]);
 
   //删除
-  const remove = async (id: string) => {
+  const remove = async (organizationId: any) => {
     try {
-      const removeRes = await deleteHotRecommend(id);
+      const removeRes = await delAlliance({ organizationId });
       if (removeRes.code === 0) {
         message.success(`删除成功`);
         getPage();
@@ -160,26 +171,37 @@ export default () => {
     },
     {
       title: '协会名称',
-      dataIndex: 'topic',
+      dataIndex: 'name',
       isEllipsis: true,
       width: 200,
     },
     {
       title: ' 所属产业',
-      dataIndex: 'enable',
+      dataIndex: 'industryCategoryName',
       width: 100,
-      render: (_: any, _record: any) => (_record.enable ? '上架' : '下架'),
+      render: (_: any, _record: any) => {
+        return <div>{_record.industryCategoryName ? _record.industryCategoryName : '--'}</div>;
+      },
     },
     {
       title: '级别',
-      dataIndex: 'contentCount',
+      dataIndex: 'districtCodeType',
       width: 120,
+      render: (_: any, _record: any) => {
+        return (
+          <div>
+            {_record.districtCodeType == 0 && '未知'}
+            {_record.districtCodeType == 1 && '省级'}
+            {_record.districtCodeType == 2 && '市级'}
+            {_record.districtCodeType == 3 && '区县级'}
+          </div>
+        );
+      },
     },
     {
       title: '所在区域',
-      dataIndex: 'weight',
+      dataIndex: 'areaName',
       width: 80,
-      render: (_: any, _record: any) => (_record.enable ? '热门' : '/'),
     },
     {
       title: '操作',
@@ -193,7 +215,7 @@ export default () => {
               type="link"
               onClick={() => {
                 history.push(
-                  `/baseline/baseline-association-manage/detail?recommendId=${record?.id}`,
+                  `/baseline/baseline-association-manage/detail?organizationId=${record?.organizationId}`,
                 );
               }}
             >
@@ -204,7 +226,7 @@ export default () => {
                 type="link"
                 onClick={() => {
                   history.push(
-                    `/baseline/baseline-association-manage/add?id=${record?.id}&contentCount=${record?.contentCount}`,
+                    `/baseline/baseline-association-manage/add?organizationId=${record?.organizationId}`,
                   );
                 }}
               >
@@ -212,14 +234,16 @@ export default () => {
               </Button>
             </Access>
             <Access accessible={access.PD_BLM_HTGL}>
-              <Popconfirm
-                title="确定删除该部门信息？"
-                okText="确定"
-                cancelText="取消"
-                onConfirm={() => remove(record.id as string)}
-              >
-                <Button type="link">删除</Button>
-              </Popconfirm>
+              {record?.deletable && (
+                <Popconfirm
+                  title="确定删除该部门信息？"
+                  okText="确定"
+                  cancelText="取消"
+                  onConfirm={() => remove(record.organizationId as string)}
+                >
+                  <Button type="link">删除</Button>
+                </Popconfirm>
+              )}
             </Access>
           </div>
         );
@@ -239,6 +263,7 @@ export default () => {
     progress: 'false',
   });
   const handleChange = (info: UploadChangeParam) => {
+    console.log(info);
     setUploadNum({
       ...uploadNum,
       progress: 'true',
@@ -249,14 +274,17 @@ export default () => {
     if (info.file.status === 'error') return;
     if (info.file.status === 'done') {
       try {
-        const { result } = info.file.response;
-        setUploadNum({
-          failNum: result.failNum,
-          successNum: result.successNum,
-          filePath: result.filePath,
-          progress: 'true',
-        });
+        const { code } = info.file.response;
+        if (code === 0) {
+          message.error(`导入成功`);
+          getPage();
+          setModalVisible(false);
+        } else {
+          setModalVisible(false);
+          message.error(`上传失败，原因:{${info.file.response.message}}`);
+        }
       } catch (error) {
+        console.log(error);
         message.error(`上传失败，原因:{${info.file.response.message}}`);
       }
     }
@@ -287,7 +315,7 @@ export default () => {
     name: 'file',
     multiple: true,
     accept: '.xlsx',
-    action: '/antelope-finance/mng/supplier/importSupplier',
+    action: '/antelope-business/mng/organization/alliance/import',
     maxCount: 1,
     onRemove: () => false,
     onChange: handleChange,
@@ -336,12 +364,12 @@ export default () => {
                 <span
                   style={{ color: 'rgba(143, 165, 255)', cursor: 'pointer' }}
                   onClick={async () => {
-                    const { code, result } = await getTemplateFile();
+                    const { code, result } = await getAllianceImportTemplate();
+                    console.log(result);
                     if (code === 0) {
                       const res = await getFileInfo(result);
-                      console.log(res);
                       if (res.code === 0) {
-                        window.location.href = res.result[0].path;
+                        window.location.href = res?.result.path;
                       } else {
                         message.error('下载失败');
                       }

@@ -3,37 +3,31 @@ import './index.less';
 import { PageContainer } from '@ant-design/pro-layout';
 import { useEffect, useState } from 'react';
 import { Button, Col, Row } from 'antd';
-import SelfTable from '@/components/self_table';
-import type Common from '@/types/common';
-import { getHotRecommendDetail } from '@/services/topic';
 import { history } from '@@/core/history';
+import { queryAllianceDetail, queryAllianceLogList } from '@/services/baseline-info';
 
 export default () => {
   const sc = scopedClasses('baseline-association-detail');
-  const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
-    pageIndex: 1,
-    pageSize: 10,
-    totalCount: 1,
-    pageTotal: 0,
-  });
-  const [hotRecommendDetail, setHotRecommendDetail] = useState<any>({});
-  const { recommendId } = history.location.query as any;
-  //获取热门话题的详情
-  const getHotRecommendDetailById = (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
-    getHotRecommendDetail({ id: recommendId, pageIndex, pageSize }).then((res) => {
+
+  const [associationLog, setAssociationLog] = useState<any>([]);
+  const [AssociationDetail, setAssociationDetail] = useState<any>({});
+  const { organizationId } = history.location.query as any;
+  //获取详情
+  //获取详情
+  const getAssociationDetailById = () => {
+    queryAllianceDetail({ organizationId }).then((res) => {
       if (res.code === 0) {
-        setHotRecommendDetail(res?.result || {});
-        setPageInfo({
-          pageIndex: res?.result.pageIndex,
-          pageSize: res?.result.pageSize,
-          totalCount: res?.result.contentCount,
-          pageTotal: 0,
-        });
+        setAssociationDetail(res?.result);
       }
     });
   };
   useEffect(() => {
-    getHotRecommendDetailById();
+    getAssociationDetailById();
+    queryAllianceLogList({ organizationId }).then((res) => {
+      if (res.code === 0) {
+        setAssociationLog(res?.result);
+      }
+    });
   }, []);
 
   return (
@@ -57,7 +51,7 @@ export default () => {
             <div className="info-label">协会名称：</div>
           </Col>
           <Col span={16}>
-            <span>{hotRecommendDetail?.topic}</span>
+            <span>{AssociationDetail?.name}</span>
           </Col>
         </Row>
         <Row className={'title'}>
@@ -65,7 +59,7 @@ export default () => {
             <div className="info-label">所属产业：</div>
           </Col>
           <Col span={16}>
-            <span>{hotRecommendDetail?.weight}</span>
+            <span>{AssociationDetail?.industryCategoryName}</span>
           </Col>
         </Row>
         <Row className={'title'}>
@@ -73,7 +67,7 @@ export default () => {
             <div className="info-label">协会级别：</div>
           </Col>
           <Col span={16}>
-            <span>{hotRecommendDetail?.contentCount}</span>
+            <span>{AssociationDetail?.districtCodeType}</span>
           </Col>
         </Row>
         <Row className={'title'}>
@@ -81,7 +75,7 @@ export default () => {
             <div className="info-label">所在区域：</div>
           </Col>
           <Col span={16}>
-            <span>{hotRecommendDetail?.contentCount}</span>
+            <span>{AssociationDetail?.provinceCode}</span>
           </Col>
         </Row>
         <Row className={'title'}>
@@ -89,7 +83,7 @@ export default () => {
             <div className="info-label">协会介绍：</div>
           </Col>
           <Col span={16}>
-            <span>{hotRecommendDetail?.contentCount}</span>
+            <span>{AssociationDetail?.aboutUs}</span>
           </Col>
         </Row>
         <Row className={'title'}>
@@ -97,7 +91,7 @@ export default () => {
             <div className="info-label">官方logo：</div>
           </Col>
           <Col span={16}>
-            <span>{hotRecommendDetail?.contentCount}</span>
+            <span>{AssociationDetail?.logoUrl}</span>
           </Col>
         </Row>
         <Row className={'title'}>
@@ -105,7 +99,7 @@ export default () => {
             <div className="info-label">官方协会二维码：</div>
           </Col>
           <Col span={16}>
-            <span>{hotRecommendDetail?.contentCount}</span>
+            <span>{AssociationDetail?.contentCount}</span>
           </Col>
         </Row>
         <Row className={'title'}>
@@ -113,7 +107,7 @@ export default () => {
             <div className="info-label">爱企查对应地址：</div>
           </Col>
           <Col span={16}>
-            <span>{hotRecommendDetail?.contentCount}</span>
+            <span>{AssociationDetail?.aqcUrl}</span>
           </Col>
         </Row>
       </div>
@@ -124,7 +118,7 @@ export default () => {
             <div className="info-label">联系人：</div>
           </Col>
           <Col span={16}>
-            <span>{hotRecommendDetail?.contentCount}</span>
+            <span>{AssociationDetail?.contactName}</span>
           </Col>
         </Row>
         <Row className={'title'}>
@@ -132,7 +126,7 @@ export default () => {
             <div className="info-label">联系电话：</div>
           </Col>
           <Col span={16}>
-            <span>{hotRecommendDetail?.contentCount}</span>
+            <span>{AssociationDetail?.contactPhone}</span>
           </Col>
         </Row>
         <Row className={'title'}>
@@ -140,7 +134,7 @@ export default () => {
             <div className="info-label">联系地址：</div>
           </Col>
           <Col span={16}>
-            <span>{hotRecommendDetail?.contentCount}</span>
+            <span>{AssociationDetail?.contactAddress}</span>
           </Col>
         </Row>
       </div>
@@ -151,7 +145,7 @@ export default () => {
             <div className="info-label">字段名称：</div>
           </Col>
           <Col span={16}>
-            <span>{hotRecommendDetail?.contentCount}</span>
+            <span>{AssociationDetail?.contentCount}</span>
           </Col>
         </Row>
         <Row className={'title'}>
@@ -159,7 +153,7 @@ export default () => {
             <div className="info-label">字段名称：</div>
           </Col>
           <Col span={16}>
-            <span>{hotRecommendDetail?.contentCount}</span>
+            <span>{AssociationDetail?.contentCount}</span>
           </Col>
         </Row>
         <Row className={'title'}>
@@ -167,18 +161,22 @@ export default () => {
             <div className="info-label">字段名称：</div>
           </Col>
           <Col span={16}>
-            <span>{hotRecommendDetail?.contentCount}</span>
+            <span>{AssociationDetail?.contentCount}</span>
           </Col>
         </Row>
       </div>
       <div className="topic-detail">
         <div className="topic-detail-title">操作日志</div>
         <div className="operation-log">
-          <div className="operation-log-item">
-            <div className="item-userName">运营人员A</div>
-            <div className="item-name">导入</div>
-            <div className="item-time">2021-06-14 08:25</div>
-          </div>
+          {associationLog.map((item: any) => {
+            return (
+              <div className="operation-log-item">
+                <div className="item-userName">{item.name}</div>
+                <div className="item-name">{item.content}</div>
+                <div className="item-time">{item.createTime}</div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </PageContainer>

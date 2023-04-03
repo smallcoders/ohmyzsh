@@ -7,76 +7,84 @@ import {
   Form,
   Input,
   Modal,
-  message,
   Breadcrumb,
-  Switch,
   InputNumber,
-  Card,
   Select,
+  message,
+  Cascader,
 } from 'antd';
 import { history } from '@@/core/history';
-import { getArticleType } from '@/services/baseline';
-import { getHotRecommendDetail, queryByIds } from '@/services/topic';
 import { Link } from 'umi';
 import { phoneVerifyReg } from '@/utils/regex-util';
-import UploadForm from '@/components/upload_form';
+import UploadFormFile from '@/components/upload_form/upload-form';
+import { queryAllianceDetail, saveAlliance } from '@/services/baseline-info';
+import { getWholeAreaTree } from '@/services/area';
 const sc = scopedClasses('baseline-association-add');
-
+import UploadFormAvatar from '@/components/upload_form/upload-form-avatar';
 export default () => {
   const [formIsChange, setFormIsChange] = useState<boolean>(false);
-  const [types, setTypes] = useState<any[]>([]);
   const [visible, setVisible] = useState<boolean>(false);
   const [visibleAdd, setVisibleAdd] = useState<boolean>(false);
   const formLayout = {
-    labelCol: { span: 6 },
+    labelCol: { span: 4 },
     wrapperCol: { span: 10 },
   };
   const { TextArea } = Input;
+  const [areaOptions, setAreaOptions] = useState<any>([]);
   const [form] = Form.useForm();
-  const [selectRowKeys, setSelectRowKeys] = useState<any>([]);
-  const [selectRows, setSelectRows] = useState<any>([]);
-  const [modalVisible, setModalVisible] = useState<any>(false);
   // 方法
-  //获取文章类型
-  const prepare = async () => {
-    try {
-      const res = await getArticleType();
-      setTypes(res.result || []);
-    } catch (error) {
-      message.error('获取数据失败');
-    }
-  };
-  //获取热门话题详情
-  const { query } = history.location as any;
-  const getHotRecommendDetailById = (pageIndex: number = 1, pageSize = query?.contentCount) => {
-    getHotRecommendDetail({ id: query?.id, pageIndex, pageSize }).then((res) => {
-      if (res.code === 0) {
-        form.setFieldsValue(res?.result);
 
-        setSelectRows(res?.result.list);
-        const newArray: any = [];
-        res?.result.list.forEach((item: any) => {
-          newArray.push(item.articleId);
-        });
-        setSelectRowKeys([...newArray]);
-        queryByIds([...newArray]).then((result) => {
-          if (result.code === 0) {
-          }
-        });
+  useEffect(() => {
+    // 获取区域省+市下拉
+    getWholeAreaTree({ endLevel: 'COUNTY' }).then((data) => {
+      setAreaOptions(data || []);
+    });
+  }, []);
+  //获取热门话题详情
+  const { organizationId } = history.location.query as any;
+  const getGovDetailById = () => {
+    queryAllianceDetail({ organizationId }).then((res) => {
+      if (res.code === 0) {
+        const areaCode = [res?.result.provinceCode, res?.result.cityCode, res?.result.countyCode];
+        form.setFieldsValue({ ...res?.result, areaCode });
       }
     });
   };
-
   useEffect(() => {
-    getHotRecommendDetailById();
-    prepare();
+    getGovDetailById();
   }, []);
 
+  // 上架/暂存
+  const addAssociation = async () => {
+    const value = form.getFieldsValue();
+    const [provinceCode, cityCode, countyCode] = value.areaCode;
+    const submitRes = organizationId
+      ? await saveAlliance({
+          organizationId,
+          ...value,
+          countyCode,
+          cityCode,
+          provinceCode,
+        })
+      : await saveAlliance({
+          ...value,
+          countyCode,
+          cityCode,
+          provinceCode,
+        });
+    if (submitRes.code === 0) {
+      message.success('保存成功');
+      history.goBack();
+    } else {
+      message.error(`${submitRes.message}`);
+    }
+  };
+  // @ts-ignore
   return (
     <PageContainer
       className={sc('container')}
       header={{
-        title: query?.id ? `编辑` : '新增',
+        title: organizationId ? `编辑` : '新增',
         breadcrumb: (
           <Breadcrumb>
             <Breadcrumb.Item>
@@ -85,7 +93,7 @@ export default () => {
             <Breadcrumb.Item>
               <Link to="/baseline/baseline-association-manage">协会信息配置 </Link>
             </Breadcrumb.Item>
-            <Breadcrumb.Item>{query?.id ? `编辑` : '新增'}</Breadcrumb.Item>
+            <Breadcrumb.Item>{organizationId ? `编辑` : '新增'}</Breadcrumb.Item>
           </Breadcrumb>
         ),
       }}
@@ -130,7 +138,7 @@ export default () => {
           <div className={sc('container-table-body')}>
             <div className={sc('container-table-body-title')}>协会基础信息</div>
             <Form.Item
-              name="topic"
+              name="name"
               label="协会名称"
               rules={[
                 {
@@ -146,7 +154,7 @@ export default () => {
               />
             </Form.Item>
             <Form.Item
-              name="weight"
+              name="industryCategoryId"
               label="所属产业"
               rules={[
                 {
@@ -162,7 +170,7 @@ export default () => {
               />
             </Form.Item>
             <Form.Item
-              name="weight"
+              name="districtCodeType"
               label="协会级别"
               rules={[
                 {
@@ -171,14 +179,15 @@ export default () => {
                 },
               ]}
             >
-              <Select placeholder="请选择" allowClear style={{ width: '200px' }}>
-                <Select.Option value={0}>省级</Select.Option>
-                <Select.Option value={1}>市级</Select.Option>
-                <Select.Option value={1}>区县级</Select.Option>
+              <Select placeholder="请选择" allowClear style={{ width: '100%' }}>
+                <Select.Option value={0}>未知</Select.Option>
+                <Select.Option value={1}>省级</Select.Option>
+                <Select.Option value={2}>市级</Select.Option>
+                <Select.Option value={3}>区县级</Select.Option>
               </Select>
             </Form.Item>
             <Form.Item
-              name="weight"
+              name="areaCode"
               label="所在区域"
               rules={[
                 {
@@ -187,13 +196,14 @@ export default () => {
                 },
               ]}
             >
-              <TextArea
-                autoSize={{ minRows: 1, maxRows: 10 }}
-                placeholder="请输入"
-                maxLength={20}
+              <Cascader
+                fieldNames={{ label: 'name', value: 'code', children: 'nodes' }}
+                options={areaOptions}
+                getPopupContainer={(triggerNode) => triggerNode}
+                placeholder="请选择"
               />
             </Form.Item>
-            <Form.Item name="weight" label="协会介绍">
+            <Form.Item name="aboutUs" label="协会介绍">
               <TextArea
                 autoSize={{ minRows: 1, maxRows: 20 }}
                 placeholder="请输入"
@@ -201,7 +211,7 @@ export default () => {
               />
             </Form.Item>
             <Form.Item
-              name="weight"
+              name="logoUrl"
               label="官方logo"
               rules={[
                 {
@@ -210,26 +220,25 @@ export default () => {
                 },
               ]}
             >
-              <UploadForm
+              <UploadFormAvatar
+                action={'/antelope-common/common/file/upload/record/withAuthCheck'}
                 listType="picture-card"
                 className="avatar-uploader"
-                showUploadList={false}
-                maxSize={5}
+                maxCount={1}
                 accept=".png,.jpeg,.jpg"
-                tooltip={<span className={'tooltip'}>图片格式仅支持JPG、PNG、JPEG</span>}
+                shape={'round'}
               />
             </Form.Item>
-            <Form.Item name="weight" label="官方协会二维码">
-              <UploadForm
+            <Form.Item name="qrcodeFileId" label="官方协会二维码">
+              <UploadFormFile
                 listType="picture-card"
                 className="avatar-uploader"
-                showUploadList={false}
-                maxSize={5}
+                maxCount={1}
                 accept=".png,.jpeg,.jpg"
-                tooltip={<span className={'tooltip'}>图片格式仅支持JPG、PNG、JPEG</span>}
+                tooltip={<span className={'tooltip'}>仅支持JPG、PNG、JPEG</span>}
               />
             </Form.Item>
-            <Form.Item name="weight" label="爱企查对应地址">
+            <Form.Item name="aqcUrl" label="爱企查对应地址">
               <TextArea
                 autoSize={{ minRows: 1, maxRows: 10 }}
                 placeholder="请输入"
@@ -247,7 +256,16 @@ export default () => {
           </div>
           <div className={sc('container-table-body')}>
             <div className={sc('container-table-body-title')}>联系信息</div>
-            <Form.Item name="weight" label="联系人">
+            <Form.Item
+              name="contactName"
+              label="联系人"
+              rules={[
+                {
+                  required: true,
+                  message: `必填`,
+                },
+              ]}
+            >
               <TextArea
                 autoSize={{ minRows: 1, maxRows: 10 }}
                 placeholder="请输入"
@@ -255,7 +273,7 @@ export default () => {
               />
             </Form.Item>
             <Form.Item
-              name="phone"
+              name="contactPhone"
               label={`联系电话`}
               rules={[
                 { required: true, message: '请输入' },
@@ -274,7 +292,16 @@ export default () => {
                 maxLength={35}
               />
             </Form.Item>
-            <Form.Item name="weight" label="联系地址">
+            <Form.Item
+              name="contactAddress"
+              label="联系地址"
+              rules={[
+                {
+                  required: true,
+                  message: `必填`,
+                },
+              ]}
+            >
               <TextArea
                 autoSize={{ minRows: 1, maxRows: 10 }}
                 placeholder="请输入"
@@ -283,33 +310,6 @@ export default () => {
             </Form.Item>
           </div>
         </Form>
-        <Modal
-          title={'内容选择'}
-          visible={modalVisible}
-          maskClosable={false}
-          width={1200}
-          onCancel={(e) => {
-            console.log(e);
-            setModalVisible(e);
-          }}
-          bodyStyle={{
-            height: '500px',
-            overflow: 'auto',
-          }}
-          centered
-          destroyOnClose
-          onOk={() => {
-            if ([...selectRows].length === 0) {
-              message.error(`至少勾选一个内容`);
-            } else {
-              queryByIds([...selectRowKeys]).then((res) => {
-                if (res.code === 0) {
-                }
-              });
-              setModalVisible(false);
-            }
-          }}
-        />
       </div>
       <Modal
         visible={visible}
@@ -340,7 +340,13 @@ export default () => {
           <Button key="back" onClick={() => setVisibleAdd(false)}>
             取消
           </Button>,
-          <Button key="submit" type="primary" onClick={() => {}}>
+          <Button
+            key="submit"
+            type="primary"
+            onClick={() => {
+              addAssociation();
+            }}
+          >
             保存
           </Button>,
         ]}

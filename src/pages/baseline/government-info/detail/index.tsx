@@ -6,9 +6,8 @@ import { Button, Col, Row } from 'antd';
 import SelfTable from '@/components/self_table';
 import type LogoutVerify from '@/types/user-config-logout-verify';
 import type Common from '@/types/common';
-import { getHotRecommendDetail } from '@/services/topic';
 import { history } from '@@/core/history';
-import { routeName } from '../../../../../config/routes';
+import { queryGovDetail, queryGovLogList } from '@/services/baseline-info';
 
 export default () => {
   const sc = scopedClasses('baseline-government-detail');
@@ -19,25 +18,26 @@ export default () => {
     pageTotal: 0,
   });
   const [dataSource, setDataSource] = useState<any>([]);
-  const [hotRecommendDetail, setHotRecommendDetail] = useState<any>({});
-  const { recommendId } = history.location.query as any;
-  //获取热门话题的详情
-  const getHotRecommendDetailById = (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
-    getHotRecommendDetail({ id: recommendId, pageIndex, pageSize }).then((res) => {
+  const [hotGovDetail, setHotGovDetail] = useState<any>({});
+  const [hotGovLog, setHotGovLog] = useState<any>([]);
+  const { organizationId } = history.location.query as any;
+  //获取详情
+  const getGovDetailById = () => {
+    queryGovDetail({ organizationId }).then((res) => {
       if (res.code === 0) {
-        setHotRecommendDetail(res?.result || {});
-        setDataSource(res?.result.list);
-        setPageInfo({
-          pageIndex: res?.result.pageIndex,
-          pageSize: res?.result.pageSize,
-          totalCount: res?.result.contentCount,
-          pageTotal: 0,
-        });
+        setHotGovDetail(res?.result);
+        setDataSource(res?.result.hotService);
       }
     });
   };
+
   useEffect(() => {
-    getHotRecommendDetailById();
+    getGovDetailById();
+    queryGovLogList({ organizationId }).then((res) => {
+      if (res.code === 0) {
+        setHotGovLog(res?.result);
+      }
+    });
   }, []);
 
   const columns = [
@@ -45,44 +45,22 @@ export default () => {
       title: '序号',
       dataIndex: 'sort',
       width: 80,
-      render: (_: any, _record: LogoutVerify.Content, index: number) =>
-        pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
-      title: '标题',
-      dataIndex: 'title',
+      title: '服务名称',
+      dataIndex: 'name',
       isEllipsis: true,
       width: 200,
     },
     {
-      title: '阅读量（总阅读量）',
-      dataIndex: 'totalReadingCount',
+      title: '服务h5地址',
+      dataIndex: 'serviceUrl',
       width: 200,
     },
     {
-      title: '转发量（总转发量）',
-      dataIndex: 'totalForwardCount',
+      title: '权重',
+      dataIndex: 'weight',
       width: 200,
-    },
-    {
-      title: '操作',
-      width: 200,
-      fixed: 'right',
-      dataIndex: 'option',
-      render: (_: any, record: any) => {
-        return (
-          <div className={sc('container-option')}>
-            <Button
-              type="link"
-              onClick={() => {
-                window.open(routeName.BASELINE_CONTENT_MANAGE_DETAIL + `?id=${record?.id}`);
-              }}
-            >
-              详情
-            </Button>
-          </div>
-        );
-      },
     },
   ];
 
@@ -107,7 +85,7 @@ export default () => {
             <div className="info-label">政府服务部门名称：</div>
           </Col>
           <Col span={16}>
-            <span>{hotRecommendDetail?.topic}</span>
+            <span>{hotGovDetail?.name}</span>
           </Col>
         </Row>
         <Row className={'title'}>
@@ -115,7 +93,7 @@ export default () => {
             <div className="info-label">服务部门简称：</div>
           </Col>
           <Col span={16}>
-            <span>{hotRecommendDetail?.weight}</span>
+            <span>{hotGovDetail?.nameShort}</span>
           </Col>
         </Row>
         <Row className={'title'}>
@@ -123,7 +101,7 @@ export default () => {
             <div className="info-label">id：</div>
           </Col>
           <Col span={16}>
-            <span>{hotRecommendDetail?.contentCount}</span>
+            <span>{hotGovDetail?.govId}</span>
           </Col>
         </Row>
         <Row className={'title'}>
@@ -131,7 +109,7 @@ export default () => {
             <div className="info-label">uuid：</div>
           </Col>
           <Col span={16}>
-            <span>{hotRecommendDetail?.contentCount}</span>
+            <span>{hotGovDetail?.govUuid}</span>
           </Col>
         </Row>
         <Row className={'title'}>
@@ -139,7 +117,7 @@ export default () => {
             <div className="info-label">级别：</div>
           </Col>
           <Col span={16}>
-            <span>{hotRecommendDetail?.contentCount}</span>
+            <span>{hotGovDetail?.districtCodeType}</span>
           </Col>
         </Row>
         <Row className={'title'}>
@@ -147,7 +125,7 @@ export default () => {
             <div className="info-label">所在区域：</div>
           </Col>
           <Col span={16}>
-            <span>{hotRecommendDetail?.contentCount}</span>
+            <span>{hotGovDetail?.provinceCode}</span>
           </Col>
         </Row>
         <Row className={'title'}>
@@ -155,7 +133,7 @@ export default () => {
             <div className="info-label">部门介绍：</div>
           </Col>
           <Col span={16}>
-            <span>{hotRecommendDetail?.contentCount}</span>
+            <span>{hotGovDetail?.aboutUs}</span>
           </Col>
         </Row>
         <Row className={'title'}>
@@ -163,7 +141,7 @@ export default () => {
             <div className="info-label">在线办理h5地址：</div>
           </Col>
           <Col span={16}>
-            <span>{hotRecommendDetail?.contentCount}</span>
+            <span>{hotGovDetail?.serviceUrl}</span>
           </Col>
         </Row>
         <Row className={'title'}>
@@ -171,7 +149,7 @@ export default () => {
             <div className="info-label">是否热门：</div>
           </Col>
           <Col span={16}>
-            <span>{hotRecommendDetail?.contentCount}</span>
+            <span>{hotGovDetail?.hot ? '热门' : '否'}</span>
           </Col>
         </Row>
         <Row className={'title'}>
@@ -179,7 +157,7 @@ export default () => {
             <div className="info-label">热门部门权重：</div>
           </Col>
           <Col span={16}>
-            <span>{hotRecommendDetail?.contentCount}</span>
+            <span>{hotGovDetail?.weight}</span>
           </Col>
         </Row>
         <Row className={'title'}>
@@ -192,20 +170,7 @@ export default () => {
               // scroll={{ x: 1480 }}
               columns={columns}
               dataSource={dataSource}
-              pagination={
-                pageInfo.totalCount === 0
-                  ? false
-                  : {
-                      onChange: getHotRecommendDetailById,
-                      total: pageInfo.totalCount,
-                      current: pageInfo.pageIndex,
-                      pageSize: pageInfo.pageSize,
-                      showTotal: (total: number) =>
-                        `共${total}条记录 第${pageInfo.pageIndex}/${
-                          Math.ceil(pageInfo.totalCount / pageInfo.pageSize) || 1
-                        }页`,
-                    }
-              }
+              pagination={null}
             />
           </Col>
         </Row>
@@ -213,11 +178,15 @@ export default () => {
       <div className="topic-detail">
         <div className="topic-detail-title">操作日志</div>
         <div className="operation-log">
-          <div className="operation-log-item">
-            <div className="item-userName">运营人员A</div>
-            <div className="item-name">导入</div>
-            <div className="item-time">2021-06-14 08:25</div>
-          </div>
+          {hotGovLog.map((item: any) => {
+            return (
+              <div className="operation-log-item">
+                <div className="item-userName">{item.name}</div>
+                <div className="item-name">{item.content}</div>
+                <div className="item-time">{item.createTime}</div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </PageContainer>

@@ -4,7 +4,7 @@ import type Common from '@/types/common';
 import CourseManage from '@/types/service-config-course-manage';
 import { request } from 'umi';
 
-type EnumResult = {result: Common.CommonEnum[]} & Common.ResultCode
+type EnumResult = { result: Common.CommonEnum[] } & Common.ResultCode;
 
 export const httpUploadWithDetail = (
   data: FormData,
@@ -19,9 +19,7 @@ export const httpUploadWithDetail = (
   });
 };
 
-export const httpUpload = (
-  data: FormData,
-) => {
+export const httpUpload = (data: FormData) => {
   return request(`/antelope-common/common/file/upload`, {
     method: 'post',
     data,
@@ -54,7 +52,7 @@ export async function getEnumByName(label: string) {
  * @param label
  * @returns
  */
- export async function getEnumByNameByScience(label: string) {
+export async function getEnumByNameByScience(label: string) {
   return request<EnumResult>(`/antelope-science/mng/common/dictionaryEnum?label=${label}`, {
     method: 'get',
   });
@@ -97,7 +95,7 @@ export async function listAllAreaCode() {
  * @param data FormData
  * @returns
  */
-export async function uploadFile(data:any) {
+export async function uploadFile(data: any) {
   return request<Common.ResultCode & { result: { path: string } }>(
     `/antelope-common/common/file/upload/record`,
     {
@@ -112,11 +110,21 @@ export async function uploadFile(data:any) {
  * @param string ids
  * @returns
  */
- export async function getFileInfo(ids: string) {
-  return request<Common.ResultCode & { result: any }>(
-    `/antelope-common/common/file/${ids}`,
-    {
-      method: 'get',
-    },
-  );
+export async function getFileInfo(ids: string) {
+  return request<Common.ResultCode & { result: any }>(`/antelope-common/common/file/${ids}`, {
+    method: 'get',
+  });
+}
+
+/**
+ * 查询附件列表
+ * @param string ids
+ * @returns
+ */
+export async function getFileInfo1(ids: string) {
+  return request<any>(`/antelope-common/common/file/${ids}`, {
+    method: 'get',
+    responseType: 'blob',
+    getResponse: true,
+  });
 }

@@ -13,17 +13,18 @@ import {
   InputNumber,
   Card,
   Select,
+  Cascader,
 } from 'antd';
 import { history } from '@@/core/history';
-import { getArticleType } from '@/services/baseline';
-import { getHotRecommendDetail, queryByIds } from '@/services/topic';
 import { Link } from 'umi';
 import { PlusOutlined } from '@ant-design/icons';
+import { getWholeAreaTree } from '@/services/area';
+import { queryGovDetail, saveGov } from '@/services/baseline-info';
 const sc = scopedClasses('baseline-government-add');
 
 export default () => {
   const [formIsChange, setFormIsChange] = useState<boolean>(false);
-  const [types, setTypes] = useState<any[]>([]);
+  const [areaOptions, setAreaOptions] = useState<any>([]);
   const [isHOt, setIsHot] = useState<boolean>(false);
   const [visible, setVisible] = useState<boolean>(false);
   const [visibleAdd, setVisibleAdd] = useState<boolean>(false);
@@ -33,50 +34,59 @@ export default () => {
   };
   const { TextArea } = Input;
   const [form] = Form.useForm();
-  const [selectRowKeys, setSelectRowKeys] = useState<any>([]);
-  const [selectRows, setSelectRows] = useState<any>([]);
-  const [modalVisible, setModalVisible] = useState<any>(false);
   // 方法
-  //获取文章类型
-  const prepare = async () => {
-    try {
-      const res = await getArticleType();
-      setTypes(res.result || []);
-    } catch (error) {
-      message.error('获取数据失败');
-    }
-  };
-  //获取热门话题详情
-  const { query } = history.location as any;
-  const getHotRecommendDetailById = (pageIndex: number = 1, pageSize = query?.contentCount) => {
-    getHotRecommendDetail({ id: query?.id, pageIndex, pageSize }).then((res) => {
-      if (res.code === 0) {
-        form.setFieldsValue(res?.result);
 
-        setSelectRows(res?.result.list);
-        const newArray: any = [];
-        res?.result.list.forEach((item: any) => {
-          newArray.push(item.articleId);
-        });
-        setSelectRowKeys([...newArray]);
-        queryByIds([...newArray]).then((result) => {
-          if (result.code === 0) {
-          }
-        });
+  useEffect(() => {
+    // 获取区域省+市下拉
+    getWholeAreaTree({ endLevel: 'COUNTY' }).then((data) => {
+      setAreaOptions(data || []);
+    });
+  }, []);
+  //获取热门话题详情
+  const { organizationId } = history.location.query as any;
+  const getGovDetailById = () => {
+    queryGovDetail({ organizationId }).then((res) => {
+      if (res.code === 0) {
+        const areaCode = [res?.result.provinceCode, res?.result.cityCode, res?.result.countyCode];
+        form.setFieldsValue({ ...res?.result, areaCode });
+        setIsHot(res?.result.hot);
       }
     });
   };
 
   useEffect(() => {
-    getHotRecommendDetailById();
-    prepare();
+    getGovDetailById();
   }, []);
-
+  // 上架/暂存
+  const addGov = async () => {
+    const value = form.getFieldsValue();
+    const [provinceCode, cityCode, countyCode] = value.areaCode;
+    const submitRes = organizationId
+      ? await saveGov({
+          organizationId,
+          ...value,
+          countyCode,
+          cityCode,
+          provinceCode,
+        })
+      : await saveGov({
+          countyCode,
+          cityCode,
+          provinceCode,
+          ...value,
+        });
+    if (submitRes.code === 0) {
+      message.success('保存成功');
+      history.goBack();
+    } else {
+      message.error(`${submitRes.message}`);
+    }
+  };
   return (
     <PageContainer
       className={sc('container')}
       header={{
-        title: query?.id ? `编辑` : '新增',
+        title: organizationId ? `编辑` : '新增',
         breadcrumb: (
           <Breadcrumb>
             <Breadcrumb.Item>
@@ -85,7 +95,7 @@ export default () => {
             <Breadcrumb.Item>
               <Link to="/baseline/baseline-government-manage">政府信息配置 </Link>
             </Breadcrumb.Item>
-            <Breadcrumb.Item>{query?.id ? `编辑` : '新增'}</Breadcrumb.Item>
+            <Breadcrumb.Item>{organizationId ? `编辑` : '新增'}</Breadcrumb.Item>
           </Breadcrumb>
         ),
       }}
@@ -95,7 +105,8 @@ export default () => {
           onClick={() => {
             form
               .validateFields()
-              .then(async () => {
+              .then(async (value: any) => {
+                console.log(value);
                 setVisibleAdd(true);
               })
               .catch((e) => {
@@ -184,7 +195,12 @@ export default () => {
               },
             ]}
           >
-            <Input placeholder="请输入" />
+            <Cascader
+              fieldNames={{ label: 'name', value: 'code', children: 'nodes' }}
+              options={areaOptions}
+              getPopupContainer={(triggerNode) => triggerNode}
+              placeholder="请选择"
+            />
           </Form.Item>
           <Form.Item name="aboutUs" label="部门介绍">
             <TextArea autoSize={{ minRows: 1, maxRows: 30 }} placeholder="请输入" maxLength={500} />
@@ -204,6 +220,7 @@ export default () => {
           <Form.Item
             name="hot"
             label="是否热门"
+            initialValue={false}
             rules={[
               {
                 required: true,
@@ -212,13 +229,13 @@ export default () => {
             ]}
           >
             <Switch
+              checked={form.getFieldsValue().hot}
+              onChange={(e) => {
+                setIsHot(e);
+              }}
               checkedChildren="热门"
               unCheckedChildren="否"
               style={{ marginRight: 20 }}
-              onChange={(e) => {
-                console.log(e);
-                setIsHot(true);
-              }}
             />
           </Form.Item>
           {isHOt && (
@@ -306,33 +323,6 @@ export default () => {
             </>
           )}
         </Form>
-        <Modal
-          title={'内容选择'}
-          visible={modalVisible}
-          maskClosable={false}
-          width={1200}
-          onCancel={(e) => {
-            console.log(e);
-            setModalVisible(e);
-          }}
-          bodyStyle={{
-            height: '500px',
-            overflow: 'auto',
-          }}
-          centered
-          destroyOnClose
-          onOk={() => {
-            if ([...selectRows].length === 0) {
-              message.error(`至少勾选一个内容`);
-            } else {
-              queryByIds([...selectRowKeys]).then((res) => {
-                if (res.code === 0) {
-                }
-              });
-              setModalVisible(false);
-            }
-          }}
-        />
       </div>
       <Modal
         visible={visible}
@@ -348,17 +338,6 @@ export default () => {
             <Button type={'primary'} key="submit" onClick={() => history.goBack()}>
               直接离开
             </Button>
-            {/*{detail?.state !== 'ON_SHELF' && (*/}
-            {/*  <Button*/}
-            {/*    key="submit"*/}
-            {/*    type="primary"*/}
-            {/*    onClick={() => {*/}
-            {/*      addRecommend(false);*/}
-            {/*    }}*/}
-            {/*  >*/}
-            {/*    暂存并离开*/}
-            {/*  </Button>*/}
-            {/*)}*/}
           </>,
         ]}
       >
@@ -374,7 +353,13 @@ export default () => {
           <Button key="back" onClick={() => setVisibleAdd(false)}>
             取消
           </Button>,
-          <Button key="submit" type="primary" onClick={() => {}}>
+          <Button
+            key="submit"
+            type="primary"
+            onClick={() => {
+              addGov();
+            }}
+          >
             保存
           </Button>,
         ]}

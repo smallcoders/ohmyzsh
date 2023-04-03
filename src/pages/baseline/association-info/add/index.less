@@ -4,15 +4,35 @@
   text-align: center;
   line-height: 88px;
 }
+.association-select{
+  width: 100%;
+}
 @prefix: baseline-association-add;
 
 .@{prefix}-container{
+  .avatar-uploader > .ant-upload {
+    width: 128px;
+    height: 128px;
+  }
+  .ant-upload-list-picture-card-container{
+    width: 128px;
+    height: 128px;
+  }
+  .ant-upload-list-picture-card .ant-upload-list-item {
+    width: 128px;
+    height: 128px;
+  }
+  .ant-upload{
+    height: 128px;
+    width: 128px;
+  }
   &-table-body {
     padding: 32px;
     background-color: #fff;
     &-title{
       font-weight: bolder;
       font-size: 16px;
+      margin:0 16px 16px 16px;
     }
   }
   .info-label {
