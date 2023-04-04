@@ -13,17 +13,23 @@ import {
 export default () => {
   const sc = scopedClasses('baseline-association-detail');
   const [baseInfo, setBaseInfo] = useState<any>({});
+  const [loading, setLoading] = useState<boolean>(false);
   const [associationLog, setAssociationLog] = useState<any>([]);
   const [AssociationDetail, setAssociationDetail] = useState<any>({});
   const { organizationId } = history.location.query as any;
   //获取详情
   //获取详情
   const getAssociationDetailById = () => {
-    queryAllianceDetail({ organizationId }).then((res) => {
-      if (res.code === 0) {
-        setAssociationDetail(res?.result);
-      }
-    });
+    queryAllianceDetail({ organizationId })
+      .then((res) => {
+        if (res.code === 0) {
+          setLoading(true);
+          setAssociationDetail(res?.result);
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
   useEffect(() => {
     getAssociationDetailById();
@@ -42,6 +48,7 @@ export default () => {
   return (
     <PageContainer
       className={sc('container')}
+      loading={loading}
       footer={[
         <Button
           style={{ marginRight: '40px' }}

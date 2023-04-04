@@ -112,3 +112,11 @@ export async function queryBaseInfoById(params?: any) {
     params,
   });
 }
+
+//协会信息配置-所属产业
+export async function queryIndustryTypes(params?: any) {
+  return request<any>('/antelope-business/mng/organization/alliance/categoryFirstList', {
+    method: 'get',
+    params,
+  });
+}

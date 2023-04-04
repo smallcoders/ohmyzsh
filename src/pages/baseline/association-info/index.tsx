@@ -19,21 +19,17 @@ import {
 } from 'antd';
 import SelfTable from '@/components/self_table';
 import type Common from '@/types/common';
-import {
-  CloudUploadOutlined,
-  FileExclamationOutlined,
-  FileTextOutlined,
-  PlusOutlined,
-} from '@ant-design/icons';
+import { CloudUploadOutlined, PlusOutlined } from '@ant-design/icons';
 import { history } from '@@/core/history';
 import { useAccess, Access } from '@@/plugin-access/access';
 import type { RcFile, UploadChangeParam } from 'antd/lib/upload/interface';
 import { getFileInfo } from '@/services/common';
-import { getAhArea } from '@/services/area';
+import { getWholeAreaTree } from '@/services/area';
 import {
   delAlliance,
   getAllianceImportTemplate,
   queryAlliancePage,
+  queryIndustryTypes,
 } from '@/services/baseline-info';
 
 export default () => {
@@ -49,6 +45,8 @@ export default () => {
   const [createModalVisible, setModalVisible] = useState<boolean>(false);
   const [searchForm] = Form.useForm();
   const [dataSource, setDataSource] = useState<any>([]);
+  const [industryTypes, setIndustryTypes] = useState<any>([]);
+
   const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
     pageIndex: 1,
     pageSize: 10,
@@ -57,8 +55,11 @@ export default () => {
   });
   const [searchContent, setSearChContent] = useState<any>({});
   useEffect(() => {
-    getAhArea().then((res) => {
-      setAreaOptions(res);
+    getWholeAreaTree({ endLevel: 'COUNTY' }).then((data) => {
+      setAreaOptions(data || []);
+    });
+    queryIndustryTypes().then((res) => {
+      setIndustryTypes(res?.result);
     });
   }, []);
   // 搜索模块
@@ -74,7 +75,13 @@ export default () => {
             </Col>
             <Col span={8}>
               <Form.Item name="industryCategoryId" label="所属产业">
-                <Input placeholder="请输入" allowClear autoComplete="off" />
+                <Select placeholder="请选择">
+                  {industryTypes.map((p: any) => (
+                    <Select.Option key={'type' + p.id} value={p.id}>
+                      {p.name}
+                    </Select.Option>
+                  ))}
+                </Select>
               </Form.Item>
             </Col>
             <Col span={8}>
@@ -103,8 +110,14 @@ export default () => {
                 type="primary"
                 key="search"
                 onClick={() => {
-                  const search = searchForm.getFieldsValue();
-                  setSearChContent(search);
+                  const { districtCodeType, areaCode, name, industryCategoryId } =
+                    searchForm.getFieldsValue();
+                  setSearChContent({
+                    districtCodeType,
+                    areaCode: areaCode ? areaCode[2] : undefined,
+                    industryCategoryId,
+                    name,
+                  });
                 }}
               >
                 查询
@@ -213,17 +226,19 @@ export default () => {
       render: (_: any, record: any) => {
         return (
           <div className={sc('container-option')}>
-            <Button
-              type="link"
-              onClick={() => {
-                history.push(
-                  `/baseline/baseline-association-manage/detail?organizationId=${record?.organizationId}`,
-                );
-              }}
-            >
-              详情
-            </Button>
-            <Access accessible={access.PU_BLM_HTGL}>
+            <Access accessible={access.PQ_BLM_XHXXPZ}>
+              <Button
+                type="link"
+                onClick={() => {
+                  history.push(
+                    `/baseline/baseline-association-manage/detail?organizationId=${record?.organizationId}`,
+                  );
+                }}
+              >
+                详情
+              </Button>
+            </Access>
+            <Access accessible={access.P_BLM_XHXXPZ}>
               <Button
                 type="link"
                 onClick={() => {
@@ -235,7 +250,7 @@ export default () => {
                 编辑
               </Button>
             </Access>
-            <Access accessible={access.PD_BLM_HTGL}>
+            <Access accessible={access.P_BLM_XHXXPZ}>
               {record?.deletable && (
                 <Popconfirm
                   title="确定删除该部门信息？"
@@ -413,7 +428,7 @@ export default () => {
     <PageContainer className={sc('container')}>
       {useSearchNode()}
       <div className={sc('container-table-header')}>
-        <Access accessible={access.PA_BLM_HTGL}>
+        <Access accessible={access.P_BLM_XHXXPZ}>
           <div>
             <Button
               type="primary"

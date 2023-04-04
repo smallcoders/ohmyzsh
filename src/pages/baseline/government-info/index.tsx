@@ -15,7 +15,6 @@ import {
   Popconfirm,
   Row,
   Select,
-  Space,
   Upload,
 } from 'antd';
 import SelfTable from '@/components/self_table';
@@ -215,17 +214,19 @@ export default () => {
       render: (_: any, record: any) => {
         return (
           <div className={sc('container-option')}>
-            <Button
-              type="link"
-              onClick={() => {
-                history.push(
-                  `/baseline/baseline-government-manage/detail?organizationId=${record?.organizationId}`,
-                );
-              }}
-            >
-              详情
-            </Button>
-            <Access accessible={access.PU_BLM_HTGL}>
+            <Access accessible={access.PQ_BLM_ZFXXPZ}>
+              <Button
+                type="link"
+                onClick={() => {
+                  history.push(
+                    `/baseline/baseline-government-manage/detail?organizationId=${record?.organizationId}`,
+                  );
+                }}
+              >
+                详情
+              </Button>
+            </Access>
+            <Access accessible={access.P_BLM_ZFXXPZ}>
               <Button
                 type="link"
                 onClick={() => {
@@ -237,7 +238,7 @@ export default () => {
                 编辑
               </Button>
             </Access>
-            <Access accessible={access.PD_BLM_HTGL}>
+            <Access accessible={access.P_BLM_ZFXXPZ}>
               {record.deletable && (
                 <Popconfirm
                   title="确定删除该部门信息？"
@@ -442,7 +443,7 @@ export default () => {
     <PageContainer className={sc('container')}>
       {useSearchNode()}
       <div className={sc('container-table-header')}>
-        <Access accessible={access.PA_BLM_HTGL}>
+        <Access accessible={access.P_BLM_ZFXXPZ}>
           <div>
             <Button
               type="primary"
