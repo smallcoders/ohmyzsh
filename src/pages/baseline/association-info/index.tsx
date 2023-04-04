@@ -1,7 +1,7 @@
 import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
 import { PageContainer } from '@ant-design/pro-layout';
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import type { UploadProps } from 'antd';
 import {
   Button,
@@ -19,7 +19,6 @@ import {
 } from 'antd';
 import SelfTable from '@/components/self_table';
 import type Common from '@/types/common';
-import { deleteHotRecommend } from '@/services/topic';
 import {
   CloudUploadOutlined,
   FileExclamationOutlined,
@@ -29,9 +28,8 @@ import {
 import { history } from '@@/core/history';
 import { useAccess, Access } from '@@/plugin-access/access';
 import type { RcFile, UploadChangeParam } from 'antd/lib/upload/interface';
-import { getTemplateFile } from '@/services/supplier';
 import { getFileInfo } from '@/services/common';
-import { getAhArea, getWholeAreaTree } from '@/services/area';
+import { getAhArea } from '@/services/area';
 import {
   delAlliance,
   getAllianceImportTemplate,
@@ -46,6 +44,7 @@ export default () => {
     labelCol: { span: 6 },
     wrapperCol: { span: 16 },
   };
+  const [loading, setLoading] = useState<boolean>(false);
   const [areaOptions, setAreaOptions] = useState<any>([]);
   const [createModalVisible, setModalVisible] = useState<boolean>(false);
   const [searchForm] = Form.useForm();
@@ -127,6 +126,7 @@ export default () => {
   };
   // 获取分页数据
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
+    setLoading(true);
     try {
       const { result, totalCount, pageTotal, code } = await queryAlliancePage({
         pageIndex,
@@ -141,6 +141,8 @@ export default () => {
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
   useEffect(() => {
@@ -250,24 +252,29 @@ export default () => {
       },
     },
   ];
+  const errorColumns = [
+    {
+      title: '序号',
+      dataIndex: 'index',
+      width: 80,
+    },
+    {
+      title: '名称',
+      dataIndex: 'name',
+      isEllipsis: true,
+      width: 120,
+    },
+    {
+      title: ' 错误原因',
+      dataIndex: 'message',
+      isEllipsis: true,
+      width: 300,
+    },
+  ];
   // 上传导入逻辑
-  const [uploadNum, setUploadNum] = useState<{
-    successNum: number | undefined;
-    failNum: number | undefined;
-    filePath: string;
-    progress?: string;
-  }>({
-    successNum: undefined,
-    failNum: undefined,
-    filePath: '',
-    progress: 'false',
-  });
+  const [uploadNum, setUploadNum] = useState<any>(0);
+  const [errorDataSource, setErrorDataSource] = useState<any>([]);
   const handleChange = (info: UploadChangeParam) => {
-    console.log(info);
-    setUploadNum({
-      ...uploadNum,
-      progress: 'true',
-    });
     if (info.file.status === 'uploading') {
       return;
     }
@@ -276,11 +283,11 @@ export default () => {
       try {
         const { code } = info.file.response;
         if (code === 0) {
-          message.error(`导入成功`);
+          setModalVisible(false);
+          message.success(`导入成功`);
           getPage();
-          setModalVisible(false);
         } else {
-          setModalVisible(false);
+          setErrorDataSource(info.file.response?.result);
           message.error(`上传失败，原因:{${info.file.response.message}}`);
         }
       } catch (error) {
@@ -341,120 +348,63 @@ export default () => {
         className="supplier-uploads-file"
         title="导入"
         visible={createModalVisible}
-        width={600}
+        width={700}
+        style={{ height: '500px' }}
         footer={false}
         maskClosable={false}
         destroyOnClose
         onCancel={() => {
           setModalVisible(false);
           getPage();
-          setUploadNum({
-            successNum: undefined,
-            failNum: undefined,
-            filePath: '',
-            progress: 'false',
-          });
+          setUploadNum(0);
         }}
       >
-        {uploadNum.failNum === undefined ? (
-          <div style={{ height: '180px' }}>
-            <div className={uploadNum.progress === 'true' ? 'supplierStaus' : ''}>
-              <div style={{ marginBottom: '24px' }}>
-                请先下载
-                <span
-                  style={{ color: 'rgba(143, 165, 255)', cursor: 'pointer' }}
-                  onClick={async () => {
-                    const { code, result } = await getAllianceImportTemplate();
-                    console.log(result);
-                    if (code === 0) {
-                      const res = await getFileInfo(result);
-                      if (res.code === 0) {
-                        window.location.href = res?.result.path;
+        {uploadNum === 0 ? (
+          <div style={{ height: '300px' }}>
+            <div style={{ height: '180px' }}>
+              <div className={uploadNum.progress === 'true' ? 'supplierStaus' : ''}>
+                <div style={{ marginBottom: '24px' }}>
+                  请先下载
+                  <span
+                    style={{ color: 'rgba(143, 165, 255)', cursor: 'pointer' }}
+                    onClick={async () => {
+                      const { code, result } = await getAllianceImportTemplate();
+                      if (code === 0) {
+                        const res = await getFileInfo(result);
+                        debugger;
+                        if (res.code === 0) {
+                          window.location.href = res?.result[0].path;
+                        } else {
+                          message.error('下载失败');
+                        }
                       } else {
                         message.error('下载失败');
                       }
-                    } else {
-                      message.error('下载失败');
-                    }
-                  }}
-                >
-                  导入模版
-                </span>
-                ，按要求填写后上传
+                    }}
+                  >
+                    导入模版
+                  </span>
+                  ，按要求填写后上传
+                </div>
               </div>
-            </div>
-            <Dragger {...props} className={uploadNum.progress === 'true' ? 'supplierStaus' : ''}>
-              <p className="ant-upload-text">
-                <CloudUploadOutlined />
-                将文件拖拽到此处，或<span style={{ color: 'rgba(143, 165, 255)' }}>点击上传</span>
-              </p>
-              <p className="ant-upload-hint">支持 xlsx 格式，限20M以内</p>
-            </Dragger>
-          </div>
-        ) : uploadNum.failNum === 0 ? (
-          <div className="resultSuccess">
-            <div className="icon">
-              <FileTextOutlined />
-            </div>
-            <div className="text1">导入成功,共{uploadNum.successNum}条</div>
-            <div>
-              <Button
-                type="primary"
-                size="large"
-                onClick={() => {
-                  setModalVisible(false);
-                  getPage();
-                  setUploadNum({
-                    successNum: undefined,
-                    failNum: undefined,
-                    filePath: '',
-                    progress: 'false',
-                  });
-                }}
-              >
-                完成
-              </Button>
+              <Dragger {...props} className={uploadNum.progress === 'true' ? 'supplierStaus' : ''}>
+                <p className="ant-upload-text">
+                  <CloudUploadOutlined />
+                  将文件拖拽到此处，或<span style={{ color: 'rgba(143, 165, 255)' }}>点击上传</span>
+                </p>
+                <p className="ant-upload-hint">支持 xlsx 格式，限20M以内</p>
+              </Dragger>
             </div>
           </div>
         ) : (
-          <div className="resultFail">
-            <div className="icon">
-              <FileExclamationOutlined />
-            </div>
-            <div className="text1">
-              共导入
-              {uploadNum.successNum !== undefined && uploadNum.failNum + uploadNum.successNum}
-              条，成功 {uploadNum.successNum}
-              条，失败 {uploadNum.failNum} 条
-            </div>
-            <div className="text2">
-              <span>您可以下载失败数据，修改后重新导入</span>
-              <a href={uploadNum.filePath}>下载失败数据</a>
-            </div>
-            <div>
-              <Space>
-                <Button
-                  size="large"
-                  onClick={() => {
-                    setModalVisible(false);
-                    getPage();
-                    setUploadNum({ successNum: undefined, failNum: undefined, filePath: '' });
-                  }}
-                >
-                  取消
-                </Button>
-                <Button
-                  type="primary"
-                  size="large"
-                  onClick={() => {
-                    setUploadNum({ successNum: undefined, failNum: undefined, filePath: '' });
-                  }}
-                >
-                  重新导入
-                </Button>
-              </Space>
-            </div>
-          </div>
+          <SelfTable
+            bordered
+            loading={loading}
+            scroll={{ y: 480 }}
+            columns={errorColumns}
+            dataSource={errorDataSource}
+            pagination={null}
+          />
         )}
       </Modal>
     );
@@ -490,6 +440,7 @@ export default () => {
       <div className={sc('container-table-body')}>
         <SelfTable
           bordered
+          loading={loading}
           // scroll={{ x: 1480 }}
           columns={columns}
           dataSource={dataSource}

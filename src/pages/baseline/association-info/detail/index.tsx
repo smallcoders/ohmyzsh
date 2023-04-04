@@ -4,11 +4,15 @@ import { PageContainer } from '@ant-design/pro-layout';
 import { useEffect, useState } from 'react';
 import { Button, Col, Row } from 'antd';
 import { history } from '@@/core/history';
-import { queryAllianceDetail, queryAllianceLogList } from '@/services/baseline-info';
+import {
+  queryAllianceDetail,
+  queryAllianceLogList,
+  queryBaseInfoById,
+} from '@/services/baseline-info';
 
 export default () => {
   const sc = scopedClasses('baseline-association-detail');
-
+  const [baseInfo, setBaseInfo] = useState<any>({});
   const [associationLog, setAssociationLog] = useState<any>([]);
   const [AssociationDetail, setAssociationDetail] = useState<any>({});
   const { organizationId } = history.location.query as any;
@@ -26,6 +30,11 @@ export default () => {
     queryAllianceLogList({ organizationId }).then((res) => {
       if (res.code === 0) {
         setAssociationLog(res?.result);
+      }
+    });
+    queryBaseInfoById({ orgId: organizationId }).then((res) => {
+      if (res.code === 0) {
+        setBaseInfo(res?.result);
       }
     });
   }, []);
@@ -140,30 +149,147 @@ export default () => {
       </div>
       <div className="topic-detail">
         <div className="topic-detail-title">爱企查字段信息</div>
-        <Row className={'title'}>
-          <Col span={4}>
-            <div className="info-label">字段名称：</div>
-          </Col>
-          <Col span={16}>
-            <span>{AssociationDetail?.contentCount}</span>
-          </Col>
-        </Row>
-        <Row className={'title'}>
-          <Col span={4}>
-            <div className="info-label">字段名称：</div>
-          </Col>
-          <Col span={16}>
-            <span>{AssociationDetail?.contentCount}</span>
-          </Col>
-        </Row>
-        <Row className={'title'}>
-          <Col span={4}>
-            <div className="info-label">字段名称：</div>
-          </Col>
-          <Col span={16}>
-            <span>{AssociationDetail?.contentCount}</span>
-          </Col>
-        </Row>
+        {baseInfo?.baseInfo?.creditCode && (
+          <Row className={'title'}>
+            <Col span={4}>
+              <div className="info-label">统一信用代码：</div>
+            </Col>
+            <Col span={16}>
+              <span>{baseInfo?.baseInfo?.creditCode}</span>
+            </Col>
+          </Row>
+        )}
+        {baseInfo?.baseInfo?.legalName && (
+          <Row className={'title'}>
+            <Col span={4}>
+              <div className="info-label">法人：</div>
+            </Col>
+            <Col span={16}>
+              <span>{baseInfo?.baseInfo?.legalName}</span>
+            </Col>
+          </Row>
+        )}
+        {baseInfo?.baseInfo?.address && (
+          <Row className={'title'}>
+            <Col span={4}>
+              <div className="info-label">注册区域：</div>
+            </Col>
+            <Col span={16}>
+              <span>{baseInfo?.baseInfo?.address}</span>
+            </Col>
+          </Row>
+        )}
+        {baseInfo?.baseInfo?.businessScope && (
+          <Row className={'title'}>
+            <Col span={4}>
+              <div className="info-label">经营范围：</div>
+            </Col>
+            <Col span={16}>
+              <span>{baseInfo?.baseInfo?.businessScope}</span>
+            </Col>
+          </Row>
+        )}
+        {baseInfo?.baseInfo?.industryTxtList && (
+          <Row className={'title'}>
+            <Col span={4}>
+              <div className="info-label">主营行业：</div>
+            </Col>
+            <Col span={16}>
+              <span>{baseInfo?.baseInfo?.industryTxtList}</span>
+            </Col>
+          </Row>
+        )}
+        {baseInfo?.baseInfo?.registeredCapital && (
+          <Row className={'title'}>
+            <Col span={4}>
+              <div className="info-label">注册资本：</div>
+            </Col>
+            <Col span={16}>
+              <span>{baseInfo?.baseInfo?.registeredCapital}</span>
+            </Col>
+          </Row>
+        )}
+        {baseInfo?.baseInfo?.entType && (
+          <Row className={'title'}>
+            <Col span={4}>
+              <div className="info-label">企业类型：</div>
+            </Col>
+            <Col span={16}>
+              <span>{baseInfo?.baseInfo?.entType}</span>
+            </Col>
+          </Row>
+        )}
+        {baseInfo?.extraInfo?.regCode && (
+          <Row className={'title'}>
+            <Col span={4}>
+              <div className="info-label">工商注册号：</div>
+            </Col>
+            <Col span={16}>
+              <span>{baseInfo?.baseInfo?.regCode}</span>
+            </Col>
+          </Row>
+        )}
+
+        {baseInfo?.extraInfo?.orgNo && (
+          <Row className={'title'}>
+            <Col span={4}>
+              <div className="info-label">组织机构代码：</div>
+            </Col>
+            <Col span={16}>
+              <span>{baseInfo?.extraInfo?.orgNo}</span>
+            </Col>
+          </Row>
+        )}
+        {baseInfo?.extraInfo?.taxNo && (
+          <Row className={'title'}>
+            <Col span={4}>
+              <div className="info-label">纳税人识别号：</div>
+            </Col>
+            <Col span={16}>
+              <span>{baseInfo?.extraInfo?.taxNo}</span>
+            </Col>
+          </Row>
+        )}
+        {baseInfo?.extraInfo?.qualification && (
+          <Row className={'title'}>
+            <Col span={4}>
+              <div className="info-label">纳税人资质：</div>
+            </Col>
+            <Col span={16}>
+              <span>{baseInfo?.extraInfo?.qualification}</span>
+            </Col>
+          </Row>
+        )}
+        {baseInfo?.baseInfo?.openTime && (
+          <Row className={'title'}>
+            <Col span={4}>
+              <div className="info-label">营业期限：</div>
+            </Col>
+            <Col span={16}>
+              <span>{baseInfo?.baseInfo?.openTime}</span>
+            </Col>
+          </Row>
+        )}
+        {baseInfo?.extraInfo?.authorityTxt && (
+          <Row className={'title'}>
+            <Col span={4}>
+              <div className="info-label">登记机关：</div>
+            </Col>
+            <Col span={16}>
+              <span>{baseInfo?.extraInfo?.authorityTxt}</span>
+            </Col>
+          </Row>
+        )}
+        {baseInfo?.baseInfo?.address && (
+          <Row className={'title'}>
+            <Col span={4}>
+              <div className="info-label">注册地址：</div>
+            </Col>
+            <Col span={16}>
+              <span>{baseInfo?.baseInfo?.address}</span>
+            </Col>
+          </Row>
+        )}
       </div>
       <div className="topic-detail">
         <div className="topic-detail-title">操作日志</div>

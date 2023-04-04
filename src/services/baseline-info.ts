@@ -104,3 +104,11 @@ export async function queryAllianceLogList(params?: any) {
     params,
   });
 }
+
+// 根据组织id获取组织基本信息
+export async function queryBaseInfoById(params?: any) {
+  return request<any>('/antelope-business/organization/info/base/get', {
+    method: 'get',
+    params,
+  });
+}

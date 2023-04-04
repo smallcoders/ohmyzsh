@@ -105,8 +105,7 @@ export default () => {
           onClick={() => {
             form
               .validateFields()
-              .then(async (value: any) => {
-                console.log(value);
+              .then(async () => {
                 setVisibleAdd(true);
               })
               .catch((e) => {
