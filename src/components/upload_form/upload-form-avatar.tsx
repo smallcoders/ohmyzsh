@@ -23,7 +23,6 @@ const UploadForm = (
   const [previewImage, setPreviewImage] = useState('');
   const [previewTitle, setPreviewTitle] = useState('');
   const [fileList, setFileList] = useState<any>([]);
-  console.log(props.value);
   const getBase64 = (file: RcFile): Promise<string> =>
     new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -42,9 +41,8 @@ const UploadForm = (
 
   useEffect(() => {
     if (isFirstRender.current) {
-      // isFirstRender.current = false;
+      isFirstRender.current = false;
       if (props.value) {
-        console.log(43214321);
         setFileList([
           {
             id: props.value,
@@ -116,7 +114,9 @@ const UploadForm = (
       return;
     }
   };
-
+  const handleRemove = (file: any) => {
+    console.log(file);
+  };
   return (
     <>
       <ImgCrop shape={props?.shape} width={300} height={300}>
@@ -130,6 +130,7 @@ const UploadForm = (
           onChange={handleChange}
           onPreview={handlePreview}
           beforeUpload={beforeUpload}
+          onRemove={handleRemove}
         >
           {fileList.length >= props.limit ? null : uploadButton}
         </Upload>

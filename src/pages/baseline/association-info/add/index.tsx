@@ -17,7 +17,7 @@ import { history } from '@@/core/history';
 import { Link } from 'umi';
 import { phoneVerifyReg } from '@/utils/regex-util';
 import UploadFormFile from '@/components/upload_form/upload-form';
-import { queryAllianceDetail, saveAlliance } from '@/services/baseline-info';
+import { queryAllianceDetail, queryIndustryTypes, saveAlliance } from '@/services/baseline-info';
 import { getWholeAreaTree } from '@/services/area';
 const sc = scopedClasses('baseline-association-add');
 import UploadFormAvatar from '@/components/upload_form/upload-form-avatar';
@@ -29,6 +29,8 @@ export default () => {
     labelCol: { span: 4 },
     wrapperCol: { span: 10 },
   };
+  const [industryTypes, setIndustryTypes] = useState<any>([]);
+
   const { TextArea } = Input;
   const [areaOptions, setAreaOptions] = useState<any>([]);
   const [form] = Form.useForm();
@@ -52,6 +54,9 @@ export default () => {
   };
   useEffect(() => {
     getGovDetailById();
+    queryIndustryTypes().then((res) => {
+      setIndustryTypes(res?.result);
+    });
   }, []);
 
   // 上架/暂存
@@ -163,11 +168,13 @@ export default () => {
                 },
               ]}
             >
-              <TextArea
-                autoSize={{ minRows: 1, maxRows: 10 }}
-                placeholder="请输入"
-                maxLength={60}
-              />
+              <Select placeholder="请选择">
+                {industryTypes.map((p: any) => (
+                  <Select.Option key={'type' + p.id} value={p.id}>
+                    {p.name}
+                  </Select.Option>
+                ))}
+              </Select>
             </Form.Item>
             <Form.Item
               name="districtCodeType"
