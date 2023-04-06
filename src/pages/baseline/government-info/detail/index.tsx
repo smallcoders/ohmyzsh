@@ -1,34 +1,35 @@
 import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
 import { PageContainer } from '@ant-design/pro-layout';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Col, Row } from 'antd';
 import SelfTable from '@/components/self_table';
-import type LogoutVerify from '@/types/user-config-logout-verify';
-import type Common from '@/types/common';
 import { history } from '@@/core/history';
 import { queryGovDetail, queryGovLogList } from '@/services/baseline-info';
 
 export default () => {
   const sc = scopedClasses('baseline-government-detail');
-  const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
-    pageIndex: 1,
-    pageSize: 10,
-    totalCount: 1,
-    pageTotal: 0,
-  });
+  const [loading, setLoading] = useState<boolean>(false);
   const [dataSource, setDataSource] = useState<any>([]);
   const [hotGovDetail, setHotGovDetail] = useState<any>({});
   const [hotGovLog, setHotGovLog] = useState<any>([]);
   const { organizationId } = history.location.query as any;
   //获取详情
   const getGovDetailById = () => {
-    queryGovDetail({ organizationId }).then((res) => {
-      if (res.code === 0) {
-        setHotGovDetail(res?.result);
-        setDataSource(res?.result.hotService);
-      }
-    });
+    setLoading(true);
+    queryGovDetail({ organizationId })
+      .then((res) => {
+        if (res.code === 0) {
+          setHotGovDetail(res?.result);
+          res?.result?.hotService?.forEach((item: any, index: any) => {
+            item.index = index + 1;
+          });
+          setDataSource(res?.result.hotService);
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   useEffect(() => {
@@ -43,7 +44,7 @@ export default () => {
   const columns = [
     {
       title: '序号',
-      dataIndex: 'sort',
+      dataIndex: 'index',
       width: 80,
     },
     {
@@ -117,7 +118,12 @@ export default () => {
             <div className="info-label">级别：</div>
           </Col>
           <Col span={16}>
-            <span>{hotGovDetail?.districtCodeType}</span>
+            <span>
+              {hotGovDetail.districtCodeType == 0 && '未知'}
+              {hotGovDetail.districtCodeType == 1 && '省级'}
+              {hotGovDetail.districtCodeType == 2 && '市级'}
+              {hotGovDetail.districtCodeType == 3 && '区县级'}
+            </span>
           </Col>
         </Row>
         <Row className={'title'}>
@@ -125,7 +131,11 @@ export default () => {
             <div className="info-label">所在区域：</div>
           </Col>
           <Col span={16}>
-            <span>{hotGovDetail?.provinceCode}</span>
+            <span>
+              {hotGovDetail?.countyName}
+              {hotGovDetail?.provinceName}
+              {hotGovDetail?.cityName}
+            </span>
           </Col>
         </Row>
         <Row className={'title'}>
@@ -138,7 +148,7 @@ export default () => {
         </Row>
         <Row className={'title'}>
           <Col span={4}>
-            <div className="info-label">在线办理h5地址：</div>
+            <span className="info-label">在线办理h5地址：</span>
           </Col>
           <Col span={16}>
             <span>{hotGovDetail?.serviceUrl}</span>
@@ -146,7 +156,7 @@ export default () => {
         </Row>
         <Row className={'title'}>
           <Col span={4}>
-            <div className="info-label">是否热门：</div>
+            <span className="info-label">是否热门：</span>
           </Col>
           <Col span={16}>
             <span>{hotGovDetail?.hot ? '热门' : '否'}</span>
@@ -166,8 +176,8 @@ export default () => {
           </Col>
           <Col span={20}>
             <SelfTable
+              loading={loading}
               bordered
-              // scroll={{ x: 1480 }}
               columns={columns}
               dataSource={dataSource}
               pagination={null}
