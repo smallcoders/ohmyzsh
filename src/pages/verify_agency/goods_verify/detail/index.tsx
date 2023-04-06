@@ -56,17 +56,24 @@ export default () => {
   const [detail, setDetail] = useState<any>({});
   const [list, setList] = useState<any>([]);
   const [applicationTypeList, setApplicationTypeList] = useState<any>([]);
-  const [appTypeId, setAppTypeId] = useState<string | number>('');
+  const [appTypeId, setAppTypeId] = useState<any[string | number]>([]);
 
   const [form] = Form.useForm();
+
+  useEffect(() => {
+    console.log('getTypeIdArray(result?.payProduct?.appTypeId)', detail?.payProduct?.appTypeId, getTypeIdArray(detail?.payProduct?.appTypeId), applicationTypeList)
+    setAppTypeId(getTypeIdArray(detail?.payProduct?.appTypeId));
+  }, [detail, applicationTypeList])
+
   const prepare = async () => {
     const productId = history.location.query?.productId as string;
     if (productId) {
       try {
+
         const { code, result, message } = await getDetail({ productId });
         if (code === 0) {
           setDetail(result);
-          setAppTypeId(getTypeIdArray(result?.payProduct?.appTypeId));
+
           const payProductApply = result?.payProductApply;
           const list = [];
           if (payProductApply) {
@@ -180,7 +187,7 @@ export default () => {
   }
   useEffect(() => {
     prepare();
-    handleGetApplicationTypeList();
+    handleGetApplicationTypeList()
   }, []);
 
   const getTypeIdArray = (id: any) => {
@@ -199,6 +206,7 @@ export default () => {
     }
     loop(applicationTypeList)
     const selectItem = arr.find(p => p.id == id)
+    console.log('applicationTypeList', applicationTypeList, selectItem)
     return [...(selectItem?.pid || []), selectItem?.id]
   }
 
@@ -249,13 +257,7 @@ export default () => {
               ]}
 
               <Form.Item label="商品类型">
-                {detail?.payProductApply?.isHandle === 1 ? (
-                  get(
-                    applicationTypeList.find((item: any) => appTypeId === item.id),
-                    'name',
-                    '--',
-                  )
-                ) : (
+                {detail?.payProductApply?.isHandle === 1 ? detail?.payProduct?.typeName : (
                   <Cascader
                     onChange={(val) => {
                       setAppTypeId(val);
