@@ -238,7 +238,11 @@ export default () => {
               />
             </Form.Item>
             <Form.Item name="aqcUrl" label="爱企查对应地址">
-              <TextArea autoSize={{ minRows: 1, maxRows: 10 }} placeholder="请输入" />
+              <TextArea
+                autoSize={{ minRows: 1, maxRows: 10 }}
+                placeholder="请输入"
+                maxLength={500}
+              />
             </Form.Item>
             <Form.Item name="weight" label="协会权重">
               <InputNumber

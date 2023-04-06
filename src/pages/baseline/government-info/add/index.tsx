@@ -213,7 +213,7 @@ export default () => {
               },
             ]}
           >
-            <TextArea autoSize={{ minRows: 1, maxRows: 10 }} placeholder="请输入" />
+            <TextArea autoSize={{ minRows: 1, maxRows: 10 }} placeholder="请输入" maxLength={500} />
           </Form.Item>
           <Form.Item
             name="hot"
