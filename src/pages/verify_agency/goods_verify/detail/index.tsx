@@ -260,6 +260,7 @@ export default () => {
                     onChange={(val) => {
                       setAppTypeId(val);
                     }}
+                    value={appTypeId}
                     style={{ width: '300px' }}
                     fieldNames={{ label: 'name', value: 'id', children: 'children' }}
                     options={applicationTypeList}
