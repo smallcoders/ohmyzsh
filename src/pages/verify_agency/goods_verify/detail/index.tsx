@@ -1,4 +1,4 @@
-import { message as AntdMessage, Image, Select, Row, Col, Form, Anchor, Button, Table } from 'antd';
+import { message as AntdMessage, Image, Select, Row, Col, Form, Anchor, Button, Table, Cascader } from 'antd';
 import ProCard from '@ant-design/pro-card';
 import { history } from 'umi';
 import React, { useState, useEffect } from 'react';
@@ -66,7 +66,7 @@ export default () => {
         const { code, result, message } = await getDetail({ productId });
         if (code === 0) {
           setDetail(result);
-          setAppTypeId(result?.payProduct?.appTypeId);
+          setAppTypeId(getTypeIdArray(result?.payProduct?.appTypeId));
           const payProductApply = result?.payProductApply;
           const list = [];
           if (payProductApply) {
@@ -152,7 +152,7 @@ export default () => {
           // 修改商品类型
           productId: detail?.payProduct?.id,
           appId: detail?.payProduct?.appId,
-          appTypeId: appTypeId,
+          appTypeId: appTypeId?.[appTypeId?.length - 1],
         };
         const submitRes = await updateVerityStatus(params);
         if (submitRes.code === 0) {
@@ -164,7 +164,7 @@ export default () => {
         }
         setLoading(false);
       })
-      .catch(() => {});
+      .catch(() => { });
   };
   function handleJumpLink(url: string) {
     getOpenInsideTokenV2(detail?.payProduct?.appId).then(({ result, code, message: msg }) => {
@@ -182,6 +182,25 @@ export default () => {
     prepare();
     handleGetApplicationTypeList();
   }, []);
+
+  const getTypeIdArray = (id: any) => {
+    const arr: any[] = []
+    const loop = (tree: any[]) => {
+      tree.map((item) => {
+        const pid = item?.pid || [item?.id]
+        arr.push(item)
+        if (item?.children && item?.children?.length > 0) {
+          loop(item?.children?.map(p => {
+            p.pid = [...pid]
+            return p
+          }))
+        }
+      })
+    }
+    loop(applicationTypeList)
+    const selectItem = arr.find(p => p.id == id)
+    return [...(selectItem?.pid || []), selectItem?.id]
+  }
 
   return (
     <PageContainer loading={loading} title={false}>
@@ -237,22 +256,31 @@ export default () => {
                     '--',
                   )
                 ) : (
-                  <Select
-                    placeholder="请选择"
-                    value={appTypeId}
+                  <Cascader
                     onChange={(val) => {
                       setAppTypeId(val);
                     }}
-                    allowClear
-                    disabled={detail?.payProductApply?.isHandle === 1}
-                    style={{ width: '200px' }}
-                  >
-                    {applicationTypeList.map((item: any) => (
-                      <Option key={item.id} value={item.id}>
-                        {item.name}
-                      </Option>
-                    ))}
-                  </Select>
+                    style={{ width: '300px' }}
+                    fieldNames={{ label: 'name', value: 'id', children: 'children' }}
+                    options={applicationTypeList}
+                    placeholder="请选择"
+                  />
+                  // <Select
+                  //   placeholder="请选择"
+                  //   value={appTypeId}
+                  //   onChange={(val) => {
+                  //     setAppTypeId(val);
+                  //   }}
+                  //   allowClear
+                  //   disabled={detail?.payProductApply?.isHandle === 1}
+                  //   style={{ width: '200px' }}
+                  // >
+                  //   {applicationTypeList.map((item: any) => (
+                  //     <Option key={item.id} value={item.id}>
+                  //       {item.name}
+                  //     </Option>
+                  //   ))}
+                  // </Select>
                 )}
               </Form.Item>
               <Form.Item label="商品名称">{detail?.payProduct?.productName}</Form.Item>
@@ -302,17 +330,13 @@ export default () => {
                 render={(text, record: any) => {
                   switch (text) {
                     case PayMethodAppEnum.YEAR:
-                      return `用户数：${
-                        record?.userNum > 0 ? `${record?.userNum}人` : '无限制'
-                      }；有效时间：${
-                        record?.expireTime > 0 ? `${yearMap[record?.expireTime]}年` : '无限制'
-                      }`;
+                      return `用户数：${record?.userNum > 0 ? `${record?.userNum}人` : '无限制'
+                        }；有效时间：${record?.expireTime > 0 ? `${yearMap[record?.expireTime]}年` : '无限制'
+                        }`;
                     case PayMethodAppEnum.SET:
-                      return `使用次数：${
-                        record?.count > 0 ? `${record?.count}次` : '无限制'
-                      }；有效时间：${
-                        record?.expireTime > 0 ? `${yearMap[record?.expireTime]}年` : '无限制'
-                      }`;
+                      return `使用次数：${record?.count > 0 ? `${record?.count}次` : '无限制'
+                        }；有效时间：${record?.expireTime > 0 ? `${yearMap[record?.expireTime]}年` : '无限制'
+                        }`;
                     case PayMethodAppEnum.TIME:
                       return `使用次数：${record?.count > 0 ? `${record?.count}次` : '无限制'}`;
                     default:
