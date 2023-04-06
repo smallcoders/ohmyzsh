@@ -178,7 +178,6 @@ export default () => {
             ]}
           >
             <Select placeholder="请选择" allowClear style={{ width: '100%' }}>
-              <Select.Option value={0}>未知</Select.Option>
               <Select.Option value={1}>省级</Select.Option>
               <Select.Option value={2}>市级</Select.Option>
               <Select.Option value={3}>区县级</Select.Option>
@@ -214,7 +213,7 @@ export default () => {
               },
             ]}
           >
-            <TextArea autoSize={{ minRows: 1, maxRows: 10 }} placeholder="请输入" maxLength={20} />
+            <TextArea autoSize={{ minRows: 1, maxRows: 10 }} placeholder="请输入" />
           </Form.Item>
           <Form.Item
             name="hot"
