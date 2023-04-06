@@ -41,8 +41,8 @@ const UploadForm = (
 
   useEffect(() => {
     if (isFirstRender.current) {
-      isFirstRender.current = false;
       if (props.value) {
+        isFirstRender.current = false;
         setFileList([
           {
             id: props.value,

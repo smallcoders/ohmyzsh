@@ -1,7 +1,7 @@
 import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
 import { PageContainer } from '@ant-design/pro-layout';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Col, Row } from 'antd';
 import { history } from '@@/core/history';
 import {
@@ -83,7 +83,12 @@ export default () => {
             <div className="info-label">协会级别：</div>
           </Col>
           <Col span={16}>
-            <span>{AssociationDetail?.districtCodeType}</span>
+            <span>
+              {AssociationDetail.districtCodeType == 0 && '未知'}
+              {AssociationDetail.districtCodeType == 1 && '省级'}
+              {AssociationDetail.districtCodeType == 2 && '市级'}
+              {AssociationDetail.districtCodeType == 3 && '区县级'}
+            </span>
           </Col>
         </Row>
         <Row className={'title'}>
@@ -91,7 +96,11 @@ export default () => {
             <div className="info-label">所在区域：</div>
           </Col>
           <Col span={16}>
-            <span>{AssociationDetail?.provinceCode}</span>
+            <span>
+              {AssociationDetail?.provinceName}
+              {AssociationDetail?.cityName}
+              {AssociationDetail?.countyName}
+            </span>
           </Col>
         </Row>
         <Row className={'title'}>
@@ -107,7 +116,7 @@ export default () => {
             <div className="info-label">官方logo：</div>
           </Col>
           <Col span={16}>
-            <span>{AssociationDetail?.logoUrl}</span>
+            <img src={AssociationDetail?.logoUrl} />
           </Col>
         </Row>
         <Row className={'title'}>
@@ -115,7 +124,7 @@ export default () => {
             <div className="info-label">官方协会二维码：</div>
           </Col>
           <Col span={16}>
-            <span>{AssociationDetail?.contentCount}</span>
+            <img src={AssociationDetail?.qrcodeFileUrl} />
           </Col>
         </Row>
         <Row className={'title'}>
@@ -196,7 +205,7 @@ export default () => {
             </Col>
           </Row>
         )}
-        {baseInfo?.baseInfo?.industryTxtList && (
+        {baseInfo?.baseInfo?.industryTxtList.length !== 0 && (
           <Row className={'title'}>
             <Col span={4}>
               <div className="info-label">主营行业：</div>
