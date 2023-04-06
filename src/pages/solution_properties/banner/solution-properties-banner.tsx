@@ -48,6 +48,7 @@ const TableList: React.FC = () => {
     [Banner.Edge.APP]: 'PQ_PC_B_ASY', // APP-首页
     [Banner.Edge.APP_CREATIVE]: 'PQ_PC_B_AKC', // APP-科产
     [Banner.Edge.APP_FINANCIAL]: 'PQ_PC_B_AJR', // APP-金融
+    [Banner.Edge.APP_BASELINE]: 'PQ_PC_B_AJR', //APP-基线
   };
   const formLayout = {
     labelCol: { span: 6 },
@@ -62,6 +63,7 @@ const TableList: React.FC = () => {
     { label: '官网-地市专题首页', value: 5 },
     { label: '官网-金融', value: 6 },
     { label: 'APP-金融', value: 7 },
+    { label: '基线APP-应用', value: 8 },
   ];
   /**
    * 新建窗口的弹窗
@@ -265,6 +267,7 @@ const TableList: React.FC = () => {
     [Banner.Edge.PC_CITY]: '官网-地市专题首页', // 官网-地市专题首页
     [Banner.Edge.FINANCIAL_SERVICE]: '官网-金融', // 官网-金融
     [Banner.Edge.APP_FINANCIAL]: 'APP-金融', // APP-金融
+    [Banner.Edge.APP_BASELINE]: 'APP-基线', // APP-基线
   };
 
   console.log('Object.entries(edges)', edges, Object.keys(edges));
@@ -388,7 +391,7 @@ const TableList: React.FC = () => {
         <div style={{ backgroundColor: '#fff', padding: 20 }}>
           <div className={sc('container-header')}>
             {selectButton()}
-            <Access accessible={access['PA_PC_B']}>
+            <Access accessible={access.PA_PC_B}>
               {' '}
               <Button
                 type="primary"
