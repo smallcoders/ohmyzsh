@@ -132,9 +132,9 @@ export default () => {
           </Col>
           <Col span={16}>
             <span>
-              {hotGovDetail?.countyName}
               {hotGovDetail?.provinceName}
               {hotGovDetail?.cityName}
+              {hotGovDetail?.countyName}
             </span>
           </Col>
         </Row>
