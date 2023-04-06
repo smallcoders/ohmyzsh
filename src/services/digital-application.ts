@@ -132,7 +132,7 @@ export async function handleApply(data?: { [key: string]: any }) {
 
 // 应用分类
 export async function getApplicationTypeList() {
-  return request('/antelope-other/app/getTypeList', {
+  return request('/antelope-other/app/getTypeList/V2', {
     method: 'get',
   });
 }
