@@ -267,7 +267,7 @@ const TableList: React.FC = () => {
     [Banner.Edge.PC_CITY]: '官网-地市专题首页', // 官网-地市专题首页
     [Banner.Edge.FINANCIAL_SERVICE]: '官网-金融', // 官网-金融
     [Banner.Edge.APP_FINANCIAL]: 'APP-金融', // APP-金融
-    [Banner.Edge.APP_BASELINE]: 'APP-基线', // APP-基线
+    [Banner.Edge.APP_BASELINE]: '基线APP-应用', // APP-基线
   };
 
   console.log('Object.entries(edges)', edges, Object.keys(edges));
