@@ -165,7 +165,7 @@ export default () => {
             <TextArea autoSize={{ minRows: 1, maxRows: 10 }} placeholder="请输入" maxLength={20} />
           </Form.Item>
           <Form.Item name="govUuid" label="uuid">
-            <TextArea autoSize={{ minRows: 1, maxRows: 10 }} placeholder="请输入" maxLength={20} />
+            <TextArea autoSize={{ minRows: 1, maxRows: 10 }} placeholder="请输入" maxLength={50} />
           </Form.Item>
           <Form.Item
             name="districtCodeType"

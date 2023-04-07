@@ -317,12 +317,12 @@ export default () => {
           getPage();
         } else {
           setErrorDataSource(info.file.response?.result);
-          message.error(`上传失败，原因:{${info.file.response.message}}`);
+          // message.error(`上传失败，原因:{${info.file.response.message}}`);
         }
         setUploadNum(code);
       } catch (error) {
         console.log(error);
-        message.error(`上传失败，原因:{${info.file.response.message}}`);
+        // message.error(`上传失败，原因:{${info.file.response.message}}`);
       }
     }
     // this.setState(info)
