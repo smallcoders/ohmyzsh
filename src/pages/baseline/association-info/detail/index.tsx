@@ -116,7 +116,7 @@ export default () => {
             <div className="info-label">官方logo：</div>
           </Col>
           <Col span={16}>
-            <img src={AssociationDetail?.logoUrl} />
+            <img style={{ width: '300px' }} src={AssociationDetail?.logoUrl} />
           </Col>
         </Row>
         <Row className={'title'}>
@@ -124,7 +124,7 @@ export default () => {
             <div className="info-label">官方协会二维码：</div>
           </Col>
           <Col span={16}>
-            <img src={AssociationDetail?.qrcodeFileUrl} />
+            <img style={{ width: '160px' }} src={AssociationDetail?.qrcodeFileUrl} />
           </Col>
         </Row>
         <Row className={'title'}>

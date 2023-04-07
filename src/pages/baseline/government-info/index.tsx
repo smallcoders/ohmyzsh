@@ -199,7 +199,7 @@ export default () => {
       title: ' 权重',
       dataIndex: 'weight',
       isEllipsis: true,
-      width: 200,
+      width: 100,
     },
     {
       title: '是否为热门',
