@@ -14,7 +14,7 @@ import {
   Popconfirm,
   Row,
   Select,
-  Space,
+  Tooltip,
   Upload,
 } from 'antd';
 import SelfTable from '@/components/self_table';
@@ -276,14 +276,28 @@ export default () => {
     {
       title: '名称',
       dataIndex: 'name',
-      isEllipsis: true,
+      ellipsis: {
+        showTitle: true,
+      },
       width: 120,
+      render: (name: any) => (
+        <Tooltip placement="topLeft" title={name}>
+          {name}
+        </Tooltip>
+      ),
     },
     {
       title: ' 错误原因',
       dataIndex: 'message',
-      isEllipsis: true,
+      ellipsis: {
+        showTitle: true,
+      },
       width: 300,
+      render: (message: any) => (
+        <Tooltip placement="topLeft" title={message}>
+          {message}
+        </Tooltip>
+      ),
     },
   ];
   // 上传导入逻辑
@@ -305,6 +319,7 @@ export default () => {
           setErrorDataSource(info.file.response?.result);
           message.error(`上传失败，原因:{${info.file.response.message}}`);
         }
+        setUploadNum(code);
       } catch (error) {
         console.log(error);
         message.error(`上传失败，原因:{${info.file.response.message}}`);
@@ -360,7 +375,6 @@ export default () => {
   const useModal = (): React.ReactNode => {
     return (
       <Modal
-        className="supplier-uploads-file"
         title="导入"
         visible={createModalVisible}
         width={700}

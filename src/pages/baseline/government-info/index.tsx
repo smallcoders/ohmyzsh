@@ -15,6 +15,7 @@ import {
   Popconfirm,
   Row,
   Select,
+  Tooltip,
   Upload,
 } from 'antd';
 import SelfTable from '@/components/self_table';
@@ -264,14 +265,28 @@ export default () => {
     {
       title: '名称',
       dataIndex: 'name',
-      isEllipsis: true,
+      ellipsis: {
+        showTitle: true,
+      },
       width: 120,
+      render: (name: any) => (
+        <Tooltip placement="topLeft" title={name}>
+          {name}
+        </Tooltip>
+      ),
     },
     {
       title: ' 错误原因',
       dataIndex: 'message',
-      isEllipsis: true,
+      ellipsis: {
+        showTitle: true,
+      },
       width: 300,
+      render: (message: any) => (
+        <Tooltip placement="topLeft" title={message}>
+          {message}
+        </Tooltip>
+      ),
     },
   ];
   // 上传导入逻辑
