@@ -1,0 +1,45 @@
+@prefix: baseline-government-detail;
+
+.@{prefix}-container{
+ .topic-detail{
+    background-color: #fff;
+    padding: 32px;
+    margin-bottom: 16px;
+   &-title{
+    font-weight: bolder;
+     font-size: 16px;
+     margin:0 16px 16px 16px;
+   }
+  }
+  .info-label {
+    text-align: right;
+    margin-right: 8px;
+  }
+  .title{
+    margin-bottom: 20px;
+    span{
+      display:block ;
+      word-break: break-word;
+    }
+  }
+  .operation-log{
+    display: flex;
+    flex-flow: column;
+    &-item{
+      display: flex;
+      flex-flow: row;
+      .item-userName{
+        margin-right: 20px;
+        font-weight: bolder;
+      }
+      .item-name{
+        margin-right: 20px;
+        font-weight: bolder;
+      }
+      .item-time{
+        margin-right: 20px;
+        font-weight: bolder;
+      }
+    }
+  }
+}

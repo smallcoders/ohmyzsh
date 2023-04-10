@@ -1,0 +1,88 @@
+@prefix: baseline-association;
+
+.@{prefix}-container{
+  &-search {
+    padding:24px 32px 0 32px;
+    background-color: #fff;
+    margin-bottom: 20px;
+  }
+  &-table-header {
+    padding: 20px;
+    background-color: #fff;
+    display: flex;
+    justify-content: space-between;
+  }
+  &-table-body {
+    padding: 0 20px 20px 20px;
+    background-color: #fff;
+  }
+  &-option{
+    display: flex;
+    flex-flow: row;
+    button{
+      padding-left: 0;
+    }
+  }
+}
+.supplier-uploads-file {
+  .ant-modal-content {
+    height: 340px;
+    .ant-upload-text {
+      .anticon svg {
+        display: inline-block;
+        align-items: center;
+        margin-right: 6px;
+        color: rgba(226, 227, 230);
+        font-size: 38px;
+        vertical-align: middle;
+      }
+    }
+    .ant-upload-list {
+      margin-top: 60px;
+      padding: 0 38px;
+    }
+  }
+}
+.resultFail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  .icon {
+    color: rgb(244, 221, 76);
+    font-size: 56px;
+  }
+  .text1 {
+    margin: 16px 0;
+    font-size: 16px;
+  }
+  .text2 {
+    margin-bottom: 24px;
+    color: rgb(183, 183, 183);
+    font-size: 14px;
+  }
+  .ant-btn-lg {
+    width: 100px;
+    border-radius: 4px;
+  }
+}
+
+.resultSuccess {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  .icon {
+    color: rgb(40, 212, 71);
+    font-size: 56px;
+  }
+  .text1 {
+    margin-top: 16px;
+    margin-bottom: 50px;
+    font-size: 16px;
+  }
+  .ant-btn-lg {
+    width: 100px;
+    border-radius: 4px;
+  }
+}
