@@ -9,7 +9,6 @@ import {
   Popconfirm,
   message,
   Space,
-
 } from 'antd';
 import { Access, useAccess } from 'umi';
 import { PageContainer } from '@ant-design/pro-layout';
@@ -22,10 +21,15 @@ import { routeName } from '@/../config/routes';
 import SelfTable from '@/components/self_table';
 import { UploadOutlined } from '@ant-design/icons';
 import { exportUserList } from '@/services/export';
-import {getAllChannelAndScene,getQueryUserManageRisky, getListEnumsByKey, getUserPage} from '@/services/user';
+import {
+  getAllChannelAndScene,
+  getQueryUserManageRisky,
+  getListEnumsByKey,
+  getUserPage,
+} from '@/services/user';
 import User from '@/types/user.d';
 import { handleAudit } from '@/services/audit';
-import type Activity from "@/types/operation-activity";
+import type Activity from '@/types/operation-activity';
 const sc = scopedClasses('service-config-requirement-manage');
 
 // const registerSource = {
@@ -37,27 +41,27 @@ enum Edge {
 
 export default () => {
   const [dataSource, setDataSource] = useState<any[]>([]);
-  const [selectChannelListAll,setSelectChannelAll] = useState<Activity.Content[]>([])
-  const [selectSceneListAll,setSelectSceneAll] = useState<Activity.Content[]>([])
+  const [selectChannelListAll, setSelectChannelAll] = useState<Activity.Content[]>([]);
+  const [selectSceneListAll, setSelectSceneAll] = useState<Activity.Content[]>([]);
   const [searchContent, setSearChContent] = useState<User.SearchBody>({});
   // 拿到当前角色的access权限兑现
-  const access = useAccess()
+  const access = useAccess();
   // 当前页面的对应权限key
   const [edge, setEdge] = useState<Edge.HOME>(Edge.HOME);
   // 页面权限
   const permissions = {
     [Edge.HOME]: 'PQ_UM_YHXX', // 用户管理-用户信息
-  }
+  };
 
   useEffect(() => {
     for (const key in permissions) {
-      const permission = permissions[key]
+      const permission = permissions[key];
       if (Object.prototype.hasOwnProperty.call(access, permission)) {
-        setEdge(key as any)
-        break
+        setEdge(key as any);
+        break;
       }
     }
-  },[])
+  }, []);
   const [registerSource, setRegisterSource] = useState<any>({});
   const [platRoleJson, setPlatRoleJson] = useState<any>({});
 
@@ -73,55 +77,55 @@ export default () => {
     pageTotal: 0,
   });
 
-  useEffect(() => {
-  }, []);
+  useEffect(() => {}, []);
 
   //获取全部场景值
-  const getSceneAndChannelList =async () =>{
+  const getSceneAndChannelList = async () => {
     try {
-      const res =await getAllChannelAndScene()
-      if(res.code === 0){
-        setSelectSceneAll(res?.result.scenes)
-        setSelectChannelAll(res?.result.channels)
+      const res = await getAllChannelAndScene();
+      if (res.code === 0) {
+        setSelectSceneAll(res?.result.scenes);
+        setSelectChannelAll(res?.result.channels);
       }
-    }catch (e) {
-      console.log(e)
+    } catch (e) {
+      console.log(e);
     }
-  }
-
+  };
 
   const prepare = async () => {
     try {
       const res = await Promise.all([
         getListEnumsByKey({
-          key: 'USER_REGISTER_SOURCE'
+          key: 'USER_REGISTER_SOURCE',
         }),
         getListEnumsByKey({
-          key: 'USER_IDENTITY'
-        })
-      ])
+          key: 'USER_IDENTITY',
+        }),
+      ]);
       if (res[0]?.code === 0) {
-        let obj = {}
-        res[0]?.result && res[0]?.result?.forEach((item: any) => {
-          obj[item.name] = item.desc
-        })
-        setRegisterSource(obj)
+        const obj = {};
+        res[0]?.result &&
+          res[0]?.result?.forEach((item: any) => {
+            obj[item.name] = item.desc;
+          });
+        setRegisterSource(obj);
       } else {
-        throw new Error("");
+        throw new Error('');
       }
       if (res[1]?.code === 0) {
-        let obj2 = {}
-        res[1]?.result && res[1]?.result?.forEach((item: any) => {
-          obj2[item.name] = item.desc
-        })
-        setPlatRoleJson(obj2)
+        const obj2 = {};
+        res[1]?.result &&
+          res[1]?.result?.forEach((item: any) => {
+            obj2[item.name] = item.desc;
+          });
+        setPlatRoleJson(obj2);
       } else {
-        throw new Error("");
+        throw new Error('');
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
   useEffect(() => {
     getSceneAndChannelList();
@@ -161,15 +165,10 @@ export default () => {
         return (
           <div>
             {_ || '--'}
-            {
-              _record?.risky &&
-              <div className={sc('container-table-body-table-name')}>
-                风险
-              </div>
-            }
+            {_record?.risky && <div className={sc('container-table-body-table-name')}>风险</div>}
           </div>
-        )
-      }
+        );
+      },
     },
     {
       title: '手机号',
@@ -180,7 +179,7 @@ export default () => {
       title: '注册时间',
       dataIndex: 'createTime',
       width: 200,
-      render: (_: string) => _ ? _ : '--',
+      render: (_: string) => (_ ? _ : '--'),
     },
     {
       title: '注册端',
@@ -201,7 +200,7 @@ export default () => {
     {
       title: '身份',
       dataIndex: 'userIdentities',
-      render: (text: any, record: any) => text?.map(p => p.desc).join('、'),
+      render: (text: any, record: any) => text?.map((p) => p.desc).join('、'),
       width: 100,
     },
     {
@@ -212,13 +211,10 @@ export default () => {
         return (
           <div className="org-name">
             {orgName || '--'}
-            {
-              record?.orgNum > 1 && orgName &&
-              <span className="org-number">+{record?.orgNum}</span>
-            }
+            {record?.orgNum > 1 && orgName && <span className="org-number">+{record?.orgNum}</span>}
           </div>
-        )
-      }
+        );
+      },
     },
     {
       title: '操作',
@@ -239,8 +235,7 @@ export default () => {
             >
               详情
             </Button>
-            {
-              record?.risky &&
+            {record?.risky && (
               <Popconfirm
                 placement="topRight"
                 title={
@@ -250,25 +245,28 @@ export default () => {
                     <div>系统不通过原因：{record?.systemRejectReason || '--'}</div>
                   </>
                 }
-                onConfirm={() => {handleRecheckBtn(record,true)}}
-                onCancel={() => {handleRecheckBtn(record,false)}}
+                onConfirm={() => {
+                  handleRecheckBtn(record, true);
+                }}
+                onCancel={() => {
+                  handleRecheckBtn(record, false);
+                }}
                 okText="复审正常"
                 cancelText="确定异常"
               >
-                <Button
-                  size="small"
-                  type="link"
-                >复审</Button>
+                <Button size="small" type="link">
+                  复审
+                </Button>
               </Popconfirm>
-            }
+            )}
           </Space>
-        )
-      }
+        );
+      },
     },
   ];
 
   // 姓名风险用户数
-  const [userCount, setUserCount] = useState<number>(0)
+  const [userCount, setUserCount] = useState<number>(0);
 
   const _getQueryUserManageRisky = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     try {
@@ -278,7 +276,7 @@ export default () => {
         ...searchContent,
       });
       if (code === 0) {
-        setUserCount(result || 0)
+        setUserCount(result || 0);
       } else {
         message.error(`请求姓名风险用户数失败`);
       }
@@ -293,7 +291,6 @@ export default () => {
   }, [searchContent]);
   const [searchForm] = Form.useForm();
   const useSearchNode = (): React.ReactNode => {
-
     return (
       <div className={sc('container-search')}>
         <Form {...formLayout} form={searchForm}>
@@ -327,7 +324,7 @@ export default () => {
             <Col span={6}>
               <Form.Item name="channelName" label="渠道值">
                 <Select placeholder="请选择" allowClear>
-                  {selectChannelListAll.map((item,index ) => (
+                  {selectChannelListAll.map((item, index) => (
                     <Select.Option key={index} value={item}>
                       {item}
                     </Select.Option>
@@ -338,7 +335,7 @@ export default () => {
             <Col span={6}>
               <Form.Item name="sceneName" label="场景值">
                 <Select placeholder="请选择" allowClear>
-                  {selectSceneListAll.map((item,index ) => (
+                  {selectSceneListAll.map((item, index) => (
                     <Select.Option key={index} value={item}>
                       {item}
                     </Select.Option>
@@ -364,8 +361,19 @@ export default () => {
             </Col>
             <Col span={6}>
               <Form.Item name="risky" label="报警标识">
-              <Select placeholder="请选择" allowClear>
+                <Select placeholder="请选择" allowClear>
                   {Object.entries(User.RiskyState).map((p) => (
+                    <Select.Option key={p[0] + p[1]} value={p[0]}>
+                      {p[1]}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={6}>
+              <Form.Item name="risky" label="加入组织状态">
+                <Select placeholder="请选择" allowClear>
+                  {Object.entries(User.OrgState).map((p) => (
                     <Select.Option key={p[0] + p[1]} value={p[0]}>
                       {p[1]}
                     </Select.Option>
@@ -375,7 +383,7 @@ export default () => {
             </Col>
             <Col offset={20} span={4}>
               <Button
-                style={{ marginRight: 20,marginBottom:20}}
+                style={{ marginRight: 20, marginBottom: 20 }}
                 type="primary"
                 key="search"
                 onClick={() => {
@@ -386,9 +394,9 @@ export default () => {
                   }
                   if (search?.risky) {
                     if (search?.risky === 'RISK') {
-                      Object.assign(search,{risky: true})
+                      Object.assign(search, { risky: true });
                     } else {
-                      Object.assign(search,{risky: false})
+                      Object.assign(search, { risky: false });
                     }
                   }
                   setSearChContent(search);
@@ -444,13 +452,11 @@ export default () => {
   //   const res = await exportUsers({})
   //   console.log(res.data)
 
-
   //   //创建 blob对象 第一个参数 response.data是代表后端返回的文件流  ，第二个参数设置文件类型
   //   let blob = new Blob([res], {
   //     type: 'application/vnd.ms-excel;charset=UTF-8'
   //   });
   //   //生成生成下载链接  这个链接放在a标签上是直接下载，放在img上可以直接显示图片问价，视频同理
-
 
   //   let objectUrl = URL.createObjectURL(blob)
   //   let link = document.createElement("a");
@@ -477,8 +483,18 @@ export default () => {
   //   //   window.URL.revokeObjectURL(linkElement.href);
   // }
   const exportList = async () => {
-    const { name, phone, registerSource, orgName,channelName,sceneName, userIdentity, createTimeStart, createTimeEnd } = searchContent;
-    console.log('@searchContent',searchContent)
+    const {
+      name,
+      phone,
+      registerSource,
+      orgName,
+      channelName,
+      sceneName,
+      userIdentity,
+      createTimeStart,
+      createTimeEnd,
+    } = searchContent;
+    console.log('@searchContent', searchContent);
 
     try {
       const res = await exportUserList({
@@ -490,17 +506,20 @@ export default () => {
         createTimeStart,
         createTimeEnd,
         channelName,
-        sceneName
+        sceneName,
       });
-      if (res?.data.size == 67 || res?.data.type == 'application/json') return message.warning('操作太过频繁，请稍后再试')
+      if (res?.data.size == 67 || res?.data.type == 'application/json')
+        return message.warning('操作太过频繁，请稍后再试');
       const content = res?.data;
-      const blob  = new Blob([content], {type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"});
-      const fileName = '用户信息.xlsx'
+      const blob = new Blob([content], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8',
+      });
+      const fileName = '用户信息.xlsx';
       const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a')
-      link.style.display = 'none'
+      const link = document.createElement('a');
+      link.style.display = 'none';
       link.href = url;
-      link.setAttribute('download', fileName)
+      link.setAttribute('download', fileName);
       document.body.appendChild(link);
       link.click();
     } catch (error) {
@@ -509,34 +528,35 @@ export default () => {
   };
 
   const handleRecheckBtn = async (record: any, state: boolean) => {
-    const text = state ? '复审正常' : '确定异常'
+    const text = state ? '复审正常' : '确定异常';
     try {
       const res = await handleAudit({
         auditId: record?.auditId || '', // 审核id
         result: state, // 通过/拒绝
-      })
+      });
       if (res?.code === 0) {
         message.success(`${text}完成`);
         getPage();
         _getQueryUserManageRisky();
       } else {
-        throw new Error("");
+        throw new Error('');
       }
     } catch (error) {
       message.error(`${text}失败，请稍后重试`);
     }
-  }
+  };
 
   return (
     <PageContainer className={sc('container')}>
       {useSearchNode()}
-      <div className={sc('container-table-header')} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div
+        className={sc('container-table-header')}
+        style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+      >
         <div className="title">
-          <span>用户信息列表(共{pageInfo.totalCount || 0}个,
-            姓名风险用户
-            <span style={{color: 'red'}}>
-              {userCount}
-            </span>
+          <span>
+            用户信息列表(共{pageInfo.totalCount || 0}个, 姓名风险用户
+            <span style={{ color: 'red' }}>{userCount}</span>
             个)
           </span>
         </div>
@@ -548,7 +568,7 @@ export default () => {
         >
           导出
         </Button> */}
-        <Access accessible={access['PX_UM_YHXX']}>
+        <Access accessible={access.PX_UM_YHXX}>
           <Button icon={<UploadOutlined />} onClick={exportList}>
             导出
           </Button>
@@ -565,13 +585,13 @@ export default () => {
             pageInfo.totalCount === 0
               ? false
               : {
-                onChange: getPage,
-                total: pageInfo.totalCount,
-                current: pageInfo.pageIndex,
-                pageSize: pageInfo.pageSize,
-                showTotal: (total: number) =>
-                  `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
-              }
+                  onChange: getPage,
+                  total: pageInfo.totalCount,
+                  current: pageInfo.pageIndex,
+                  pageSize: pageInfo.pageSize,
+                  showTotal: (total: number) =>
+                    `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
+                }
           }
         />
       </div>
