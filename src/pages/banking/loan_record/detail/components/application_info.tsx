@@ -1,13 +1,12 @@
-import { Row, Col, Button, Image, message, Spin } from 'antd';
+import { Row, Col, Button, Image, message, Spin, message as antdMessage } from 'antd';
 import './application_info.less';
 import VerifyStepsDetail from './verify-steps/verify-steps';
 import CommonTitle from '@/components/verify_steps/common_title';
 import { useEffect, useState } from 'react';
-import ProCard from '@ant-design/pro-card';
 import { FooterToolbar } from '@ant-design/pro-components';
 import { useHistory } from 'umi';
 import type { Props } from './authorization_info';
-import { getApplicationInfo } from '@/services/banking-loan';
+import { getApplicationInfo, getAgreement } from '@/services/banking-loan';
 import { regFenToYuan } from '@/utils/util';
 import type BankingLoan from '@/types/banking-loan.d';
 export default ({ id, left, loanType }: Props) => {
@@ -50,6 +49,23 @@ export default ({ id, left, loanType }: Props) => {
   useEffect(() => {
     getInfo();
   }, []);
+  const downLoad = (contractNo: string, name: string) => {
+    getAgreement(contractNo).then((res: any) => {
+      if (res.data){
+        const content = res?.data;
+        const blob  = new Blob([content], { type: 'application/pdf' });
+        const fileName = `${name}.pdf`
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a')
+        link.style.display = 'none'
+        link.href = url;
+        link.setAttribute('download', fileName)
+        document.body.appendChild(link);
+        link.click();
+        console.log(res)
+      }
+    })
+  }
   return (
     <Spin spinning={detailLoading}>
       <div className="application">
@@ -143,6 +159,26 @@ export default ({ id, left, loanType }: Props) => {
               <span>金融机构：</span>
               <span>{detail.financialOrg}</span>
             </Col>
+            {
+              detail?.urls?.length === 2 &&
+              <Col span={24}>
+                <span>已签署协议: </span>
+                <span>
+                  <span
+                    style={{cursor: 'pointer', color: '#0068ff'}}
+                    onClick={() => {downLoad(detail?.urls?.[0] || '', '《企业征信查询和使用授权书》')}}
+                  >
+                    《企业征信查询和使用授权书》
+                  </span>、
+                  <span
+                    style={{cursor: 'pointer', color: '#0068ff'}}
+                    onClick={() => {downLoad(detail?.urls?.[1] || '', '《个人征信查询和使用授权书》')}}
+                  >
+                    《个人征信查询和使用授权书》
+                  </span>
+                </span>
+              </Col>
+            }
           </Row>
         </div>
         <div className="application-contain main">

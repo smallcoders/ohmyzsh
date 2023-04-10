@@ -39,6 +39,7 @@ namespace FinancialInstitution {
     name?: string; //姓名
     phone?: string; //手机号
     position?: number; //职位
+    email?: string; //邮箱地址
   };
   export type BankInfo = {
     // eslint-disable-next-line @typescript-eslint/method-signature-style
@@ -56,6 +57,7 @@ namespace FinancialInstitution {
     productLogoImage?: string | number; //产品展示logo
     content?: string; //机构介绍
     bankUserInfoList?: BankUserInfoList[];
+    bankOperationInfoList?: BankUserInfoList[]
   };
   export interface ResultBankInfo extends Common.ResultCode {
     result: BankInfo;
@@ -67,7 +69,7 @@ namespace FinancialInstitution {
   };
 
   export interface ResultsaveOrUpdate extends Common.ResultCode {
-    result: [];
+    result: number;
   }
   export type bankUserInfo = {
     name?: string;

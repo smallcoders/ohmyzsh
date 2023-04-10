@@ -17,6 +17,8 @@ namespace DiagnosticRecord {
     createTime?: string; //  诊断时间
     linkCustomer?: boolean; //是否对接客户 true是 false否
     applyNum?: number; //申请数量
+    hasDemand?: boolean; // 是否有发布需求
+    demandId?: number; // 需求id,
   };
   export type CustomerDemand = {
     id?: number; //主键
@@ -53,6 +55,12 @@ namespace DiagnosticRecord {
     applyNum?: number; //产品申请数量
     qualification?: string; //企业资质（多选，逗号隔开） 1 规上企业 2 高新技术企业 3 科技型中小企业 4 民营科技企业 5 专精特新企业
     revenueContent?: string;
+    urgency?: number; // 资金需求紧迫度  1  急需解决资金问题/近期有融资计划 2希望获得产品推介/近期无融资计划
+    urgencyRemark?: string; //到账时间
+    type?: number; // 1 快速诊断 2 精准诊断
+    demandState?: number // 需求状态
+    recommendBankId?: number // 金融机构
+    exclusiveService?: boolean
   };
   export type OrgAssets = {
     typeContent?: string; //资产类型 1自有产权土地、2自有高价值设备
@@ -71,8 +79,17 @@ namespace DiagnosticRecord {
     orgAssets?: OrgAssets[]; //资产信息
     diagnoseCreditVO?: DiagnoseCreditVO[]; //产品申请
   };
+  export type DemandDetail = {
+    diagnoseRecord?: DiagnoseRecord; //诊断信息
+    orgAssets?: OrgAssets[]; //资产信息
+    creditInfo?: any; //产品申请
+    workProve?: any
+  };
+  export interface DemandDetailData extends Common.ResultCode {
+    result: DemandDetail;
+  }
   export interface DiagnoseDetailData extends Common.ResultCode {
-    result: DiagnoseDetail[];
+    result: DiagnoseDetail;
   }
 }
 

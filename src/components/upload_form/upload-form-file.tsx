@@ -72,6 +72,7 @@ const UploadForm = (
 
     props.onChange?.(list as any);
   };
+  console.log(props.value, '00000')
 
   const isOpen = props?.maxCount ? (props.value?.length || 0) < props?.maxCount : true;
   return (

@@ -168,6 +168,7 @@
   FINANCIAL_DIAGNOSTIC_RECORD: '/banking/financial_diagnostic_record',
   FINANCIAL_DIAGNOSTIC_RECORD_INDEX: '/banking/financial_diagnostic_record/index',
   FINANCIAL_DIAGNOSTIC_RECORD_DETAIL: '/banking/financial_diagnostic_record/detail',
+  FINANCIAL_DIAGNOSTIC_RECORD_DEMAND: '/banking/financial_diagnostic_record/demand',
 
   // 金融专属
   FINANCIAL_EXCLUSIVE: '/banking/financial_exclusive',
@@ -176,6 +177,9 @@
   // 机构管理
   FINANCIAL_INSTITUTION: '/banking/financial_institution',
   FINANCIAL_INSTITUTION_INDEX: '/banking/financial_institution/index',
+
+  // 金融待办通知
+  FINANCIAL_NOTIFICATION: '/banking/financial_notification/index',
 
   // App金融服务管理
   APP_FINANCIAL_SERVICE_MANAGE: '/banking/app_financial_service_manage',
@@ -1602,6 +1606,11 @@ export default [
             name: '详情',
             component: './banking/financial_diagnostic_record/detail/index',
           },
+          {
+            path: routeName.FINANCIAL_DIAGNOSTIC_RECORD_DEMAND,
+            name: '需求反馈',
+            component: './banking/financial_diagnostic_record/demand/index',
+          }
         ],
       },
       {
@@ -1697,6 +1706,13 @@ export default [
         access: 'M_FM_GYSGL',
         component: './banking/supplier-management',
       },
+      {
+        path: routeName.FINANCIAL_NOTIFICATION,
+        name: '金融待办通知',
+        code: 'M_FM_DBTZ',
+        access: 'M_FM_DBTZ',
+        component: './banking/financial_notification/index',
+      }
     ],
   },
   {
