@@ -176,6 +176,7 @@ export default () => {
           </Col>
           <Col span={20}>
             <SelfTable
+              scroll={{ x: 1480 }}
               loading={loading}
               bordered
               columns={columns}
