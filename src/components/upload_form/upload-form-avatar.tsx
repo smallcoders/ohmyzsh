@@ -118,7 +118,7 @@ const UploadForm = (
         return item?.id ? item?.id : item?.response?.result.path;
       });
       props?.onChange?.(arr.length === 1 ? arr[0] : arr);
-      message.success('上传成功');
+      if (newFileList.length > 0) message.success('上传成功');
       return;
     }
   };
