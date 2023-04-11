@@ -372,9 +372,9 @@ export default () => {
               </Form.Item>
             </Col>
             <Col span={6}>
-              <Form.Item name="OrgState" label="加入组织状态">
+              <Form.Item name="orgState" label="加入组织状态">
                 <Select placeholder="请选择" allowClear>
-                  {Object.entries(User.OrgState).map((p) => (
+                  {Object.entries(User.orgState).map((p) => (
                     <Select.Option key={p[0] + p[1]} value={p[0]}>
                       {p[1]}
                     </Select.Option>

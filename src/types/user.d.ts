@@ -24,10 +24,10 @@ namespace User {
     RISK: '风险',
     NORMAL: '正常',
   };
-  export const OrgState = {
+  export const orgState = {
     AUTHED: '已认证',
     AUDITING: '审核中',
-    not_auth: '未认证',
+    NOT_AUTH: '未认证',
   };
 
   export type Content = {
