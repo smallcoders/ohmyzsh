@@ -75,7 +75,7 @@ const UploadForm = (
           props.isMore ? (info.fileList as any)?.map((item: any) => item.response?.result) : value,
         );
         setLoading(false);
-        message.success('上传成功');
+        if (info.fileList.length > 0) message.success('上传成功');
       } else {
         setLoading(false);
         message.error(`上传失败，原因:{${uploadResponse.message}}`);
