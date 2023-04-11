@@ -30,6 +30,7 @@ import {
 import User from '@/types/user.d';
 import { handleAudit } from '@/services/audit';
 import type Activity from '@/types/operation-activity';
+import { OrgState } from '@/types/user';
 const sc = scopedClasses('service-config-requirement-manage');
 
 // const registerSource = {
@@ -371,7 +372,7 @@ export default () => {
               </Form.Item>
             </Col>
             <Col span={6}>
-              <Form.Item name="risky" label="加入组织状态">
+              <Form.Item name="OrgState" label="加入组织状态">
                 <Select placeholder="请选择" allowClear>
                   {Object.entries(User.OrgState).map((p) => (
                     <Select.Option key={p[0] + p[1]} value={p[0]}>

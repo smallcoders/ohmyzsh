@@ -25,8 +25,9 @@ namespace User {
     NORMAL: '正常',
   };
   export const OrgState = {
-    RISK: '风险',
-    NORMAL: '正常',
+    AUTHED: '已认证',
+    AUDITING: '审核中',
+    not_auth: '未认证',
   };
 
   export type Content = {
