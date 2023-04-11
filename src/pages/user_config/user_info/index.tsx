@@ -218,6 +218,21 @@ export default () => {
       },
     },
     {
+      title: '加入组织状态',
+      dataIndex: 'orgState',
+      width: 100,
+      render: (orgState: any, record: any) => {
+        return (
+          <div className="org-name">
+            {orgState === 'AUTHED' && <span>已认证</span>}
+            {orgState === 'AUDITING' && <span>审核中</span>}
+            {orgState === 'NOT_AUTH' && <span>未认证</span>}
+            {!orgState && <span>--</span>}
+          </div>
+        );
+      },
+    },
+    {
       title: '操作',
       width: 100,
       fixed: 'right',
