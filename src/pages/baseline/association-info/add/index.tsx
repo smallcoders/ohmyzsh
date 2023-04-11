@@ -16,7 +16,7 @@ import {
 import { history } from '@@/core/history';
 import { Link } from 'umi';
 import { phoneVerifyReg } from '@/utils/regex-util';
-import UploadFormFile from '@/components/upload_form/upload-form';
+import UploadFormFile from '@/components/upload_form/upload-form-asso';
 import { queryAllianceDetail, queryIndustryTypes, saveAlliance } from '@/services/baseline-info';
 import { getWholeAreaTree } from '@/services/area';
 const sc = scopedClasses('baseline-association-add');
