@@ -1,4 +1,4 @@
-import { PlusOutlined } from '@ant-design/icons';
+import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 import { message, Upload, Modal } from 'antd';
 import type { RcFile, UploadProps } from 'antd/lib/upload/interface';
 import type { ReactNode, RefAttributes } from 'react';
@@ -37,6 +37,15 @@ const UploadForm = (
       <div style={{ marginTop: 8 }}>上传</div>
     </div>
   );
+
+  const reUpload = (
+    <>
+      <div className={'reupload'}>
+        <img src={props.value} alt="图片损坏" />
+        <div>重新上传</div>
+      </div>
+    </>
+  );
   const isFirstRender = useRef(true);
 
   useEffect(() => {
@@ -55,7 +64,6 @@ const UploadForm = (
       return;
     }
   }, [props.value]);
-
   const handlePreview = async (file: any) => {
     if (!file.url && !file.preview) {
       file.preview = await getBase64(file.originFileObj as RcFile);
@@ -132,7 +140,7 @@ const UploadForm = (
           beforeUpload={beforeUpload}
           onRemove={handleRemove}
         >
-          {fileList.length >= props.limit ? null : uploadButton}
+          {fileList.length >= 1 ? reUpload : uploadButton}
         </Upload>
       </ImgCrop>
       <Modal
