@@ -171,14 +171,28 @@ export default () => {
     {
       title: '部门名称',
       dataIndex: 'name',
-      isEllipsis: true,
+      ellipsis: {
+        showTitle: true,
+      },
       width: 200,
+      render: (name: any) => (
+        <Tooltip placement="topLeft" title={name}>
+          {name}
+        </Tooltip>
+      ),
     },
     {
       title: ' 在线办理h5地址',
       dataIndex: 'serviceUrl',
-      isEllipsis: true,
+      ellipsis: {
+        showTitle: true,
+      },
       width: 200,
+      render: (serviceUrl: any) => (
+        <Tooltip placement="topLeft" title={serviceUrl}>
+          {serviceUrl}
+        </Tooltip>
+      ),
     },
     {
       title: '级别',

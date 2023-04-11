@@ -187,8 +187,15 @@ export default () => {
     {
       title: '协会名称',
       dataIndex: 'name',
-      isEllipsis: true,
+      ellipsis: {
+        showTitle: true,
+      },
       width: 200,
+      render: (name: any) => (
+        <Tooltip placement="topLeft" title={name}>
+          {name}
+        </Tooltip>
+      ),
     },
     {
       title: ' 所属产业',
