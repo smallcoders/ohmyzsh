@@ -460,6 +460,7 @@ export default () => {
       search.createTimeStart = moment(search.time[0]).format('YYYY-MM-DD HH:mm:ss');
       search.createTimeEnd = moment(search.time[1]).format('YYYY-MM-DD HH:mm:ss');
     }
+    console.log(serialize(search));
     return `/antelope-user/mng/user/exportUser?${serialize(search)}`;
   };
 
@@ -504,12 +505,13 @@ export default () => {
       phone,
       registerSource,
       orgName,
+      orgState,
       channelName,
       sceneName,
       userIdentity,
       createTimeStart,
       createTimeEnd,
-    } = searchContent;
+    } = searchForm.getFieldsValue();
     console.log('@searchContent', searchContent);
 
     try {
@@ -518,6 +520,7 @@ export default () => {
         phone,
         registerSource,
         orgName,
+        orgState,
         userIdentity,
         createTimeStart,
         createTimeEnd,
