@@ -123,7 +123,6 @@
     '/operation-activity/local-propaganda/propaganda-config/detail-management', // 新增地市宣传页管理
   MANAGEMENT_ACTIVITIES: '/operation-activity/local-propaganda/management_activities', // 地市活动管理
 
-  
   //金融服务管理
   BANKING_SERVICE: '/banking/banking_service_manage',
   BANKING_SERVICE_INDEX: '/banking/banking_service_manage/index',
@@ -132,7 +131,7 @@
   // 贷款业务
   ORG_MANAGE_INDEX: '/user-config/org-manage/index',
   ORG_MANAGE_DETAIL: '/user-config/org-manage/detail',
-  ORG_MANAGE_NEW_DETAIL:'/user-config/org-manage/new-detail',
+  ORG_MANAGE_NEW_DETAIL: '/user-config/org-manage/new-detail',
   // 贷款记录
   LOAN_RECORD: '/banking/loan_record',
   LOAN_RECORD_INDEX: '/banking/loan_record/index',
@@ -235,12 +234,17 @@
   BASELINE_RECOMMENDED_MANAGE: 'baseline-recommended',
   BASELINE_TOPIC_MANAGE_DETAIL: 'baseline-topic-manage/detail',
   BASELINE_TOPIC_MANAGE_ADD: 'baseline-topic-manage/add',
-  BASELINE_CONFERENCE_CARD:'baseline-card-manage',
+  BASELINE_CONFERENCE_CARD: 'baseline-card-manage',
   BASELINE_CONFERENCE_MANAGE: 'baseline-conference-manage',
   BASELINE_CONFERENCE_MANAGE_DETAIL: 'baseline-conference-manage/detail',
   BASELINE_CONFERENCE_MANAGE_EDIT: 'baseline-conference-manage/edit',
+  BASELINE_GOVERNMENT_MANAGE: 'baseline-government-manage',
+  BASELINE_GOVERNMENT_MANAGE_DETAIL: 'baseline-government-manage/detail',
+  BASELINE_GOVERNMENT_MANAGE_EDIT: 'baseline-government-manage/add',
+  BASELINE_ASSOCIATION_MANAGE: 'baseline-association-manage',
+  BASELINE_ASSOCIATION_MANAGE_DETAIL: 'baseline-association-manage/detail',
+  BASELINE_ASSOCIATION_MANAGE_EDIT: 'baseline-association-manage/add',
 };
-
 
 export default [
   {
@@ -302,7 +306,6 @@ export default [
         name: '用户认证数据',
         component: './operate_data/data_manage/index',
       },
-
     ],
   },
   {
@@ -415,7 +418,8 @@ export default [
         hideInMenu: true,
         name: '详情',
         component: './baseline/topic/detail',
-      },{
+      },
+      {
         path: routeName.BASELINE_TOPIC_MANAGE_ADD,
         hideInMenu: true,
         name: '新增',
@@ -436,7 +440,7 @@ export default [
         component: './baseline/recommended/detail',
         hideInMenu: true,
       },
-       {
+      {
         path: routeName.BASELINE_CONFERENCE_MANAGE,
         code: 'M_BLM_HYGL',
         access: 'M_BLM_HYGL',
@@ -452,8 +456,6 @@ export default [
       },
       {
         path: routeName.BASELINE_CONFERENCE_MANAGE_DETAIL,
-        // code: 'M_HRM_XQ',
-        // access: 'M_HRM_XQ',
         hideInMenu: true,
         name: '详情',
         component: './baseline/conference/detail',
@@ -463,6 +465,44 @@ export default [
         hideInMenu: true,
         name: '新增',
         component: './baseline/conference/edit',
+      },
+      {
+        path: routeName.BASELINE_GOVERNMENT_MANAGE,
+        code: 'M_BLM_ZFXXPZ',
+        access: 'M_BLM_ZFXXPZ',
+        name: '政府信息配置',
+        component: './baseline/government-info/index',
+      },
+      {
+        path: routeName.BASELINE_GOVERNMENT_MANAGE_DETAIL,
+        hideInMenu: true,
+        name: '详情',
+        component: './baseline/government-info/detail',
+      },
+      {
+        path: routeName.BASELINE_GOVERNMENT_MANAGE_EDIT,
+        hideInMenu: true,
+        name: '新增',
+        component: './baseline/government-info/add',
+      },
+      {
+        path: routeName.BASELINE_ASSOCIATION_MANAGE,
+        code: 'M_BLM_XHXXPZ',
+        access: 'M_BLM_XHXXPZ',
+        name: '协会信息配置',
+        component: './baseline/association-info/index',
+      },
+      {
+        path: routeName.BASELINE_ASSOCIATION_MANAGE_DETAIL,
+        hideInMenu: true,
+        name: '详情',
+        component: './baseline/association-info/detail',
+      },
+      {
+        path: routeName.BASELINE_ASSOCIATION_MANAGE_EDIT,
+        hideInMenu: true,
+        name: '新增',
+        component: './baseline/association-info/add',
       },
     ],
   },
@@ -1028,7 +1068,6 @@ export default [
             access: 'M_OA_CJHD',
             component: './operation_activity/activity_project/detail/spring-detail',
           },
-
         ],
       },
       {
