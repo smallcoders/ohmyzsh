@@ -24,11 +24,58 @@ export default (props: {
   dataSoueceItem?: any
 }) => {
   const { onOffShelves, handleRouter, dataSoueceItem } = props
+  // 当前数组项
   const { id, innerName, menuNameList, name, state } = dataSoueceItem
   const [loading, setLoading] = useState<boolean>(false);
   const access = useAccess();
 
   // 菜单项
+  // const dataSoueceList = [
+  //   {
+  //     id: '0',
+  //     name:  menuNameList && menuNameList[0],
+  //     chilrden: (
+  //       <Menu>
+  //         <Menu.Item>导出筛选结果</Menu.Item>
+  //         <Menu.Item>导出选中数据</Menu.Item>
+  //         <Menu.Item>导出选中数据</Menu.Item>
+  //         <Menu.Item>导出选中数据</Menu.Item>
+  //       </Menu>
+  //     ),
+  //   },
+  //   {
+  //     id: '1',
+  //     name: '菜单二',
+  //     chilrden: (
+  //       <Menu>
+  //         <Menu.Item>导出筛选结果</Menu.Item>
+  //         <Menu.Item>导出选中数据</Menu.Item>
+  //       </Menu>
+  //     ),
+  //   },
+  //   {
+  //     id: '2',
+  //     name: '菜单三',
+  //     chilrden: (
+  //       <Menu>
+  //         <Menu.Item>导出筛选结果</Menu.Item>
+  //         <Menu.Item>导出选中数据</Menu.Item>
+  //       </Menu>
+  //     ),
+  //   },
+  //   {
+  //     id: '3',
+  //     name: '菜单四',
+  //     chilrden: (
+  //       <Menu>
+  //         <Menu.Item>导出筛选结果</Menu.Item>
+  //         <Menu.Item>导出选中数据</Menu.Item>
+  //       </Menu>
+  //     ),
+  //   },
+  // ];
+  // 根据menuNameList配置菜单项
+  const [dataList, setDataList] = useState<any>([])
   const dataSoueceList = [
     {
       id: '0',
@@ -41,38 +88,29 @@ export default (props: {
           <Menu.Item>导出选中数据</Menu.Item>
         </Menu>
       ),
-    },
-    {
-      id: '1',
-      name: '菜单二',
-      chilrden: (
-        <Menu>
-          <Menu.Item>导出筛选结果</Menu.Item>
-          <Menu.Item>导出选中数据</Menu.Item>
-        </Menu>
-      ),
-    },
-    {
-      id: '2',
-      name: '菜单三',
-      chilrden: (
-        <Menu>
-          <Menu.Item>导出筛选结果</Menu.Item>
-          <Menu.Item>导出选中数据</Menu.Item>
-        </Menu>
-      ),
-    },
-    {
-      id: '3',
-      name: '菜单四',
-      chilrden: (
-        <Menu>
-          <Menu.Item>导出筛选结果</Menu.Item>
-          <Menu.Item>导出选中数据</Menu.Item>
-        </Menu>
-      ),
-    },
+    }
   ];
+
+  useEffect(() => {
+    if (menuNameList && menuNameList.length > 0) {
+      const newList = menuNameList?.map((item: any) => {
+        return {
+          id: id,
+          name:  item,
+          chilrden: (
+            <Menu>
+              <Menu.Item>导出筛选结果</Menu.Item>
+              <Menu.Item>导出选中数据</Menu.Item>
+              <Menu.Item>导出选中数据</Menu.Item>
+              <Menu.Item>导出选中数据</Menu.Item>
+            </Menu>
+          ),
+        }
+      })
+      setDataList(newList)
+
+    }
+  },[menuNameList])
 
   // 服务号管理
   const handleManagement = () => {
@@ -119,7 +157,7 @@ export default (props: {
           } */}
           {true && (
             <div className={sc('container-card-item-preview-menu-list')}>
-              {dataSoueceList.map((item: any) => {
+              {dataList && dataList.map((item: any) => {
                 return (
                   <React.Fragment key={item.id}>
                     <div className={sc('container-card-item-preview-menu-list-item')}>

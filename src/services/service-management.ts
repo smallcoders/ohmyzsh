@@ -100,8 +100,8 @@ export function httpArticleDrafList(
 
 // 图文-暂存
 export async function httpArticlePictureTextSave(data: {
-  id?: number // 主键
-  serviceAccountId?: number // 服务号Id
+  id?: number |undefined // 主键
+  serviceAccountId?: number |undefined // 服务号Id
   title?: string // 标题
   authorName?: string // 作者
   coverId?: number // 封面图文件id
@@ -118,8 +118,8 @@ export async function httpArticlePictureTextSave(data: {
 
 // 图文-提交
 export async function httpServiceAccountPictureTextSubmit(data: {
-  id?: number // 主键
-  serviceAccountId?: number // 服务号Id
+  id?: number |undefined // 主键
+  serviceAccountId?: number |undefined // 服务号Id
   title?: string // 标题
   authorName?: string // 作者
   coverId?: number // 封面图文件id
@@ -137,8 +137,8 @@ export async function httpServiceAccountPictureTextSubmit(data: {
 
 // 图片 - 暂存
 export async function httpServiceAccountPictureSave(data: {
-  id?: number // 主键
-  serviceAccountId?: number // 服务号Id
+  id?: number |undefined // 主键
+  serviceAccountId?: number |undefined // 服务号Id
   title?: string // 标题
   coverId?: number // 封面图文件id
   content?: string // 描述信息
@@ -156,8 +156,8 @@ export async function httpServiceAccountPictureSave(data: {
 
 // 图片 - 提交
 export async function httpServiceAccountPictureSubmit(data: {
-  id?: number // 主键
-  serviceAccountId?: number // 服务号Id
+  id?: number |undefined // 主键
+  serviceAccountId?: number |undefined // 服务号Id
   title?: string // 标题
   coverId?: number // 封面图文件id
   content?: string // 描述信息
@@ -175,8 +175,8 @@ export async function httpServiceAccountPictureSubmit(data: {
 
 // 文本 - 暂存
 export async function httpServiceAccountTextSave(data: {
-  id?: number // 主键
-  serviceAccountId?: number // 服务号Id
+  id?: number |undefined // 主键
+  serviceAccountId?: number |undefined // 服务号Id
   content?: string // 文本内容
   realTimePublishing?: boolean // 实时发布 true实时发布 false预约发布
   publishTime?: string // 发布时间
@@ -191,8 +191,8 @@ export async function httpServiceAccountTextSave(data: {
 
 // 文本 - 提交
 export async function httpServiceAccountTextSubmit(data: {
-  id?: number // 主键
-  serviceAccountId?: number // 服务号Id
+  id?: number |undefined // 主键
+  serviceAccountId?: number |undefined // 服务号Id
   content?: string // 文本内容
   realTimePublishing?: boolean // 实时发布 true实时发布 false预约发布
   publishTime?: string // 发布时间
@@ -207,8 +207,8 @@ export async function httpServiceAccountTextSubmit(data: {
 
 // 视频-暂存
 export async function httpServiceAccountVideoSave(data: {
-  id?: number // 主键
-  serviceAccountId?: number // 服务号Id
+  id?: number |undefined // 主键
+  serviceAccountId?: number |undefined // 服务号Id
   title?: string // 标题
   authorName?: string // 作者
   coverId?: number // 封面图文件id
@@ -227,8 +227,8 @@ export async function httpServiceAccountVideoSave(data: {
 
 // 视频-提交
 export async function httpServiceAccountVideoSubmit(data: {
-  id?: number // 主键
-  serviceAccountId?: number // 服务号Id
+  id?: number |undefined // 主键
+  serviceAccountId?: number |undefined // 服务号Id
   title?: string // 标题
   authorName?: string // 作者
   coverId?: number // 封面图文件id
@@ -247,8 +247,8 @@ export async function httpServiceAccountVideoSubmit(data: {
 
 // 音频-暂存
 export function httpServiceAccountAudioSave(data: {
-  id?: number // 主键
-  serviceAccountId?: number // 服务号Id
+  id?: number |undefined // 主键
+  serviceAccountId?: number |undefined // 服务号Id
   title?: string // 标题
   authorName?: string // 作者
   coverId?: number // 封面图文件id
@@ -267,8 +267,8 @@ export function httpServiceAccountAudioSave(data: {
 
 // 音频-提交
 export function httpServiceAccountAudioSubmit(data: {
-  id?: number // 主键
-  serviceAccountId?: number // 服务号Id
+  id?: number |undefined // 主键
+  serviceAccountId?: number |undefined // 服务号Id
   title?: string // 标题
   authorName?: string // 作者
   coverId?: number // 封面图文件id
@@ -368,5 +368,12 @@ export function httpServiceAccountArticleDetail(id: string) {
   return request(`/antelope-business/mng/serviceAccount/article/detail?serviceAccountArticleId=${id}`, {
     method: 'get',
     // params
+  })
+}
+
+// 服务号运营-服务号设置-详情
+export function httpServiceAccountOperationDetail(id: string) {
+  return request(`/antelope-business/mng/serviceAccount/operation/detail?serviceAccountId=${id}`, {
+    method: 'get',
   })
 }

@@ -34,6 +34,7 @@ import {
   httpServiceAccountArticleDel,
   httpServiceAccountOperationSave,
   httpServiceAccountOperationSubmit,
+  httpServiceAccountOperationDetail,
 } from '@/services/service-management';
 const sc = scopedClasses('service-number-management');
 
@@ -48,6 +49,61 @@ export default () => {
   const access = useAccess();
   // 手动触发table 的 reload等操作
   const actionRef = useRef<ActionType>();
+
+  // 是否为更新服务号
+  const [update, setUpdata] = useState<boolean>(false);
+
+  const [serveDetail, setServeDetail] = useState<any>();
+  const detail = async () => {
+    if (!id) return;
+    try {
+      const res = await httpServiceAccountOperationDetail(id);
+      if (res?.code === 0) {
+        console.log('获取渲染详情', res?.result);
+        setUpdata(true);
+        setServeDetail(res?.result);
+      } else {
+        throw new Error('');
+      }
+    } catch (error) {
+      message.error(`获取详情失败:${error}`);
+    }
+  };
+
+  useEffect(() => {
+    console.log('有详情', serveDetail);
+    if (serveDetail) {
+      formBasic.setFieldsValue({
+        ...serveDetail,
+        // 服务号logo
+        // logoId
+        logoId: serveDetail?.logoUrl,
+      });
+      // 如果有详情
+      // 初始化菜单设置
+      const a = [
+        {
+          name: '菜单名称', // 菜单名称,
+          key: 'delete',
+        },
+        {
+          name: '+添加菜单',
+          type: 'add',
+          key: 'delete',
+        },
+      ]
+      let menus = serveDetail?.menus
+      a.forEach((item: any) => {
+        menus.push(item)
+      })
+      console.log('初始化菜单设置', menus)
+      setDataSouceList(menus)
+    }
+  }, [serveDetail]);
+
+  useEffect(() => {
+    detail();
+  }, []);
 
   const [drafLoading, setDrafLoading] = useState<boolean>(false);
   const getDraftList = async (id: any, reset?: boolean) => {
@@ -498,6 +554,9 @@ export default () => {
       Promise.all([formBasic.validateFields()]).then(async ([formBasicValues]) => {
         console.log('搜集的form', formBasicValues);
         console.log('搜集的菜单设置', dataSoueceList);
+        if (dataSoueceList.length <= 2) {
+          return message.warning('请配置菜单设置')
+        }
         let a = JSON.stringify(dataSoueceList);
         let b = JSON.parse(a);
         let c = JSON.parse(a);
@@ -514,8 +573,8 @@ export default () => {
         });
         console.log('删除一级之后的值', c);
         c = c.map((item: any) => {
-          if (item.chilrden) {
-            let a = JSON.stringify(item.chilrden);
+          if (item.childMenu) {
+            let a = JSON.stringify(item.childMenu);
             let b = JSON.parse(a);
             let c = JSON.parse(a);
             b.forEach((item2: any) => {
@@ -529,7 +588,7 @@ export default () => {
               }
             });
             return {
-              chilrden: c,
+              childMenu: c,
               menuLayer: item.menuLayer,
               name: item.name,
               weight: item.weight,
@@ -546,7 +605,7 @@ export default () => {
         console.log('删除了二级多余c', c);
 
         try {
-          const res = await httpServiceAccountOperationSave({
+          const res = await httpServiceAccountOperationSubmit({
             id: id,
             ...formBasicValues,
             menus: c,
@@ -562,71 +621,71 @@ export default () => {
       });
     } else {
       // 暂存
-        const formBasicValues = formBasic.getFieldsValue()
-        console.log('搜集的form', formBasicValues);
-        console.log('搜集的菜单设置', dataSoueceList);
+      const formBasicValues = formBasic.getFieldsValue();
+      console.log('搜集的form', formBasicValues);
+      console.log('搜集的菜单设置', dataSoueceList);
 
-        let a = JSON.stringify(dataSoueceList);
-        let b = JSON.parse(a);
-        let c = JSON.parse(a);
-        b.forEach((item: any, index: any) => {
-          if (item.key) {
-            console.log('item', item.name);
-            c.forEach((item2: any, index2: any) => {
-              if (item2.name === item.name) {
-                // 删除动态的index2
-                c.splice(index2, 1);
-              }
-            });
-          }
-        });
-        console.log('删除一级之后的值', c);
-        c = c.map((item: any) => {
-          if (item.chilrden) {
-            let a = JSON.stringify(item.chilrden);
-            let b = JSON.parse(a);
-            let c = JSON.parse(a);
-            b.forEach((item2: any) => {
-              if (item2.key) {
-                console.log('需要删除是子菜单项', item2.name);
-                c.forEach((item3: any, index3: any) => {
-                  if (item3.name === item2.name) {
-                    c.splice(index3, 1);
-                  }
-                });
-              }
-            });
-            return {
-              chilrden: c,
-              menuLayer: item.menuLayer,
-              name: item.name,
-              weight: item.weight,
-            };
-          }
+      let a = JSON.stringify(dataSoueceList);
+      let b = JSON.parse(a);
+      let c = JSON.parse(a);
+      b.forEach((item: any, index: any) => {
+        if (item.key) {
+          console.log('item', item.name);
+          c.forEach((item2: any, index2: any) => {
+            if (item2.name === item.name) {
+              // 删除动态的index2
+              c.splice(index2, 1);
+            }
+          });
+        }
+      });
+      console.log('删除一级之后的值', c);
+      c = c.map((item: any) => {
+        if (item.childMenu) {
+          let a = JSON.stringify(item.childMenu);
+          let b = JSON.parse(a);
+          let c = JSON.parse(a);
+          b.forEach((item2: any) => {
+            if (item2.key) {
+              console.log('需要删除是子菜单项', item2.name);
+              c.forEach((item3: any, index3: any) => {
+                if (item3.name === item2.name) {
+                  c.splice(index3, 1);
+                }
+              });
+            }
+          });
           return {
-            content: item.content,
-            contentType: item.contentType,
+            childMenu: c,
             menuLayer: item.menuLayer,
             name: item.name,
             weight: item.weight,
           };
-        });
-        console.log('删除了二级多余c', c);
-
-        try {
-          const res = await httpServiceAccountOperationSave({
-            id: id,
-            ...formBasicValues,
-            menus: c,
-          });
-          if (res?.code === 0) {
-            message.success('上架成功');
-          } else {
-            throw new Error('');
-          }
-        } catch (error) {
-          message.error(`发布失败，原因:{${error}}`);
         }
+        return {
+          content: item.content,
+          contentType: item.contentType,
+          menuLayer: item.menuLayer,
+          name: item.name,
+          weight: item.weight,
+        };
+      });
+      console.log('删除了二级多余c', c);
+
+      try {
+        const res = await httpServiceAccountOperationSave({
+          id: id,
+          ...formBasicValues,
+          menus: c,
+        });
+        if (res?.code === 0) {
+          message.success('暂存成功');
+        } else {
+          throw new Error('');
+        }
+      } catch (error) {
+        message.error(`发布失败，原因:{${error}}`);
+      }
     }
   };
   // 菜单项
@@ -716,7 +775,7 @@ export default () => {
     } else {
       setCurrentMenu(item);
       console.log('item', item);
-      if (item.chilrden) {
+      if (item.childMenu) {
         // 有子菜单
         setIsTry(2);
         setContentShow(false);
@@ -751,7 +810,7 @@ export default () => {
       let b = JSON.parse(a);
 
       if (values?.menuLayer === 2) {
-        newItem.chilrden = childMunuDataList;
+        newItem.childMenu = childMunuDataList;
       }
 
       // b.push(newItem)
@@ -807,7 +866,7 @@ export default () => {
       let b = JSON.parse(a);
       // 是否 选两层
       if (values?.menuLayer === 2) {
-        newItem.chilrden = childMunuDataList;
+        newItem.childMenu = childMunuDataList;
       }
       b.forEach((item: any, index: any) => {
         if (item.name === currentMenu.name) {
@@ -919,8 +978,8 @@ export default () => {
       b?.forEach((j: any) => {
         if (j.name === item?.name) {
           // 对应的一级的二级数组
-          j.chilrden.unshift(values);
-          const c = sortArrayByWeight(j.chilrden);
+          j.childMenu.unshift(values);
+          const c = sortArrayByWeight(j.childMenu);
           console.log('重排之后', c);
         }
       });
@@ -966,7 +1025,7 @@ export default () => {
     b?.forEach((j: any) => {
       if (j.name === currentMenu?.name) {
         // 对应的一级的二级数组
-        j.chilrden.forEach((i: any, index: any) => {
+        j.childMenu.forEach((i: any, index: any) => {
           if (i.name === currentChilrden.name) {
             console.log('删除name', name);
             currentId = index;
@@ -976,7 +1035,7 @@ export default () => {
     });
     b?.forEach((j: any) => {
       if (j.name === currentMenu?.name) {
-        j.chilrden.splice(currentId, 1);
+        j.childMenu.splice(currentId, 1);
       }
     });
     console.log('currentId', currentId);
@@ -1008,7 +1067,7 @@ export default () => {
       b?.forEach((j: any) => {
         if (j.name === currentMenu?.name) {
           // 对应的一级的二级数组
-          j.chilrden.forEach((i: any, index: any) => {
+          j.childMenu.forEach((i: any, index: any) => {
             if (i.name === currentChilrden.name) {
               console.log('编辑的name', i.name);
               currentId = index;
@@ -1019,8 +1078,8 @@ export default () => {
       console.log('编辑的索引', currentId);
       b?.forEach((j: any) => {
         if (j.name === currentMenu?.name) {
-          j.chilrden.splice(currentId, 1, newItem);
-          const c = sortArrayByWeight(j.chilrden);
+          j.childMenu.splice(currentId, 1, newItem);
+          const c = sortArrayByWeight(j.childMenu);
           console.log('重排之后', c);
         }
       });
@@ -1110,13 +1169,13 @@ export default () => {
                 <div className={sc('container-tab-set-menu-content-left-menu-list')}>
                   {dataSoueceList &&
                     dataSoueceList.map((item: any, index: any) => {
-                      const { chilrden } = item;
+                      const { childMenu } = item;
                       let overlayList;
-                      if (chilrden) {
+                      if (childMenu) {
                         // 如果有子菜单
                         overlayList = (
                           <Menu>
-                            {chilrden?.map((chilrdenItem: any, index: any) => {
+                            {childMenu?.map((chilrdenItem: any, index: any) => {
                               return (
                                 <React.Fragment key={index}>
                                   {/* 二级菜单也分添加和菜单项 */}
@@ -1151,7 +1210,7 @@ export default () => {
                             <div
                               className={sc('container-tab-set-menu-content-left-menu-list-item')}
                             >
-                              {item.chilrden && (
+                              {item.childMenu && (
                                 <Dropdown
                                   visible
                                   trigger={['click']}
@@ -1171,7 +1230,7 @@ export default () => {
                                   </span>
                                 </Dropdown>
                               )}
-                              {!item.chilrden && (
+                              {!item.childMenu && (
                                 <span
                                   className={`${sc(
                                     'container-tab-set-menu-content-left-menu-list-item-text',
@@ -1330,10 +1389,7 @@ export default () => {
                       okText="删除"
                       cancelText="取消"
                     >
-                      <Button
-                      >
-                        删除菜单
-                      </Button>
+                      <Button>删除菜单</Button>
                     </Popconfirm>
                     <Button
                       onClick={() => {
@@ -1492,12 +1548,28 @@ export default () => {
       </div>
       <Affix offsetBottom={0}>
         <div className={sc('container-tab-set-bottom')}>
-          <div className={sc('container-tab-set-bottom-left')}>
-            <Button type="primary" onClick={() => onSubmit(1)}>
-              立即上架
-            </Button>
-          </div>
-          <Button onClick={() => onSubmit(2)}>暂存</Button>
+          {!update && (
+            <React.Fragment>
+              <div className={sc('container-tab-set-bottom-left')}>
+                <Button type="primary" onClick={() => onSubmit(1)}>
+                  立即上架
+                </Button>
+              </div>
+              <Button onClick={() => onSubmit(2)}>暂存</Button>
+            </React.Fragment>
+          )}
+          {update && (
+            <React.Fragment>
+              <Popconfirm
+                title="确定更新当前服务号信息"
+                okText="确定"
+                cancelText="取消"
+                onConfirm={() => onSubmit(1)}
+              >
+                <Button type="primary">更新服务号</Button>
+              </Popconfirm>
+            </React.Fragment>
+          )}
           {/* <Button onClick={onBack}>
             返回
           </Button> */}
