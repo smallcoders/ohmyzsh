@@ -50,7 +50,7 @@ export default () => {
         message.success(`下架成功`)
         perpaer()
       } else {
-        throw new Error('')
+        message.error(`下架失败，原因:{${res?.message}}`)
       }
     } catch (error) {
       message.error(`下架失败，原因:{${error}}`)

@@ -168,21 +168,24 @@ export default () => {
                 编辑
               </Button>
             </Access>
-            <Access accessible={access['P_BLM_FWHGL']}>
-              <Popconfirm
-                title={
-                  <div>
-                    <div>删除数据</div>
-                    <div>确定删除该服务号？</div>
-                  </div>
-                }
-                okText="确定"
-                cancelText="取消"
-                onConfirm={() => remove(record.id.toString())}
-              >
-                <a href="#">删除</a>
-              </Popconfirm>
-            </Access>
+            {
+              record?.deletable &&
+              <Access accessible={access['P_BLM_FWHGL']}>
+                <Popconfirm
+                  title={
+                    <div>
+                      <div>删除数据</div>
+                      <div>确定删除该服务号？</div>
+                    </div>
+                  }
+                  okText="确定"
+                  cancelText="取消"
+                  onConfirm={() => remove(record.id.toString())}
+                >
+                  <a href="#">删除</a>
+                </Popconfirm>
+              </Access>
+            }
           </Space>
         );
       },
@@ -207,10 +210,8 @@ export default () => {
           message.success(`${modalTitle}成功`);
           actionRef.current?.reload()
           clearForm();
-        } else if (res?.code === 1034) {
-          message.warning('服务号内部名称不能重复')
         } else {
-          throw new Error("");
+          message.error(`${modalTitle}失败，原因:{${res.message}}`);
         }
       } catch (error) {
         message.error(`${modalTitle}失败，原因:{${error}}`);

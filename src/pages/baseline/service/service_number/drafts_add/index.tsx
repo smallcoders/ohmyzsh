@@ -438,7 +438,7 @@ export default () => {
               message.success('操作成功');
               history.goBack();
             } else {
-              throw new Error('');
+              message.error(`发布失败，原因:{${res?.message}}`);
             }
           } catch (error) {
             message.error(`发布失败，原因:{${error}}`);
@@ -477,7 +477,7 @@ export default () => {
         if (res.code === 0) {
           message.success('操作成功');
         } else {
-          throw new Error('');
+          message.error(`暂存失败，原因:{${res?.message}}`);
         }
       } catch (error) {
         message.error(`暂存失败，原因:{${error}}`);

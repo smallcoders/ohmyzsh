@@ -646,7 +646,7 @@ export default () => {
           } else if (res?.code === 1034) {
             message.warning('服务号内部名称不能重复');
           } else {
-            throw new Error('');
+            message.error(`发布失败，原因:{${res?.message}}`);
           }
         } catch (error) {
           message.error(`发布失败，原因:{${error}}`);
@@ -714,7 +714,7 @@ export default () => {
         if (res?.code === 0) {
           message.success('暂存成功');
         } else {
-          throw new Error('');
+          message.error(`发布失败，原因:{${res?.message}}`);
         }
       } catch (error) {
         message.error(`发布失败，原因:{${error}}`);
