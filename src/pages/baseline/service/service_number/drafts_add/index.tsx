@@ -16,7 +16,8 @@ import {
 import FormEdit from '@/components/FormEdit';
 import UploadFormFile from '@/components/upload_form/upload-form-file';
 // import UploadFormFile from '@/pages/page_creat_manage/edit/components/upload_form/upload-form-file'
-import { useConfig } from '@/pages/page_creat_manage/edit/hooks/hooks'
+import { useConfig } from '@/pages/page_creat_manage/edit/hooks/hooks';
+import UploadFormAvatar from '@/components/upload_form/upload-form-avatar';
 import { UploadOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import UploadForm from '@/components/upload_form';
@@ -27,7 +28,7 @@ import { routeName } from '../../../../../../config/routes';
 import { history, Link, useAccess, Access, Prompt } from 'umi';
 import './index.less';
 import ServiceItem from '../components/service-item';
-import { 
+import {
   httpServiceAccountPictureTextSubmit,
   httpServiceAccountPictureSubmit,
   httpServiceAccountTextSubmit,
@@ -38,8 +39,8 @@ import {
   httpServiceAccountTextSave,
   httpServiceAccountVideoSave,
   httpServiceAccountAudioSave,
-  httpServiceAccountArticleDetail
-} from '@/services/service-management'
+  httpServiceAccountArticleDetail,
+} from '@/services/service-management';
 const sc = scopedClasses('service-number-drafts-add');
 
 type RouterParams = {
@@ -55,19 +56,19 @@ export default () => {
   // 监听的标题 title
   const contentInfoFormTitle = Form.useWatch('title', contentInfoForm);
   // 监听的封面图
-  const [imgUrl, setImgUrl] = useState<any>()
+  const [imgUrl, setImgUrl] = useState<any>();
   // 监听视频 / 音频
   const attachmentUrl = Form.useWatch('attachmentId', contentInfoForm);
-  const [showControls, setShowControls] = useState<boolean>(false)
+  const [showControls, setShowControls] = useState<boolean>(false);
 
   useEffect(() => {
-    console.log('监听视频/ 音频', attachmentUrl)
-  },[attachmentUrl])
+    console.log('监听视频/ 音频', attachmentUrl);
+  }, [attachmentUrl]);
   // 监听的封面图
   // 发布信息form
   const [formPostMessage] = Form.useForm();
   // 字段监听Hooks
-  const formPostMessageName =  Form.useWatch('syncIndustrial', formPostMessage);
+  const formPostMessageName = Form.useWatch('syncIndustrial', formPostMessage);
 
   const formLayout = {
     labelCol: { span: 6 },
@@ -84,12 +85,12 @@ export default () => {
   const { type, state = 'tuwen', id, name } = history.location.query as RouterParams;
 
   const perpaer = async (id?: string) => {
-    if (!id) return
+    if (!id) return;
     try {
-      const res = await httpServiceAccountArticleDetail(id)
+      const res = await httpServiceAccountArticleDetail(id);
       if (res?.code === 0) {
-        const detail = res?.result
-        console.log('获取的编辑详情', detail)
+        const detail = res?.result;
+        console.log('获取的编辑详情', detail);
 
         // 发布信息
         formPostMessage.setFieldsValue({
@@ -99,21 +100,23 @@ export default () => {
           publishTime: detail?.publishTime ? moment(detail?.publishTime) : undefined,
           // 是否同步到产业圈
           syncIndustrial: detail?.syncIndustrial,
-        })
+        });
         // 内容信息
         contentInfoForm.setFieldsValue({
           ...detail,
           // 图片
-          attachmentIdList: detail?.attachmentList && detail?.attachmentList?.map((item: any) => {
-            return {
-              createTime: item.createTime,
-              format: item.format,
-              uid: item.id,
-              name: item.name,
-              path: item.path,
-              thumbUrl: item.path,
-            }
-          }),
+          attachmentIdList:
+            detail?.attachmentList &&
+            detail?.attachmentList?.map((item: any) => {
+              return {
+                createTime: item.createTime,
+                format: item.format,
+                uid: item.id,
+                name: item.name,
+                path: item.path,
+                thumbUrl: item.path,
+              };
+            }),
           // attachmentId 音频视频可以判断一下
           attachmentId: detail?.attachmentList?.map((item: any) => {
             return {
@@ -124,70 +127,52 @@ export default () => {
               path: item?.path,
               uid: item.id,
               url: item?.path,
-            }
-          })
-        })
-
+            };
+          }),
+        });
       } else {
-        throw new Error("");
+        throw new Error('');
       }
     } catch (error) {
-      message.error(`初始化失败: ${error}`)
+      message.error(`初始化失败: ${error}`);
     }
-  }
+  };
 
   useEffect(() => {
-    console.log('新增页获取的参数', type, state, id, name)
+    console.log('新增页获取的参数', type, state, id, name);
     if (type && type === 'edit' && id) {
       // 初始化
-      perpaer(id)
+      perpaer(id);
     }
-  },[])
+  }, []);
 
   enum stateEnum {
     PICTURE_TEXT = 'PICTURE_TEXT',
     PICTURE = 'PICTURE',
     TEXT = 'TEXT',
     VIDEO = 'VIDEO',
-    AUDIO = 'AUDIO'
+    AUDIO = 'AUDIO',
   }
   // 根据路由参数展示不同内容信息
 
   // 内容信息 - 封面图
   const coverOnChange = (value: any) => {
-    setImgUrl(value)
-  }
+    setImgUrl(value);
+  };
 
   // 内容信息 - 图文信息
   const Tuwen = (
     <div className={sc('container-left-top-content')}>
-      <div className={sc('container-left-top-content-title')}>
-        内容信息
-      </div>
+      <div className={sc('container-left-top-content-title')}>内容信息</div>
       <div className={sc('container-left-top-content-form')}>
-        <Form
-          {...formLayout}
-          form={contentInfoForm}
-          validateTrigger={['onBlur']}
-        >
-          <Form.Item
-            label="标题"
-            name="title"
-            rules={[{ required: true, message: '必填' }]}
-          >
+        <Form {...formLayout} form={contentInfoForm} validateTrigger={['onBlur']}>
+          <Form.Item label="标题" name="title" rules={[{ required: true, message: '必填' }]}>
             <Input maxLength={100} placeholder="请输入" allowClear />
           </Form.Item>
-          <Form.Item
-            label="作者"
-            name="authorName"
-          >
+          <Form.Item label="作者" name="authorName">
             <Input maxLength={30} placeholder="请输入" allowClear />
           </Form.Item>
-          <Form.Item 
-            label="封面图"
-            name="coverId"
-            rules={[{ required: true, message: '必填' }]}
-          >
+          <Form.Item label="封面图" name="coverId" rules={[{ required: true, message: '必填' }]}>
             <UploadForm
               listType="picture-card"
               className="avatar-uploader"
@@ -196,6 +181,15 @@ export default () => {
               tooltip={<span className={'tooltip'}>图片格式仅支持JPG、PNG、JPEG</span>}
               setValue={(e) => coverOnChange(e)}
             />
+            {/* <UploadFormAvatar
+              action={'/antelope-common/common/file/upload/record/withAuthCheck'}
+              listType="picture-card"
+              className="avatar-uploader"
+              maxCount={1}
+              accept=".png,.jpeg,.jpg"
+              shape={'round'}
+              setValue={(e) => coverOnChange(e)}
+            /> */}
           </Form.Item>
           <Form.Item label="内容" name="content" rules={[{ required: true, message: '请输入' }]}>
             <FormEdit width="100%" />
@@ -203,41 +197,24 @@ export default () => {
         </Form>
       </div>
     </div>
-  )
+  );
   // 内容信息 - 图片信息
   const TUPIAN = (
     <div className={sc('container-left-top-content')}>
-      <div className={sc('container-left-top-content-title')}>
-        内容信息
-      </div>
+      <div className={sc('container-left-top-content-title')}>内容信息</div>
       <div className={sc('container-left-top-content-form')}>
-        <Form
-          {...formLayout}
-          form={contentInfoForm}
-          validateTrigger={['onBlur']}
-        >
-          <Form.Item
-            label="标题"
-            name="title"
-            rules={[{ required: true, message: '必填' }]}
-          >
+        <Form {...formLayout} form={contentInfoForm} validateTrigger={['onBlur']}>
+          <Form.Item label="标题" name="title" rules={[{ required: true, message: '必填' }]}>
             <Input maxLength={100} placeholder="请输入" allowClear />
           </Form.Item>
-          <Form.Item
-            label="描述信息"
-            name="content"
-          >
+          <Form.Item label="描述信息" name="content">
             <Input.TextArea
               placeholder="请输入"
               autoSize={{ minRows: 3, maxRows: 5 }}
               maxLength={300}
             />
           </Form.Item>
-          <Form.Item 
-            label="封面图"
-            name="coverId"
-            rules={[{ required: true, message: '必填' }]}
-          >
+          <Form.Item label="封面图" name="coverId" rules={[{ required: true, message: '必填' }]}>
             <UploadForm
               maxCount={1}
               listType="picture-card"
@@ -249,7 +226,7 @@ export default () => {
             />
           </Form.Item>
           {/* 多张上传 */}
-          <Form.Item 
+          <Form.Item
             label="图片"
             name="attachmentIdList"
             rules={[{ required: true, message: '必填' }]}
@@ -260,7 +237,9 @@ export default () => {
               listType="picture-card"
               className="avatar-uploader"
               accept=".png,.jpeg,.jpg"
-              tooltip={<span className={'tooltip'}>图片格式仅支持JPG、PNG、JPEG, 且支持多张上传</span>}
+              tooltip={
+                <span className={'tooltip'}>图片格式仅支持JPG、PNG、JPEG, 且支持多张上传</span>
+              }
             >
               + 上传
             </UploadFormFile>
@@ -279,24 +258,14 @@ export default () => {
         </Form>
       </div>
     </div>
-  )
+  );
   // 内容信息 - 文字信息
   const WENZI = (
     <div className={sc('container-left-top-content')}>
-      <div className={sc('container-left-top-content-title')}>
-        内容信息
-      </div>
+      <div className={sc('container-left-top-content-title')}>内容信息</div>
       <div className={sc('container-left-top-content-form')}>
-        <Form
-          {...formLayout}
-          form={contentInfoForm}
-          validateTrigger={['onBlur']}
-        >
-          <Form.Item
-            label="文本内容"
-            name="content"
-            rules={[{ required: true, message: '必填' }]}
-          >
+        <Form {...formLayout} form={contentInfoForm} validateTrigger={['onBlur']}>
+          <Form.Item label="文本内容" name="content" rules={[{ required: true, message: '必填' }]}>
             <Input.TextArea
               placeholder="请输入"
               autoSize={{ minRows: 3, maxRows: 5 }}
@@ -306,43 +275,27 @@ export default () => {
         </Form>
       </div>
     </div>
-  )
+  );
   // 内容信息 - 视频
   const SHIPIN = (
     <div className={sc('container-left-top-content')}>
-      <div className={sc('container-left-top-content-title')}>
-        内容信息
-      </div>
+      <div className={sc('container-left-top-content-title')}>内容信息</div>
       <div className={sc('container-left-top-content-form')}>
-        <Form
-          {...formLayout}
-          form={contentInfoForm}
-          validateTrigger={['onBlur']}
-        >
-          <Form.Item
-            label="标题"
-            name="title"
-            rules={[{ required: true, message: '必填' }]}
-          >
+        <Form {...formLayout} form={contentInfoForm} validateTrigger={['onBlur']}>
+          <Form.Item label="标题" name="title" rules={[{ required: true, message: '必填' }]}>
             <Input maxLength={100} placeholder="请输入" allowClear />
           </Form.Item>
-          <Form.Item
-            label="作者"
-            name="authorName"
-          >
+          <Form.Item label="作者" name="authorName">
             <Input maxLength={30} placeholder="请输入" allowClear />
           </Form.Item>
-          <Form.Item
-            label="视频介绍"
-            name="content"
-          >
+          <Form.Item label="视频介绍" name="content">
             <Input.TextArea
               placeholder="请输入"
               autoSize={{ minRows: 3, maxRows: 5 }}
               maxLength={300}
             />
           </Form.Item>
-          <Form.Item 
+          <Form.Item
             label="视频封面图"
             name="coverId"
             rules={[{ required: true, message: '必填' }]}
@@ -356,11 +309,7 @@ export default () => {
               // setValue={(e) => coverOnChange(e)}
             />
           </Form.Item>
-          <Form.Item 
-            label="视频"
-            name="attachmentId"
-            rules={[{ required: true, message: '必填' }]}
-          >
+          <Form.Item label="视频" name="attachmentId" rules={[{ required: true, message: '必填' }]}>
             <UploadFormFile
               multiple={false}
               accept=".mp4"
@@ -379,47 +328,27 @@ export default () => {
         </Form>
       </div>
     </div>
-  )
+  );
   // 内容信息 - 音频
   const YINPIN = (
     <div className={sc('container-left-top-content')}>
-      <div className={sc('container-left-top-content-title')}>
-        内容信息
-      </div>
+      <div className={sc('container-left-top-content-title')}>内容信息</div>
       <div className={sc('container-left-top-content-form')}>
-        <Form
-          {...formLayout}
-          form={contentInfoForm}
-          validateTrigger={['onBlur']}
-        >
-          <Form.Item
-            label="标题"
-            name="title"
-            rules={[{ required: true, message: '必填' }]}
-          >
+        <Form {...formLayout} form={contentInfoForm} validateTrigger={['onBlur']}>
+          <Form.Item label="标题" name="title" rules={[{ required: true, message: '必填' }]}>
             <Input maxLength={100} placeholder="请输入" allowClear />
           </Form.Item>
-          <Form.Item
-            label="作者"
-            name="authorName"
-          >
+          <Form.Item label="作者" name="authorName">
             <Input maxLength={30} placeholder="请输入" allowClear />
           </Form.Item>
-          <Form.Item
-            label="音频介绍"
-            name="content"
-          >
+          <Form.Item label="音频介绍" name="content">
             <Input.TextArea
               placeholder="请输入"
               autoSize={{ minRows: 3, maxRows: 5 }}
               maxLength={300}
             />
           </Form.Item>
-          <Form.Item 
-            label="音频"
-            name="attachmentId"
-            rules={[{ required: true, message: '必填' }]}
-          >
+          <Form.Item label="音频" name="attachmentId" rules={[{ required: true, message: '必填' }]}>
             <UploadFormFile
               multiple={false}
               accept=".mp3,.wma,wav,amr,m4a"
@@ -429,7 +358,7 @@ export default () => {
               // 开启url的发回
               isSkip
               onChange={(value: any) => {
-                contentInfoForm.validateFields(['音频'])
+                contentInfoForm.validateFields(['音频']);
                 // 如果需要同步到服务号，可以再这里setState
               }}
             >
@@ -439,14 +368,14 @@ export default () => {
         </Form>
       </div>
     </div>
-  )
+  );
   const ContentInfo = {
     [stateEnum.PICTURE_TEXT]: Tuwen,
     [stateEnum.PICTURE]: TUPIAN,
     [stateEnum.TEXT]: WENZI,
     [stateEnum.VIDEO]: SHIPIN,
     [stateEnum.AUDIO]: YINPIN,
-  }[state]
+  }[state];
 
   // 当前的内容信息的接口
   const contentInfoHttp = {
@@ -455,93 +384,100 @@ export default () => {
     [stateEnum.TEXT]: httpServiceAccountTextSubmit,
     [stateEnum.VIDEO]: httpServiceAccountVideoSubmit,
     [stateEnum.AUDIO]: httpServiceAccountAudioSubmit,
-  }[state]
+  }[state];
 
   // 当前的内容信息暂存的接口
-    const contentInfoHttpSave = {
+  const contentInfoHttpSave = {
     [stateEnum.PICTURE_TEXT]: httpArticlePictureTextSave,
     [stateEnum.PICTURE]: httpServiceAccountPictureSave,
     [stateEnum.TEXT]: httpServiceAccountTextSave,
     [stateEnum.VIDEO]: httpServiceAccountVideoSave,
     [stateEnum.AUDIO]: httpServiceAccountAudioSave,
-  }[state]
+  }[state];
 
   useEffect(() => {
     console.log('获取的参数', type, state);
     setActiveTitle(type === 'add' ? '新增' : '编辑');
-    if(type === 'add') {
-      console.log('是新增呀')
-      formPostMessage.setFieldsValue({realTimePublishing: true})
-      formPostMessage.setFieldsValue({syncIndustrial: true})
-    } 
+    if (type === 'add') {
+      console.log('是新增呀');
+      formPostMessage.setFieldsValue({ realTimePublishing: false });
+      formPostMessage.setFieldsValue({ syncIndustrial: true });
+    }
   }, [type, state]);
 
   const onSubmit = async (statue: number) => {
     if (statue === 1) {
       // 发布
       // 需要来一个当前的内容信息表单, 看所有的是不是一个
-      Promise.all([contentInfoForm.validateFields(), formPostMessage.validateFields()])
-        .then(async ([contentInfoFormValues, formPostMessageValues]) => {
+      Promise.all([contentInfoForm.validateFields(), formPostMessage.validateFields()]).then(
+        async ([contentInfoFormValues, formPostMessageValues]) => {
           const formData = { ...contentInfoFormValues, ...formPostMessageValues };
-          console.log('搜集的form', formData)
+          console.log('搜集的form', formData);
           // 视频id
-          const attachmentId= formData.attachmentId && formData.attachmentId[0].uid
-          console.log('attachmentId', attachmentId)
+          const attachmentId = formData.attachmentId && formData.attachmentId[0].uid;
+          console.log('attachmentId', attachmentId);
           try {
             const res = await contentInfoHttp({
               ...formData,
-              // 新增需要添加id  
+              // 新增需要添加id
               serviceAccountId: type === 'edit' ? undefined : id,
               // 编辑需要传id
               id: type === 'edit' ? id : undefined,
               coverId: Number(formData.coverId),
-              publishTime: formData.publishTime && dayjs(formData.publishTime).format('YYYY-MM-DD HH:mm:ss'),
-              // 图片信息 - 图片 
-              attachmentIdList: formData.attachmentIdList && formData.attachmentIdList?.map((item: any) => item.uid),
+              publishTime:
+                formData.publishTime && dayjs(formData.publishTime).format('YYYY-MM-DD HH:mm'),
+              // 图片信息 - 图片
+              attachmentIdList:
+                formData.attachmentIdList &&
+                formData.attachmentIdList?.map((item: any) => item.uid),
               // 视频
-              attachmentId: attachmentId
+              attachmentId: attachmentId,
             });
-            console.log('添加返回的res', res)
+            console.log('添加返回的res', res);
             if (res.code === 0) {
-              message.success('操作成功')
+              message.success('操作成功');
+              history.goBack();
             } else {
-              throw new Error("");
+              throw new Error('');
             }
           } catch (error) {
             message.error(`发布失败，原因:{${error}}`);
           }
-        })
+        },
+      );
     } else {
       // 暂存
       // Promise.all([contentInfoForm.validateFields(), formPostMessage.validateFields()])
       //   .then(async ([contentInfoFormValues, formPostMessageValues]) => {
       //   })
-      const contentInfoFormValues = contentInfoForm.getFieldsValue()
-      const formPostMessageValues = formPostMessage.getFieldsValue()
+      const contentInfoFormValues = contentInfoForm.getFieldsValue();
+      const formPostMessageValues = formPostMessage.getFieldsValue();
       const formData = { ...contentInfoFormValues, ...formPostMessageValues };
-      console.log('搜集的form', formData)
+      console.log('搜集的form', formData);
       // 视频id
-      const attachmentId= formData.attachmentId && formData.attachmentId[0].uid
-      console.log('attachmentId', attachmentId)
+      const attachmentId = formData.attachmentId && formData.attachmentId[0].uid;
+      console.log('attachmentId', attachmentId);
       try {
         const res = await contentInfoHttpSave({
           ...formData,
-          // 新增需要添加id  
-          serviceAccountId: id,
+          // 新增需要添加id
+          serviceAccountId: type === 'edit' ? undefined : id,
           // 编辑需要传id
           id: type === 'edit' ? id : undefined,
           coverId: Number(formData.coverId),
-          publishTime: formData.publishTime && dayjs(formData.publishTime).format('YYYY-MM-DD HH:mm:ss'),
-          // 图片信息 - 图片 
-          attachmentIdList: formData.attachmentIdList && formData.attachmentIdList?.map((item: any) => item.uid),
+          publishTime:
+            formData.publishTime && dayjs(formData.publishTime).format('YYYY-MM-DD HH:mm'),
+          // 图片信息 - 图片
+          attachmentIdList:
+            formData.attachmentIdList && formData.attachmentIdList?.map((item: any) => item.uid),
           // 视频
-          attachmentId: attachmentId
+          attachmentId: attachmentId,
         });
-        console.log('暂存返回的res', res)
+        console.log('暂存返回的res', res);
         if (res.code === 0) {
-          message.success('操作成功')
+          message.success('操作成功');
         } else {
-          throw new Error("");
+          throw new Error('');
         }
       } catch (error) {
         message.error(`暂存失败，原因:{${error}}`);
@@ -553,32 +489,20 @@ export default () => {
    */
   const [isTry, setIsTry] = useState<boolean>(false);
   // 发布信息选了实时发布，隐藏发布时间
-  const [timeShow, setTimeShow] = useState<boolean>(true)
+  const [timeShow, setTimeShow] = useState<boolean>(true);
   useEffect(() => {
     if (isTry) {
-      setTimeShow(false)
-      return
-    } 
-    if (!isTry){
-      setTimeShow(true)
+      setTimeShow(false);
+      return;
     }
-  },[isTry])
+    if (!isTry) {
+      setTimeShow(true);
+    }
+  }, [isTry]);
   /**
    * 发布信息 是否同步到产业圈 1 实时发布 0 预约发布
    */
   const [sync, setSync] = useState<boolean>(false);
-
-  useEffect(() => {
-    console.log('/sync', sync)
-  },[sync])
-
-  // 编辑
-  const prepare = () => {
-    // 是否编辑
-    if (id) {
-
-    }
-  }
 
   const listener = (e: any) => {
     e.preventDefault();
@@ -586,25 +510,13 @@ export default () => {
   };
 
   useEffect(() => {
-    prepare();
     window.addEventListener('beforeunload', listener);
     return () => {
       window.removeEventListener('beforeunload', listener);
     };
-  },[])
+  }, []);
 
   const [isClosejumpTooltip, setIsClosejumpTooltip] = useState<boolean>(true);
-
-
-  // 初始化发布方式
-  useEffect(() => {
-    // 如果是新增
-    if (type === 'add') {
-      console.log('新增')
-      // setIsTry(true)
-      // setSync(true)
-    }
-  },[])
 
   return (
     <PageContainer
@@ -624,37 +536,39 @@ export default () => {
         // access后端根据
         // <Access accessible={access['PA_BLM_NRGL']}>
         <React.Fragment>
-          {
-            !isTry && (
-              <Popconfirm
-                title={
-                  <div>
-                    <div>提示</div>
-                    <div>若设定预约发布，则会在设定的时间进行发布</div>
-                  </div>
-                }
-                okText="发布"
-                cancelText="取消"
-                onConfirm={() => onSubmit(1)}
-              >
-                {/* <Button type="primary" htmlType="submit"  onClick={() => onSubmit(1)}> */}
-                <Button type="primary" htmlType="submit">
-                  发布
-                </Button>
-              </Popconfirm>
-            )
-          }
-          {
-            isTry && (
-              <Button type="primary" htmlType="submit"  onClick={() => onSubmit(1)}>发布</Button>
-            )
-          }
+          {!isTry && (
+            <Popconfirm
+              title={
+                <div>
+                  <div>提示</div>
+                  <div>若设定预约发布，则会在设定的时间进行发布</div>
+                </div>
+              }
+              okText="发布"
+              cancelText="取消"
+              onConfirm={() => onSubmit(1)}
+            >
+              {/* <Button type="primary" htmlType="submit"  onClick={() => onSubmit(1)}> */}
+              <Button type="primary" htmlType="submit">
+                发布
+              </Button>
+            </Popconfirm>
+          )}
+          {isTry && (
+            <Button type="primary" htmlType="submit" onClick={() => onSubmit(1)}>
+              发布
+            </Button>
+          )}
         </React.Fragment>,
         // </Access>,
         // <Access accessible={access['PA_BLM_NRGL']}>
-          <Button onClick={() => onSubmit(2)}>暂存</Button>,
+        <React.Fragment>
+          {type === 'edit' && <Button onClick={() => onSubmit(2)}>暂存</Button>}
+        </React.Fragment>,
         // </Access>,
-        <Button onClick={() => history.push(`${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT}?id=${id}`)}>
+        <Button
+          onClick={() => history.push(`${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT}?id=${id}`)}
+        >
           返回
         </Button>,
       ]}
@@ -665,9 +579,7 @@ export default () => {
       />
       <div className={sc('container')}>
         <div className={sc('container-left')}>
-          <div className={sc('container-left-top')}>
-            {ContentInfo}
-          </div>
+          <div className={sc('container-left-top')}>{ContentInfo}</div>
           <div className={sc('container-left-bottom')}>
             <div className={sc('container-left-bottom-title')}>发布信息</div>
             <div className={sc('container-left-bottom-form')}>
@@ -708,23 +620,23 @@ export default () => {
                   ))}
                   </Select>
                 </Form.Item> */}
-                {
-                  timeShow &&
+                {timeShow && (
                   <Form.Item
                     label="发布时间"
                     name="publishTime"
                     rules={[{ required: true, message: '必填' }]}
                   >
-                    <DatePicker showTime={{ format: 'HH:mm' }} style={{ width: '100%' }} disabledDate={(current) => {
-                      const maxDate = moment().add(15, 'days').startOf('day');
-                      return current && (current < moment().startOf('day') || current > maxDate);
-                    }} />
+                    <DatePicker
+                      showTime={{ format: 'HH:mm' }}
+                      style={{ width: '100%' }}
+                      disabledDate={(current) => {
+                        const maxDate = moment().add(15, 'days').startOf('day');
+                        return current && (current < moment().startOf('day') || current > maxDate);
+                      }}
+                    />
                   </Form.Item>
-                }
-                <Form.Item
-                  label="是否同步到产业圈"
-                  name="syncIndustrial"
-                >
+                )}
+                <Form.Item label="是否同步到产业圈" name="syncIndustrial">
                   <Radio.Group onChange={(e) => setSync(e.target.value)}>
                     <Radio value={true}>是</Radio>
                     <Radio value={false}>否</Radio>
@@ -735,88 +647,83 @@ export default () => {
           </div>
         </div>
         <div className={sc('container-right')}>
-            <div className={sc('container-right-serve')}>
-              <div className={sc('container-right-serve-title')}>
-                服务号预览
+          <div className={sc('container-right-serve')}>
+            <div className={sc('container-right-serve-title')}>服务号预览</div>
+            <div className={sc('container-right-serve-content')}>
+              <div className={sc('container-right-serve-content-header')}>
+                <img className={sc('container-right-serve-content-header-img')} src="" alt="" />
+                <div className={sc('container-right-serve-content-header-name')}>
+                  {/* 服务号的名称再确定一下 */}
+                  {name || '服务号名称'}
+                </div>
               </div>
-              <div className={sc('container-right-serve-content')}>
-                <div className={sc('container-right-serve-content-header')}>
-                  <img className={sc('container-right-serve-content-header-img')} src="" alt="" />
-                  <div className={sc('container-right-serve-content-header-name')}>
-                    {/* 服务号的名称再确定一下 */}
-                    {name || '服务号名称'}
+              <div className={sc('container-right-serve-content-img')}>
+                <img className={sc('container-right-serve-content-img-url')} src={imgUrl} alt="" />
+                {attachmentUrl && attachmentUrl?.length > 0 && (
+                  <video
+                    src={attachmentUrl[0].url}
+                    preload="true"
+                    width="100%"
+                    height="100%"
+                    muted
+                    loop={false}
+                    controls={showControls}
+                    onMouseEnter={() => {
+                      setShowControls(true);
+                    }}
+                    onMouseLeave={() => {
+                      setShowControls(false);
+                    }}
+                    // 隐藏下载按钮
+                    controlsList="nodownload"
+                    // 此属性在android设备播放视频时,导致自动全屏播放
+                    // x5-video-player-type="h5-page"
+                    /**
+                     * ios系统
+                     * 内联播放
+                     */
+                    playsInline
+                    /* eslint-disable-next-line react/no-unknown-property */
+                    webkit-playsinline="true"
+                    /**
+                     * 同层h5播放器
+                     * 网页内部同层播放
+                     * 视频上方显示html元素
+                     *  */
+                    /* eslint-disable-next-line react/no-unknown-property */
+                    x5-playsinline="true"
+                  ></video>
+                )}
+              </div>
+              <div className={sc('container-right-serve-content-text')}>
+                {contentInfoFormTitle ||
+                  '文案标题文案标题文案标题文案标题文案标题文案标题文案标题文案标题文案标题文案标题文案标题文案标题'}
+              </div>
+            </div>
+          </div>
+          {sync && (
+            <div className={sc('container-right-industry')}>
+              <div className={sc('container-right-industry-title')}>产业圈预览</div>
+              <div className={sc('container-right-industry-content')}>
+                <div className={sc('container-right-industry-content-left')}>
+                  <div className={sc('container-right-industry-content-left-name')}>
+                    标题显示标题显示
+                  </div>
+                  <div className={sc('container-right-industry-content-left-bottom')}>
+                    <div className={sc('container-right-industry-content-left-bottom-name')}>
+                      服务号名称
+                    </div>
+                    <div className={sc('container-right-industry-content-left-bottom-time')}>
+                      发布时间
+                    </div>
                   </div>
                 </div>
-                <div className={sc('container-right-serve-content-img')}>
-                  <img className={sc('container-right-serve-content-img-url')} src={imgUrl} alt="" />
-                  {
-                    attachmentUrl && attachmentUrl?.length > 0 &&
-                    <video
-                      src={attachmentUrl[0].url}
-                      preload="true"
-                      width="100%"
-                      height="100%"
-                      muted
-                      loop={false}
-                      controls={showControls}
-                      onMouseEnter={() => {
-                        setShowControls(true)
-                      }}
-                        onMouseLeave={() => {
-                        setShowControls(false)
-                      }}
-                      // 隐藏下载按钮
-                      controlsList="nodownload"
-                      // 此属性在android设备播放视频时,导致自动全屏播放
-                      // x5-video-player-type="h5-page"
-                      /**
-                       * ios系统
-                       * 内联播放
-                       */
-                      playsInline
-                      /* eslint-disable-next-line react/no-unknown-property */
-                      webkit-playsinline="true"
-                      /**
-                       * 同层h5播放器
-                       * 网页内部同层播放
-                       * 视频上方显示html元素
-                       *  */
-                      /* eslint-disable-next-line react/no-unknown-property */
-                      x5-playsinline="true"
-                    ></video>
-                  }
-                </div>
-                <div className={sc('container-right-serve-content-text')}>
-                  {contentInfoFormTitle || '文案标题文案标题文案标题文案标题文案标题文案标题文案标题文案标题文案标题文案标题文案标题文案标题'}
+                <div className={sc('container-right-industry-content-right')}>
+                  <img className={sc('container-right-industry-content-right-img')} src="" alt="" />
                 </div>
               </div>
             </div>
-            {
-              sync &&
-              <div className={sc('container-right-industry')}>
-                <div className={sc('container-right-industry-title')}>
-                  产业圈预览
-                </div>
-                <div className={sc('container-right-industry-content')}>
-                  <div className={sc('container-right-industry-content-left')}>
-                    <div className={sc('container-right-industry-content-left-name')}>
-                      标题显示标题显示
-                    </div>
-                    <div className={sc('container-right-industry-content-left-bottom')}>
-                      <div className={sc('container-right-industry-content-left-bottom-name')}>
-                        服务号名称
-                      </div>
-                      <div className={sc('container-right-industry-content-left-bottom-time')}>
-                        发布时间
-                      </div>
-                    </div>
-                  </div>
-                  <div className={sc('container-right-industry-content-right')}>
-                    <img className={sc('container-right-industry-content-right-img')} src="" alt="" />
-                  </div>
-                </div>
-              </div>
-            }
+          )}
         </div>
       </div>
     </PageContainer>

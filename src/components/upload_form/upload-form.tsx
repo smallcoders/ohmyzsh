@@ -74,6 +74,7 @@ const UploadForm = (
         );
         setLoading(false);
         message.success('上传成功');
+        console.log('uploadResponse.result', uploadResponse.result)
         props.setValue && props.setValue(`/antelope-common/common/file/download/${uploadResponse.result}`)
       } else {
         setLoading(false);

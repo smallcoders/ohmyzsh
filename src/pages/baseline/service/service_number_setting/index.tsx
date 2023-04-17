@@ -207,6 +207,8 @@ export default () => {
           message.success(`${modalTitle}成功`);
           actionRef.current?.reload()
           clearForm();
+        } else if (res?.code === 1034) {
+          message.warning('服务号内部名称不能重复')
         } else {
           throw new Error("");
         }

@@ -119,6 +119,7 @@ const UploadForm = (
       });
       props?.onChange?.(arr.length === 1 ? arr[0] : arr);
       if (newFileList.length > 0) message.success('上传成功');
+      console.log('剪切图片', arr)
       return;
     }
   };

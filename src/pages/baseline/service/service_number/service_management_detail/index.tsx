@@ -5,13 +5,25 @@ import scopedClasses from '@/utils/scopedClasses';
 import { Link, history} from 'umi';
 import './index.less';
 import {
-  httpServiceAccountArticleDetail
+  httpServiceAccountArticleDetail,
+  httpServiceAccountArticleLogList
 } from '@/services/service-management'
 const sc = scopedClasses('service-number-management-detail');
 
+
+interface dataDetailType {
+  id?: number
+  type?: string
+  title?: string
+  authorName?: string
+  coverId?: string
+  coverUrl?: string
+  content?: string
+  publishTime?: string
+}
 export default () => {
   const { id } = history.location.query as { id: string | undefined };
-
+const [dataDetail, setDataDetail] = useState<dataDetailType[]>()
   const prepare = async (id?: string) => {
     if (!id) return
     try {
@@ -19,6 +31,7 @@ export default () => {
       if (res?.code === 0) {
         console.log('获取的详情', res?.result)
         const detail = res?.result
+        setDataDetail(detail)
         const infoList = [
           {
             label: '发布方式：',
@@ -39,28 +52,6 @@ export default () => {
         ]
         setiInfoData(infoList)
 
-        // 操作日志
-        const logList = [
-          {
-            img: '图片',
-            name: '运营人员',
-            typeName: '操作项目',
-            time: '时间'
-          },
-          {
-            img: '图片',
-            name: '运营人员',
-            typeName: '操作项目',
-            time: '时间'
-          },
-          {
-            img: '图片',
-            name: '运营人员',
-            typeName: '操作项目',
-            time: '时间'
-          }
-        ]
-        // setLogData()
       } else {
         message.error(`获取详情失败: ${res.error}`)
       }
@@ -68,9 +59,34 @@ export default () => {
       message.error(`获取详情失败: ${error}`)
     }
   }
+
+  const _httpServiceAccountArticleLogList = async () => {
+    if (!id) return
+    try {
+      const res = await httpServiceAccountArticleLogList(id)
+      if (res?.code === 0) {
+        console.log('操作日志', res?.result)
+        const arr = res?.result?.map((item: any) => {
+          return {
+            img: '图片',
+            name: item.name,
+            typeName: item.content,
+            time: item.createTime
+          }
+        })
+        console.log('处理之后', arr)
+        setLogData(arr)
+      } else {
+        throw new Error("")
+      }
+    } catch (error) {
+      message.error(`获取操作日志失败: ${error}`)
+    }
+  }
   useEffect(() => {
     console.log('详情id', id)
     prepare(id)
+    _httpServiceAccountArticleLogList()
   },[])
   // 发布信息
   const [infoData, setiInfoData] = useState([
@@ -93,31 +109,42 @@ export default () => {
   ])
 
   // 操作日志
-  const [logData, setLogData] = useState([
-    {
-      img: '图片',
-      name: '运营人员',
-      typeName: '操作项目',
-      time: '时间'
-    },
-    {
-      img: '图片',
-      name: '运营人员',
-      typeName: '操作项目',
-      time: '时间'
-    },
-    {
-      img: '图片',
-      name: '运营人员',
-      typeName: '操作项目',
-      time: '时间'
-    }
-  ])
+  const [logData, setLogData] = useState([])
 
   const onBack = () => {
     history.goBack();
 // history.push(`${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DETAIL}?id=${id}`)
   };
+
+  // 修改之后
+  const [dataSource, SetDataSource] = useState<any[]>()
+  useEffect(() => {
+    if (!dataDetail) return
+    const {  title, authorName, content,  coverId, coverUrl, attachmentIds, publishTime } = dataDetail
+    const arr = [
+      {
+        label: '标题：',
+        value: title || '--'
+      },
+      {
+        label: '作者：',
+        value: authorName || '--'
+      },
+      {
+        label: '封面图：',
+        value: coverUrl && <img className={sc('container-top-item-right-img')} src={coverUrl} /> || '--'
+      },
+      {
+        label: '内容：',
+        value: content || '--'
+      },
+      {
+        label: '发布时间：',
+        value: publishTime || '--'
+      }
+    ]
+    SetDataSource(arr)
+  },[dataDetail])
 
   return (
     <PageContainer 
@@ -135,7 +162,20 @@ export default () => {
       }}
     >
       <div className={sc('container-top')}>
-        top根据前台h5页面展示详情
+        {
+          dataSource && dataSource?.map((item: any) => {
+            return (
+              <div className={sc('container-top-item')}>
+                <div className={sc('container-top-item-left')}>
+                  {item.label}
+                </div>
+                <div className={sc('container-top-item-right')}>
+                  {item.value}
+                </div>
+              </div>
+            )
+          })
+        }
       </div>
       <div className={sc('container-center')}>
         <div className={sc('container-center-title')}>
@@ -168,7 +208,7 @@ export default () => {
               return (
                 <React.Fragment key={index}>
                   <div className={sc('container-bottom-content-item')}>
-                    <img className={sc('container-bottom-content-item-img')} src="" alt="" />
+                    {/* <img className={sc('container-bottom-content-item-img')} src="" alt="" /> */}
                     <div className={sc('container-bottom-content-item-name')}>
                       {item.name}
                     </div>

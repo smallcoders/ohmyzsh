@@ -6,6 +6,24 @@
     padding: 44px 100px;
     background: #ffffff;
     border: 1px solid rgba(0,0,0,0.05);
+    &-item {
+      display: flex;
+      align-items: center;
+      &-left {
+        font-size: 14px;
+        font-weight: bold;
+        color: #000000;
+      }
+      &-right {
+        font-weight: normal;
+        color: rgba(0,0,0,0.65);
+        line-height: 22px;
+        &-img {
+          width: 320px;
+          height: 134px;
+        }
+      }
+    }
   }
   &-center {
     margin-top: 10px;
@@ -83,18 +101,18 @@
           color: #000000;
           line-height: 22px;
         }
-        &::before {
-          position: absolute;
-          bottom: -12px;
-          left: 14px;
-          content: '';
-          width: 1px;
-          height: 12px;
-          background-color: #aaaaaa;
-        }
-        &:last-child::before {
-          display: none;
-        } 
+        // &::before {
+        //   position: absolute;
+        //   bottom: -12px;
+        //   left: 14px;
+        //   content: '';
+        //   width: 1px;
+        //   height: 12px;
+        //   background-color: #aaaaaa;
+        // }
+        // &:last-child::before {
+        //   display: none;
+        // } 
       }
     }
   }

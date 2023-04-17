@@ -377,3 +377,10 @@ export function httpServiceAccountOperationDetail(id: string) {
     method: 'get',
   })
 }
+
+// 操作日志
+export function httpServiceAccountArticleLogList(id: string) {
+  return request(`/antelope-business/mng/serviceAccount/article/logList?serviceAccountArticleId=${id}`, {
+    method: 'get',
+  })
+}

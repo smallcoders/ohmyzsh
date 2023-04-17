@@ -76,7 +76,6 @@ export default () => {
       formBasic.setFieldsValue({
         ...serveDetail,
         // 服务号logo
-        // logoId
         logoId: serveDetail?.logoUrl,
       });
       // 如果有详情
@@ -91,13 +90,37 @@ export default () => {
           type: 'add',
           key: 'delete',
         },
+      ];
+      const aa = [
+        {
+          name: '二级菜单名称', // 菜单名称
+          // 没有menuLayer 的是子菜单
+          contentType: 'TEXT', // 内容类型 TEXT:文本 PICTURE:图片 LINK:链接
+          content: '', // 内容
+          weight: null, // 排序权重,
+          key: 'delete',
+        },
+        {
+          type: 'add',
+          name: '+添加菜单',
+          key: 'delete',
+        },
       ]
-      let menus = serveDetail?.menus
+      let menus = serveDetail?.menus;
       a.forEach((item: any) => {
-        menus.push(item)
+        menus.push(item);
+      });
+      menus?.forEach((item: any) => {
+        if (item.childMenu) {
+          aa.forEach((item2: any) => {
+            item.childMenu.push(item2);
+          });
+          // 初始化内容类型
+          handleContentType('TEXT');
+        }
       })
-      console.log('初始化菜单设置', menus)
-      setDataSouceList(menus)
+      console.log('初始化菜单设置', menus);
+      setDataSouceList(menus);
     }
   }, [serveDetail]);
 
@@ -193,9 +216,12 @@ export default () => {
 
     const handleEdit = () => {
       console.log('编辑');
-      window.open(
+      history.push(
         `${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DRAFTS_ADD}?type=edit&state=${dataSource.type}&id=${dataSource.id}&name=${name}}`,
       );
+      // window.open(
+      //   `${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DRAFTS_ADD}?type=edit&state=${dataSource.type}&id=${dataSource.id}&name=${name}}`,
+      // );
     };
 
     const addTypes = [
@@ -223,10 +249,12 @@ export default () => {
     // 草稿箱 新增
     const handleAddItem = (value: string) => {
       console.log('ADD', value);
-      // history.push(`${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DRAFTS_ADD}?type=add&state=${value}`)
-      window.open(
+      history.push(
         `${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DRAFTS_ADD}?type=add&state=${value}&id=${id}&name=${name}`,
       );
+      // window.open(
+      //   `${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DRAFTS_ADD}?type=add&state=${value}&id=${id}&name=${name}`,
+      // );
     };
     const items = (
       <Menu>
@@ -333,9 +361,12 @@ export default () => {
   const paginationRef = useRef<any>();
   const handleEditBtn = (item: any) => {
     console.log('编辑的当前值', item);
-    window.open(
+    history.push(
       `${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DRAFTS_ADD}?type=edit&state=${item.type}&id=${item.id}&name=${name}}`,
     );
+    // window.open(
+    //   `${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DRAFTS_ADD}?type=edit&state=${item.type}&id=${item.id}&name=${name}}`,
+    // );
   };
   // 删除
   const remove = async (id: string) => {
@@ -555,7 +586,7 @@ export default () => {
         console.log('搜集的form', formBasicValues);
         console.log('搜集的菜单设置', dataSoueceList);
         if (dataSoueceList.length <= 2) {
-          return message.warning('请配置菜单设置')
+          return message.warning('请配置菜单设置');
         }
         let a = JSON.stringify(dataSoueceList);
         let b = JSON.parse(a);
@@ -612,6 +643,8 @@ export default () => {
           });
           if (res?.code === 0) {
             message.success('上架成功');
+          } else if (res?.code === 1034) {
+            message.warning('服务号内部名称不能重复');
           } else {
             throw new Error('');
           }
@@ -1392,6 +1425,9 @@ export default () => {
                       <Button>删除菜单</Button>
                     </Popconfirm>
                     <Button
+                      style={{
+                        marginLeft: '20px',
+                      }}
                       onClick={() => {
                         handleMenuItemEdit();
                       }}
@@ -1570,9 +1606,13 @@ export default () => {
               </Popconfirm>
             </React.Fragment>
           )}
-          {/* <Button onClick={onBack}>
-            返回
-          </Button> */}
+          <div
+            style={{
+              marginLeft: '20px',
+            }}
+          >
+            <Button onClick={() => history.goBack()}>返回</Button>
+          </div>
         </div>
       </Affix>
     </div>

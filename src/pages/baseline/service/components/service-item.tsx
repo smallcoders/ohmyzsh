@@ -97,14 +97,14 @@ export default (props: {
         return {
           id: id,
           name:  item,
-          chilrden: (
-            <Menu>
-              <Menu.Item>导出筛选结果</Menu.Item>
-              <Menu.Item>导出选中数据</Menu.Item>
-              <Menu.Item>导出选中数据</Menu.Item>
-              <Menu.Item>导出选中数据</Menu.Item>
-            </Menu>
-          ),
+          // chilrden: (
+          //   <Menu>
+          //     <Menu.Item>导出筛选结果</Menu.Item>
+          //     <Menu.Item>导出选中数据</Menu.Item>
+          //     <Menu.Item>导出选中数据</Menu.Item>
+          //     <Menu.Item>导出选中数据</Menu.Item>
+          //   </Menu>
+          // ),
         }
       })
       setDataList(newList)
@@ -161,13 +161,26 @@ export default (props: {
                 return (
                   <React.Fragment key={item.id}>
                     <div className={sc('container-card-item-preview-menu-list-item')}>
-                      <Dropdown overlay={item.chilrden} placement="top" arrow>
-                        <span
-                          className={sc('container-card-item-preview-menu-list-item-text')}
-                        >
-                          {item.name}
-                        </span>
-                      </Dropdown>
+                      {
+                        item.chilrden && (
+                          <Dropdown overlay={item.chilrden} placement="top" arrow>
+                            <span
+                              className={sc('container-card-item-preview-menu-list-item-text')}
+                            >
+                              {item.name}
+                            </span>
+                          </Dropdown>
+                        )
+                      }
+                      {
+                        !item.chilrden && (
+                          <span
+                            className={sc('container-card-item-preview-menu-list-item-text')}
+                          >
+                            {item.name}
+                          </span>
+                        )
+                      }
                     </div>
                   </React.Fragment>
                 );
