@@ -10,7 +10,7 @@ export function  httpAccountList (params: {
   name?: string //用户姓名
   all?: boolean // true全部 false非运营超级管理员 默认
 }) {
-  return request(`antelope-manage/account/list`, {
+  return request(`/antelope-manage/account/list`, {
     method: 'get',
     params
   })

@@ -155,7 +155,7 @@ export default () => {
         return (
           <Space size="middle">
             {/* 需要调整的权限 */}
-            <Access accessible={access['P_OA_DSXCY']}>
+            <Access accessible={access['P_BLM_FWHGL']}>
               <Button
                 key="2"
                 size="small"
@@ -168,19 +168,21 @@ export default () => {
                 编辑
               </Button>
             </Access>
-            <Popconfirm
-              title={
-                <div>
-                  <div>删除数据</div>
-                  <div>确定删除该服务号？</div>
-                </div>
-              }
-              okText="确定"
-              cancelText="取消"
-              onConfirm={() => remove(record.id.toString())}
-            >
-              <a href="#">删除</a>
-            </Popconfirm>
+            <Access accessible={access['P_BLM_FWHGL']}>
+              <Popconfirm
+                title={
+                  <div>
+                    <div>删除数据</div>
+                    <div>确定删除该服务号？</div>
+                  </div>
+                }
+                okText="确定"
+                cancelText="取消"
+                onConfirm={() => remove(record.id.toString())}
+              >
+                <a href="#">删除</a>
+              </Popconfirm>
+            </Access>
           </Space>
         );
       },
@@ -291,17 +293,17 @@ export default () => {
         }}
         columns={columns}
         toolBarRender={() => [
-          // <Access accessible={access['P_OA_DSXCY']}>
+          <Access accessible={access['P_BLM_FWHGL']}>
             <Button
               key="button"
               icon={<PlusOutlined />}
               type="primary"
-              disabled={total >= 16}
+              // disabled={total >= 16}
               onClick={() => { handleAddBtn() }}
             >
               新增
             </Button>
-          // </Access>
+          </Access>
         ]}
         pagination={{ size: 'default', showQuickJumper: true, defaultPageSize: 10 }}
       />

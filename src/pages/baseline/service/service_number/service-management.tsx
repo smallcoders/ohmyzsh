@@ -492,7 +492,7 @@ export default () => {
     wrapperCol: { span: 8 },
   };
   // 服务号设置 - 暂存、提交
-  const onSubmit = (statue: number) => {
+  const onSubmit = async (statue: number) => {
     if (statue === 1) {
       // 上架
       Promise.all([formBasic.validateFields()]).then(async ([formBasicValues]) => {
@@ -562,6 +562,71 @@ export default () => {
       });
     } else {
       // 暂存
+        const formBasicValues = formBasic.getFieldsValue()
+        console.log('搜集的form', formBasicValues);
+        console.log('搜集的菜单设置', dataSoueceList);
+
+        let a = JSON.stringify(dataSoueceList);
+        let b = JSON.parse(a);
+        let c = JSON.parse(a);
+        b.forEach((item: any, index: any) => {
+          if (item.key) {
+            console.log('item', item.name);
+            c.forEach((item2: any, index2: any) => {
+              if (item2.name === item.name) {
+                // 删除动态的index2
+                c.splice(index2, 1);
+              }
+            });
+          }
+        });
+        console.log('删除一级之后的值', c);
+        c = c.map((item: any) => {
+          if (item.chilrden) {
+            let a = JSON.stringify(item.chilrden);
+            let b = JSON.parse(a);
+            let c = JSON.parse(a);
+            b.forEach((item2: any) => {
+              if (item2.key) {
+                console.log('需要删除是子菜单项', item2.name);
+                c.forEach((item3: any, index3: any) => {
+                  if (item3.name === item2.name) {
+                    c.splice(index3, 1);
+                  }
+                });
+              }
+            });
+            return {
+              chilrden: c,
+              menuLayer: item.menuLayer,
+              name: item.name,
+              weight: item.weight,
+            };
+          }
+          return {
+            content: item.content,
+            contentType: item.contentType,
+            menuLayer: item.menuLayer,
+            name: item.name,
+            weight: item.weight,
+          };
+        });
+        console.log('删除了二级多余c', c);
+
+        try {
+          const res = await httpServiceAccountOperationSave({
+            id: id,
+            ...formBasicValues,
+            menus: c,
+          });
+          if (res?.code === 0) {
+            message.success('上架成功');
+          } else {
+            throw new Error('');
+          }
+        } catch (error) {
+          message.error(`发布失败，原因:{${error}}`);
+        }
     }
   };
   // 菜单项
@@ -1432,7 +1497,7 @@ export default () => {
               立即上架
             </Button>
           </div>
-          <Button onClick={() => onSubmit(1)}>暂存</Button>
+          <Button onClick={() => onSubmit(2)}>暂存</Button>
           {/* <Button onClick={onBack}>
             返回
           </Button> */}

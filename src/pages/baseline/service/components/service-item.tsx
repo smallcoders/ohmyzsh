@@ -8,6 +8,7 @@ import {
 import PhoneHeader from '@/assets/service/phone-header.png';
 import scopedClasses from '@/utils/scopedClasses';
 import LeftIcon from '@/assets/service/icon_left.png';
+import { history, Access, useAccess, useModel } from 'umi';
 import './service-item.less'
 const sc = scopedClasses('service-item');
 
@@ -25,6 +26,7 @@ export default (props: {
   const { onOffShelves, handleRouter, dataSoueceItem } = props
   const { id, innerName, menuNameList, name, state } = dataSoueceItem
   const [loading, setLoading] = useState<boolean>(false);
+  const access = useAccess();
 
   // 菜单项
   const dataSoueceList = [
@@ -153,9 +155,11 @@ export default (props: {
           </div>
         }
         <div className={sc('container-card-item-bottom-right')}>
-          <Button type="primary" onClick={() => handleManagement()} block>
-            服务号管理
-          </Button>
+          <Access accessible={access['P_BLM_FWHYY']}>
+            <Button type="primary" onClick={() => handleManagement()} block>
+              服务号管理
+            </Button>
+          </Access>
         </div>
       </div>
     </div>
