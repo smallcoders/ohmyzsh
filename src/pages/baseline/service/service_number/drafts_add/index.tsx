@@ -436,6 +436,7 @@ export default () => {
             console.log('添加返回的res', res);
             if (res.code === 0) {
               message.success('操作成功');
+              setIsClosejumpTooltip(false);
               history.goBack();
             } else {
               message.error(`发布失败，原因:{${res?.message}}`);
@@ -518,6 +519,11 @@ export default () => {
 
   const [isClosejumpTooltip, setIsClosejumpTooltip] = useState<boolean>(true);
 
+
+  const goBack = () => {
+    setIsClosejumpTooltip(false) 
+    history.push(`${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT}?id=${id}`)
+  }
   return (
     <PageContainer
       loading={loading}
@@ -563,11 +569,11 @@ export default () => {
         // </Access>,
         // <Access accessible={access['PA_BLM_NRGL']}>
         <React.Fragment>
-          {type === 'edit' && <Button onClick={() => onSubmit(2)}>暂存</Button>}
+          <Button onClick={() => onSubmit(2)}>暂存</Button>
         </React.Fragment>,
         // </Access>,
         <Button
-          onClick={() => history.push(`${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT}?id=${id}`)}
+          onClick={() => {goBack}}
         >
           返回
         </Button>,
