@@ -491,7 +491,9 @@ export default () => {
             const res = await contentInfoHttp({
               ...formData,
               // 新增需要添加id  
-              serviceAccountId: id,
+              serviceAccountId: type === 'edit' ? undefined : id,
+              // 编辑需要传id
+              id: type === 'edit' ? id : undefined,
               coverId: Number(formData.coverId),
               publishTime: formData.publishTime && dayjs(formData.publishTime).format('YYYY-MM-DD HH:mm:ss'),
               // 图片信息 - 图片 
@@ -527,7 +529,7 @@ export default () => {
           // 新增需要添加id  
           serviceAccountId: id,
           // 编辑需要传id
-          id: type === 'edit' ? id : '',
+          id: type === 'edit' ? id : undefined,
           coverId: Number(formData.coverId),
           publishTime: formData.publishTime && dayjs(formData.publishTime).format('YYYY-MM-DD HH:mm:ss'),
           // 图片信息 - 图片 
