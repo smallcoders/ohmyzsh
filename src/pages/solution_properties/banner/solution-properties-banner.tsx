@@ -225,6 +225,7 @@ const TableList: React.FC = () => {
               <a
                 href="#"
                 onClick={() => {
+                  console.log('record', record)
                   setEditingItem(record);
                   form.setFieldsValue({ belong: Number(edge) });
                   setModalVisible(true);
