@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Button, Input, Form, Modal, Space, Popconfirm, Select, message } from 'antd';
+import { Button, Input, Form, Modal, Space, Popconfirm, Select, message, TreeSelect } from 'antd';
 import type { SelectProps } from 'antd/es/select';
 import { PlusOutlined } from '@ant-design/icons';
 import { history, Access, useAccess, useModel } from 'umi';
@@ -10,7 +10,13 @@ import scopedClasses from '@/utils/scopedClasses';
 import ProTable from '@ant-design/pro-table';
 // 根据后端接口添加
 import { deleteBid, getBidPage, onOffShelvesById } from '@/services/baseline';
-import { httpServiceAccountMannagePage, httpServiceAccountManageSave, pageQuery, httpServiceAccountManageDel, httpAccountList } from '@/services/service-management'
+import {
+  httpServiceAccountMannagePage,
+  httpServiceAccountManageSave,
+  pageQuery,
+  httpServiceAccountManageDel,
+  httpAccountList,
+} from '@/services/service-management';
 import './index.less';
 const sc = scopedClasses('service-number-setting');
 
@@ -21,15 +27,17 @@ const stateColumn = {
   OFF_SHELF: '已下架', // 已下架
 };
 export default () => {
+  const { TreeNode } = TreeSelect;
+  const { Option } = Select;
   const { initialState, setInitialState } = useModel('@@initialState');
   const { currentUser } = initialState;
   // 编辑的id
-  const [editId, setEditId] = useState<number | null>()
+  const [editId, setEditId] = useState<number | null>();
   // 编辑的选中值
-  const [selectDefault, setSelectDefault] = useState<any>(null)
+  const [selectDefault, setSelectDefault] = useState<any>(null);
   // 模态框的状态
   const [createModalVisible, setModalVisible] = useState<boolean>(false);
-  const [modalTitle, setModalTitle] = useState<string>('新增')
+  const [modalTitle, setModalTitle] = useState<string>('新增');
   const [form] = Form.useForm();
   // 表单 权限人员 label: 展示的姓名  value id
   const [optionsData, setOptionsData] = useState<any>([]);
@@ -44,36 +52,37 @@ export default () => {
     try {
       const res = await httpAccountList({
         // name: '',
-        all: true
-      })
+        all: true,
+      });
       if (res?.code == 0) {
-        console.log('权限人员',res)
-        setOptionsData(res?.result?.map((item: any) => {
-          return {
-            label: item?.name,
-            value: item.id
-          }
-        }))
+        setOptionsData(
+          res?.result?.map((item: any) => {
+            return {
+              label: item?.name,
+              value: item.id,
+            };
+          }),
+        );
       } else {
-        throw new Error("");
+        throw new Error('');
       }
     } catch (error) {
-      message.error('获取权限人员失败')
+      message.error('获取权限人员失败');
     }
-  }
+  };
   useEffect(() => {
-    prepare()
-  },[])
+    prepare();
+  }, []);
   // 删除
   const remove = async (id: string) => {
     try {
-      const removeRes = await httpServiceAccountManageDel(id)
+      const removeRes = await httpServiceAccountManageDel(id);
       if (removeRes.code === 0) {
         message.success(`删除成功`);
         // 根据pageSize
         if (total === 11) {
-          actionRef.current?.reloadAndRest()
-          return
+          actionRef.current?.reloadAndRest();
+          return;
         }
         actionRef.current?.reload(); // 让table// 刷新
       } else {
@@ -86,10 +95,10 @@ export default () => {
 
   const handleEditBtn = (item: any) => {
     // 注意需要传id, 否则下拉框无法呈现选中状态
-    const a = item.accountList && item.accountList?.map((value: any) => value.id)
-    form.setFieldsValue({...item, accountIdList: a})
-    setModalTitle('编辑')
-    setModalVisible(true)
+    const a = item.accountList && item.accountList?.map((value: any) => value.id);
+    form.setFieldsValue({ ...item, accountIdList: a });
+    setModalTitle('编辑');
+    setModalVisible(true);
   };
 
   const columns: ProColumns<SolutionTypes.Solution>[] = [
@@ -115,13 +124,14 @@ export default () => {
       renderText: (_: any, record: any) => {
         return (
           <div className={sc('permission')}>
-            { _ && _?.map((item: any, index: any) => {
-              return (
-                <div className={sc('permission-item')} key={index}>
-                  {item.name}
-                </div>
-              );
-            })}
+            {_ &&
+              _?.map((item: any, index: any) => {
+                return (
+                  <div className={sc('permission-item')} key={index}>
+                    {item.name}
+                  </div>
+                );
+              })}
           </div>
         );
       },
@@ -161,15 +171,14 @@ export default () => {
                 size="small"
                 type="link"
                 onClick={() => {
-                  setEditId(record.id)
+                  setEditId(record.id);
                   handleEditBtn(record);
                 }}
               >
                 编辑
               </Button>
             </Access>
-            {
-              record?.deletable &&
+            {record?.deletable && (
               <Access accessible={access['P_BLM_FWHGL']}>
                 <Popconfirm
                   title={
@@ -185,7 +194,7 @@ export default () => {
                   <a href="#">删除</a>
                 </Popconfirm>
               </Access>
-            }
+            )}
           </Space>
         );
       },
@@ -194,8 +203,8 @@ export default () => {
 
   const clearForm = () => {
     form.resetFields();
-    setEditId(null)
-    setSelectDefault(null)
+    setEditId(null);
+    setSelectDefault(null);
   };
   const onFinish = async () => {
     // 拿到form的表单值
@@ -204,11 +213,11 @@ export default () => {
         const res = await httpServiceAccountManageSave({
           id: editId,
           ...value,
-        })
+        });
         if (res?.code === 0) {
-          setModalVisible(false)
+          setModalVisible(false);
           message.success(`${modalTitle}成功`);
-          actionRef.current?.reload()
+          actionRef.current?.reload();
           clearForm();
         } else {
           message.error(`${modalTitle}失败，原因:{${res.message}}`);
@@ -216,10 +225,14 @@ export default () => {
       } catch (error) {
         message.error(`${modalTitle}失败，原因:{${error}}`);
       }
-    })
+    });
   };
   const handleChange = (value: any) => {
     console.log('多选', value);
+  };
+
+  const handleSearch = (value: any) => {
+    console.log('搜索', value);
   };
 
   const getModal = () => {
@@ -248,17 +261,29 @@ export default () => {
           <Form.Item
             name="accountIdList"
             label="权限人员"
-            rules={[{ required: true, message: '请填写App版本号' }]}
+            rules={[{ required: true, message: '请选择权限人员' }]}
           >
             <Select
-              allowClear
-              showArrow={true}
+              showSearch
               mode="multiple"
-              style={{ width: '100%' }}
+              style={{ width: 200 }}
               placeholder="请选择"
-              options={optionsData}
+              optionFilterProp="children"
               onChange={handleChange}
-            />
+              onSearch={handleSearch}
+              filterOption={(input, option) =>
+                option?.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              }
+            >
+              {optionsData &&
+                optionsData?.map((item: any) => {
+                  return (
+                    <Option key={item.value} value={item?.value}>
+                      {item.label}
+                    </Option>
+                  );
+                })}
+            </Select>
           </Form.Item>
         </Form>
       </Modal>
@@ -266,9 +291,9 @@ export default () => {
   };
 
   const handleAddBtn = () => {
-    setModalTitle('新增')
-    setModalVisible(true)
-  }
+    setModalTitle('新增');
+    setModalVisible(true);
+  };
 
   return (
     <PageContainer className={sc('container')}>
@@ -285,11 +310,11 @@ export default () => {
         }}
         request={async (pagination) => {
           // 查询，重置搜集的值
-          console.log('pagination', pagination)
+          console.log('pagination', pagination);
           const result = await httpServiceAccountMannagePage({
-            ...pagination
-          })
-          console.log('结果',result)
+            ...pagination,
+          });
+          console.log('结果', result);
           paginationRef.current = pagination;
           setTotal(result.total);
           return result;
@@ -302,11 +327,13 @@ export default () => {
               icon={<PlusOutlined />}
               type="primary"
               // disabled={total >= 16}
-              onClick={() => { handleAddBtn() }}
+              onClick={() => {
+                handleAddBtn();
+              }}
             >
               新增
             </Button>
-          </Access>
+          </Access>,
         ]}
         pagination={{ size: 'default', showQuickJumper: true, defaultPageSize: 10 }}
       />

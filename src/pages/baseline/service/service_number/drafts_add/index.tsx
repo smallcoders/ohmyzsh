@@ -521,8 +521,9 @@ export default () => {
 
 
   const goBack = () => {
+    console.log('点击了返回')
     setIsClosejumpTooltip(false) 
-    history.push(`${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT}?id=${id}`)
+    history.goBack()
   }
   return (
     <PageContainer
@@ -573,7 +574,7 @@ export default () => {
         </React.Fragment>,
         // </Access>,
         <Button
-          onClick={() => {goBack}}
+          onClick={() => goBack()}
         >
           返回
         </Button>,
