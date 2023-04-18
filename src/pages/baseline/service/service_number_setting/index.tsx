@@ -23,8 +23,8 @@ const sc = scopedClasses('service-number-setting');
 // 状态
 const stateColumn = {
   NOT_SUBMITTED: '暂存', // 暂存
-  ON_SHELF: '上架中', // 上架中
-  OFF_SHELF: '已下架', // 已下架
+  ON_SHELF: '已上架', // 上架中
+  OFF_SHELF: '未上架', // 已下架
 };
 export default () => {
   const { TreeNode } = TreeSelect;

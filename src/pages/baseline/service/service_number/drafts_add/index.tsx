@@ -63,6 +63,8 @@ export default () => {
   // 监听视频 / 音频
   const attachmentUrl = Form.useWatch('attachmentId', contentInfoForm);
   const [showControls, setShowControls] = useState<boolean>(false);
+  // 暂存 第一次暂存成功，保存暂存ID
+  const [saveId, setSaveId] = useState<number>()
 
   useEffect(() => {
     console.log('监听视频/ 音频', attachmentUrl);
@@ -497,10 +499,18 @@ export default () => {
       try {
         const res = await contentInfoHttpSave({
           ...formData,
-          // 新增需要添加id
-          serviceAccountId: type === 'edit' ? undefined : id,
+          // 新增需要添加id, 第二次新增 saveId不需要service
+          serviceAccountId: type === 'edit' 
+          ? undefined 
+          : saveId 
+            ? undefined
+            : id,
           // 编辑需要传id
-          id: type === 'edit' ? id : undefined,
+          id: type === 'edit' 
+            ? id 
+            : saveId 
+            ? saveId
+            : undefined,
           // 裁切的封面图
           // coverId: Number(formData.coverId),
           coverId: imgUrlId,
@@ -515,6 +525,12 @@ export default () => {
         console.log('暂存返回的res', res);
         if (res.code === 0) {
           message.success('操作成功');
+          if (res?.result) {
+            if ( typeof res?.result === 'number') {
+              console.log('返回的result是数字')
+              setSaveId(res?.result)
+            }
+          }
         } else {
           message.error(`暂存失败，原因:{${res?.message}}`);
         }
