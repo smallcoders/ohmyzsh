@@ -252,9 +252,6 @@ export default () => {
       history.push(
         `${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DRAFTS_ADD}?type=add&state=${value}&id=${id}&name=${name}`,
       );
-      // window.open(
-      //   `${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DRAFTS_ADD}?type=add&state=${value}&id=${id}&name=${name}`,
-      // );
     };
     const items = (
       <Menu>

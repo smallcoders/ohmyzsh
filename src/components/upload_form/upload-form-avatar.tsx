@@ -17,6 +17,8 @@ const UploadForm = (
       changeLoading?: (loading: boolean) => void;
       maxSizeKb?: number;
       limit?: number;
+      setValue?: (value: any) => void;
+      setValueId?: (value: any) => void;
     },
 ) => {
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -49,6 +51,7 @@ const UploadForm = (
   const isFirstRender = useRef(true);
 
   useEffect(() => {
+    console.log('监听裁切的Url', props.value)
     if (isFirstRender.current) {
       if (props.value) {
         isFirstRender.current = false;
@@ -119,7 +122,15 @@ const UploadForm = (
       });
       props?.onChange?.(arr.length === 1 ? arr[0] : arr);
       if (newFileList.length > 0) message.success('上传成功');
+      console.log('裁切图片的urlid', newFileList)
       console.log('剪切图片', arr)
+      if (newFileList.length <= 0) {
+        props?.setValueId('')
+        props?.setValue('')
+      } else {
+        props?.setValueId(newFileList[0].response.result.id)
+        props?.setValue(arr)
+      }
       return;
     }
   };
@@ -128,6 +139,7 @@ const UploadForm = (
   };
   return (
     <>
+      {props.tooltip}
       <ImgCrop shape={props?.shape} width={300} height={300}>
         <Upload
           action={props.action || '/antelope-common/common/file/upload'}

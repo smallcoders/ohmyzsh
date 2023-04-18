@@ -55,8 +55,11 @@ export default () => {
   const [contentInfoForm] = Form.useForm();
   // 监听的标题 title
   const contentInfoFormTitle = Form.useWatch('title', contentInfoForm);
+  // 监听的文本内容
+  const contentInfoFormContent = Form.useWatch('content', contentInfoForm);
   // 监听的封面图
   const [imgUrl, setImgUrl] = useState<any>();
+  const [imgUrlId, setImgUrlId] = useState<string>();
   // 监听视频 / 音频
   const attachmentUrl = Form.useWatch('attachmentId', contentInfoForm);
   const [showControls, setShowControls] = useState<boolean>(false);
@@ -91,7 +94,15 @@ export default () => {
       if (res?.code === 0) {
         const detail = res?.result;
         console.log('获取的编辑详情', detail);
-
+        // 如果返回了裁切的图片
+        if (detail && detail?.coverUrl) {
+          setImgUrl(detail?.coverUrl)
+          setImgUrlId(detail?.coverId)
+        }
+        // 如果是实时发布, 隐藏发布时间
+        if (detail && detail?.realTimePublishing) {
+          setTimeShow(false)
+        }
         // 发布信息
         formPostMessage.setFieldsValue({
           // 发布方式
@@ -104,9 +115,11 @@ export default () => {
         // 内容信息
         contentInfoForm.setFieldsValue({
           ...detail,
+          // 裁切的封面图要用Url地址
+          coverId: detail?.coverUrl,
           // 图片
           attachmentIdList:
-            detail?.attachmentList &&
+            detail?.attachmentList?.length > 0  &&
             detail?.attachmentList?.map((item: any) => {
               return {
                 createTime: item.createTime,
@@ -118,7 +131,7 @@ export default () => {
               };
             }),
           // attachmentId 音频视频可以判断一下
-          attachmentId: detail?.attachmentList?.map((item: any) => {
+          attachmentId: detail?.attachmentList?.length > 0 && detail?.attachmentList?.map((item: any) => {
             return {
               createTime: item?.createTime,
               format: item?.format,
@@ -129,6 +142,7 @@ export default () => {
               url: item?.path,
             };
           }),
+
         });
       } else {
         throw new Error('');
@@ -159,6 +173,10 @@ export default () => {
   const coverOnChange = (value: any) => {
     setImgUrl(value);
   };
+  // 裁切封面图ID
+  const coverOnChangeId = (value: any) => {
+    setImgUrlId(value)
+  }
 
   // 内容信息 - 图文信息
   const Tuwen = (
@@ -173,23 +191,26 @@ export default () => {
             <Input maxLength={30} placeholder="请输入" allowClear />
           </Form.Item>
           <Form.Item label="封面图" name="coverId" rules={[{ required: true, message: '必填' }]}>
-            <UploadForm
+            {/* <UploadForm
               listType="picture-card"
               className="avatar-uploader"
               showUploadList={false}
               accept=".png,.jpeg,.jpg"
               tooltip={<span className={'tooltip'}>图片格式仅支持JPG、PNG、JPEG</span>}
               setValue={(e) => coverOnChange(e)}
-            />
-            {/* <UploadFormAvatar
+            /> */}
+            <UploadFormAvatar
+              tooltip={<span className={'tooltip'}>图片格式仅支持JPG、PNG、JPEG</span>}
               action={'/antelope-common/common/file/upload/record/withAuthCheck'}
               listType="picture-card"
               className="avatar-uploader"
               maxCount={1}
               accept=".png,.jpeg,.jpg"
-              shape={'round'}
+              shape={'rect'}
+              // shape={false}
               setValue={(e) => coverOnChange(e)}
-            /> */}
+              setValueId={(e) => coverOnChangeId(e)}
+            />
           </Form.Item>
           <Form.Item label="内容" name="content" rules={[{ required: true, message: '请输入' }]}>
             <FormEdit width="100%" />
@@ -215,7 +236,7 @@ export default () => {
             />
           </Form.Item>
           <Form.Item label="封面图" name="coverId" rules={[{ required: true, message: '必填' }]}>
-            <UploadForm
+            {/* <UploadForm
               maxCount={1}
               listType="picture-card"
               className="avatar-uploader"
@@ -223,6 +244,18 @@ export default () => {
               accept=".png,.jpeg,.jpg"
               tooltip={<span className={'tooltip'}>图片格式仅支持JPG、PNG、JPEG</span>}
               setValue={(e) => coverOnChange(e)}
+            /> */}
+            <UploadFormAvatar
+              tooltip={<span className={'tooltip'}>图片格式仅支持JPG、PNG、JPEG</span>}
+              action={'/antelope-common/common/file/upload/record/withAuthCheck'}
+              listType="picture-card"
+              className="avatar-uploader"
+              maxCount={1}
+              accept=".png,.jpeg,.jpg"
+              shape={'rect'}
+              // shape={false}
+              setValue={(e) => coverOnChange(e)}
+              setValueId={(e) => coverOnChangeId(e)}
             />
           </Form.Item>
           {/* 多张上传 */}
@@ -300,13 +333,17 @@ export default () => {
             name="coverId"
             rules={[{ required: true, message: '必填' }]}
           >
-            <UploadForm
+            <UploadFormAvatar
+              tooltip={<span className={'tooltip'}>图片格式仅支持JPG、PNG、JPEG</span>}
+              action={'/antelope-common/common/file/upload/record/withAuthCheck'}
               listType="picture-card"
               className="avatar-uploader"
-              showUploadList={false}
+              maxCount={1}
               accept=".png,.jpeg,.jpg"
-              tooltip={<span className={'tooltip'}>图片格式仅支持JPG、PNG、JPEG</span>}
-              // setValue={(e) => coverOnChange(e)}
+              shape={'rect'}
+              // shape={false}
+              setValue={(e) => coverOnChange(e)}
+              setValueId={(e) => coverOnChangeId(e)}
             />
           </Form.Item>
           <Form.Item label="视频" name="attachmentId" rules={[{ required: true, message: '必填' }]}>
@@ -423,7 +460,9 @@ export default () => {
               serviceAccountId: type === 'edit' ? undefined : id,
               // 编辑需要传id
               id: type === 'edit' ? id : undefined,
-              coverId: Number(formData.coverId),
+              // 裁切的封面图
+              // coverId: Number(formData.coverId),
+              coverId: imgUrlId,
               publishTime:
                 formData.publishTime && dayjs(formData.publishTime).format('YYYY-MM-DD HH:mm'),
               // 图片信息 - 图片
@@ -448,9 +487,6 @@ export default () => {
       );
     } else {
       // 暂存
-      // Promise.all([contentInfoForm.validateFields(), formPostMessage.validateFields()])
-      //   .then(async ([contentInfoFormValues, formPostMessageValues]) => {
-      //   })
       const contentInfoFormValues = contentInfoForm.getFieldsValue();
       const formPostMessageValues = formPostMessage.getFieldsValue();
       const formData = { ...contentInfoFormValues, ...formPostMessageValues };
@@ -465,7 +501,9 @@ export default () => {
           serviceAccountId: type === 'edit' ? undefined : id,
           // 编辑需要传id
           id: type === 'edit' ? id : undefined,
-          coverId: Number(formData.coverId),
+          // 裁切的封面图
+          // coverId: Number(formData.coverId),
+          coverId: imgUrlId,
           publishTime:
             formData.publishTime && dayjs(formData.publishTime).format('YYYY-MM-DD HH:mm'),
           // 图片信息 - 图片
@@ -658,54 +696,84 @@ export default () => {
             <div className={sc('container-right-serve-title')}>服务号预览</div>
             <div className={sc('container-right-serve-content')}>
               <div className={sc('container-right-serve-content-header')}>
-                <img className={sc('container-right-serve-content-header-img')} src="" alt="" />
+                {/* <img className={sc('container-right-serve-content-header-img')} src="" alt="" /> */}
                 <div className={sc('container-right-serve-content-header-name')}>
                   {/* 服务号的名称再确定一下 */}
                   {name || '服务号名称'}
                 </div>
               </div>
-              <div className={sc('container-right-serve-content-img')}>
-                <img className={sc('container-right-serve-content-img-url')} src={imgUrl} alt="" />
-                {attachmentUrl && attachmentUrl?.length > 0 && (
-                  <video
-                    src={attachmentUrl[0].url}
-                    preload="true"
-                    width="100%"
-                    height="100%"
-                    muted
-                    loop={false}
-                    controls={showControls}
-                    onMouseEnter={() => {
-                      setShowControls(true);
-                    }}
-                    onMouseLeave={() => {
-                      setShowControls(false);
-                    }}
-                    // 隐藏下载按钮
-                    controlsList="nodownload"
-                    // 此属性在android设备播放视频时,导致自动全屏播放
-                    // x5-video-player-type="h5-page"
-                    /**
-                     * ios系统
-                     * 内联播放
-                     */
-                    playsInline
-                    /* eslint-disable-next-line react/no-unknown-property */
-                    webkit-playsinline="true"
-                    /**
-                     * 同层h5播放器
-                     * 网页内部同层播放
-                     * 视频上方显示html元素
-                     *  */
-                    /* eslint-disable-next-line react/no-unknown-property */
-                    x5-playsinline="true"
-                  ></video>
-                )}
-              </div>
-              <div className={sc('container-right-serve-content-text')}>
-                {contentInfoFormTitle ||
-                  '文案标题文案标题文案标题文案标题文案标题文案标题文案标题文案标题文案标题文案标题文案标题文案标题'}
-              </div>
+              {
+                // 文本没有标题
+                !['TEXT'].includes(state) && (
+                  <div className={sc('container-right-serve-content-text')}>
+                    标题：
+                    {contentInfoFormTitle ||
+                      '标题'}
+                  </div>
+                )
+              }
+              {
+                // 如果是图片， 图文， 视频， 视频 展示封面图
+                ['PICTURE_TEXT', 'PICTURE', 'VIDEO'].includes(state) && (
+                  <div className={sc('container-right-serve-content-img')}>
+                    <img className={sc('container-right-serve-content-img-url')} src={imgUrl} alt="" />
+                  </div>
+                )
+              }
+              {
+                // 如果是视频展示
+                ['VIDEO'].includes(state) && (
+                  <div className={sc('container-right-serve-content-video')}>
+                    {attachmentUrl && attachmentUrl?.length > 0 && (
+                      <video
+                        src={attachmentUrl[0].url}
+                        preload="true"
+                        width="100%"
+                        height="100%"
+                        muted
+                        loop={false}
+                        controls={showControls}
+                        onMouseEnter={() => {
+                          setShowControls(true);
+                        }}
+                        onMouseLeave={() => {
+                          setShowControls(false);
+                        }}
+                        // 隐藏下载按钮
+                        controlsList="nodownload"
+                        // 此属性在android设备播放视频时,导致自动全屏播放
+                        // x5-video-player-type="h5-page"
+                        /**
+                         * ios系统
+                         * 内联播放
+                         */
+                        playsInline
+                        /* eslint-disable-next-line react/no-unknown-property */
+                        webkit-playsinline="true"
+                        /**
+                         * 同层h5播放器
+                         * 网页内部同层播放
+                         * 视频上方显示html元素
+                         *  */
+                        /* eslint-disable-next-line react/no-unknown-property */
+                        x5-playsinline="true"
+                      ></video>
+                    )}
+                  </div>
+                )
+              }
+              {
+                // 如果是文字展示 文本内容
+                ['TEXT'].includes(state) && (
+                  <div className={sc('container-right-serve-content-content')}>
+                    { contentInfoFormContent && (
+                      <div>
+                        {contentInfoFormContent || '文本内容...'}
+                      </div>
+                    )}
+                  </div>
+                )
+              }
             </div>
           </div>
           {sync && (

@@ -28,68 +28,8 @@ export default (props: {
   const { id, innerName, menuNameList, name, state } = dataSoueceItem
   const [loading, setLoading] = useState<boolean>(false);
   const access = useAccess();
-
-  // 菜单项
-  // const dataSoueceList = [
-  //   {
-  //     id: '0',
-  //     name:  menuNameList && menuNameList[0],
-  //     chilrden: (
-  //       <Menu>
-  //         <Menu.Item>导出筛选结果</Menu.Item>
-  //         <Menu.Item>导出选中数据</Menu.Item>
-  //         <Menu.Item>导出选中数据</Menu.Item>
-  //         <Menu.Item>导出选中数据</Menu.Item>
-  //       </Menu>
-  //     ),
-  //   },
-  //   {
-  //     id: '1',
-  //     name: '菜单二',
-  //     chilrden: (
-  //       <Menu>
-  //         <Menu.Item>导出筛选结果</Menu.Item>
-  //         <Menu.Item>导出选中数据</Menu.Item>
-  //       </Menu>
-  //     ),
-  //   },
-  //   {
-  //     id: '2',
-  //     name: '菜单三',
-  //     chilrden: (
-  //       <Menu>
-  //         <Menu.Item>导出筛选结果</Menu.Item>
-  //         <Menu.Item>导出选中数据</Menu.Item>
-  //       </Menu>
-  //     ),
-  //   },
-  //   {
-  //     id: '3',
-  //     name: '菜单四',
-  //     chilrden: (
-  //       <Menu>
-  //         <Menu.Item>导出筛选结果</Menu.Item>
-  //         <Menu.Item>导出选中数据</Menu.Item>
-  //       </Menu>
-  //     ),
-  //   },
-  // ];
   // 根据menuNameList配置菜单项
   const [dataList, setDataList] = useState<any>([])
-  const dataSoueceList = [
-    {
-      id: '0',
-      name:  menuNameList && menuNameList[0],
-      chilrden: (
-        <Menu>
-          <Menu.Item>导出筛选结果</Menu.Item>
-          <Menu.Item>导出选中数据</Menu.Item>
-          <Menu.Item>导出选中数据</Menu.Item>
-          <Menu.Item>导出选中数据</Menu.Item>
-        </Menu>
-      ),
-    }
-  ];
 
   useEffect(() => {
     if (menuNameList && menuNameList.length > 0) {
@@ -122,14 +62,10 @@ export default (props: {
     onOffShelves(id)
   }
 
-  useEffect(() => {
-    console.log('获取的参数', dataSoueceItem)
-  },[])
-
   return (
     <div className={sc('container-card-item')}>
       <div className={sc('container-card-item-title')}>
-        {name || '--'}
+        {innerName || '--'}
         <span className={sc('container-card-item-title-span')}>{stateType[state]}</span>
       </div>
       <div className={sc('container-card-item-preview')}>
@@ -143,7 +79,7 @@ export default (props: {
                 src={LeftIcon}
               />
             </div>
-            <div className={sc('container-card-item-preview-header-content-center')}>{innerName || '--'}</div>
+            <div className={sc('container-card-item-preview-header-content-center')}>{name || '--'}</div>
             <div className={sc('container-card-item-preview-header-content-right')}>主页</div>
           </div>
         </div>
