@@ -25,7 +25,7 @@ const sc = scopedClasses('service-number');
 export default () => {
   const [spinState, setSpinState] = useState<boolean>(false)
   const [show, setShow] = useState<boolean>(false)
-  const [dataList, setDataList] = useState<any>()
+  const [dataList, setDataList] = useState<any>([])
   const perpaer = async () => {
     setSpinState(true)
     try {
@@ -83,7 +83,7 @@ export default () => {
             })
           }
           {
-            !dataList && show && (
+            dataList.length === 0 && show && (
               <div>暂无服务号，请联系运营平台管理员</div>
             )
           }

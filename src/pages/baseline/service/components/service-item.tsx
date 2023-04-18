@@ -14,8 +14,8 @@ const sc = scopedClasses('service-item');
 
 const stateType = {
   NOT_SUBMITTED: '暂存',
-  ON_SHELF: '上架中',
-  OFF_SHELF: '已下架'
+  ON_SHELF: '已上架',
+  OFF_SHELF: '未下架'
 }
 export default (props: {
   dataSoueceList?: any
@@ -66,7 +66,7 @@ export default (props: {
     <div className={sc('container-card-item')}>
       <div className={sc('container-card-item-title')}>
         {innerName || '--'}
-        <span className={sc('container-card-item-title-span')}>{stateType[state]}</span>
+        <span className={sc('container-card-item-title-span')} style={{color: state === 'ON_SHELF' ? '#52c41a' : '#000000'}}>{stateType[state]}</span>
       </div>
       <div className={sc('container-card-item-preview')}>
         <div className={sc('container-card-item-preview-header')}>

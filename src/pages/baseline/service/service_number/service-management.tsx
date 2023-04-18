@@ -82,30 +82,30 @@ export default () => {
       // 初始化菜单设置
       const a = [
         {
-          name: '菜单名称', // 菜单名称,
+          name: '添加菜单', // 菜单名称,
           key: 'delete',
         },
-        {
-          name: '+添加菜单',
-          type: 'add',
-          key: 'delete',
-        },
+        // {
+        //   name: '+添加菜单',
+        //   type: 'add',
+        //   key: 'delete',
+        // },
       ];
       const aa = [
         {
-          name: '二级菜单名称', // 菜单名称
+          name: '添加菜单', // 菜单名称
           // 没有menuLayer 的是子菜单
           contentType: 'TEXT', // 内容类型 TEXT:文本 PICTURE:图片 LINK:链接
           content: '', // 内容
           weight: null, // 排序权重,
           key: 'delete',
         },
-        {
-          type: 'add',
-          name: '+添加菜单',
-          key: 'delete',
-        },
-      ]
+        // {
+        //   type: 'add',
+        //   name: '+添加菜单',
+        //   key: 'delete',
+        // },
+      ];
       let menus = serveDetail?.menus;
       a.forEach((item: any) => {
         menus.push(item);
@@ -118,7 +118,7 @@ export default () => {
           // 初始化内容类型
           handleContentType('TEXT');
         }
-      })
+      });
       console.log('初始化菜单设置', menus);
       setDataSouceList(menus);
     }
@@ -580,8 +580,6 @@ export default () => {
     if (statue === 1) {
       // 上架
       Promise.all([formBasic.validateFields()]).then(async ([formBasicValues]) => {
-        console.log('搜集的form', formBasicValues);
-        console.log('搜集的菜单设置', dataSoueceList);
         if (dataSoueceList.length <= 2) {
           return message.warning('请配置菜单设置');
         }
@@ -599,7 +597,6 @@ export default () => {
             });
           }
         });
-        console.log('删除一级之后的值', c);
         c = c.map((item: any) => {
           if (item.childMenu) {
             let a = JSON.stringify(item.childMenu);
@@ -607,7 +604,6 @@ export default () => {
             let c = JSON.parse(a);
             b.forEach((item2: any) => {
               if (item2.key) {
-                console.log('需要删除是子菜单项', item2.name);
                 c.forEach((item3: any, index3: any) => {
                   if (item3.name === item2.name) {
                     c.splice(index3, 1);
@@ -630,7 +626,6 @@ export default () => {
             weight: item.weight,
           };
         });
-        console.log('删除了二级多余c', c);
 
         try {
           const res = await httpServiceAccountOperationSubmit({
@@ -652,8 +647,6 @@ export default () => {
     } else {
       // 暂存
       const formBasicValues = formBasic.getFieldsValue();
-      console.log('搜集的form', formBasicValues);
-      console.log('搜集的菜单设置', dataSoueceList);
 
       let a = JSON.stringify(dataSoueceList);
       let b = JSON.parse(a);
@@ -669,7 +662,6 @@ export default () => {
           });
         }
       });
-      console.log('删除一级之后的值', c);
       c = c.map((item: any) => {
         if (item.childMenu) {
           let a = JSON.stringify(item.childMenu);
@@ -677,7 +669,6 @@ export default () => {
           let c = JSON.parse(a);
           b.forEach((item2: any) => {
             if (item2.key) {
-              console.log('需要删除是子菜单项', item2.name);
               c.forEach((item3: any, index3: any) => {
                 if (item3.name === item2.name) {
                   c.splice(index3, 1);
@@ -700,7 +691,6 @@ export default () => {
           weight: item.weight,
         };
       });
-      console.log('删除了二级多余c', c);
 
       try {
         const res = await httpServiceAccountOperationSave({
@@ -728,7 +718,6 @@ export default () => {
   const [contentShow, setContentShow] = useState<boolean>(true);
   // 根据菜单层级，展示内容
   useEffect(() => {
-    console.log('isTry菜单层级', isTry);
     if (isTry === 1) {
       setContentShow(true);
       return;
@@ -741,48 +730,22 @@ export default () => {
   const [formMunuChilrden] = Form.useForm();
   const [dataSoueceList, setDataSouceList] = useState<any>([
     {
-      name: '菜单名称', // 菜单名称,
-      key: 'delete',
-    },
-    {
-      name: '+添加菜单',
-      type: 'add',
+      name: '添加菜单', // 菜单名称,
       key: 'delete',
     },
   ]);
-  // const [dataSoueceList, setDataSouceList] = useState<any>([
-  //   {
-  //     id: '0',
-  //     name: '菜单名称', // 菜单名称
-  //     menuLayer: 1, // 层数
-  //     contentType: 'TEXT', // 内容类型 TEXT:文本 PICTURE:图片 LINK:链接
-  //     content: '', // 内容
-  //     weight: null, // 排序权重
-  //     // chilrden: null, // childMenu 子菜单
-  //   },
-  //   // {
-  //   //   type: 'add',
-  //   //   name: '+添加菜单',
-  //   // },
-  // ]);
-  // 子菜单初始化数组
   const [childMunuDataList, setChildMunuDataList] = useState<any>([
     {
-      name: '二级菜单名称', // 菜单名称
+      name: '添加菜单', // 菜单名称
       // 没有menuLayer 的是子菜单
       contentType: 'TEXT', // 内容类型 TEXT:文本 PICTURE:图片 LINK:链接
       content: '', // 内容
       weight: null, // 排序权重,
       key: 'delete',
     },
-    {
-      type: 'add',
-      name: '+添加菜单',
-      key: 'delete',
-    },
   ]);
   useEffect(() => {
-    setCurrentMenu({ name: '菜单名称' });
+    setCurrentMenu({ name: '添加菜单' });
   }, []);
   // 当前选中的菜单项
   const [currentMenu, setCurrentMenu] = useState({});
@@ -790,11 +753,9 @@ export default () => {
   const handleMenuItem = (item: any) => {
     // 清空子级
     setCurrentChilrden({});
-    console.log('一级菜单项item', item);
     // 切换一级菜单
     setShowChilrdenMenuLayer(false);
-    if (item.name === '菜单名称') {
-      console.log('清空数据');
+    if (item.name === '添加菜单') {
       setIsTry(1);
       setContentShow(true);
       // 重置 form表单
@@ -804,7 +765,6 @@ export default () => {
       setCurrentMenu(item);
     } else {
       setCurrentMenu(item);
-      console.log('item', item);
       if (item.childMenu) {
         // 有子菜单
         setIsTry(2);
@@ -823,18 +783,11 @@ export default () => {
   // 当前增的菜单 是不是二级
   const [isTwo, setIsTwo] = useState(false);
   const handleMenuItemAdd = (item?: any, index?: any) => {
-    if (currentMenu && currentMenu.name !== '菜单名称') {
-      return;
-    }
-    console.log('添加菜单', item, index);
-    if (index === 5) {
-      console.log('不需要添加了', index);
+    if (currentMenu && currentMenu.name !== '添加菜单') {
       return;
     }
     // 添加之前校验表单
     formMunu.validateFields().then((values: any) => {
-      console.log('校验成功的值', values);
-      console.log('校验成功的值-权重', values.weight);
       let newItem = values;
       let a = JSON.stringify(dataSoueceList);
       let b = JSON.parse(a);
@@ -842,28 +795,21 @@ export default () => {
       if (values?.menuLayer === 2) {
         newItem.childMenu = childMunuDataList;
       }
-
-      // b.push(newItem)
       b.unshift(newItem);
-      console.log('调整排序之前', b);
       const c = sortArrayByWeight(b);
-      console.log('调整排序之后', c);
       setDataSouceList(b);
 
       // 如果点了两层菜单，结束需要重置菜单状态
       handleMenuItem({
-        name: '菜单名称',
+        name: '添加菜单',
       });
     });
   };
   const handleMenuItemDelete = () => {
-    if (currentMenu && currentMenu.name === '菜单名称') {
+    if (currentMenu && currentMenu.name === '添加菜单') {
       return;
     }
-    console.log('删除的当前项', currentMenu);
-    let newItem = dataSoueceList;
     let currentId;
-
     let a = JSON.stringify(dataSoueceList);
     let b = JSON.parse(a);
     b.forEach((item: any, index: any) => {
@@ -872,24 +818,20 @@ export default () => {
       }
     });
     b.splice(currentId, 1);
-    console.log('删除项的索引', currentId);
-    console.log('删除后', b);
     setDataSouceList(b);
 
     // 如果点了删除，让触发点击了菜单明称
     handleMenuItem({
-      name: '菜单名称',
+      name: '添加菜单',
     });
   };
   // 编辑
   const handleMenuItemEdit = () => {
-    if (currentMenu && currentMenu.name === '菜单名称') {
+    if (currentMenu && currentMenu.name === '添加菜单') {
       return;
     }
-    console.log('编辑当前项', currentMenu);
 
     formMunu.validateFields().then((values: any) => {
-      console.log('编辑校验的值', values);
       let currentId;
       let newItem = values;
       let a = JSON.stringify(dataSoueceList);
@@ -903,14 +845,11 @@ export default () => {
           currentId = index;
         }
       });
-      console.log('编辑项的索引', currentId);
       b.splice(currentId, 1, newItem);
-      console.log('编辑之后', b);
       const c = sortArrayByWeight(b);
-      console.log('重排之后', c);
       setDataSouceList(b);
       handleMenuItem({
-        name: '菜单名称',
+        name: '添加菜单',
       });
     });
   };
@@ -920,11 +859,6 @@ export default () => {
     formMunu.resetFields();
     formMunuChilrden.resetFields();
     handleContentType('TEXT');
-    console.log('监听菜单更新之后', dataSoueceList);
-    console.log('变化之前的当前值', currentMenu);
-    if (dataSoueceList.length >= 6) {
-      console.log('数组长度为6', dataSoueceList);
-    }
   }, [dataSoueceList, isTwo]);
   // 监听的标题 title
   const contentInfoFormTitle = Form.useWatch('contentType', formMunu);
@@ -932,11 +866,7 @@ export default () => {
 
   // 监听左侧的当前选中的菜单, 对应展示右侧的form表单
   useEffect(() => {
-    // 默认不给chilrden
     console.log('监听的菜单当前项', currentMenu);
-    if (currentMenu && currentMenu?.name === '菜单名称') {
-      //展示右侧的值
-    }
   }, [currentMenu]);
 
   // 展示内容的当前项 // 文本 图片 链接
@@ -956,7 +886,6 @@ export default () => {
   ];
   const [contentType, setContentType] = useState('TEXT');
   const contentTypeOnChange = (value: any) => {
-    console.log('图片id', value);
     if (value) {
       formMunu.setFieldsValue({ content: value });
     }
@@ -980,58 +909,63 @@ export default () => {
 
   // 点击的当前二级菜单项
   const [currentChilrden, setCurrentChilrden] = useState({});
+  // 当前已经添加的数量
+  const [chilrdenCount, setChilrdenCount] = useState<number>(0);
   // 选择了子菜单的add
-  const handleChilrdenMenuItemAdd = (value: any, index: any, item?: any) => {
-    // 切换form表单
+  const handleChilrdenMenuItemAdd = (value?: any, item?: any) => {
+    console.log('子菜单项add', value, item);
     // 只有当前项选中了二级菜单名称，才可以点击添加菜单
-    if (currentChilrden && currentChilrden.name !== '二级菜单名称') {
-      return;
-    }
-    if (index === 7) {
-      console.log('不需要添加了', index);
+    if (currentChilrden && currentChilrden.name !== '添加菜单') {
       return;
     }
     // 让当前的表单隐藏菜单层级
     formMunu.resetFields();
-    // 切换右侧
+    // 切换form表单
     setShowChilrdenMenuLayer(true);
     // --------切换清空完成------
     // item: 当前的一级
-    console.log('子菜单项add', value, index, item);
     formMunuChilrden.validateFields().then((values: any) => {
-      console.log('校验成功', values);
-      console.log('校验成功当前的二级', currentChilrden);
       let a = JSON.stringify(dataSoueceList);
       let b = JSON.parse(a);
       // 当前一级的索引
-      console.log('添加之前', b);
       b?.forEach((j: any) => {
-        if (j.name === item?.name) {
+        if (j.name === currentMenu?.name) {
+          // if (j.name === item?.name) {
           // 对应的一级的二级数组
           j.childMenu.unshift(values);
           const c = sortArrayByWeight(j.childMenu);
-          console.log('重排之后', c);
         }
       });
-      console.log('添加之后的值', b);
-      // const c = sortArrayByWeight(b)
       // 当前二级的索引,
       setDataSouceList(b);
     });
   };
+  // 监听当前菜单
+  useEffect(() => {
+    console.log('dataSoueceList', dataSoueceList);
+  }, [dataSoueceList]);
+  // 选择子菜单的储存当前一级
+  const [childrenData, setChildrenData] = useState<any>();
+  useEffect(() => {
+    console.log('二级菜单，当前开启对应的一级', childrenData);
+  }, [childrenData]);
   // 选择了子菜单
   const handleChilrdenMenuItem = (value?: any, index?: any, item?: any) => {
     console.log('子菜单项', value, index, item);
-    // 切换form表单
+    // 子 当前的一级
+    if (item) {
+      console.log('子当前的一级', item);
+      setChildrenData(item);
+    }
+    // 重置form表单
+    formMunu.resetFields();
     // 保存当前的二级 对应的一级菜单
     setCurrentChilrden(value);
-    formMunu.resetFields();
     // 切换右侧为子菜单
     setShowChilrdenMenuLayer(true);
     // 对应一级选中, 并选中一级下的二级表单名称
     setCurrentMenu(item);
-    // formMunuChilrden
-    if (value.name === '二级菜单名称') {
+    if (value.name === '添加菜单') {
       formMunuChilrden.resetFields();
       handleContentType('TEXT');
     } else {
@@ -1043,13 +977,10 @@ export default () => {
   // 删除子菜单
   const handleMenuChildItemDelete = () => {
     // 当前项选中了二级菜单名称，不可以删除
-    if (currentChilrden && currentChilrden.name === '二级菜单名称') {
+    if (currentChilrden && currentChilrden.name === '添加菜单') {
       return;
     }
     let currentId;
-
-    console.log('删除的当前子项', currentChilrden);
-    console.log('删除的当前一级', currentMenu);
     let a = JSON.stringify(dataSoueceList);
     let b = JSON.parse(a);
     b?.forEach((j: any) => {
@@ -1057,7 +988,6 @@ export default () => {
         // 对应的一级的二级数组
         j.childMenu.forEach((i: any, index: any) => {
           if (i.name === currentChilrden.name) {
-            console.log('删除name', name);
             currentId = index;
           }
         });
@@ -1068,13 +998,11 @@ export default () => {
         j.childMenu.splice(currentId, 1);
       }
     });
-    console.log('currentId', currentId);
-    console.log('删除之后', b);
     setDataSouceList(b);
     // 当触发当前的值
     handleChilrdenMenuItem(
       {
-        name: '二级菜单名称',
+        name: '添加菜单',
       },
       currentId,
       currentMenu,
@@ -1083,15 +1011,12 @@ export default () => {
   // 编辑子菜单
   const handleMenuChildItemEdit = () => {
     // 当前项选中了二级菜单名称，不可以编辑
-    if (currentChilrden && currentChilrden.name === '二级菜单名称') {
+    if (currentChilrden && currentChilrden.name === '添加菜单') {
       return;
     }
-    console.log('编辑的当前项', currentChilrden);
     formMunuChilrden.validateFields().then((values: any) => {
       let newItem = values;
-      console.log('编辑搜集的Form', values);
       let currentId;
-
       let a = JSON.stringify(dataSoueceList);
       let b = JSON.parse(a);
       b?.forEach((j: any) => {
@@ -1099,24 +1024,21 @@ export default () => {
           // 对应的一级的二级数组
           j.childMenu.forEach((i: any, index: any) => {
             if (i.name === currentChilrden.name) {
-              console.log('编辑的name', i.name);
               currentId = index;
             }
           });
         }
       });
-      console.log('编辑的索引', currentId);
       b?.forEach((j: any) => {
         if (j.name === currentMenu?.name) {
           j.childMenu.splice(currentId, 1, newItem);
           const c = sortArrayByWeight(j.childMenu);
-          console.log('重排之后', c);
         }
       });
       setDataSouceList(b);
       handleChilrdenMenuItem(
         {
-          name: '二级菜单名称',
+          name: '添加菜单',
         },
         currentId,
         currentMenu,
@@ -1206,6 +1128,7 @@ export default () => {
                         overlayList = (
                           <Menu>
                             {childMenu?.map((chilrdenItem: any, index: any) => {
+                              // if (index >= 6) return
                               return (
                                 <React.Fragment key={index}>
                                   {/* 二级菜单也分添加和菜单项 */}
@@ -1220,7 +1143,7 @@ export default () => {
                                       }}
                                       onClick={() => {
                                         chilrdenItem.type
-                                          ? handleChilrdenMenuItemAdd(chilrdenItem, index, item)
+                                          ? handleChilrdenMenuItemAdd(chilrdenItem, item)
                                           : handleChilrdenMenuItem(chilrdenItem, index, item);
                                       }}
                                     >
@@ -1233,7 +1156,7 @@ export default () => {
                           </Menu>
                         );
                       }
-
+                      if (index >= 4) return;
                       return (
                         <React.Fragment key={index}>
                           {
@@ -1419,18 +1342,22 @@ export default () => {
                       okText="删除"
                       cancelText="取消"
                     >
-                      <Button>删除菜单</Button>
+                      <Button>删除</Button>
                     </Popconfirm>
-                    <Button
-                      style={{
-                        marginLeft: '20px',
-                      }}
-                      onClick={() => {
-                        handleMenuItemEdit();
-                      }}
-                    >
-                      编辑菜单
-                    </Button>
+                    {(dataSoueceList?.length < 5 || currentMenu?.name !== '添加菜单') && (
+                      <Button
+                        style={{
+                          marginLeft: '20px',
+                        }}
+                        onClick={() => {
+                          currentMenu?.name === '添加菜单'
+                            ? handleMenuItemAdd()
+                            : handleMenuItemEdit();
+                        }}
+                      >
+                        暂存菜单
+                      </Button>
+                    )}
                   </div>
                 </div>
               </React.Fragment>
@@ -1539,13 +1466,6 @@ export default () => {
                     </Form>
                   )}
                   <div>
-                    {/* <Button
-                      onClick={() => {
-                        handleMenuItemAdd();
-                      }}
-                    >
-                      添加菜单
-                    </Button> */}
                     <Popconfirm
                       title={
                         <div>
@@ -1557,20 +1477,30 @@ export default () => {
                       okText="删除"
                       cancelText="取消"
                     >
-                      <Button
-                        onClick={() => {
-                          handleMenuChildItemDelete();
-                        }}
-                      >
-                        删除子菜单
-                      </Button>
+                      <Button>删除</Button>
                     </Popconfirm>
                     <Button
+                      style={{
+                        marginLeft: '20px',
+                      }}
                       onClick={() => {
-                        handleMenuChildItemEdit();
+                        if (currentChilrden?.name === '添加菜单') {
+                          let warning = false;
+                          dataSoueceList.forEach((item: any) => {
+                            if (item.name === childrenData.name) {
+                              if (item?.childMenu.length > 6) {
+                                warning = true;
+                              }
+                            }
+                          });
+                          if (warning) return message.warning('最多添加6条');
+                          handleChilrdenMenuItemAdd(currentMenu);
+                        } else {
+                          handleMenuChildItemEdit();
+                        }
                       }}
                     >
-                      编辑子菜单
+                      暂存子菜单
                     </Button>
                   </div>
                 </div>
@@ -1581,7 +1511,7 @@ export default () => {
       </div>
       <Affix offsetBottom={0}>
         <div className={sc('container-tab-set-bottom')}>
-          {!update && (
+          {serveDetail?.state === 'OFF_SHELF' && (
             <React.Fragment>
               <div className={sc('container-tab-set-bottom-left')}>
                 <Button type="primary" onClick={() => onSubmit(1)}>
@@ -1591,7 +1521,7 @@ export default () => {
               <Button onClick={() => onSubmit(2)}>暂存</Button>
             </React.Fragment>
           )}
-          {update && (
+          {serveDetail?.state !== 'OFF_SHELF' && (
             <React.Fragment>
               <Popconfirm
                 title="确定更新当前服务号信息"
