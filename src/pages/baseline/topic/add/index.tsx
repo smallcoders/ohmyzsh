@@ -2,7 +2,8 @@ import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
 import { PageContainer } from '@ant-design/pro-layout';
 import React, {useEffect, useState,useRef} from "react";
-import {Button, Col, Form, Input, Row, Modal, Select, message, Breadcrumb} from "antd";
+import {Button, Col, Form, Input, Row, Modal, Select, message, Breadcrumb, Popconfirm, } from "antd";
+import {InfoOutlined} from "@ant-design/icons";
 import SelfTable from "@/components/self_table";
 import type Common from "@/types/common";
 import {history} from "@@/core/history";
@@ -46,6 +47,7 @@ export default () => {
     pageSize: 5,
     totalCount: 0,
   });
+  const [weightForm] = Form.useForm();
 
   // 方法
 //获取文章类型
@@ -84,6 +86,27 @@ export default () => {
       }
     })
   }
+
+    // 编辑权重
+    const editSort = async (e: any, value: string) => {
+      try {
+        const {id, topic,enable } = e
+        const editRes = await editHotRecommend({
+          id,
+          topic,
+          weight:parseInt(value),
+          enable,
+        })
+        if (editRes.code === 0) {
+          message.success(`编辑权重成功！`);
+          getPage();
+        } else {
+          message.error(`编辑权重失败，原因:{${editRes.message}}`);
+        }
+      }catch (err) {
+        console.log(err)
+      }
+    }
 
   useEffect(() => {
     getHotRecommendDetailById();
@@ -251,6 +274,11 @@ export default () => {
       width: 200,
     },
     {
+      title: '权重',
+      dataIndex: 'weight',
+      width: 200,
+    },
+    {
       title: '操作',
       width: 240,
       fixed: 'right',
@@ -263,6 +291,37 @@ export default () => {
             }}>
               详情
             </Button>
+            <Popconfirm
+              placement="topRight"
+              title={
+                <>
+                  <Form form={weightForm} {...formLayout} style={{width:'300px'}}>
+                    <Form.Item
+                      style={{flexFlow:'column'}}
+                      name={'weight'}
+                      label="权重设置">
+                      <Input ref={weightRef} style={{ width: '300px' }} placeholder='请输入1～100的整数，数字越大排名越小' onInput={useLimit(weightRef)} />
+                    </Form.Item>
+                  </Form>
+                </>
+              }
+              icon={<InfoOutlined style={{ display: 'none' }} />}
+              okText="确定"
+              cancelText="取消"
+              onConfirm={() => {
+                if(!weightForm.getFieldValue('weight')) return
+                editSort(record, weightForm.getFieldValue('weight'))
+              }}
+            >
+              <Button
+                type="link"
+                onClick={() => {
+                  weightForm.setFieldsValue({ weight: record.sort })
+                }}
+              >
+                权重设置
+              </Button>
+            </Popconfirm>
             <Button type="link" onClick={() => {
               reMove( record.id as string)
             }}>
