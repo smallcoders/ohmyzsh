@@ -14,6 +14,7 @@ import {
   Radio,
   InputNumber,
   Spin,
+  Modal
 } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
@@ -1141,13 +1142,31 @@ export default () => {
     console.log('logoIdChangeId',value)
     setImgUrlId(value);
   }
+
+  // 基础信息的改变
+  // const [infoFormChange, setnfoFormChange] = useState<boolean>(false);
+  // const [visible, setVisible] = useState<boolean>(false);
+  // 监听当前的tab
+  useEffect(() => {
+    if (activeTab === '服务号设置') {
+      console.log('当前的TAB', activeTab)
+    }
+  },[activeTab])
+
   // 服务号设置
   const SetService = (
     <div className={sc('container-tab-set')}>
       <div className={sc('container-tab-set-top')}>
         <div className={sc('container-tab-set-top-title')}>服务号基本信息</div>
         <div className={sc('container-tab-set-top-form')}>
-          <Form form={formBasic} {...formLayout} validateTrigger={['onBlur']}>
+          <Form 
+            form={formBasic} 
+            {...formLayout} 
+            validateTrigger={['onBlur']}
+            // onValuesChange={() => {
+            //   setnfoFormChange(true);
+            // }}
+          >
             <Form.Item 
               label="服务号名称" 
               name="name" 
@@ -1656,16 +1675,42 @@ export default () => {
           </div>
         </div>
       </Affix>
+      {/* <Modal
+        width={330}
+        visible={visible}
+        title="提示"
+        onCancel={() => {
+          setVisible(false);
+        }}
+        footer={[
+          <Button key="back" onClick={() => setVisible(false)}>
+            取消
+          </Button>,
+          <Button
+            key="submit"
+            type="primary"
+            onClick={() => {
+              history.goBack()
+            }}
+          >
+            直接离开
+          </Button>,
+          <Button
+            key="submit"
+            type="primary"
+            onClick={() => {
+              onSubmit(1)
+              history.goBack()
+            }}
+          >
+            暂存并离开
+          </Button>,
+        ]}
+      >
+        <p>数据未保存，是否仍要离开当前页面？</p>
+      </Modal> */}
     </div>
   );
-
-  // 监听当前的tab
-  useEffect(() => {
-    if (activeTab === '服务号设置') {
-      console.log('当前的TAB', activeTab)
-
-    }
-  },[activeTab])
 
   return (
     <PageContainer
