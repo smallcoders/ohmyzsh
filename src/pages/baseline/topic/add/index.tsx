@@ -87,31 +87,7 @@ export default () => {
     })
   }
 
-    // 编辑权重
-    const editSort = async (e: any, value: string) => {
-      try {
-        const {id, topic,enable } = e
-        const editRes = await editHotRecommend({
-          id,
-          topic,
-          weight:parseInt(value),
-          enable,
-        })
-        if (editRes.code === 0) {
-          message.success(`编辑权重成功！`);
-          getPage();
-        } else {
-          message.error(`编辑权重失败，原因:{${editRes.message}}`);
-        }
-      }catch (err) {
-        console.log(err)
-      }
-    }
 
-  useEffect(() => {
-    getHotRecommendDetailById();
-    prepare();
-  }, []);
 
   // 获取选择管理内容详情页
   const getPage = async (pageIndex: number = 1, pageSize = pageSelectInfo.pageSize) => {
@@ -139,8 +115,17 @@ export default () => {
     getPage();
   }, [searchContent]);
 
+    useEffect(() => {
+      getHotRecommendDetailById();
+      prepare();
+    }, []);
+
   // 上架
   const addRecommend = async (state: number) => {
+    const articles = {}
+    dataSource.forEach((item: any) => {
+      articles[item.id] = +(item.weight || 1)
+    })
     form
       .validateFields()
       .then(async (value) => {
@@ -155,7 +140,8 @@ export default () => {
           topic,
           weight:parseInt(weight),
           enable:1,
-          articleIds:selectRowKeys
+          articleIds:selectRowKeys,
+          articles
         })
         if (submitRes.code === 0) {
           history.goBack()
@@ -272,18 +258,22 @@ export default () => {
       dataIndex: 'title',
       isEllipsis: true,
       width: 200,
+
     },
     {
       title: '权重',
       dataIndex: 'weight',
       width: 200,
+      render: (_: any) => {
+        return _ || '1'
+      }
     },
     {
       title: '操作',
       width: 240,
       fixed: 'right',
       dataIndex: 'option',
-      render: (_: any, record: any) => {
+      render: (_: any, record: any, index) => {
         return (
           <div className={sc('container-option')}>
             <Button type="link" onClick={() => {
@@ -309,14 +299,16 @@ export default () => {
               okText="确定"
               cancelText="取消"
               onConfirm={() => {
+                console.log('_', _, record, index)
                 if(!weightForm.getFieldValue('weight')) return
-                editSort(record, weightForm.getFieldValue('weight'))
+                dataSource[index].weight = weightForm.getFieldValue('weight')
+                setDataSource([...dataSource])
               }}
             >
               <Button
                 type="link"
                 onClick={() => {
-                  weightForm.setFieldsValue({ weight: record.sort })
+                  weightForm.setFieldsValue({ weight: record.weight || 1 })
                 }}
               >
                 权重设置
