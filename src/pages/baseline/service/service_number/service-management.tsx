@@ -35,6 +35,7 @@ import {
   httpServiceAccountOperationSave,
   httpServiceAccountOperationSubmit,
   httpServiceAccountOperationDetail,
+  httpServiceAccountManageNameAble,
 } from '@/services/service-management';
 const sc = scopedClasses('service-number-management');
 
@@ -717,6 +718,11 @@ export default () => {
           id: id,
           ...formBasicValues,
           logoId: imgUrlId,
+          name: formBasicValues.name 
+            ? formBasicValues.name.trim() 
+              ? formBasicValues.name.trim() 
+              : undefined
+            : undefined,
           menus: c,
         });
         if (res?.code === 0) {
@@ -1097,17 +1103,35 @@ export default () => {
     });
   };
 
-  // 菜单名的校验规则
-  // const changeFormMunuName = (_: any, value: string) => {
-  //   console.log('value', value)
-  //   console.log('_', _)
-  //   // value 是当前拿到的值
-  //   if (value) {
-
-  //     return Promise.reject(new Error('该供应商不存在'));
-  //   }
-  //   return Promise.resolve();
-  // }
+  // 服务号名称的校验规则
+  const changeFormMunuName = async (_: any, value: string) => {
+    console.log('value', value)
+    console.log('_', _)
+    // value 是当前拿到的值
+    // if (value) {
+      // }
+    if (!value.trim()) {
+      return Promise.reject(new Error('服务号名称不可以为空格'));
+    }
+    try {
+        const res = await httpServiceAccountManageNameAble({
+          manage: false,
+          name: value
+        })
+        if (res?.code === 0) {
+          if (res?.result) {
+            return Promise.resolve();
+          } else {
+            return Promise.reject(new Error('该服务号名称已存在'));
+          }
+        } else {
+          message.warning(res?.message)
+        }
+    } catch (error) {
+      message.error(`服务号名称校验失败:`,error)
+      return Promise.reject(new Error('菜单名称重复'));
+    }
+  }
   const logoIdChange = (value: any) => {
     console.log('logoIdChange',value)
     setImgUrl(value)
@@ -1123,7 +1147,18 @@ export default () => {
         <div className={sc('container-tab-set-top-title')}>服务号基本信息</div>
         <div className={sc('container-tab-set-top-form')}>
           <Form form={formBasic} {...formLayout} validateTrigger={['onBlur']}>
-            <Form.Item label="服务号名称" name="name" rules={[{ required: true, message: '必填' }]}>
+            <Form.Item 
+              label="服务号名称" 
+              name="name" 
+              rules={[
+                { required: true, message: '必填' },
+                {
+                  validator: changeFormMunuName,
+                  message: '该服务号名称已存在',
+                  validateTrigger: 'onBlur',
+                },
+              ]}
+            >
               <Input maxLength={20} placeholder="请输入" allowClear />
             </Form.Item>
             <Form.Item
@@ -1296,7 +1331,7 @@ export default () => {
                         { required: true, message: '必填' },
                         // {
                         //   validator: changeFormMunuName,
-                        //   message: '菜单名不可重复',
+                        //   message: '菜单名称不可重复',
                         //   validateTrigger: 'onBlur',
                         // },
                       ]}

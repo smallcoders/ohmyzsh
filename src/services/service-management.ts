@@ -384,3 +384,13 @@ export function httpServiceAccountArticleLogList(id: string) {
     method: 'get',
   })
 }
+
+// 服务号名称可用查询
+export function httpServiceAccountManageNameAble(params: {
+  manage?: boolean
+  name: string
+}) {
+  return request(`/antelope-business/mng/serviceAccount/manage/nameAble?manage=${params?.manage}&name=${params?.name}`, {
+    method: 'get',
+  })
+}
