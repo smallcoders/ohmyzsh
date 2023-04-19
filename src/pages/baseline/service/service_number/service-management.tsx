@@ -71,7 +71,6 @@ export default () => {
   };
 
   useEffect(() => {
-    console.log('有详情', serveDetail);
     if (serveDetail) {
       formBasic.setFieldsValue({
         ...serveDetail,
@@ -85,11 +84,6 @@ export default () => {
           name: '添加菜单', // 菜单名称,
           key: 'delete',
         },
-        // {
-        //   name: '+添加菜单',
-        //   type: 'add',
-        //   key: 'delete',
-        // },
       ];
       const aa = [
         {
@@ -100,11 +94,6 @@ export default () => {
           weight: null, // 排序权重,
           key: 'delete',
         },
-        // {
-        //   type: 'add',
-        //   name: '+添加菜单',
-        //   key: 'delete',
-        // },
       ];
       let menus = serveDetail?.menus;
       a.forEach((item: any) => {
@@ -119,7 +108,7 @@ export default () => {
           handleContentType('TEXT');
         }
       });
-      console.log('初始化菜单设置', menus);
+      // console.log('初始化菜单设置', menus);
       setDataSouceList(menus);
     }
   }, [serveDetail]);
@@ -164,7 +153,7 @@ export default () => {
                 updateTime: item.updateTime,
               };
             });
-        console.log('处理之后', a);
+        // console.log('处理之后', a);
         setDraftsList(a);
         setDrafLoading(false);
       } else {
@@ -217,10 +206,10 @@ export default () => {
     const handleEdit = () => {
       console.log('编辑');
       history.push(
-        `${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DRAFTS_ADD}?type=edit&state=${dataSource.type}&id=${dataSource.id}&name=${name}}`,
+        `${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DRAFTS_ADD}?type=edit&state=${dataSource.type}&id=${dataSource.id}&name=${name}`,
       );
       // window.open(
-      //   `${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DRAFTS_ADD}?type=edit&state=${dataSource.type}&id=${dataSource.id}&name=${name}}`,
+      //   `${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DRAFTS_ADD}?type=edit&state=${dataSource.type}&id=${dataSource.id}&name=${name}`,
       // );
     };
 
@@ -941,14 +930,14 @@ export default () => {
     });
   };
   // 监听当前菜单
-  useEffect(() => {
-    console.log('dataSoueceList', dataSoueceList);
-  }, [dataSoueceList]);
+  // useEffect(() => {
+  //   console.log('dataSoueceList', dataSoueceList);
+  // }, [dataSoueceList]);
   // 选择子菜单的储存当前一级
   const [childrenData, setChildrenData] = useState<any>();
-  useEffect(() => {
-    console.log('二级菜单，当前开启对应的一级', childrenData);
-  }, [childrenData]);
+  // useEffect(() => {
+  //   console.log('二级菜单，当前开启对应的一级', childrenData);
+  // }, [childrenData]);
   // 选择了子菜单
   const handleChilrdenMenuItem = (value?: any, index?: any, item?: any) => {
     console.log('子菜单项', value, index, item);

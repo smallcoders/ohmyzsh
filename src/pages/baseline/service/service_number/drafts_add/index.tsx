@@ -53,10 +53,26 @@ type RouterParams = {
 export default () => {
   // 内容信息form
   const [contentInfoForm] = Form.useForm();
+  // 发布信息form
+  const [formPostMessage] = Form.useForm();
   // 监听的标题 title
   const contentInfoFormTitle = Form.useWatch('title', contentInfoForm);
-  // 监听的文本内容
+  // 监听的文本内容 / 图文的富文本
   const contentInfoFormContent = Form.useWatch('content', contentInfoForm);
+  // 发布时间
+  const contentInfoFormPublishTime = Form.useWatch('publishTime', formPostMessage);
+  useEffect(() => {
+    if (contentInfoFormPublishTime) {
+      console.log('发布时间', dayjs(contentInfoFormPublishTime).format('YYYY-MM-DD HH:mm'));
+    }
+  }, [contentInfoFormPublishTime]);
+  useEffect(() => {
+    console.log('监听富文本', contentInfoFormContent);
+    if (contentInfoFormContent) {
+      const container = document.querySelector('#rich-text-container');
+      container.innerHTML = contentInfoFormContent;
+    }
+  }, [contentInfoFormContent]);
   // 监听的封面图
   const [imgUrl, setImgUrl] = useState<any>();
   const [imgUrlId, setImgUrlId] = useState<string>();
@@ -64,14 +80,12 @@ export default () => {
   const attachmentUrl = Form.useWatch('attachmentId', contentInfoForm);
   const [showControls, setShowControls] = useState<boolean>(false);
   // 暂存 第一次暂存成功，保存暂存ID
-  const [saveId, setSaveId] = useState<number>()
+  const [saveId, setSaveId] = useState<number>();
 
   useEffect(() => {
     console.log('监听视频/ 音频', attachmentUrl);
   }, [attachmentUrl]);
   // 监听的封面图
-  // 发布信息form
-  const [formPostMessage] = Form.useForm();
   // 字段监听Hooks
   const formPostMessageName = Form.useWatch('syncIndustrial', formPostMessage);
 
@@ -98,12 +112,19 @@ export default () => {
         console.log('获取的编辑详情', detail);
         // 如果返回了裁切的图片
         if (detail && detail?.coverUrl) {
-          setImgUrl(detail?.coverUrl)
-          setImgUrlId(detail?.coverId)
+          setImgUrl(detail?.coverUrl);
+          setImgUrlId(detail?.coverId);
         }
         // 如果是实时发布, 隐藏发布时间
         if (detail && detail?.realTimePublishing) {
-          setTimeShow(false)
+          console.log('实时发布');
+          setTimeShow(false);
+          setIsTry(true);
+        }
+
+        // 如果是同步产业圈
+        if (detail && detail?.syncIndustrial) {
+          setSync(true);
         }
         // 发布信息
         formPostMessage.setFieldsValue({
@@ -121,7 +142,7 @@ export default () => {
           coverId: detail?.coverUrl,
           // 图片
           attachmentIdList:
-            detail?.attachmentList?.length > 0  &&
+            detail?.attachmentList?.length > 0 &&
             detail?.attachmentList?.map((item: any) => {
               return {
                 createTime: item.createTime,
@@ -133,18 +154,19 @@ export default () => {
               };
             }),
           // attachmentId 音频视频可以判断一下
-          attachmentId: detail?.attachmentList?.length > 0 && detail?.attachmentList?.map((item: any) => {
-            return {
-              createTime: item?.createTime,
-              format: item?.format,
-              id: item?.id,
-              name: item?.name,
-              path: item?.path,
-              uid: item.id,
-              url: item?.path,
-            };
-          }),
-
+          attachmentId:
+            detail?.attachmentList?.length > 0 &&
+            detail?.attachmentList?.map((item: any) => {
+              return {
+                createTime: item?.createTime,
+                format: item?.format,
+                id: item?.id,
+                name: item?.name,
+                path: item?.path,
+                uid: item.id,
+                url: item?.path,
+              };
+            }),
         });
       } else {
         throw new Error('');
@@ -177,8 +199,8 @@ export default () => {
   };
   // 裁切封面图ID
   const coverOnChangeId = (value: any) => {
-    setImgUrlId(value)
-  }
+    setImgUrlId(value);
+  };
 
   // 内容信息 - 图文信息
   const Tuwen = (
@@ -440,7 +462,7 @@ export default () => {
     if (type === 'add') {
       console.log('是新增呀');
       formPostMessage.setFieldsValue({ realTimePublishing: false });
-      formPostMessage.setFieldsValue({ syncIndustrial: true });
+      formPostMessage.setFieldsValue({ syncIndustrial: false });
     }
   }, [type, state]);
 
@@ -500,17 +522,9 @@ export default () => {
         const res = await contentInfoHttpSave({
           ...formData,
           // 新增需要添加id, 第二次新增 saveId不需要service
-          serviceAccountId: type === 'edit' 
-          ? undefined 
-          : saveId 
-            ? undefined
-            : id,
+          serviceAccountId: type === 'edit' ? undefined : saveId ? undefined : id,
           // 编辑需要传id
-          id: type === 'edit' 
-            ? id 
-            : saveId 
-            ? saveId
-            : undefined,
+          id: type === 'edit' ? id : saveId ? saveId : undefined,
           // 裁切的封面图
           // coverId: Number(formData.coverId),
           coverId: imgUrlId,
@@ -526,9 +540,9 @@ export default () => {
         if (res.code === 0) {
           message.success('操作成功');
           if (res?.result) {
-            if ( typeof res?.result === 'number') {
-              console.log('返回的result是数字')
-              setSaveId(res?.result)
+            if (typeof res?.result === 'number') {
+              console.log('返回的result是数字');
+              setSaveId(res?.result);
             }
           }
         } else {
@@ -573,12 +587,11 @@ export default () => {
 
   const [isClosejumpTooltip, setIsClosejumpTooltip] = useState<boolean>(true);
 
-
   const goBack = () => {
-    console.log('点击了返回')
-    setIsClosejumpTooltip(false) 
-    history.goBack()
-  }
+    console.log('点击了返回');
+    setIsClosejumpTooltip(false);
+    history.goBack();
+  };
   return (
     <PageContainer
       loading={loading}
@@ -627,11 +640,7 @@ export default () => {
           <Button onClick={() => onSubmit(2)}>暂存</Button>
         </React.Fragment>,
         // </Access>,
-        <Button
-          onClick={() => goBack()}
-        >
-          返回
-        </Button>,
+        <Button onClick={() => goBack()}>返回</Button>,
       ]}
     >
       <Prompt
@@ -723,8 +732,7 @@ export default () => {
                 !['TEXT'].includes(state) && (
                   <div className={sc('container-right-serve-content-text')}>
                     标题：
-                    {contentInfoFormTitle ||
-                      '标题'}
+                    {contentInfoFormTitle || '标题'}
                   </div>
                 )
               }
@@ -732,7 +740,19 @@ export default () => {
                 // 如果是图片， 图文， 视频， 视频 展示封面图
                 ['PICTURE_TEXT', 'PICTURE', 'VIDEO'].includes(state) && (
                   <div className={sc('container-right-serve-content-img')}>
-                    <img className={sc('container-right-serve-content-img-url')} src={imgUrl} alt="" />
+                    <img
+                      className={sc('container-right-serve-content-img-url')}
+                      src={imgUrl}
+                      alt=""
+                    />
+                  </div>
+                )
+              }
+              {
+                // 如果是图文， 展示富文本
+                ['PICTURE_TEXT'].includes(state) && contentInfoFormContent && (
+                  <div className={sc('container-right-serve-content-rich')}>
+                    <div id="rich-text-container"></div>
                   </div>
                 )
               }
@@ -782,10 +802,16 @@ export default () => {
                 // 如果是文字展示 文本内容
                 ['TEXT'].includes(state) && (
                   <div className={sc('container-right-serve-content-content')}>
-                    { contentInfoFormContent && (
-                      <div>
-                        {contentInfoFormContent || '文本内容...'}
-                      </div>
+                    {contentInfoFormContent && <div>{contentInfoFormContent || '文本内容...'}</div>}
+                  </div>
+                )
+              }
+              {
+                // 音频
+                ['AUDIO'].includes(state) && (
+                  <div className={sc('container-right-serve-content-video')}>
+                    {attachmentUrl && attachmentUrl?.length > 0 && (
+                      <audio controls={true} src={attachmentUrl[0].url} />
                     )}
                   </div>
                 )
@@ -798,20 +824,31 @@ export default () => {
               <div className={sc('container-right-industry-content')}>
                 <div className={sc('container-right-industry-content-left')}>
                   <div className={sc('container-right-industry-content-left-name')}>
-                    标题显示标题显示
+                    {contentInfoFormTitle || ''}
                   </div>
                   <div className={sc('container-right-industry-content-left-bottom')}>
                     <div className={sc('container-right-industry-content-left-bottom-name')}>
-                      服务号名称
+                      {name || '服务号名称'}
                     </div>
-                    <div className={sc('container-right-industry-content-left-bottom-time')}>
-                      发布时间
-                    </div>
+                    {/* 选择了预约时间才展示 */}
+                    {contentInfoFormPublishTime && (
+                      <div className={sc('container-right-industry-content-left-bottom-time')}>
+                        {dayjs(contentInfoFormPublishTime).format('YYYY-MM-DD HH:mm') || ''}
+                      </div>
+                    )}
                   </div>
                 </div>
-                <div className={sc('container-right-industry-content-right')}>
-                  <img className={sc('container-right-industry-content-right-img')} src="" alt="" />
-                </div>
+                {
+                  // 图文 图片 视频
+                  ['PICTURE_TEXT', 'PICTURE', 'VIDEO'].includes(state) && (
+                    <div className={sc('container-right-industry-content-right')}>
+                      <img
+                        className={sc('container-right-industry-content-right-img')}
+                        src={imgUrl}
+                      />
+                    </div>
+                  )
+                }
               </div>
             </div>
           )}
