@@ -9,6 +9,7 @@ import {
   Space,
   Modal,
   Tooltip,
+  DatePicker
 } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
@@ -174,6 +175,25 @@ export default () => {
       width: 300,
     },
     {
+      title: '发布时间',
+      dataIndex: 'publishTime',
+      isEllipsis: true,
+      render: (_: string) => _ ? moment(_).format('YYYY-MM-DD HH:mm:ss') : '--',
+      width: 250,
+    },
+    {
+      title: '内容类型',
+      dataIndex: 'types',
+      render: (_: any[]) => _?.length > 0 ? _?.map(p => p.typeName).join(',') : '--',
+      width: 200,
+    },
+    {
+      title: '标签',
+      dataIndex: 'labels',
+      render: (_: any[]) => _?.length > 0 ? _?.map(p => p.labelName).join(',') : '--',
+      width: 200,
+    },
+    {
       title: '作者',
       dataIndex: 'author',
       isEllipsis: true,
@@ -188,19 +208,6 @@ export default () => {
       render: (_: any[]) => _ || '--',
     },
     {
-      title: '内容类型',
-      dataIndex: 'types',
-      render: (_: any[]) => _?.length > 0 ? _?.map(p => p.typeName).join(',') : '--',
-      width: 200,
-    },
-    {
-      title: '标签',
-      dataIndex: 'labels',
-      render: (_: any[]) => _?.length > 0 ? _?.map(p => p.labelName).join(',') : '--',
-      width: 200,
-    },
-
-    {
       title: '内容状态',
       dataIndex: 'status',
       isEllipsis: true,
@@ -213,13 +220,7 @@ export default () => {
       },
       width: 150,
     },
-    {
-      title: '发布时间',
-      dataIndex: 'publishTime',
-      isEllipsis: true,
-      render: (_: string) => _ ? moment(_).format('YYYY-MM-DD HH:mm:ss') : '--',
-      width: 250,
-    },
+
     {
       title: '上架时间',
       dataIndex: 'updateTime',
@@ -428,8 +429,8 @@ export default () => {
               </Form.Item>
             </Col>
             <Col span={6}>
-              <Form.Item name="labels" label="标签">
-                <Input placeholder="请输入" />
+              <Form.Item name="time" label="发布日期">
+                <DatePicker.RangePicker allowClear />
               </Form.Item>
             </Col>
             <Col span={6}>
@@ -448,8 +449,9 @@ export default () => {
                 onClick={() => {
                   const search = searchForm.getFieldsValue();
                   if (search.time) {
-                    search.createTimeStart = moment(search.time[0]).format('YYYY-MM-DD HH:mm:ss');
-                    search.createTimeEnd = moment(search.time[1]).format('YYYY-MM-DD HH:mm:ss');
+                    search.publishStartTime = moment(search.time[0]).format('YYYY-MM-DD HH:mm:ss');
+                    search.publishEndTime = moment(search.time[1]).format('YYYY-MM-DD HH:mm:ss');
+                    delete search.time
                   }
                   setSearChContent(search);
                 }}
@@ -466,6 +468,13 @@ export default () => {
               >
                 重置
               </Button>
+            </Col>
+          </Row>
+          <Row>
+            <Col span={6}>
+              <Form.Item name="labels" label="标签">
+                <Input placeholder="请输入" />
+              </Form.Item>
             </Col>
           </Row>
         </Form>

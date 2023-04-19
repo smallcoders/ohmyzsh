@@ -49,6 +49,7 @@ const TableList: React.FC = () => {
     [Banner.Edge.APP_CREATIVE]: 'PQ_PC_B_AKC', // APP-科产
     [Banner.Edge.APP_FINANCIAL]: 'PQ_PC_B_AJR', // APP-金融
     [Banner.Edge.APP_BASELINE]: 'PQ_PC_B_AJR', //APP-基线
+    [Banner.Edge.APP_BASELINE_MEETING]: 'PQ_PC_B_AJR'
   };
   const formLayout = {
     labelCol: { span: 6 },
@@ -64,6 +65,7 @@ const TableList: React.FC = () => {
     { label: '官网-金融', value: 6 },
     { label: 'APP-金融', value: 7 },
     { label: '基线APP-应用', value: 8 },
+    { label: '基线APP-会议', value: 9 },
   ];
   /**
    * 新建窗口的弹窗
@@ -268,6 +270,7 @@ const TableList: React.FC = () => {
     [Banner.Edge.FINANCIAL_SERVICE]: '官网-金融', // 官网-金融
     [Banner.Edge.APP_FINANCIAL]: 'APP-金融', // APP-金融
     [Banner.Edge.APP_BASELINE]: '基线APP-应用', // APP-基线
+    [Banner.Edge.APP_BASELINE_MEETING]: '基线APP-会议', // APP-基线会议
   };
 
   console.log('Object.entries(edges)', edges, Object.keys(edges));
