@@ -69,9 +69,18 @@ export default () => {
       message.error(`获取详情失败:${error}`);
     }
   };
-
+  // logo封面图
+  const [imgUrl, setImgUrl] = useState<any>();
+  const [imgUrlId, setImgUrlId] = useState<string>();
   useEffect(() => {
     if (serveDetail) {
+      // 如果返回了Logo
+      if (serveDetail?.logoUrl) {
+        console.log('有图片')
+        setImgUrl(serveDetail?.logoUrl);
+        setImgUrlId(serveDetail?.logoId);
+      }
+      console.log('imgUrl', imgUrl)
       formBasic.setFieldsValue({
         ...serveDetail,
         // 服务号logo
@@ -641,6 +650,7 @@ export default () => {
           const res = await httpServiceAccountOperationSubmit({
             id: id,
             ...formBasicValues,
+            logoId: imgUrlId,
             menus: c,
           });
           if (res?.code === 0) {
@@ -706,6 +716,7 @@ export default () => {
         const res = await httpServiceAccountOperationSave({
           id: id,
           ...formBasicValues,
+          logoId: imgUrlId,
           menus: c,
         });
         if (res?.code === 0) {
@@ -1066,7 +1077,15 @@ export default () => {
   //     return Promise.reject(new Error('该供应商不存在'));
   //   }
   //   return Promise.resolve();
-  // } 
+  // }
+  const logoIdChange = (value: any) => {
+    console.log('logoIdChange',value)
+    setImgUrl(value)
+  }
+  const logoIdChangeId = (value: any) => {
+    console.log('logoIdChangeId',value)
+    setImgUrlId(value);
+  }
   // 服务号设置
   const SetService = (
     <div className={sc('container-tab-set')}>
@@ -1088,7 +1107,8 @@ export default () => {
                 showUploadList={false}
                 accept=".png,.jpeg,.jpg"
                 tooltip={<span className={'tooltip'}>图片格式仅支持JPG、PNG、JPEG</span>}
-                // setValue={(e) => coverOnChange(e)}
+                setValue={(e) => logoIdChange(e)}
+                setValueId={(e) => logoIdChangeId(e)}
               />
             </Form.Item>
             <Form.Item label="服务号介绍" name="introduction">
