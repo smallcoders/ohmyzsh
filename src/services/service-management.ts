@@ -389,6 +389,7 @@ export function httpServiceAccountArticleLogList(id: string) {
 export function httpServiceAccountManageNameAble(params: {
   manage?: boolean
   name: string
+  id?: any
 }) {
   return request(`/antelope-business/mng/serviceAccount/manage/nameAble?manage=${params?.manage}&name=${params?.name}`, {
     method: 'get',

@@ -1111,7 +1111,8 @@ export default () => {
     // if (value) {
       // }
     if (!value.trim()) {
-      return Promise.reject(new Error('服务号名称不可以为空格'));
+      message.warning('服务号名称不可为空格')
+      return Promise.resolve();
     }
     try {
         const res = await httpServiceAccountManageNameAble({

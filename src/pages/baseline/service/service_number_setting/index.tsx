@@ -13,7 +13,7 @@ import { deleteBid, getBidPage, onOffShelvesById } from '@/services/baseline';
 import {
   httpServiceAccountMannagePage,
   httpServiceAccountManageSave,
-  pageQuery,
+  httpServiceAccountManageNameAble,
   httpServiceAccountManageDel,
   httpAccountList,
 } from '@/services/service-management';
@@ -234,6 +234,33 @@ export default () => {
   const handleSearch = (value: any) => {
     console.log('搜索', value);
   };
+  const changeFormMunuName = async (_: any, value: string) => {
+    console.log('value', value)
+    console.log('_', _)
+    if (!value.trim()) {
+      message.warning('服务号内部名称不要为空')
+      return Promise.resolve();
+    }
+    try {
+        const res = await httpServiceAccountManageNameAble({
+          manage: true,
+          id: editId,
+          name: value
+        })
+        if (res?.code === 0) {
+          if (res?.result) {
+            return Promise.resolve();
+          } else {
+            return Promise.reject(new Error('该服务号名称已存在'));
+          }
+        } else {
+          message.warning(res?.message)
+        }
+    } catch (error) {
+      message.error(`服务号名称校验失败:`,error)
+      return Promise.reject(new Error('菜单名称重复'));
+    }
+  }
 
   const getModal = () => {
     return (
@@ -250,11 +277,18 @@ export default () => {
           onFinish();
         }}
       >
-        <Form form={form} labelCol={{ span: 7 }} wrapperCol={{ span: 16 }}>
+        <Form form={form} labelCol={{ span: 7 }} wrapperCol={{ span: 16 }} validateTrigger={['onBlur']}>
           <Form.Item
             name="innerName"
             label="服务号内部名称"
-            rules={[{ required: true, message: '请输入服务号内部名称' }]}
+            rules={[
+              { required: true, message: '必填' },
+              {
+                validator: changeFormMunuName,
+                message: '该服务号内部名称已存在',
+                validateTrigger: 'onBlur',
+              },
+            ]}
           >
             <Input maxLength={20} />
           </Form.Item>
