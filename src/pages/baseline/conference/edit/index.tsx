@@ -12,7 +12,7 @@ import {
   Card,
   Form,
   Input,
-  Select,
+  Checkbox,
   Popconfirm,
   DatePicker,
   Modal,
@@ -68,6 +68,8 @@ export default () => {
   const [editForm] = Form.useForm();
   const [userForm] = Form.useForm();
   const [materialsForm] = Form.useForm();
+  const [meetingTimeRequire, setMeetingTimeRequire] = useState(true)
+  const [defaultMeetingTime, setDefaultMeetingTime] = useState<any[]>([])
   const { TextArea } = Input;
   const columns = [
     {
@@ -257,12 +259,14 @@ export default () => {
         });
         setOrganizationSimples(res?.result.organizationSimples);
         setExpandAttributes(newArr);
-        const time = [moment(res?.result.startTime), moment(res?.result.endTime)];
         if (res?.result.startTime && res?.result.endTime) {
+          const time = [moment(res?.result.startTime), moment(res?.result.endTime)];
+          setDefaultMeetingTime(time)
           form.setFieldsValue({ time, ...res?.result });
         } else {
           form.setFieldsValue({ ...res?.result });
         }
+        setMeetingTimeRequire(!res.result.timePending)
       }
     });
   };
@@ -303,6 +307,7 @@ export default () => {
             expandAttributes,
             startTime,
             endTime,
+            timePending: !meetingTimeRequire,
             ...value[0],
             ...value[1],
             ...value[2],
@@ -341,6 +346,7 @@ export default () => {
         expandAttributes,
         startTime,
         endTime,
+        timePending: !meetingTimeRequire,
         ...value[0],
         ...value[1],
         ...value[2],
@@ -541,23 +547,38 @@ export default () => {
                 maxLength={100}
               />
             </Form.Item>
-            <Form.Item
-              name="time"
-              label="会议时间"
-              rules={[
-                {
-                  required: true,
-                  message: `必填`,
-                },
-              ]}
-            >
-              <DatePicker.RangePicker
-                style={{ width: '100%' }}
-                allowClear
-                showTime
-                format="YYYY-MM-DD HH:mm"
-              />
-            </Form.Item>
+            <div style={{ display: 'flex', alignItems: 'center', marginLeft: '10%' }}>
+              <Form.Item
+                name="time"
+                label="会议时间"
+                rules={[
+                  {
+                    required: meetingTimeRequire,
+                    validator: (rule) => {
+                      const values = form.getFieldsValue();
+                      if (!rule.required) return Promise.resolve()
+                      if (values.time) return Promise.resolve()
+                      return Promise.reject('会议时间不能为空')
+                    },
+                    message: `必填`,
+                  },
+                ]}
+              >
+                <DatePicker.RangePicker
+                  allowClear
+                  style={{ width: 400 }}
+                  showTime
+                  onChange={(e) => {
+                    form.setFieldValue('time', e)
+                  }}
+                  format="YYYY-MM-DD HH:mm"
+                />
+              </Form.Item>
+              <Checkbox style={{ marginBottom: 20, marginLeft: 20 }} checked={!meetingTimeRequire} onChange={({ target }) => {
+                setMeetingTimeRequire(!target.checked)
+              }}>时间待定</Checkbox>
+            </div>
+            
 
             <Form.Item name="weight" label="权重">
               <InputNumber
