@@ -341,7 +341,7 @@ export default () => {
     NOT_SUBMITTED: '暂存',
     ON_SHELF: '已发布',
     OFF_SHELF: '已下架',
-    APPOINTMENT_ON_SHELF: '预约发布 - 数据库不体现',
+    APPOINTMENT_ON_SHELF: '预约发布',
   };
   const [total, setTotal] = useState<number>(0);
   const paginationRef = useRef<any>();
@@ -462,17 +462,19 @@ export default () => {
       render: (_, record) => {
         return (
           <Space size="middle">
-            <Button
-              key="2"
-              size="small"
-              type="link"
-              onClick={() => {
-                // 草稿的新新增页面
-                handleDetail(record.id.toString());
-              }}
-            >
-              详情
-            </Button>
+            {record?.state !== 'OFF_SHELF' && (
+              <Button
+                key="2"
+                size="small"
+                type="link"
+                onClick={() => {
+                  // 草稿的新新增页面
+                  handleDetail(record.id.toString());
+                }}
+              >
+                详情
+              </Button>
+            )}
             {/* 需要调整的权限 */}
             {/* <Access accessible={access['P_OA_DSXCY']}> */}
             <Button
@@ -504,19 +506,38 @@ export default () => {
                 </Button>
               </Popconfirm>
             )}
-            <Popconfirm
-              title={
-                <div>
-                  <div>删除数据</div>
-                  <div>确定删除该服务号？</div>
-                </div>
-              }
-              okText="确定"
-              cancelText="取消"
-              onConfirm={() => remove(record.id.toString())}
-            >
-              <a href="#">删除</a>
-            </Popconfirm>
+            {record?.state === 'APPOINTMENT_ON_SHELF' && (
+              <Popconfirm
+                title={
+                  <div>
+                    <div>提示</div>
+                    <div>确定将内容撤回发布？</div>
+                  </div>
+                }
+                okText="撤回发布"
+                cancelText="取消"
+                onConfirm={() => addOrUpdataState(record.id.toString())}
+              >
+                <Button key="3" size="small" type="link">
+                  下架
+                </Button>
+              </Popconfirm>
+            )}
+            {record?.state === 'OFF_SHELF' && (
+              <Popconfirm
+                title={
+                  <div>
+                    <div>删除数据</div>
+                    <div>确定删除该发布内容？</div>
+                  </div>
+                }
+                okText="确定"
+                cancelText="取消"
+                onConfirm={() => remove(record.id.toString())}
+              >
+                <a href="#">删除</a>
+              </Popconfirm>
+            )}
           </Space>
         );
       },
@@ -569,7 +590,7 @@ export default () => {
     if (statue === 1) {
       // 上架
       Promise.all([formBasic.validateFields()]).then(async ([formBasicValues]) => {
-        if (dataSoueceList.length <= 2) {
+        if (dataSoueceList.length <= 1) {
           return message.warning('请配置菜单设置');
         }
         let a = JSON.stringify(dataSoueceList);
@@ -1035,6 +1056,17 @@ export default () => {
     });
   };
 
+  // 菜单名的校验规则
+  // const changeFormMunuName = (_: any, value: string) => {
+  //   console.log('value', value)
+  //   console.log('_', _)
+  //   // value 是当前拿到的值
+  //   if (value) {
+
+  //     return Promise.reject(new Error('该供应商不存在'));
+  //   }
+  //   return Promise.resolve();
+  // } 
   // 服务号设置
   const SetService = (
     <div className={sc('container-tab-set')}>
@@ -1210,7 +1242,14 @@ export default () => {
                     <Form.Item
                       label="菜单名称"
                       name="name"
-                      rules={[{ required: true, message: '必填' }]}
+                      rules={[
+                        { required: true, message: '必填' },
+                        // {
+                        //   validator: changeFormMunuName,
+                        //   message: '菜单名不可重复',
+                        //   validateTrigger: 'onBlur',
+                        // },
+                      ]}
                     >
                       <Input maxLength={20} placeholder="请输入" allowClear />
                     </Form.Item>

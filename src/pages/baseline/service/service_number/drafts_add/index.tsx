@@ -69,8 +69,10 @@ export default () => {
   useEffect(() => {
     console.log('监听富文本', contentInfoFormContent);
     if (contentInfoFormContent) {
-      const container = document.querySelector('#rich-text-container');
-      container.innerHTML = contentInfoFormContent;
+      if (['PICTURE_TEXT'].includes(state)) {
+        const container = document.querySelector('#rich-text-container');
+        container.innerHTML = contentInfoFormContent;
+      }
     }
   }, [contentInfoFormContent]);
   // 监听的封面图
@@ -117,7 +119,6 @@ export default () => {
         }
         // 如果是实时发布, 隐藏发布时间
         if (detail && detail?.realTimePublishing) {
-          console.log('实时发布');
           setTimeShow(false);
           setIsTry(true);
         }
@@ -168,6 +169,10 @@ export default () => {
               };
             }),
         });
+
+        // 结尾处，搜集所有的表单信息
+        // 当点击返回是，校验所有的表单信息是否 全等, 如果有一个不全等  提示数据未保存
+
       } else {
         throw new Error('');
       }
