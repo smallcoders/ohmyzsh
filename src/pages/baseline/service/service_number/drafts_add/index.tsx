@@ -10,7 +10,7 @@ import {
   Image,
   Space,
   Popconfirm,
-  Dropdown,
+  Modal,
   message,
 } from 'antd';
 import FormEdit from '@/components/FormEdit';
@@ -51,6 +51,14 @@ type RouterParams = {
   name?: string;
 };
 export default () => {
+  // 模态框的状态
+  const [visibleAdd, setVisibleAdd] = useState<boolean>(false);
+  const [visible, setVisible] = useState<boolean>(false);
+  // 基础信息的改变
+  const [contentInfoFormChange, setContentInfoFormChange] = useState<boolean>(false);
+  // 发布信息的改变
+  const [formPostMessageChange, setFormPostMessageChange] = useState<boolean>(false);
+
   // 内容信息form
   const [contentInfoForm] = Form.useForm();
   // 发布信息form
@@ -212,7 +220,14 @@ export default () => {
     <div className={sc('container-left-top-content')}>
       <div className={sc('container-left-top-content-title')}>内容信息</div>
       <div className={sc('container-left-top-content-form')}>
-        <Form {...formLayout} form={contentInfoForm} validateTrigger={['onBlur']}>
+        <Form 
+          {...formLayout} 
+          form={contentInfoForm} 
+          validateTrigger={['onBlur']}
+          onValuesChange={() => {
+            setContentInfoFormChange(true);
+          }}
+        >
           <Form.Item label="标题" name="title" rules={[{ required: true, message: '必填' }]}>
             <Input maxLength={100} placeholder="请输入" allowClear />
           </Form.Item>
@@ -253,7 +268,14 @@ export default () => {
     <div className={sc('container-left-top-content')}>
       <div className={sc('container-left-top-content-title')}>内容信息</div>
       <div className={sc('container-left-top-content-form')}>
-        <Form {...formLayout} form={contentInfoForm} validateTrigger={['onBlur']}>
+        <Form 
+          {...formLayout} 
+          form={contentInfoForm} 
+          validateTrigger={['onBlur']} 
+          onValuesChange={() => {
+            setContentInfoFormChange(true);
+          }}
+        >
           <Form.Item label="标题" name="title" rules={[{ required: true, message: '必填' }]}>
             <Input maxLength={100} placeholder="请输入" allowClear />
           </Form.Item>
@@ -326,7 +348,14 @@ export default () => {
     <div className={sc('container-left-top-content')}>
       <div className={sc('container-left-top-content-title')}>内容信息</div>
       <div className={sc('container-left-top-content-form')}>
-        <Form {...formLayout} form={contentInfoForm} validateTrigger={['onBlur']}>
+        <Form 
+          {...formLayout} 
+          form={contentInfoForm} 
+          validateTrigger={['onBlur']}
+          onValuesChange={() => {
+            setContentInfoFormChange(true);
+          }}
+        >
           <Form.Item label="文本内容" name="content" rules={[{ required: true, message: '必填' }]}>
             <Input.TextArea
               placeholder="请输入"
@@ -343,7 +372,14 @@ export default () => {
     <div className={sc('container-left-top-content')}>
       <div className={sc('container-left-top-content-title')}>内容信息</div>
       <div className={sc('container-left-top-content-form')}>
-        <Form {...formLayout} form={contentInfoForm} validateTrigger={['onBlur']}>
+        <Form 
+          {...formLayout} 
+          form={contentInfoForm} 
+          validateTrigger={['onBlur']}
+          onValuesChange={() => {
+            setContentInfoFormChange(true);
+          }}
+        >
           <Form.Item label="标题" name="title" rules={[{ required: true, message: '必填' }]}>
             <Input maxLength={100} placeholder="请输入" allowClear />
           </Form.Item>
@@ -400,7 +436,14 @@ export default () => {
     <div className={sc('container-left-top-content')}>
       <div className={sc('container-left-top-content-title')}>内容信息</div>
       <div className={sc('container-left-top-content-form')}>
-        <Form {...formLayout} form={contentInfoForm} validateTrigger={['onBlur']}>
+        <Form 
+          {...formLayout} 
+          form={contentInfoForm} 
+          validateTrigger={['onBlur']}
+          onValuesChange={() => {
+            setContentInfoFormChange(true);
+          }}
+        >
           <Form.Item label="标题" name="title" rules={[{ required: true, message: '必填' }]}>
             <Input maxLength={100} placeholder="请输入" allowClear />
           </Form.Item>
@@ -645,7 +688,14 @@ export default () => {
           <Button onClick={() => onSubmit(2)}>暂存</Button>
         </React.Fragment>,
         // </Access>,
-        <Button onClick={() => goBack()}>返回</Button>,
+        <Button onClick={() => {
+          if (contentInfoFormChange || formPostMessageChange) {
+            console.log('有改变')
+            setVisible(true);
+          } else {
+            goBack()
+          }
+        }}>返回</Button>,
       ]}
     >
       <Prompt
@@ -658,7 +708,14 @@ export default () => {
           <div className={sc('container-left-bottom')}>
             <div className={sc('container-left-bottom-title')}>发布信息</div>
             <div className={sc('container-left-bottom-form')}>
-              <Form form={formPostMessage} {...formLayout} validateTrigger={['onBlur']}>
+              <Form 
+                form={formPostMessage} 
+                {...formLayout} 
+                validateTrigger={['onBlur']}
+                onValuesChange={() => {
+                  setFormPostMessageChange(true);
+                }}
+              >
                 <Form.Item
                   label="发布方式"
                   name="realTimePublishing"
@@ -859,6 +916,40 @@ export default () => {
           )}
         </div>
       </div>
+      <Modal
+        width={330}
+        visible={visible}
+        title="提示"
+        onCancel={() => {
+          setVisible(false);
+        }}
+        footer={[
+          <Button key="back" onClick={() => setVisible(false)}>
+            取消
+          </Button>,
+          <Button
+            key="submit"
+            type="primary"
+            onClick={() => {
+              goBack()
+            }}
+          >
+            直接离开
+          </Button>,
+          <Button
+            key="submit"
+            type="primary"
+            onClick={() => {
+              onSubmit(2)
+              goBack()
+            }}
+          >
+            暂存并离开
+          </Button>,
+        ]}
+      >
+        <p>数据未保存，是否仍要离开当前页面？</p>
+      </Modal>
     </PageContainer>
   );
 };

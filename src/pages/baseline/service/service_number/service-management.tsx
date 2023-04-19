@@ -772,6 +772,7 @@ export default () => {
   const [currentMenu, setCurrentMenu] = useState({});
   // 菜单项item
   const handleMenuItem = (item: any) => {
+    console.log('点击了一级菜单当前项', currentMenu)
     // 清空子级
     setCurrentChilrden({});
     // 切换一级菜单
@@ -812,7 +813,6 @@ export default () => {
       let newItem = values;
       let a = JSON.stringify(dataSoueceList);
       let b = JSON.parse(a);
-      // 如果选了两层菜单，添加childMenu
       if (values?.menuLayer === 2) {
         newItem.childMenu = childMunuDataList;
       }
@@ -820,7 +820,6 @@ export default () => {
       b.splice(b.length - 1 , 0, newItem)
       const c = sortArrayByWeight(b);
       setDataSouceList(b);
-
       // 如果点了两层菜单，结束需要重置菜单状态
       handleMenuItem({
         name: '添加菜单',
@@ -858,18 +857,47 @@ export default () => {
       let newItem = values;
       let a = JSON.stringify(dataSoueceList);
       let b = JSON.parse(a);
-      // 是否 选两层
-      if (values?.menuLayer === 2) {
-        newItem.childMenu = childMunuDataList;
-      }
-      b.forEach((item: any, index: any) => {
-        if (item.name === currentMenu.name) {
-          currentId = index;
+      console.log('一级菜单项currentMenu', currentMenu)
+      if (currentMenu?.childMenu) {
+        if (values?.menuLayer === 2) {
+          // 如果还是选两层菜单，保留当前的子菜单
+          newItem.childMenu = currentMenu?.childMenu;
+          b.forEach((item: any, index: any) => {
+            if (item.name === currentMenu.name) {
+              currentId = index;
+            }
+          });
+          b.splice(currentId, 1, newItem);
+          const c = sortArrayByWeight(b);
+          setDataSouceList(b);
+        } else {
+          // 改成了一层菜单
+          newItem.childMenu = childMunuDataList;
+          b.forEach((item: any, index: any) => {
+            if (item.name === currentMenu.name) {
+              currentId = index;
+            }
+          });
+          b.splice(currentId, 1, newItem);
+          const c = sortArrayByWeight(b);
+          setDataSouceList(b);
+
         }
-      });
-      b.splice(currentId, 1, newItem);
-      const c = sortArrayByWeight(b);
-      setDataSouceList(b);
+      } else {
+        // 是否 选两层
+        if (values?.menuLayer === 2) {
+          newItem.childMenu = childMunuDataList;
+        }
+        b.forEach((item: any, index: any) => {
+          if (item.name === currentMenu.name) {
+            currentId = index;
+          }
+        });
+        b.splice(currentId, 1, newItem);
+        const c = sortArrayByWeight(b);
+        setDataSouceList(b);
+      }
+
       handleMenuItem({
         name: '添加菜单',
       });
@@ -888,7 +916,7 @@ export default () => {
 
   // 监听左侧的当前选中的菜单, 对应展示右侧的form表单
   useEffect(() => {
-    console.log('监听的菜单当前项', currentMenu);
+    console.log('监听的一级菜单当前项', currentMenu);
   }, [currentMenu]);
 
   // 展示内容的当前项 // 文本 图片 链接
@@ -964,14 +992,14 @@ export default () => {
     });
   };
   // 监听当前菜单
-  // useEffect(() => {
-  //   console.log('dataSoueceList', dataSoueceList);
-  // }, [dataSoueceList]);
+  useEffect(() => {
+    console.log('dataSoueceList', dataSoueceList);
+  }, [dataSoueceList]);
   // 选择子菜单的储存当前一级
   const [childrenData, setChildrenData] = useState<any>();
-  // useEffect(() => {
-  //   console.log('二级菜单，当前开启对应的一级', childrenData);
-  // }, [childrenData]);
+  useEffect(() => {
+    console.log('二级菜单，当前开启对应的一级', childrenData);
+  }, [childrenData]);
   // 选择了子菜单
   const handleChilrdenMenuItem = (value?: any, index?: any, item?: any) => {
     console.log('子菜单项', value, index, item);
