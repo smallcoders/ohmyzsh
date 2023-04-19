@@ -39,7 +39,7 @@ export default () => {
           },
           {
             label: '发布服务号：',
-            value: detail?.id,
+            value: detail?.serviceAccountName,
           },
           {
             label: '发布时间：',
@@ -51,6 +51,10 @@ export default () => {
           },
         ];
         setiInfoData(infoList);
+        if (detail?.type === 'PICTURE_TEXT') {
+          const container = document.querySelector('#rich-text-container');
+          container.innerHTML = detail?.content;
+        }
       } else {
         message.error(`获取详情失败: ${res.error}`);
       }
@@ -151,7 +155,20 @@ export default () => {
           <div className={sc('container-top-content-cover')}>
             <img className={sc('container-top-content-cover-img')} src={dataDetail?.coverUrl} />
           </div>
-          <div className={sc('container-top-content-text')}>{dataDetail?.content || '------'}</div>
+          {
+            // 图文是富文本
+            ['PICTURE_TEXT'].includes(dataDetail?.type) && (
+              <div className={sc('container-top-content-text')}>
+                <div id="rich-text-container"></div>
+              </div>
+            )
+          }
+          {
+            // 非图文正常展示
+            !['PICTURE_TEXT'].includes(dataDetail?.type) && (
+              <div className={sc('container-top-content-text')}>{dataDetail?.content || '------'}</div>
+            )
+          }
           {
             // 视频
             ['VIDEO'].includes(dataDetail?.type) && (
