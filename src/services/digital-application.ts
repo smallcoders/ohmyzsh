@@ -146,9 +146,12 @@ export async function getApplicationInfo(params: { id: string }) {
 }
 
 // 获取接口配置
-export async function getInterfaceConfig() {
-  return request('/antelope-other/mng/api/manage/getInterfaceConfig', {
-    method: 'get',
+export async function getInterfaceConfig(typeName?: string) {
+  return request('/antelope-other/mng/api/manage/getIfConfig/byType', {
+    method: 'post',
+    data: {
+      typeName
+    }
   });
 }
 
@@ -166,7 +169,7 @@ export async function addInterfaceConfig(data: {
 
 // 更新接口配置
 export async function updateInterfaceConfig(data: {
-  id?: number;
+  id?: string;
   interfaceDescription?: string;
   interfaceNorm?: string;
 }) {
