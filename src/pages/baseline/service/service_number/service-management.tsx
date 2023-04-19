@@ -358,7 +358,7 @@ export default () => {
   const handleEditBtn = (item: any) => {
     console.log('编辑的当前值', item);
     history.push(
-      `${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DRAFTS_ADD}?type=edit&state=${item.type}&id=${item.id}&name=${name}}`,
+      `${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DRAFTS_ADD}?type=edit&state=${item.type}&id=${item.id}&name=${name}`,
     );
     // window.open(
     //   `${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DRAFTS_ADD}?type=edit&state=${item.type}&id=${item.id}&name=${name}}`,
@@ -537,7 +537,7 @@ export default () => {
               <Popconfirm
                 title={
                   <div>
-                    <div>删除数据</div>
+                    <div>删除</div>
                     <div>确定删除该发布内容？</div>
                   </div>
                 }
@@ -1272,7 +1272,7 @@ export default () => {
                             >
                               {item.childMenu && (
                                 <Dropdown
-                                  visible
+                                  visible={activeTab === '服务号设置'}
                                   trigger={['click']}
                                   overlay={overlayList}
                                   placement="top"
@@ -1658,6 +1658,14 @@ export default () => {
       </Affix>
     </div>
   );
+
+  // 监听当前的tab
+  useEffect(() => {
+    if (activeTab === '服务号设置') {
+      console.log('当前的TAB', activeTab)
+
+    }
+  },[activeTab])
 
   return (
     <PageContainer
