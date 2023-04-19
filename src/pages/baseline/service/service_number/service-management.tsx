@@ -812,11 +812,12 @@ export default () => {
       let newItem = values;
       let a = JSON.stringify(dataSoueceList);
       let b = JSON.parse(a);
-
+      // 如果选了两层菜单，添加childMenu
       if (values?.menuLayer === 2) {
         newItem.childMenu = childMunuDataList;
       }
-      b.unshift(newItem);
+      // b.unshift(newItem);
+      b.splice(b.length - 1 , 0, newItem)
       const c = sortArrayByWeight(b);
       setDataSouceList(b);
 
@@ -953,7 +954,8 @@ export default () => {
         if (j.name === currentMenu?.name) {
           // if (j.name === item?.name) {
           // 对应的一级的二级数组
-          j.childMenu.unshift(values);
+          // j.childMenu.unshift(values);
+          j.childMenu.splice(j.childMenu.length - 1, 0, values);
           const c = sortArrayByWeight(j.childMenu);
         }
       });
