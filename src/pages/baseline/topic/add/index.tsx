@@ -2,7 +2,8 @@ import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
 import { PageContainer } from '@ant-design/pro-layout';
 import React, {useEffect, useState,useRef} from "react";
-import {Button, Col, Form, Input, Row, Modal, Select, message, Breadcrumb} from "antd";
+import {Button, Col, Form, Input, Row, Modal, Select, message, Breadcrumb, Popconfirm, } from "antd";
+import {InfoOutlined} from "@ant-design/icons";
 import SelfTable from "@/components/self_table";
 import type Common from "@/types/common";
 import {history} from "@@/core/history";
@@ -46,6 +47,9 @@ export default () => {
     pageSize: 5,
     totalCount: 0,
   });
+  const [weightForm] = Form.useForm();
+
+  const [weightMap, setWeightMap] = useState({})
 
   // 方法
 //获取文章类型
@@ -65,6 +69,12 @@ export default () => {
       if (res.code === 0){
         form.setFieldsValue(res?.result)
         // setDataSource(res?.result.list)
+        const map = {}
+        res?.result?.list.forEach((element: any) => {
+          map[element.id] = element.weight
+        })
+        // 设置权重 id map 对应表
+        setWeightMap(map)
 
         setSelectRows(res?.result.list)
         const newArray: any = []
@@ -85,10 +95,7 @@ export default () => {
     })
   }
 
-  useEffect(() => {
-    getHotRecommendDetailById();
-    prepare();
-  }, []);
+
 
   // 获取选择管理内容详情页
   const getPage = async (pageIndex: number = 1, pageSize = pageSelectInfo.pageSize) => {
@@ -116,8 +123,17 @@ export default () => {
     getPage();
   }, [searchContent]);
 
+    useEffect(() => {
+      getHotRecommendDetailById();
+      prepare();
+    }, []);
+
   // 上架
   const addRecommend = async (state: number) => {
+    const articles = {}
+    dataSource.forEach((item: any) => {
+      articles[item.id] = +(item.weight || 1)
+    })
     form
       .validateFields()
       .then(async (value) => {
@@ -132,7 +148,8 @@ export default () => {
           topic,
           weight:parseInt(weight),
           enable:1,
-          articleIds:selectRowKeys
+          articleIds:selectRowKeys,
+          articles
         })
         if (submitRes.code === 0) {
           history.goBack()
@@ -249,13 +266,22 @@ export default () => {
       dataIndex: 'title',
       isEllipsis: true,
       width: 200,
+
+    },
+    {
+      title: '权重',
+      dataIndex: 'weight',
+      width: 200,
+      render: (_: any, record: any) => {
+        return weightMap[record.id + ''] || '1'
+      }
     },
     {
       title: '操作',
       width: 240,
       fixed: 'right',
       dataIndex: 'option',
-      render: (_: any, record: any) => {
+      render: (_: any, record: any, index) => {
         return (
           <div className={sc('container-option')}>
             <Button type="link" onClick={() => {
@@ -263,6 +289,42 @@ export default () => {
             }}>
               详情
             </Button>
+            <Popconfirm
+              placement="topRight"
+              title={
+                <>
+                  <Form form={weightForm} {...formLayout} style={{width:'300px'}}>
+                    <Form.Item
+                      style={{flexFlow:'column'}}
+                      name={'weight'}
+                      label="权重设置">
+                      <Input ref={weightRef} placeholder='请输入1～100的整数，数字越大排名越小' onInput={useLimit(weightRef)} />
+                    </Form.Item>
+                  </Form>
+                </>
+              }
+              icon={<InfoOutlined style={{ display: 'none' }} />}
+              okText="确定"
+              cancelText="取消"
+              onConfirm={() => {
+                console.log('_', _, record, index)
+                if(!weightForm.getFieldValue('weight')) return
+                dataSource[index].weight = weightForm.getFieldValue('weight')
+                const map = weightMap
+                map[dataSource[index].id] = weightForm.getFieldValue('weight')
+                setWeightMap(map)
+                setDataSource([...dataSource])
+              }}
+            >
+              <Button
+                type="link"
+                onClick={() => {
+                  weightForm.setFieldsValue({ weight: record.weight || 1 })
+                }}
+              >
+                权重设置
+              </Button>
+            </Popconfirm>
             <Button type="link" onClick={() => {
               reMove( record.id as string)
             }}>

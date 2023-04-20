@@ -11,6 +11,7 @@ namespace Banner {
     PC_CITY = 5, // 官网-地市专题首页
     APP_FINANCIAL = 7, // APP-金融
     APP_BASELINE = 8, // APP-基线
+    APP_BASELINE_MEETING = 9, // App - 基线 - 会议banner
   }
 
   export interface ResultList extends Common.ResultCode, Common.ResultPage {
