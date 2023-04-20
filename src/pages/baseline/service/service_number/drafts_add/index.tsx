@@ -892,7 +892,8 @@ export default () => {
                 // 如果是文字展示 文本内容
                 ['TEXT'].includes(state) && (
                   <div className={sc('container-right-serve-content-content')}>
-                    {contentInfoFormContent && <div>{contentInfoFormContent || '文本内容...'}</div>}
+                    {contentInfoFormContent && <div>{<Input.TextArea value={contentInfoFormContent} autoSize={{ minRows: 3, maxRows: 5 }} maxLength={500} /> || '文本内容...'}</div>}
+                    {/* {contentInfoFormContent && <div>{contentInfoFormContent || '文本内容...'}</div>} */}
                   </div>
                 )
               }
