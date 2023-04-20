@@ -40,6 +40,7 @@ import {
   httpServiceAccountVideoSave,
   httpServiceAccountAudioSave,
   httpServiceAccountArticleDetail,
+  httpServiceAccountOperationDetail,
 } from '@/services/service-management';
 const sc = scopedClasses('service-number-drafts-add');
 
@@ -189,11 +190,30 @@ export default () => {
     }
   };
 
+  // 获取服务号详情
+  const [serveDetail, setServeDetail] = useState<any>();
+  const detail = async (id: any) => {
+    if (!id) return;
+    try {
+      const res = await httpServiceAccountOperationDetail(id);
+      if (res?.code === 0) {
+        console.log('获取渲染详情', res?.result);
+        setServeDetail(res?.result);
+      } else {
+        throw new Error('');
+      }
+    } catch (error) {
+      message.error(`获取详情失败:${error}`);
+    }
+  };
   useEffect(() => {
     console.log('新增页获取的参数', type, state, id, name);
     if (type && type === 'edit' && id) {
       // 初始化
       perpaer(id);
+    }
+    if (id) {
+      detail(id)
     }
   }, []);
 
@@ -786,7 +806,7 @@ export default () => {
                 {/* <img className={sc('container-right-serve-content-header-img')} src="" alt="" /> */}
                 <div className={sc('container-right-serve-content-header-name')}>
                   {/* 服务号的名称再确定一下 */}
-                  {name || '服务号名称'}
+                  {name || serveDetail.name || '服务号名称'}
                 </div>
               </div>
               {
@@ -890,7 +910,7 @@ export default () => {
                   </div>
                   <div className={sc('container-right-industry-content-left-bottom')}>
                     <div className={sc('container-right-industry-content-left-bottom-name')}>
-                      {name || '服务号名称'}
+                      {name || serveDetail.name || '服务号名称'}
                     </div>
                     {/* 选择了预约时间才展示 */}
                     {contentInfoFormPublishTime && (

@@ -31,7 +31,6 @@ export default () => {
     try {
       const res = await httpServiceAccountOperationList()
       if (res?.code === 0) {
-        console.log('res', res)
         setDataList(res?.result)
         setSpinState(false)
         setShow(true)
