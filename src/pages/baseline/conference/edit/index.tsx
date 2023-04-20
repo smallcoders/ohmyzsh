@@ -291,8 +291,12 @@ export default () => {
         materialsForm.validateFields(),
       ])
         .then(async (value) => {
-          const startTime = moment(value[0].time[0]).format('YYYY-MM-DD HH:mm');
-          const endTime = moment(value[0].time[1]).format('YYYY-MM-DD HH:mm');
+          let startTime = ''
+          let endTime = ''
+          if (value[0].time && value[0].time.length) {
+            startTime = moment(value[0].time[0]).format('YYYY-MM-DD HH:mm');
+            endTime = moment(value[0].time[1]).format('YYYY-MM-DD HH:mm');
+          }
           if (!value[0].weight) {
             value[0].weight = '1';
           }
