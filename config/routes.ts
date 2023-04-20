@@ -244,6 +244,11 @@
   BASELINE_ASSOCIATION_MANAGE: 'baseline-association-manage',
   BASELINE_ASSOCIATION_MANAGE_DETAIL: 'baseline-association-manage/detail',
   BASELINE_ASSOCIATION_MANAGE_EDIT: 'baseline-association-manage/add',
+  
+  
+  BASELINE_USER_POSTING_MANAGE: '/baseline/baseline-user-posting-manage', // 用户发布管理
+  BASELINE_USER_POSTING_MANAGE_INDEX: '/baseline/baseline-user-posting-manage/index', // 用户发布管理
+  BASELINE_USER_POSTING_MANAGE_DETAIL: '/baseline/baseline-user-posting-manage/detail', // 用户发布管理
 };
 
 export default [
@@ -503,6 +508,32 @@ export default [
         hideInMenu: true,
         name: '新增',
         component: './baseline/association-info/add',
+      },
+      {
+        path: routeName.BASELINE_USER_POSTING_MANAGE, 
+        name: '用户发布管理',
+        // access: 'M_BLM_NRBQGL',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            path: routeName.BASELINE_USER_POSTING_MANAGE,
+            // access: 'M_BLM_NRBQGL',
+            redirect: routeName.BASELINE_USER_POSTING_MANAGE_INDEX,
+          },
+          {
+            path: routeName.BASELINE_USER_POSTING_MANAGE_INDEX,
+            // access: 'M_BLM_NRBQGL',
+            name: '用户发布管理',
+            hideInBreadcrumb: true,
+            component: './baseline/user-posting/index',
+          },
+          {
+            path: routeName.BASELINE_USER_POSTING_MANAGE_DETAIL,
+            name: '用户发布详情',
+            hideInBreadcrumb: true,
+            component: './baseline/user-posting/detail/index',
+          },
+        ],
       },
     ],
   },
