@@ -1,7 +1,7 @@
 import { message, Upload } from 'antd';
 import type { RcFile, UploadChangeParam, UploadFile, UploadProps } from 'antd/lib/upload/interface';
 import type { ReactNode, RefAttributes } from 'react';
-import { useEffect } from 'react';
+import { useState } from 'react';
 import './upload-form.less';
 
 const UploadForm = (
@@ -13,25 +13,24 @@ const UploadForm = (
       isSkip?: boolean;
     },
 ) => {
+  const [uploadStatus, setUploadStatus] = useState<boolean>(false)
   const handleChange = (info: UploadChangeParam<UploadFile<any>>) => {
-    let newFileList = [...info.fileList] as any;
-
+    const newFileList = [...info.fileList] as any;
     // 2. Read from response and show file link
-    newFileList = newFileList?.map((file: any) => {
+    if (newFileList?.[0]?.status === "uploading"){
+      setUploadStatus(true)
+    }
+    console.log(newFileList?.[0]?.status, '123123123')
+    if (newFileList?.[0]?.status === "done"){
+      setUploadStatus(false)
+    }
+    newFileList?.map((file: any) => {
       if (file.response) {
-        if (props.isSkip) {
-          file.url = `/antelope-common/common/file/download/${file?.response?.result}`;
-        }
-        file.uid = file?.response?.result;
+        props.onChange?.(file.response);
       }
       return file;
     });
-    props.onChange?.([...newFileList] as any);
   };
-
-  // useEffect(() => {
-  //   console.log(props.value);
-  // }, [props.value]);
 
   const beforeUpload = (file: RcFile, files: RcFile[]) => {
     if (props.beforeUpload) {
@@ -72,25 +71,27 @@ const UploadForm = (
 
     props.onChange?.(list as any);
   };
-  console.log(props.value, '00000')
 
   const isOpen = props?.maxCount ? (props.value?.length || 0) < props?.maxCount : true;
   return (
-    <>
+    <div onClick={() => {
+      if (uploadStatus){
+        message.warn(`视频上传中，请稍后`);
+      }
+    }}>
       {props.tooltip}
       <Upload
         {...props}
-        fileList={props?.value || []}
         name="file"
-        action="/antelope-common/common/file/upload"
+        action="/antelope-common/common/file/upload/record"
         onChange={handleChange}
         beforeUpload={beforeUpload}
         onRemove={onRemove}
-        openFileDialogOnClick={isOpen}
+        openFileDialogOnClick={!uploadStatus && isOpen}
       >
         {props.children}
       </Upload>
-    </>
+    </div>
   );
 };
 export default UploadForm;

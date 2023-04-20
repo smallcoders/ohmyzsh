@@ -663,7 +663,7 @@ export default () => {
           <Button
             style={{ margin: '10px 0' }}
             type="primary"
-            disabled={organizationSimples.length >= 300}
+            disabled={organizationSimples.length >= 2000}
             key="addStyle1"
             onClick={() => {
               setVisibleImport(true);
@@ -1156,8 +1156,8 @@ export default () => {
                     item.index = index + 1;
                   });
                   const newArray =
-                    [...organizationSimples, ...res?.result]?.length > 300
-                      ? [...organizationSimples, ...res?.result].splice(0, 300)
+                    [...organizationSimples, ...res?.result]?.length > 2000
+                      ? [...organizationSimples, ...res?.result].splice(0, 2000)
                       : [...organizationSimples, ...res?.result];
                   setOrganizationSimples(newArray);
                   importForm.resetFields();

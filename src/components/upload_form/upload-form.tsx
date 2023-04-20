@@ -14,6 +14,8 @@ const UploadForm = (
       changeLoading?: (loaidng: boolean) => void;
       maxSizeKb?: number;
       isMore?: boolean;
+      setValue?: (value: any) => void;
+      setValueId?: (value: any) => void;
     },
 ) => {
   const [fileId, setFileId] = useState<string | undefined | any>();
@@ -73,6 +75,9 @@ const UploadForm = (
         );
         setLoading(false);
         message.success('上传成功');
+        console.log('uploadResponse.result', uploadResponse.result)
+        props.setValue && props.setValue(`/antelope-common/common/file/download/${uploadResponse.result}`)
+        props.setValueId && props.setValueId(uploadResponse.result)
       } else {
         setLoading(false);
         message.error(`上传失败，原因:{${uploadResponse.message}}`);
