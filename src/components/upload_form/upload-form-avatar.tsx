@@ -19,6 +19,7 @@ const UploadForm = (
       limit?: number;
       setValue?: (value: any) => void;
       setValueId?: (value: any) => void;
+      imgCropAccept?: any
     },
 ) => {
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -140,7 +141,7 @@ const UploadForm = (
   return (
     <>
       {props.tooltip}
-      <ImgCrop shape={props?.shape} width={300} height={300}>
+      <ImgCrop aspect={props?.imgCropAccept ||  1} shape={props?.shape} width={300} height={300}>
         <Upload
           action={props.action || '/antelope-common/common/file/upload'}
           listType="picture-card"
