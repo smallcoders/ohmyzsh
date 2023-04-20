@@ -244,6 +244,7 @@
   BASELINE_ASSOCIATION_MANAGE: 'baseline-association-manage',
   BASELINE_ASSOCIATION_MANAGE_DETAIL: 'baseline-association-manage/detail',
   BASELINE_ASSOCIATION_MANAGE_EDIT: 'baseline-association-manage/add',
+  BASELINE_HOTSPOT_MANAGE: 'baseline-hotspot-manage'
 };
 
 export default [
@@ -351,6 +352,11 @@ export default [
             component: './baseline/content/detail',
           },
         ],
+      },
+      {
+        path: routeName.BASELINE_HOTSPOT_MANAGE,
+        name: '实时热点管理',
+        component: './baseline/real_time_hotspot_management',
       },
       {
         path: routeName.BASELINE_BID_MANAGE,
@@ -503,7 +509,7 @@ export default [
         hideInMenu: true,
         name: '新增',
         component: './baseline/association-info/add',
-      },
+      }
     ],
   },
   {

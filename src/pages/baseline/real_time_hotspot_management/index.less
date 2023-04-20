@@ -1,0 +1,46 @@
+@prefix: real-time-hotspot-manage;
+
+.@{prefix}-container {
+  &-table-header {
+    padding: 20px;
+    background-color: #fff;
+    .title {
+      display: flex;
+      justify-content: space-between;
+      > span {
+        color: rgba(0, 0, 0, 0.85);
+        font-weight: 600;
+        font-size: 16px;
+        line-height: 22px;
+      }
+    }
+  }
+  &-table-body {
+    padding: 20px;
+    background-color: #fff;
+    .ant-table-row {
+      .ant-table-cell {
+        &:last-child {
+          white-space: nowrap;
+        }
+      }
+    }
+  }
+  &-search {
+    margin-bottom: 20px;
+    padding: 20px 20px 0 20px;
+    background-color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  .ant-table-wrapper {
+    margin-top: 20px;
+  }
+  .button-box {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin-left: 20px;
+  }
+}
