@@ -24,10 +24,18 @@ import { routeName } from '../../../../config/routes'
 
 const sc = scopedClasses('baseline-user-posting');
 
-const stateColumn = {
+// 上下架状态
+const stateEnable = {
   'PREPARE': '待发布',
   'SHOPPED': '发布中',
   'UN_SHOP': '已下架',
+}
+// 审核状态
+const auditStatus = {
+  '1': '系统审核通过',
+  '2': '系统审核不通过',
+  '3': '人工审核通过',
+  '4': '人工审核不通过'
 }
 
 export default () => {
@@ -76,36 +84,80 @@ export default () => {
         (paginationRef.current.current - 1) * paginationRef.current.pageSize + index + 1,
     },
     {
-      title: '城市名称',
-      dataIndex: 'areaName',
+      title: '内容信息',
+      dataIndex: 'content',
       align: 'center',
-      valueType: 'textarea', // 筛选的类别
+      // valueType: 'textarea', // 筛选的类别
+      // valueType: 'text', // 筛选的类别
+      hideInSearch: true, // 隐藏search
     },
     {
-      title: '状态',
+      title: '内容标题',
+      dataIndex: 'title',
       align: 'center',
-      dataIndex: 'state',
-      width: 100,
-      hideInSearch: true,
+      // valueType: 'textarea', // 筛选的类别
+      valueType: 'text', // 筛选的类别
+    },
+    {
+      title: '关联话题',
+      dataIndex: 'topic',
+      align: 'center',
+      // valueType: 'textarea', // 筛选的类别
+      valueType: 'text', // 筛选的类别
+      // hideInSearch: true, // 本次 隐藏search
+    },
+    {
+      title: '发布时间范围',
+      dataIndex: 'publishTime',
+      align: 'center',
+      valueType: 'dateRange', // 筛选的类别
+      hideInForm: true, // 在Form中不展示此列
+    },
+    {
+      title: '内容类型',
+      dataIndex: 'type',
+      align: 'center',
+      // valueType: 'textarea', // 筛选的类别
+      valueType: 'text', // 筛选的类别
+      // hideInSearch: true, // 隐藏search
+    },
+    {
+      title: '发布时间',
+      dataIndex: 'publishTime',
+      align: 'center',
+      hideInSearch: true, // 隐藏search
+      renderText: (_: string) => {
+        return _ ? moment(_).format('YYYY-MM-DD HH:mm:ss') : '--'
+      },
+    },
+    {
+      title: '审核状态',
+      dataIndex: 'auditStatus',
+      align: 'center',
+      // valueType: 'textarea', // 筛选的类别
+      valueType: 'select', // 筛选的类别
       renderText: (_: string) => {
         return (
           <div className={`state${_}`}>
-            {Object.prototype.hasOwnProperty.call(stateColumn, _) ? stateColumn[_] : '--'}
+            {Object.prototype.hasOwnProperty.call(auditStatus, _) ? auditStatus[_] : '--'}
           </div>
         );
       },
     },
     {
-      title: '企业需求数量',
+      title: '上架状态',
+      dataIndex: 'enable',
       align: 'center',
-      dataIndex: 'demandCount',
-      hideInSearch: true,
-    },
-    {
-      title: '服务方案数量',
-      align: 'center',
-      dataIndex: 'solutionCount',
-      hideInSearch: true,
+      // valueType: 'textarea', // 筛选的类别
+      valueType: 'select', // 筛选的类别
+      renderText: (_: string) => {
+        return (
+          <div className={`state${_}`}>
+            {/* 这里 true false */}
+            {Object.prototype.hasOwnProperty.call(stateEnable, _) ? stateEnable[_] : '--'}
+          </div>
+        );
+      },
     },
     {
       title: '操作',
@@ -187,24 +239,61 @@ export default () => {
           span: 8,
           labelWidth: 100,
           defaultCollapsed: false,
-          optionRender: (searchConfig, formProps, dom) => [dom[1], dom[0]],
+          optionRender: (searchConfig, formProps, dom) => {
+            return[dom[1], dom[0]]
+          },
         }}
         request={async (pagination) => {
+          console.log('查询pagination', pagination)
+          // 搜集的发布时间范围 是一个数组 publishTime
+          // 目前可以选同一天
+          // publishTime.length > 0
+          // publishTime[0], publishTime[1]
           // const result = await getPropagandaDataList(pagination); // 根据后端调整
           const result = {
             success: 0,
             total: 1,
             data: [
               {
-                areaCode: "340200",
-                areaName: "芜湖市",
+                content: '芜湖市内容信息',
+                title: '一贫如洗',
+                topic: '一人之下',
+                type: '玄幻',
+                publishTime: "2023-04-20 16:45:02",
+                auditStatus: '1',
                 cityBannerId: 1658904288000001,
-                cityBannerUrl: "https://oss.lingyangplat.com/iiep-dev/bda16f09e37d4b3ab5a12474d332610d.png",
                 demandCount: 33,
                 id: 9,
                 solutionCount: 15,
                 state: "UN_SHOP",
-              }
+              },
+              {
+                content: '芜湖市内容信息',
+                title: '一贫如洗',
+                topic: '一人之下',
+                type: '玄幻',
+                publishTime: "2023-04-20 16:45:02",
+                auditStatus: '1',
+                cityBannerId: 1658904288000001,
+                demandCount: 33,
+                id: 9,
+                solutionCount: 15,
+                state: "UN_SHOP",
+              },
+              {
+                content: '芜湖市内容信息',
+                title: '一贫如洗',
+                topic: '一人之下',
+                type: '玄幻',
+                publishTime: "2023-04-20 16:45:02",
+                auditStatus: '1',
+                cityBannerId: 1658904288000001,
+                demandCount: 33,
+                id: 9,
+                solutionCount: 15,
+                state: "UN_SHOP",
+              },
+
             ]
           }
           paginationRef.current = pagination;
