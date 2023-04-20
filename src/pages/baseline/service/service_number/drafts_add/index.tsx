@@ -549,9 +549,17 @@ export default () => {
             const res = await contentInfoHttp({
               ...formData,
               // 新增需要添加id
-              serviceAccountId: type === 'edit' ? undefined : id,
+              serviceAccountId: type === 'edit' 
+                ? undefined
+                : saveId 
+                  ? undefined
+                  : id,
               // 编辑需要传id
-              id: type === 'edit' ? id : undefined,
+              id: type === 'edit' 
+                ? id 
+                : saveId 
+                  ? saveId
+                  :undefined,
               // 裁切的封面图
               // coverId: Number(formData.coverId),
               coverId: imgUrlId,
@@ -814,7 +822,7 @@ export default () => {
                 !['TEXT'].includes(state) && (
                   <div className={sc('container-right-serve-content-text')}>
                     标题：
-                    {contentInfoFormTitle || '标题'}
+                    {contentInfoFormTitle || ''}
                   </div>
                 )
               }

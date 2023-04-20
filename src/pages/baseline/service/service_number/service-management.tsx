@@ -27,7 +27,7 @@ import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import type SolutionTypes from '@/types/solution';
 import ProTable from '@ant-design/pro-table';
 import UploadForm from '@/components/upload_form';
-import { phoneVerifyReg } from '@/utils/regex-util';
+import { telVerifyReg } from '@/utils/regex-util';
 import {
   httpArticleDrafList,
   httpServiceAccountPublishPage,
@@ -419,6 +419,13 @@ export default () => {
       dataIndex: 'title',
       align: 'center',
       valueType: 'text', // 筛选的类别
+      renderText: (_: string) => {
+        return (
+          <div className={sc(`title`)}>
+            {_ || '--'}
+          </div>
+        );
+      },
     },
     {
       title: '内容类型',
@@ -637,6 +644,7 @@ export default () => {
               menuLayer: item.menuLayer,
               name: item.name,
               weight: item.weight,
+              id: item.id ? item.id : undefined
             };
           }
           return {
@@ -645,6 +653,7 @@ export default () => {
             menuLayer: item.menuLayer,
             name: item.name,
             weight: item.weight,
+            id: item.id ? item.id : undefined
           };
         });
 
@@ -703,6 +712,7 @@ export default () => {
             menuLayer: item.menuLayer,
             name: item.name,
             weight: item.weight,
+            id: item.id ? item.id : undefined
           };
         }
         return {
@@ -711,6 +721,7 @@ export default () => {
           menuLayer: item.menuLayer,
           name: item.name,
           weight: item.weight,
+          id: item.id ? item.id : undefined
         };
       });
 
@@ -779,6 +790,7 @@ export default () => {
   const [currentMenu, setCurrentMenu] = useState({});
   // 菜单项item
   const handleMenuItem = (item: any) => {
+    console.log('item', item)
     console.log('点击了一级菜单当前项', currentMenu)
     // 清空子级
     setCurrentChilrden({});
@@ -864,7 +876,12 @@ export default () => {
       let newItem = values;
       let a = JSON.stringify(dataSoueceList);
       let b = JSON.parse(a);
+      console.log('一级菜单项dataSoueceList', dataSoueceList)
       console.log('一级菜单项currentMenu', currentMenu)
+      // 在添加之前，判断当前项是否有id
+      if(currentMenu?.id) {
+        newItem = {...values, id: currentMenu?.id}
+      } 
       if (currentMenu?.childMenu) {
         if (values?.menuLayer === 2) {
           // 如果还是选两层菜单，保留当前的子菜单
@@ -1077,6 +1094,10 @@ export default () => {
       let currentId;
       let a = JSON.stringify(dataSoueceList);
       let b = JSON.parse(a);
+      console.log('编辑子菜单当前项', currentChilrden)
+      if (currentChilrden?.id) {
+        newItem = {...newItem, id: currentChilrden?.id}
+      }
       b?.forEach((j: any) => {
         if (j.name === currentMenu?.name) {
           // 对应的一级的二级数组
@@ -1214,7 +1235,7 @@ export default () => {
               <Input.TextArea
                 placeholder="请输入"
                 autoSize={{ minRows: 3, maxRows: 5 }}
-                maxLength={300}
+                maxLength={120}
               />
             </Form.Item>
             <Form.Item
@@ -1222,11 +1243,11 @@ export default () => {
               name="servicePhone"
               rules={[
                 { required: true, message: '请输入' },
-                {
-                  pattern: phoneVerifyReg,
-                  message: '请输入正确手机号',
-                  validateTrigger: 'onBlur',
-                },
+                // {
+                //   pattern: telVerifyReg,
+                //   message: '请输入正确手机号',
+                //   validateTrigger: 'onBlur',
+                // },
               ]}
             >
               <Input
@@ -1251,104 +1272,106 @@ export default () => {
         <div className={sc('container-tab-set-menu-header')}>菜单设置</div>
         <div className={sc('container-tab-set-menu-content')}>
           <div className={sc('container-tab-set-menu-content-left')}>
-            <div className={sc('container-tab-set-menu-content-left-content')}>
-              {/* <div className={sc('container-tab-set-menu-left-content-title')}>预览</div>
-              <div>图片信息</div>
-              <div>内容信息</div> */}
-            </div>
-            <div className={sc('container-tab-set-menu-content-left-menu')}>
-              {true && (
-                <div className={sc('container-tab-set-menu-content-left-menu-list')}>
-                  {dataSoueceList &&
-                    dataSoueceList.map((item: any, index: any) => {
-                      const { childMenu } = item;
-                      let overlayList;
-                      if (childMenu) {
-                        // 如果有子菜单
-                        overlayList = (
-                          <Menu>
-                            {childMenu?.map((chilrdenItem: any, index: any) => {
-                              // if (index >= 6) return
-                              return (
-                                <React.Fragment key={index}>
-                                  {/* 二级菜单也分添加和菜单项 */}
-                                  <Menu.Item>
-                                    <div
-                                      style={{
-                                        color:
-                                          currentChilrden?.name === chilrdenItem.name &&
-                                          currentMenu?.name === item?.name
-                                            ? '#6680ff'
-                                            : '',
-                                      }}
+            <div style={{border: '1px solid'}}>
+              <div className={sc('container-tab-set-menu-content-left-content')}>
+                {/* <div className={sc('container-tab-set-menu-left-content-title')}>预览</div>
+                <div>图片信息</div>
+                <div>内容信息</div> */}
+              </div>
+              <div className={sc('container-tab-set-menu-content-left-menu')}>
+                {true && (
+                  <div className={sc('container-tab-set-menu-content-left-menu-list')}>
+                    {dataSoueceList &&
+                      dataSoueceList.map((item: any, index: any) => {
+                        const { childMenu } = item;
+                        let overlayList;
+                        if (childMenu) {
+                          // 如果有子菜单
+                          overlayList = (
+                            <Menu>
+                              {childMenu?.map((chilrdenItem: any, index: any) => {
+                                // if (index >= 6) return
+                                return (
+                                  <React.Fragment key={index}>
+                                    {/* 二级菜单也分添加和菜单项 */}
+                                    <Menu.Item>
+                                      <div
+                                        style={{
+                                          color:
+                                            currentChilrden?.name === chilrdenItem.name &&
+                                            currentMenu?.name === item?.name
+                                              ? '#6680ff'
+                                              : '',
+                                        }}
+                                        onClick={() => {
+                                          chilrdenItem.type
+                                            ? handleChilrdenMenuItemAdd(chilrdenItem, item)
+                                            : handleChilrdenMenuItem(chilrdenItem, index, item);
+                                        }}
+                                      >
+                                        {chilrdenItem.name}
+                                      </div>
+                                    </Menu.Item>
+                                  </React.Fragment>
+                                );
+                              })}
+                            </Menu>
+                          );
+                        }
+                        if (index >= 4) return;
+                        return (
+                          <React.Fragment key={index}>
+                            {
+                              <div
+                                className={sc('container-tab-set-menu-content-left-menu-list-item')}
+                              >
+                                {item.childMenu && (
+                                  <Dropdown
+                                    visible={activeTab === '服务号设置'}
+                                    trigger={['click']}
+                                    overlay={overlayList}
+                                    placement="top"
+                                    arrow
+                                  >
+                                    <span
+                                      className={`${sc(
+                                        'container-tab-set-menu-content-left-menu-list-item-text',
+                                      )} ${currentMenu?.name === item.name ? 'current' : ''}`}
                                       onClick={() => {
-                                        chilrdenItem.type
-                                          ? handleChilrdenMenuItemAdd(chilrdenItem, item)
-                                          : handleChilrdenMenuItem(chilrdenItem, index, item);
+                                        handleMenuItem(item);
                                       }}
                                     >
-                                      {chilrdenItem.name}
-                                    </div>
-                                  </Menu.Item>
-                                </React.Fragment>
-                              );
-                            })}
-                          </Menu>
-                        );
-                      }
-                      if (index >= 4) return;
-                      return (
-                        <React.Fragment key={index}>
-                          {
-                            <div
-                              className={sc('container-tab-set-menu-content-left-menu-list-item')}
-                            >
-                              {item.childMenu && (
-                                <Dropdown
-                                  visible={activeTab === '服务号设置'}
-                                  trigger={['click']}
-                                  overlay={overlayList}
-                                  placement="top"
-                                  arrow
-                                >
+                                      {item.name}
+                                    </span>
+                                  </Dropdown>
+                                )}
+                                {!item.childMenu && (
                                   <span
                                     className={`${sc(
                                       'container-tab-set-menu-content-left-menu-list-item-text',
                                     )} ${currentMenu?.name === item.name ? 'current' : ''}`}
                                     onClick={() => {
-                                      handleMenuItem(item);
+                                      item.type
+                                        ? handleMenuItemAdd(item, index)
+                                        : handleMenuItem(item);
                                     }}
                                   >
                                     {item.name}
                                   </span>
-                                </Dropdown>
-                              )}
-                              {!item.childMenu && (
-                                <span
-                                  className={`${sc(
-                                    'container-tab-set-menu-content-left-menu-list-item-text',
-                                  )} ${currentMenu?.name === item.name ? 'current' : ''}`}
-                                  onClick={() => {
-                                    item.type
-                                      ? handleMenuItemAdd(item, index)
-                                      : handleMenuItem(item);
-                                  }}
-                                >
-                                  {item.name}
-                                </span>
-                              )}
-                            </div>
-                          }
-                        </React.Fragment>
-                      );
-                    })}
-                  {!dataSoueceList && (
-                    <div className={sc('container-tab-set-menu-content-left-menu-list-item')}>
-                      菜单栏位置
-                    </div>
-                  )}
-                </div>
-              )}
+                                )}
+                              </div>
+                            }
+                          </React.Fragment>
+                        );
+                      })}
+                    {!dataSoueceList && (
+                      <div className={sc('container-tab-set-menu-content-left-menu-list-item')}>
+                        菜单栏位置
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
           <div className={sc('container-tab-set-menu-content-right')}>
