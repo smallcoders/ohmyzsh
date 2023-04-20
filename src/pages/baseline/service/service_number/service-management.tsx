@@ -530,7 +530,7 @@ export default () => {
                 onConfirm={() => addOrUpdataState(record.id.toString())}
               >
                 <Button key="3" size="small" type="link">
-                  下架
+                  撤回发布
                 </Button>
               </Popconfirm>
             )}
@@ -999,9 +999,9 @@ export default () => {
     });
   };
   // 监听当前菜单
-  useEffect(() => {
-    console.log('dataSoueceList', dataSoueceList);
-  }, [dataSoueceList]);
+  // useEffect(() => {
+  //   console.log('dataSoueceList', dataSoueceList);
+  // }, [dataSoueceList]);
   // 选择子菜单的储存当前一级
   const [childrenData, setChildrenData] = useState<any>();
   useEffect(() => {
@@ -1118,7 +1118,8 @@ export default () => {
     try {
         const res = await httpServiceAccountManageNameAble({
           manage: false,
-          name: value
+          name: value,
+          id: serveDetail?.id,
         })
         if (res?.code === 0) {
           if (res?.result) {
@@ -1144,14 +1145,27 @@ export default () => {
   }
 
   // 基础信息的改变
-  // const [infoFormChange, setnfoFormChange] = useState<boolean>(false);
-  // const [visible, setVisible] = useState<boolean>(false);
+  const [infoFormChange, setnfoFormChange] = useState<boolean>(false);
+  const [visible, setVisible] = useState<boolean>(false);
+  const [visibleTwo, setVisibleTwo] = useState<boolean>(false);
   // 监听当前的tab
+  const [text, setText] = useState()
   useEffect(() => {
     if (activeTab === '服务号设置') {
+      // 监听当前的菜单设置
       console.log('当前的TAB', activeTab)
+      console.log('菜单设置', dataSoueceList)
+      setText(dataSoueceList)
+      let a = JSON.stringify(dataSoueceList);
     }
-  },[activeTab])
+  },[activeTab, dataSoueceList])
+
+  useEffect(() => {
+    if (dataSoueceList && text) {
+      // 并且更新
+      console.log('并且更新', JSON.stringify(text) === JSON.stringify(dataSoueceList))
+    }
+  },[dataSoueceList])
 
   // 服务号设置
   const SetService = (
@@ -1163,9 +1177,9 @@ export default () => {
             form={formBasic} 
             {...formLayout} 
             validateTrigger={['onBlur']}
-            // onValuesChange={() => {
-            //   setnfoFormChange(true);
-            // }}
+            onValuesChange={() => {
+              setnfoFormChange(true);
+            }}
           >
             <Form.Item 
               label="服务号名称" 
@@ -1343,7 +1357,14 @@ export default () => {
                 {/* 一级菜单 */}
                 <div className={sc('container-tab-set-menu-content-right-title')}>一级菜单</div>
                 <div className={sc('container-tab-set-menu-content-right-form')}>
-                  <Form form={formMunu} {...formLayoutMenu} validateTrigger={['onBlur']}>
+                  <Form 
+                    form={formMunu} 
+                    {...formLayoutMenu} 
+                    validateTrigger={['onBlur']}
+                    onValuesChange={() => {
+                      setnfoFormChange(true);
+                    }}
+                  >
                     <Form.Item
                       label="菜单名称"
                       name="name"
@@ -1666,16 +1687,30 @@ export default () => {
               </Popconfirm>
             </React.Fragment>
           )}
+          {/* 未上架和上架的返回，要有不同的方法 */}
           <div
             style={{
               marginLeft: '20px',
             }}
           >
-            <Button onClick={() => history.goBack()}>返回</Button>
+            <Button onClick={() => {
+              if (infoFormChange) {
+                if (serveDetail?.state !== 'OFF_SHELF') {
+                  // 已上架
+                  // history.goBack()
+                  setVisibleTwo(true)
+                } else {
+                  // 未上架, 有暂存
+                  setVisible(true)
+                }
+              } else {
+                history.goBack()
+              }
+            }}>返回</Button>
           </div>
         </div>
       </Affix>
-      {/* <Modal
+      <Modal
         width={330}
         visible={visible}
         title="提示"
@@ -1699,7 +1734,7 @@ export default () => {
             key="submit"
             type="primary"
             onClick={() => {
-              onSubmit(1)
+              onSubmit(2)
               history.goBack()
             }}
           >
@@ -1708,7 +1743,41 @@ export default () => {
         ]}
       >
         <p>数据未保存，是否仍要离开当前页面？</p>
-      </Modal> */}
+      </Modal>
+      <Modal
+        width={350}
+        visible={visibleTwo}
+        title="提示"
+        onCancel={() => {
+          setVisibleTwo(false);
+        }}
+        footer={[
+          <Button key="back" onClick={() => setVisibleTwo(false)}>
+            取消
+          </Button>,
+          <Button
+            key="submit"
+            type="primary"
+            onClick={() => {
+              history.goBack()
+            }}
+          >
+            直接离开
+          </Button>,
+          <Button
+            key="submit"
+            type="primary"
+            onClick={() => {
+              onSubmit(1)
+              history.goBack()
+            }}
+          >
+            更新服务号并离开
+          </Button>,
+        ]}
+      >
+        <p>数据未保存，是否仍要离开当前页面？</p>
+      </Modal>
     </div>
   );
 

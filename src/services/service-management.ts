@@ -391,7 +391,8 @@ export function httpServiceAccountManageNameAble(params: {
   name: string
   id?: any
 }) {
-  return request(`/antelope-business/mng/serviceAccount/manage/nameAble?manage=${params?.manage}&name=${params?.name}`, {
+  return request(`/antelope-business/mng/serviceAccount/manage/nameAble`, {
     method: 'get',
+    params,
   })
 }
