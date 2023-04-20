@@ -15,7 +15,7 @@ const sc = scopedClasses('service-item');
 const stateType = {
   NOT_SUBMITTED: '暂存',
   ON_SHELF: '已上架',
-  OFF_SHELF: '未下架'
+  OFF_SHELF: '未上架'
 }
 export default (props: {
   dataSoueceList?: any

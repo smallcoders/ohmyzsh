@@ -558,7 +558,7 @@ export default () => {
   const ReleaseRecord = (
     <div className={sc('container-tab-release')}>
       <ProTable
-        headerTitle={`服务号设置管理列表（共${total}个）`}
+        headerTitle={`发布记录列表（共${total}个）`}
         options={false} // 工具栏隐藏
         actionRef={actionRef} // 用来自定义触发
         rowKey="id"
