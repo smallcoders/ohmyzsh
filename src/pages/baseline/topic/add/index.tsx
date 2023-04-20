@@ -298,7 +298,7 @@ export default () => {
                       style={{flexFlow:'column'}}
                       name={'weight'}
                       label="权重设置">
-                      <Input ref={weightRef} style={{ width: '300px' }} placeholder='请输入1～100的整数，数字越大排名越小' onInput={useLimit(weightRef)} />
+                      <Input ref={weightRef} placeholder='请输入1～100的整数，数字越大排名越小' onInput={useLimit(weightRef)} />
                     </Form.Item>
                   </Form>
                 </>
@@ -310,6 +310,9 @@ export default () => {
                 console.log('_', _, record, index)
                 if(!weightForm.getFieldValue('weight')) return
                 dataSource[index].weight = weightForm.getFieldValue('weight')
+                const map = weightMap
+                map[dataSource[index].id] = weightForm.getFieldValue('weight')
+                setWeightMap(map)
                 setDataSource([...dataSource])
               }}
             >
