@@ -33,6 +33,7 @@ export default () => {
   const [dataSource, setDataSource] = useState<any>([]);
   const [searchContent, setSearChContent] = useState<any>({});
   const [visible, setVisible] = useState<any>(false);
+  const [loading, setLoading] = useState<any>(false);
   const [modalForm] = Form.useForm()
   const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
     pageIndex: 1,
@@ -41,12 +42,14 @@ export default () => {
     pageTotal: 0,
   });
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
+    setLoading(true)
     try {
       const { result, totalCount, pageTotal, code, message } = await getHotNews({
         pageIndex,
         pageSize,
         ...searchContent,
       });
+      setLoading(false)
       if (code === 0) {
         setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
         setDataSource(result);
@@ -54,6 +57,7 @@ export default () => {
         throw new Error(message);
       }
     } catch (error) {
+      setLoading(false)
       antdMessage.error(`请求失败，原因:{${error}}`);
     }
   };
@@ -133,7 +137,7 @@ export default () => {
       width: 250,
       render: (_: any, record: any) => {
         const { origin } = window.location
-        return <span>{ record.crawered === 1 ? `${hostMap[origin] || 'http://172.30.33.222'}/antelope-baseline/industry-moments/#/detail?id=${record.articleId}` : '--' }</span>
+        return <span>{ record.crawered === 1 || record.crawered === 2? `${hostMap[origin] || 'http://172.30.33.222'}/antelope-baseline/industry-moments/#/detail?id=${record.articleId}` : '--' }</span>
       }
     },
     {
@@ -373,6 +377,7 @@ export default () => {
         </Button>
         <SelfTable
           rowKey="id"
+          loading={loading}
           bordered
           columns={columns}
           dataSource={dataSource}
