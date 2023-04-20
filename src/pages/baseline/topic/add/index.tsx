@@ -49,6 +49,8 @@ export default () => {
   });
   const [weightForm] = Form.useForm();
 
+  const [weightMap, setWeightMap] = useState({})
+
   // 方法
 //获取文章类型
   const prepare = async () => {
@@ -67,6 +69,12 @@ export default () => {
       if (res.code === 0){
         form.setFieldsValue(res?.result)
         // setDataSource(res?.result.list)
+        const map = {}
+        res?.result?.list.forEach((element: any) => {
+          map[element.id] = element.weight
+        })
+        // 设置权重 id map 对应表
+        setWeightMap(map)
 
         setSelectRows(res?.result.list)
         const newArray: any = []
@@ -264,8 +272,8 @@ export default () => {
       title: '权重',
       dataIndex: 'weight',
       width: 200,
-      render: (_: any) => {
-        return _ || '1'
+      render: (_: any, record: any) => {
+        return weightMap[record.id + ''] || '1'
       }
     },
     {
