@@ -330,6 +330,7 @@ export default () => {
               // shape={false}
               setValue={(e) => coverOnChange(e)}
               setValueId={(e) => coverOnChangeId(e)}
+              imgCropAccept={343/144}
             />
           </Form.Item>
           {/* 多张上传 */}
@@ -432,6 +433,7 @@ export default () => {
               // shape={false}
               setValue={(e) => coverOnChange(e)}
               setValueId={(e) => coverOnChangeId(e)}
+              imgCropAccept={343/144}
             />
           </Form.Item>
           <Form.Item label="视频" name="attachmentId" rules={[{ required: true, message: '必填' }]}>
