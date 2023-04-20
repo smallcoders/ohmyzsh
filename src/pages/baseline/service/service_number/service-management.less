@@ -121,6 +121,7 @@
               }
             }
             &-menu {
+              border-top: 1px solid;
               &-list {
                 display: flex;
                 justify-content: space-between;
@@ -190,10 +191,19 @@
         padding: 13px 0px;
         display: flex;
         justify-content: center;
+        align-items: center;
+        height: 80px;
         &-left {
           margin-right: 39px;
         }
       }
     }
+  }
+}
+
+.@{prefix} {
+  &-title {
+    max-width: 320px;
+    .ellipseText(1);
   }
 }
