@@ -49,7 +49,7 @@ const TableList: React.FC = () => {
     [Banner.Edge.APP_CREATIVE]: 'PQ_PC_B_AKC', // APP-科产
     [Banner.Edge.APP_FINANCIAL]: 'PQ_PC_B_AJR', // APP-金融
     [Banner.Edge.APP_BASELINE]: 'PQ_PC_B_AJR', //APP-基线
-    [Banner.Edge.APP_BASELINE_MEETING]: 'PQ_PC_B_AJR'
+    [Banner.Edge.APP_BASELINE_MEETING]: 'PQ_PC_B_BAHY' // APP - 基线 - 会议
   };
   const formLayout = {
     labelCol: { span: 6 },
