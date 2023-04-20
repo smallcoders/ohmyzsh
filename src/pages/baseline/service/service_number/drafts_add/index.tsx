@@ -42,6 +42,7 @@ import {
   httpServiceAccountArticleDetail,
   httpServiceAccountOperationDetail,
 } from '@/services/service-management';
+import debounce from 'lodash/debounce';
 const sc = scopedClasses('service-number-drafts-add');
 
 type RouterParams = {
@@ -274,6 +275,8 @@ export default () => {
               // shape={false}
               setValue={(e) => coverOnChange(e)}
               setValueId={(e) => coverOnChangeId(e)}
+              // imgCropAccept={16/9}
+              imgCropAccept={343/144}
             />
           </Form.Item>
           <Form.Item label="内容" name="content" rules={[{ required: true, message: '请输入' }]}>
@@ -534,6 +537,9 @@ export default () => {
     }
   }, [type, state]);
 
+  const onSubmitDebounce = debounce((value) => {
+    onSubmit(value)
+  },1000);
   const onSubmit = async (statue: number) => {
     if (statue === 1) {
       // 发布
@@ -696,7 +702,7 @@ export default () => {
               }
               okText="发布"
               cancelText="取消"
-              onConfirm={() => onSubmit(1)}
+              onConfirm={() => onSubmitDebounce(1)}
             >
               {/* <Button type="primary" htmlType="submit"  onClick={() => onSubmit(1)}> */}
               <Button type="primary" htmlType="submit">
@@ -705,7 +711,7 @@ export default () => {
             </Popconfirm>
           )}
           {isTry && (
-            <Button type="primary" htmlType="submit" onClick={() => onSubmit(1)}>
+            <Button type="primary" htmlType="submit" onClick={() => onSubmitDebounce(1)}>
               发布
             </Button>
           )}
@@ -713,7 +719,7 @@ export default () => {
         // </Access>,
         // <Access accessible={access['PA_BLM_NRGL']}>
         <React.Fragment>
-          <Button onClick={() => onSubmit(2)}>暂存</Button>
+          <Button onClick={() => onSubmitDebounce(2)}>暂存</Button>
         </React.Fragment>,
         // </Access>,
         <Button onClick={() => {
@@ -821,7 +827,6 @@ export default () => {
                 // 文本没有标题
                 !['TEXT'].includes(state) && (
                   <div className={sc('container-right-serve-content-text')}>
-                    标题：
                     {contentInfoFormTitle || ''}
                   </div>
                 )
@@ -969,7 +974,7 @@ export default () => {
             key="submit"
             type="primary"
             onClick={() => {
-              onSubmit(2)
+              onSubmitDebounce(2)
               goBack()
             }}
           >

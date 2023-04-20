@@ -38,6 +38,7 @@ import {
   httpServiceAccountOperationDetail,
   httpServiceAccountManageNameAble,
 } from '@/services/service-management';
+import debounce from 'lodash/debounce';
 const sc = scopedClasses('service-number-management');
 
 type AuditType = '草稿箱' | '发布记录' | '服务号设置';
@@ -121,6 +122,8 @@ export default () => {
       });
       // console.log('初始化菜单设置', menus);
       setDataSouceList(menus);
+      // 在这里校验菜单
+      console.log('menus', menus)
     }
   }, [serveDetail]);
 
@@ -604,6 +607,9 @@ export default () => {
     wrapperCol: { span: 8 },
   };
   // 服务号设置 - 暂存、提交
+  const onSubmitDebounce = debounce((value) => {
+    onSubmit(value)
+  },1000)
   const onSubmit = async (statue: number) => {
     if (statue === 1) {
       // 上架
@@ -1691,11 +1697,11 @@ export default () => {
           {serveDetail?.state === 'OFF_SHELF' && (
             <React.Fragment>
               <div className={sc('container-tab-set-bottom-left')}>
-                <Button type="primary" onClick={() => onSubmit(1)}>
+                <Button type="primary" onClick={() => onSubmitDebounce(1)}>
                   立即上架
                 </Button>
               </div>
-              <Button onClick={() => onSubmit(2)}>暂存</Button>
+              <Button onClick={() => onSubmitDebounce(2)}>暂存</Button>
             </React.Fragment>
           )}
           {serveDetail?.state !== 'OFF_SHELF' && (
@@ -1704,7 +1710,7 @@ export default () => {
                 title="确定更新当前服务号信息"
                 okText="确定"
                 cancelText="取消"
-                onConfirm={() => onSubmit(1)}
+                onConfirm={() => onSubmitDebounce(1)}
               >
                 <Button type="primary">更新服务号</Button>
               </Popconfirm>
@@ -1757,7 +1763,7 @@ export default () => {
             key="submit"
             type="primary"
             onClick={() => {
-              onSubmit(2)
+              onSubmitDebounce(2)
               history.goBack()
             }}
           >
@@ -1791,7 +1797,7 @@ export default () => {
             key="submit"
             type="primary"
             onClick={() => {
-              onSubmit(1)
+              onSubmitDebounce(1)
               history.goBack()
             }}
           >
