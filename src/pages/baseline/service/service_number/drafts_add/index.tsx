@@ -113,7 +113,7 @@ export default () => {
   const [activeTitle, setActiveTitle] = useState<any>('新增');
 
   // 根据路由获取参数
-  const { type, state = 'tuwen', id, name = '' } = history.location.query as RouterParams;
+  const { type, state = 'tuwen', id, name = '', backid, backname, activeTab } = history.location.query as RouterParams;
 
   const perpaer = async (id?: string) => {
     if (!id) return;
@@ -588,6 +588,7 @@ export default () => {
               setIsClosejumpTooltip(false);
               setIsExporting(false);
               history.goBack();
+              history.push(`${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT}?id=${backid}&name=${backname}&activeTabValue=${activeTab}`);
             } else {
               message.error(`发布失败，原因:{${res?.message}}`);
               setIsExporting(false);
@@ -682,7 +683,14 @@ export default () => {
 
   const goBack = () => {
     setIsClosejumpTooltip(false);
-    history.goBack();
+    // 服务号管理
+    if (activeTab) {
+      // 如果是发布记录进入的这样返回
+      history.push(`${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT}?id=${backid}&name=${backname}&activeTabValue=${activeTab}`);
+    } else {
+      history.goBack();
+
+    }
     // history.push(`${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT}?id=${id}&name=${name}`);
   };
   return (

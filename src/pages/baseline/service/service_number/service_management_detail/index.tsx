@@ -9,6 +9,7 @@ import {
   httpServiceAccountArticleDetail,
   httpServiceAccountArticleLogList,
 } from '@/services/service-management';
+import {routeName} from '../../../../../../config/routes'
 const sc = scopedClasses('service-number-management-detail');
 
 interface dataDetailType {
@@ -22,7 +23,7 @@ interface dataDetailType {
   publishTime?: string;
 }
 export default () => {
-  const { id } = history.location.query as { id: string | undefined };
+  const { id, backid, backname, activeTab } = history.location.query as { id: string | undefined };
   const [dataDetail, setDataDetail] = useState<dataDetailType[]>();
   const prepare = async (id?: string) => {
     if (!id) return;
@@ -116,8 +117,8 @@ export default () => {
 
   const onBack = () => {
     // console.log('返回值之前检查参数id和name')
-    history.goBack();
-    // history.push(`${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DETAIL}?id=${id}`)
+    // history.goBack();
+    history.push(`${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT}?id=${backid}&name=${backname}&activeTabValue=${activeTab}`);
   };
 
   const [showControls, setShowControls] = useState<boolean>(false);
