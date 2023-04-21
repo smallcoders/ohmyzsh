@@ -155,3 +155,25 @@ export async function queryProviderAll() {
     },
   );
 }
+
+/**
+* 数字化应用列表
+* @param data 
+* @returns 
+*/
+export const getRecommendAppList = (keyword = "") => {
+  return request(`/antelope-pay/show/app/getRecommendAppList/V2`, {
+    method: 'POST', data: {
+      pageIndex: 1,
+      pageSize: 99,
+      keyword
+    },
+  })
+}
+
+// 获取商品组织id
+export const getProductDetails = (params: { productId: any }) => {
+  return request('/antelope-pay/api/product/queryAppProductDetail', {
+    params,
+  })
+}

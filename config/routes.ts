@@ -35,6 +35,14 @@
   PAGE_CREAT_MANAGE_PAGE_DATA: '/operation-activity/page_creat_manage/manage/page_data',
   PAGE_CREAT_MANAGE_WEB_PREVIEW: '/operation-activity/page_creat_manage/manage/web_preview',
 
+  // 数字化运营模板
+  APP_PAGE_CREAT_MANAGE_EDIT: '/operation-activity/app_page_creat_manage/manage/edit',
+  APP_PAGE_CREAT_MANAGE_PUBLISH: '/operation-activity/app_page_creat_manage/manage/publish',
+  APP_PAGE_CREAT_MANAGE_PAGE_LIST: '/operation-activity/app_page_creat_manage/manage',
+  APP_PAGE_CREAT_MANAGE_PAGE_DATA: '/operation-activity/app_page_creat_manage/manage/page_data',
+  APP_PAGE_CREAT_MANAGE_WEB_PREVIEW: '/operation-activity/app_page_creat_manage/manage/web_preview',
+  APP_PAGE_CREAT_MANAGE_APP_PREVIEW: '/operation-activity/app_page_creat_manage/manage/app_preview',
+
   // 素材库管理
   MATERIAL_LIBRARY_MANAGE: '/operation-activity/material-library-manage/index',
 
@@ -1107,6 +1115,53 @@ export default [
             name: '页面编辑',
             hideInMenu: true,
             component: './page_creat_manage/edit/index',
+            layout: false,
+          },
+        ],
+      },
+      {
+        path: routeName.APP_PAGE_CREAT_MANAGE_PAGE_LIST,
+        name: '数字化模板配置',
+        hideChildrenInMenu: true,
+        // access: 'M_OA_YYMB',
+        routes: [
+          {
+            path: routeName.APP_PAGE_CREAT_MANAGE_PAGE_LIST,
+            name: '运营模板配置',
+            component: './app_page_creat_manage/page_list/index',
+          },
+          {
+            path: routeName.APP_PAGE_CREAT_MANAGE_PUBLISH,
+            name: '发布',
+            hideInMenu: true,
+            component: './app_page_creat_manage/publish/index',
+            layout: false,
+          },
+          {
+            path: routeName.APP_PAGE_CREAT_MANAGE_PAGE_DATA,
+            name: '数据管理',
+            hideInMenu: true,
+            component: './app_page_creat_manage/page_data/index',
+          },
+          {
+            path: routeName.APP_PAGE_CREAT_MANAGE_WEB_PREVIEW,
+            name: '网页设计预览',
+            hideInMenu: true,
+            layout: false,
+            component: './app_page_creat_manage/web_preview/index',
+          },
+          {
+            path: routeName.APP_PAGE_CREAT_MANAGE_APP_PREVIEW,
+            name: 'app设计预览',
+            hideInMenu: true,
+            layout: false,
+            component: './app_page_creat_manage/app_preview/index',
+          },
+          {
+            path: routeName.APP_PAGE_CREAT_MANAGE_EDIT,
+            name: '页面编辑',
+            hideInMenu: true,
+            component: './app_page_creat_manage/edit/index',
             layout: false,
           },
         ],

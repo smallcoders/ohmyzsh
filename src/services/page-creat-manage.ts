@@ -11,6 +11,18 @@ export async function saveTemplate(data?: { [key: string]: any }) {
     data,
   });
 }
+/**
+ * 保存数字化应用模版
+ * @returns
+ */
+export async function saveAppTemplate(data?: { [key: string]: any }) {
+  return request<Common.ResultCode & { result: any }>(`/antelope-common/mng/tmp/app/save`, {
+    method: 'post',
+    data,
+  });
+}
+
+
 
 
 /**
