@@ -16,6 +16,7 @@ import React, { useEffect, useState } from 'react';
 import type Common from '@/types/common';
 import moment from 'moment';
 import SelfTable from '@/components/self_table';
+import { Access, useAccess } from '@@/plugin-access/access';
 const sc = scopedClasses('real-time-hotspot-manage');
 
 const hostMap = {
@@ -30,6 +31,8 @@ const hostMap = {
 
 
 export default () => {
+  // // 拿到当前角色的access权限兑现
+  const access = useAccess()
   const [dataSource, setDataSource] = useState<any>([]);
   const [searchContent, setSearChContent] = useState<any>({});
   const [visible, setVisible] = useState<any>(false);
@@ -104,6 +107,7 @@ export default () => {
       }
     })
   }
+  console.log(access['PD_BLM_SSRDGL'], 'access[\'PD_BLM_SSRDGL\']')
 
   const columns = [
     {
@@ -190,37 +194,41 @@ export default () => {
         }
         return (
           <div style={{whiteSpace: 'break-spaces'}}>
-            <Button
-              size="small"
-              type="link"
-              onClick={() => {
-                handleDelete(record)
-              }}
-            >
-              删除
-            </Button>
-            {
-              record.crawered === 1 &&
+            <Access accessible={access['PD_BLM_SSRDGL']}>
               <Button
                 size="small"
                 type="link"
                 onClick={() => {
-                  const formData = new FormData();
-                  formData.append('configId', record.id);
-                  formData.append('status', `${record.sended === 1 ? 0 : 1}`);
-                  updateSendedNews(formData).then((res) => {
-                    if (res.code === 0){
-                      antdMessage.success('设置成功')
-                      getPage(pageInfo.pageIndex)
-                    } else {
-                      antdMessage.error(res.message)
-                    }
-                  })
+                  handleDelete(record)
                 }}
               >
-                {record.sended ? '设置未推送' : '设置已推送'}
+                删除
               </Button>
-            }
+            </Access>
+            <Access accessible={access['PA_BLM_SSRDGL']}>
+              {
+                record.crawered === 1 &&
+                <Button
+                  size="small"
+                  type="link"
+                  onClick={() => {
+                    const formData = new FormData();
+                    formData.append('configId', record.id);
+                    formData.append('status', `${record.sended === 1 ? 0 : 1}`);
+                    updateSendedNews(formData).then((res) => {
+                      if (res.code === 0){
+                        antdMessage.success('设置成功')
+                        getPage(pageInfo.pageIndex)
+                      } else {
+                        antdMessage.error(res.message)
+                      }
+                    })
+                  }}
+                >
+                  {record.sended ? '设置未推送' : '设置已推送'}
+                </Button>
+              }
+            </Access>
             {
               record.crawered === 2 &&
               <Button
@@ -366,15 +374,17 @@ export default () => {
     <PageContainer className={sc('container')}>
       {useSearchNode()}
       <div className={sc('container-table-body')}>
-        <Button
-          type="primary"
-          onClick={() => {
-            modalForm.resetFields()
-            setVisible(true)
-          }}
-        >
-          新增
-        </Button>
+        <Access accessible={access['PA_BLM_SSRDGL']}>
+          <Button
+            type="primary"
+            onClick={() => {
+              modalForm.resetFields()
+              setVisible(true)
+            }}
+          >
+            新增
+          </Button>
+        </Access>
         <SelfTable
           rowKey="id"
           loading={loading}
