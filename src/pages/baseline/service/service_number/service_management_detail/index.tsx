@@ -115,6 +115,7 @@ export default () => {
   const [logData, setLogData] = useState([]);
 
   const onBack = () => {
+    // console.log('返回值之前检查参数id和name')
     history.goBack();
     // history.push(`${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DETAIL}?id=${id}`)
   };

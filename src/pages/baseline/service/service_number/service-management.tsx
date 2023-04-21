@@ -48,7 +48,7 @@ export default () => {
   };
 
   const { TextArea } = Input;
-  const { id, name } = history.location.query as { id: string | undefined };
+  const { id, name, active } = history.location.query as { id: string | undefined };
   const access = useAccess();
   // 手动触发table 的 reload等操作
   const actionRef = useRef<ActionType>();
@@ -361,12 +361,14 @@ export default () => {
   const paginationRef = useRef<any>();
   const handleEditBtn = (item: any) => {
     console.log('编辑的当前值', item);
-    history.push(
-      `${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DRAFTS_ADD}?type=edit&state=${item.type}&id=${item.id}&name=${name}`,
-    );
-    // window.open(
-    //   `${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DRAFTS_ADD}?type=edit&state=${item.type}&id=${item.id}&name=${name}}`,
+    console.log('backid',id)
+    console.log('backname',name)
+    // history.push(
+    //   `${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DRAFTS_ADD}?type=edit&state=${item.type}&id=${item.id}&name=${name}`,
     // );
+    window.open(
+      `${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DRAFTS_ADD}?type=edit&state=${item.type}&id=${item.id}&name=${name}}`,
+    );
   };
   // 删除
   const remove = async (id: string) => {
@@ -1818,6 +1820,12 @@ export default () => {
     </div>
   );
 
+  useEffect(() => {
+    if (active) {
+      console.log('获取路由的tab', active)
+
+    }
+  },[active])
   return (
     <PageContainer
       className={sc('container')}
