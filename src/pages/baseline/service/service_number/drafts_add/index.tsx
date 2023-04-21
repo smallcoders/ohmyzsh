@@ -539,6 +539,7 @@ export default () => {
     }
   }, [type, state]);
 
+  const [isExporting, setIsExporting] = useState<boolean>(false);
   const onSubmitDebounce = debounce((value) => {
     onSubmit(value)
   },1000);
@@ -553,6 +554,7 @@ export default () => {
           // 视频id
           const attachmentId = formData.attachmentId && formData.attachmentId[0].uid;
           console.log('attachmentId', attachmentId);
+          setIsExporting(true);
           try {
             const res = await contentInfoHttp({
               ...formData,
@@ -584,12 +586,15 @@ export default () => {
             if (res.code === 0) {
               message.success('操作成功');
               setIsClosejumpTooltip(false);
+              setIsExporting(false);
               history.goBack();
             } else {
               message.error(`发布失败，原因:{${res?.message}}`);
+              setIsExporting(false);
             }
           } catch (error) {
             message.error(`发布失败，原因:{${error}}`);
+            setIsExporting(false);
           }
         },
       );
@@ -602,6 +607,7 @@ export default () => {
       // 视频id
       const attachmentId = formData.attachmentId && formData.attachmentId[0].uid;
       console.log('attachmentId', attachmentId);
+      setIsExporting(true);
       try {
         const res = await contentInfoHttpSave({
           ...formData,
@@ -623,6 +629,7 @@ export default () => {
         console.log('暂存返回的res', res);
         if (res.code === 0) {
           message.success('操作成功');
+          setIsExporting(false);
           if (res?.result) {
             if (typeof res?.result === 'number') {
               console.log('返回的result是数字');
@@ -631,9 +638,11 @@ export default () => {
           }
         } else {
           message.error(`暂存失败，原因:{${res?.message}}`);
+          setIsExporting(false);
         }
       } catch (error) {
         message.error(`暂存失败，原因:{${error}}`);
+        setIsExporting(false);
       }
     }
   };
@@ -707,13 +716,13 @@ export default () => {
               onConfirm={() => onSubmitDebounce(1)}
             >
               {/* <Button type="primary" htmlType="submit"  onClick={() => onSubmit(1)}> */}
-              <Button type="primary" htmlType="submit">
+              <Button disabled={isExporting} type="primary" htmlType="submit">
                 发布
               </Button>
             </Popconfirm>
           )}
           {isTry && (
-            <Button type="primary" htmlType="submit" onClick={() => onSubmitDebounce(1)}>
+            <Button disabled={isExporting} type="primary" htmlType="submit" onClick={() => onSubmitDebounce(1)}>
               发布
             </Button>
           )}
@@ -721,7 +730,7 @@ export default () => {
         // </Access>,
         // <Access accessible={access['PA_BLM_NRGL']}>
         <React.Fragment>
-          <Button onClick={() => onSubmitDebounce(2)}>暂存</Button>
+          <Button disabled={isExporting} onClick={() => onSubmitDebounce(2)}>暂存</Button>
         </React.Fragment>,
         // </Access>,
         <Button onClick={() => {
