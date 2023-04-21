@@ -1,15 +1,9 @@
 import {
   Button,
-  Input,
-  Form,
-  Select,
-  Row,
-  Col,
   message,
   Space,
-  Modal,
-  Tooltip,
   Popconfirm,
+  Tooltip,
 } from 'antd';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import type SolutionTypes from '@/types/solution';
@@ -26,16 +20,13 @@ const sc = scopedClasses('baseline-user-posting');
 
 // 上下架状态
 const stateEnable = {
-  'PREPARE': '待发布',
-  'SHOPPED': '发布中',
-  'UN_SHOP': '已下架',
+  '1': '已上架',
+  '2': '未上架',
 }
-// 审核状态
-const auditStatus = {
-  '1': '系统审核通过',
-  '2': '系统审核不通过',
-  '3': '人工审核通过',
-  '4': '人工审核不通过'
+// 推荐状态
+const recommendStatus = {
+  '1': '已推荐',
+  '2': '微推荐',
 }
 
 export default () => {
@@ -90,6 +81,23 @@ export default () => {
       // valueType: 'textarea', // 筛选的类别
       // valueType: 'text', // 筛选的类别
       hideInSearch: true, // 隐藏search
+      renderText: (_: any, record: any) => {
+        return (
+          <div className={sc('container-table-content')}>
+            <div className={sc('container-table-content-value')}>
+              {_ || '--'}
+            </div>
+            {
+              record?.risky && 
+              <Tooltip title={record?.riskyContent}>
+                <div className={sc('container-table-content-risky')}>
+                  风险
+                </div>
+              </Tooltip>
+            }
+          </div>
+        )
+      }
     },
     {
       title: '内容标题',
@@ -111,7 +119,7 @@ export default () => {
       dataIndex: 'publishTime',
       align: 'center',
       valueType: 'dateRange', // 筛选的类别
-      hideInForm: true, // 在Form中不展示此列
+      hideInTable: true, // 在Form中不展示此列
     },
     {
       title: '内容类型',
@@ -130,20 +138,20 @@ export default () => {
         return _ ? moment(_).format('YYYY-MM-DD HH:mm:ss') : '--'
       },
     },
-    {
-      title: '审核状态',
-      dataIndex: 'auditStatus',
-      align: 'center',
-      // valueType: 'textarea', // 筛选的类别
-      valueType: 'select', // 筛选的类别
-      renderText: (_: string) => {
-        return (
-          <div className={`state${_}`}>
-            {Object.prototype.hasOwnProperty.call(auditStatus, _) ? auditStatus[_] : '--'}
-          </div>
-        );
-      },
-    },
+    // {
+    //   title: '审核状态',
+    //   dataIndex: 'auditStatus',
+    //   align: 'center',
+    //   // valueType: 'textarea', // 筛选的类别
+    //   valueType: 'select', // 筛选的类别
+    //   renderText: (_: string) => {
+    //     return (
+    //       <div className={`state${_}`}>
+    //         {Object.prototype.hasOwnProperty.call(auditStatus, _) ? auditStatus[_] : '--'}
+    //       </div>
+    //     );
+    //   },
+    // },
     {
       title: '上架状态',
       dataIndex: 'enable',
@@ -155,6 +163,21 @@ export default () => {
           <div className={`state${_}`}>
             {/* 这里 true false */}
             {Object.prototype.hasOwnProperty.call(stateEnable, _) ? stateEnable[_] : '--'}
+          </div>
+        );
+      },
+    },
+    {
+      title: '推荐状态',
+      dataIndex: 'tuijian', // 需要更新
+      align: 'center',
+      // valueType: 'textarea', // 筛选的类别
+      valueType: 'select', // 筛选的类别
+      renderText: (_: string) => {
+        return (
+          <div className={`state${_}`}>
+            {/* 这里 true false */}
+            {Object.prototype.hasOwnProperty.call(recommendStatus, _) ? recommendStatus[_] : '--'}
           </div>
         );
       },
@@ -260,12 +283,22 @@ export default () => {
                 topic: '一人之下',
                 type: '玄幻',
                 publishTime: "2023-04-20 16:45:02",
-                auditStatus: '1',
-                cityBannerId: 1658904288000001,
-                demandCount: 33,
+                enable: '1',
+                tuijian: '1',
                 id: 9,
-                solutionCount: 15,
-                state: "UN_SHOP",
+                risky: false,
+              },
+              {
+                content: '芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息',
+                title: '一贫如洗',
+                topic: '一人之下',
+                type: '玄幻',
+                publishTime: "2023-04-20 16:45:02",
+                enable: '1',
+                tuijian: '1',
+                id: 9,
+                risky: true,
+                riskyContent: '风险内容风险内容风险内容'
               },
               {
                 content: '芜湖市内容信息',
@@ -273,25 +306,11 @@ export default () => {
                 topic: '一人之下',
                 type: '玄幻',
                 publishTime: "2023-04-20 16:45:02",
-                auditStatus: '1',
-                cityBannerId: 1658904288000001,
-                demandCount: 33,
+                enable: '1',
+                tuijian: '1',
                 id: 9,
-                solutionCount: 15,
-                state: "UN_SHOP",
-              },
-              {
-                content: '芜湖市内容信息',
-                title: '一贫如洗',
-                topic: '一人之下',
-                type: '玄幻',
-                publishTime: "2023-04-20 16:45:02",
-                auditStatus: '1',
-                cityBannerId: 1658904288000001,
-                demandCount: 33,
-                id: 9,
-                solutionCount: 15,
-                state: "UN_SHOP",
+                risky: true,
+                riskyContent: '风险内容风险内容'
               },
 
             ]
