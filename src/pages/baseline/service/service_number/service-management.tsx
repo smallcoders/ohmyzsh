@@ -48,7 +48,7 @@ export default () => {
   };
 
   const { TextArea } = Input;
-  const { id, name } = history.location.query as { id: string | undefined };
+  const { id, name, activeTabValue } = history.location.query as { id: string | undefined };
   const access = useAccess();
   // 手动触发table 的 reload等操作
   const actionRef = useRef<ActionType>();
@@ -220,7 +220,7 @@ export default () => {
     const handleEdit = () => {
       console.log('编辑');
       history.push(
-        `${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DRAFTS_ADD}?type=edit&state=${dataSource.type}&id=${dataSource.id}&name=${name}`,
+        `${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DRAFTS_ADD}?type=edit&state=${dataSource.type}&id=${dataSource.id}&name=${name}&backid=${id}&backname=${name}&activeTab=${'草稿箱'}`,
       );
       // window.open(
       //   `${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DRAFTS_ADD}?type=edit&state=${dataSource.type}&id=${dataSource.id}&name=${name}`,
@@ -253,7 +253,7 @@ export default () => {
     const handleAddItem = (value: string) => {
       console.log('ADD', value);
       history.push(
-        `${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DRAFTS_ADD}?type=add&state=${value}&id=${id}&name=${name}`,
+        `${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DRAFTS_ADD}?type=add&state=${value}&id=${id}&name=${name}&backid=${id}&backname=${name}&activeTab=${'草稿箱'}`,
       );
     };
     const items = (
@@ -361,12 +361,14 @@ export default () => {
   const paginationRef = useRef<any>();
   const handleEditBtn = (item: any) => {
     console.log('编辑的当前值', item);
-    history.push(
-      `${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DRAFTS_ADD}?type=edit&state=${item.type}&id=${item.id}&name=${name}`,
-    );
-    // window.open(
-    //   `${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DRAFTS_ADD}?type=edit&state=${item.type}&id=${item.id}&name=${name}}`,
+    console.log('backid',id)
+    console.log('backname',name)
+    // history.push(
+    //   `${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DRAFTS_ADD}?type=edit&state=${item.type}&id=${item.id}&name=${name}`,
     // );
+    window.open(
+      `${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DRAFTS_ADD}?type=edit&state=${item.type}&id=${item.id}&name=${name}&backid=${id}&backname=${name}&activeTab=${'发布记录'}`,
+    );
   };
   // 删除
   const remove = async (id: string) => {
@@ -405,8 +407,8 @@ export default () => {
   // 详情
   const handleDetail = (id: string) => {
     console.log('详情', id);
-    history.push(`${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DETAIL}?id=${id}`);
-    // window.open(`${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DETAIL}?id=${id}`);
+    // history.push(`${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DETAIL}?id=${id}`);
+    window.open(`${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DETAIL}?id=${id}&backid=${id}&backname=${name}&activeTab=${'发布记录'}`);
   };
 
   const columns: ProColumns<SolutionTypes.Solution>[] = [
@@ -1818,6 +1820,13 @@ export default () => {
     </div>
   );
 
+  useEffect(() => {
+    if (activeTabValue) {
+      console.log('发布记录返回的tab', activeTabValue)
+      // 如果有重置active的值
+      setActiveTab(activeTabValue)
+    }
+  },[activeTabValue])
   return (
     <PageContainer
       className={sc('container')}

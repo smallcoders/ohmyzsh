@@ -113,7 +113,7 @@ export default () => {
   const [activeTitle, setActiveTitle] = useState<any>('新增');
 
   // 根据路由获取参数
-  const { type, state = 'tuwen', id, name } = history.location.query as RouterParams;
+  const { type, state = 'tuwen', id, name = '', backid, backname, activeTab } = history.location.query as RouterParams;
 
   const perpaer = async (id?: string) => {
     if (!id) return;
@@ -172,7 +172,7 @@ export default () => {
                 createTime: item?.createTime,
                 format: item?.format,
                 id: item?.id,
-                name: item?.name,
+                name: item?.name || '',
                 path: item?.path,
                 uid: item.id,
                 url: item?.path,
@@ -588,6 +588,7 @@ export default () => {
               setIsClosejumpTooltip(false);
               setIsExporting(false);
               history.goBack();
+              history.push(`${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT}?id=${backid}&name=${backname}&activeTabValue=${activeTab}`);
             } else {
               message.error(`发布失败，原因:{${res?.message}}`);
               setIsExporting(false);
@@ -681,9 +682,16 @@ export default () => {
   const [isClosejumpTooltip, setIsClosejumpTooltip] = useState<boolean>(true);
 
   const goBack = () => {
-    console.log('点击了返回');
     setIsClosejumpTooltip(false);
-    history.goBack();
+    // 服务号管理
+    if (activeTab) {
+      // 如果是发布记录进入的这样返回
+      history.push(`${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT}?id=${backid}&name=${backname}&activeTabValue=${activeTab}`);
+    } else {
+      history.goBack();
+
+    }
+    // history.push(`${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT}?id=${id}&name=${name}`);
   };
   return (
     <PageContainer
@@ -831,7 +839,11 @@ export default () => {
                 {/* <img className={sc('container-right-serve-content-header-img')} src="" alt="" /> */}
                 <div className={sc('container-right-serve-content-header-name')}>
                   {/* 服务号的名称再确定一下 */}
-                  {name || serveDetail.name || '服务号名称'}
+                  {/* {name || serveDetail.name || '服务号名称'} */}
+                  {name === 'null' 
+                    ? '' 
+                    : name || serveDetail.name || ''
+                  }
                 </div>
               </div>
               {
