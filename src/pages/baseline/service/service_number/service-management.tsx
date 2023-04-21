@@ -407,8 +407,8 @@ export default () => {
   // 详情
   const handleDetail = (id: string) => {
     console.log('详情', id);
-    history.push(`${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DETAIL}?id=${id}`);
-    // window.open(`${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DETAIL}?id=${id}`);
+    // history.push(`${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DETAIL}?id=${id}`);
+    window.open(`${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DETAIL}?id=${id}`);
   };
 
   const columns: ProColumns<SolutionTypes.Solution>[] = [
