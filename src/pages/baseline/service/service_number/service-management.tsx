@@ -607,6 +607,7 @@ export default () => {
     wrapperCol: { span: 8 },
   };
   // 服务号设置 - 暂存、提交
+  const [isExporting, setIsExporting] = useState<boolean>(false);
   const onSubmitDebounce = debounce((value) => {
     onSubmit(value)
   },1000)
@@ -662,7 +663,7 @@ export default () => {
             id: item.id ? item.id : undefined
           };
         });
-
+        setIsExporting(true);
         try {
           const res = await httpServiceAccountOperationSubmit({
             id: id,
@@ -672,13 +673,17 @@ export default () => {
           });
           if (res?.code === 0) {
             message.success('上架成功');
+            setIsExporting(false);
           } else if (res?.code === 1034) {
             message.warning('服务号内部名称不能重复');
+            setIsExporting(false);
           } else {
             message.error(`发布失败，原因:{${res?.message}}`);
+            setIsExporting(false);
           }
         } catch (error) {
           message.error(`发布失败，原因:{${error}}`);
+          setIsExporting(false);
         }
       });
     } else {
@@ -730,7 +735,7 @@ export default () => {
           id: item.id ? item.id : undefined
         };
       });
-
+      setIsExporting(true);
       try {
         const res = await httpServiceAccountOperationSave({
           id: id,
@@ -745,11 +750,14 @@ export default () => {
         });
         if (res?.code === 0) {
           message.success('暂存成功');
+          setIsExporting(false);
         } else {
           message.error(`发布失败，原因:{${res?.message}}`);
+          setIsExporting(false);
         }
       } catch (error) {
         message.error(`发布失败，原因:{${error}}`);
+        setIsExporting(false);
       }
     }
   };
@@ -1692,12 +1700,12 @@ export default () => {
           </div>
         </div>
       </div>
-      <Affix offsetBottom={0}>
+      <Affix offsetBottom={13}>
         <div className={sc('container-tab-set-bottom')}>
           {serveDetail?.state === 'OFF_SHELF' && (
             <React.Fragment>
               <div className={sc('container-tab-set-bottom-left')}>
-                <Button type="primary" onClick={() => onSubmitDebounce(1)}>
+                <Button disabled={isExporting}  type="primary" onClick={() => onSubmitDebounce(1)}>
                   立即上架
                 </Button>
               </div>
@@ -1712,7 +1720,7 @@ export default () => {
                 cancelText="取消"
                 onConfirm={() => onSubmitDebounce(1)}
               >
-                <Button type="primary">更新服务号</Button>
+                <Button disabled={isExporting} type="primary">更新服务号</Button>
               </Popconfirm>
             </React.Fragment>
           )}
