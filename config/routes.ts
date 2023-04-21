@@ -356,6 +356,7 @@ export default [
       {
         path: routeName.BASELINE_HOTSPOT_MANAGE,
         name: '实时热点管理',
+        code: 'M_BLM_SSRDGL',
         access: 'M_BLM_SSRDGL',
         component: './baseline/real_time_hotspot_management',
       },
