@@ -540,10 +540,10 @@ export default () => {
   }, [type, state]);
 
   const [isExporting, setIsExporting] = useState<boolean>(false);
-  const onSubmitDebounce = debounce((value) => {
-    onSubmit(value)
+  const onSubmitDebounce = debounce((value, back?) => {
+    onSubmit(value, back)
   },1000);
-  const onSubmit = async (statue: number) => {
+  const onSubmit = async (statue: number, back?) => {
     if (statue === 1) {
       // 发布
       // 需要来一个当前的内容信息表单, 看所有的是不是一个
@@ -607,7 +607,6 @@ export default () => {
       console.log('搜集的form', formData);
       // 视频id
       const attachmentId = formData.attachmentId && formData.attachmentId[0].uid;
-      console.log('attachmentId', attachmentId);
       setIsExporting(true);
       try {
         const res = await contentInfoHttpSave({
@@ -631,11 +630,16 @@ export default () => {
         if (res.code === 0) {
           message.success('操作成功');
           setIsExporting(false);
+          setContentInfoFormChange(false);
+          setFormPostMessageChange(false);
           if (res?.result) {
             if (typeof res?.result === 'number') {
               console.log('返回的result是数字');
               setSaveId(res?.result);
             }
+          }
+          if (back) {
+            goBack()
           }
         } else {
           message.error(`暂存失败，原因:{${res?.message}}`);
@@ -985,7 +989,7 @@ export default () => {
             取消
           </Button>,
           <Button
-            key="submit"
+            // key="submit"
             type="primary"
             onClick={() => {
               goBack()
@@ -994,11 +998,11 @@ export default () => {
             直接离开
           </Button>,
           <Button
-            key="submit"
+            // key="submit"
             type="primary"
             onClick={() => {
-              onSubmitDebounce(2)
-              goBack()
+              onSubmitDebounce(2,true)
+              // goBack()
             }}
           >
             暂存并离开
