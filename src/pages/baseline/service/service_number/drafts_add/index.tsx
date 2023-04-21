@@ -213,7 +213,7 @@ export default () => {
       // 初始化
       perpaer(id);
     }
-    if (id) {
+    if (type === 'add' && id) {
       detail(id)
     }
   }, []);
