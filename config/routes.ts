@@ -248,10 +248,10 @@
   
   BASELINE_USER_POSTING_MANAGE: '/baseline/baseline-user-posting-manage', // 用户发布管理
   BASELINE_USER_POSTING_MANAGE_INDEX: '/baseline/baseline-user-posting-manage/index', // 用户发布管理
-  BASELINE_USER_POSTING_MANAGE_DETAIL: '/baseline/baseline-user-posting-manage/detail', // 用户发布管理
+  BASELINE_USER_POSTING_MANAGE_DETAIL: '/baseline/baseline-user-posting-manage/detail', // 用户发布管理详情
   VERIFY_AGENCY_USER_POSTING_VERIFY: '/verify-agency/user-posting-verify', // 用户发布审核
   VERIFY_AGENCY_USER_POSTING_VERIFY_INDEX: '/verify-agency/user-posting-verify/index', // 用户发布审核
-  VERIFY_AGENCY_USER_POSTING_VERIFY_DETAIL: '/verify-agency/user-posting-verify/detail', // 用户发布审核
+  VERIFY_AGENCY_USER_POSTING_VERIFY_DETAIL: '/verify-agency/user-posting-verify/detail', // 用户发布审核详情
   
 };
 

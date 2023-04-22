@@ -1,5 +1,79 @@
 @prefix: baseline-user-posting-detail;
 
 .@{prefix}-container {
-  color: orange;
+  &-content {
+    padding: 20px;
+    background: #fff;
+    &-title {
+      margin-left: 100px;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    &-desc {
+      display: flex;
+      line-height: 48px;
+      > :first-child {
+        flex: 1;
+        text-align: right;
+      }
+      > :last-child {
+        flex: 4;
+        font-weight: 600;
+        font-size: 16px;
+      }
+    }
+  }
+  &-publisher {
+    margin-top: 10px;
+    padding: 20px;
+    background: #fff;
+    &-title {
+      margin-left: 100px;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    &-desc {
+      display: flex;
+      line-height: 48px;
+      > :first-child {
+        flex: 1;
+        text-align: right;
+      }
+      > :last-child {
+        flex: 4;
+        font-weight: 600;
+        font-size: 16px;
+      }
+    }
+  }
+  &-topic {
+    margin-top: 10px;
+    padding: 20px;
+    background: #fff;
+    &-title {
+      margin-left: 76px;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    .operation-log{
+      display: flex;
+      flex-flow: column;
+      &-item{
+        display: flex;
+        flex-flow: row;
+        .item-userName{
+          margin-right: 20px;
+          font-weight: bolder;
+        }
+        .item-name{
+          margin-right: 20px;
+          font-weight: bolder;
+        }
+        .item-time{
+          margin-right: 20px;
+          font-weight: bolder;
+        }
+      }
+    }
+  }
 }

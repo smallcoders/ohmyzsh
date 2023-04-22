@@ -4,6 +4,8 @@ import {
   Space,
   Popconfirm,
   Tooltip,
+  Form,
+  Input,
 } from 'antd';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import type SolutionTypes from '@/types/solution';
@@ -30,29 +32,44 @@ const recommendStatus = {
 }
 
 export default () => {
+  const formLayout = {
+    labelCol: { span: 6 },
+    wrapperCol: { span: 16 },
+  };
+  const [form] = Form.useForm();
+  const { TextArea } = Input;
   const access = useAccess()
   const [total, setTotal] = useState<number>(0);
   // pro需要用到的index
   const paginationRef = useRef<any>();
   const actionRef = useRef<ActionType>();
 
-  // 下架
+  // 上/下架
   const soldOut = async (id: string,state: any) => {
-    try {
-      const res = await cityPropaganda(id)
-      if (res.code === 0) {
-        message.success(state === 'SHOPPED' ? '下架成功' : '上架成功');
-        actionRef.current?.reload(); // 让table// 刷新
-      } else {
-        message.error(`失败，原因:{${res.message}}`);
-      }
-    } catch (error) {
-      console.log(error);
-    }
+    // try {
+    //   const res = await cityPropaganda(id)
+    //   if (res.code === 0) {
+    //     message.success(state === 'SHOPPED' ? '下架成功' : '上架成功');
+    //     actionRef.current?.reload(); // 让table// 刷新
+    //   } else {
+    //     message.error(`失败，原因:{${res.message}}`);
+    //   }
+    // } catch (error) {
+    //   console.log(error);
+    // }
+    // 区分一下上架还是下架
+    return new Promise((resolve, reject) => {
+      form.validateFields().then((values: any) => {
+        console.log('搜集的表单', values)
+        resolve('成功')
+      }).catch(() => {
+        reject('失败')
+      })
+    })
   }
 
-  // 删除
-  const remove = async (id: string) => {
+  // 推荐/取消推荐
+  const recommend = async (id: string, state: any) => {
     try {
       const removeRes = await removePropaganda(id)
       if (removeRes.code === 0) {
@@ -105,6 +122,23 @@ export default () => {
       align: 'center',
       // valueType: 'textarea', // 筛选的类别
       valueType: 'text', // 筛选的类别
+      renderText: (_: any, record: any) => {
+        return (
+          <div className={sc('container-table-content')}>
+            <div className={sc('container-table-content-value')}>
+              {_ || '--'}
+            </div>
+            {
+              record?.risky && 
+              <Tooltip title={record?.riskyContent}>
+                <div className={sc('container-table-content-risky')}>
+                  风险
+                </div>
+              </Tooltip>
+            }
+          </div>
+        )
+      }
     },
     {
       title: '关联话题',
@@ -195,54 +229,71 @@ export default () => {
               size="small"
               type="link"
               onClick={() => {
-                history.push(`${routeName.DETAIL_PROPAGANDA_CONFIG}?detail=${record?.id}`)
+                history.push(`${routeName.BASELINE_USER_POSTING_MANAGE_DETAIL}?id=${record?.id}`)
               }}
             >
               详情
             </Button>
-            <Access accessible={access['P_OA_DSXCY']}>
-              <Button
-                key="2"
-                size="small"
-                type="link"
-                onClick={() => {
-                  history.push(`${routeName.ADD_PROPAGANDA_CONFIG}?edit=${record?.id}`)
-                }}
-              >
-                编辑
-              </Button>
-              {
-                record?.state === 'SHOPPED' &&
+            {/* <Access accessible={access['P_OA_DSXCY']}> */}
+            {/* </Access> */}
+            {
+              // record?.state === 'SHOPPED' &&
               <Popconfirm
+                icon={null}
                 title="确定下架么？"
+                okText="下架"
+                cancelText="取消"
+                onConfirm={() => recommend(record?.id.toString(),record?.state)}
+              >
+                <a href="#">推荐</a>
+              </Popconfirm>
+            }
+            {
+              // (record?.state === 'UN_SHOP' || record?.state === 'PREPARE') &&
+              <Popconfirm
+                icon={null}
+                title="确定上架么？"
+                okText="确定"
+                cancelText="取消"
+                onConfirm={() => recommend(record?.id.toString(),record?.state)}
+              >
+                <a href="#">取消推荐</a>
+              </Popconfirm>
+            }
+            {
+              // record?.state === 'SHOPPED' &&
+              <Popconfirm
+                icon={null}
+                title={
+                  <React.Fragment>
+                    <div style={{fontSize: '16px', fontWeight: 600}}>下架原因</div>
+                    <Form form={form} {...formLayout} validateTrigger="onBlur">
+                      <Form.Item
+                        name="原因"
+                        rules={[{ required: true, message: '请填写原因' }]}
+                      >
+                        <TextArea placeholder='请输入原因(必填)' rows={3} maxLength={50} />
+                      </Form.Item>
+                    </Form>
+                  </React.Fragment>
+                }
                 okText="下架"
                 cancelText="取消"
                 onConfirm={() => soldOut(record?.id.toString(),record?.state)}
               >
-                <a href="#">下架</a>
+                <a href="#" onClick={() => form.resetFields()}>下架</a>
               </Popconfirm>
-              }
-            </Access>
+            }
             {
-              (record?.state === 'UN_SHOP' || record?.state === 'PREPARE') &&
+              // (record?.state === 'UN_SHOP' || record?.state === 'PREPARE') &&
               <Popconfirm
+                icon={null}
                 title="确定上架么？"
                 okText="确定"
                 cancelText="取消"
                 onConfirm={() => soldOut(record?.id.toString(),record?.state)}
               >
                 <a href="#">上架</a>
-              </Popconfirm>
-            }
-            {
-              record?.state !== 'SHOPPED' &&
-              <Popconfirm
-                title="确定删除么？"
-                okText="确定"
-                cancelText="取消"
-                onConfirm={() => remove(record.id.toString())}
-              >
-                <a href="#">删除</a>
               </Popconfirm>
             }
           </Space>
