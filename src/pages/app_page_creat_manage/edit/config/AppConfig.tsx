@@ -9,7 +9,7 @@ const AppConfig = () => {
   const { selectWidgetItem, handleChange } = useConfig()
   const { config } = selectWidgetItem || {}
 
-  const [products, setProducts] = useState<{ label: string; value: string }[]>([]);
+  const [products, setProducts] = useState<{ label: string; value: string, appId: string, type: string }[]>([]);
 
   /**
    * 搜索企业
@@ -21,7 +21,8 @@ const AppConfig = () => {
       const products = body.result.map((p: any) => ({
         label: p.name,
         value: p.id,
-        appId: p.appId
+        appId: p.appId,
+        type: p.appType
       }))
       setProducts(products)
       return products
@@ -29,7 +30,7 @@ const AppConfig = () => {
     );
   };
 
-  const getProductDetail = async (productId: string, productName: string, key: string, appId: string) => {
+  const getProductDetail = async (productId: string, productName: string, key: string) => {
     try {
       const res = await getProductDetails({ productId })
       const { userNumMap,
@@ -62,11 +63,14 @@ const AppConfig = () => {
       //   products
       // }, 'config.product')
 
+      const app = products?.find(p => p.value === productId)
+
       handleChangeProduct({
         value: productId,
         name: productName,
         specs,
-        appId,
+        appId: app?.appId,
+        type: app?.type,
         products
       }, 'product', key)
 
@@ -215,7 +219,7 @@ const AppConfig = () => {
           style={{ width: '100%' }}
           defaultOptions={config?.product?.products}
           onChange={({ value, label, appId }) => {
-            getProductDetail(value, label, key, appId)
+            getProductDetail(value, label, key)
           }}
         />
       </Form.Item>
@@ -270,7 +274,6 @@ const AppConfig = () => {
           if (value) handleChangeProduct(false, 'isLimit', key)
         }} min={1} step={1} precision={0} />
         <Checkbox checked={config?.isLimit} onChange={(e: any) => {
-          console.log('valuevaluevalue', e.target.checked)
           handleChangeProduct(e.target.checked, 'isLimit', key)
           if (e.target.checked) handleChangeProduct('', 'num', key)
         }}>无限制</Checkbox>
@@ -303,6 +306,26 @@ const AppConfig = () => {
           </Tabs.TabPane>
         })}
       </Tabs>
+      <Form.Item label="移动端下边距">
+        <InputNumber
+          disabled
+          value={config?.appConfig?.marginBottom || 0}
+          min={0}
+          onChange={(value) => {
+            handleChange(value, 'config.appConfig.marginBottom')
+          }}
+        />
+      </Form.Item>
+      <Form.Item label="下边距">
+        <InputNumber
+          disabled
+          value={config?.marginBottom}
+          min={0}
+          onChange={(value) => {
+            handleChange(value, 'config.marginBottom')
+          }}
+        />
+      </Form.Item>
     </>
   )
 }

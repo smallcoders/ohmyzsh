@@ -7,7 +7,7 @@ import './index.less'
 
 export default () => {
   const id = history.location.query?.id as string;
-  const [templateInfo, setTemplateInfo] = useState<any>(id ? null : JSON.parse(localStorage.getItem('tmpInfo') || '{}'))
+  const [templateInfo, setTemplateInfo] = useState<any>(id ? null : JSON.parse(localStorage.getItem('webTmpInfo') || '{}'))
   useEffect(() => {
     if (id){
       getTemplatePageInfo({

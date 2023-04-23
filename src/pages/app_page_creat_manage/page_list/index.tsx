@@ -11,7 +11,8 @@ import {
   Menu,
   Modal,
   Radio,
-  Popover
+  Popover,
+  message
 } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
@@ -32,6 +33,7 @@ import SelfTable from '@/components/self_table';
 import { routeName } from '@/../config/routes';
 import PreviewModal from '../edit/components/PreviewModal';
 import { listAllAreaCode } from '@/services/common';
+import { getOrderNum } from '@/services/order/order-manage';
 const sc = scopedClasses('page-creat-list');
 const statusMap = {
   0: '未发布',
@@ -81,7 +83,7 @@ export default () => {
       const { result, totalCount, pageTotal, code, message } = await getPageList({
         pageIndex,
         pageSize,
-        tmpType: templateType,
+        tmpType: 2,
         ...searchContent,
       });
       if (code === 0) {
@@ -107,14 +109,14 @@ export default () => {
     }).then((res) => {
       if (res.code === 0) {
         antdMessage.success(`发布成功`);
-        history.push(`${routeName.PAGE_CREAT_MANAGE_PUBLISH}?id=${record.tmpId}&type=${record.tmpType || ''}`);
+        history.push(`${routeName.APP_PAGE_CREAT_MANAGE_PUBLISH}?id=${record.tmpId}&type=${record.tmpType || ''}`);
       } else {
         antdMessage.error(`${res.message}`);
       }
     })
   }
   const checkLink = (record: record) => {
-    window.open(`${routeName.PAGE_CREAT_MANAGE_PUBLISH}?id=${record.tmpId}&type=${record.tmpType || ''}`);
+    window.open(`${routeName.APP_PAGE_CREAT_MANAGE_PUBLISH}?id=${record.tmpId}&type=1`);
   }
   const checkData = (record: record) => {
     getTemplateData({
@@ -142,7 +144,7 @@ export default () => {
   const handleDelete = (record: record) => {
     Modal.confirm({
       title: '提示',
-      content: tmpType === 1 ? '删除后用户将不能访问此网页，确认删除？' : '删除后用户将不能填写，表单及其数据也将无法恢复，确认删除？',
+      content: '删除后用户将不能访问，但不会影响已有数据，确认删除？',
       okText: '删除',
       onOk: () => {
         modifyTemplateState({
@@ -168,14 +170,14 @@ export default () => {
       tmpId: record.tmpId,
       type: 0,
     }).then(() => {
-      history.push(`${routeName.PAGE_CREAT_MANAGE_EDIT}?id=${record.tmpId}&type=${record.tmpType || ''}`);
+      history.push(`${routeName.APP_PAGE_CREAT_MANAGE_EDIT}?id=${record.tmpId}&type=${1 || ''}`);
     })
   }
 
   const handleDrop = (record: record) => {
     Modal.confirm({
       title: '提示',
-      content: tmpType === 1 ? '下架后用户将不能访问此网页，确认下架？' : '下架后用户将不能填写，确认下架？若重新发布，之前的分享链接还可继续使用？',
+      content: '下架后用户将不能访问，确认下架？若重新发布，之前的分享链接还可继续使用？',
       okText: '下架',
       onOk: () => {
         addOperationLog({
@@ -216,19 +218,40 @@ export default () => {
     if (type === 'data_manage') {
       checkData(record)
     }
+    if (type === 'order') {
+      toOrder(record)
+    }
+  }
+
+  const toOrder = async (record: record) => {
+    try {
+
+      const res = await getOrderNum(record.tmpId)
+
+      if (res?.result?.num > 0) {
+        history.push(`${routeName.ORDER_MESSAGE_INDEX}?source=ZDY_${record.tmpName}`);
+      } else {
+        Modal.info({
+          title: '提示',
+          content: `此数字化活动暂时还没有订单`,
+          okText: '知道了',
+        })
+      }
+      console.log('record', record)
+    } catch { }
   }
 
   const getButtonList = (record: record) => {
     let buttonTypeList = [];
-    if (tmpType === 1) {
-      buttonTypeList = record.state === 0 ?
-        [{ type: 'publish', text: '发布' }, { text: '编辑', type: 'edit' }, { type: 'delete', text: '删除' }]
-        : [{ type: 'link', text: '查看链接' }, { type: 'drop', text: '下架' }, { text: '删除', type: 'delete' }]
-    } else {
-      buttonTypeList = record.state === 0 ?
-        [{ type: 'publish', text: '发布' }, { type: 'data_manage', text: '数据管理' }, { type: 'more', children: [{ type: 'delete', text: '删除' }, { text: '编辑', type: 'edit' }] }]
-        : [{ type: 'link', text: '查看链接' }, { type: 'data_manage', text: '数据管理' }, { type: 'more', children: [{ type: 'drop', text: '下架' }, { text: '删除', type: 'delete' }] }]
-    }
+    // if (tmpType === 1) {
+    //   buttonTypeList = record.state === 0 ?
+    //     [{ type: 'publish', text: '发布' }, { text: '编辑', type: 'edit' }, { type: 'delete', text: '删除' }]
+    //     : [{ type: 'link', text: '查看链接' }, { type: 'drop', text: '下架' }, { text: '删除', type: 'delete' }]
+    // } else {
+    buttonTypeList = record.state === 0 ?
+      [{ type: 'publish', text: '发布' }, { type: 'more', children: [{ type: 'order', text: '查看订单' }, { type: 'delete', text: '删除' }, { text: '编辑', type: 'edit' }] }]
+      : [{ type: 'link', text: '查看链接' }, { type: 'order', text: '查看订单' }, { type: 'drop', text: '下架' }]
+    // }
     return buttonTypeList.map((item: any) => {
       if (item.type === 'more') {
         const { children } = item
@@ -285,15 +308,42 @@ export default () => {
       dataIndex: 'tmpName',
       width: 150,
       render: (tmpName: string, record: record) => {
-        return <span onClick={() => {
-          if (record.tmpJson && record.tmpType !== 1) {
-            setTemplateJson(JSON.parse(record.tmpJson || '{}'))
-            setPreviewVisible(true)
-          } else {
-            window.open(`${routeName.PAGE_CREAT_MANAGE_WEB_PREVIEW}?id=${record.tmpId || ''}&type=${record.tmpType || ''}`);
-          }
-        }} style={{ cursor: 'pointer', color: '#6680FF' }}>{tmpName}</span>
+        // return <span onClick={() => {
+        //   if (record.tmpJson && record.tmpType !== 1) {
+        //     setTemplateJson(JSON.parse(record.tmpJson || '{}'))
+        //     setPreviewVisible(true)
+        //   } else {
+        //     window.open(`${routeName.PAGE_CREAT_MANAGE_WEB_PREVIEW}?id=${record.tmpId || ''}&type=${record.tmpType || ''}`);
+        //   }
+        // }} style={{ cursor: 'pointer', color: '#6680FF' }}>{tmpName}</span>
+
+        return <Popover content={
+          <div style={{ display: 'grid', gap: 10 }}>
+            <Button onClick={() => {
+              console.log('record.tmpJson', record.tmpJson)
+              localStorage.setItem('webTmpInfo', JSON.stringify({
+                tmpJson: record.tmpJson,
+                tmpType: 1,
+                state: 0,
+              }))
+              window.open(`${routeName.APP_PAGE_CREAT_MANAGE_WEB_PREVIEW}`)
+            }}
+              type="primary"
+            >pc</Button>
+            <Button type="primary"
+              onClick={() => {
+                window.open(`${routeName.APP_PAGE_CREAT_MANAGE_APP_PREVIEW}?type=${tmpType || ''}`);
+              }}
+            >
+              app
+            </Button>
+          </div>
+        }>
+          <span style={{ cursor: 'pointer', color: '#6680FF' }}>{tmpName}</span>
+        </Popover>
       }
+
+
     },
     {
       title: '描述信息',
@@ -388,6 +438,8 @@ export default () => {
       },
     },
   ];
+
+  const [newWinUrl, setNewWinUrl] = useState<any>(null)
 
   const getSearchQuery = () => {
     const search = searchForm.getFieldsValue();

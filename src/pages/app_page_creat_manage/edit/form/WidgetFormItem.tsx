@@ -53,6 +53,10 @@ const WidgetFormItem: FC<Props> = (props) => {
     areaCodeOptions,
     editWidth
   } = props
+
+  console.log('item', item)
+
+
   const tmpType = history.location.query?.type as string
 
   const {

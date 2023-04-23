@@ -226,17 +226,30 @@ export default () => {
                 </Form.Item>,
                 <Form.Item key="appType" label="商品服务端">
                   {detail?.payProduct?.appType === 0 ? (
-                    <div>
-                      <span>H5应用：</span>
-                      <span>{detail?.payProduct?.appHomeUrl || '--'} </span>
-                      <a onClick={() => handleJumpLink(detail?.payProduct?.appHomeUrl)}>查看</a>
-                    </div>
+                    <>
+                      <div>
+                        <span>H5应用：</span>
+                        <span>{detail?.payProduct?.appHomeUrl || '--'} </span>
+                        <a onClick={() => handleJumpLink(detail?.payProduct?.appHomeUrl)}>查看</a>
+                      </div>
+                      <div>
+                        <span>H5体验应用：</span>
+                        <span>{detail?.payProduct?.appDemoUrl || '--'} </span>
+                        <a onClick={() => handleJumpLink(detail?.payProduct?.appDemoUrl)}>查看</a>
+                      </div>
+                    </>
                   ) : detail?.payProduct?.appType === 1 ? (
-                    <div>
+                    <><div>
                       <span>WEB应用:</span>
                       <span>{detail?.payProduct?.pcHomeUrl || '--'} </span>
                       <a onClick={() => handleJumpLink(detail?.payProduct?.pcHomeUrl)}>查看</a>
                     </div>
+                      <div>
+                        <span>WEB体验应用</span>
+                        <span>{detail?.payProduct?.pcDemoUrl || '--'} </span>
+                        <a onClick={() => handleJumpLink(detail?.payProduct?.appDemoUrl)}>查看</a>
+                      </div>
+                    </>
                   ) : detail?.payProduct?.appType === 3 ? (
                     [
                       <div key="h5">
@@ -248,6 +261,51 @@ export default () => {
                         <span>WEB应用:</span>
                         <span>{detail?.payProduct?.pcHomeUrl || '--'} </span>
                         <a onClick={() => handleJumpLink(detail?.payProduct?.pcHomeUrl)}>查看</a>
+                      </div>,
+                      <div>
+                        <span>H5体验应用：</span>
+                        <span>{detail?.payProduct?.appDemoUrl || '--'} </span>
+                        <a onClick={() => handleJumpLink(detail?.payProduct?.appDemoUrl)}>查看</a>
+                      </div>,
+                      <div>
+                        <span>WEB体验应用</span>
+                        <span>{detail?.payProduct?.pcDemoUrl || '--'} </span>
+                        <a onClick={() => handleJumpLink(detail?.payProduct?.appDemoUrl)}>查看</a>
+                      </div>,
+                    ]
+                  ) : (
+                    '/'
+                  )}
+                </Form.Item>,
+                <Form.Item key="appType" label="商品体验地址">
+                  {detail?.payProduct?.appType === 0 ? (
+                    <>
+                      <div>
+                        <span>H5体验应用：</span>
+                        <span>{detail?.payProduct?.appDemoUrl || '--'} </span>
+                        <a onClick={() => handleJumpLink(detail?.payProduct?.appDemoUrl)}>查看</a>
+                      </div>
+                    </>
+                  ) : detail?.payProduct?.appType === 1 ? (
+                    <>
+                      <div>
+                        <span>WEB体验应用</span>
+                        <span>{detail?.payProduct?.pcDemoUrl || '--'} </span>
+                        <a onClick={() => handleJumpLink(detail?.payProduct?.appDemoUrl)}>查看</a>
+                      </div>
+                    </>
+                  ) : detail?.payProduct?.appType === 3 ? (
+                    [
+
+                      <div>
+                        <span>H5体验应用：</span>
+                        <span>{detail?.payProduct?.appDemoUrl || '--'} </span>
+                        <a onClick={() => handleJumpLink(detail?.payProduct?.appDemoUrl)}>查看</a>
+                      </div>,
+                      <div>
+                        <span>WEB体验应用</span>
+                        <span>{detail?.payProduct?.pcDemoUrl || '--'} </span>
+                        <a onClick={() => handleJumpLink(detail?.payProduct?.appDemoUrl)}>查看</a>
                       </div>,
                     ]
                   ) : (

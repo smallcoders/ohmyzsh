@@ -33,7 +33,7 @@ const ComponentItem = (props: any) => {
   const imgHeight = type !== 'Image' ? 0 : config?.imgStyle === 'matrix' ?
     `${config?.imgHeight * config.lineNumber + (config.lineNumber - 1) * 12}px` : `${config?.imgHeight}px`
   return (
-    <div>
+    <div style={{ marginBottom: 20 }}>
       {
         type === 'Title' && (
           <div
@@ -46,7 +46,7 @@ const ComponentItem = (props: any) => {
               paddingTop: `${config?.paddingTop * screen.width / 1920}px`,
               paddingBottom: `${config?.paddingBottom * screen.width / 1920}px`,
               width: `1200px`,
-              margin: '0 auto'
+              margin: '48px auto 28px auto'
             }}
           >
             {config?.text}

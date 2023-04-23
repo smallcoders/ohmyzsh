@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import GlobalHeaderRight from '@/components/RightContent';
 import QRCode from 'qrcode.react'
-import { Form, message, Radio, Popover } from 'antd';
+import { Form, message, Radio, Popover, Button } from 'antd';
 import logo2 from '@/assets/page_creat_manage/logo2.png'
 import successIcon from '@/assets/page_creat_manage/success.png'
 import logoImg from '@/assets/page_creat_manage/logo-img.png'
@@ -38,16 +38,16 @@ export default () => {
   const [publishType, setPublishType] = useState<string>("公开发布")
   const [templateJson, setTemplateJson] = useState<any>({})
   const [templateInfo, setTemplateInfo] = useState<any>({})
-  const [areaCodeOptions, setAreaCodeOptions] = useState<any>({county: [], city: [], province: []})
+  const [areaCodeOptions, setAreaCodeOptions] = useState<any>({ county: [], city: [], province: [] })
   const [templateName, setTemplateName] = useState<string>('')
   const [previewVisible, setPreviewVisible] = useState(false)
 
   useEffect(() => {
-    if (id){
+    if (id) {
       getTemplatePageInfo({
         id
       }).then((res) => {
-        if (res?.code === 0 && res?.result?.tmpJson){
+        if (res?.code === 0 && res?.result?.tmpJson) {
           setTemplateJson(JSON.parse(res?.result?.tmpJson))
           setTemplateName(res?.result?.tmpName)
           setTemplateInfo(res?.result)
@@ -56,19 +56,19 @@ export default () => {
         }
       })
       listAllAreaCode().then((res) => {
-        if (res?.result){
-          const {result} = res
+        if (res?.result) {
+          const { result } = res
           const city: any = []
           const province: any = []
           result.forEach((item: any) => {
             city.push({
               ...item,
               nodes: item.nodes?.map((node: any) => {
-                const {nodes, ...reset} = node
+                const { nodes, ...reset } = node
                 return reset
               })
             })
-            const {nodes, ...reset} = item
+            const { nodes, ...reset } = item
             province.push(reset)
           })
           setAreaCodeOptions({
@@ -83,17 +83,17 @@ export default () => {
 
   const getLink = (isMobile: boolean) => {
     const { origin } = window.location
-    if (isMobile){
-      return `${hostMap[origin]}/antelope-activity-h5/template-page/index.html#/?isApp=false&id=${id}&login=${publishType === '公开发布' ? '' : '1'}&timeStamp=${+new Date()}`
+    if (isMobile) {
+      return `${hostMap[origin]}/antelope-baseline/applications/#/applicition-app-template?id=${id}&timeStamp=${+new Date()}`
     } else {
-      return `${hostMap[origin]}/front/template-page?id=${id}&login=${publishType === '公开发布' ? '' : '1'}&timeStamp=${+new Date()}`
+      return `${hostMap[origin]}/front/app-template-page?id=${id}&timeStamp=${+new Date()}`
     }
   }
 
   const getCode = (isMobile: boolean) => {
     return (
       <div>
-        <div style={{display: 'none'}}>
+        <div style={{ display: 'none' }}>
           <QRCode
             value={getLink(isMobile)}
             renderAs={'canvas'}
@@ -128,17 +128,17 @@ export default () => {
           }}
         />
         <div className="download-btn"
-             onClick={() => {
-               const canvas: any = document.querySelector('#download-canvas');
-               // 创建一个 a 标签，并设置 href 和 download 属性
-               const el = document.createElement('a');
-               // 设置 href 为图片经过 base64 编码后的字符串，默认为 png 格式
-               el.href = canvas.toDataURL();
-               el.download = `${templateName}-${publishType}-${isMobile? '移动端': 'web端'}`;
-               // 创建一个点击事件并对 a 标签进行触发
-               const event = new MouseEvent('click');
-               el.dispatchEvent(event);
-             }}
+          onClick={() => {
+            const canvas: any = document.querySelector('#download-canvas');
+            // 创建一个 a 标签，并设置 href 和 download 属性
+            const el = document.createElement('a');
+            // 设置 href 为图片经过 base64 编码后的字符串，默认为 png 格式
+            el.href = canvas.toDataURL();
+            el.download = `${templateName}-${publishType}-${isMobile ? '移动端' : 'web端'}`;
+            // 创建一个点击事件并对 a 标签进行触发
+            const event = new MouseEvent('click');
+            el.dispatchEvent(event);
+          }}
         >
           下载
         </div>
@@ -160,40 +160,43 @@ export default () => {
       <div className="middle-header">
         <div className="left">
           <div className="page-name">{templateName}</div>
-          <div className="preview-btn" onClick={() => {
-            if(Object.keys(templateJson).length){
-              if (templateInfo.tmpType !== 1){
-                setPreviewVisible(true)
-              } else {
-                window.open(`${routeName.PAGE_CREAT_MANAGE_WEB_PREVIEW}?id=${templateInfo.tmpId || ''}&type=${templateInfo.tmpType || ''}`);
-              }
-            }
-          }}>
-            <img src={previewIcon} alt='' /><span>预览</span>
-          </div>
+
+          <Popover content={
+            <div style={{ display: 'grid', gap: 10 }}>
+              <Button onClick={() => {
+                console.log('record.tmpJson', record.tmpJson)
+                localStorage.setItem('webTmpInfo', JSON.stringify({
+                  tmpJson: record.tmpJson,
+                  tmpType: 1,
+                  state: 0,
+                }))
+                window.open(`${routeName.APP_PAGE_CREAT_MANAGE_APP_PREVIEW}?id=${templateInfo.tmpId || ''}`);
+              }}
+                type="primary"
+              >pc</Button>
+              <Button type="primary"
+                onClick={() => {
+                  window.open(`${routeName.APP_PAGE_CREAT_MANAGE_WEB_PREVIEW}?id=${templateInfo.tmpId || ''}`);
+                }}
+              >
+                app
+              </Button>
+            </div>
+          }>
+
+            <div className="preview-btn" >
+              <img src={previewIcon} alt='' /><span>预览</span>
+            </div>
+          </Popover>
         </div>
-        <div className="title">{templateInfo.tmpType === 1 ? '网页' : '表单'}发布</div>
+        <div className="title">数字化应用发布</div>
       </div>
       <div className="content">
         <div className="result-content">
-          <div className="status"><img src={successIcon} alt='' />{templateInfo.tmpType === 1 ? '网页' : '表单'}已发布</div>
-          <div className="desc">可在运营模板配置列表对表单进行管理</div>
+          <div className="status"><img src={successIcon} alt='' />数字化应用模版已发布</div>
+          <div className="desc">可在数字化应用运营模板配置列表对表单进行管理</div>
         </div>
         <div className="main-content">
-          <Form.Item>
-            <Radio.Group
-              optionType="button"
-              buttonStyle="solid"
-              value={publishType}
-              options={publishOptions}
-              onChange={(event) => setPublishType(event.target.value)}
-            />
-          </Form.Item>
-          <div className="publish-type-desc">
-            {
-              publishType === '公开发布' ? `使用此方式发布${templateInfo.tmpType === 1 ? '网页' : '表单'}，访问时不需要登录` : `使用此方法发布${templateInfo.tmpType === 1 ? '网页' : '表单'}，访问时需要登录羚羊平台账号`
-            }
-          </div>
           {
             templateInfo.tmpType !== 1 &&
             <div className="link-info">
@@ -224,9 +227,9 @@ export default () => {
             <div className="link-content">
               <div className="link" id="pc-link">{getLink(false)}</div>
               <div className="btn"
-                   onClick={() => {
-                     window.open(getLink(false))
-                   }}
+                onClick={() => {
+                  window.open(getLink(false))
+                }}
               >
                 打开
               </div>

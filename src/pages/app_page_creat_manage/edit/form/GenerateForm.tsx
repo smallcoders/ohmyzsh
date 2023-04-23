@@ -46,7 +46,7 @@ const GenerateForm = (props: GenerateFormProps) => {
         {
           isMobile && widgetInfo?.globalConfig?.showPageName && <div className="mobile-title">{ widgetInfo?.globalConfig?.pageName}</div>
         }
-        <div  className={widgetInfo.globalConfig.formStyle === 'tiled' ? "body-title-box tiled" : "body-title-box"}>
+        <div  className={widgetInfo.globalConfig?.formStyle === 'tiled' ? "body-title-box tiled" : "body-title-box"}>
           {
             widgetInfo?.globalConfig?.pageBg &&
             <img
@@ -66,13 +66,13 @@ const GenerateForm = (props: GenerateFormProps) => {
             }
           </div>
         </div>
-        <div className={widgetInfo.globalConfig.formStyle === 'tiled' ? "preview-form tiled" : "preview-form"}>
+        <div className={widgetInfo.globalConfig?.formStyle === 'tiled' ? "preview-form tiled" : "preview-form"}>
           <Form {...widgetInfo.formConfig} form={formInstance}>
-            {widgetInfo.widgetFormList.map((widgetFormItem: any) => (
+            {widgetInfo.widgetFormList?.map((widgetFormItem: any) => (
               <GenerateFormItem widgetInfo={widgetInfo} clickCallBack={clickCallBack} areaCodeOptions={areaCodeOptions} key={widgetFormItem.key} item={widgetFormItem} formInstance={formInstance} />
             ))}
             {
-              widgetInfo.globalConfig.showRegister &&
+              widgetInfo.globalConfig?.showRegister &&
               <Form.Item
                 className="register-area real-form-area"
                 required

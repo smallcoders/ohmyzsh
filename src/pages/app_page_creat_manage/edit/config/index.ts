@@ -1323,33 +1323,33 @@ export const webComponentsList: ComponentGroup[] = [
   {
     title: '基础字段',
     components: [
-      {
-        label: '标题',
-        type: 'Title',
-        errorMsg: '',
-        config: {
-          text: '主标题',
-          fontWeight: 'bold',
-          fontSize: 28,
-          color: '#1E232A',
-          inputColor: '#1E232A',
-          lineHeight: 36,
-          textAlign: 'center',
-          paddingTop: 64,
-          paddingBottom: 24,
-          subTitle: {
-            text: '',
-            fontWeight: 'normal',
-            fontSize: 14,
-            color: '#556377',
-            inputColor: '#556377',
-            lineHeight: 22,
-            textAlign: 'center',
-            paddingTop: 12,
-            paddingBottom: 24,
-          }
-        },
-      },
+      // {
+      //   label: '标题',
+      //   type: 'Title',
+      //   errorMsg: '',
+      //   config: {
+      //     text: '主标题',
+      //     fontWeight: 'bold',
+      //     fontSize: 28,
+      //     color: '#1E232A',
+      //     inputColor: '#1E232A',
+      //     lineHeight: 36,
+      //     textAlign: 'center',
+      //     paddingTop: 64,
+      //     paddingBottom: 24,
+      //     subTitle: {
+      //       text: '',
+      //       fontWeight: 'normal',
+      //       fontSize: 14,
+      //       color: '#556377',
+      //       inputColor: '#556377',
+      //       lineHeight: 22,
+      //       textAlign: 'center',
+      //       paddingTop: 12,
+      //       paddingBottom: 24,
+      //     }
+      //   },
+      // },
       {
         label: '文本',
         type: 'Text',
@@ -1364,6 +1364,8 @@ export const webComponentsList: ComponentGroup[] = [
           textAlign: 'center',
           paddingTop: 24,
           paddingBottom: 24,
+          marginBottom: 0,
+          appConfig: { marginBottom: 0, },
         },
       },
       {
@@ -1380,29 +1382,44 @@ export const webComponentsList: ComponentGroup[] = [
             link: '',
             index: 0
           }],
-          appImage: '',
+          appImgList: [{
+            img: '',
+            link: '',
+            index: 0
+          }],
+          appImgConfig: {
+            imgWidth: 1200,
+            imgHeight: 300,
+            duration: 5,
+            lineNumber: 2,
+            columnNumber: 4,
+            marginBottom: 20,
+            isCarousel: false
+          },
+          marginBottom: 10,
           lineNumber: 2,
           columnNumber: 4,
           isCarousel: false
         },
       },
-      {
-        type: 'Video',
-        label: '视频',
-        errorMsg: '',
-        config: {
-          url: '',
-          videoAreaWidth: 1200,
-          videoAreaHeight: 675,
-          coverImageUrl: '',
-        },
-      },
+      // {
+      //   type: 'Video',
+      //   label: '视频',
+      //   errorMsg: '',
+      //   config: {
+      //     url: '',
+      //     videoAreaWidth: 1200,
+      //     videoAreaHeight: 675,
+      //     coverImageUrl: '',
+      //   },
+      // },
       {
         label: '应用商品',
         type: 'App',
         errorMsg: '',
         config: {
           index: '1',
+          marginBottom: 0,
           productList: [{
             key: '1',
             icon: '',
@@ -1413,6 +1430,7 @@ export const webComponentsList: ComponentGroup[] = [
               name: '',
               appId: ''
             },
+            appConfig: { marginBottom: 0, },
             desc: '',
             specId: '',
             specName: '',

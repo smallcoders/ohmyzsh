@@ -7,7 +7,7 @@ import './index.less'
 
 export default () => {
   const id = history.location.query?.id as string;
-  const [templateInfo, setTemplateInfo] = useState<any>(id ? null : JSON.parse(localStorage.getItem('tmpInfo') || '{}'))
+  const [templateInfo, setTemplateInfo] = useState<any>(id ? null : JSON.parse(localStorage.getItem('appTmpInfo') || '{}'))
   useEffect(() => {
     if (id){
       getTemplatePageInfo({
@@ -24,11 +24,19 @@ export default () => {
   const { tmpJson } = templateInfo || {}
   const json = JSON.parse(tmpJson || '{}')
   const widgetFormList = json.widgetFormList || []
+
+  console.log('json', json)
   return (
-    <div className="web-preview-page" style={json?.webGlobalConfig?.bgColor ? {background: json.webGlobalConfig.bgColor} : {}}>
+    <div style={{
+      height: '100%',
+      width: '100%',
+      background: '#cbe5be'
+    }}>
+    <div className="app-preview-page" style={json?.webGlobalConfig?.bgColor ? {background: json.webGlobalConfig.bgColor} : {}}>
       {widgetFormList.map((widgetFormItem: any, index: number) => {
         return <ComponentItem item={widgetFormItem} key={index} />
       })}
+    </div>
     </div>
   )
 

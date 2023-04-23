@@ -23,6 +23,12 @@ const Header = (props: any) => {
     const { widgetFormList, globalConfig, id, webGlobalConfig } = state;
     const paramsList: any = []
     const paramsKeyList: string[] = []
+
+    if (!webGlobalConfig.activeTime) {
+      message.warn('请先设置活动时间')
+      return;
+    }
+
     if (!widgetFormList.length) {
       message.warn('请先设置题目', 2)
       return;
@@ -55,11 +61,13 @@ const Header = (props: any) => {
     }
     const data = {
       config: {
+        startTime: webGlobalConfig.activeTime[0],
+        endTime: webGlobalConfig.activeTime[1],
         tmpName: tmpType === '1' ? webGlobalConfig.pageName : globalConfig.pageName,
         tmpDesc: tmpType === '1' ? webGlobalConfig.pageDesc : globalConfig.pageDesc,
         tmpJson: JSON.stringify(state),
         repeatAble: 1,
-        tmpType: tmpType === '1' ? 1 : 0,
+        tmpType: 2,
         state: 0,
       },
       params: paramsList
@@ -116,15 +124,13 @@ const Header = (props: any) => {
         return {
           productId: p?.product?.value,
           appId: p?.product?.appId,
+          type: p?.product?.type,
           specId: p?.specId,
           expireDay: p?.time,
           actNum: p?.isLimit ? -1 : p?.num
         }
       })
     }
-
-    console.log('datadaat', data, state)
-
 
     saveAppTemplate(data).then((res) => {
       if (res.code === 0) {
@@ -157,13 +163,33 @@ const Header = (props: any) => {
       tmpId: id,
       type: 2,
     })
+
+    const appConfig = state?.widgetFormList?.find(p => p?.type === 'App')?.config
+
+    if (appConfig?.productList && appConfig?.productList?.length > 0) {
+      if (!requiredJudge(appConfig?.productList[appConfig?.productList?.length - 1])) {
+        return
+      }
+      data.list = appConfig?.productList?.map((p: any) => {
+        return {
+          productId: p?.product?.value,
+          appId: p?.product?.appId,
+          type: p?.product?.type,
+          specId: p?.specId,
+          expireDay: p?.time,
+          actNum: p?.isLimit ? -1 : p?.num
+        }
+      })
+    }
+
+
     saveTemplate(data).then((res) => {
       if (res.code === 0) {
         if (callback) {
           callback(data.config.tmpJson, 'publish')
         }
         antdMessage.success(`发布成功`);
-        history.replace(`${routeName.PAGE_CREAT_MANAGE_PUBLISH}?id=${id || res.result}&type=${tmpType || ''}`);
+        history.replace(`${routeName.APP_PAGE_CREAT_MANAGE_PUBLISH}?id=${id || res.result}&type=1`);
       } else {
         antdMessage.error(`${res.message}`);
       }
@@ -182,29 +208,29 @@ const Header = (props: any) => {
           <Popover content={
             <div style={{ display: 'grid', gap: 10 }}>
               <Button onClick={() => {
-                if (tmpType === '1') {
-                  localStorage.setItem('tmpInfo', JSON.stringify({
-                    tmpJson: JSON.stringify(state),
-                    tmpType: 1,
-                    state: 0,
-                  }))
-                  if (!newWinUrl || newWinUrl && newWinUrl?.closed) {
-                    const winUrl = window.open(`${routeName.APP_PAGE_CREAT_MANAGE_WEB_PREVIEW}?type=${tmpType || ''}`);
-                    setNewWinUrl(winUrl)
-                  }
-                  if (newWinUrl && !newWinUrl.closed) {
-                    newWinUrl.location.reload()
-                  }
-                } else {
-                  setPreviewVisible(true)
+
+                console.log('state', state)
+
+                localStorage.setItem('webTmpInfo', JSON.stringify({
+                  tmpJson: JSON.stringify(state),
+                  tmpType: 1,
+                  state: 0,
+                }))
+                if (!newWinUrl || newWinUrl && newWinUrl?.closed) {
+                  const winUrl = window.open(`${routeName.APP_PAGE_CREAT_MANAGE_WEB_PREVIEW}?type=${tmpType || ''}`);
+                  setNewWinUrl(winUrl)
                 }
+                if (newWinUrl && !newWinUrl.closed) {
+                  newWinUrl.location.reload()
+                }
+
               }}
                 type="primary"
               >pc</Button>
               <Button type="primary"
                 onClick={() => {
                   if (tmpType === '1') {
-                    localStorage.setItem('tmpInfo', JSON.stringify({
+                    localStorage.setItem('appTmpInfo', JSON.stringify({
                       tmpJson: JSON.stringify(state),
                       tmpType: 1,
                       state: 0,
@@ -225,24 +251,7 @@ const Header = (props: any) => {
               </Button>
             </div>
           }>
-            <div className="btn" onClick={() => {
-              if (tmpType === '1') {
-                localStorage.setItem('tmpInfo', JSON.stringify({
-                  tmpJson: JSON.stringify(state),
-                  tmpType: 1,
-                  state: 0,
-                }))
-                if (!newWinUrl || newWinUrl && newWinUrl?.closed) {
-                  const winUrl = window.open(`${routeName.APP_PAGE_CREAT_MANAGE_WEB_PREVIEW}?type=${tmpType || ''}`);
-                  setNewWinUrl(winUrl)
-                }
-                if (newWinUrl && !newWinUrl.closed) {
-                  newWinUrl.location.reload()
-                }
-              } else {
-                setPreviewVisible(true)
-              }
-            }}>
+            <div className="btn">
               <img src={preViewIcon} alt='' />
               <span>预览</span>
             </div>

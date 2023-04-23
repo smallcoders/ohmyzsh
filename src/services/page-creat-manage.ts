@@ -19,6 +19,7 @@ export async function saveAppTemplate(data?: { [key: string]: any }) {
   return request<Common.ResultCode & { result: any }>(`/antelope-common/mng/tmp/app/save`, {
     method: 'post',
     data,
+    
   });
 }
 
@@ -33,6 +34,7 @@ export async function getPageList(data?: { [key: string]: any }) {
   return request<any>(`/antelope-common/mng/template/page/query`, {
     method: 'post',
     data,
+    
   });
 }
 
@@ -44,6 +46,7 @@ export async function getTemplatePageInfo(data?: { [key: string]: any }) {
   return request<any>(`/antelope-common/mng/template/info`, {
     method: 'get',
     params: data,
+    
   });
 }
 
@@ -55,6 +58,7 @@ export async function modifyTemplateState(data?: { [key: string]: any }) {
   return request<any>(`/antelope-common/mng/template/modify/state`, {
     method: 'post',
     data,
+    
   });
 }
 
@@ -66,6 +70,7 @@ export async function getTemplateData(data?: { [key: string]: any }) {
   return request<any>(`/antelope-common/mng/template/ans/data`, {
     method: 'post',
     data,
+    
   });
 }
 
@@ -78,6 +83,7 @@ export async function getTemplateOperationList(data?: { [key: string]: any }) {
   return request<any>(`/antelope-common/mng/template/log/list`, {
     method: 'get',
     params: data,
+    
   });
 }
 
@@ -89,6 +95,7 @@ export async function addOperationLog(data?: { [key: string]: any }) {
   return request<any>(`/antelope-common/mng/template/add/operate/log`, {
     method: 'post',
     data,
+    
   });
 }
 
@@ -103,6 +110,7 @@ export async function exportData(data?: { [key: string]: any }) {
     data,
     responseType: 'blob',
     getResponse: true,
+    
   });
 }
 
@@ -114,6 +122,7 @@ export async function exportData(data?: { [key: string]: any }) {
 export async function getGroupList() {
   return request<any>(`/antelope-common/mng/common/materialGroup/listAll`, {
     method: 'get',
+    
   });
 }
 
@@ -125,6 +134,7 @@ export async function getMaterialList(data?: { [key: string]: any }) {
   return request<any>(`/antelope-common/mng/common/material/queryByGroupsId`, {
     method: 'post',
     data,
+    
   });
 }
 
@@ -136,5 +146,6 @@ export async function uploadMaterial(data?: { [key: string]: any }) {
   return request<any>(`/antelope-common/mng/common/material/upload`, {
     method: 'post',
     data,
+    
   });
 }

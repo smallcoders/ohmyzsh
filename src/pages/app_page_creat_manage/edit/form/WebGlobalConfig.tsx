@@ -1,9 +1,10 @@
 import { FC, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { Form, Input, Popover } from 'antd';
+import { DatePicker, Form, Input, Popover } from 'antd';
 import { DesignContext } from '../store'
 import { ActionType } from '../store/action'
+import moment from 'moment';
 
-const colorMapList = ["#CCDFFF","#DEE5FF","#BCDFFF","#0A309E","#D1EAFF"]
+const colorMapList = ["#CCDFFF", "#DEE5FF", "#BCDFFF", "#0A309E", "#D1EAFF"]
 
 const GlobalConfig: FC = () => {
   const {
@@ -13,7 +14,7 @@ const GlobalConfig: FC = () => {
   const [bgColorOpen, setBgColorOpen] = useState<boolean>(false)
   const inputRef = useRef<any>(null);
   useEffect(() => {
-    if (inputRef?.current){
+    if (inputRef?.current) {
       inputRef.current.focus()
     }
   }, [])
@@ -43,7 +44,7 @@ const GlobalConfig: FC = () => {
   const content = () => {
     return (
       <div className="color-card">
-        <div className="color-card-value" style={{background: `${webGlobalConfig?.bgColor}`}} />
+        <div className="color-card-value" style={{ background: `${webGlobalConfig?.bgColor}` }} />
         <div className="color-list">
           {
             colorMapList.map((item: string, index: number) => {
@@ -57,7 +58,7 @@ const GlobalConfig: FC = () => {
                     })
                   }}
                   key={index}
-                  style={{background: item}}
+                  style={{ background: item }}
                   className="color-list-item"
                 />
               )
@@ -82,18 +83,25 @@ const GlobalConfig: FC = () => {
                   inputRef.current?.select()
                 }}
                 value={webGlobalConfig?.pageName}
-                onChange={(event) => handleGlobalConfigChange('pageName',event.target.value)}
+                onChange={(event) => handleGlobalConfigChange('pageName', event.target.value)}
                 onBlur={(event) => {
-                  if(!event.target.value){
+                  if (!event.target.value) {
                     handleGlobalConfigChange('pageName', '未命名网页')
                   }
                 }}
               />
             </Form.Item>
-            <Form.Item label="描述信息" >
-              <Input.TextArea maxLength={50} value={webGlobalConfig?.pageDesc} onChange={(event) => handleGlobalConfigChange('pageDesc',event.target.value)} />
+            <Form.Item label="活动时间" required>
+              <DatePicker.RangePicker
+                value={webGlobalConfig?.activeTime ? [moment(webGlobalConfig?.activeTime?.[0]), moment(webGlobalConfig?.activeTime?.[1])] : undefined}
+                format={'YYYY-MM-DD'} onChange={(event) => handleGlobalConfigChange('activeTime', [event[0].format('YYYY-MM-DD 00:00:00'), event[1].format('YYYY-MM-DD 00:00:00')])} />
             </Form.Item>
-            <Form.Item label="网页背景" >
+
+            <Form.Item label="描述信息" >
+              <Input.TextArea maxLength={50} value={webGlobalConfig?.pageDesc} onChange={(event) => handleGlobalConfigChange('pageDesc', event.target.value)} />
+            </Form.Item>
+
+            {/* <Form.Item label="网页背景" >
               <div className="config-item">
                 <div className="config-item-label">背景底色:</div>
                 <div className="flex">
@@ -108,7 +116,7 @@ const GlobalConfig: FC = () => {
                     }}
                   >
                     <div className="show-color">
-                      <span className="color" style={{background: `${webGlobalConfig?.bgColor}`}} />
+                      <span className="color" style={{ background: `${webGlobalConfig?.bgColor}` }} />
                       颜色
                     </div>
                   </Popover>
@@ -121,8 +129,8 @@ const GlobalConfig: FC = () => {
                           handleGlobalConfigChange('inputBgColor', `#${e.target.value.toUpperCase()}`)
                         }}
                         onBlur={(event) => {
-                          const {value} = event.target
-                          if(value && /^[0-9A-F]{6}$/i.test(value)){
+                          const { value } = event.target
+                          if (value && /^[0-9A-F]{6}$/i.test(value)) {
                             handleGlobalConfigChange('bgColor', `#${value.toUpperCase()}`)
                           } else {
                             handleGlobalConfigChange('inputBgColor', webGlobalConfig.bgColor)
@@ -134,7 +142,7 @@ const GlobalConfig: FC = () => {
                   </div>
                 </div>
               </div>
-            </Form.Item>
+            </Form.Item> */}
           </Form>
         ),
         [webGlobalConfig, bgColorOpen]

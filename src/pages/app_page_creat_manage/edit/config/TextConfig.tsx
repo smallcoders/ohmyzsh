@@ -12,13 +12,13 @@ export const fontWeightOptions = [
   }
 ]
 
-const colorMapList = ["#1E232A","#556377","#8290A6","#C4CAD5","#0068FF"]
+const colorMapList = ["#1E232A", "#556377", "#8290A6", "#C4CAD5", "#0068FF"]
 
 const TextConfig = () => {
   const { selectWidgetItem, handleChange } = useConfig()
   const inputRef = useRef<any>(null);
   useEffect(() => {
-    if (inputRef?.current){
+    if (inputRef?.current) {
       inputRef.current.focus()
     }
   }, [])
@@ -28,7 +28,7 @@ const TextConfig = () => {
   const content = () => {
     return (
       <div className="color-card">
-        <div className="color-card-value" style={{background: `${config?.color}`}} />
+        <div className="color-card-value" style={{ background: `${config?.color}` }} />
         <div className="color-list">
           {
             colorMapList.map((item: string, index: number) => {
@@ -40,7 +40,7 @@ const TextConfig = () => {
                     handleChange(item, 'config.inputColor')
                   }}
                   key={index}
-                  style={{background: item}}
+                  style={{ background: item }}
                   className="color-list-item"
                 />
               )
@@ -61,7 +61,7 @@ const TextConfig = () => {
           ref={inputRef}
           maxLength={300}
           onBlur={(event) => {
-            if(!event.target.value){
+            if (!event.target.value) {
               handleChange('文本', 'config.text')
             }
           }}
@@ -69,11 +69,14 @@ const TextConfig = () => {
           onChange={(event) => handleChange(event.target.value, 'config.text')}
         />
       </Form.Item>
+
+
       <Form.Item label="排版">
         <div className="config-item">
           <div className="config-item-label">字符:</div>
           <div className="flex special-style">
             <Select
+              disabled
               options={fontWeightOptions}
               value={config?.fontWeight}
               onChange={(value) => {
@@ -81,6 +84,7 @@ const TextConfig = () => {
               }}
             />
             <InputNumber
+              disabled
               value={config?.fontSize}
               max={48}
               min={12}
@@ -88,7 +92,7 @@ const TextConfig = () => {
             />
           </div>
         </div>
-        <div className="config-item">
+        {/* <div className="config-item">
           <div className="config-item-label">字体颜色:</div>
           <div className="flex">
             <Popover
@@ -104,7 +108,7 @@ const TextConfig = () => {
               <div className="show-color" onClick={() => {
                 setTextColorOpen(true)
               }}>
-                <span className="color" style={{background: `${config?.color}`}} />
+                <span className="color" style={{ background: `${config?.color}` }} />
                 颜色
               </div>
             </Popover>
@@ -114,14 +118,14 @@ const TextConfig = () => {
                   maxLength={6}
                   value={config?.inputColor?.replace('#', '')}
                   onChange={(e) => {
-                    handleChange(`#${e.target.value.toUpperCase()}`, 'config.inputColor' )
+                    handleChange(`#${e.target.value.toUpperCase()}`, 'config.inputColor')
                   }}
                   onBlur={(event) => {
-                    const {value} = event.target
-                    if(value && /^[0-9A-F]{6}$/i.test(value)){
+                    const { value } = event.target
+                    if (value && /^[0-9A-F]{6}$/i.test(value)) {
                       handleChange(`#${value.toUpperCase()}`, 'config.color')
                     } else {
-                      handleChange(config?.color,'config.inputColor')
+                      handleChange(config?.color, 'config.inputColor')
                     }
                   }}
                 />
@@ -129,8 +133,8 @@ const TextConfig = () => {
               Hex
             </div>
           </div>
-        </div>
-        <div className="config-item">
+        </div> */}
+        {/* <div className="config-item">
           <div className="config-item-label">对齐方式:</div>
           <div className="flex align">
             <Tooltip title="左对齐" placement="bottomLeft">
@@ -166,7 +170,27 @@ const TextConfig = () => {
               />
             </Tooltip>
           </div>
-        </div>
+        </div> */}
+      </Form.Item>
+      <Form.Item label="移动端下边距">
+        <InputNumber
+          disabled
+          value={config?.appConfig?.marginBottom}
+          min={0}
+          onChange={(value) => {
+            handleChange(value, 'config.appConfig.marginBottom')
+          }}
+        />
+      </Form.Item>
+      <Form.Item label="下边距">
+        <InputNumber
+          disabled
+          value={config?.marginBottom}
+          min={0}
+          onChange={(value) => {
+            handleChange(value, 'config.marginBottom')
+          }}
+        />
       </Form.Item>
     </>
   )

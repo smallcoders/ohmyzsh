@@ -32,15 +32,15 @@ const ImageConfig = () => {
 
   const getImageList = (newImgListLength: number, imgStyle: string) => {
     const currentImgListLength = config?.imgList.length
-    if (imgStyle === 'matrix'){
-      if (newImgListLength > currentImgListLength){
+    if (imgStyle === 'matrix') {
+      if (newImgListLength > currentImgListLength) {
         const difLength = newImgListLength - currentImgListLength
-        const indexList: number[] = selectWidgetItem!.config!.imgList.map((item: {label: string, value: string, index: number}) => {
+        const indexList: number[] = selectWidgetItem!.config!.imgList.map((item: { label: string, value: string, index: number }) => {
           return item.index
         })
         const max = Math.max(...indexList)
         const difArr = []
-        for (let i = 0; i < difLength; i++){
+        for (let i = 0; i < difLength; i++) {
           difArr.push({
             img: '',
             link: '',
@@ -50,7 +50,7 @@ const ImageConfig = () => {
         console.log(newImgListLength, currentImgListLength, config?.imgList, difArr, 'config?.imgList.concat(difArr),')
         handleChange(config?.imgList.concat(difArr), 'config.imgList')
       }
-      if (newImgListLength < currentImgListLength){
+      if (newImgListLength < currentImgListLength) {
         handleChange(config?.imgList.slice(0, newImgListLength), 'config.imgList')
       }
     } else {
@@ -84,7 +84,7 @@ const ImageConfig = () => {
           >
             文本
           </div>
-          <div
+          {/* <div
             className={config?.imgStyle === 'matrix' ? 'img-style-item active' : 'img-style-item'}
             onClick={() => {
               handleChange('matrix', 'config.imgStyle')
@@ -96,12 +96,11 @@ const ImageConfig = () => {
             }}
           >
             矩阵图片
-          </div>
+          </div> */}
         </div>
       </Form.Item>
 
-      <Form.Item label="移动端图片">
-        <UploadForm
+      {/* <UploadForm
           listType="picture-card"
           className="avatar-uploader"
           maxSize={10}
@@ -109,15 +108,195 @@ const ImageConfig = () => {
           showUploadList={false}
           style={{ width: '36px', height: '36px', marginBottom: 0 }}
           accept=".bmp,.gif,.png,.jpeg,.jpg"
-          value={config!.appImage}
+          value={config!.appImgList}
           onChange={(value: any) => {
-            handleChange(value, 'config.appImage')
+            handleChange(value, 'config.appImgList')
           }}
           noUploadText={true}
-        />
+        /> */}
+      <Form.Item label="移动端图片">
+        {
+          config?.imgStyle === 'matrix' &&
+          <div className="config-item center">
+            <div className="config-item-label">矩阵数量:</div>
+            <div className="flex special-style matrix">
+              <InputNumber
+                value={config?.appImgConfig?.columnNumber}
+                max={5}
+                min={3}
+                onChange={(value) => {
+                  if (value) {
+                    handleChange(value, 'config.appImgConfig.columnNumber')
+                    getImageList(value * config.lineNumber, 'matrix')
+                    if (value === 3) {
+                      handleChange(384, 'config.appImgConfig.imgWidth')
+                      handleChange(256, 'config.appImgConfig.imgHeight')
+                    }
+                    if (value === 4) {
+                      handleChange(282, 'config.appImgConfig.imgWidth')
+                      handleChange(188, 'config.appImgConfig.imgHeight')
+                    }
+                    if (value === 5) {
+                      handleChange(224, 'config.appImgConfig.imgWidth')
+                      handleChange(149, 'config.appImgConfig.imgHeight')
+                    }
+                  }
+                }}
+              />
+              <span className="multi-icon">*</span>
+              <InputNumber
+                value={config?.appImgConfig?.lineNumber}
+                max={8}
+                min={1}
+                onChange={(value) => {
+                  if (value) {
+                    handleChange(value, 'config.appImgConfig.lineNumber')
+                    getImageList(value * config.columnNumber, 'matrix')
+                  }
+                }}
+              />
+            </div>
+          </div>
+        }
+        <div className="config-item center">
+          <div className="config-item-label">{config?.imgStyle === 'matrix' ? '单图尺寸:' : '尺寸设置:'}</div>
+          <div className="flex special-style">
+            <InputNumber
+              value={config?.appImgConfig?.imgWidth}
+              max={config?.imgStyle === 'banner' ? 1920 : 1200}
+              min={1}
+              onChange={(value) => {
+                handleChange(value, 'config.appImgConfig.imgWidth')
+              }}
+              controls
+              addonAfter={<span>W</span>}
+              disabled={config?.imgStyle === 'matrix'}
+            />
+            <span className="multi-icon">*</span>
+            <InputNumber
+              value={config?.appImgConfig?.imgHeight}
+              max={9999}
+              min={1}
+              controls
+              addonAfter={<span>H</span>}
+              onChange={(value) => {
+                handleChange(value, 'config.appImgConfig.imgHeight')
+              }}
+            />
+          </div>
+        </div>
+        {
+          config?.imgStyle !== 'matrix' &&
+          <div className="config-item center">
+            <div className="config-item-label">多图轮播:</div>
+            <div className="flex special-style">
+              <Switch checked={config?.appImgConfig?.isCarousel} onChange={(checked) => {
+                handleChange(checked, 'config.appImgConfig.isCarousel')
+              }} />
+            </div>
+          </div>
+        }
+        <Form.Item label="下边距">
+          <InputNumber
+          disabled
+            value={config?.appImgConfig?.marginBottom}
+            min={0}
+            onChange={(value) => {
+              handleChange(value, 'config.appImgConfig.marginBottom')
+            }}
+          />
+        </Form.Item>
       </Form.Item>
+      <div>
+        <div>
+          图片上传
+          <Tooltip title="点击图片缩略图区域可上传图片,缩略图后方输入框可设置图片跳转链接">
+            <img className="question-icon" src={questionIcon} alt='' />
+          </Tooltip>
+        </div>
+        <ul ref={sortableGroupDecorator}>
+          {selectWidgetItem?.config?.appImgList?.map((option: { img: string, link: string, index: number }, id: number) => (
+            <li key={`${option.index}`}>
+              <div className="option-item">
+                <img className="drag-item" src={dragIcon} alt='' />
+                <UploadForm
+                  listType="picture-card"
+                  className="avatar-uploader"
+                  maxSize={10}
+                  action={'/antelope-common/common/file/upload/record'}
+                  showUploadList={false}
+                  style={{ width: '36px', height: '36px', marginBottom: 0 }}
+                  accept=".bmp,.gif,.png,.jpeg,.jpg"
+                  value={option.img}
+                  onChange={(value: any) => {
+                    const newConfigImgList = clone(selectWidgetItem!.config!.appImgList)
+                    newConfigImgList[id].img = value?.path || value || ''
+                    handleChange(newConfigImgList, 'config.appImgList')
+                  }}
+                  noUploadText={true}
+                />
+                <div>
+                  <Tooltip
+                    title={option.link}
+                  >
+                    <Input
+                      value={option.link}
+                      maxLength={50}
+                      className="ellipsis"
+                      placeholder="https://"
+                      onChange={(event) => {
+                        const newConfigImgList = clone(selectWidgetItem!.config!.appImgList)
+                        newConfigImgList[id].link = event.target.value
+                        handleChange(newConfigImgList, 'config.appImgList')
+                      }}
+                    />
+                  </Tooltip>
+                </div>
+                {
+                  config?.imgStyle !== 'matrix' &&
+                  <Button
+                    type="ghost"
+                    shape="circle"
+                    size="small"
+                    onClick={() => {
+                      if (selectWidgetItem?.config?.appImgList.length <= 1) {
+                        message.warn('请至少保留1个选项', 2)
+                        return
+                      }
+                      const newConfigImgList = clone(selectWidgetItem!.config!.appImgList)
+                      newConfigImgList.splice(id, 1)
+                      handleChange(newConfigImgList, 'config.appImgList')
+                    }}
+                  >
+                    —
+                  </Button>
+                }
+              </div>
+            </li>
+          ))}
+        </ul>
+        {
+          config?.imgStyle !== 'matrix' && config?.isCarousel &&
+          <Button
+            className="insert-btn"
+            type="link"
+            size="small"
+            onClick={() => {
+              const newConfigImgList = clone(selectWidgetItem!.config!.appImgList)
+              const indexList: number[] = newConfigImgList.map((item: { label: string, value: string, index: number }) => {
+                return item.index
+              })
+              const max = Math.max(...indexList)
+              newConfigImgList.push({ img: '', link: '', index: max + 1 })
+              handleChange(newConfigImgList, 'config.appImgList')
+            }}
+          >
+            添加图片
+          </Button>
+        }
+      </div>
 
-      <Form.Item label="排版">
+      <Form.Item label="web">
         {
           config?.imgStyle === 'matrix' &&
           <div className="config-item center">
@@ -128,18 +307,18 @@ const ImageConfig = () => {
                 max={5}
                 min={3}
                 onChange={(value) => {
-                  if (value){
+                  if (value) {
                     handleChange(value, 'config.columnNumber')
                     getImageList(value * config.lineNumber, 'matrix')
-                    if (value === 3){
+                    if (value === 3) {
                       handleChange(384, 'config.imgWidth')
                       handleChange(256, 'config.imgHeight')
                     }
-                    if (value === 4){
+                    if (value === 4) {
                       handleChange(282, 'config.imgWidth')
                       handleChange(188, 'config.imgHeight')
                     }
-                    if (value === 5){
+                    if (value === 5) {
                       handleChange(224, 'config.imgWidth')
                       handleChange(149, 'config.imgHeight')
                     }
@@ -152,7 +331,7 @@ const ImageConfig = () => {
                 max={8}
                 min={1}
                 onChange={(value) => {
-                  if (value){
+                  if (value) {
                     handleChange(value, 'config.lineNumber')
                     getImageList(value * config.columnNumber, 'matrix')
                   }
@@ -218,7 +397,7 @@ const ImageConfig = () => {
                   maxSize={10}
                   action={'/antelope-common/common/file/upload/record'}
                   showUploadList={false}
-                  style={{width: '36px', height: '36px', marginBottom: 0}}
+                  style={{ width: '36px', height: '36px', marginBottom: 0 }}
                   accept=".bmp,.gif,.png,.jpeg,.jpg"
                   value={option.img}
                   onChange={(value: any) => {
@@ -252,7 +431,7 @@ const ImageConfig = () => {
                     shape="circle"
                     size="small"
                     onClick={() => {
-                      if (selectWidgetItem?.config?.imgList.length <= 1){
+                      if (selectWidgetItem?.config?.imgList.length <= 1) {
                         message.warn('请至少保留1个选项', 2)
                         return
                       }
@@ -276,7 +455,7 @@ const ImageConfig = () => {
             size="small"
             onClick={() => {
               const newConfigImgList = clone(selectWidgetItem!.config!.imgList)
-              const indexList: number[] = newConfigImgList.map((item: {label: string, value: string, index: number}) => {
+              const indexList: number[] = newConfigImgList.map((item: { label: string, value: string, index: number }) => {
                 return item.index
               })
               const max = Math.max(...indexList)
@@ -303,6 +482,16 @@ const ImageConfig = () => {
           </div>
         </div>
       }
+      <Form.Item label="下边距">
+        <InputNumber
+        disabled
+          value={config?.marginBottom}
+          min={0}
+          onChange={(value) => {
+            handleChange(value, 'config.marginBottom')
+          }}
+        />
+      </Form.Item>
     </>
   )
 }
