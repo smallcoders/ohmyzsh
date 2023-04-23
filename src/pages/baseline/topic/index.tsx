@@ -247,7 +247,7 @@ export default () => {
                       style={{flexFlow:'column'}}
                       name={'weight'}
                       label="权重设置">
-                      <Input ref={weightRef} style={{ width: '300px' }} placeholder='请输入1～100的整数，数字越大排名越小' onInput={useLimit(weightRef)} />
+                      <Input ref={weightRef} placeholder='请输入1～100的整数，数字越大排名越小' onInput={useLimit(weightRef)} />
                     </Form.Item>
                   </Form>
                 </>

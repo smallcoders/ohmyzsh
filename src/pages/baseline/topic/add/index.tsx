@@ -309,9 +309,10 @@ export default () => {
               onConfirm={() => {
                 console.log('_', _, record, index)
                 if(!weightForm.getFieldValue('weight')) return
-                dataSource[index].weight = weightForm.getFieldValue('weight')
+                const dataIndex = (pageInfo.pageIndex - 1) * pageInfo.pageSize + index
+                dataSource[dataIndex].weight = weightForm.getFieldValue('weight')
                 const map = weightMap
-                map[dataSource[index].id] = weightForm.getFieldValue('weight')
+                map[dataSource[dataIndex].id] = weightForm.getFieldValue('weight')
                 setWeightMap(map)
                 setDataSource([...dataSource])
               }}
