@@ -2,12 +2,8 @@ import {
   Button,
   Input,
   Form,
-  Select,
-  Row,
-  Col,
   message,
   Space,
-  Modal,
   Tooltip,
   Popconfirm,
 } from 'antd';
@@ -261,63 +257,65 @@ export default () => {
       render: (_: any, record: any) => {
         return (
           <Space size="middle">
-            <Button
-              key="1"
-              size="small"
-              type="link"
-              onClick={() => {
-                history.push(`${routeName.VERIFY_AGENCY_USER_POSTING_VERIFY_DETAIL}?id=${record?.id}`);
-              }}
-            >
-              详情
-            </Button>
-            {/* <Access accessible={access['P_OA_DSXCY']}>
-            </Access> */}
-            {
-              record?.auditStatus === 1 &&
-              <Popconfirm
-                icon={null}
-                title={
-                  <div className={sc('container-table-popconfirm')}>
-                    <div className={sc('container-table-popconfirm-title')}>确定审核通过？</div>
-                    <div className={sc('container-table-popconfirm-content')}>点击“通过并推荐”可将该内容上架到“推荐”页面</div>
-                  </div>
-                }
-                okText="通过并推荐"
-                cancelText="通过"
-                // 根据接口改
-                onConfirm={() => audit(record?.id.toString(), 1)}
-                onCancel={() => audit(record?.id.toString(), 2)}
+            <Access accessible={access['PQ_BLM_YHFBSH']}>
+              <Button
+                key="1"
+                size="small"
+                type="link"
+                onClick={() => {
+                  history.push(`${routeName.VERIFY_AGENCY_USER_POSTING_VERIFY_DETAIL}?id=${record?.id}`);
+                }}
               >
-                <a href="#">通过</a>
-              </Popconfirm>
-            }
-            {
-              record?.auditStatus === 1 &&
-              <Popconfirm
-                icon={null}
-                // visible={visible}
-                title={
-                  <React.Fragment>
-                    <div style={{fontSize: '16px', fontWeight: 600}}>不通过</div>
-                    <Form form={form} {...formLayout} validateTrigger="onBlur">
-                      <Form.Item
-                        name="auditReason"
-                        rules={[{ required: true, message: '请填写原因' }]}
-                      >
-                        <TextArea placeholder='请输入原因(必填)' rows={3} maxLength={50} />
-                      </Form.Item>
-                    </Form>
-                  </React.Fragment>
-                }
-                okText="确定"
-                cancelText="取消"
-                onConfirm={() => noPass(record?.id.toString(), record?.state)}
-                // onCancel={() => visible= false}
-              >
-                <a href="#" onClick={() => form.resetFields()}>不通过</a>
-              </Popconfirm>
-            }
+                详情
+              </Button>
+            </Access>
+            <Access accessible={access['PA_BLM_YHFBSH']}>
+              {
+                record?.auditStatus === 1 &&
+                <Popconfirm
+                  icon={null}
+                  title={
+                    <div className={sc('container-table-popconfirm')}>
+                      <div className={sc('container-table-popconfirm-title')}>确定审核通过？</div>
+                      <div className={sc('container-table-popconfirm-content')}>点击“通过并推荐”可将该内容上架到“推荐”页面</div>
+                    </div>
+                  }
+                  okText="通过并推荐"
+                  cancelText="通过"
+                  // 根据接口改
+                  onConfirm={() => audit(record?.id.toString(), 1)}
+                  onCancel={() => audit(record?.id.toString(), 2)}
+                >
+                  <a href="#">通过</a>
+                </Popconfirm>
+              }
+              {
+                record?.auditStatus === 1 &&
+                <Popconfirm
+                  icon={null}
+                  // visible={visible}
+                  title={
+                    <React.Fragment>
+                      <div style={{fontSize: '16px', fontWeight: 600}}>不通过</div>
+                      <Form form={form} {...formLayout} validateTrigger="onBlur">
+                        <Form.Item
+                          name="auditReason"
+                          rules={[{ required: true, message: '请填写原因' }]}
+                        >
+                          <TextArea placeholder='请输入原因(必填)' rows={3} maxLength={50} />
+                        </Form.Item>
+                      </Form>
+                    </React.Fragment>
+                  }
+                  okText="确定"
+                  cancelText="取消"
+                  onConfirm={() => noPass(record?.id.toString(), record?.state)}
+                  // onCancel={() => visible= false}
+                >
+                  <a href="#" onClick={() => form.resetFields()}>不通过</a>
+                </Popconfirm>
+              }
+            </Access>
           </Space>
         );
       },
@@ -348,10 +346,10 @@ export default () => {
           const result = await httpEnterpriseList({
             ...pagination,
             publishStartTime: pagination?.publishTime 
-              ? pagination[0]
+              ? pagination?.publishTime[0]
               : undefined,
             publishEndTime: pagination?.publishTime 
-              ? pagination[1]
+              ? pagination?.publishTime[1]
               : undefined,
             queryType: 1,
             auditStatus: pagination?.auditStatus 

@@ -268,78 +268,80 @@ export default () => {
       render: (_: any, record: any) => {
         return (
           <Space size="middle">
-            <Button
-              key="1"
-              size="small"
-              type="link"
-              onClick={() => {
-                history.push(`${routeName.BASELINE_USER_POSTING_MANAGE_DETAIL}?id=${record?.id}`)
-              }}
-            >
-              详情
-            </Button>
-            {/* <Access accessible={access['P_OA_DSXCY']}> */}
-            {/* </Access> */}
-            {
-              record?.recommend === true &&
-              <Popconfirm
-                // icon={null}
-                title="确定将内容取消推荐？"
-                okText="确定"
-                cancelText="取消"
-                onConfirm={() => recommend(record?.id.toString(), false)}
+            <Access accessible={access['PQ_BLM_YHFBGL']}>
+              <Button
+                key="1"
+                size="small"
+                type="link"
+                onClick={() => {
+                  history.push(`${routeName.BASELINE_USER_POSTING_MANAGE_DETAIL}?id=${record?.id}`)
+                }}
               >
-                <a href="#">取消推荐</a>
-              </Popconfirm>
-            }
-            {
-              record?.recommend === false &&
-              <Popconfirm
-                // icon={null}
-                title="确定将内容在推荐列表中进行展示？"
-                okText="确定"
-                cancelText="取消"
-                onConfirm={() => recommend(record?.id.toString(), true)}
-              >
-                <a href="#">推荐</a>
-              </Popconfirm>
-            }
-            {
-              record?.status === 1 &&
-              <Popconfirm
-                icon={null}
-                title={
-                  <React.Fragment>
-                    <div style={{fontSize: '16px', fontWeight: 600}}>下架原因</div>
-                    <Form form={form} {...formLayout} validateTrigger="onBlur">
-                      <Form.Item
-                        name="原因"
-                        rules={[{ required: true, message: '请填写原因' }]}
-                      >
-                        <TextArea placeholder='请输入原因(必填)' rows={3} maxLength={50} />
-                      </Form.Item>
-                    </Form>
-                  </React.Fragment>
-                }
-                okText="下架"
-                cancelText="取消"
-                onConfirm={() => soldOut(record?.id.toString(), 0)}
-              >
-                <a href="#" onClick={() => form.resetFields()}>下架</a>
-              </Popconfirm>
-            }
-            {
-              record?.status === 0 &&
-              <Popconfirm
-                // icon={null}
-                title="确定上架么？"
-                okText="确定"
-                cancelText="取消"
-                onConfirm={() => soldOut(record?.id.toString(), 1)}
-              >
-                <a href="#">上架</a>
-              </Popconfirm>
-            }
+                详情
+              </Button>
+            </Access>
+            <Access accessible={access['PA_BLM_YHFBGL']}>
+              {
+                record?.recommend === true &&
+                <Popconfirm
+                  // icon={null}
+                  title="确定将内容取消推荐？"
+                  okText="确定"
+                  cancelText="取消"
+                  onConfirm={() => recommend(record?.id.toString(), false)}
+                >
+                  <a href="#">取消推荐</a>
+                </Popconfirm>
+              }
+              {
+                record?.recommend === false &&
+                <Popconfirm
+                  // icon={null}
+                  title="确定将内容在推荐列表中进行展示？"
+                  okText="确定"
+                  cancelText="取消"
+                  onConfirm={() => recommend(record?.id.toString(), true)}
+                >
+                  <a href="#">推荐</a>
+                </Popconfirm>
+              }
+              {
+                record?.status === 1 &&
+                <Popconfirm
+                  icon={null}
+                  title={
+                    <React.Fragment>
+                      <div style={{fontSize: '16px', fontWeight: 600}}>下架原因</div>
+                      <Form form={form} {...formLayout} validateTrigger="onBlur">
+                        <Form.Item
+                          name="原因"
+                          rules={[{ required: true, message: '请填写原因' }]}
+                        >
+                          <TextArea placeholder='请输入原因(必填)' rows={3} maxLength={50} />
+                        </Form.Item>
+                      </Form>
+                    </React.Fragment>
+                  }
+                  okText="下架"
+                  cancelText="取消"
+                  onConfirm={() => soldOut(record?.id.toString(), 0)}
+                >
+                  <a href="#" onClick={() => form.resetFields()}>下架</a>
+                </Popconfirm>
+              }
+              {
+                record?.status === 0 &&
+                <Popconfirm
+                  // icon={null}
+                  title="确定上架么？"
+                  okText="确定"
+                  cancelText="取消"
+                  onConfirm={() => soldOut(record?.id.toString(), 1)}
+                >
+                  <a href="#">上架</a>
+                </Popconfirm>
+              }
+            </Access>
           </Space>
         )
       }
@@ -365,6 +367,7 @@ export default () => {
           // auditStatus 上架状态 1 已上架 2 未上架
           // recommend 推荐 1 已推荐 2 微推荐   需要修改
           console.log('查询pagination', pagination)
+          console.log('publishTime', pagination?.publishTime)
           // 搜集的发布时间范围 是一个数组 publishTime
           // 目前可以选同一天
           // publishTime.length > 0
@@ -375,10 +378,10 @@ export default () => {
             recommend: pagination?.recommend ? undefined : undefined,
 
             publishStartTime: pagination?.publishTime 
-              ? pagination[0]
+              ? pagination?.publishTime[0]
               : undefined,
             publishEndTime: pagination?.publishTime
-              ? pagination[1]
+              ? pagination?.publishTime[1]
               : undefined,
             queryType: 2,
             auditStatus: [1,2,3]

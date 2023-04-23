@@ -571,17 +571,17 @@ export default [
       {
         path: routeName.BASELINE_USER_POSTING_MANAGE, 
         name: '用户发布管理',
-        // access: 'M_BLM_NRBQGL',
+        access: 'M_BLM_YHFBGL',
         hideChildrenInMenu: true,
         routes: [
           {
             path: routeName.BASELINE_USER_POSTING_MANAGE,
-            // access: 'M_BLM_NRBQGL',
+            access: 'M_BLM_YHFBGL',
             redirect: routeName.BASELINE_USER_POSTING_MANAGE_INDEX,
           },
           {
             path: routeName.BASELINE_USER_POSTING_MANAGE_INDEX,
-            // access: 'M_BLM_NRBQGL',
+            access: 'M_BLM_YHFBGL',
             name: '用户发布管理',
             hideInBreadcrumb: true,
             component: './baseline/user-posting/index',
@@ -899,17 +899,17 @@ export default [
       {
         path: routeName.VERIFY_AGENCY_USER_POSTING_VERIFY, 
         name: '用户发布审核',
-        // access: 'M_BLM_NRBQGL',
+        access: 'M_BLM_YHFBSH',
         hideChildrenInMenu: true,
         routes: [
           {
             path: routeName.VERIFY_AGENCY_USER_POSTING_VERIFY,
-            // access: 'M_BLM_NRBQGL',
+            access: 'M_BLM_YHFBSH',
             redirect: routeName.VERIFY_AGENCY_USER_POSTING_VERIFY_INDEX,
           },
           {
             path: routeName.VERIFY_AGENCY_USER_POSTING_VERIFY_INDEX,
-            // access: 'M_BLM_NRBQGL',
+            access: 'M_BLM_YHFBSH',
             name: '用户发布审核',
             hideInBreadcrumb: true,
             component: './verify_agency/user_posting_verify/index',
