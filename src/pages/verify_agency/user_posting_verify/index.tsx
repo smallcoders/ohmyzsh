@@ -34,8 +34,11 @@ const auditStatus = {
 };
 // 内容类型
 const contentType = {
+  '1': '供需简讯',
   '2': '企业动态',
   '3': '经验分享',
+  '4': '供需简讯',
+  '5': '供需简讯',
 }
 // export let visible = false; // 用于控制气泡
 
@@ -73,7 +76,7 @@ export default () => {
     try {
       const res = await httpEnterpriseAudit({
         id: Number(id),
-        auditStatus: 1
+        auditStatus: 2
       });
       if (res.code === 0) {
         message.success('审核通过');
@@ -90,24 +93,24 @@ export default () => {
     return new Promise((resolve, reject) => {
       form.validateFields().then(async (values: any) => {
         console.log('搜集的表单', values)
-        // try {
-        //   const res = await httpEnterpriseAudit({
-        //     id: Number(id),
-        //     auditStatus: 3,
-        //     auditReason: values?.auditReason
-        //   });
-        //   if (res.code === 0) {
-        //     message.success('审核不通过完成');
-        //     actionRef.current?.reload(); // 让table// 刷新
-        //     resolve('成功');
-        //   } else {
-        //     message.error(`失败，原因:{${res.message}}`);
-        //     resolve('失败');
-        //   }
-        // } catch (error) {
-        //   console.log(error);
-        //   resolve('失败');
-        // }
+        try {
+          const res = await httpEnterpriseAudit({
+            id: Number(id),
+            auditStatus: 3,
+            auditReason: values?.auditReason
+          });
+          if (res.code === 0) {
+            message.success('审核不通过完成');
+            actionRef.current?.reload(); // 让table// 刷新
+            resolve('成功');
+          } else {
+            message.error(`失败，原因:{${res.message}}`);
+            resolve('失败');
+          }
+        } catch (error) {
+          console.log(error);
+          resolve('失败');
+        }
 
 
         resolve('成功')
@@ -140,8 +143,8 @@ export default () => {
               {_ || '--'}
             </div>
             {
-              record?.risky && 
-              <Tooltip title={record?.riskyContent}>
+              record?.riskInfo && 
+              <Tooltip title={record?.riskInfo}>
                 <div className={sc('container-table-content-risky')}>
                   风险
                 </div>
@@ -164,8 +167,8 @@ export default () => {
               {_ || '--'}
             </div>
             {
-              record?.risky && 
-              <Tooltip title={record?.riskyContent}>
+              record?.riskInfo && 
+              <Tooltip title={record?.riskInfo}>
                 <div className={sc('container-table-content-risky')}>
                   风险
                 </div>
@@ -198,6 +201,9 @@ export default () => {
       valueType: 'select', // 筛选的类别
       // hideInSearch: true, // 隐藏search
       valueEnum: {
+        1: {
+          text: '供需简讯'
+        },
         2: {
           text: '企业动态'
         },
@@ -230,7 +236,7 @@ export default () => {
       valueType: 'select', // 筛选的类别
       valueEnum: {
         1: {
-          text: '未解决',
+          text: '待审核',
         },
         2: {
           text: '审核通过'
@@ -268,7 +274,7 @@ export default () => {
             {/* <Access accessible={access['P_OA_DSXCY']}>
             </Access> */}
             {
-              record?.auditStatus === '1' &&
+              record?.auditStatus === 1 &&
               <Popconfirm
                 icon={null}
                 title={
@@ -287,7 +293,7 @@ export default () => {
               </Popconfirm>
             }
             {
-              record?.auditStatus === '1' &&
+              record?.auditStatus === 1 &&
               <Popconfirm
                 icon={null}
                 // visible={visible}
@@ -347,6 +353,10 @@ export default () => {
             publishEndTime: pagination?.publishTime 
               ? pagination[1]
               : undefined,
+            queryType: 1,
+            auditStatus: pagination?.auditStatus 
+              ? [Number(pagination?.auditStatus)]
+              : [1,2,3]
           }); 
           // 根据后端调整
           // const result = {

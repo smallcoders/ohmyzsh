@@ -9,11 +9,13 @@ export function httpEnterpriseList(data: {
   publishStartTime?: string // 发布时间-开始
   publishEndTime?: string // 发布时间-开始
   contentType?: string // 内容类型：1：供需简讯，5:供，4：需，2：企业动态，3：经验分享
-  auditStatus?: string // 审核状态：0：草稿；1：审核中；2：上架；3：审核不通过
+  auditStatus: any // 必传[1,2,3] 审核状态：0：草稿；1：审核中；2：上架；3：审核不通过
   recommendFlag?: boolean // 推荐：true：已推荐，false:未推荐
+  recommend?: boolean
   current?: number
   pageSize?: number
   pageIndex?: number
+  queryType: number
 }) {
   return request(`/antelope-industrial/mng/enterprise/publish/page-query`, {
     method: 'POST',
@@ -71,7 +73,7 @@ export function httpEnterprisePublishDown(data: {
  * 详情
  */
 export function httpEnterpriseDetail(id: string) {
-  return request(`/antelope-industrial/mng/enterprise/publish/detail/?id=${id}`, {
+  return request(`/antelope-industrial/mng/enterprise/publish/detail/${id}`, {
     method: 'GET',
   })
 }

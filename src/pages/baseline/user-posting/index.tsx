@@ -31,11 +31,19 @@ const recommendStatus = {
   'true': '已推荐',
   'false': '未推荐',
 }
+// 内容类型
+const contentType = {
+  '1': '供需简讯',
+  '2': '企业动态',
+  '3': '经验分享',
+  '4': '供需简讯',
+  '5': '供需简讯',
+}
 
 export default () => {
   const formLayout = {
     labelCol: { span: 6 },
-    wrapperCol: { span: 16 },
+    wrapperCol: { span: 20 },
   };
   const [form] = Form.useForm();
   const { TextArea } = Input;
@@ -58,7 +66,7 @@ export default () => {
             status: state,
           })
           if (res.code === 0) {
-            message.success(state === 'SHOPPED' ? '下架成功' : '上架成功');
+            message.success(state === 0 ? '下架成功' : '上架成功');
             actionRef.current?.reload(); // 让table// 刷新
           } else {
             message.error(`失败，原因:{${res.message}}`);
@@ -86,7 +94,7 @@ export default () => {
         message.success(`${state ? '推荐' : '取消推荐' }成功`);
         actionRef.current?.reload(); // 让table// 刷新
       } else {
-        message.error(`删除失败，原因:{${removeRes.message}}`);
+        message.error(`推荐失败，原因:{${removeRes.message}}`);
       }
     } catch (error) {
       console.log(error);
@@ -115,8 +123,8 @@ export default () => {
               {_ || '--'}
             </div>
             {
-              record?.risky && 
-              <Tooltip title={record?.riskyContent}>
+              record?.riskInfo && 
+              <Tooltip title={record?.riskInfo}>
                 <div className={sc('container-table-content-risky')}>
                   风险
                 </div>
@@ -139,8 +147,8 @@ export default () => {
               {_ || '--'}
             </div>
             {
-              record?.risky && 
-              <Tooltip title={record?.riskyContent}>
+              record?.riskInfo && 
+              <Tooltip title={record?.riskInfo}>
                 <div className={sc('container-table-content-risky')}>
                   风险
                 </div>
@@ -173,12 +181,22 @@ export default () => {
       valueType: 'select', // 筛选的类别
       // hideInSearch: true, // 隐藏search
       valueEnum: {
+        1: {
+          text: '供需简讯'
+        },
         2: {
           text: '企业动态'
         },
         3: {
           text: '经验分享'
         },
+      },
+      renderText: (_: string) => {
+        return (
+          <div className={`state${_}`}>
+            {Object.prototype.hasOwnProperty.call(contentType, _) ? contentType[_] : '--'}
+          </div>
+        );
       },
     },
     {
@@ -211,8 +229,8 @@ export default () => {
       // valueType: 'textarea', // 筛选的类别
       valueType: 'select', // 筛选的类别
       valueEnum: {
+        0: '未上架',
         1: '已上架',
-        2: '未上架'
       },
       renderText: (_: string) => {
         return (
@@ -265,7 +283,7 @@ export default () => {
             {
               record?.recommend === true &&
               <Popconfirm
-                icon={null}
+                // icon={null}
                 title="确定将内容取消推荐？"
                 okText="确定"
                 cancelText="取消"
@@ -277,7 +295,7 @@ export default () => {
             {
               record?.recommend === false &&
               <Popconfirm
-                icon={null}
+                // icon={null}
                 title="确定将内容在推荐列表中进行展示？"
                 okText="确定"
                 cancelText="取消"
@@ -313,7 +331,7 @@ export default () => {
             {
               record?.status === 0 &&
               <Popconfirm
-                icon={null}
+                // icon={null}
                 title="确定上架么？"
                 okText="确定"
                 cancelText="取消"
@@ -354,12 +372,16 @@ export default () => {
           const result = await httpEnterpriseList({
             ...pagination,
             recommendFlag: pagination?.recommend ? pagination?.recommend === '1' : undefined,
+            recommend: pagination?.recommend ? undefined : undefined,
+
             publishStartTime: pagination?.publishTime 
               ? pagination[0]
               : undefined,
             publishEndTime: pagination?.publishTime
               ? pagination[1]
               : undefined,
+            queryType: 2,
+            auditStatus: [1,2,3]
           }); 
           // 根据后端调整
           // const result = {
