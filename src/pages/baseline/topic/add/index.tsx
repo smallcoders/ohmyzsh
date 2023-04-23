@@ -132,13 +132,13 @@ export default () => {
   const addRecommend = async (state: number) => {
     const articles = {}
     dataSource.forEach((item: any) => {
-      articles[item.id] = +(item.weight || 1)
+      articles[item.id] = +(weightMap[item.id] || 1)
     })
     form
       .validateFields()
       .then(async (value) => {
         const {topic,weight}=value
-        const submitRes =   !query?.id ? await addHotRecommend({
+        const submitRes = !query?.id ? await addHotRecommend({
           topic,
           weight:parseInt(weight),
           enable:1,
