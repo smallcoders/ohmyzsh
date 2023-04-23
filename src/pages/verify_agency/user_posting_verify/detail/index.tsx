@@ -22,6 +22,13 @@ const contentType = {
   '4': '供需简讯',
   '5': '供需简讯',
 };
+// 审核状态
+const auditStatus = {
+  '0': '草稿',
+  '1': '待审核',
+  '2': '审核通过',
+  '3': '审核不通过',
+};
 const operaObj = { ADD: '新增', MODIFY: '修改', DOWN: '下架', UP: '上架', DELETE: '删除', TOPPING: '置顶', CANCEL_TOPPING: '取消置顶', AUDIT: '自动审核', STAGING: '暂存', AUDIT_PASS: '审核通过', AUDIT_NOT_PASS: '审核不通过', RECOMMEND: '推荐', CANCEL_RECOMMEND: '取消推荐' }
 export default () => {
   const { id } = history.location.query as any;
@@ -98,7 +105,7 @@ export default () => {
         </div>
         <div className={sc('container-content-desc')}>
           <span>审核状态：</span>
-          <span>{detail?.title || '--'}</span>
+          <span>{detail?.auditStatus && auditStatus[detail?.auditStatus] || '--'}</span>
         </div>
       </div>
       <div className={sc('container-publisher')}>
