@@ -1,17 +1,25 @@
-import { message, Image, Button, Table, Steps, Avatar } from 'antd';
+import { message, Button, Avatar } from 'antd';
 import { Access, history, useAccess } from 'umi';
 import { useState, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
-import { getDemandDetail } from '@/services/creative-demand';
 import SelfTable from '@/components/self_table';
-import VerifyInfoDetail from '@/components/verify_info_detail/verify-info-detail';
 import { UserOutlined } from '@ant-design/icons';
 import { getArticleDetail, getArticleStatisticPage } from '@/services/baseline';
 import Common from '@/types/common';
 import moment from 'moment';
 import { routeName } from '../../../../../config/routes';
+
+const hostMap = {
+  'http://172.30.33.222:10086': 'http://172.30.33.222',
+  'http://172.30.33.212:10086': 'http://172.30.33.212',
+  'http://10.103.142.216': 'https://preprod.lingyangplat.com',
+  'http://10.103.142.222': 'https://greenenv.lingyangplat.com',
+  'http://manage.lingyangplat.com': 'https://www.lingyangplat.com',
+  'https://manage.lingyangplat.com': 'https://www.lingyangplat.com',
+  'http://localhost:8000': 'http://172.30.33.222'
+}
 
 const sc = scopedClasses('science-technology-manage-creative-detail');
 const operaObj = { ADD: '新增', MODIFY: '修改', DOWN: '下架', UP: '上架', DELETE: '删除', TOPPING: '置顶', CANCEL_TOPPING: '取消置顶', AUDIT: '自动审核', STAGING: '暂存' }
@@ -187,6 +195,18 @@ export default () => {
                 <span>内容原址：</span>
                 <span>{detail?.sourceUrl ? <a href={detail?.sourceUrl} target="_blank">{detail?.sourceUrl}</a> : '--'}</span>
               </div>
+              {
+                detail.status === 1 && detail.id && <div className={sc('container-desc')}>
+                  <span>平台内地址：</span>
+                  <span>
+                    <a href={`${hostMap[location.origin] || 'http://172.30.33.222'}/antelope-baseline/industry-moments/#/detail?id=${detail.id}`} target="_blank" rel="noreferrer">
+                      {
+                        `${hostMap[location.origin] || 'http://172.30.33.222'}/antelope-baseline/industry-moments/#/detail?id=${detail.id}`
+                      }
+                    </a>
+                  </span>
+                </div>
+              }
             </div>
           </>
         }
