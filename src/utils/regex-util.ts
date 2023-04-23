@@ -46,3 +46,6 @@ export const emailReg = /^[A-Za-z0-9\u4e00-\u9fa5]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_
 
 //邮编
 export const postcodeReg = /^[1-9]\d{5}$/
+
+//11位和10位的手机号
+export const tenPhone = /^(?:\+86)?1[3-9]\d{9}$/
