@@ -9,6 +9,7 @@ import {
   Space,
   Modal,
   Tooltip,
+  DatePicker
 } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
@@ -21,8 +22,7 @@ import { Access, useAccess } from 'umi';
 import type Common from '@/types/common';
 import type NeedVerify from '@/types/user-config-need-verify';
 import { routeName } from '../../../../config/routes';
-import { stubFalse } from 'lodash';
-import { deleteArticle, getArticlePage, getArticleRiskCount, getArticleTags, getArticleType, isTopArticle, onOffShelvesArticle } from '@/services/baseline';
+import { deleteArticle, getArticlePage, getArticleRiskCount, getArticleTags, getArticleType, isTopArticle, onOffShelvesArticle, articleBatchDelete, articleBatchOffShelves } from '@/services/baseline';
 const sc = scopedClasses('science-technology-manage-creative-need');
 const statusObj = {
   0: '下架',
@@ -64,6 +64,12 @@ export default () => {
 
   const [tags, setTags] = useState<any>([]);
   const [riskCount, setRiskCount] = useState<number>(0);
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+
+  const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
+    setSelectedRowKeys(newSelectedRowKeys);
+  };
+
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     setLoading(true);
     try {
@@ -174,6 +180,25 @@ export default () => {
       width: 300,
     },
     {
+      title: '发布时间',
+      dataIndex: 'publishTime',
+      isEllipsis: true,
+      render: (_: string) => _ ? moment(_).format('YYYY-MM-DD HH:mm:ss') : '--',
+      width: 250,
+    },
+    {
+      title: '内容类型',
+      dataIndex: 'types',
+      render: (_: any[]) => _?.length > 0 ? _?.map(p => p.typeName).join(',') : '--',
+      width: 200,
+    },
+    {
+      title: '标签',
+      dataIndex: 'labels',
+      render: (_: any[]) => _?.length > 0 ? _?.map(p => p.labelName).join(',') : '--',
+      width: 200,
+    },
+    {
       title: '作者',
       dataIndex: 'author',
       isEllipsis: true,
@@ -188,19 +213,6 @@ export default () => {
       render: (_: any[]) => _ || '--',
     },
     {
-      title: '内容类型',
-      dataIndex: 'types',
-      render: (_: any[]) => _?.length > 0 ? _?.map(p => p.typeName).join(',') : '--',
-      width: 200,
-    },
-    {
-      title: '标签',
-      dataIndex: 'labels',
-      render: (_: any[]) => _?.length > 0 ? _?.map(p => p.labelName).join(',') : '--',
-      width: 200,
-    },
-
-    {
       title: '内容状态',
       dataIndex: 'status',
       isEllipsis: true,
@@ -213,13 +225,7 @@ export default () => {
       },
       width: 150,
     },
-    {
-      title: '发布时间',
-      dataIndex: 'publishTime',
-      isEllipsis: true,
-      render: (_: string) => _ ? moment(_).format('YYYY-MM-DD HH:mm:ss') : '--',
-      width: 250,
-    },
+
     {
       title: '上架时间',
       dataIndex: 'updateTime',
@@ -254,18 +260,6 @@ export default () => {
                     }}
                   >
                     编辑
-                  </Button>
-                </Access>
-                <Access accessible={access['PD_BLM_NRGL']}>
-                  <Button type="link" style={{ padding: 0 }} onClick={() => {
-                    Modal.confirm({
-                      title: '删除数据',
-                      content: '删除该内容后，系统将不再推荐该内容，确定删除？',
-                      onOk: () => { onDelete(record?.id) },
-                      okText: '删除'
-                    })
-                  }}>
-                    删除
                   </Button>
                 </Access>
               </>
@@ -345,33 +339,36 @@ export default () => {
                 >
                   上架
                 </Button></Access> : <>
-                  <Access accessible={access['P_BLM_NRGL']}> <Button
-                    type="link"
-                    style={{ padding: 0 }}
-                    onClick={() => {
-                      window.open(routeName.BASELINE_CONTENT_MANAGE_ADDORUPDATE + `?id=${record?.id}`);
-                    }}
-                  >
-                    编辑
-                  </Button>
+                  <Access accessible={access['P_BLM_NRGL']}>
+                      <Button
+                      type="link"
+                      style={{ padding: 0 }}
+                      onClick={() => {
+                        window.open(routeName.BASELINE_CONTENT_MANAGE_ADDORUPDATE + `?id=${record?.id}`);
+                      }}
+                    >
+                      编辑
+                    </Button>
                   </Access>
-                  <Access accessible={access['PD_BLM_NRGL']}><Button type="link" style={{ padding: 0 }} onClick={() => {
-                    Modal.confirm({
-                      title: '删除数据',
-                      content: '删除该内容后，系统将不再推荐该内容，确定删除？',
-                      onOk: () => { onDelete(record?.id) },
-                      okText: '删除'
-                    })
-                  }}>
-                    删除
-                  </Button></Access>
                 </>
                 }
               </>
             }
-
-
-
+            {
+              record?.status !== 1 &&
+              <Access accessible={access['PD_BLM_NRGL']}>
+                  <Button type="link" style={{ padding: 0, color: 'red' }} onClick={() => {
+                      Modal.confirm({
+                        title: '删除数据',
+                        content: '删除该内容后，系统将不再推荐该内容，确定删除？',
+                        onOk: () => { onDelete(record?.id) },
+                        okText: '删除'
+                      })
+                    }}>
+                      删除
+                  </Button>
+                </Access>
+            }
           </Space>
           // </Access>
         )
@@ -428,8 +425,8 @@ export default () => {
               </Form.Item>
             </Col>
             <Col span={6}>
-              <Form.Item name="labels" label="标签">
-                <Input placeholder="请输入" />
+              <Form.Item name="time" label="发布日期">
+                <DatePicker.RangePicker allowClear />
               </Form.Item>
             </Col>
             <Col span={6}>
@@ -448,8 +445,9 @@ export default () => {
                 onClick={() => {
                   const search = searchForm.getFieldsValue();
                   if (search.time) {
-                    search.createTimeStart = moment(search.time[0]).format('YYYY-MM-DD HH:mm:ss');
-                    search.createTimeEnd = moment(search.time[1]).format('YYYY-MM-DD HH:mm:ss');
+                    search.publishStartTime = moment(search.time[0]).valueOf();
+                    search.publishEndTime = moment(search.time[1]).valueOf();
+                    delete search.time
                   }
                   setSearChContent(search);
                 }}
@@ -468,6 +466,13 @@ export default () => {
               </Button>
             </Col>
           </Row>
+          <Row>
+            <Col span={6}>
+              <Form.Item name="labels" label="标签">
+                <Input placeholder="请输入" />
+              </Form.Item>
+            </Col>
+          </Row>
         </Form>
       </div>
     );
@@ -478,12 +483,88 @@ export default () => {
       {useSearchNode()}
       <div className={sc('container-table-header')}>
         <div className="title">
-          <span>风险资讯(<span style={{ color: 'red' }}>{riskCount >= 10000 ? '10000+' : riskCount || 0}</span>条)</span>
-          <Access accessible={access['PA_BLM_NRGL']}>
-            <Button type='primary' icon={<PlusOutlined />} onClick={() => { window.open(routeName.BASELINE_CONTENT_MANAGE_ADDORUPDATE); }}>
-              新增
-            </Button>
-          </Access>
+          <span>
+            风险资讯(<span style={{ color: 'red' }}>{riskCount >= 10000 ? '10000+' : riskCount || 0}</span>条)
+          </span>
+          <div>
+            <Access accessible={access['PA_BLM_NRGL']}>
+              <Button onClick={() => {
+                if (!selectedRowKeys.length) {
+                  message.warning('请选择数据');
+                  return;
+                }
+                Modal.confirm({
+                  title: '提示',
+                  content: (
+                    <div>
+                      <p>确定将所选的内容全部下架？</p>
+                    </div>
+                  ),
+                  onOk() {
+                    articleBatchOffShelves({
+                      articleIds: selectedRowKeys,
+                      articleStatus: 0
+                    }).then((res) => {
+                      if (res.code === 0) {
+                        message.success('下架成功')
+                        setSelectedRowKeys([])
+                        getPage();
+                      } else {
+                        message.error(res.message)
+                      }
+                    }).finally(() => {
+                      Modal.destroyAll()
+                    })
+                  },
+                  onCancel() { }
+                });
+              }}>
+                批量下架
+              </Button>
+              <Button style={{ margin: '0 10px' }} onClick={() => {
+                if (!selectedRowKeys.length) {
+                  message.warning('请选择数据');
+                  return;
+                }
+                Modal.confirm({
+                  title: '提示',
+                  content: (
+                    <div>
+                      <p>确定将所选的内容全部删除？</p>
+                    </div>
+                  ),
+                  onOk() {
+                    articleBatchDelete({
+                      ids: selectedRowKeys
+                    }).then((res) => {
+                      if (res.code === 0) {
+                        const successCount = res.result
+                        let msg = `成功删除${successCount}条数据`
+                        if (selectedRowKeys.length > successCount) {
+                          msg += `，失败${selectedRowKeys.length - successCount}条数据，删除数据需要先下架`
+                        }
+                        Modal.info({
+                          title: '提示',
+                          content: msg,
+                          okText: '我知道了',
+                        })
+                        setSelectedRowKeys([])
+                        getPage();
+                      } else {
+                        message.error(res.message)
+                      }
+                    })
+                  },
+                  onCancel() { }
+                });
+              }}>
+                批量删除
+              </Button>
+              <Button type='primary' icon={<PlusOutlined />} onClick={() => { window.open(routeName.BASELINE_CONTENT_MANAGE_ADDORUPDATE); }}>
+                新增
+              </Button>
+            </Access>
+          </div>
         </div>
       </div>
       <div className={sc('container-table-body')}>
@@ -491,6 +572,12 @@ export default () => {
           loading={loading}
           bordered
           scroll={{ x: 2580 }}
+          rowSelection={{
+            fixed: true,
+            selectedRowKeys,
+            onChange: onSelectChange,
+          }}
+          rowKey={'id'}
           columns={columns}
           dataSource={dataSource}
           pagination={

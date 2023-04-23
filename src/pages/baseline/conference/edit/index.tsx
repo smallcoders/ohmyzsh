@@ -12,7 +12,7 @@ import {
   Card,
   Form,
   Input,
-  Select,
+  Checkbox,
   Popconfirm,
   DatePicker,
   Modal,
@@ -68,6 +68,8 @@ export default () => {
   const [editForm] = Form.useForm();
   const [userForm] = Form.useForm();
   const [materialsForm] = Form.useForm();
+  const [meetingTimeRequire, setMeetingTimeRequire] = useState(true)
+  const [defaultMeetingTime, setDefaultMeetingTime] = useState<any[]>([])
   const { TextArea } = Input;
   const columns = [
     {
@@ -257,12 +259,14 @@ export default () => {
         });
         setOrganizationSimples(res?.result.organizationSimples);
         setExpandAttributes(newArr);
-        const time = [moment(res?.result.startTime), moment(res?.result.endTime)];
         if (res?.result.startTime && res?.result.endTime) {
+          const time = [moment(res?.result.startTime), moment(res?.result.endTime)];
+          setDefaultMeetingTime(time)
           form.setFieldsValue({ time, ...res?.result });
         } else {
           form.setFieldsValue({ ...res?.result });
         }
+        setMeetingTimeRequire(!res.result.timePending)
       }
     });
   };
@@ -287,8 +291,12 @@ export default () => {
         materialsForm.validateFields(),
       ])
         .then(async (value) => {
-          const startTime = moment(value[0].time[0]).format('YYYY-MM-DD HH:mm');
-          const endTime = moment(value[0].time[1]).format('YYYY-MM-DD HH:mm');
+          let startTime = ''
+          let endTime = ''
+          if (value[0].time && value[0].time.length) {
+            startTime = moment(value[0].time[0]).format('YYYY-MM-DD HH:mm');
+            endTime = moment(value[0].time[1]).format('YYYY-MM-DD HH:mm');
+          }
           if (!value[0].weight) {
             value[0].weight = '1';
           }
@@ -303,6 +311,7 @@ export default () => {
             expandAttributes,
             startTime,
             endTime,
+            timePending: !meetingTimeRequire,
             ...value[0],
             ...value[1],
             ...value[2],
@@ -341,6 +350,7 @@ export default () => {
         expandAttributes,
         startTime,
         endTime,
+        timePending: !meetingTimeRequire,
         ...value[0],
         ...value[1],
         ...value[2],
@@ -541,23 +551,38 @@ export default () => {
                 maxLength={100}
               />
             </Form.Item>
-            <Form.Item
-              name="time"
-              label="会议时间"
-              rules={[
-                {
-                  required: true,
-                  message: `必填`,
-                },
-              ]}
-            >
-              <DatePicker.RangePicker
-                style={{ width: '100%' }}
-                allowClear
-                showTime
-                format="YYYY-MM-DD HH:mm"
-              />
-            </Form.Item>
+            <div style={{ display: 'flex', alignItems: 'center', marginLeft: '10%' }}>
+              <Form.Item
+                name="time"
+                label="会议时间"
+                rules={[
+                  {
+                    required: meetingTimeRequire,
+                    validator: (rule) => {
+                      const values = form.getFieldsValue();
+                      if (!rule.required) return Promise.resolve()
+                      if (values.time) return Promise.resolve()
+                      return Promise.reject('会议时间不能为空')
+                    },
+                    message: `必填`,
+                  },
+                ]}
+              >
+                <DatePicker.RangePicker
+                  allowClear
+                  style={{ width: 400 }}
+                  showTime
+                  onChange={(e) => {
+                    form.setFieldValue('time', e)
+                  }}
+                  format="YYYY-MM-DD HH:mm"
+                />
+              </Form.Item>
+              <Checkbox style={{ marginBottom: 20, marginLeft: 20 }} checked={!meetingTimeRequire} onChange={({ target }) => {
+                setMeetingTimeRequire(!target.checked)
+              }}>时间待定</Checkbox>
+            </div>
+            
 
             <Form.Item name="weight" label="权重">
               <InputNumber
@@ -663,7 +688,7 @@ export default () => {
           <Button
             style={{ margin: '10px 0' }}
             type="primary"
-            disabled={organizationSimples.length >= 300}
+            disabled={organizationSimples.length >= 2000}
             key="addStyle1"
             onClick={() => {
               setVisibleImport(true);
@@ -1156,8 +1181,8 @@ export default () => {
                     item.index = index + 1;
                   });
                   const newArray =
-                    [...organizationSimples, ...res?.result]?.length > 300
-                      ? [...organizationSimples, ...res?.result].splice(0, 300)
+                    [...organizationSimples, ...res?.result]?.length > 2000
+                      ? [...organizationSimples, ...res?.result].splice(0, 2000)
                       : [...organizationSimples, ...res?.result];
                   setOrganizationSimples(newArray);
                   importForm.resetFields();

@@ -245,7 +245,6 @@
   BASELINE_ASSOCIATION_MANAGE_DETAIL: 'baseline-association-manage/detail',
   BASELINE_ASSOCIATION_MANAGE_EDIT: 'baseline-association-manage/add',
   
-  
   BASELINE_USER_POSTING_MANAGE: '/baseline/baseline-user-posting-manage', // 用户发布管理
   BASELINE_USER_POSTING_MANAGE_INDEX: '/baseline/baseline-user-posting-manage/index', // 用户发布管理
   BASELINE_USER_POSTING_MANAGE_DETAIL: '/baseline/baseline-user-posting-manage/detail', // 用户发布管理详情
@@ -253,6 +252,12 @@
   VERIFY_AGENCY_USER_POSTING_VERIFY_INDEX: '/verify-agency/user-posting-verify/index', // 用户发布审核
   VERIFY_AGENCY_USER_POSTING_VERIFY_DETAIL: '/verify-agency/user-posting-verify/detail', // 用户发布审核详情
   
+  BASELINE_SERVICE_NUMBER: '/baseline/baseline-service-number',
+  BASELINE_SERVICE_NUMBER_INDEX: '/baseline/baseline-service-number/index',
+  BASELINE_SERVICE_NUMBER_SETTING: '/baseline/baseline-service-number-setting',
+  BASELINE_SERVICE_NUMBER_MANAGEMENT: '/baseline/baseline-service-number/management', // 服务号管理
+  BASELINE_SERVICE_NUMBER_MANAGEMENT_DETAIL: '/baseline/baseline-service-number/management/detail', // 服务号管理
+  BASELINE_SERVICE_NUMBER_MANAGEMENT_DRAFTS_ADD: '/baseline/baseline-service-number/management/drafts/add', // 草稿箱add
 };
 
 export default [
@@ -512,6 +517,56 @@ export default [
         hideInMenu: true,
         name: '新增',
         component: './baseline/association-info/add',
+      },
+      {
+        path: routeName.BASELINE_SERVICE_NUMBER_SETTING,
+        name: '服务号设置管理',
+        code: 'M_BLM_FWHGL',
+        access: 'M_BLM_FWHGL',
+        component: './baseline/service/service_number_setting/index',
+      },
+      {
+        path: routeName.BASELINE_SERVICE_NUMBER,
+        code: 'M_BLM_FWHYY',
+        access: 'M_BLM_FWHYY',
+        name: '服务号运营',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            access: 'M_BLM_FWHYY',
+            path: routeName.BASELINE_SERVICE_NUMBER,
+            redirect: routeName.BASELINE_SERVICE_NUMBER_INDEX,
+          },
+          {
+            path: routeName.BASELINE_SERVICE_NUMBER_INDEX,
+            // code: 'M_AT_KJCG',
+            access: 'M_BLM_FWHYY',
+            name: '服务号运营',
+            hideInBreadcrumb: true,
+            component: './baseline/service/service_number/index', // 更新
+          },
+          {
+            path: routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT,
+            name: '服务号管理',
+            // access: 'PQ_BLM_FWHYY',
+            hideInBreadcrumb: true,
+            component: './baseline/service/service_number/service-management',
+          },
+          {
+            path: routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DRAFTS_ADD,
+            name: '新增',
+            // access: 'PA_BLM_NRGL',
+            hideInBreadcrumb: true,
+            component: './baseline/service/service_number/drafts_add/index',
+          },
+          {
+            path: routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DETAIL,
+            name: '服务号设置详情',
+            // access: 'PA_BLM_NRGL',
+            hideInBreadcrumb: true,
+            component: './baseline/service/service_number/service_management_detail/index',
+          }
+        ]
       },
       {
         path: routeName.BASELINE_USER_POSTING_MANAGE, 

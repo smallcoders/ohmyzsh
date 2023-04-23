@@ -102,6 +102,22 @@ export async function onOffShelvesArticle(id: string, articleStatus: number) {
   });
 }
 
+// 批量删除文章
+export async function articleBatchDelete(data?: Record<string, any>) {
+  return request<any>(`/antelope-industrial/mng/article/batch/delete`, {
+    method: 'post',
+    data,
+  })
+}
+
+// 批量下架文章
+export async function articleBatchOffShelves(data?: Record<string, any>) {
+  return request<any>(`/antelope-industrial/mng/article/batch/up-or-down`, {
+    method: 'post',
+    data,
+  })
+}
+
 // 置顶/取消置顶
 //id	是	isTopping	true：置顶；false：取消置顶
 export async function isTopArticle(data?: Record<string, any>) {
