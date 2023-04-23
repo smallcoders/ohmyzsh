@@ -83,6 +83,7 @@ export default () => {
       }
 
       const cb = async () => {
+        setLoading(true)
         const res = await (id ? editArticle({ id, ...data, status }) : addArticle({ ...data, status }))
         if (res?.code == 0) {
           message.success('操作成功')
@@ -91,6 +92,7 @@ export default () => {
         } else {
           message.error(res?.message || '操作失败')
         }
+        setLoading(false)
       }
 
       if (status == 1) {
@@ -111,6 +113,7 @@ export default () => {
       }
 
     } catch (error) {
+      setLoading(false)
       console.log(' error ', error)
     }
   }
