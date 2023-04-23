@@ -17,18 +17,19 @@ import { history, Access, useAccess } from 'umi';
 import './index.less'
 import scopedClasses from '@/utils/scopedClasses';
 import { routeName } from '../../../../config/routes'
+import { httpEnterpriseList, httpEnterpriseAudit, httpEnterprisePublishDown, httpEnterprisePublishRecommend } from '@/services/user-posting';
 
 const sc = scopedClasses('baseline-user-posting');
 
 // 上下架状态
 const stateEnable = {
+  '0': '未上架',
   '1': '已上架',
-  '2': '未上架',
 }
 // 推荐状态
 const recommendStatus = {
-  '1': '已推荐',
-  '2': '微推荐',
+  'true': '已推荐',
+  'false': '未推荐',
 }
 
 export default () => {
@@ -46,21 +47,27 @@ export default () => {
 
   // 上/下架
   const soldOut = async (id: string,state: any) => {
-    // try {
-    //   const res = await cityPropaganda(id)
-    //   if (res.code === 0) {
-    //     message.success(state === 'SHOPPED' ? '下架成功' : '上架成功');
-    //     actionRef.current?.reload(); // 让table// 刷新
-    //   } else {
-    //     message.error(`失败，原因:{${res.message}}`);
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    // }
+    // state 0 下架 1 上架
     // 区分一下上架还是下架
     return new Promise((resolve, reject) => {
-      form.validateFields().then((values: any) => {
+      form.validateFields().then(async (values: any) => {
         console.log('搜集的表单', values)
+        try {
+          const res = await httpEnterprisePublishDown({
+            id: Number(id),
+            status: state,
+          })
+          if (res.code === 0) {
+            message.success(state === 'SHOPPED' ? '下架成功' : '上架成功');
+            actionRef.current?.reload(); // 让table// 刷新
+          } else {
+            message.error(`失败，原因:{${res.message}}`);
+          }
+        } catch (error) {
+          console.log(error);
+        }
+
+
         resolve('成功')
       }).catch(() => {
         reject('失败')
@@ -71,9 +78,12 @@ export default () => {
   // 推荐/取消推荐
   const recommend = async (id: string, state: any) => {
     try {
-      const removeRes = await removePropaganda(id)
+      const removeRes = await httpEnterprisePublishRecommend({
+        id: Number(id),
+        recommend: state
+      })
       if (removeRes.code === 0) {
-        message.success(`删除成功`);
+        message.success(`${state ? '推荐' : '取消推荐' }成功`);
         actionRef.current?.reload(); // 让table// 刷新
       } else {
         message.error(`删除失败，原因:{${removeRes.message}}`);
@@ -157,11 +167,19 @@ export default () => {
     },
     {
       title: '内容类型',
-      dataIndex: 'type',
+      dataIndex: 'contentType',
       align: 'center',
       // valueType: 'textarea', // 筛选的类别
-      valueType: 'text', // 筛选的类别
+      valueType: 'select', // 筛选的类别
       // hideInSearch: true, // 隐藏search
+      valueEnum: {
+        2: {
+          text: '企业动态'
+        },
+        3: {
+          text: '经验分享'
+        },
+      },
     },
     {
       title: '发布时间',
@@ -188,10 +206,14 @@ export default () => {
     // },
     {
       title: '上架状态',
-      dataIndex: 'enable',
+      dataIndex: 'status',
       align: 'center',
       // valueType: 'textarea', // 筛选的类别
       valueType: 'select', // 筛选的类别
+      valueEnum: {
+        1: '已上架',
+        2: '未上架'
+      },
       renderText: (_: string) => {
         return (
           <div className={`state${_}`}>
@@ -203,10 +225,14 @@ export default () => {
     },
     {
       title: '推荐状态',
-      dataIndex: 'tuijian', // 需要更新
+      dataIndex: 'recommend', // 需要更新
       align: 'center',
       // valueType: 'textarea', // 筛选的类别
       valueType: 'select', // 筛选的类别
+      valueEnum: {
+        1: '已推荐',
+        2: '未推荐'
+      },
       renderText: (_: string) => {
         return (
           <div className={`state${_}`}>
@@ -221,7 +247,7 @@ export default () => {
       hideInSearch: true, // 隐藏筛选
       align: 'center',
       width: 300,
-      render: (_,record) => {
+      render: (_: any, record: any) => {
         return (
           <Space size="middle">
             <Button
@@ -237,31 +263,31 @@ export default () => {
             {/* <Access accessible={access['P_OA_DSXCY']}> */}
             {/* </Access> */}
             {
-              // record?.state === 'SHOPPED' &&
+              record?.recommend === true &&
               <Popconfirm
                 icon={null}
-                title="确定下架么？"
-                okText="下架"
-                cancelText="取消"
-                onConfirm={() => recommend(record?.id.toString(),record?.state)}
-              >
-                <a href="#">推荐</a>
-              </Popconfirm>
-            }
-            {
-              // (record?.state === 'UN_SHOP' || record?.state === 'PREPARE') &&
-              <Popconfirm
-                icon={null}
-                title="确定上架么？"
+                title="确定将内容取消推荐？"
                 okText="确定"
                 cancelText="取消"
-                onConfirm={() => recommend(record?.id.toString(),record?.state)}
+                onConfirm={() => recommend(record?.id.toString(), false)}
               >
                 <a href="#">取消推荐</a>
               </Popconfirm>
             }
             {
-              // record?.state === 'SHOPPED' &&
+              record?.recommend === false &&
+              <Popconfirm
+                icon={null}
+                title="确定将内容在推荐列表中进行展示？"
+                okText="确定"
+                cancelText="取消"
+                onConfirm={() => recommend(record?.id.toString(), true)}
+              >
+                <a href="#">推荐</a>
+              </Popconfirm>
+            }
+            {
+              record?.status === 1 &&
               <Popconfirm
                 icon={null}
                 title={
@@ -279,19 +305,19 @@ export default () => {
                 }
                 okText="下架"
                 cancelText="取消"
-                onConfirm={() => soldOut(record?.id.toString(),record?.state)}
+                onConfirm={() => soldOut(record?.id.toString(), 0)}
               >
                 <a href="#" onClick={() => form.resetFields()}>下架</a>
               </Popconfirm>
             }
             {
-              // (record?.state === 'UN_SHOP' || record?.state === 'PREPARE') &&
+              record?.status === 0 &&
               <Popconfirm
                 icon={null}
                 title="确定上架么？"
                 okText="确定"
                 cancelText="取消"
-                onConfirm={() => soldOut(record?.id.toString(),record?.state)}
+                onConfirm={() => soldOut(record?.id.toString(), 1)}
               >
                 <a href="#">上架</a>
               </Popconfirm>
@@ -318,54 +344,70 @@ export default () => {
           },
         }}
         request={async (pagination) => {
+          // auditStatus 上架状态 1 已上架 2 未上架
+          // recommend 推荐 1 已推荐 2 微推荐   需要修改
           console.log('查询pagination', pagination)
           // 搜集的发布时间范围 是一个数组 publishTime
           // 目前可以选同一天
           // publishTime.length > 0
           // publishTime[0], publishTime[1]
-          // const result = await getPropagandaDataList(pagination); // 根据后端调整
-          const result = {
-            success: 0,
-            total: 1,
-            data: [
-              {
-                content: '芜湖市内容信息',
-                title: '一贫如洗',
-                topic: '一人之下',
-                type: '玄幻',
-                publishTime: "2023-04-20 16:45:02",
-                enable: '1',
-                tuijian: '1',
-                id: 9,
-                risky: false,
-              },
-              {
-                content: '芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息',
-                title: '一贫如洗',
-                topic: '一人之下',
-                type: '玄幻',
-                publishTime: "2023-04-20 16:45:02",
-                enable: '1',
-                tuijian: '1',
-                id: 9,
-                risky: true,
-                riskyContent: '风险内容风险内容风险内容'
-              },
-              {
-                content: '芜湖市内容信息',
-                title: '一贫如洗',
-                topic: '一人之下',
-                type: '玄幻',
-                publishTime: "2023-04-20 16:45:02",
-                enable: '1',
-                tuijian: '1',
-                id: 9,
-                risky: true,
-                riskyContent: '风险内容风险内容'
-              },
+          const result = await httpEnterpriseList({
+            ...pagination,
+            recommendFlag: pagination?.recommend ? pagination?.recommend === '1' : undefined,
+            publishStartTime: pagination?.publishTime 
+              ? pagination[0]
+              : undefined,
+            publishEndTime: pagination?.publishTime
+              ? pagination[1]
+              : undefined,
+          }); 
+          // 根据后端调整
+          // const result = {
+          //   success: 0,
+          //   total: 1,
+          //   data: [
+          //     {
+          //       content: '芜湖市内容信息',
+          //       title: '一贫如洗',
+          //       topic: '一人之下',
+          //       type: '玄幻',
+          //       publishTime: "2023-04-20 16:45:02",
+          //       enable: '1',
+          //       tuijian: '1',
+          //       id: 9,
+          //       risky: false,
+          //       status: 0,
+          //       recommend: true,
+          //     },
+          //     {
+          //       content: '芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息',
+          //       title: '一贫如洗',
+          //       topic: '一人之下',
+          //       type: '玄幻',
+          //       publishTime: "2023-04-20 16:45:02",
+          //       enable: '1',
+          //       tuijian: '1',
+          //       id: 9,
+          //       risky: true,
+          //       riskyContent: '风险内容风险内容风险内容',
+          //       status: 1,
+          //       recommend: false,
+          //     },
+          //     {
+          //       content: '芜湖市内容信息',
+          //       title: '一贫如洗',
+          //       topic: '一人之下',
+          //       type: '玄幻',
+          //       publishTime: "2023-04-20 16:45:02",
+          //       enable: '1',
+          //       tuijian: '1',
+          //       id: 9,
+          //       risky: true,
+          //       riskyContent: '风险内容风险内容'
+          //     },
 
-            ]
-          }
+          //   ]
+          // }
           paginationRef.current = pagination;
           setTotal(result.total);
           return result;

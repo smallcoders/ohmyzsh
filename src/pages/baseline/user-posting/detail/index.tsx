@@ -1,29 +1,17 @@
 import {
   Button,
-  Input,
-  Form,
-  Select,
-  Row,
-  Col,
   message,
-  Space,
-  Modal,
-  Tooltip,
 } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
-import ProTable from '@ant-design/pro-table';
 import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 import { history, Access, useAccess } from 'umi';
 import './index.less'
 import scopedClasses from '@/utils/scopedClasses';
-import { routeName } from '../../../../../config/routes'
+import { httpEnterpriseDetail } from '@/services/user-posting';
 
 const sc = scopedClasses('baseline-user-posting-detail');
 
-interface userPostDetailType {
-  
-}
 export default () => {
   const { id } = history.location.query as any;
 
@@ -31,15 +19,20 @@ export default () => {
   // 操作日志
   const [associationLog, setAssociationLog] = useState<any>([]);
   // 初始化
-  const perpaer = () => {
+  const perpaer = async () => {
     if (!id) return
     try {
-      
+      const res = await httpEnterpriseDetail(id)
+      if (res?.code === 0) {
+        setDetail(res?.result)
+        setAssociationLog(res?.result?.operationRecords)
+      }
     } catch (error) {
       message.error(`获取用户发布管理详情失败： ${error}`)
     } 
   }
   useEffect(() => {
+    perpaer()
     console.log('详情的路径参数', id)
   },[])
 

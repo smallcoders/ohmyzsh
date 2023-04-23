@@ -21,21 +21,28 @@ import { history, Access, useAccess } from 'umi';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import { routeName } from '../../../../config/routes';
+import { httpEnterpriseList, httpEnterpriseAudit, httpEnterprisePublishRecommend } from '@/services/user-posting';
 
 const sc = scopedClasses('verify-user-posting');
 
 // 审核状态
 const auditStatus = {
+  '0': '草稿',
   '1': '待审核',
   '2': '审核通过',
   '3': '审核不通过',
 };
+// 内容类型
+const contentType = {
+  '2': '企业动态',
+  '3': '经验分享',
+}
 // export let visible = false; // 用于控制气泡
 
 export default () => {
   const formLayout = {
-    labelCol: { span: 6 },
-    wrapperCol: { span: 16 },
+    // labelCol: { span: 2 },
+    wrapperCol: { span: 24 },
   };
   const [form] = Form.useForm();
   const { TextArea } = Input;
@@ -47,13 +54,32 @@ export default () => {
 
   // 审核
   const audit = async (id: string, state: any) => {
+    if (state === 1) {
+      // 多一个推荐
+      try {
+        const res = await httpEnterprisePublishRecommend({
+          id: Number(id),
+          recommend: true
+        })
+        if (res?.code === 0) {
+          message.success('推荐成功');
+        } else {
+          message.success(`推荐失败: ${res?.message}`);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
     try {
-      const res = await cityPropaganda(id);
+      const res = await httpEnterpriseAudit({
+        id: Number(id),
+        auditStatus: 1
+      });
       if (res.code === 0) {
-        message.success(state === 'SHOPPED' ? '下架成功' : '上架成功');
+        message.success('审核通过');
         actionRef.current?.reload(); // 让table// 刷新
       } else {
-        message.error(`失败，原因:{${res.message}}`);
+        message.error(`失败，原因:{${res?.message}}`);
       }
     } catch (error) {
       console.log(error);
@@ -62,21 +88,29 @@ export default () => {
   // 不通过
   const noPass = async (id: string, state: any) => {
     return new Promise((resolve, reject) => {
-      form.validateFields().then((values: any) => {
+      form.validateFields().then(async (values: any) => {
         console.log('搜集的表单', values)
-        resolve('成功')
         // try {
-        //   const res = await cityPropaganda(id);
+        //   const res = await httpEnterpriseAudit({
+        //     id: Number(id),
+        //     auditStatus: 3,
+        //     auditReason: values?.auditReason
+        //   });
         //   if (res.code === 0) {
-        //     message.success(state === 'SHOPPED' ? '下架成功' : '上架成功');
+        //     message.success('审核不通过完成');
         //     actionRef.current?.reload(); // 让table// 刷新
         //     resolve('成功');
         //   } else {
         //     message.error(`失败，原因:{${res.message}}`);
+        //     resolve('失败');
         //   }
         // } catch (error) {
         //   console.log(error);
+        //   resolve('失败');
         // }
+
+
+        resolve('成功')
       }).catch(() => {
         reject('失败')
       })
@@ -158,11 +192,26 @@ export default () => {
     },
     {
       title: '内容类型',
-      dataIndex: 'type',
+      dataIndex: 'contentType',
       align: 'center',
       // valueType: 'textarea', // 筛选的类别
-      valueType: 'text', // 筛选的类别
+      valueType: 'select', // 筛选的类别
       // hideInSearch: true, // 隐藏search
+      valueEnum: {
+        2: {
+          text: '企业动态'
+        },
+        3: {
+          text: '经验分享'
+        },
+      },
+      renderText: (_: string) => {
+        return (
+          <div className={`state${_}`}>
+            {Object.prototype.hasOwnProperty.call(contentType, _) ? contentType[_] : '--'}
+          </div>
+        );
+      },
     },
     {
       title: '发布时间',
@@ -179,6 +228,17 @@ export default () => {
       align: 'center',
       // valueType: 'textarea', // 筛选的类别
       valueType: 'select', // 筛选的类别
+      valueEnum: {
+        1: {
+          text: '未解决',
+        },
+        2: {
+          text: '审核通过'
+        },
+        3: {
+          text: '审核不通过'
+        },
+      },
       renderText: (_: string) => {
         return (
           <div className={`state${_}`}>
@@ -192,7 +252,7 @@ export default () => {
       hideInSearch: true, // 隐藏筛选
       align: 'center',
       width: 300,
-      render: (_, record) => {
+      render: (_: any, record: any) => {
         return (
           <Space size="middle">
             <Button
@@ -208,7 +268,7 @@ export default () => {
             {/* <Access accessible={access['P_OA_DSXCY']}>
             </Access> */}
             {
-              // record?.state === 'SHOPPED' &&
+              record?.auditStatus === '1' &&
               <Popconfirm
                 icon={null}
                 title={
@@ -220,14 +280,14 @@ export default () => {
                 okText="通过并推荐"
                 cancelText="通过"
                 // 根据接口改
-                onConfirm={() => audit(record?.id.toString(), record?.state)}
-                onCancel={() => audit(record?.id.toString(), record?.state)}
+                onConfirm={() => audit(record?.id.toString(), 1)}
+                onCancel={() => audit(record?.id.toString(), 2)}
               >
                 <a href="#">通过</a>
               </Popconfirm>
             }
             {
-              // (record?.state === 'UN_SHOP' || record?.state === 'PREPARE') &&
+              record?.auditStatus === '1' &&
               <Popconfirm
                 icon={null}
                 // visible={visible}
@@ -236,7 +296,7 @@ export default () => {
                     <div style={{fontSize: '16px', fontWeight: 600}}>不通过</div>
                     <Form form={form} {...formLayout} validateTrigger="onBlur">
                       <Form.Item
-                        name="原因"
+                        name="auditReason"
                         rules={[{ required: true, message: '请填写原因' }]}
                       >
                         <TextArea placeholder='请输入原因(必填)' rows={3} maxLength={50} />
@@ -279,49 +339,60 @@ export default () => {
           // 目前可以选同一天
           // publishTime.length > 0
           // publishTime[0], publishTime[1]
-          // const result = await getPropagandaDataList(pagination); // 根据后端调整
-          const result = {
-            success: 0,
-            total: 1,
-            data: [
-              {
-                content: '芜湖市内容信息',
-                title: '一贫如洗',
-                topic: '一人之下',
-                type: '玄幻',
-                publishTime: '2023-04-20 16:45:02',
-                enable: '1',
-                tuijian: '1',
-                id: 9,
-                risky: false,
-              },
-              {
-                content:
-                  '芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息',
-                title: '一贫如洗',
-                topic: '一人之下',
-                type: '玄幻',
-                publishTime: '2023-04-20 16:45:02',
-                enable: '1',
-                tuijian: '1',
-                id: 9,
-                risky: true,
-                riskyContent: '风险内容风险内容风险内容',
-              },
-              {
-                content: '芜湖市内容信息',
-                title: '一贫如洗',
-                topic: '一人之下',
-                type: '玄幻',
-                publishTime: '2023-04-20 16:45:02',
-                enable: '1',
-                tuijian: '1',
-                id: 9,
-                risky: true,
-                riskyContent: '风险内容风险内容',
-              },
-            ],
-          };
+          const result = await httpEnterpriseList({
+            ...pagination,
+            publishStartTime: pagination?.publishTime 
+              ? pagination[0]
+              : undefined,
+            publishEndTime: pagination?.publishTime 
+              ? pagination[1]
+              : undefined,
+          }); 
+          // 根据后端调整
+          // const result = {
+          //   success: 0,
+          //   total: 1,
+          //   data: [
+          //     {
+          //       content: '芜湖市内容信息',
+          //       title: '一贫如洗',
+          //       topic: '一人之下',
+          //       type: '玄幻',
+          //       publishTime: '2023-04-20 16:45:02',
+          //       enable: '1',
+          //       tuijian: '1',
+          //       id: 9,
+          //       risky: false,
+          //       auditStatus: '1',
+          //     },
+          //     {
+          //       content:
+          //         '芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息',
+          //       title: '一贫如洗',
+          //       topic: '一人之下',
+          //       type: '玄幻',
+          //       publishTime: '2023-04-20 16:45:02',
+          //       enable: '1',
+          //       tuijian: '1',
+          //       id: 9,
+          //       risky: true,
+          //       riskyContent: '风险内容风险内容风险内容',
+          //       auditStatus: '2',
+          //     },
+          //     {
+          //       content: '芜湖市内容信息',
+          //       title: '一贫如洗',
+          //       topic: '一人之下',
+          //       type: '玄幻',
+          //       publishTime: '2023-04-20 16:45:02',
+          //       enable: '1',
+          //       tuijian: '1',
+          //       id: 9,
+          //       risky: true,
+          //       riskyContent: '风险内容风险内容',
+          //     },
+          //   ],
+          // };
           paginationRef.current = pagination;
           setTotal(result.total);
           return result;
