@@ -82,7 +82,7 @@ export default () => {
         </div>
         <div className={sc('container-content-desc')}>
           <span>发布时间：</span>
-          <span>{detail?.publishTime || '--'}</span>
+          <span>{moment(detail?.publishTime).format('YYYY-MM-DD HH:mm') || '--'}</span>
         </div>
         <div className={sc('container-content-desc')}>
           <span>图片：</span>
