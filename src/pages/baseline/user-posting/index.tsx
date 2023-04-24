@@ -257,7 +257,7 @@ export default () => {
                 详情
               </Button>
             </Access>
-            <Access accessible={access['PA_BLM_YHFBGL']}>
+            <Access accessible={access['P_BLM_YHFBGL']}>
               {
                 record?.recommend === true &&
                 <Popconfirm
@@ -283,7 +283,7 @@ export default () => {
                 </Popconfirm>
               }
             </Access>
-            <Access accessible={access['PA_BLM_YHFBGL']}>
+            <Access accessible={access['P_BLM_YHFBGL']}>
               {
                 record?.status === 1 &&
                 <Popconfirm

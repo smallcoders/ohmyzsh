@@ -249,7 +249,7 @@ export default () => {
       render: (_: any, record: any) => {
         return (
           <Space size="middle">
-            <Access accessible={access['PQ_BLM_YHFBSH']}>
+            <Access accessible={access['PQ_AT_YHFBSH']}>
               <Button
                 key="1"
                 size="small"
@@ -261,7 +261,7 @@ export default () => {
                 详情
               </Button>
             </Access>
-            <Access accessible={access['PA_BLM_YHFBSH']}>
+            <Access accessible={access['P_AT_YHFBSH']}>
               {
                 record?.auditStatus === 1 &&
                 <Popconfirm
@@ -282,7 +282,7 @@ export default () => {
                 </Popconfirm>
               }
             </Access>
-            <Access accessible={access['PA_BLM_YHFBSH']}>
+            <Access accessible={access['P_AT_YHFBSH']}>
               {
                 record?.auditStatus === 1 &&
                 <Popconfirm

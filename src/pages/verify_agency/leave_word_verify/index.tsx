@@ -273,7 +273,6 @@ export default () => {
             ),
           }}
           onChange={(pagination: any) => {
-            console.log('分页onChange', pagination)
             // ⭐ 也需要处理
             getLeaveWordVerifyPage({...searchInfo}, pagination.pageSize, pagination.current);
           }}
