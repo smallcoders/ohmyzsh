@@ -249,7 +249,7 @@ export default () => {
     //     : [{ type: 'link', text: '查看链接' }, { type: 'drop', text: '下架' }, { text: '删除', type: 'delete' }]
     // } else {
     buttonTypeList = record.state === 0 ?
-      [{ type: 'publish', text: '发布' }, { type: 'more', children: [{ type: 'order', text: '查看订单' }, { type: 'delete', text: '删除' }, { text: '编辑', type: 'edit' }] }]
+      [{ type: 'publish', text: '发布' }, { type: 'order', text: '查看订单' }, { type: 'more', children: [{ type: 'delete', text: '删除' }, { text: '编辑', type: 'edit' }] }]
       : [{ type: 'link', text: '查看链接' }, { type: 'order', text: '查看订单' }, { type: 'drop', text: '下架' }]
     // }
     return buttonTypeList.map((item: any) => {
@@ -320,17 +320,17 @@ export default () => {
         return <Popover content={
           <div style={{ display: 'grid', gap: 10 }}>
             <Button onClick={() => {
-                window.open(`${routeName.APP_PAGE_CREAT_MANAGE_WEB_PREVIEW}?id=${record.tmpId || ''}`);
+              window.open(`${routeName.APP_PAGE_CREAT_MANAGE_WEB_PREVIEW}?id=${record.tmpId || ''}`);
+            }}
+              type="primary"
+            >pc</Button>
+            <Button type="primary"
+              onClick={() => {
+                window.open(`${routeName.APP_PAGE_CREAT_MANAGE_APP_PREVIEW}?id=${record.tmpId || ''}`);
               }}
-                type="primary"
-              >pc</Button>
-              <Button type="primary"
-                onClick={() => {
-                  window.open(`${routeName.APP_PAGE_CREAT_MANAGE_APP_PREVIEW}?id=${record.tmpId || ''}`);
-                }}
-              >
-                app
-              </Button>
+            >
+              app
+            </Button>
           </div>
         }>
           <span style={{ cursor: 'pointer', color: '#6680FF' }}>{tmpName}</span>

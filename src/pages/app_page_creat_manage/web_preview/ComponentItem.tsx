@@ -350,10 +350,14 @@ const ComponentItem = (props: any) => {
             }}>{c?.desc ? c?.desc : '内容'}</div>
 
             <div style={{ width: '100%' }}>
-              <div style={{ marginTop: 5, padding: 4 }}><span style={{ color: '#8290a6', fontSize: '14px' }}>使用期限：</span><span style={{ background: '#ff4f17', padding: '0 5px', color: '#fff' }}>{c?.time}天有效</span></div>
+              <div style={{ marginTop: 5, padding: 4 }}><span style={{ color: '#8290a6', fontSize: '14px' }}>使用期限：</span><span style={{ background: '#ff4f17', padding: '0 5px', color: '#fff' }}>有效期{c?.time}天</span></div>
               <div style={{ padding: 4, ...ellipsis, fontSize: '14px' }}><span style={{ color: '#8290a6' }}>产品规格：</span><span style={{ color: '#556377', fontWeight: 700 }}>{c?.specName}</span></div>
               <div style={{ padding: 4, fontSize: '14px' }}>
-                <span style={{ color: '#8290a6' }}>剩余数量：</span><span style={{ color: '#556377', fontWeight: 700 }}>{c?.isLimit ? '无限制' : c?.num}</span>
+                {c?.isLimit ?  <>
+                  <span style={{ color: '#8290a6' }}>剩余数量：</span><span style={{ color: '#556377', fontWeight: 700 }}>无限制</span></> : <>
+                  <span style={{ color: '#8290a6' }}>剩余数量：</span>
+                  <span style={{ color: '#556377', fontWeight: 700 }}>{c?.num}</span>
+                </>}
               </div>
             </div>
             <div style={{

@@ -59,7 +59,7 @@ const TextConfig = () => {
             inputRef.current?.resizableTextArea.textArea.select()
           }}
           ref={inputRef}
-          maxLength={300}
+          maxLength={35}
           onBlur={(event) => {
             if (!event.target.value) {
               handleChange('文本', 'config.text')
@@ -71,7 +71,7 @@ const TextConfig = () => {
       </Form.Item>
 
 
-      <Form.Item label="排版">
+      <Form.Item label="web端">
         <div className="config-item">
           <div className="config-item-label">字符:</div>
           <div className="flex special-style">
@@ -171,26 +171,36 @@ const TextConfig = () => {
             </Tooltip>
           </div>
         </div> */}
+        <div className="config-item">
+          <div className="config-item-label">下边距:</div>
+          <div className="flex special-style">
+            <InputNumber
+              disabled
+              value={config?.marginBottom}
+              min={0}
+              onChange={(value) => {
+                handleChange(value, 'config.marginBottom')
+              }}
+            />
+          </div>
+        </div>
       </Form.Item>
-      <Form.Item label="移动端下边距">
-        <InputNumber
-          disabled
-          value={config?.appConfig?.marginBottom}
-          min={0}
-          onChange={(value) => {
-            handleChange(value, 'config.appConfig.marginBottom')
-          }}
-        />
-      </Form.Item>
-      <Form.Item label="下边距">
-        <InputNumber
-          disabled
-          value={config?.marginBottom}
-          min={0}
-          onChange={(value) => {
-            handleChange(value, 'config.marginBottom')
-          }}
-        />
+
+      <Form.Item label="移动端">
+        <div className="config-item">
+          <div className="config-item-label">下边距:</div>
+          <div className="flex special-style">
+            <InputNumber
+              disabled
+              value={config?.appConfig?.marginBottom}
+              min={0}
+              onChange={(value) => {
+                handleChange(value, 'config.appConfig.marginBottom')
+              }}
+            />
+          </div>
+        </div>
+
       </Form.Item>
     </>
   )

@@ -324,9 +324,12 @@ const ComponentItem = (props: any) => {
               }}>
                 {c?.product?.name ? c?.product?.name : '应用标题'}
               </span>
-              <span style={{ color: '#8290A6' }}>
-                数量：{c?.num === -1 ? '无限制' : c?.num}
+              {c?.isLimit ? <span style={{ color: '#8290A6' }}>
+                无限制
+              </span> : <span style={{ color: '#8290A6' }}>
+                剩余数量：  {c?.num}
               </span>
+              }
             </div>
           </div>
           <div>
@@ -342,7 +345,7 @@ const ComponentItem = (props: any) => {
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
               <div style={{ width: 'calc(100% - 80px)' }}>
-                <div style={{ marginTop: 5, padding: 4 }}><span style={{ color: '#8290a6', fontSize: '12px' }}>使用期限：</span><span style={{ background: '#ff4f17', padding: '0 5px', color: '#fff' }}>{c?.time}天有效</span></div>
+                <div style={{ marginTop: 5, padding: 4 }}><span style={{ color: '#8290a6', fontSize: '12px' }}>使用期限：</span><span style={{ background: '#ff4f17', padding: '0 5px', color: '#fff' }}>有效期{c?.time || 0}天</span></div>
                 <div style={{ padding: 4, ...ellipsis }}><span style={{ color: '#8290a6', fontSize: '12px' }}>产品规格：</span>{c?.specName}</div>
               </div>
               <div style={{ padding: '4px 12px', background: '#0068ff', borderRadius: 2, color: '#fff', textAlign: 'center' }}>立即领取</div>

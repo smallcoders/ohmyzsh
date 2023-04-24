@@ -77,7 +77,7 @@ const GlobalConfig: FC = () => {
           <Form layout="vertical">
             <Form.Item label="网页名称" required >
               <Input
-                maxLength={20}
+                maxLength={8}
                 ref={inputRef}
                 onFocus={() => {
                   inputRef.current?.select()
@@ -97,9 +97,9 @@ const GlobalConfig: FC = () => {
                 format={'YYYY-MM-DD'} onChange={(event) => handleGlobalConfigChange('activeTime', [event[0].format('YYYY-MM-DD 00:00:00'), event[1].format('YYYY-MM-DD 00:00:00')])} />
             </Form.Item>
 
-            <Form.Item label="描述信息" >
+            {/* <Form.Item label="描述信息" >
               <Input.TextArea maxLength={50} value={webGlobalConfig?.pageDesc} onChange={(event) => handleGlobalConfigChange('pageDesc', event.target.value)} />
-            </Form.Item>
+            </Form.Item> */}
 
             {/* <Form.Item label="网页背景" >
               <div className="config-item">
