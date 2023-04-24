@@ -909,65 +909,78 @@ const WidgetFormItem: FC<Props> = (props) => {
           </Form.Item>
         )}
         {type === 'App' && <div style={{
-          display: 'flex', gap: 20,
+          display: 'flex', gap: 16,
           justifyContent: 'flex-start',
-          width: 1060,
+          width: 1200,
           flexWrap: 'wrap',
+          background: '#fff',
+          padding: '16px',
           margin: 'auto'
         }}>{config?.productList?.map(c => (
           <div
             style={{
-              width: 250,
-              borderRadius: '1px',
-              fontSize: '10px',
+              width: 280,
+              marginBottom: 8,
+              padding: '16px',
+              // fontSize: '10px',
               background: 'linear-gradient(180deg,#eff5ff, #f9fbff)',
-              padding: 16
+              borderRadius: '4px',
             }}
           >
-            <div
-              className="img-item-box"
-            >
-              {
-                c?.icon ?
-                  <img
-                    style={{
-                      height: 48,
-                      width: 48,
-                      objectFit: "cover",
-                      borderRadius: '8px'
-                    }}
-                    src={c?.icon?.path || c?.icon}
-                    alt=''
-                  /> :
-                  <div
-                    style={{
-                      height: 48,
-                      width: 48,
-                      background: '#fff',
-                      padding: '5px 0',
-                      textAlign: 'center'
-                    }}
-                  >
-                    LOGO
-                  </div>
-              }
-            </div>
-            <div style={{ background: '#e6ebf2', color: '#1e232a', marginTop: 5, padding: 4 }}>{c?.product?.name ? c?.product?.name : '应用标题'}</div>
             <div style={{
-              background: '#e6ebf2', marginTop: 5,
-              display: '-webkit-box',
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: 'vertical',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              height: 38,
-              padding: 4
-            }}>适合企业：{c?.desc ? c?.desc : '内容'}</div>
-            <div style={{ background: '#e6ebf2', marginTop: 5, padding: 4 }}>产品规格：{c?.specName ? c?.specName : '内容'}</div>
-            <div style={{ background: '#e6ebf2', marginTop: 5, padding: 4 }}>使用期限：{c?.time ? c?.time : '内容'}</div>
-            <div style={{ background: '#e6ebf2', marginTop: 5, padding: 4 }}>数量：{c?.num}</div>
+              display: 'flex',
+              gap: 10
+            }}>
+              <div
+                style={{ flex: '0 0 48px' }}
+              >
+                <img
+                  style={{
+                    height: 56,
+                    width: 56,
+                    objectFit: "cover",
+                    borderRadius: '8px'
+                  }}
+                  src={c?.icon?.path || c?.icon}
+                  alt=''
+                />
+              </div>
+              <div style={{ flex: 1, color: '#1e232a', display: 'flex', justifyContent: 'space-between' }}>
+                <div style={{
+                  width: '100%',
+                  fontWeight: 700,
+                  fontSize: '16px',
+                  height: 26,
+                  ...ellipsis,
+                }}>
+                  {c?.product?.name ? c?.product?.name : '应用标题'}
+                </div>
+              </div>
+            </div>
+            <div>
+              <div style={{
+                marginTop: 5,
+                ...ellipsis,
+                WebkitLineClamp: 3,
+                height: 66,
+                padding: 4,
+                color: '#556377',
+                fontSize: '14px'
+              }}>{c?.desc ? c?.desc : '内容'}</div>
 
-            <div style={{ padding: '4px 0', background: 'linear-gradient(135deg,#0068ff, #2cabe8)', borderRadius: 1, marginTop: 10, color: '#fff', textAlign: 'center' }}>免费领取</div>
+              <div style={{ width: '100%' }}>
+                <div style={{ marginTop: 5, padding: 4 }}><span style={{ color: '#8290a6', fontSize: '14px' }}>使用期限：</span><span style={{ background: '#ff4f17', padding: '0 5px', color: '#fff' }}>{c?.time}天有效</span></div>
+                <div style={{ padding: 4, ...ellipsis, fontSize: '14px' }}><span style={{ color: '#8290a6' }}>产品规格：</span><span style={{ color: '#556377', fontWeight: 700 }}>{c?.specName}</span></div>
+                <div style={{ padding: 4, fontSize: '14px' }}>
+                  <span style={{ color: '#8290a6' }}>剩余数量：</span><span style={{ color: '#556377', fontWeight: 700 }}>{c?.isLimit ? '无限制' : c?.num}</span>
+                </div>
+              </div>
+              <div style={{
+                marginTop: 22,
+                padding: '4px 12px', background: 'linear-gradient(135deg,#0068ff, #2cabe8)',
+                borderRadius: '2px', color: '#f8f9fb', textAlign: 'center', fontSize: '16px', lineHeight: '24px'
+              }}>立即领取</div>
+            </div>
           </div>
         ))}
         </div>
@@ -978,5 +991,11 @@ const WidgetFormItem: FC<Props> = (props) => {
   }
   return render()
 }
-
+const ellipsis = {
+  display: '-webkit-box',
+  WebkitLineClamp: 1,
+  WebkitBoxOrient: 'vertical',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+}
 export default memo(WidgetFormItem)

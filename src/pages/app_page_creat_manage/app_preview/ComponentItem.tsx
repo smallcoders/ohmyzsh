@@ -33,7 +33,7 @@ const ComponentItem = (props: any) => {
   const imgHeight = type !== 'Image' ? 0 : config?.imgStyle === 'matrix' ?
     `${config?.appImgConfig?.imgHeight * config.lineNumber + (config.lineNumber - 1) * 12}px` : `${config?.appImgConfig?.imgHeight}px`
   return (
-    <div style={{marginBottom: 10}}>
+    <div style={{ marginBottom: 10 }}>
       {
         type === 'Title' && (
           <div
@@ -297,51 +297,55 @@ const ComponentItem = (props: any) => {
             // fontSize: '10px',
             background: 'linear-gradient(180deg,#eff5ff, #f9fbff)',
             borderRadius: '4px',
-            display: 'flex',
-            gap: 10
           }}
         >
-          <div
-            style={{ flex: '0 0 48px' }}
-          >
-            <img
-              style={{
-                height: 48,
-                width: 48,
-                objectFit: "cover",
-                borderRadius: '8px'
-              }}
-              src={c?.icon?.path || c?.icon}
-              alt=''
-            />
-          </div>
-
-          <div style={{ flex: 1 }}>
-            <div style={{ color: '#1e232a', marginTop: 5, padding: 4 }}>
-              <span>
+          <div style={{
+            display: 'flex',
+            gap: 10
+          }}>
+            <div
+              style={{ flex: '0 0 48px' }}
+            >
+              <img
+                style={{
+                  height: 48,
+                  width: 48,
+                  objectFit: "cover",
+                  borderRadius: '8px'
+                }}
+                src={c?.icon?.path || c?.icon}
+                alt=''
+              />
+            </div>
+            <div style={{ flex: 1, color: '#1e232a', display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{
+                width: 'calc(100% - 100px)',
+                ...ellipsis,
+              }}>
                 {c?.product?.name ? c?.product?.name : '应用标题'}
               </span>
               <span style={{ color: '#8290A6' }}>
-                数量：{c?.num}
+                数量：{c?.num === -1 ? '无限制' : c?.num}
               </span>
             </div>
+          </div>
+          <div>
             <div style={{
               marginTop: 5,
-              display: '-webkit-box',
+              ...ellipsis,
               WebkitLineClamp: 3,
-              WebkitBoxOrient: 'vertical',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              maxHeight: 68,
-              padding: 4
-            }}>适合企业：{c?.desc ? c?.desc : '内容'}</div>
+              maxHeight: 60,
+              padding: 4,
+              color: '#556377',
+              fontSize: '12px'
+            }}>{c?.desc ? c?.desc : '内容'}</div>
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-              <div>
-                <div style={{ marginTop: 5, padding: 4 }}>使用期限：<span style={{ background: '#ff4f17', padding: '0 5px', color: '#fff' }}>{c?.time}天有效</span></div>
-                <div style={{ padding: 4 }}>产品规格：{c?.specName}</div>
+              <div style={{ width: 'calc(100% - 80px)' }}>
+                <div style={{ marginTop: 5, padding: 4 }}><span style={{ color: '#8290a6', fontSize: '12px' }}>使用期限：</span><span style={{ background: '#ff4f17', padding: '0 5px', color: '#fff' }}>{c?.time}天有效</span></div>
+                <div style={{ padding: 4, ...ellipsis }}><span style={{ color: '#8290a6', fontSize: '12px' }}>产品规格：</span>{c?.specName}</div>
               </div>
-              <div style={{ padding: '2px', background: '#0068ff', borderRadius: 2, color: '#fff', textAlign: 'center' }}>免费领取</div>
+              <div style={{ padding: '4px 12px', background: '#0068ff', borderRadius: 2, color: '#fff', textAlign: 'center' }}>立即领取</div>
             </div>
           </div>
         </div>
@@ -351,6 +355,14 @@ const ComponentItem = (props: any) => {
     </div>
   )
 
+}
+
+const ellipsis = {
+  display: '-webkit-box',
+  WebkitLineClamp: 1,
+  WebkitBoxOrient: 'vertical',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
 }
 
 export default ComponentItem
