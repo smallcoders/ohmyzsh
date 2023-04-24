@@ -232,11 +232,6 @@ export default () => {
                         <span>{detail?.payProduct?.appHomeUrl || '--'} </span>
                         <a onClick={() => handleJumpLink(detail?.payProduct?.appHomeUrl)}>查看</a>
                       </div>
-                      <div>
-                        <span>H5体验应用：</span>
-                        <span>{detail?.payProduct?.appDemoUrl || '--'} </span>
-                        <a onClick={() => handleJumpLink(detail?.payProduct?.appDemoUrl)}>查看</a>
-                      </div>
                     </>
                   ) : detail?.payProduct?.appType === 1 ? (
                     <><div>
@@ -244,11 +239,6 @@ export default () => {
                       <span>{detail?.payProduct?.pcHomeUrl || '--'} </span>
                       <a onClick={() => handleJumpLink(detail?.payProduct?.pcHomeUrl)}>查看</a>
                     </div>
-                      <div>
-                        <span>WEB体验应用</span>
-                        <span>{detail?.payProduct?.pcDemoUrl || '--'} </span>
-                        <a onClick={() => handleJumpLink(detail?.payProduct?.appDemoUrl)}>查看</a>
-                      </div>
                     </>
                   ) : detail?.payProduct?.appType === 3 ? (
                     [
@@ -261,16 +251,6 @@ export default () => {
                         <span>WEB应用:</span>
                         <span>{detail?.payProduct?.pcHomeUrl || '--'} </span>
                         <a onClick={() => handleJumpLink(detail?.payProduct?.pcHomeUrl)}>查看</a>
-                      </div>,
-                      <div>
-                        <span>H5体验应用：</span>
-                        <span>{detail?.payProduct?.appDemoUrl || '--'} </span>
-                        <a onClick={() => handleJumpLink(detail?.payProduct?.appDemoUrl)}>查看</a>
-                      </div>,
-                      <div>
-                        <span>WEB体验应用</span>
-                        <span>{detail?.payProduct?.pcDemoUrl || '--'} </span>
-                        <a onClick={() => handleJumpLink(detail?.payProduct?.appDemoUrl)}>查看</a>
                       </div>,
                     ]
                   ) : (
