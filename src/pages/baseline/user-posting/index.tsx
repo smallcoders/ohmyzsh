@@ -305,6 +305,8 @@ export default () => {
                   <a href="#">推荐</a>
                 </Popconfirm>
               }
+            </Access>
+            <Access accessible={access['PA_BLM_YHFBGL']}>
               {
                 record?.status === 1 &&
                 <Popconfirm
