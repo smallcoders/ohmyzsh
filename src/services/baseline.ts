@@ -355,3 +355,35 @@ export async function queryConvertOrg(data?: Record<string, any>) {
     data,
   });
 }
+
+// 热点资讯分页查询
+export async function getHotNews(data?: Record<string, any>) {
+  return request<any>('/antelope-industrial/mng/hot/news/config/list', {
+    method: 'post',
+    data,
+  });
+}
+
+// 添加热点资讯
+export async function saveHotNews(data?: Record<string, any>) {
+  return request<any>('/antelope-industrial/mng/hot/news/config/save', {
+    method: 'post',
+    data,
+  });
+}
+
+// 更新资讯已推送状态
+export async function updateSendedNews(data?: any) {
+  return request<any>('/antelope-industrial/mng/hot/news/config/sended/update', {
+    method: 'PUT',
+    data,
+  });
+}
+
+// 删除资讯
+export async function deleteHotNews(data?: Record<string, any>) {
+  return request<any>(`/antelope-industrial/mng/hot/news/config/delete`, {
+    method: 'delete',
+    data
+  });
+}
