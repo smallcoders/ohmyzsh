@@ -405,10 +405,10 @@ export default () => {
     }
   };
   // 详情
-  const handleDetail = (id: string) => {
-    console.log('详情', id);
+  const handleDetail = (detailId: string) => {
+    console.log('详情', detailId);
     // history.push(`${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DETAIL}?id=${id}`);
-    window.open(`${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DETAIL}?id=${id}&backid=${id}&backname=${name}&activeTab=${'发布记录'}`);
+    window.open(`${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DETAIL}?id=${detailId}&backid=${id}&backname=${name}&activeTab=${'发布记录'}`);
   };
 
   const columns: ProColumns<SolutionTypes.Solution>[] = [
