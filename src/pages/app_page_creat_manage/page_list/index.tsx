@@ -320,30 +320,22 @@ export default () => {
         return <Popover content={
           <div style={{ display: 'grid', gap: 10 }}>
             <Button onClick={() => {
-              console.log('record.tmpJson', record.tmpJson)
-              localStorage.setItem('webTmpInfo', JSON.stringify({
-                tmpJson: record.tmpJson,
-                tmpType: 1,
-                state: 0,
-              }))
-              window.open(`${routeName.APP_PAGE_CREAT_MANAGE_WEB_PREVIEW}`)
-            }}
-              type="primary"
-            >pc</Button>
-            <Button type="primary"
-              onClick={() => {
-                window.open(`${routeName.APP_PAGE_CREAT_MANAGE_APP_PREVIEW}?type=${tmpType || ''}`);
+                window.open(`${routeName.APP_PAGE_CREAT_MANAGE_WEB_PREVIEW}?id=${record.tmpId || ''}`);
               }}
-            >
-              app
-            </Button>
+                type="primary"
+              >pc</Button>
+              <Button type="primary"
+                onClick={() => {
+                  window.open(`${routeName.APP_PAGE_CREAT_MANAGE_APP_PREVIEW}?id=${record.tmpId || ''}`);
+                }}
+              >
+                app
+              </Button>
           </div>
         }>
           <span style={{ cursor: 'pointer', color: '#6680FF' }}>{tmpName}</span>
         </Popover>
       }
-
-
     },
     {
       title: '描述信息',

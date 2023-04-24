@@ -43,7 +43,7 @@ const AppConfig = () => {
         const type = c?.type;
         let label = c?.specsValue
         if (type === 1) {
-          label += '/' + Object.entries(expireTimeMap)?.filter(p => p[0] == c?.userNum)?.[0]?.[1];
+          label += '/' + Object.entries(userNumMap)?.filter(p => p[0] == c?.userNum)?.[0]?.[1];
           label += '/' + Object.entries(expireTimeMap)?.filter(p => p[0] == c?.expireTime)?.[0]?.[1];
         } else if (type === 2) {
           label += '/' + Object.entries(countMap)?.filter(p => p[0] == c?.count)?.[0]?.[1];

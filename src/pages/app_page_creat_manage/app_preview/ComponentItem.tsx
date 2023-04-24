@@ -83,7 +83,6 @@ const ComponentItem = (props: any) => {
               textAlign: config?.textAlign === 'justifyAlign' ? 'left' : config?.textAlign,
               paddingTop: `${config?.paddingTop}px`,
               paddingBottom: `${config?.paddingBottom}px`,
-              width: `1200px`,
               margin: '0 auto'
             }}
           >

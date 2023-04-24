@@ -164,19 +164,13 @@ export default () => {
           <Popover content={
             <div style={{ display: 'grid', gap: 10 }}>
               <Button onClick={() => {
-                console.log('record.tmpJson', record.tmpJson)
-                localStorage.setItem('webTmpInfo', JSON.stringify({
-                  tmpJson: record.tmpJson,
-                  tmpType: 1,
-                  state: 0,
-                }))
-                window.open(`${routeName.APP_PAGE_CREAT_MANAGE_APP_PREVIEW}?id=${templateInfo.tmpId || ''}`);
+                window.open(`${routeName.APP_PAGE_CREAT_MANAGE_WEB_PREVIEW}?id=${templateInfo.tmpId || ''}`);
               }}
                 type="primary"
               >pc</Button>
               <Button type="primary"
                 onClick={() => {
-                  window.open(`${routeName.APP_PAGE_CREAT_MANAGE_WEB_PREVIEW}?id=${templateInfo.tmpId || ''}`);
+                  window.open(`${routeName.APP_PAGE_CREAT_MANAGE_APP_PREVIEW}?id=${templateInfo.tmpId || ''}`);
                 }}
               >
                 app
