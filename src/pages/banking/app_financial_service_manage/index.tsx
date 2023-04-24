@@ -142,12 +142,8 @@ export default () => {
     },
     {
       title: '渠道名称',
-      dataIndex: 'channel',
+      dataIndex: 'channelContent',
       isEllipsis: true,
-      render: (channel: number) => {
-        const channelName = channels.find((item) => item.value === channel);
-        return channelName?.name;
-      },
       width: 140,
     },
     {
