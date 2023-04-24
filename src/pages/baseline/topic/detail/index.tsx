@@ -68,6 +68,11 @@ export default () => {
       width: 200,
     },
     {
+      title: '权重',
+      dataIndex: 'weight',
+      width: 200,
+    },
+    {
       title: '操作',
       width: 200,
       fixed: 'right',

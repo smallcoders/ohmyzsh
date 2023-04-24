@@ -132,13 +132,13 @@ export default () => {
   const addRecommend = async (state: number) => {
     const articles = {}
     dataSource.forEach((item: any) => {
-      articles[item.id] = +(item.weight || 1)
+      articles[item.id] = +(weightMap[item.id] || 1)
     })
     form
       .validateFields()
       .then(async (value) => {
         const {topic,weight}=value
-        const submitRes =   !query?.id ? await addHotRecommend({
+        const submitRes = !query?.id ? await addHotRecommend({
           topic,
           weight:parseInt(weight),
           enable:1,
@@ -309,9 +309,10 @@ export default () => {
               onConfirm={() => {
                 console.log('_', _, record, index)
                 if(!weightForm.getFieldValue('weight')) return
-                dataSource[index].weight = weightForm.getFieldValue('weight')
+                const dataIndex = (pageInfo.pageIndex - 1) * pageInfo.pageSize + index
+                dataSource[dataIndex].weight = weightForm.getFieldValue('weight')
                 const map = weightMap
-                map[dataSource[index].id] = weightForm.getFieldValue('weight')
+                map[dataSource[dataIndex].id] = weightForm.getFieldValue('weight')
                 setWeightMap(map)
                 setDataSource([...dataSource])
               }}
