@@ -74,9 +74,6 @@ export default () => {
         } catch (error) {
           console.log(error);
         }
-
-
-        resolve('成功')
       }).catch(() => {
         reject('失败')
       })
@@ -208,25 +205,10 @@ export default () => {
         return _ ? moment(_).format('YYYY-MM-DD HH:mm:ss') : '--'
       },
     },
-    // {
-    //   title: '审核状态',
-    //   dataIndex: 'auditStatus',
-    //   align: 'center',
-    //   // valueType: 'textarea', // 筛选的类别
-    //   valueType: 'select', // 筛选的类别
-    //   renderText: (_: string) => {
-    //     return (
-    //       <div className={`state${_}`}>
-    //         {Object.prototype.hasOwnProperty.call(auditStatus, _) ? auditStatus[_] : '--'}
-    //       </div>
-    //     );
-    //   },
-    // },
     {
       title: '上架状态',
       dataIndex: 'status',
       align: 'center',
-      // valueType: 'textarea', // 筛选的类别
       valueType: 'select', // 筛选的类别
       valueEnum: {
         0: '未上架',
@@ -235,7 +217,6 @@ export default () => {
       renderText: (_: string) => {
         return (
           <div className={`state${_}`}>
-            {/* 这里 true false */}
             {Object.prototype.hasOwnProperty.call(stateEnable, _) ? stateEnable[_] : '--'}
           </div>
         );
@@ -371,9 +352,6 @@ export default () => {
           console.log('查询pagination', pagination)
           console.log('publishTime', pagination?.publishTime)
           // 搜集的发布时间范围 是一个数组 publishTime
-          // 目前可以选同一天
-          // publishTime.length > 0
-          // publishTime[0], publishTime[1]
           const result = await httpEnterpriseList({
             ...pagination,
             recommendFlag: pagination?.recommend ? pagination?.recommend === '1' : undefined,
@@ -387,54 +365,7 @@ export default () => {
               : undefined,
             queryType: 2,
             auditStatus: [1,2,3]
-          }); 
-          // 根据后端调整
-          // const result = {
-          //   success: 0,
-          //   total: 1,
-          //   data: [
-          //     {
-          //       content: '芜湖市内容信息',
-          //       title: '一贫如洗',
-          //       topic: '一人之下',
-          //       type: '玄幻',
-          //       publishTime: "2023-04-20 16:45:02",
-          //       enable: '1',
-          //       tuijian: '1',
-          //       id: 9,
-          //       risky: false,
-          //       status: 0,
-          //       recommend: true,
-          //     },
-          //     {
-          //       content: '芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息芜湖市内容信息',
-          //       title: '一贫如洗',
-          //       topic: '一人之下',
-          //       type: '玄幻',
-          //       publishTime: "2023-04-20 16:45:02",
-          //       enable: '1',
-          //       tuijian: '1',
-          //       id: 9,
-          //       risky: true,
-          //       riskyContent: '风险内容风险内容风险内容',
-          //       status: 1,
-          //       recommend: false,
-          //     },
-          //     {
-          //       content: '芜湖市内容信息',
-          //       title: '一贫如洗',
-          //       topic: '一人之下',
-          //       type: '玄幻',
-          //       publishTime: "2023-04-20 16:45:02",
-          //       enable: '1',
-          //       tuijian: '1',
-          //       id: 9,
-          //       risky: true,
-          //       riskyContent: '风险内容风险内容'
-          //     },
-
-          //   ]
-          // }
+          });
           paginationRef.current = pagination;
           setTotal(result.total);
           return result;
