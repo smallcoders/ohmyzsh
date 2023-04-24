@@ -16,7 +16,7 @@ import moment from 'moment';
 import { history, Access, useAccess } from 'umi';
 import './index.less'
 import scopedClasses from '@/utils/scopedClasses';
-import { routeName } from '../../../../config/routes'
+import { routeName } from '../../../../config/routes';
 import { httpEnterpriseList, httpEnterpriseAudit, httpEnterprisePublishDown, httpEnterprisePublishRecommend } from '@/services/user-posting';
 
 const sc = scopedClasses('baseline-user-posting');
@@ -110,8 +110,6 @@ export default () => {
       title: '内容信息',
       dataIndex: 'content',
       align: 'center',
-      // valueType: 'textarea', // 筛选的类别
-      // valueType: 'text', // 筛选的类别
       hideInSearch: true, // 隐藏search
       renderText: (_: any, record: any) => {
         return (
@@ -161,7 +159,6 @@ export default () => {
       align: 'center',
       // valueType: 'textarea', // 筛选的类别
       valueType: 'text', // 筛选的类别
-      // hideInSearch: true, // 本次 隐藏search
     },
     {
       title: '发布时间范围',
@@ -226,7 +223,6 @@ export default () => {
       title: '推荐状态',
       dataIndex: 'recommend', // 需要更新
       align: 'center',
-      // valueType: 'textarea', // 筛选的类别
       valueType: 'select', // 筛选的类别
       valueEnum: {
         1: '已推荐',

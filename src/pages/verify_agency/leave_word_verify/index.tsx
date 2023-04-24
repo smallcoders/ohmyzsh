@@ -232,7 +232,6 @@ export default () => {
       type: Common.SearchItemControlEnum.SELECT,
       options: tabTypeValue,
       allowClear: true,
-      initialValue: 'DEMAND'
     },
   ];
 
