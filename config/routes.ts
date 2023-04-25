@@ -252,21 +252,6 @@
   BASELINE_ASSOCIATION_MANAGE: 'baseline-association-manage',
   BASELINE_ASSOCIATION_MANAGE_DETAIL: 'baseline-association-manage/detail',
   BASELINE_ASSOCIATION_MANAGE_EDIT: 'baseline-association-manage/add',
-  
-  BASELINE_USER_POSTING_MANAGE: '/baseline/baseline-user-posting-manage', // 用户发布管理
-  BASELINE_USER_POSTING_MANAGE_INDEX: '/baseline/baseline-user-posting-manage/index', // 用户发布管理
-  BASELINE_USER_POSTING_MANAGE_DETAIL: '/baseline/baseline-user-posting-manage/detail', // 用户发布管理详情
-  VERIFY_AGENCY_USER_POSTING_VERIFY: '/verify-agency/user-posting-verify', // 用户发布审核
-  VERIFY_AGENCY_USER_POSTING_VERIFY_INDEX: '/verify-agency/user-posting-verify/index', // 用户发布审核
-  VERIFY_AGENCY_USER_POSTING_VERIFY_DETAIL: '/verify-agency/user-posting-verify/detail', // 用户发布审核详情
-  
-  BASELINE_SERVICE_NUMBER: '/baseline/baseline-service-number',
-  BASELINE_SERVICE_NUMBER_INDEX: '/baseline/baseline-service-number/index',
-  BASELINE_SERVICE_NUMBER_SETTING: '/baseline/baseline-service-number-setting',
-  BASELINE_SERVICE_NUMBER_MANAGEMENT: '/baseline/baseline-service-number/management', // 服务号管理
-  BASELINE_SERVICE_NUMBER_MANAGEMENT_DETAIL: '/baseline/baseline-service-number/management/detail', // 服务号管理
-  BASELINE_SERVICE_NUMBER_MANAGEMENT_DRAFTS_ADD: '/baseline/baseline-service-number/management/drafts/add', // 草稿箱add
-  BASELINE_HOTSPOT_MANAGE: 'baseline-hotspot-manage'
 };
 
 export default [
@@ -374,13 +359,6 @@ export default [
             component: './baseline/content/detail',
           },
         ],
-      },
-      {
-        path: routeName.BASELINE_HOTSPOT_MANAGE,
-        name: '实时热点管理',
-        code: 'M_BLM_SSRDGL',
-        access: 'M_BLM_SSRDGL',
-        component: './baseline/real_time_hotspot_management',
       },
       {
         path: routeName.BASELINE_BID_MANAGE,
@@ -533,82 +511,6 @@ export default [
         hideInMenu: true,
         name: '新增',
         component: './baseline/association-info/add',
-      },
-      {
-        path: routeName.BASELINE_SERVICE_NUMBER_SETTING,
-        name: '服务号设置管理',
-        code: 'M_BLM_FWHGL',
-        access: 'M_BLM_FWHGL',
-        component: './baseline/service/service_number_setting/index',
-      },
-      {
-        path: routeName.BASELINE_SERVICE_NUMBER,
-        code: 'M_BLM_FWHYY',
-        access: 'M_BLM_FWHYY',
-        name: '服务号运营',
-        hideChildrenInMenu: true,
-        routes: [
-          {
-            access: 'M_BLM_FWHYY',
-            path: routeName.BASELINE_SERVICE_NUMBER,
-            redirect: routeName.BASELINE_SERVICE_NUMBER_INDEX,
-          },
-          {
-            path: routeName.BASELINE_SERVICE_NUMBER_INDEX,
-            // code: 'M_AT_KJCG',
-            access: 'M_BLM_FWHYY',
-            name: '服务号运营',
-            hideInBreadcrumb: true,
-            component: './baseline/service/service_number/index', // 更新
-          },
-          {
-            path: routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT,
-            name: '服务号管理',
-            // access: 'PQ_BLM_FWHYY',
-            hideInBreadcrumb: true,
-            component: './baseline/service/service_number/service-management',
-          },
-          {
-            path: routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DRAFTS_ADD,
-            name: '新增',
-            // access: 'PA_BLM_NRGL',
-            hideInBreadcrumb: true,
-            component: './baseline/service/service_number/drafts_add/index',
-          },
-          {
-            path: routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DETAIL,
-            name: '服务号设置详情',
-            // access: 'PA_BLM_NRGL',
-            hideInBreadcrumb: true,
-            component: './baseline/service/service_number/service_management_detail/index',
-          }
-        ]
-      },
-      {
-        path: routeName.BASELINE_USER_POSTING_MANAGE, 
-        name: '用户发布管理',
-        access: 'M_BLM_YHFBGL',
-        hideChildrenInMenu: true,
-        routes: [
-          {
-            path: routeName.BASELINE_USER_POSTING_MANAGE,
-            access: 'M_BLM_YHFBGL',
-            redirect: routeName.BASELINE_USER_POSTING_MANAGE_INDEX,
-          },
-          {
-            path: routeName.BASELINE_USER_POSTING_MANAGE_INDEX,
-            access: 'M_BLM_YHFBGL',
-            name: '用户发布管理',
-            hideInBreadcrumb: true,
-            component: './baseline/user-posting/index',
-          },
-          {
-            path: routeName.BASELINE_USER_POSTING_MANAGE_DETAIL,
-            name: '用户发布详情',
-            hideInBreadcrumb: true,
-            component: './baseline/user-posting/detail/index',
-          },
-        ],
       },
     ],
   },
@@ -909,32 +811,6 @@ export default [
             path: routeName.VOUCHER_APPLY_VERIFY_DETAIL,
             name: '审核详情',
             component: './verify_agency/voucher_apply_verify/detail',
-          },
-        ],
-      },
-      {
-        path: routeName.VERIFY_AGENCY_USER_POSTING_VERIFY, 
-        name: '用户发布审核',
-        access: 'M_BLM_YHFBSH',
-        hideChildrenInMenu: true,
-        routes: [
-          {
-            path: routeName.VERIFY_AGENCY_USER_POSTING_VERIFY,
-            access: 'M_BLM_YHFBSH',
-            redirect: routeName.VERIFY_AGENCY_USER_POSTING_VERIFY_INDEX,
-          },
-          {
-            path: routeName.VERIFY_AGENCY_USER_POSTING_VERIFY_INDEX,
-            access: 'M_BLM_YHFBSH',
-            name: '用户发布审核',
-            hideInBreadcrumb: true,
-            component: './verify_agency/user_posting_verify/index',
-          },
-          {
-            path: routeName.VERIFY_AGENCY_USER_POSTING_VERIFY_DETAIL,
-            name: '用户发布审核详情',
-            hideInBreadcrumb: true,
-            component: './verify_agency/user_posting_verify/detail/index',
           },
         ],
       },
@@ -1247,7 +1123,7 @@ export default [
         path: routeName.APP_PAGE_CREAT_MANAGE_PAGE_LIST,
         name: '数字化模板配置',
         hideChildrenInMenu: true,
-        access: 'M_OA_SZHMB',
+        access: 'PQ_OA_SZHMB',
         routes: [
           {
             path: routeName.APP_PAGE_CREAT_MANAGE_PAGE_LIST,
