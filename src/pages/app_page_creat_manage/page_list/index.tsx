@@ -369,61 +369,61 @@ export default () => {
       }
     },
 
-    // {
-    //   title: '最新操作时间',
-    //   dataIndex: 'updateTime',
-    //   width: 200,
-    //   render: (creatTime: string, record: record) => {
-    //     return (
-    //       <>
-    //         {moment(creatTime).format('YYYY-MM-DD HH:mm:ss')}
-    //         <Dropdown
-    //           visible={record.tmpId === openMenuId}
-    //           overlayClassName="operation-list-drop-menu"
-    //           onVisibleChange={(visible) => {
-    //             if (visible) {
-    //               getTemplateOperationList({ tmpId: record.tmpId }).then((res) => {
-    //                 if (res.code === 0) {
-    //                   setMenuData(res?.result || [])
-    //                   setMenuOpen(record.tmpId)
-    //                 } else {
-    //                   antdMessage.error(`获取操作记录失败`);
-    //                 }
-    //               })
-    //             } else {
-    //               setMenuOpen('')
-    //               setMenuData([])
-    //             }
-    //           }}
-    //           trigger={['click']} overlay={() => {
-    //             return (
-    //               <Menu>
-    //                 {
-    //                   menuData.map((item: { opTypeDesc: string, opTime: string, opUserName: string }, index: number) => {
-    //                     return (
-    //                       <Menu.Item key={index}>
-    //                         <div className="operation-list">
-    //                           <div className="title">{item.opTypeDesc}</div>
-    //                           <div className="menu-right">
-    //                             <div className='operation-time'>{item.opTime}</div>
-    //                             <div>操作人：{item.opUserName}</div>
-    //                           </div>
-    //                         </div>
-    //                       </Menu.Item>
-    //                     )
-    //                   })
-    //                 }
-    //               </Menu>
-    //             )
-    //           }}>
-    //           <a className="drop-menu">
-    //             <DownOutlined />
-    //           </a>
-    //         </Dropdown>
-    //       </>
-    //     )
-    //   },
-    // },
+    {
+      title: '最新操作时间',
+      dataIndex: 'updateTime',
+      width: 200,
+      render: (creatTime: string, record: record) => {
+        return (
+          <>
+            {moment(creatTime).format('YYYY-MM-DD HH:mm:ss')}
+            <Dropdown
+              visible={record.tmpId === openMenuId}
+              overlayClassName="operation-list-drop-menu"
+              onVisibleChange={(visible) => {
+                if (visible) {
+                  getTemplateOperationList({ tmpId: record.tmpId }).then((res) => {
+                    if (res.code === 0) {
+                      setMenuData(res?.result || [])
+                      setMenuOpen(record.tmpId)
+                    } else {
+                      antdMessage.error(`获取操作记录失败`);
+                    }
+                  })
+                } else {
+                  setMenuOpen('')
+                  setMenuData([])
+                }
+              }}
+              trigger={['click']} overlay={() => {
+                return (
+                  <Menu>
+                    {
+                      menuData.map((item: { opTypeDesc: string, opTime: string, opUserName: string }, index: number) => {
+                        return (
+                          <Menu.Item key={index}>
+                            <div className="operation-list">
+                              <div className="title">{item.opTypeDesc}</div>
+                              <div className="menu-right">
+                                <div className='operation-time'>{item.opTime}</div>
+                                <div>操作人：{item.opUserName}</div>
+                              </div>
+                            </div>
+                          </Menu.Item>
+                        )
+                      })
+                    }
+                  </Menu>
+                )
+              }}>
+              <a className="drop-menu">
+                <DownOutlined />
+              </a>
+            </Dropdown>
+          </>
+        )
+      },
+    },
     {
       title: '操作',
       hideInSearch: true,
