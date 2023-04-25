@@ -12,6 +12,7 @@ import {
   httpEnterpriseAudit,
   httpEnterprisePublishRecommend,
 } from '@/services/user-posting';
+import { routeName } from '../../../../../config/routes';
 
 const sc = scopedClasses('verify-user-posting-detail');
 // 内容类型
@@ -198,7 +199,8 @@ export default () => {
             </Access>
             <Button
               onClick={() => {
-                history.goBack();
+                // history.goBack();
+                history.push(`${routeName.VERIFY_AGENCY_USER_POSTING_VERIFY_INDEX}`)
               }}
             >
               返回
@@ -210,7 +212,8 @@ export default () => {
           <Space size="middle">
             <Button
               onClick={() => {
-                history.goBack();
+                // history.goBack();
+                history.push(`${routeName.VERIFY_AGENCY_USER_POSTING_VERIFY_INDEX}`)
               }}
             >
               返回

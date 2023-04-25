@@ -11,6 +11,7 @@ import {
   httpEnterprisePublishDown,
 } from '@/services/user-posting';
 import { UserOutlined } from '@ant-design/icons';
+import { routeName } from '../../../../../config/routes';
 
 const sc = scopedClasses('baseline-user-posting-detail');
 
@@ -149,7 +150,8 @@ export default () => {
             <Button
               style={{ marginRight: '40px' }}
               onClick={() => {
-                history.goBack();
+                // history.goBack();
+                history.push(`${routeName.BASELINE_USER_POSTING_MANAGE_INDEX}`)
               }}
             >
               返回
@@ -184,7 +186,8 @@ export default () => {
             <Button
               style={{ marginRight: '40px' }}
               onClick={() => {
-                history.goBack();
+                // history.goBack();
+                history.push(`${routeName.BASELINE_USER_POSTING_MANAGE_INDEX}`)
               }}
             >
               返回
@@ -230,7 +233,8 @@ export default () => {
             <Button
               style={{ marginRight: '40px' }}
               onClick={() => {
-                history.goBack();
+                // history.goBack();
+                history.push(`${routeName.BASELINE_USER_POSTING_MANAGE_INDEX}`)
               }}
             >
               返回
@@ -276,7 +280,8 @@ export default () => {
             <Button
               style={{ marginRight: '40px' }}
               onClick={() => {
-                history.goBack();
+                // history.goBack();
+                history.push(`${routeName.BASELINE_USER_POSTING_MANAGE_INDEX}`)
               }}
             >
               返回
