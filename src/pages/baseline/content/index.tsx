@@ -448,8 +448,8 @@ export default () => {
                 onClick={() => {
                   const search = searchForm.getFieldsValue();
                   if (search.time) {
-                    search.createTimeStart = moment(search.time[0]).format('YYYY-MM-DD HH:mm:ss');
-                    search.createTimeEnd = moment(search.time[1]).format('YYYY-MM-DD HH:mm:ss');
+                    search.createTimeStart = moment(search.time[0]).format('YYYY-MM-DD 00:00:00');
+                    search.createTimeEnd = moment(search.time[1]).format('YYYY-MM-DD 23:59:59');
                   }
                   setSearChContent(search);
                 }}
