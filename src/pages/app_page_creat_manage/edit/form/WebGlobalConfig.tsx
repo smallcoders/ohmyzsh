@@ -86,13 +86,16 @@ const GlobalConfig: FC = () => {
                 onChange={(event) => handleGlobalConfigChange('pageName', event.target.value)}
                 onBlur={(event) => {
                   if (!event.target.value) {
-                    handleGlobalConfigChange('pageName', '未命名网页')
+                    handleGlobalConfigChange('pageName', '未命名模版')
                   }
                 }}
               />
             </Form.Item>
             <Form.Item label="活动时间" required>
               <DatePicker.RangePicker
+                disabledDate={(current) => {
+                  return current && current < moment().startOf('day');
+                }}
                 value={webGlobalConfig?.activeTime ? [moment(webGlobalConfig?.activeTime?.[0]), moment(webGlobalConfig?.activeTime?.[1])] : undefined}
                 format={'YYYY-MM-DD'} onChange={(event) => handleGlobalConfigChange('activeTime', [event[0].format('YYYY-MM-DD 00:00:00'), event[1].format('YYYY-MM-DD 00:00:00')])} />
             </Form.Item>

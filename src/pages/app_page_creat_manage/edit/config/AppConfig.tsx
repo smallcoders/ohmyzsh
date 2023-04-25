@@ -210,7 +210,7 @@ const AppConfig = () => {
 
   const render = (config: any, key: string) => {
     return <>
-      <Form.Item label="输入选择应用商品">
+      <Form.Item label="输入选择应用商品" required>
         <DebounceSelect
           value={config?.product?.value}
           showSearch
@@ -223,14 +223,14 @@ const AppConfig = () => {
           }}
         />
       </Form.Item>
-      <Form.Item label="上传图标">
+      <Form.Item label="上传图标" required>
         <UploadForm
           listType="picture-card"
           className="avatar-uploader"
           maxSize={10}
           action={'/antelope-common/common/file/upload/record'}
           showUploadList={false}
-          style={{ width: '36px', height: '36px', marginBottom: 0 }}
+          style={{ width: '56px', height: '56px', marginBottom: 0 }}
           accept=".bmp,.gif,.png,.jpeg,.jpg"
           value={config!.icon}
           onChange={(value: any) => {

@@ -7,7 +7,7 @@ import './index.less';
 import { dateFormat } from '@/utils/date';
 
 export const OrderItem = ({
-  record,
+  record = {},
   type = 'ORDER',
 }: {
   record: OrderManage.Content;
@@ -108,7 +108,7 @@ export const OrderItem = ({
                     padding: '0 10px',
                   }}
                 >
-                  {record?.payMethod?.indexOf('ZDY_') > 0 ? record?.payMethod?.substring(4) : OrderManage.PayTypeJson[record?.payMethod || ''] || '在线支付'}
+                  {record?.payMethod?.indexOf('ZDY_') > -1 ? record?.payMethod?.substring(4) : OrderManage.PayTypeJson[record?.payMethod || ''] || '在线支付'}
                 </span>
               </div>
               <div style={{ flex: 1, display: 'grid', textAlign: 'center' }}>

@@ -177,7 +177,7 @@ export default () => {
   const handleDrop = (record: record) => {
     Modal.confirm({
       title: '提示',
-      content: '下架后用户将不能访问，确认下架？若重新发布，之前的分享链接还可继续使用？',
+      content: '下架后用户将不能访问，确认下架？若重新发布，之前的分享链接还可继续使用',
       okText: '下架',
       onOk: () => {
         addOperationLog({

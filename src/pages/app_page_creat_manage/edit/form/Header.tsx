@@ -183,7 +183,7 @@ const Header = (props: any) => {
     }
 
 
-    saveTemplate(data).then((res) => {
+    saveAppTemplate(data).then((res) => {
       if (res.code === 0) {
         if (callback) {
           callback(data.config.tmpJson, 'publish')
@@ -202,7 +202,7 @@ const Header = (props: any) => {
       <Layout.Header className="btn-bar">
         <Space>{tmpType === '1' ? state.webGlobalConfig.pageName : state.globalConfig?.pageName}</Space>
         <div className="middle-title">
-          {tmpType === '1' ? '网页设计' : '表单设计'}
+          {tmpType === '1' ? '活动模版设计' : '表单设计'}
         </div>
         <Space>
           <Popover content={

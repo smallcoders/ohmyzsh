@@ -28,7 +28,7 @@ export const initState: State = {
   },
   id: '',
   webGlobalConfig: {
-    pageName: '未命名网页',
+    pageName: '未命名模版',
     pageDesc: '',
     bgColor: '#F7F9FE',
     inputBgColor: '#F7F9FE'
