@@ -75,7 +75,7 @@ const GlobalConfig: FC = () => {
       {useMemo(
         () => (
           <Form layout="vertical">
-            <Form.Item label="网页名称" required >
+            <Form.Item label="活动模版名称" required >
               <Input
                 maxLength={8}
                 ref={inputRef}

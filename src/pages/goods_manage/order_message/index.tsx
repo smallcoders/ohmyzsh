@@ -28,14 +28,17 @@ const RangePicker: any = DatePicker.RangePicker;
 export default () => {
   const [dataSource, setDataSource] = useState<OrderManage.Content[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const { source } = history.location.query as any;
   const [searchContent, setSearChContent] = useState<{
     title?: string; // 标题
     publishTime?: string; // 发布时间
     payMethod?: string; // 
     state?: number; // 状态：0发布中、1待发布、2已下架
-  }>({});
+  }>({
+    payMethod: source
+  });
 
-  const { source } = history.location.query as any;
+
 
   const formLayout = {
     labelCol: { span: 8 },
@@ -51,12 +54,7 @@ export default () => {
   const [state, setState] = useState<number>(0);
   const [searchForm] = Form.useForm();
 
-  useEffect(() => {
-    if (state !== 0) {
-      searchForm.resetFields();
-    }
-    setSearChContent({});
-  }, [state]);
+
 
   const [sourceList, setSourceList] = useState<any[]>([])
 
@@ -94,20 +92,33 @@ export default () => {
 
   useEffect(() => {
     getSource();
-    if (source) {
-      searchForm.setFieldsValue({
-        payMethod: source
-      })
-      setSearChContent({
-        payMethod: source
-      })
-    }
-
   }, []);
 
   useEffect(() => {
     getPage();
-  }, [searchContent, source]);
+  }, [searchContent]);
+
+  useEffect(() => {
+    if (source) {
+      searchForm.setFieldsValue({
+        payMethod: source
+      })
+      // setSearChContent({
+      //   payMethod: source
+      // })
+    }
+  }, [source]);
+
+
+  useEffect(() => {
+    if (state !== 0) {
+      searchForm.resetFields();
+      setSearChContent({});
+    } else {
+      getPage();
+    }
+  }, [state]);
+
   const useSearchNode = (): React.ReactNode => {
     return (
       <div className={sc('container-search')}>
