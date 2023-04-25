@@ -255,7 +255,7 @@ export default () => {
                 size="small"
                 type="link"
                 onClick={() => {
-                  history.push(`${routeName.VERIFY_AGENCY_USER_POSTING_VERIFY_DETAIL}?id=${record?.id}`);
+                  window.open(`${routeName.VERIFY_AGENCY_USER_POSTING_VERIFY_DETAIL}?id=${record?.id}`);
                 }}
               >
                 详情
@@ -327,6 +327,7 @@ export default () => {
           span: 8,
           labelWidth: 100,
           defaultCollapsed: false,
+          collapseRender: () => false,
           optionRender: (searchConfig, formProps, dom) => {
             return [dom[1], dom[0]];
           },

@@ -64,12 +64,15 @@ export default () => {
           const res = await httpEnterprisePublishDown({
             id: Number(id),
             status: state,
+            auditReason: values?.auditReason
           })
           if (res.code === 0) {
             message.success(state === 0 ? '下架成功' : '上架成功');
             actionRef.current?.reload(); // 让table// 刷新
+            resolve('成功');
           } else {
             message.error(`失败，原因:{${res.message}}`);
+            reject('失败')
           }
         } catch (error) {
           console.log(error);
@@ -251,7 +254,7 @@ export default () => {
                 size="small"
                 type="link"
                 onClick={() => {
-                  history.push(`${routeName.BASELINE_USER_POSTING_MANAGE_DETAIL}?id=${record?.id}`)
+                  window.open(`${routeName.BASELINE_USER_POSTING_MANAGE_DETAIL}?id=${record?.id}`)
                 }}
               >
                 详情
@@ -293,7 +296,7 @@ export default () => {
                       <div style={{fontSize: '16px', fontWeight: 600}}>下架原因</div>
                       <Form form={form} {...formLayout} validateTrigger="onBlur">
                         <Form.Item
-                          name="原因"
+                          name="auditReason"
                           rules={[{ required: true, message: '请填写原因' }]}
                         >
                           <TextArea placeholder='请输入原因(必填)' rows={3} maxLength={50} />
@@ -338,15 +341,12 @@ export default () => {
           span: 8,
           labelWidth: 100,
           defaultCollapsed: false,
+          collapseRender: () => false,
           optionRender: (searchConfig, formProps, dom) => {
             return[dom[1], dom[0]]
           },
         }}
         request={async (pagination) => {
-          // auditStatus 上架状态 1 已上架 2 未上架
-          // recommend 推荐 1 已推荐 2 微推荐   需要修改
-          console.log('查询pagination', pagination)
-          console.log('publishTime', pagination?.publishTime)
           // 搜集的发布时间范围 是一个数组 publishTime
           const result = await httpEnterpriseList({
             ...pagination,

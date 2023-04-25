@@ -62,6 +62,7 @@ export function httpEnterprisePublishRecommend(data: {
 export function httpEnterprisePublishDown(data: {
   id?: number
   status?: boolean // 0：下架，1：下架
+  auditReason?: string
 }) {
   return request(`/antelope-industrial/mng/enterprise/publish/down-or-up`, {
     method: 'POST',
