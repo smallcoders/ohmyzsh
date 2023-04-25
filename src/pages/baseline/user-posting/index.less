@@ -1,0 +1,23 @@
+@prefix: baseline-user-posting;
+@import '../../../global.less';
+
+.@{prefix}-container {
+  &-table {
+    &-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      &-value {
+        max-width: 180px;
+        .ellipseText(1);
+      }
+      &-risky {
+        display: inline-block;
+        background-color: red;
+        color: #fff;
+        padding: 1px;
+        margin-left: 3px;
+      }
+    }
+  }
+}
