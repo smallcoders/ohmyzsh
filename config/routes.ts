@@ -1123,7 +1123,7 @@ export default [
         path: routeName.APP_PAGE_CREAT_MANAGE_PAGE_LIST,
         name: '数字化模板配置',
         hideChildrenInMenu: true,
-        access: 'M_OA_SZHMB',
+        access: 'PQ_OA_SZHMB',
         routes: [
           {
             path: routeName.APP_PAGE_CREAT_MANAGE_PAGE_LIST,
