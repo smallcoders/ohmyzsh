@@ -445,8 +445,8 @@ export default () => {
                 onClick={() => {
                   const search = searchForm.getFieldsValue();
                   if (search.time) {
-                    search.publishStartTime = moment(search.time[0]).valueOf();
-                    search.publishEndTime = moment(search.time[1]).valueOf();
+                    search.publishStartTime = moment(moment(search.time[0]).format('YYYY-MM-DD 00:00:00')).valueOf();
+                    search.publishEndTime = moment(moment(search.time[1]).format('YYYY-MM-DD 23:59:59')).valueOf();
                     delete search.time
                   }
                   setSearChContent(search);

@@ -34,6 +34,7 @@ import { routeName } from '@/../config/routes';
 import PreviewModal from '../edit/components/PreviewModal';
 import { listAllAreaCode } from '@/services/common';
 import { getOrderNum } from '@/services/order/order-manage';
+import { Access, useAccess } from 'umi';
 const sc = scopedClasses('page-creat-list');
 const statusMap = {
   0: '未发布',
@@ -428,12 +429,13 @@ export default () => {
       hideInSearch: true,
       width: 200,
       render: (_: any, record: any) => {
-        return getButtonList(record)
+        return <Access accessible={access['P_OA_SZHMB']}>{getButtonList(record)}</Access>
       },
     },
   ];
 
-
+  // 拿到当前角色的access权限兑现
+  const access = useAccess()
   const getSearchQuery = () => {
     const search = searchForm.getFieldsValue();
     if (search.updateTime) {
