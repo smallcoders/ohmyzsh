@@ -11,6 +11,11 @@ export default function access(initialState: { currentUser?: Account.CurrentUser
     permissionCodes[p] = true
   })
 
+  console.log('#', {
+    ...(currentUser?.menuShowMap || {}),
+    ...(permissionCodes || {}),
+  })
+
   // if (currentUser?.type === 'MANAGER_ADMIN') return {}
 
   return {
