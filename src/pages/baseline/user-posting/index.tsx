@@ -18,6 +18,7 @@ import './index.less'
 import scopedClasses from '@/utils/scopedClasses';
 import { routeName } from '../../../../config/routes';
 import { httpEnterpriseList, httpEnterpriseAudit, httpEnterprisePublishDown, httpEnterprisePublishRecommend } from '@/services/user-posting';
+import dayjs from 'dayjs';
 
 const sc = scopedClasses('baseline-user-posting');
 
@@ -354,13 +355,14 @@ export default () => {
             recommend: pagination?.recommend ? undefined : undefined,
 
             publishStartTime: pagination?.publishTime 
-              ? pagination?.publishTime[0]
+              ? dayjs(pagination?.publishTime[0]).format('YYYY-MM-DD 00:00:00')
               : undefined,
             publishEndTime: pagination?.publishTime
-              ? pagination?.publishTime[1]
+              ? dayjs(pagination?.publishTime[1]).format('YYYY-MM-DD 23:59:59')
               : undefined,
             queryType: 2,
-            auditStatus: [1,2,3]
+            auditStatus: [1,2,3],
+            publishTime: undefined
           });
           paginationRef.current = pagination;
           setTotal(result.total);

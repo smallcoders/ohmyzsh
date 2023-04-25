@@ -16,6 +16,7 @@ export function httpEnterpriseList(data: {
   pageSize?: number
   pageIndex?: number
   queryType: number
+  publishTime?: any
 }) {
   return request(`/antelope-industrial/mng/enterprise/publish/page-query`, {
     method: 'POST',
