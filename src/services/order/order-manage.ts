@@ -9,6 +9,7 @@ export async function getOrderPage(data?: { [key: string]: any }) {
   return request<OrderManage.ResultList>('/antelope-pay/mng/order/query', {
     method: 'post',
     data,
+    
   });
 }
 
@@ -104,5 +105,18 @@ export async function getOrderLog(params?: { [key: string]: any }) {
   return request<any>('/antelope-pay/mng/log', {
     method: 'GET',
     params,
+  });
+}
+
+export async function getOrderSource() {
+  return request<any>('/antelope-pay/mng/order/payMethod', {
+    method: 'POST',
+    
+  });
+}
+
+export async function getOrderNum(tmpId: string) {
+  return request<any>(`/antelope-pay/mng/activity/app/orderNum?tmpId=${tmpId}`, {
+    method: 'POST',
   });
 }

@@ -21,7 +21,8 @@ import OrderList from './components/order-list';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import OrderManage from '@/types/order/order-manage';
-import { getOrderPage } from '@/services/order/order-manage';
+import { getOrderPage, getOrderSource } from '@/services/order/order-manage';
+import { history } from 'umi';
 const sc = scopedClasses('order-manage');
 const RangePicker: any = DatePicker.RangePicker;
 export default () => {
@@ -30,8 +31,11 @@ export default () => {
   const [searchContent, setSearChContent] = useState<{
     title?: string; // 标题
     publishTime?: string; // 发布时间
+    payMethod?: string; // 
     state?: number; // 状态：0发布中、1待发布、2已下架
   }>({});
+
+  const { source } = history.location.query as any;
 
   const formLayout = {
     labelCol: { span: 8 },
@@ -53,6 +57,16 @@ export default () => {
     }
     setSearChContent({});
   }, [state]);
+
+  const [sourceList, setSourceList] = useState<any[]>([])
+
+  const getSource = async () => {
+    try {
+      const res = await getOrderSource()
+      setSourceList(res?.result)
+    } catch { }
+  }
+
 
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     setLoading(true);
@@ -79,8 +93,21 @@ export default () => {
   };
 
   useEffect(() => {
+    getSource();
+    if (source) {
+      searchForm.setFieldsValue({
+        payMethod: source
+      })
+      setSearChContent({
+        payMethod: source
+      })
+    }
+
+  }, []);
+
+  useEffect(() => {
     getPage();
-  }, [searchContent]);
+  }, [searchContent, source]);
   const useSearchNode = (): React.ReactNode => {
     return (
       <div className={sc('container-search')}>
@@ -125,7 +152,20 @@ export default () => {
                 <RangePicker allowClear showTime />
               </Form.Item>
             </Col>
-            <Col span={12} style={{ textAlign: 'right' }}>
+            <Col span={6}>
+              <Form.Item name="payMethod" label="订单来源">
+                <Select placeholder="请选择" allowClear>
+                  {sourceList?.map((p) => (
+                    <Select.Option key={p?.code} value={p?.code}>
+                      {p?.name}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+
+
+            <Col span={6} style={{ textAlign: 'right' }}>
               <Button
                 style={{ marginRight: 20 }}
                 type="primary"
