@@ -193,3 +193,9 @@ export async function getOpenInsideTokenV2(id: string) {
     method: 'get',
   });
 }
+
+export async function getTryToken(id: string) {
+  return request(`/antelope-other/token/inside/lingYangDefaultToken/${id}`, {
+    method: 'get',
+  });
+}

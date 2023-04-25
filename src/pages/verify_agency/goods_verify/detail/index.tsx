@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
-import { getOpenInsideToken, getOpenInsideTokenV2 } from '@/services/digital-application';
+import { getOpenInsideToken, getOpenInsideTokenV2, getTryToken } from '@/services/digital-application';
 import VerifyStepsDetail from '@/components/verify_steps';
 import VerifyDescription from '@/components/verify_steps/verify_description/verify-description';
 import CommonTitle from '@/components/verify_steps/common_title';
@@ -185,6 +185,20 @@ export default () => {
       }
     });
   }
+
+  function handleJumpTryLink(url: string) {
+    getTryToken(detail?.payProduct?.appId).then(({ result, code, message: msg }) => {
+      if (code === 0) {
+        if (!url) return;
+        const token = url.indexOf('?') >= 0 ? `&token=${result}` : `?token=${result}`;
+
+        window.open(url + token);
+      } else {
+        AntdMessage.error(msg);
+      }
+    });
+  }
+
   useEffect(() => {
     prepare();
     handleGetApplicationTypeList()
@@ -263,7 +277,7 @@ export default () => {
                       <div>
                         <span>H5体验应用：</span>
                         <span>{detail?.payProduct?.appDemoUrl || '--'} </span>
-                        <a onClick={() => handleJumpLink(detail?.payProduct?.appDemoUrl)}>查看</a>
+                        <a onClick={() => handleJumpTryLink(detail?.payProduct?.appDemoUrl)}>查看</a>
                       </div>
                     </>
                   ) : detail?.payProduct?.appType === 1 ? (
@@ -271,7 +285,7 @@ export default () => {
                       <div>
                         <span>WEB体验应用</span>
                         <span>{detail?.payProduct?.pcDemoUrl || '--'} </span>
-                        <a onClick={() => handleJumpLink(detail?.payProduct?.appDemoUrl)}>查看</a>
+                        <a onClick={() => handleJumpTryLink(detail?.payProduct?.pcDemoUrl)}>查看</a>
                       </div>
                     </>
                   ) : detail?.payProduct?.appType === 3 ? (
@@ -280,12 +294,12 @@ export default () => {
                       <div>
                         <span>H5体验应用：</span>
                         <span>{detail?.payProduct?.appDemoUrl || '--'} </span>
-                        <a onClick={() => handleJumpLink(detail?.payProduct?.appDemoUrl)}>查看</a>
+                        <a onClick={() => handleJumpTryLink(detail?.payProduct?.appDemoUrl)}>查看</a>
                       </div>,
                       <div>
                         <span>WEB体验应用</span>
                         <span>{detail?.payProduct?.pcDemoUrl || '--'} </span>
-                        <a onClick={() => handleJumpLink(detail?.payProduct?.appDemoUrl)}>查看</a>
+                        <a onClick={() => handleJumpTryLink(detail?.payProduct?.pcDemoUrl)}>查看</a>
                       </div>,
                     ]
                   ) : (
