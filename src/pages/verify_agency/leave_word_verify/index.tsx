@@ -175,7 +175,7 @@ export default () => {
         )
       }
     }
-  ].filter(p => p);
+  ].filter(p => p); // 过滤处理, 如果你给整个操作添加了 access['P_LM_JBLX'] && { title: '操作' } 可以过滤跳当前table列
 
   const getLeaveWordVerifyPage = async ( searchInfo: SearchInfo, pageSize = 10, pageIndex = 1) => {
     try {
