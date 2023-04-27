@@ -21,13 +21,42 @@ import dayjs from 'dayjs';
 
 const sc = scopedClasses('content-stream-ad-statistical-detail');
 
+const staNumArr = [
+  {
+    title: '浏览总次数',
+    num: 0,
+  },
+  {
+    title: '被关闭总次数',
+    num: 0,
+  },
+  {
+    title: '曝光总量',
+    num: 0,
+  },
+]
+
+// 统计卡片
+const StaCard = () => {
+  return (
+  <div className={sc('card')}>
+    {staNumArr.map(((item) => {
+      return (
+        <div className="wrap" key={item.title}>
+          <div className="title">{ item.title }</div>
+          <div className="num">{ item.num }</div>
+        </div>
+      )
+    }))}
+  </div>
+  )
+}
+
 export default () => {
-
-
 
   return (
     <PageContainer className={sc('container')}>
-      内容流广告-统计详情
+      <StaCard/>
     </PageContainer>
   )
 }
