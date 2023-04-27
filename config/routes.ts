@@ -651,13 +651,13 @@ export default [
           },
           {
             path: routeName.BASELINE_OPERATIONS_MANAGEMENT_HOME_SCREEN_AD_ADD,
-            name: '新增内容',
+            name: '新增',
             // access: 'PA_BLM_NRGL',
             component: './baseline_operations_manage/home_screen_ad/add/index',
           },
           {
             path: routeName.BASELINE_OPERATIONS_MANAGEMENT_HOME_SCREEN_AD_DETAIL,
-            name: '内容详情',
+            name: '详情',
             // access: 'PA_BLM_NRGL',
             component: './baseline_operations_manage/home_screen_ad/detail/index',
           },
