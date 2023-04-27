@@ -2,5 +2,41 @@
 @import '../../../global.less';
 
 .@{prefix}-container {
-  color: orange;
+  &-search {
+    padding:24px 16px 0 16px;
+    background-color: #fff;
+    margin-bottom: 20px;
+    margin-top: 10px;
+  }
+  &-table-body {
+    padding: 20px;
+    background-color: #fff;
+    .ant-table-row {
+      .ant-table-cell {
+        &:last-child {
+          white-space: nowrap;
+        }
+      }
+    }
+  }
+
+}
+
+.@{prefix}-card {
+  display: flex;
+  justify-content: space-between;
+  background-color: #fff;
+  padding: 10px 40px;
+  .wrap {
+    width: 100%;
+  }
+  .title {
+    font-size: 16px;
+    line-height: 30px;
+  }
+  .num {
+    font-size: 24px;
+    font-weight: 800;
+    color: #6680FF;
+  }
 }
