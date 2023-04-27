@@ -410,8 +410,8 @@ export async function getAllLayout() {
   });
 }
 
-// 版面以及全部用户标签
-export async function getAllLabels(data?: Record<string, any>) {
+// 部分用户标签
+export async function getPartLabels(data?: Record<string, any>) {
   return request<any>(`/antelope-industrial/mng/page/query/labels`, {
     method: 'post',
     data
