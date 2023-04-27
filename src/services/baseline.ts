@@ -387,3 +387,35 @@ export async function deleteHotNews(data?: Record<string, any>) {
     data
   });
 }
+
+// 新增全局悬浮窗广告
+export async function addGlobalFloatAd(data?: Record<string, any>) {
+  return request<any>(`/antelope-industrial/mng/add/global-float/ads`, {
+    method: 'post',
+    data
+  });
+}
+
+// 全局悬浮窗广告详情
+export async function getGlobalFloatAdDetail(id: any) {
+  return request<any>(`/antelope-industrial/mng/get/ads/detail/${id}`, {
+    method: 'get',
+  });
+}
+
+// 版面以及全部用户标签
+export async function getAllLayout() {
+  return request<any>(`/antelope-industrial/mng/get/all/layout`, {
+    method: 'get',
+  });
+}
+
+// 部分用户标签
+export async function getPartLabels(data?: Record<string, any>) {
+  return request<any>(`/antelope-industrial/mng/page/query/labels`, {
+    method: 'post',
+    data
+  });
+}
+
+

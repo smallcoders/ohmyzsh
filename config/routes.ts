@@ -244,14 +244,14 @@
   BASELINE_ASSOCIATION_MANAGE: 'baseline-association-manage',
   BASELINE_ASSOCIATION_MANAGE_DETAIL: 'baseline-association-manage/detail',
   BASELINE_ASSOCIATION_MANAGE_EDIT: 'baseline-association-manage/add',
-  
+
   BASELINE_USER_POSTING_MANAGE: '/baseline/baseline-user-posting-manage', // 用户发布管理
   BASELINE_USER_POSTING_MANAGE_INDEX: '/baseline/baseline-user-posting-manage/index', // 用户发布管理
   BASELINE_USER_POSTING_MANAGE_DETAIL: '/baseline/baseline-user-posting-manage/detail', // 用户发布管理详情
   VERIFY_AGENCY_USER_POSTING_VERIFY: '/verify-agency/user-posting-verify', // 用户发布审核
   VERIFY_AGENCY_USER_POSTING_VERIFY_INDEX: '/verify-agency/user-posting-verify/index', // 用户发布审核
   VERIFY_AGENCY_USER_POSTING_VERIFY_DETAIL: '/verify-agency/user-posting-verify/detail', // 用户发布审核详情
-  
+
   BASELINE_SERVICE_NUMBER: '/baseline/baseline-service-number',
   BASELINE_SERVICE_NUMBER_INDEX: '/baseline/baseline-service-number/index',
   BASELINE_SERVICE_NUMBER_SETTING: '/baseline/baseline-service-number-setting',
@@ -593,7 +593,7 @@ export default [
         ]
       },
       {
-        path: routeName.BASELINE_USER_POSTING_MANAGE, 
+        path: routeName.BASELINE_USER_POSTING_MANAGE,
         name: '用户发布管理',
         access: 'M_BLM_YHFBGL',
         hideChildrenInMenu: true,
@@ -697,7 +697,7 @@ export default [
       },
       {
         path: routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD,
-        name: '内容流广告',
+        name: '内容流广告管理',
         // access: 'M_BLM_NRGL',
         hideChildrenInMenu: true,
         routes: [
@@ -708,7 +708,7 @@ export default [
           },
           {
             path: routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD + '/index',
-            name: '内容流广告',
+            name: '内容流广告管理',
             // access: 'M_BLM_NRGL',
             hideInBreadcrumb: true,
             component: './baseline_operations_manage/content_stream_ad/index',
@@ -1068,7 +1068,7 @@ export default [
         ],
       },
       {
-        path: routeName.VERIFY_AGENCY_USER_POSTING_VERIFY, 
+        path: routeName.VERIFY_AGENCY_USER_POSTING_VERIFY,
         name: '用户发布审核',
         access: 'M_BLM_YHFBSH',
         hideChildrenInMenu: true,

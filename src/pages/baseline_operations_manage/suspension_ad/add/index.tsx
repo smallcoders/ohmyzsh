@@ -1,22 +1,207 @@
-import { Button, message, Avatar, Space, Popconfirm, Form, Input } from 'antd';
+import { Input, Form, Select, Button, message, message as antdMessage, Radio } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
-import React, { useEffect, useState } from 'react';
-import moment from 'moment';
-import { history, Access, useAccess } from 'umi';
-import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
-import { UserOutlined } from '@ant-design/icons';
-import { routeName } from '../../../../../config/routes';
+import { useEffect, useState } from 'react';
+import UploaImageV2 from '@/components/upload_form/upload-image-v2';
+import { addGlobalFloatAd, getGlobalFloatAdDetail, getAllLayout, getPartLabels } from '@/services/baseline';
+import { history } from 'umi';
+import './index.less';
+import { UploadOutlined } from '@ant-design/icons';
 
-const sc = scopedClasses('suspension-ad-add');
-
+const sc = scopedClasses('suspension-add');
 export default () => {
+  const [form] = Form.useForm();
+  const { id } = history.location.query as { id: string | undefined };
+  const [partLabels, setPartLabels] = useState<any>([])
+  const [allLabels, setAllLabels] = useState<any>([])
+  const [userType, setUserType] = useState<any>('all')
+  const [pageInfo, setPageInfo] = useState<any>({pageSize: 10, pageIndex: 1, pageTotal: 0})
+  useEffect(() => {
+    if (id){
+      getGlobalFloatAdDetail({ id }).then((res) => {
+        const { result, code, message: resultMsg } = res || {};
+        if (code === 0) {
+          console.log(result)
+        } else {
+          antdMessage.error(`请求失败，原因:{${resultMsg}}`);
+        }
+      });
+    } else {
+      form.setFieldsValue({userType: 'all'})
+    }
+    getAllLayout().then((res) => {
+      // todo 数据结构待定
+      if(res.code === 0 && res.result){
+        setAllLabels(res.result)
+      }
+    })
+    getPartLabels({ ...pageInfo }).then((res) => {
+      if (res.code === 0 && res.result){
+        const labelArr = res.result.map((item: any) => {
+          return {
+            value: item.id,
+            label: item.labelName
+          }
+        })
+        setPageInfo({
+          ...pageInfo, pageTotal: Math.ceil(res.totalCount / pageInfo.pageSize)
+        })
+        setPartLabels(labelArr)
+      }
+    })
+  }, []);
+
+  const handleSubmit = async () => {
+    await form.validateFields();
+    // todo 审核接口
+    addGlobalFloatAd().then((res) => {
+      console.log(res)
+    })
+  };
+
+  const getLabels = (pageIndex: number) => {
+    getPartLabels({pageIndex, pageSize: pageInfo.pageSize}).then((res) => {
+      if (res.code === 0 && res.result){
+        const labelArr = res.result.map((item: any) => {
+          return {
+            value: item.id,
+            label: item.labelName
+          }
+        })
+        setPageInfo({
+          ...pageInfo, pageTotal: Math.ceil(res.result.totalCount / pageInfo.pageSize)
+        })
+        setPartLabels(partLabels.concat(labelArr))
+      } else {
+        setPageInfo({
+          ...pageInfo, pageIndex: pageInfo.pageIndex - 1
+        })
+      }
+    }).catch(() => {
+      setPageInfo({
+        ...pageInfo, pageIndex: pageInfo.pageIndex - 1
+      })
+    })
+  }
 
   return (
     <PageContainer
-      className={sc('container')}
+      className={sc('page')}
+      ghost
+      footer={[
+        <>
+          <Button type="primary" onClick={handleSubmit}>
+            立即上架
+          </Button>
+          <Button onClick={handleSubmit}>
+            暂存
+          </Button>
+          <Button onClick={() => history.goBack()}>返回</Button>
+        </>,
+      ]}
     >
-      全局悬浮窗广告新增页
+      <Form className={sc('container-form')} form={form}>
+        <div className="title">全局悬浮窗广告信息</div>
+        <Form.Item
+          labelCol={{span: 4}}
+          wrapperCol={{span: 12}}
+          name="advertiseName"
+          label="活动名称"
+          required
+          rules={[
+            {
+              required: true,
+              message: '必填',
+            },
+          ]}
+        >
+          <Input placeholder="请输入" maxLength={35} />
+        </Form.Item>
+        <Form.Item
+          name="imgs"
+          label="图片"
+          required
+          extra="图片格式仅支持JPG、PNG、JPEG"
+          labelCol={{span: 4}}
+          wrapperCol={{span: 16}}
+          rules={[
+            {
+              required: true,
+              message: '必填',
+            },
+          ]}
+        >
+          <UploaImageV2 multiple={true} accept=".png,.jpeg,.jpg" maxCount={3}>
+            <Button icon={<UploadOutlined />}>上传</Button>
+          </UploaImageV2>
+        </Form.Item>
+        <Form.Item
+          labelCol={{span: 4}}
+          wrapperCol={{span: 12}}
+          name="siteLink"
+          label="站内链接配置"
+          required
+          rules={[
+            {
+              required: true,
+              message: '必填',
+            },
+          ]}
+        >
+          <Input placeholder="请输入" />
+        </Form.Item>
+        <Form.Item
+          labelCol={{span: 4}}
+          wrapperCol={{span: 12}}
+          name="userType"
+          label="作用范围"
+          required
+          rules={[
+            {
+              required: true,
+              message: '必选',
+            },
+          ]}
+        >
+          <Radio.Group
+            onChange={(e) => {
+              setUserType(e.target.value)
+            }}
+            options={[{label: '全部用户', value: 'all'}, {label: '部分用户', value: 'part'}]}
+          />
+        </Form.Item>
+        <Form.Item
+          wrapperCol={{offset: 4, span: 12}}
+          name="labelIds"
+          required
+          validateTrigger="onBlur"
+          rules={[
+            {
+              required: true,
+              message: '必选',
+            },
+          ]}
+        >
+          {
+            form.getFieldValue('userType') === 'part' ?
+              <Select
+                options={partLabels}
+                mode={'multiple'}
+                placeholder="请选择"
+                onPopupScroll={() => {
+                  if (pageInfo.pageTotal > pageInfo.pageIndex) {
+                    const pageIndex = pageInfo.pageIndex + 1
+                    setPageInfo({...pageInfo, pageIndex})
+                    getLabels(pageIndex)
+                  }
+                }}
+              /> : <Select
+                options={allLabels}
+                placeholder="请选择"
+              />
+          }
+        </Form.Item>
+      </Form>
     </PageContainer>
-  )
-}
+  );
+};
