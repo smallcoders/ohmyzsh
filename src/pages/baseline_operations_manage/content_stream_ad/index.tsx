@@ -294,6 +294,8 @@ export default () => {
             onClick={() => {
               // modalForm.resetFields()
               // setVisible(true)
+              window.open(routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_STATISTICAL_DETAIL)
+
             }}
           >
             新增
