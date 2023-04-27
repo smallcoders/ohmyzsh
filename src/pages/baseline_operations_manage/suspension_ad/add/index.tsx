@@ -30,7 +30,7 @@ export default () => {
       form.setFieldsValue({userType: 'all'})
     }
     getAllLayout().then((res) => {
-      // 数据结构待定
+      // todo 数据结构待定
       if(res.code === 0 && res.result){
         setAllLabels(res.result)
       }
@@ -83,8 +83,6 @@ export default () => {
       })
     })
   }
-
-  console.log(form.getFieldValue('userType'))
 
   return (
     <PageContainer
