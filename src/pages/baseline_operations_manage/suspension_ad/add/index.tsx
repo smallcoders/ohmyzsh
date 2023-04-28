@@ -4,7 +4,7 @@ import scopedClasses from '@/utils/scopedClasses';
 import { useEffect, useState } from 'react';
 import UploaImageV2 from '@/components/upload_form/upload-image-v2';
 import { addGlobalFloatAd, getGlobalFloatAdDetail, getPartLabels } from '@/services/baseline';
-import { history } from 'umi';
+import { history, Prompt } from 'umi';
 import './index.less';
 import { UploadOutlined } from '@ant-design/icons';
 
@@ -30,12 +30,36 @@ export default () => {
   const [partLabels, setPartLabels] = useState<any>([])
   const [ userType, setUserType] = useState<any>('all')
   const [pageInfo, setPageInfo] = useState<any>({pageSize: 10, pageIndex: 1, pageTotal: 0})
+  const [ cacheParams, setCacheParams] = useState<any>({})
   useEffect(() => {
     if (id){
       getGlobalFloatAdDetail({ id }).then((res) => {
         const { result, code, message: resultMsg } = res || {};
         if (code === 0) {
           console.log(result)
+          setCacheParams({
+            scope: result.scope,
+            status: result.status,
+            imgs: result.img,
+            siteLink: result.siteLink,
+            advertiseType: 'GLOBAL_FLOAT_ADS',
+            labelIds: result.labelIds,
+            advertiseName: result.advertiseName
+          })
+          form.setFieldsValue({
+            advertiseName: result.advertiseName,
+            labelIds: result.scope === 'PORTION_USER' ? result.labelIds : result.scope,
+            siteLink: result.siteLink,
+            userType: result.scope !== 'PORTION_USER' ? 'all' : 'part',
+            imgs: result.imgs.length ? result.imgs?.map((item: any) => {
+              return {
+                uid: item,
+                name: item,
+                status: 'done',
+                url: item
+              }
+            }) : []
+          })
         } else {
           antdMessage.error(`请求失败，原因:{${resultMsg}}`);
         }
@@ -59,26 +83,30 @@ export default () => {
     })
   }, []);
 
-  const handleSubmit = async (status) => {
+  const handleSubmit = async (status: number) => {
     await form.validateFields();
     const {advertiseName, imgs, siteLink, labelIds} = form.getFieldsValue()
     console.log(form.getFieldsValue())
     const params = {
-      advertiseName,
-      siteLink,
+      scope: userType === 'all' ? labelIds : 'PORTION_USER',
+      status,
       imgs: imgs.map((item: any) => {
         return item.url
       }),
-      scope: userType === 'all' ? labelIds : 'PORTION_USER',
-      labelIds: userType === 'all' ? [] : labelIds,
+      siteLink,
       advertiseType: 'GLOBAL_FLOAT_ADS',
-      status
+      labelIds: userType === 'all' ? [] : labelIds,
+      advertiseName,
     }
+    setCacheParams(params)
     console.log(params, '000000')
     // todo 先获取审核接口
     addGlobalFloatAd(params).then((res) => {
       if (res.code === 0){
-        history.goBack()
+        antdMessage.success('保存成功')
+        if (status !== 0) {
+          history.goBack()
+        }
       } else {
         antdMessage.error(res.message)
       }
@@ -110,6 +138,22 @@ export default () => {
     })
   }
 
+  const isChanged = () => {
+    const {advertiseName, imgs, siteLink, labelIds} = form.getFieldsValue()
+    const params = {
+      scope: userType === 'all' ? labelIds : 'PORTION_USER',
+      status: cacheParams.status,
+      imgs: imgs?.map((item: any) => {
+        return item.url
+      }),
+      siteLink,
+      advertiseType: 'GLOBAL_FLOAT_ADS',
+      labelIds: userType === 'all' ? [] : labelIds || '',
+      advertiseName,
+    }
+    return JSON.stringify(params) !== JSON.stringify(cacheParams)
+  }
+
   return (
     <PageContainer
       className={sc('page')}
@@ -130,6 +174,10 @@ export default () => {
         </>,
       ]}
     >
+      <Prompt
+        when={isChanged()}
+        message={`数据未保存, 是否直接离开`}
+      />
       <Form className={sc('container-form')} form={form}>
         <div className="title">全局悬浮窗广告信息</div>
         <Form.Item
