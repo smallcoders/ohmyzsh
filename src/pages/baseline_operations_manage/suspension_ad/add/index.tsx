@@ -252,7 +252,7 @@ export default () => {
         >
           <Radio.Group
             onChange={(e) => {
-              form.setFieldsValue({labelIds: []})
+              form.setFieldsValue(e.target.value === 'all' ? {labelIds: ''} : {labelIds: []})
               setUserType(e.target.value)
             }}
             options={[{label: '全部用户', value: 'all'}, {label: '部分用户', value: 'part'}]}
