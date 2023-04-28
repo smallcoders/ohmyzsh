@@ -1,20 +1,34 @@
-import { Input, Form, Select, Button, message, message as antdMessage, Radio } from 'antd';
+import { Input, Form, Select, Button, message as antdMessage, Radio } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import scopedClasses from '@/utils/scopedClasses';
 import { useEffect, useState } from 'react';
 import UploaImageV2 from '@/components/upload_form/upload-image-v2';
-import { addGlobalFloatAd, getGlobalFloatAdDetail, getAllLayout, getPartLabels } from '@/services/baseline';
+import { addGlobalFloatAd, getGlobalFloatAdDetail, getPartLabels } from '@/services/baseline';
 import { history } from 'umi';
 import './index.less';
 import { UploadOutlined } from '@ant-design/icons';
+
+const allLabels = [
+  {
+    label: '全部用户',
+    value: 'ALL_USER'
+  },
+  {
+    label: '全部登录用户',
+    value: 'ALL_LOGIN_USE'
+  },
+  {
+    label: '全部未登录用户',
+    value: 'ALL_NOT_LOGIN_USE'
+  }
+]
 
 const sc = scopedClasses('suspension-add');
 export default () => {
   const [form] = Form.useForm();
   const { id } = history.location.query as { id: string | undefined };
   const [partLabels, setPartLabels] = useState<any>([])
-  const [allLabels, setAllLabels] = useState<any>([])
-  const [userType, setUserType] = useState<any>('all')
+  const [ userType, setUserType] = useState<any>('all')
   const [pageInfo, setPageInfo] = useState<any>({pageSize: 10, pageIndex: 1, pageTotal: 0})
   useEffect(() => {
     if (id){
@@ -29,12 +43,6 @@ export default () => {
     } else {
       form.setFieldsValue({userType: 'all'})
     }
-    getAllLayout().then((res) => {
-      // todo 数据结构待定
-      if(res.code === 0 && res.result){
-        setAllLabels(res.result)
-      }
-    })
     getPartLabels({ ...pageInfo }).then((res) => {
       if (res.code === 0 && res.result){
         const labelArr = res.result.map((item: any) => {
@@ -51,11 +59,29 @@ export default () => {
     })
   }, []);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (status) => {
     await form.validateFields();
-    // todo 审核接口
-    addGlobalFloatAd().then((res) => {
-      console.log(res)
+    const {advertiseName, imgs, siteLink, labelIds} = form.getFieldsValue()
+    console.log(form.getFieldsValue())
+    const params = {
+      advertiseName,
+      siteLink,
+      imgs: imgs.map((item: any) => {
+        return item.url
+      }),
+      scope: userType === 'all' ? labelIds : 'PORTION_USER',
+      labelIds: userType === 'all' ? [] : labelIds,
+      advertiseType: 'GLOBAL_FLOAT_ADS',
+      status
+    }
+    console.log(params, '000000')
+    // todo 先获取审核接口
+    addGlobalFloatAd(params).then((res) => {
+      if (res.code === 0){
+        history.goBack()
+      } else {
+        antdMessage.error(res.message)
+      }
     })
   };
 
@@ -90,10 +116,14 @@ export default () => {
       ghost
       footer={[
         <>
-          <Button type="primary" onClick={handleSubmit}>
+          <Button type="primary" onClick={() => {
+            handleSubmit(1)
+          }}>
             立即上架
           </Button>
-          <Button onClick={handleSubmit}>
+          <Button onClick={() => {
+            handleSubmit(0)
+          }}>
             暂存
           </Button>
           <Button onClick={() => history.goBack()}>返回</Button>
@@ -165,6 +195,7 @@ export default () => {
         >
           <Radio.Group
             onChange={(e) => {
+              form.setFieldsValue({labelIds: []})
               setUserType(e.target.value)
             }}
             options={[{label: '全部用户', value: 'all'}, {label: '部分用户', value: 'part'}]}
