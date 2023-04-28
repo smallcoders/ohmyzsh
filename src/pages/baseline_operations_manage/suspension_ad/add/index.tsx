@@ -1,4 +1,4 @@
-import { Input, Form, Select, Button, message as antdMessage, Radio } from 'antd';
+import { Input, Form, Select, Button, message as antdMessage, Radio, Modal } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import scopedClasses from '@/utils/scopedClasses';
 import { useEffect, useState } from 'react';
@@ -94,8 +94,7 @@ export default () => {
   const handleSubmit = async (status: number) => {
     await form.validateFields();
     const {advertiseName, imgs, siteLink, labelIds} = form.getFieldsValue()
-    console.log(form.getFieldsValue())
-    const params = {
+    const params: any = {
       scope: userType === 'all' ? labelIds : 'PORTION_USER',
       status,
       imgs: imgs.map((item: any) => {
@@ -107,18 +106,36 @@ export default () => {
       advertiseName,
     }
     setCacheParams(params)
-    console.log(params, '000000')
-    // todo 先获取审核接口
-    addGlobalFloatAd(params).then((res) => {
-      if (res.code === 0){
-        antdMessage.success('保存成功')
-        if (status !== 0) {
-          history.goBack()
+    if (id) {
+      params.id = id
+    }
+    if (status === 1){
+      Modal.confirm({
+        title: '提示',
+        content: '确定上架当前内容？',
+        okText: '上架',
+        onOk: () => {
+          // todo 先获取审核接口
+          addGlobalFloatAd(params).then((res) => {
+            if (res.code === 0){
+              antdMessage.success('上架成功')
+              history.goBack()
+            } else {
+              antdMessage.error(res.message)
+            }
+          })
+        },
+      })
+    } else {
+      // 暂存
+      addGlobalFloatAd(params).then((res) => {
+        if (res.code === 0){
+          antdMessage.success('暂存成功')
+        } else {
+          antdMessage.error(res.message)
         }
-      } else {
-        antdMessage.error(res.message)
-      }
-    })
+      })
+    }
   };
 
   const getLabels = (pageIndex: number) => {

@@ -5,30 +5,19 @@ import {
   Row,
   Col,
   message as antdMessage,
-  Modal,
+  Modal, Input,
 } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
-import {
-  getPageList,
-} from '@/services/page-creat-manage'
+import { getPageList, } from '@/services/page-creat-manage'
+import { history } from 'umi';
 import type Common from '@/types/common';
 import moment from 'moment';
 import SelfTable from '@/components/self_table';
 import { routeName } from '../../../../config/routes';
 const sc = scopedClasses('suspension-list');
-
-interface record {
-  tmpId: string;
-  tmpName: string;
-  tmpDesc: string;
-  state: string | number,
-  updateTime: string,
-  tmpJson: string,
-  tmpType: number,
-}
 
 
 export default () => {
@@ -42,6 +31,7 @@ export default () => {
     pageTotal: 0,
   });
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
+    // todo  列表接口未提供
     try {
       const { result, totalCount, pageTotal, code, message } = await getPageList({
         pageIndex,
@@ -59,26 +49,30 @@ export default () => {
     }
   };
 
-  const handleDelete = (record: record) => {
+  const handleDelete = (record: any) => {
+    console.log(record)
     Modal.confirm({
       title: '删除数据',
-      content: '删除该内容流广告后，系统将不再推荐该广告，确定删除？',
+      content: '删除该广告后，系统将不再推荐该广告，确定删除？',
       okText: '删除',
       onOk: () => {
+        // todo 删除接口
+        antdMessage.success(`删除成功`);
       },
     })
   }
-  const handleUpOrDown = (record: record) => {
+  const handleUpOrDown = (record: any) => {
     Modal.confirm({
       title: '提示',
-      content: record.state === 1 ? '确定将内容上架？' : '确定将内容下架？',
+      content: record.status === 1 ? '确定将内容上架？' : '确定将内容下架？',
       okText: '下架',
       onOk: () => {
+        // todo 下架上架接口
         antdMessage.success(`下架成功`);
       },
     })
   }
-
+  // todo 字段定义
   const columns = [
     {
       title: '序号',
@@ -88,42 +82,69 @@ export default () => {
         pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
-      title: '标题',
-      dataIndex: 'tmpName',
+      title: '活动名称',
+      dataIndex: 'advertiseName',
       width: 150,
-      render: (tmpName: string, record: record) => {
-        return <span>{tmpName || '--'}</span>
+      render: (advertiseName: string) => {
+        return <span>{advertiseName || '--'}</span>
       }
     },
     {
       title: '图片',
-      dataIndex: 'tmpDesc',
+      dataIndex: 'imgs',
       isEllipsis: true,
-      width: 250,
-    },
-    {
-      title: '版面',
-      dataIndex: 'pv',
-      render: (pv: string) => {
-        return <span>{pv || '--'}</span>
-      }
+      width: 200,
+      render: (imgs: any) => {
+        return (
+          <div className="img-tr">
+            {
+              imgs?.map((item: any, index: number) => {
+                return (
+                  <div className="img-box">
+                    <img src={item} key={index} alt='' />
+                  </div>
+                )
+              }) || '--'
+            }
+          </div>
+        )
+      },
     },
     {
       title: '作用范围',
-      dataIndex: 'uv',
-      render: (uv: string) => {
-        return <span>{uv || '--'}</span>
+      dataIndex: 'scope',
+      width: 100,
+      render: (scope: string) => {
+        return <span>{scope || '--'}</span>
       }
     },
     {
       title: '点击次数',
-      dataIndex: 'state',
+      dataIndex: 'clickTimes',
       width: 100,
+      render: (clickTimes: number) => {
+        return <span>{clickTimes || '--'}</span>
+      }
     },
     {
       title: '用户数',
-      dataIndex: 'state',
+      dataIndex: 'amount',
       width: 100,
+      render: (amount: number) => {
+        return <span>{amount || '--'}</span>
+      }
+    },
+    {
+      title: '内容状态',
+      dataIndex: 'status',
+      width: 200,
+      render: (status: string) => {
+        return (
+          <>
+            {status || '--'}
+          </>
+        )
+      },
     },
     {
       title: '操作时间',
@@ -132,7 +153,7 @@ export default () => {
       render: (updateTime: string) => {
         return (
           <>
-            {moment(updateTime).format('YYYY-MM-DD HH:mm:ss')}
+            {updateTime ? moment(updateTime).format('YYYY-MM-DD HH:mm:ss') : '--'}
           </>
         )
       },
@@ -142,7 +163,55 @@ export default () => {
       hideInSearch: true,
       width: 200,
       render: (_: any, record: any) => {
-        return <span>--</span>
+        return (
+          <>
+            <Button
+              size="small"
+              type="link"
+              onClick={() => {
+                history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_SUSPENSION_AD_ADD}?id=${record.id}`)
+              }}
+            >
+              编辑
+            </Button>
+            <Button
+              size="small"
+              type="link"
+              onClick={() => {
+                handleDelete(record)
+              }}
+            >
+              删除
+            </Button>
+            <Button
+              size="small"
+              type="link"
+              onClick={() => {
+                history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_SUSPENSION_AD_DETAIL}?id=${record.id}`)
+              }}
+            >
+              详情
+            </Button>
+            <Button
+              size="small"
+              type="link"
+              onClick={() => {
+                handleUpOrDown(record)
+              }}
+            >
+              上架
+            </Button>
+            <Button
+              size="small"
+              type="link"
+              onClick={() => {
+                handleUpOrDown(record)
+              }}
+            >
+              下架
+            </Button>
+          </>
+        )
       },
     },
   ];
@@ -161,16 +230,12 @@ export default () => {
         <Form form={searchForm}>
           <Row>
             <Col span={6} offset={1}>
-              <Form.Item name="state" label="模板状态">
-                <Select
-                  placeholder="请选择"
-                  allowClear
-                  options={[{label: '产业圈', value: 0}, {label: '商脉', value: 1}, {lable: '我的', value: 2}]}
-                />
+              <Form.Item name="advertiseName" label="活动名称">
+                <Input placeholder="请输入" maxLength={35} />
               </Form.Item>
             </Col>
             <Col span={6} offset={1}>
-              <Form.Item name="state" label="模板状态">
+              <Form.Item name="status" label="内容状态">
                 <Select
                   placeholder="请选择"
                   allowClear
@@ -215,7 +280,7 @@ export default () => {
           <Button
             type="primary"
             onClick={() => {
-              window.open(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_SUSPENSION_AD_ADD}`);
+              history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_SUSPENSION_AD_ADD}`)
             }}
           >
             +新建
