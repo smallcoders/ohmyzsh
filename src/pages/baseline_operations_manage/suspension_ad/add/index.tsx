@@ -30,7 +30,15 @@ export default () => {
   const [partLabels, setPartLabels] = useState<any>([])
   const [ userType, setUserType] = useState<any>('all')
   const [pageInfo, setPageInfo] = useState<any>({pageSize: 10, pageIndex: 1, pageTotal: 0})
-  const [ cacheParams, setCacheParams] = useState<any>({})
+  const [ cacheParams, setCacheParams] = useState<any>({
+    scope: '',
+    status: '',
+    imgs: [],
+    siteLink: '',
+    advertiseType: 'GLOBAL_FLOAT_ADS',
+    labelIds: '',
+    advertiseName: '',
+  })
   useEffect(() => {
     if (id){
       getGlobalFloatAdDetail({ id }).then((res) => {
@@ -141,16 +149,17 @@ export default () => {
   const isChanged = () => {
     const {advertiseName, imgs, siteLink, labelIds} = form.getFieldsValue()
     const params = {
-      scope: userType === 'all' ? labelIds : 'PORTION_USER',
-      status: cacheParams.status,
+      scope: userType === 'all' ? labelIds || '' : 'PORTION_USER',
+      status: cacheParams.status || '',
       imgs: imgs?.map((item: any) => {
         return item.url
-      }),
-      siteLink,
+      }) || [],
+      siteLink: siteLink || '',
       advertiseType: 'GLOBAL_FLOAT_ADS',
-      labelIds: userType === 'all' ? [] : labelIds || '',
-      advertiseName,
+      labelIds: userType === 'all' ? '' : labelIds || [],
+      advertiseName: advertiseName || '',
     }
+    console.log(params, cacheParams)
     return JSON.stringify(params) !== JSON.stringify(cacheParams)
   }
 
