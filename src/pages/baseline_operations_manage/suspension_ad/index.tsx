@@ -52,7 +52,7 @@ export default () => {
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     setLoading(true)
     try {
-      const { result, total, code, message } = await getGlobalFloatAds({
+      const { result, code, message } = await getGlobalFloatAds({
         pageIndex,
         pageSize,
         advertiseType: 'GLOBAL_FLOAT_ADS',
@@ -60,7 +60,7 @@ export default () => {
       });
       setLoading(false)
       if (code === 0) {
-        setPageInfo({ totalCount: total, pageTotal: Math.ceil(total / pageSize), pageIndex, pageSize });
+        setPageInfo({ totalCount: result.total, pageTotal: Math.ceil(result.total / pageSize), pageIndex, pageSize });
         setDataSource(result.list || []);
       } else {
         throw new Error(message);
