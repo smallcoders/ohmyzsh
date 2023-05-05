@@ -1,4 +1,4 @@
-import {Button, Select, Row, Col, Form, Input, Popconfirm, message, message as antdMessage} from 'antd';
+import {Button, Select, Row,Tag, Col, Form, Input, Popconfirm, message, message as antdMessage} from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import React, {useEffect, useState} from 'react';
 import SelfTable from '@/components/self_table';
@@ -12,22 +12,19 @@ import {
   getAdvertiseDiffTypeNum,
   getAdvertiseList,
   getAllLayout,
-  getGlobalFloatAdDetail,
-  getPartLabels
 } from "@/services/baseline";
 import Common from "@/types/common";
-import {getPageList} from "@/services/page-creat-manage";
+import moment from "moment/moment";
 
 const sc = scopedClasses('content-stream-ad');
 export default () => {
   const [staNumArr, setStaNumArr] = useState<any>([]);
 
 const handleAdd = () => {
-  // history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_HOME_SCREEN_AD_ADD}`)
-  window.open(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_ADD}`);
+  history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_ADD}`);
 };
 const handleDetail = (item:any) => {
-  window.open(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_DETAIL}?id=${item}`);
+  history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_DETAIL}?id=${item}`);
 };
 const handleStatisticalDetail = (item: any) => {
   history.push(
@@ -62,7 +59,11 @@ const formLayout = {
 
 
   const [layType, setLayType] = useState<any>([]);
-
+  const statusMap = {
+    1: '上架',
+    3: '下架',
+    0: '暂存'
+  }
   // 拿到当前角色的access权限兑现
   const access = useAccess();
   const [dataSource, setDataSource] = useState<any>([]);
@@ -135,7 +136,6 @@ const formLayout = {
     getAdvertiseDiffTypeNum().then((res) => {
       if (res.code === 0 && res.result) {
         setStaNumArr(res.result)
-        // setLayType(labelArr);
       }
     })
   }, []);
@@ -212,29 +212,44 @@ const formLayout = {
     },
     {
       title: '图片',
-      dataIndex: 'newUrl',
+      dataIndex: 'advertiseOssRelationList',
       isEllipsis: true,
-      width: 250,
-      render: (newUrl: string) => {
-        return newUrl || '--';
+      width: 200,
+      render: (advertiseOssRelationList: any) => {
+        return (
+          <div className="img-tr">
+            {
+              advertiseOssRelationList.length ? advertiseOssRelationList?.map((item: any, index: number) => {
+                return (
+                  <div className="img-box">
+                    <img src={item.ossUrl} key={index} alt='' />
+                  </div>
+                )
+              }) : '--'
+            }
+          </div>
+        )
       },
     },
     {
       title: '版面',
-      dataIndex: 'currentUrl',
+      dataIndex: 'advertiseArticleTypeRelationList',
       isEllipsis: true,
       width: 250,
-      render: () => {
-        return <div>123</div>;
+      render: (advertiseArticleTypeRelationList:any) => {
+        advertiseArticleTypeRelationList.length ? advertiseArticleTypeRelationList?.map((item: any, index: number) => {
+          const arr: any = layType.filter((item1:any) => item1.value===item.id)
+          return <span >{arr[0].label}</span>
+        }) : '--'
       },
     },
     {
       title: '位置',
       dataIndex: 'displayOrder',
       width: 150,
-      // render: () => {
-      //   return <div>123</div>;
-      // },
+      render: (displayOrder:any) => {
+        return <span>{displayOrder}</span>;
+      },
     },
     {
       title: '作用范围',
@@ -265,7 +280,7 @@ const formLayout = {
       width: 200,
       sorter: (a: any, b: any) => a.closeCount - b.closeCount,
       render: (closeCount: string) => {
-        return <span>{closeCount || '--'}</span>;
+        return <span>{closeCount || 0}</span>;
       },
     },
     {
@@ -274,7 +289,7 @@ const formLayout = {
       width: 200,
       sorter: (a: any, b: any) => a.createByName - b.createByName,
       render: (createByName: string) => {
-        return <span>{createByName || '--'}</span>;
+        return <span>{createByName || 0}</span>;
       },
     },
     {
@@ -282,7 +297,11 @@ const formLayout = {
       dataIndex: 'updateTime',
       width: 200,
       render: (updateTime: string) => {
-        return <span>{updateTime || '--'}</span>;
+        return (
+          <>
+            {updateTime ? moment(updateTime).format('YYYY-MM-DD HH:mm:ss') : '--'}
+          </>
+        )
       },
     },
     {
@@ -290,7 +309,11 @@ const formLayout = {
       dataIndex: 'status',
       width: 200,
       render: (status: string) => {
-        return status || '--';
+        return (
+          <>
+            {statusMap[status] || '--'}
+          </>
+        )
       },
     },
     {
@@ -317,7 +340,7 @@ const formLayout = {
                 size="small"
                 type="link"
                 onClick={() => {
-                  // handleDelete(record)
+                  handleAdd(record.id)
                 }}
               >
                 编辑
