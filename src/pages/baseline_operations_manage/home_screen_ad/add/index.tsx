@@ -9,7 +9,10 @@ import { UserOutlined } from '@ant-design/icons';
 import { routeName } from '../../../../../config/routes';
 import debounce from 'lodash/debounce';
 import UploadForm from '@/components/upload_form';
-import { httpAddSplash, httpMngDetail } from '@/services/home-screen-ad'; 
+import { httpAddSplash, httpMngDetail } from '@/services/home-screen-ad';
+import { auditImgs } from '@/services/baseline';
+import UploaImageV2 from '@/components/upload_form/upload-image-v2';
+import { ExclamationCircleOutlined, UploadOutlined } from '@ant-design/icons';
 
 const sc = scopedClasses('home-screen-ad-add');
 
@@ -53,82 +56,160 @@ export default () => {
   // 请求数据中
   const [isExporting, setIsExporting] = useState<boolean>(false);
 
-  const onSubmitDebounce = debounce((state) => {
-    onSubmit(state)
+  const onSubmitDebounce = debounce((state, isPrompt?: boolean) => {
+    onSubmit(state, isPrompt)
   },1000)
-  const onSubmit = async (state: number) => {
-    if (state === 1) {
-      contentInfoForm.validateFields().then( async (values: any) => {
-        console.log('上架搜集的表单', values)
+  const onSubmit = async (status: number, isPrompt?: boolean) => {
+    await contentInfoForm.validateFields();
+    const {advertiseName, imgs, countdown, siteLink, displayFrequency} = contentInfoForm.getFieldsValue();
+    const params: any = {
+      status,
+      advertiseName,
+      imgs: imgs 
+      ? imgs.map((item: any) => {
         const image = new Image();
-        image.src = values.imgs.path;
-        console.log('检查图片', image.width, image.height)
-        // 手动添加上广告类型
-        setContentInfoFormChange(false);
-        try {
-          const res = await httpAddSplash({
-            ...values,
-            status: 1,
-            imgs: [{
-              id: values.imgs.id,
-              path: values.imgs.path,
-              width: image.width,
-              high: image.height,
-            }], // 调整为数组格式
-            advertiseType: 'SPLASH_ADS',
-            // imgs: undefined
-            id: type === 'add' 
-              ? saveId ? saveId : undefined
-              : id
-          })
-          if (res?.code === 0) {
-            message.success('上架成功');
-            setTimeout(() => {
-              history.goBack()
-            }, 500);
-          } else {
-            message.error(`新增失败,原因${res?.message}`)
-          }
-        } catch (error) {
-          message.error(`新增失败，原因：${error}`)
+        if (imgs) {
+          image.src = item.url;
+        }
+        return {
+          path: item.url, 
+          id: item.resData?.id || item.uid,
+          width: image.width,
+          high: image.height,
         }
       })
+      : undefined,
+      countdown,
+      siteLink,
+      displayFrequency,
+      advertiseType: 'SPLASH_ADS',
+      id: type === 'add' 
+      ? saveId ? saveId : undefined
+      : id
+    }
+    if (status === 1) {
+      Modal.confirm({
+        title: '提示',
+        content: '确定上架当前内容？',
+        okText: '上架',
+        onOk: () => {
+          auditImgs({
+            ossUrls: params.imgs.map((item: any) => {return item.path})
+          }).then((result) => {
+            if (result.code === 0){
+              httpAddSplash(params).then((res: any) => {
+                if (res.code === 0){
+                  setContentInfoFormChange(false)
+                  message.success('上架成功')
+                  history.goBack()
+                } else {
+                  message.error(res.message)
+                }
+              })
+            } else {
+              Modal.confirm({
+                title: '风险提示',
+                content: result.message,
+                okText: '继续上架',
+                onOk: () => {
+                  httpAddSplash(params).then((res: any) => {
+                    if (res.code === 0){
+                      setContentInfoFormChange(false)
+                      message.success('上架成功')
+                      history.goBack()
+                    } else {
+                      message.error(res.message)
+                    }
+                  })
+                }
+              })
+            }
+          })
+        },
+      })
+      // contentInfoForm.validateFields().then( async (values: any) => {
+      //   console.log('上架搜集的表单', values)
+      //   const image = new Image();
+      //   image.src = values.imgs.path;
+      //   console.log('检查图片', image.width, image.height)
+      //   // 手动添加上广告类型
+      //   setContentInfoFormChange(false);
+      //   try {
+      //     const res = await httpAddSplash({
+      //       ...values,
+      //       status: 1,
+      //       imgs: [{
+      //         id: values.imgs.id,
+      //         path: values.imgs.path,
+      //         width: image.width,
+      //         high: image.height,
+      //       }], // 调整为数组格式
+      //       advertiseType: 'SPLASH_ADS',
+      //       // imgs: undefined
+      //       id: type === 'add' 
+      //         ? saveId ? saveId : undefined
+      //         : id
+      //     })
+      //     if (res?.code === 0) {
+      //       message.success('上架成功');
+      //       setTimeout(() => {
+      //         history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_HOME_SCREEN_AD}`)
+      //       }, 500);
+      //     } else {
+      //       message.error(`新增失败,原因${res?.message}`)
+      //     }
+      //   } catch (error) {
+      //     message.error(`新增失败，原因：${error}`)
+      //   }
+      // })
     } else {
-      const formValues = contentInfoForm.getFieldsValue();
-      console.log('暂存搜集的表单', formValues)
-      const image = new Image();
-      if (formValues.imgs) {
-        image.src = formValues.imgs.path;
-      }
-      try {
-        const res = await httpAddSplash({
-          ...formValues,
-          status: 0,
-          imgs: formValues.imgs
-          ? [{
-            id: formValues.imgs.id,
-            path: formValues.imgs.path,
-            width: image.width,
-            high: image.height,
-          }]
-          : undefined, // 调整为数组格式
-          advertiseType: 'SPLASH_ADS',
-          // imgs: undefined
-          id: type === 'add' 
-            ? saveId ? saveId : undefined 
-            : id
-        })
-        if (res?.code === 0) {
-          message.success('暂存成功');
-          // 保存id
-          setSaveId(res?.result)
-          // history.goBack()
+      // const formValues = contentInfoForm.getFieldsValue();
+      // console.log('暂存搜集的表单', formValues)
+      // const image = new Image();
+      // if (formValues.imgs) {
+      //   image.src = formValues.imgs.path;
+      // }
+      // try {
+      //   const res = await httpAddSplash({
+      //     ...formValues,
+      //     status: 0,
+      //     imgs: formValues.imgs
+      //     ? [{
+      //       id: formValues.imgs.id,
+      //       path: formValues.imgs.path,
+      //       width: image.width,
+      //       high: image.height,
+      //     }]
+      //     : undefined, // 调整为数组格式
+      //     advertiseType: 'SPLASH_ADS',
+      //     // imgs: undefined
+      //     id: type === 'add' 
+      //       ? saveId ? saveId : undefined 
+      //       : id
+      //   })
+      //   if (res?.code === 0) {
+      //     message.success('暂存成功');
+      //     // 保存id
+      //     setSaveId(res?.result)
+      //     // history.goBack()
+      //   } else {
+      //     message.error(`暂存失败,原因${res?.message}`)
+      //   }
+      // } catch (error) {
+      //   message.error(`暂存失败，原因：${error}`)
+      // }
+
+      httpAddSplash(params).then((res: any) => {
+        if (res.code === 0){
+          setContentInfoFormChange(false)
+          message.success('暂存成功')
+          if (isPrompt) {
+            history.goBack()
+          }
         } else {
-          message.error(`暂存失败,原因${res?.message}`)
+          message.error(res.message)
         }
-      } catch (error) {
-        message.error(`暂存失败，原因：${error}`)
-      }
+      })
     }
   }
   const goBack = () => {
@@ -148,6 +229,14 @@ export default () => {
         contentInfoForm.setFieldsValue({
           ...detail,
           // 需要再根据返回值调整
+          imgs: detail.imgRelations?.length ? detail.imgRelations?.map((item: any) => {
+            return {
+              uid: `${item.fileId}`,
+              name: item.ossUrl,
+              status: 'done',
+              url: item.ossUrl
+            }
+          }) : []
         })
       } else {
         message.error(`获取详情失败: ${res?.message}`)
@@ -238,7 +327,7 @@ export default () => {
               发布
             </Button>
           )} */}
-            <Popconfirm
+            {/* <Popconfirm
               title={
                 <div>
                   <div>提示</div>
@@ -248,18 +337,19 @@ export default () => {
               okText="发布"
               cancelText="取消"
               onConfirm={() => onSubmitDebounce(1)}
-              // onConfirm={() => soldOut()}
             >
-              {/* <Button type="primary" htmlType="submit"  onClick={() => onSubmit(1)}> */}
               <Button disabled={isExporting} type="primary" htmlType="submit">
                 立即上架
               </Button>
-            </Popconfirm>
+            </Popconfirm> */}
+            <Button onClick={() => onSubmitDebounce(1)} disabled={isExporting} type="primary" htmlType="submit">
+              立即上架
+            </Button>
         </React.Fragment>,
         // </Access>,
         // <Access accessible={access['PA_BLM_NRGL']}>
         <React.Fragment>
-          <Button disabled={isExporting} onClick={() => onSubmitDebounce(2)}>暂存</Button>
+          <Button disabled={isExporting} onClick={() => onSubmitDebounce(0)}>暂存</Button>
         </React.Fragment>,
         // </Access>,
         <Button onClick={() => {
@@ -273,7 +363,7 @@ export default () => {
     >
       <Prompt
         when={contentInfoFormChange}
-        message={'离开此页面，将不会保存当前编辑的内容，确认离开吗？'}
+        // message={'离开此页面，将不会保存当前编辑的内容，确认离开吗？'}
         // message={(location) => {
         //   // 可以拿到之前的路由,和参数
         //   // console.log('location', location)
@@ -300,6 +390,24 @@ export default () => {
         //   });
         //   return false;
         // }}
+        message={(location: any) => {
+          Modal.confirm({
+            title: '要在离开之前对填写的信息进行保存吗?',
+            icon: <ExclamationCircleOutlined />,
+            cancelText: '放弃修改并离开',
+            okText: '暂存并离开',
+            onCancel() {
+              setContentInfoFormChange(false)
+              setTimeout(() => {
+                history.push(location.pathname);
+              }, 100);
+            },
+            onOk() {
+              handleSubmit(0, true)
+            },
+          });
+          return false;
+        }}
       />
       <div className={sc('container-info')}>
         <div className={sc('container-info-header')}>开屏广告信息</div>
@@ -324,14 +432,17 @@ export default () => {
               name="imgs"
               rules={[{ required: true, message: '必填' }]}
             >
-              <UploadForm
+              {/* <UploadForm
                 listType="picture-card"
                 className="avatar-uploader"
                 showUploadList={false}
                 accept=".png,.jpeg,.jpg"
                 tooltip={<span className={'tooltip'}>图片格式仅支持JPG、PNG、JPEG</span>}
                 action="/antelope-common/common/file/upload/record"
-              />
+              /> */}
+              <UploaImageV2 multiple={true} accept=".png,.jpeg,.jpg" maxCount={10}>
+                <Button icon={<UploadOutlined />}>上传</Button>
+              </UploaImageV2>
             </Form.Item>
             <Form.Item
               label="倒计时时长" 
@@ -382,7 +493,7 @@ export default () => {
             // key="submit"
             type="primary"
             onClick={() => {
-              onSubmitDebounce(2)
+              onSubmitDebounce(0)
               // goBack()
             }}
           >

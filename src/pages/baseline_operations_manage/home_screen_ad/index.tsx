@@ -42,8 +42,8 @@ export default () => {
   const [total, setTotal] = useState<number>(0);
 
   const handleAddBtn = () => {
-    history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_HOME_SCREEN_AD_ADD}?type=add`)
-    // window.open(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_HOME_SCREEN_AD_ADD}?type=add`)
+    // history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_HOME_SCREEN_AD_ADD}?type=add`)
+    window.open(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_HOME_SCREEN_AD_ADD}?type=add`)
   }
   const handleDetail = (itemId: any) => {
     window.open(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_HOME_SCREEN_AD_DETAIL}?id=${itemId}`)
@@ -63,6 +63,10 @@ export default () => {
           : state === 2 
             ? '删除成功'
             : '上架成功');
+        if (total === 11) {
+          actionRef.current?.reloadAndRest();
+          return;
+        }
         actionRef.current?.reload(); // 让table// 刷新
       } else {
         message.error(`失败，原因:{${res.message}}`);
@@ -164,7 +168,7 @@ export default () => {
             {/* 需要调整的权限 */}
             {/* <Access accessible={access['P_BLM_FWHGL']}> */}
             {record?.status !== 0 && (
-              <a href="#" onClick={handleDetail.bind(null,2)}>详情</a>
+              <a href="#" onClick={handleDetail.bind(null,record?.id)}>详情</a>
             )}
             {/* </Access> */}
             {record?.status === 3 && (
@@ -196,8 +200,7 @@ export default () => {
                 size="small"
                 type="link"
                 onClick={() => {
-                  // setEditId(record.id);
-                  // handleEditBtn(record);
+                  history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_HOME_SCREEN_AD_ADD}?type=edit&id=${record?.id}`)
                 }}
               >
                 编辑

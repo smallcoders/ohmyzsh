@@ -13,28 +13,59 @@ type RouterParams = {
   type?: string;
   id?: string;
 };
+const displayFrequencyEnum = {
+  EVERY_TIME: '每次',
+  INTERVAL_ONE_TIME: '间隔一次',
+  DAY_THREE_TIMES: '每天最多显示3次',
+};
 export default () => {
   const { id } = history.location.query as RouterParams
-  const [detail, setDetail] = useState<any>([
-    {
-      label: '活动名称：',
-      value: '全明星活动'
-    },
-    {
-      label: '图片：',
-      value: <Image src='' alt='' />
-    },
-    {
-      label: '倒计时时长：',
-      value: '3秒'
-    }
-  ])
+  const [detail, setDetail] = useState<any>()
   const perpaer = async () => {
     if (!id) return
     try {
       const res = await httpMngDetail(id)
       if (res?.code === 0) {
-        setDetail(res?.result)
+        const {advertiseName, countdown, siteLink, displayFrequency, ossUrls } = res?.result
+        const dataSource = [
+          {
+            label: '活动名称：',
+            value: advertiseName || '--'
+          },
+          {
+            label: '图片：',
+            value: 
+            <div className="img-box" style={{
+              display: 'flex',
+              gridColumnGap: '10px',
+              gridRowGap: '15px'
+            }}>
+              {
+                ossUrls ? ossUrls?.map((item: any, index: number) => {
+                  return (
+                    <div className="img-box-item">
+                      <Image src={item} key={index} />
+                    </div>
+                  )
+                }) : '--'
+              }
+
+            </div>
+          },
+          {
+            label: '倒计时时长：',
+            value: countdown + 'S' || '--',
+          },
+          {
+            label: '广告链接：',
+            value: siteLink || '--',
+          },
+          {
+            label: '启动频次：',
+            value: displayFrequencyEnum[displayFrequency] || '--',
+          },
+        ]
+        setDetail(dataSource)
       } else {
         message.error(`获取详情失败: ${res?.message}`)
       }
