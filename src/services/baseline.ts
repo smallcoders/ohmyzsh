@@ -418,4 +418,19 @@ export async function getPartLabels(data?: Record<string, any>) {
   });
 }
 
+// 获取广告列表
+export async  function getGlobalFloatAds(data?: Record<string, any>) {
+  return request<any>(`/antelope-industrial/mng/advertise/list`, {
+    method: 'post',
+    data
+  });
+}
+
+// 删除
+export async  function updateAdsStatus(id: number, status: number) {
+  return request<any>(`/antelope-industrial/mng/up-or-down/ads/${id}/${status}`, {
+    method: 'post',
+  });
+}
+
 

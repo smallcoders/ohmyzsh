@@ -6,7 +6,7 @@ import UploaImageV2 from '@/components/upload_form/upload-image-v2';
 import { addGlobalFloatAd, getGlobalFloatAdDetail, getPartLabels } from '@/services/baseline';
 import { history, Prompt } from 'umi';
 import './index.less';
-import { UploadOutlined } from '@ant-design/icons';
+import { ExclamationCircleOutlined, UploadOutlined } from '@ant-design/icons';
 
 const allLabels = [
   {
@@ -27,50 +27,36 @@ const sc = scopedClasses('suspension-add');
 export default () => {
   const [form] = Form.useForm();
   const { id } = history.location.query as { id: string | undefined };
+  const [loading, setLoading] = useState<any>(false);
   const [partLabels, setPartLabels] = useState<any>([])
+  const [formIsChange, setFormIsChange] = useState<boolean>(false);
   const [ userType, setUserType] = useState<any>('all')
   const [pageInfo, setPageInfo] = useState<any>({pageSize: 10, pageIndex: 1, pageTotal: 0})
-  const [ cacheParams, setCacheParams] = useState<any>({
-    scope: '',
-    status: '',
-    imgs: [],
-    siteLink: '',
-    advertiseType: 'GLOBAL_FLOAT_ADS',
-    labelIds: '',
-    advertiseName: '',
-  })
   useEffect(() => {
     if (id){
-      getGlobalFloatAdDetail({ id }).then((res) => {
+      setLoading(true)
+      getGlobalFloatAdDetail(id).then((res) => {
         const { result, code, message: resultMsg } = res || {};
         if (code === 0) {
-          console.log(result)
-          setCacheParams({
-            scope: result.scope,
-            status: result.status,
-            imgs: result.img,
-            siteLink: result.siteLink,
-            advertiseType: 'GLOBAL_FLOAT_ADS',
-            labelIds: result.labelIds,
-            advertiseName: result.advertiseName
-          })
           form.setFieldsValue({
             advertiseName: result.advertiseName,
             labelIds: result.scope === 'PORTION_USER' ? result.labelIds : result.scope,
             siteLink: result.siteLink,
             userType: result.scope !== 'PORTION_USER' ? 'all' : 'part',
-            imgs: result.imgs.length ? result.imgs?.map((item: any) => {
+            imgs: result.imgRelations?.length ? result.imgRelations?.map((item: any) => {
               return {
-                uid: item,
-                name: item,
+                uid: `${item.fileId}`,
+                name: item.ossUrl,
                 status: 'done',
-                url: item
+                url: item.ossUrl
               }
             }) : []
           })
         } else {
           antdMessage.error(`请求失败，原因:{${resultMsg}}`);
         }
+      }).finally(() => {
+        setLoading(false)
       });
     } else {
       form.setFieldsValue({userType: 'all'})
@@ -91,21 +77,20 @@ export default () => {
     })
   }, []);
 
-  const handleSubmit = async (status: number) => {
+  const handleSubmit = async (status: number, isPrompt?: boolean) => {
     await form.validateFields();
     const {advertiseName, imgs, siteLink, labelIds} = form.getFieldsValue()
     const params: any = {
       scope: userType === 'all' ? labelIds : 'PORTION_USER',
       status,
       imgs: imgs.map((item: any) => {
-        return item.url
+        return {path: item.url, id: item.resData?.id || item.uid}
       }),
       siteLink,
       advertiseType: 'GLOBAL_FLOAT_ADS',
       labelIds: userType === 'all' ? [] : labelIds,
       advertiseName,
     }
-    setCacheParams(params)
     if (id) {
       params.id = id
     }
@@ -118,6 +103,7 @@ export default () => {
           // todo 先获取审核接口
           addGlobalFloatAd(params).then((res) => {
             if (res.code === 0){
+              setFormIsChange(false)
               antdMessage.success('上架成功')
               history.goBack()
             } else {
@@ -127,10 +113,13 @@ export default () => {
         },
       })
     } else {
-      // 暂存
       addGlobalFloatAd(params).then((res) => {
         if (res.code === 0){
+          setFormIsChange(false)
           antdMessage.success('暂存成功')
+          if (isPrompt){
+            history.goBack()
+          }
         } else {
           antdMessage.error(res.message)
         }
@@ -163,48 +152,55 @@ export default () => {
     })
   }
 
-  const isChanged = () => {
-    const {advertiseName, imgs, siteLink, labelIds} = form.getFieldsValue()
-    const params = {
-      scope: userType === 'all' ? labelIds || '' : 'PORTION_USER',
-      status: cacheParams.status || '',
-      imgs: imgs?.map((item: any) => {
-        return item.url
-      }) || [],
-      siteLink: siteLink || '',
-      advertiseType: 'GLOBAL_FLOAT_ADS',
-      labelIds: userType === 'all' ? '' : labelIds || [],
-      advertiseName: advertiseName || '',
-    }
-    console.log(params, cacheParams)
-    return JSON.stringify(params) !== JSON.stringify(cacheParams)
-  }
-
   return (
     <PageContainer
       className={sc('page')}
       ghost
+      loading={loading}
       footer={[
         <>
-          <Button type="primary" onClick={() => {
+          <Button key={1} type="primary" onClick={() => {
             handleSubmit(1)
           }}>
             立即上架
           </Button>
-          <Button onClick={() => {
+          <Button key={2} onClick={() => {
             handleSubmit(0)
           }}>
             暂存
           </Button>
-          <Button onClick={() => history.goBack()}>返回</Button>
+          <Button key={3} onClick={() => history.goBack()}>返回</Button>
         </>,
       ]}
     >
       <Prompt
-        when={isChanged()}
-        message={`数据未保存, 是否直接离开`}
+        when={formIsChange}
+        message={(location: any) => {
+          Modal.confirm({
+            title: '要在离开之前对填写的信息进行保存吗?',
+            icon: <ExclamationCircleOutlined />,
+            cancelText: '放弃修改并离开',
+            okText: '暂存并离开',
+            onCancel() {
+              setFormIsChange(false)
+              setTimeout(() => {
+                history.push(location.pathname);
+              }, 1000);
+            },
+            onOk() {
+              handleSubmit(0, true)
+            },
+          });
+          return false;
+        }}
       />
-      <Form className={sc('container-form')} form={form}>
+      <Form
+        className={sc('container-form')}
+        form={form}
+        onValuesChange={() => {
+          setFormIsChange(true)
+        }}
+      >
         <div className="title">全局悬浮窗广告信息</div>
         <Form.Item
           labelCol={{span: 4}}
@@ -288,7 +284,7 @@ export default () => {
           ]}
         >
           {
-            form.getFieldValue('userType') === 'part' ?
+            form.getFieldValue('userType') === 'part' && partLabels.length ?
               <Select
                 options={partLabels}
                 mode={'multiple'}
@@ -300,10 +296,10 @@ export default () => {
                     getLabels(pageIndex)
                   }
                 }}
-              /> : <Select
+              /> : form.getFieldValue('userType') === 'all' ? <Select
                 options={allLabels}
                 placeholder="请选择"
-              />
+              /> : null
           }
         </Form.Item>
       </Form>
