@@ -20,8 +20,13 @@ const sc = scopedClasses('content-stream-ad');
 export default () => {
   const [staNumArr, setStaNumArr] = useState<any>([]);
 
-const handleAdd = () => {
-  history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_ADD}`);
+const handleAdd = (item:any) => {
+  if(item){
+    history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_ADD}?id=${item}`);
+  }else{
+    history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_ADD}`);
+
+  }
 };
 const handleDetail = (item:any) => {
   history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_DETAIL}?id=${item}`);
@@ -239,7 +244,7 @@ const formLayout = {
       render: (advertiseArticleTypeRelationList:any) => {
         advertiseArticleTypeRelationList.length ? advertiseArticleTypeRelationList?.map((item: any, index: number) => {
           const arr: any = layType.filter((item1:any) => item1.value===item.id)
-          return <span >{arr[0].label}</span>
+          return <span color="blue">{arr && arr.length > 0 ? arr[0].label : '--'}</span>
         }) : '--'
       },
     },
