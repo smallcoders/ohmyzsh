@@ -243,8 +243,8 @@ const formLayout = {
       render: (scope: any) => {
         return (<>
           {scope==='ALL_USER'&&<span>全部用户</span>}
-          {scope==='ALL_LOGIN_USE'&&<span>全部登陆用户</span>}
-          {scope==='ALL_NOT_LOGIN_USE'&&<span>全部未登录用户</span>}
+          {scope==='ALL_LOGIN_USER'&&<span>全部登陆用户</span>}
+          {scope==='ALL_NOT_LOGIN_USER'&&<span>全部未登录用户</span>}
           {scope==='PORTION_USER'&&<span>部分用户</span>}
           {!scope&&<span>__</span>}
         </>)

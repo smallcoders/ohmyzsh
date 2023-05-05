@@ -80,8 +80,8 @@ export default () => {
             <div className={sc('container-body-detail-item-label')}>作用范围：</div>
             <div className={sc('container-body-detail-item-value')}>
               {detail?.scope === 'ALL_USER' && <span>全部用户</span>}
-              {detail?.scope === 'ALL_LOGIN_USE' && <span>全部登陆用户</span>}
-              {detail?.scope === 'ALL_NOT_LOGIN_USE' && <span>全部未登录用户</span>}
+              {detail?.scope === 'ALL_LOGIN_USER' && <span>全部登陆用户</span>}
+              {detail?.scope === 'ALL_NOT_LOGIN_USER' && <span>全部未登录用户</span>}
               {detail?.scope === 'PORTION_USER' && <span>部分用户</span>}
               {!detail?.scope && <span>__</span>}
             </div>
