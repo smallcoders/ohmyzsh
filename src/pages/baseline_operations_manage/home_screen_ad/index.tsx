@@ -20,13 +20,19 @@ import './index.less'
 import scopedClasses from '@/utils/scopedClasses';
 import { routeName } from '../../../../config/routes';
 import dayjs from 'dayjs';
+import { httpMngLayout, httpAdvertiseList, httpUpOrDownAds } from '@/services/home-screen-ad';
 
 const sc = scopedClasses('home-screen-ad');
 
 const stateColumn = {
-  NOT_SUBMITTED: '暂存', // 暂存
-  ON_SHELF: '上架', // 上架中
-  OFF_SHELF: '下架', // 已下架
+  0: '暂存', // 暂存
+  1: '上架', // 上架中
+  3: '下架', // 已下架
+};
+const displayFrequencyEnum = {
+  EVERY_TIME: '每次',
+  INTERVAL_ONE_TIME: '间隔一次',
+  DAY_THREE_TIMES: '每天最多显示3次',
 };
 export default () => {
   // 手动触发table 的 reload等操作
@@ -36,11 +42,34 @@ export default () => {
   const [total, setTotal] = useState<number>(0);
 
   const handleAddBtn = () => {
-    // history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_HOME_SCREEN_AD_ADD}`)
-    window.open(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_HOME_SCREEN_AD_ADD}?type=add`)
+    history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_HOME_SCREEN_AD_ADD}?type=add`)
+    // window.open(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_HOME_SCREEN_AD_ADD}?type=add`)
   }
   const handleDetail = (itemId: any) => {
     window.open(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_HOME_SCREEN_AD_DETAIL}?id=${itemId}`)
+  }
+
+  // 上/下架/删除
+  const soldOut = async (id: string,state: any) => {
+    try {
+      const res = await httpUpOrDownAds({
+        id,
+        status: state
+      })
+      if (res?.code === 0) {
+        message.success(
+          state === 3 
+          ? '下架成功' 
+          : state === 2 
+            ? '删除成功'
+            : '上架成功');
+        actionRef.current?.reload(); // 让table// 刷新
+      } else {
+        message.error(`失败，原因:{${res.message}}`);
+      }
+    } catch (error) {
+      message.error(`上下架失败, 原因: ${error}`)
+    }
   }
 
   const columns: ProColumns<SolutionTypes.Solution>[] = [
@@ -54,52 +83,62 @@ export default () => {
     },
     {
       title: '活动名称',
-      dataIndex: 'innerName',
+      dataIndex: 'advertiseName',
       align: 'center',
       valueType: 'text', // 筛选的类别
     },
     {
       title: '图片',
-      dataIndex: 'photoId',
+      dataIndex: 'advertiseOssRelationList',
       align: 'center',
       hideInSearch: true,
-      renderText: (photoId: string) => (
-        <Image
+      renderText: (photoId: string) => {
+        return <Image
           className={'table-img'}
-          src={`/antelope-common/common/file/download/${photoId}`} // 看给的值是什么, 是给的ID就用这个
+          src={`/antelope-common/common/file/download/${photoId[0]?.fileId}`} // 看给的值是什么, 是给的ID就用这个
           alt="图片损坏"
         />
-      ),
+      },
     },
     {
       title: '倒计时时长',
-      dataIndex: 'updateTime',
+      dataIndex: 'countdown',
       align: 'center',
       hideInSearch: true,
     },
     {
       title: '启动频次',
-      dataIndex: 'updateTime',
+      dataIndex: 'displayFrequency',
       align: 'center',
       hideInSearch: true,
+      renderText: (_: string) => {
+        return (
+          <div className={`state${_}`}>
+            {Object.prototype.hasOwnProperty.call(displayFrequencyEnum, _) ? displayFrequencyEnum[_] : '--'}
+          </div>
+        );
+      },
     },
     {
       title: '操作时间',
       dataIndex: 'updateTime',
       align: 'center',
       hideInSearch: true,
+      renderText: (_: string) => {
+        return _ ? moment(_).format('YYYY-MM-DD HH:mm:ss') : '--'
+      }
     },
     {
       title: '内容状态',
-      dataIndex: 'state',
+      dataIndex: 'status',
       align: 'center',
       width: 100,
       valueType: 'select',
       valueEnum: {
-        1: {
+        0: {
           text: '暂存'
         },
-        2: {
+        1: {
           text: '上架'
         },
         3: {
@@ -124,7 +163,34 @@ export default () => {
           <Space size="middle">
             {/* 需要调整的权限 */}
             {/* <Access accessible={access['P_BLM_FWHGL']}> */}
-            {record?.status && (
+            {record?.status !== 0 && (
+              <a href="#" onClick={handleDetail.bind(null,2)}>详情</a>
+            )}
+            {/* </Access> */}
+            {record?.status === 3 && (
+              <Popconfirm
+                // icon={null}
+                title="确定上架么？"
+                okText="上架"
+                cancelText="取消"
+                onConfirm={() => soldOut(record?.id.toString(), 1)}
+              >
+                <a href="#">上架</a>
+              </Popconfirm>
+            )}
+            {record?.status === 1 && (
+              <Popconfirm
+                // icon={null}
+                title="确定下架么？"
+                okText="下架"
+                cancelText="取消"
+                onConfirm={() => soldOut(record?.id.toString(), 3)}
+              >
+                <a href="#">下架</a>
+              </Popconfirm>
+            )}
+            {/* <Access accessible={access['P_BLM_FWHGL']}> */}
+            {(record?.status === 3 || record?.status === 0) && (
               <Button
                 key="2"
                 size="small"
@@ -139,7 +205,7 @@ export default () => {
             )}
             {/* </Access> */}
             {/* <Access accessible={access['P_BLM_FWHGL']}> */}
-            {record?.status && (
+            {(record?.status === 3 || record?.status === 0) && (
                 <Popconfirm
                   title={
                     <div>
@@ -149,15 +215,10 @@ export default () => {
                   }
                   okText="确定"
                   cancelText="取消"
-                  // onConfirm={() => remove(record.id.toString())}
+                  onConfirm={() => soldOut(record.id.toString(),2)}
                 >
                   <a href="#">删除</a>
                 </Popconfirm>
-            )}
-            {/* </Access> */}
-            {/* <Access accessible={access['P_BLM_FWHGL']}> */}
-            {record?.status && (
-              <a href="#" onClick={handleDetail.bind(null,2)}>详情</a>
             )}
             {/* </Access> */}
           </Space>
@@ -169,7 +230,7 @@ export default () => {
   return (
     <PageContainer className={sc('container')}>
       <ProTable
-        headerTitle={`服务号设置管理列表（共${total}个）`}
+        headerTitle={`开屏广告管理列表（共${total}个）`}
         options={false} // 工具栏隐藏
         actionRef={actionRef} // 用来自定义触发
         rowKey="id"
@@ -182,21 +243,10 @@ export default () => {
         request={async (pagination) => {
           // 查询，重置搜集的值
           console.log('pagination', pagination);
-          // const result = await httpServiceAccountMannagePage({
-          //   ...pagination,
-          // });
-          const result = {
-            success: 0,
-            total: 0,
-            data: [
-              {
-                id: 1,
-                name: '123',
-                state: 'ON_SHELF',
-                status: 1,
-              }
-            ],
-          }
+          const result = await httpAdvertiseList({
+            ...pagination,
+            advertiseType: 'SPLASH_ADS'
+          });
           console.log('结果', result);
           paginationRef.current = pagination;
           setTotal(result.total);

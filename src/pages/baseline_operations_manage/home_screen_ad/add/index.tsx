@@ -19,6 +19,15 @@ type RouterParams = {
 };
 const { confirm } = Modal;
 export default () => {
+  /**
+   * 当前的新增还是编辑
+   */
+  const { type, id } = history.location.query as RouterParams;
+  const [activeTitle, setActiveTitle] = useState<string>('新增');
+
+  // 暂存ID
+  const [saveId, setSaveId] = useState<number>()
+
   const listener = (e: any) => {
     e.preventDefault();
     e.returnValue = '离开当前页后，所编辑的数据将不可恢复';
@@ -47,14 +56,79 @@ export default () => {
   const onSubmitDebounce = debounce((state) => {
     onSubmit(state)
   },1000)
-  const onSubmit = (state: number) => {
+  const onSubmit = async (state: number) => {
     if (state === 1) {
-      contentInfoForm.validateFields().then((values: any) => {
+      contentInfoForm.validateFields().then( async (values: any) => {
         console.log('上架搜集的表单', values)
+        const image = new Image();
+        image.src = values.imgs.path;
+        console.log('检查图片', image.width, image.height)
+        // 手动添加上广告类型
+        setContentInfoFormChange(false);
+        try {
+          const res = await httpAddSplash({
+            ...values,
+            status: 1,
+            imgs: [{
+              id: values.imgs.id,
+              path: values.imgs.path,
+              width: image.width,
+              high: image.height,
+            }], // 调整为数组格式
+            advertiseType: 'SPLASH_ADS',
+            // imgs: undefined
+            id: type === 'add' 
+              ? saveId ? saveId : undefined
+              : id
+          })
+          if (res?.code === 0) {
+            message.success('上架成功');
+            setTimeout(() => {
+              history.goBack()
+            }, 500);
+          } else {
+            message.error(`新增失败,原因${res?.message}`)
+          }
+        } catch (error) {
+          message.error(`新增失败，原因：${error}`)
+        }
       })
     } else {
       const formValues = contentInfoForm.getFieldsValue();
       console.log('暂存搜集的表单', formValues)
+      const image = new Image();
+      if (formValues.imgs) {
+        image.src = formValues.imgs.path;
+      }
+      try {
+        const res = await httpAddSplash({
+          ...formValues,
+          status: 0,
+          imgs: formValues.imgs
+          ? [{
+            id: formValues.imgs.id,
+            path: formValues.imgs.path,
+            width: image.width,
+            high: image.height,
+          }]
+          : undefined, // 调整为数组格式
+          advertiseType: 'SPLASH_ADS',
+          // imgs: undefined
+          id: type === 'add' 
+            ? saveId ? saveId : undefined 
+            : id
+        })
+        if (res?.code === 0) {
+          message.success('暂存成功');
+          // 保存id
+          setSaveId(res?.result)
+          // history.goBack()
+        } else {
+          message.error(`暂存失败,原因${res?.message}`)
+        }
+      } catch (error) {
+        message.error(`暂存失败，原因：${error}`)
+      }
     }
   }
   const goBack = () => {
@@ -63,11 +137,6 @@ export default () => {
       // history.goBack();
     },800)
   }
-  /**
-   * 当前的新增还是编辑
-   */
-  const { type, id } = history.location.query as RouterParams;
-  const [activeTitle, setActiveTitle] = useState<any>('新增');
 
   // const [detail, setDetail] = useState<any>()
   const perpaer = async (id: any) => {
@@ -93,13 +162,39 @@ export default () => {
     // 有编辑 和新增
     if (type === 'add') {
       // 初始化表单默认项
-      contentInfoForm.setFieldsValue({ countdown: 1 })
-      contentInfoForm.setFieldsValue({ displayFrequency: 1 })
+      contentInfoForm.setFieldsValue({ countdown: 3 })
+      contentInfoForm.setFieldsValue({ displayFrequency: 'EVERY_TIME' })
     }
     if (id) {
       perpaer(id)
     }
   },[])
+
+  // const soldOut = () => {
+  //   return new Promise((resolve, reject) => {
+  //     contentInfoForm.validateFields().then( async (values: any) => {
+  //       console.log('上架搜集的表单', values)
+  //       // 手动添加上广告类型
+  //       try {
+  //         const res = await httpAddSplash({
+  //           ...values,
+  //           imgs: [{
+  //             id: values.imgs,
+  //             path: ''
+  //           }] // 调整为数组格式
+  //         })
+  //         if (res?.code === 0) {
+  //           console.log('查看结果')
+  //         } else {
+  //           message.error(`新增失败,原因${res?.message}`)
+  //         }
+  //       } catch (error) {
+  //         message.error(`新增失败，原因：${error}`)
+  //       }
+
+  //     })
+  //   })
+  // }
 
 
   return (
@@ -153,6 +248,7 @@ export default () => {
               okText="发布"
               cancelText="取消"
               onConfirm={() => onSubmitDebounce(1)}
+              // onConfirm={() => soldOut()}
             >
               {/* <Button type="primary" htmlType="submit"  onClick={() => onSubmit(1)}> */}
               <Button disabled={isExporting} type="primary" htmlType="submit">
@@ -225,7 +321,7 @@ export default () => {
             </Form.Item>
             <Form.Item
               label="图片" 
-              name="图片"
+              name="imgs"
               rules={[{ required: true, message: '必填' }]}
             >
               <UploadForm
@@ -234,7 +330,7 @@ export default () => {
                 showUploadList={false}
                 accept=".png,.jpeg,.jpg"
                 tooltip={<span className={'tooltip'}>图片格式仅支持JPG、PNG、JPEG</span>}
-                // setValue={(e) => coverOnChange(e)}
+                action="/antelope-common/common/file/upload/record"
               />
             </Form.Item>
             <Form.Item
@@ -242,7 +338,7 @@ export default () => {
               name="countdown"
               rules={[{ required: true, message: '必填' }]}
             >
-              <Select options={[{label: '3秒', value: 1},{label: '4秒', value: 2},{label: '5秒', value: 3}]} placeholder="请选择" allowClear />
+              <Select options={[{label: '3秒', value: 3},{label: '4秒', value: 4},{label: '5秒', value: 5}]} placeholder="请选择" allowClear />
             </Form.Item>
             <Form.Item
               label="站内链接配置" 
@@ -255,7 +351,7 @@ export default () => {
               name="displayFrequency"
               rules={[{ required: true, message: '必填' }]}
             >
-              <Select options={[{label: '每次', value: 1},{label: '间隔一次', value: 2},{label: '每天最多显示3次', value: 3}]} placeholder="请选择" allowClear />
+              <Select options={[{label: '每次', value: 'EVERY_TIME'},{label: '间隔一次', value: 'INTERVAL_ONE_TIME'},{label: '每天最多显示3次', value: 'DAY_THREE_TIMES'}]} placeholder="请选择" allowClear />
             </Form.Item>
           </Form>
         </div>

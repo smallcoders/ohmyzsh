@@ -21,7 +21,7 @@ export function httpEnterpriseList(data: {
   return request(`/antelope-industrial/mng/enterprise/publish/page-query`, {
     method: 'POST',
     data: {...data, pageIndex: data.current}
-  }).then((json) => (
+  }).then((json: any) => (
     {
       success: json.code === 0,
       total: json.totalCount,
