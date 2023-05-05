@@ -242,10 +242,12 @@ const formLayout = {
       isEllipsis: true,
       width: 250,
       render: (advertiseArticleTypeRelationList:any) => {
-        advertiseArticleTypeRelationList.length ? advertiseArticleTypeRelationList?.map((item: any, index: number) => {
-          const arr: any = layType.filter((item1:any) => item1.value===item.id)
-          return <span color="blue">{arr && arr.length > 0 ? arr[0].label : '--'}</span>
-        }) : '--'
+        const arr = layType.filter(aItem =>
+          advertiseArticleTypeRelationList.some(bItem =>
+            aItem.value === bItem.id
+          )
+        );
+        return <span color="blue">{arr && arr.length > 0 ? arr[0].label : '--'}</span>
       },
     },
     {
