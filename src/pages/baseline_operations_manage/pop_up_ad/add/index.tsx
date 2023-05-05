@@ -6,7 +6,7 @@ import { ExclamationCircleOutlined, UploadOutlined } from '@ant-design/icons';
 import { history, Access, useAccess, Link, Prompt } from 'umi';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
-import { addPopupAd, getGlobalFloatAdDetail, getAllLayout, getPartLabels } from '@/services/baseline';
+import { addPopupAd, getGlobalFloatAdDetail, getAllLayout, getPartLabels, auditImgs } from '@/services/baseline';
 import UploadFormFile from '@/components/upload_form/upload-form-asso';
 import UploaImageV2 from '@/components/upload_form/upload-image-v2';
 import { routeName } from '../../../../../config/routes';
@@ -82,19 +82,40 @@ export default () => {
       params.periodStartTime = moment(regularTime[0]).format('YYYY-MM-DD');
       params.periodEndTime = moment(regularTime[1]).format('YYYY-MM-DD');
     }
+    const cb = () => {
+      setLoading(true)
+      addPopupAd(params).then((res) => {
+        if (res.code === 0){
+          setIsClosejumpTooltip(false)
+          antdMessage.success('上架成功')
+          history.goBack()
+        } else {
+          antdMessage.error(res.message)
+        }
+        setLoading(false)
+      })
+    }
     if (status == 1) {
       Modal.confirm({
         title: '提示',
         content: '确定上架当前内容？',
         okText: '上架',
         onOk: () => {
-          addPopupAd(params).then((res) => {
-            if (res.code === 0) {
-              setIsClosejumpTooltip(false)
-              antdMessage.success('上架成功')
+          auditImgs({
+            ossUrls: params.imgs.map((item: any) => {return item.path})
+          }).then((result) => {
+            if (result.code === 0){
+              cb()
               history.goBack()
             } else {
-              antdMessage.error(res.message)
+              Modal.confirm({
+                title: '风险提示',
+                content: result.message,
+                okText: '继续上架',
+                onOk: () => {
+                  cb()
+                }
+              })
             }
           })
         },
@@ -157,8 +178,15 @@ export default () => {
                 status: 'done',
                 url: item.ossUrl
               }
-            }) : []
+            }) : [],
+            triggerMechanism: result.triggerMechanism || 'PAGE_START',
+            triggerAddress: result.triggerAddress || '',
+            periodType: result.periodType || 'ALL_TIME',
+            regularTime: result.periodType == 'FIXED_TIME' && [moment(result.periodStartTime), moment(result.periodEndTime)]
           })
+          if(result.periodType === 'FIXED_TIME') {
+            setShowDatePicker(true)
+          }
         } else {
           antdMessage.error(`请求失败，原因:{${resultMsg}}`);
         }
@@ -188,13 +216,13 @@ export default () => {
     <PageContainer
       loading={loading}
       header={{
-        title: '新增',
+        title: id ? '编辑' : '新增',
         breadcrumb: (
           <Breadcrumb>
             <Breadcrumb.Item>
               <Link to="/baseline-operations-management/pop-up-ad">全局悬浮窗广告</Link>
             </Breadcrumb.Item>
-            <Breadcrumb.Item>新增</Breadcrumb.Item>
+            <Breadcrumb.Item>{id ? '编辑' : '新增'}</Breadcrumb.Item>
           </Breadcrumb>
         ),
       }}
