@@ -38,6 +38,7 @@ export default () => {
       getGlobalFloatAdDetail(id).then((res) => {
         const { result, code, message: resultMsg } = res || {};
         if (code === 0) {
+          setUserType(result.scope !== 'PORTION_USER' ? 'all' : 'part')
           form.setFieldsValue({
             advertiseName: result.advertiseName,
             labelIds: result.scope === 'PORTION_USER' ? result.labelIds : result.scope,
