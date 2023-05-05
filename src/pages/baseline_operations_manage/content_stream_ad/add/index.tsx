@@ -1,22 +1,335 @@
-import { Button, message, Avatar, Space, Popconfirm, Form, Input } from 'antd';
+import { Button, Form, Input, message as antdMessage, Modal, Radio, Select } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import React, { useEffect, useState } from 'react';
-import moment from 'moment';
 import { history, Access, useAccess } from 'umi';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
-import { UserOutlined } from '@ant-design/icons';
-import { routeName } from '../../../../../config/routes';
+import { UploadOutlined } from '@ant-design/icons';
+import {
+  addGlobalFloatAd,
+  getAllLayout,
+  getGlobalFloatAdDetail,
+  getPartLabels,
+} from '@/services/baseline';
+import UploaImageV2 from '@/components/upload_form/upload-image-v2';
 
 const sc = scopedClasses('content-stream-ad-add');
-
+const { TextArea } = Input;
+const allLabels = [
+  {
+    label: '全部用户',
+    value: 'ALL_USER',
+  },
+  {
+    label: '全部登录用户',
+    value: 'ALL_LOGIN_USE',
+  },
+  {
+    label: '全部未登录用户',
+    value: 'ALL_NOT_LOGIN_USE',
+  },
+];
 export default () => {
+  const [visibleLocation, setVisibleLocation] = useState<boolean>(false);
+  const [visibleAdd, setVisibleAdd] = useState<boolean>(false);
+  const [visible, setVisible] = useState<boolean>(false);
+  const [form] = Form.useForm();
+  const { id } = history.location.query as { id: string | undefined };
+  const [partLabels, setPartLabels] = useState<any>([]);
+  const [userType, setUserType] = useState<any>('all');
+  const [layType, setLayType] = useState<any>([]);
+  const [pageInfo, setPageInfo] = useState<any>({ pageSize: 10, pageIndex: 1, pageTotal: 0 });
+  useEffect(() => {
+    if (id) {
+      getGlobalFloatAdDetail({ id }).then((res) => {
+        const { result, code, message: resultMsg } = res || {};
+        if (code === 0) {
+          console.log(result);
+        } else {
+          antdMessage.error(`请求失败，原因:{${resultMsg}}`);
+        }
+      });
+    } else {
+      form.setFieldsValue({ userType: 'all' });
+    }
+    getPartLabels({ ...pageInfo }).then((res) => {
+      if (res.code === 0 && res.result) {
+        const labelArr = res.result.map((item: any) => {
+          return {
+            value: item.id,
+            label: item.labelName,
+          };
+        });
+        setPageInfo({
+          ...pageInfo,
+          pageTotal: Math.ceil(res.totalCount / pageInfo.pageSize),
+        });
+        setPartLabels(labelArr);
+      }
+    });
+    getAllLayout().then((res) => {
+      if (res.code === 0 && res.result) {
+        const labelArr = res.result.map((item: any) => {
+          return {
+            value: item.id,
+            label: item.typeName,
+          };
+        });
+        setLayType(labelArr);
+      }
+    });
+  }, []);
+
+  const handleSubmit = async (status: any) => {
+    await form.validateFields();
+    const { advertiseName, imgs, siteLink, labelIds } = form.getFieldsValue();
+    console.log(form.getFieldsValue());
+    const params = {
+      advertiseName,
+      siteLink,
+      imgs: imgs.map((item: any) => {
+        return item.url;
+      }),
+      scope: userType === 'all' ? labelIds : 'PORTION_USER',
+      labelIds: userType === 'all' ? [] : labelIds,
+      advertiseType: 'GLOBAL_FLOAT_ADS',
+      status,
+    };
+    console.log(params, '000000');
+    // todo 先获取审核接口
+    addGlobalFloatAd(params).then((res) => {
+      if (res.code === 0) {
+        history.goBack();
+      } else {
+        antdMessage.error(res.message);
+      }
+    });
+  };
+
+  const getLabels = (pageIndex: number) => {
+    getPartLabels({ pageIndex, pageSize: pageInfo.pageSize })
+      .then((res) => {
+        if (res.code === 0 && res.result) {
+          const labelArr = res.result.map((item: any) => {
+            return {
+              value: item.id,
+              label: item.labelName,
+            };
+          });
+          setPageInfo({
+            ...pageInfo,
+            pageTotal: Math.ceil(res.result.totalCount / pageInfo.pageSize),
+          });
+          setPartLabels(partLabels.concat(labelArr));
+        } else {
+          setPageInfo({
+            ...pageInfo,
+            pageIndex: pageInfo.pageIndex - 1,
+          });
+        }
+      })
+      .catch(() => {
+        setPageInfo({
+          ...pageInfo,
+          pageIndex: pageInfo.pageIndex - 1,
+        });
+      });
+  };
 
   return (
     <PageContainer
-      className={sc('container')}
+      className={sc('page')}
+      ghost
+      footer={[
+        <>
+          <Button type="primary" onClick={handleSubmit}>
+            立即上架
+          </Button>
+          <Button onClick={handleSubmit}>暂存</Button>
+          <Button onClick={() => history.goBack()}>返回</Button>
+        </>,
+      ]}
     >
-      内容流广告新增页
+      <Form className={sc('container-form')} form={form}>
+        <div className="title">弹窗广告信息</div>
+        <Form.Item
+          labelCol={{ span: 4 }}
+          wrapperCol={{ span: 12 }}
+          name="advertiseName"
+          label="内容标题"
+          required
+          rules={[
+            {
+              required: true,
+              message: '必填',
+            },
+          ]}
+        >
+          <TextArea autoSize={{ minRows: 1, maxRows: 10 }} placeholder="请输入" maxLength={100} />
+        </Form.Item>
+        <Form.Item
+          name="imgs"
+          label="图片"
+          required
+          extra="图片格式仅支持JPG、PNG、JPEG，图片尺寸123*123"
+          labelCol={{ span: 4 }}
+          wrapperCol={{ span: 16 }}
+        >
+          <UploaImageV2 multiple={true} accept=".png,.jpeg,.jpg" maxCount={3}>
+            <Button icon={<UploadOutlined />}>上传</Button>
+          </UploaImageV2>
+        </Form.Item>
+        <Form.Item
+          labelCol={{ span: 4 }}
+          wrapperCol={{ span: 12 }}
+          name="siteLink"
+          label="站内链接配置"
+          required
+          rules={[
+            {
+              required: true,
+              message: '必填',
+            },
+          ]}
+        >
+          <Input placeholder="请输入" />
+        </Form.Item>
+        <Form.Item
+          labelCol={{ span: 4 }}
+          wrapperCol={{ span: 12 }}
+          name="siteLink"
+          label="版面"
+          required
+          rules={[
+            {
+              required: true,
+              message: '必填',
+            },
+          ]}
+        >
+          <Select options={layType} mode={'multiple'} placeholder="请选择" />
+        </Form.Item>
+        <Form.Item
+          labelCol={{ span: 4 }}
+          wrapperCol={{ span: 12 }}
+          name="siteLink"
+          label="位置"
+          extra={visibleLocation ? '广告位已被占用' : ''}
+          required
+          rules={[
+            {
+              required: true,
+              message: '必填',
+            },
+          ]}
+        >
+          <Input placeholder="请输入" />
+        </Form.Item>
+        <Form.Item
+          labelCol={{ span: 4 }}
+          wrapperCol={{ span: 12 }}
+          name="userType"
+          label="作用范围"
+          required
+          rules={[
+            {
+              required: true,
+              message: '必选',
+            },
+          ]}
+        >
+          <Radio.Group
+            onChange={(e) => {
+              setUserType(e.target.value);
+            }}
+            options={[
+              { label: '全部用户', value: 'all' },
+              { label: '部分用户', value: 'part' },
+            ]}
+          />
+        </Form.Item>
+        <Form.Item
+          wrapperCol={{ offset: 4, span: 12 }}
+          name="labelIds"
+          required
+          validateTrigger="onBlur"
+          rules={[
+            {
+              required: true,
+              message: '必选',
+            },
+          ]}
+        >
+          {form.getFieldValue('userType') === 'part' ? (
+            <Select
+              options={partLabels}
+              mode={'multiple'}
+              placeholder="请选择"
+              onPopupScroll={() => {
+                if (pageInfo.pageTotal > pageInfo.pageIndex) {
+                  const pageIndex = pageInfo.pageIndex + 1;
+                  setPageInfo({ ...pageInfo, pageIndex });
+                  getLabels(pageIndex);
+                }
+              }}
+            />
+          ) : (
+            <Select options={allLabels} placeholder="请选择" />
+          )}
+        </Form.Item>
+      </Form>
+      <Modal
+        visible={visible}
+        title="提示"
+        onCancel={() => {
+          setVisible(false);
+        }}
+        footer={[
+          <>
+            <Button key="back" onClick={() => setVisible(false)}>
+              取消
+            </Button>
+            <Button type={'default'} key="submit" onClick={() => history.goBack()}>
+              直接离开
+            </Button>
+            <Button
+              key="submit"
+              type="primary"
+              onClick={() => {
+                handleSubmit(true);
+                // addRecommend(false);
+              }}
+            >
+              暂存并离开
+            </Button>
+          </>,
+        ]}
+      >
+        <p>数据未保存，是否仍要离开当前页面？</p>
+      </Modal>
+      <Modal
+        visible={visibleAdd}
+        title="提示"
+        onCancel={() => {
+          setVisibleAdd(false);
+        }}
+        footer={[
+          <Button key="back" onClick={() => setVisibleAdd(false)}>
+            取消
+          </Button>,
+          <Button
+            key="submit"
+            type="primary"
+            onClick={() => {
+              handleSubmit(true);
+            }}
+          >
+            上架
+          </Button>,
+        ]}
+      >
+        <p>确定上架当前内容？</p>
+      </Modal>
     </PageContainer>
-  )
-}
+  );
+};

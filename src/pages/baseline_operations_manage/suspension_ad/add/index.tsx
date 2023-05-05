@@ -1,40 +1,67 @@
-import { Input, Form, Select, Button, message, message as antdMessage, Radio } from 'antd';
+import { Input, Form, Select, Button, message as antdMessage, Radio, Modal } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import scopedClasses from '@/utils/scopedClasses';
 import { useEffect, useState } from 'react';
 import UploaImageV2 from '@/components/upload_form/upload-image-v2';
-import { addGlobalFloatAd, getGlobalFloatAdDetail, getAllLayout, getPartLabels } from '@/services/baseline';
-import { history } from 'umi';
+import { addGlobalFloatAd, getGlobalFloatAdDetail, getPartLabels, auditImgs } from '@/services/baseline';
+import { history, Prompt } from 'umi';
 import './index.less';
-import { UploadOutlined } from '@ant-design/icons';
+import { ExclamationCircleOutlined, UploadOutlined } from '@ant-design/icons';
+
+const allLabels = [
+  {
+    label: '全部用户',
+    value: 'ALL_USER'
+  },
+  {
+    label: '全部登录用户',
+    value: 'ALL_LOGIN_USER'
+  },
+  {
+    label: '全部未登录用户',
+    value: 'ALL_NOT_LOGIN_USER'
+  }
+]
 
 const sc = scopedClasses('suspension-add');
 export default () => {
   const [form] = Form.useForm();
   const { id } = history.location.query as { id: string | undefined };
+  const [loading, setLoading] = useState<any>(false);
   const [partLabels, setPartLabels] = useState<any>([])
-  const [allLabels, setAllLabels] = useState<any>([])
-  const [userType, setUserType] = useState<any>('all')
+  const [formIsChange, setFormIsChange] = useState<boolean>(false);
+  const [ userType, setUserType] = useState<any>('all')
   const [pageInfo, setPageInfo] = useState<any>({pageSize: 10, pageIndex: 1, pageTotal: 0})
   useEffect(() => {
     if (id){
-      getGlobalFloatAdDetail({ id }).then((res) => {
+      setLoading(true)
+      getGlobalFloatAdDetail(id).then((res) => {
         const { result, code, message: resultMsg } = res || {};
         if (code === 0) {
-          console.log(result)
+          setUserType(result.scope !== 'PORTION_USER' ? 'all' : 'part')
+          form.setFieldsValue({
+            advertiseName: result.advertiseName,
+            labelIds: result.scope === 'PORTION_USER' ? result.labelIds : result.scope,
+            siteLink: result.siteLink,
+            userType: result.scope !== 'PORTION_USER' ? 'all' : 'part',
+            imgs: result.imgRelations?.length ? result.imgRelations?.map((item: any) => {
+              return {
+                uid: `${item.fileId}`,
+                name: item.ossUrl,
+                status: 'done',
+                url: item.ossUrl
+              }
+            }) : []
+          })
         } else {
           antdMessage.error(`请求失败，原因:{${resultMsg}}`);
         }
+      }).finally(() => {
+        setLoading(false)
       });
     } else {
       form.setFieldsValue({userType: 'all'})
     }
-    getAllLayout().then((res) => {
-      // todo 数据结构待定
-      if(res.code === 0 && res.result){
-        setAllLabels(res.result)
-      }
-    })
     getPartLabels({ ...pageInfo }).then((res) => {
       if (res.code === 0 && res.result){
         const labelArr = res.result.map((item: any) => {
@@ -51,12 +78,76 @@ export default () => {
     })
   }, []);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (status: number, isPrompt?: boolean) => {
     await form.validateFields();
-    // todo 审核接口
-    addGlobalFloatAd().then((res) => {
-      console.log(res)
-    })
+    const {advertiseName, imgs, siteLink, labelIds} = form.getFieldsValue()
+    const params: any = {
+      scope: userType === 'all' ? labelIds : 'PORTION_USER',
+      status,
+      imgs: imgs.map((item: any) => {
+        return {path: item.url, id: item.resData?.id || item.uid}
+      }),
+      siteLink,
+      advertiseType: 'GLOBAL_FLOAT_ADS',
+      labelIds: userType === 'all' ? [] : labelIds,
+      advertiseName,
+    }
+    if (id) {
+      params.id = parseInt(id)
+    }
+    if (status === 1){
+      Modal.confirm({
+        title: '提示',
+        content: '确定上架当前内容？',
+        okText: '上架',
+        onOk: () => {
+          auditImgs({
+            ossUrls: params.imgs.map((item: any) => {return item.path})
+          }).then((result) => {
+            if (result.code === 0){
+              addGlobalFloatAd(params).then((res) => {
+                if (res.code === 0){
+                  setFormIsChange(false)
+                  antdMessage.success('上架成功')
+                  history.goBack()
+                } else {
+                  antdMessage.error(res.message)
+                }
+              })
+            } else {
+              Modal.confirm({
+                title: '风险提示',
+                content: result.message,
+                okText: '继续上架',
+                onOk: () => {
+                  addGlobalFloatAd(params).then((res) => {
+                    if (res.code === 0){
+                      setFormIsChange(false)
+                      antdMessage.success('上架成功')
+                      history.goBack()
+                    } else {
+                      antdMessage.error(res.message)
+                    }
+                  })
+                }
+              })
+            }
+          })
+        },
+      })
+    } else {
+      addGlobalFloatAd(params).then((res) => {
+        if (res.code === 0){
+          setFormIsChange(false)
+          antdMessage.success('暂存成功')
+          if (isPrompt){
+            history.goBack()
+          }
+        } else {
+          antdMessage.error(res.message)
+        }
+      })
+    }
   };
 
   const getLabels = (pageIndex: number) => {
@@ -88,19 +179,51 @@ export default () => {
     <PageContainer
       className={sc('page')}
       ghost
+      loading={loading}
       footer={[
         <>
-          <Button type="primary" onClick={handleSubmit}>
+          <Button key={1} type="primary" onClick={() => {
+            handleSubmit(1)
+          }}>
             立即上架
           </Button>
-          <Button onClick={handleSubmit}>
+          <Button key={2} onClick={() => {
+            handleSubmit(0)
+          }}>
             暂存
           </Button>
-          <Button onClick={() => history.goBack()}>返回</Button>
+          <Button key={3} onClick={() => history.goBack()}>返回</Button>
         </>,
       ]}
     >
-      <Form className={sc('container-form')} form={form}>
+      <Prompt
+        when={formIsChange}
+        message={(location: any) => {
+          Modal.confirm({
+            title: '要在离开之前对填写的信息进行保存吗?',
+            icon: <ExclamationCircleOutlined />,
+            cancelText: '放弃修改并离开',
+            okText: '暂存并离开',
+            onCancel() {
+              setFormIsChange(false)
+              setTimeout(() => {
+                history.push(location.pathname);
+              }, 100);
+            },
+            onOk() {
+              handleSubmit(0, true)
+            },
+          });
+          return false;
+        }}
+      />
+      <Form
+        className={sc('container-form')}
+        form={form}
+        onValuesChange={() => {
+          setFormIsChange(true)
+        }}
+      >
         <div className="title">全局悬浮窗广告信息</div>
         <Form.Item
           labelCol={{span: 4}}
@@ -165,6 +288,7 @@ export default () => {
         >
           <Radio.Group
             onChange={(e) => {
+              form.setFieldsValue(e.target.value === 'all' ? {labelIds: ''} : {labelIds: []})
               setUserType(e.target.value)
             }}
             options={[{label: '全部用户', value: 'all'}, {label: '部分用户', value: 'part'}]}
@@ -183,7 +307,7 @@ export default () => {
           ]}
         >
           {
-            form.getFieldValue('userType') === 'part' ?
+            form.getFieldValue('userType') === 'part' && partLabels.length ?
               <Select
                 options={partLabels}
                 mode={'multiple'}
@@ -195,10 +319,10 @@ export default () => {
                     getLabels(pageIndex)
                   }
                 }}
-              /> : <Select
+              /> : form.getFieldValue('userType') === 'all' ? <Select
                 options={allLabels}
                 placeholder="请选择"
-              />
+              /> : null
           }
         </Form.Item>
       </Form>

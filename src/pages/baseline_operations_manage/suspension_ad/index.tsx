@@ -5,35 +5,43 @@ import {
   Row,
   Col,
   message as antdMessage,
-  Modal,
+  Modal, Input,
 } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
-import {
-  getPageList,
-} from '@/services/page-creat-manage'
+import { history } from 'umi';
+import { getGlobalFloatAds, updateAdsStatus, getGobleFloatAdsStatistics } from '@/services/baseline';
 import type Common from '@/types/common';
 import moment from 'moment';
 import SelfTable from '@/components/self_table';
 import { routeName } from '../../../../config/routes';
 const sc = scopedClasses('suspension-list');
-
-interface record {
-  tmpId: string;
-  tmpName: string;
-  tmpDesc: string;
-  state: string | number,
-  updateTime: string,
-  tmpJson: string,
-  tmpType: number,
+const scopeMap = {
+  'ALL_USER': '全部用户',
+  'ALL_LOGIN_USE': '全部登陆用户',
+  'ALL_NOT_LOGIN_USE': '全部未登录用户',
+  'ALL_LOGIN_USER': '全部登陆用户',
+  'ALL_NOT_LOGIN_USER': '全部未登录用户',
+  'PORTION_USER': '部分用户'
 }
 
+const statusOptions = [
+  {label: '上架', value: 1}, {label: '下架', value: 3}
+]
+
+const statusMap = {
+  1: '上架',
+  3: '下架',
+  0: '暂存'
+}
 
 export default () => {
   const [dataSource, setDataSource] = useState<any>([]);
+  const [loading, setLoading] = useState<any>(false);
   const [searchContent, setSearChContent] = useState<any>({});
+  const [totalInfo, setTotalInfo] = useState<any>({userCount: 0, onClickCount: 0})
   const [searchForm] = Form.useForm();
   const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
     pageIndex: 1,
@@ -42,43 +50,65 @@ export default () => {
     pageTotal: 0,
   });
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
+    setLoading(true)
     try {
-      const { result, totalCount, pageTotal, code, message } = await getPageList({
+      const { result, code, message } = await getGlobalFloatAds({
         pageIndex,
         pageSize,
+        advertiseType: 'GLOBAL_FLOAT_ADS',
         ...searchContent,
       });
+      setLoading(false)
       if (code === 0) {
-        setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
-        setDataSource(result);
+        setPageInfo({ totalCount: result.total, pageTotal: Math.ceil(result.total / pageSize), pageIndex, pageSize });
+        setDataSource(result.list || []);
       } else {
         throw new Error(message);
       }
     } catch (error) {
+      setLoading(false)
       antdMessage.error(`请求失败，原因:{${error}}`);
     }
   };
 
-  const handleDelete = (record: record) => {
+  const handleDelete = (record: any) => {
+    console.log(record)
     Modal.confirm({
       title: '删除数据',
-      content: '删除该内容流广告后，系统将不再推荐该广告，确定删除？',
+      content: '删除该广告后，系统将不再推荐该广告，确定删除？',
       okText: '删除',
       onOk: () => {
+        updateAdsStatus(record.id, 2).then((res) => {
+          if (res.code === 0){
+            const { totalCount, pageIndex, pageSize } = pageInfo
+            const newTotal = totalCount - 1 || 1;
+            const newPageTotal = Math.ceil(newTotal / pageSize) || 1
+            getPage(pageIndex >  newPageTotal ? newPageTotal : pageIndex)
+            antdMessage.success(`删除成功`);
+          } else {
+            antdMessage.error(res.message);
+          }
+        })
       },
     })
   }
-  const handleUpOrDown = (record: record) => {
+  const handleUpOrDown = (record: any) => {
     Modal.confirm({
       title: '提示',
-      content: record.state === 1 ? '确定将内容上架？' : '确定将内容下架？',
-      okText: '下架',
-      onOk: () => {
-        antdMessage.success(`下架成功`);
+      content: record.status === 1 ? '确定将内容下架？' : '确定将内容上架？',
+      okText: record.status === 1 ? '下架' : '上架',
+      onOk: async () => {
+        updateAdsStatus(record.id, record.status === 1 ? 3 : 1).then((res) => {
+          if (res.code === 0){
+            getPage(pageInfo.pageIndex)
+            antdMessage.success(record.status === 1 ? '下架成功' : `上架成功`);
+          } else {
+            antdMessage.error(res.message);
+          }
+        })
       },
     })
   }
-
   const columns = [
     {
       title: '序号',
@@ -88,42 +118,69 @@ export default () => {
         pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
-      title: '标题',
-      dataIndex: 'tmpName',
+      title: '活动名称',
+      dataIndex: 'advertiseName',
       width: 150,
-      render: (tmpName: string, record: record) => {
-        return <span>{tmpName || '--'}</span>
+      render: (advertiseName: string) => {
+        return <span>{advertiseName || '--'}</span>
       }
     },
     {
       title: '图片',
-      dataIndex: 'tmpDesc',
+      dataIndex: 'advertiseOssRelationList',
       isEllipsis: true,
-      width: 250,
-    },
-    {
-      title: '版面',
-      dataIndex: 'pv',
-      render: (pv: string) => {
-        return <span>{pv || '--'}</span>
-      }
+      width: 200,
+      render: (advertiseOssRelationList: any) => {
+        return (
+          <div className="img-tr">
+            {
+              advertiseOssRelationList.length ? advertiseOssRelationList?.map((item: any, index: number) => {
+                return (
+                  <div className="img-box">
+                    <img src={item.ossUrl} key={index} alt='' />
+                  </div>
+                )
+              }) : '--'
+            }
+          </div>
+        )
+      },
     },
     {
       title: '作用范围',
-      dataIndex: 'uv',
-      render: (uv: string) => {
-        return <span>{uv || '--'}</span>
+      dataIndex: 'scope',
+      width: 100,
+      render: (scope: string) => {
+        return <span>{scopeMap[scope] || '--'}</span>
       }
     },
     {
       title: '点击次数',
-      dataIndex: 'state',
+      dataIndex: 'onClickCount',
       width: 100,
+      render: (onClickCount: number) => {
+        return <span>{typeof onClickCount === 'number' ? onClickCount : '--'}</span>
+      }
     },
     {
       title: '用户数',
-      dataIndex: 'state',
+      dataIndex: 'userCount',
       width: 100,
+      render: (userCount: number) => {
+        return <span>{typeof userCount === 'number' ? userCount : '--'}</span>
+      }
+    },
+    {
+      title: '内容状态',
+      dataIndex: 'status',
+      width: 200,
+      render: (status: string) => {
+        return (
+          <>
+            {statusMap[status] || '--'}
+          </>
+        )
+      },
     },
     {
       title: '操作时间',
@@ -132,7 +189,7 @@ export default () => {
       render: (updateTime: string) => {
         return (
           <>
-            {moment(updateTime).format('YYYY-MM-DD HH:mm:ss')}
+            {updateTime ? moment(updateTime).format('YYYY-MM-DD HH:mm:ss') : '--'}
           </>
         )
       },
@@ -142,7 +199,70 @@ export default () => {
       hideInSearch: true,
       width: 200,
       render: (_: any, record: any) => {
-        return <span>--</span>
+        return (
+          <>
+            {
+              record.status === 0 &&
+              <Button
+                size="small"
+                type="link"
+                onClick={() => {
+                  history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_SUSPENSION_AD_ADD}?id=${record.id}`)
+                }}
+              >
+                编辑
+              </Button>
+            }
+            {
+              record.status === 0 &&
+              <Button
+                size="small"
+                type="link"
+                onClick={() => {
+                  handleDelete(record)
+                }}
+              >
+                删除
+              </Button>
+            }
+            {
+              [1,3].indexOf(record.status) !== -1 &&
+              <Button
+                size="small"
+                type="link"
+                onClick={() => {
+                  history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_SUSPENSION_AD_DETAIL}?id=${record.id}`)
+                }}
+              >
+                详情
+              </Button>
+            }
+            {
+              record.status === 3 &&
+              <Button
+                size="small"
+                type="link"
+                onClick={() => {
+                  handleUpOrDown(record)
+                }}
+              >
+                上架
+              </Button>
+            }
+            {
+              record.status === 1 &&
+              <Button
+                size="small"
+                type="link"
+                onClick={() => {
+                  handleUpOrDown(record)
+                }}
+              >
+                下架
+              </Button>
+            }
+          </>
+        )
       },
     },
   ];
@@ -154,6 +274,13 @@ export default () => {
   useEffect(() => {
     getPage();
   }, [searchContent]);
+  useEffect(() => {
+    getGobleFloatAdsStatistics().then((res) => {
+      if (res.code === 0){
+        setTotalInfo(res.result)
+      }
+    })
+  }, [])
 
   const useSearchNode = (): React.ReactNode => {
     return (
@@ -161,20 +288,16 @@ export default () => {
         <Form form={searchForm}>
           <Row>
             <Col span={6} offset={1}>
-              <Form.Item name="state" label="模板状态">
-                <Select
-                  placeholder="请选择"
-                  allowClear
-                  options={[{label: '产业圈', value: 0}, {label: '商脉', value: 1}, {lable: '我的', value: 2}]}
-                />
+              <Form.Item name="advertiseName" label="活动名称">
+                <Input placeholder="请输入" maxLength={35} />
               </Form.Item>
             </Col>
             <Col span={6} offset={1}>
-              <Form.Item name="state" label="模板状态">
+              <Form.Item name="status" label="内容状态">
                 <Select
                   placeholder="请选择"
                   allowClear
-                  options={[{label: '上架', value: 0}, {label: '下架', value: 1}]}
+                  options={statusOptions}
                 />
               </Form.Item>
             </Col>
@@ -209,13 +332,27 @@ export default () => {
 
   return (
     <PageContainer className={sc('container')}>
+      <div className="total">
+        <div className="click-amount">
+          <div>
+            点击总次数
+          </div>
+          {totalInfo.onClickCount}
+        </div>
+        <div className="user-amount">
+          <div>
+            总用户数
+          </div>
+          {totalInfo.userCount}
+        </div>
+      </div>
       {useSearchNode()}
       <div className={sc('container-table-header')}>
         <div className="title">
           <Button
             type="primary"
             onClick={() => {
-              window.open(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_SUSPENSION_AD_ADD}`);
+              history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_SUSPENSION_AD_ADD}`)
             }}
           >
             +新建
@@ -228,6 +365,7 @@ export default () => {
           rowKey="id"
           bordered
           columns={columns}
+          loading={loading}
           dataSource={dataSource}
           pagination={
             pageInfo.totalCount === 0

@@ -2,7 +2,18 @@
 @import '../../../../global.less';
 
 .@{prefix}-container {
-
+  &-table-body {
+    margin-top: 10px;
+    padding: 20px;
+    background-color: #fff;
+    .ant-table-row {
+      .ant-table-cell {
+        &:last-child {
+          white-space: nowrap;
+        }
+      }
+    }
+  }
 }
 
 .@{prefix}-card {

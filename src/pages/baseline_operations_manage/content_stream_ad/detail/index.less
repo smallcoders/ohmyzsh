@@ -1,5 +1,31 @@
 @prefix: content-stream-ad-detail;
 
+
 .@{prefix}-container {
-  color: orange;
+  &-body {
+    padding: 20px;
+    background-color: #fff;
+    &-title{
+      font-size: 16px;
+      font-weight: bold;
+    }
+    &-detail{
+      display: flex;
+      flex-flow: column;
+      padding: 40px;
+      &-item{
+        display: flex;
+        padding: 10px;
+        &-label{
+          width: 100px;
+          text-align: right;
+        }
+        &-value{
+          width: 400px;
+          text-align: left;
+        }
+      }
+    }
+  }
+
 }
