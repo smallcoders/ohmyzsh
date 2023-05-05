@@ -8,61 +8,45 @@ import scopedClasses from '@/utils/scopedClasses';
 import { routeName } from '../../../../config/routes';
 import {updateConversion} from "@/services/achievements-manage";
 import {updateLabel} from "@/services/purchase";
-import {getAllLayout, getGlobalFloatAdDetail, getPartLabels} from "@/services/baseline";
+import {
+  getAdvertiseDiffTypeNum,
+  getAdvertiseList,
+  getAllLayout,
+  getGlobalFloatAdDetail,
+  getPartLabels
+} from "@/services/baseline";
+import Common from "@/types/common";
+import {getPageList} from "@/services/page-creat-manage";
 
 const sc = scopedClasses('content-stream-ad');
+export default () => {
+  const [staNumArr, setStaNumArr] = useState<any>([]);
 
-const staNumArr = [
-  {
-    title: '推荐上架总数',
-    num: 0,
-  },
-  {
-    title: '商机上架总数',
-    num: 0,
-  },
-  {
-    title: '政策上架总数',
-    num: 0,
-  },
-  {
-    title: '人工智能上架总数',
-    num: 0,
-  },
-  {
-    title: '智能家电上架总数',
-    num: 0,
-  },
-  {
-    title: '汽车上架总数',
-    num: 0,
-  },
-];
 const handleAdd = () => {
   // history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_HOME_SCREEN_AD_ADD}`)
   window.open(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_ADD}`);
 };
-const handleDetail = () => {
-  window.open(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_DETAIL}`);
+const handleDetail = (item:any) => {
+  window.open(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_DETAIL}?id=${item}`);
 };
-const handleStatisticalDetail = (title: string) => {
+const handleStatisticalDetail = (item: any) => {
   history.push(
-    `${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_STATISTICAL_DETAIL}?title=${title}`,
+    `${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_STATISTICAL_DETAIL}?articleTypeId=${item?.articleTypeId}&typeName=${item?.typeName}`,
   );
 };
 // 统计卡片
 const StaCard = () => {
   return (
     <div className={sc('card')}>
-      {staNumArr.map((item) => {
+      {staNumArr.map((item:any) => {
         return (
           <div
             className="wrap"
             key={item.title}
-            onClick={() => handleStatisticalDetail(item.title)}
+            onClick={() => handleStatisticalDetail(item)}
           >
-            <div className="title">{item.title} ></div>
-            <div className="num">{item.num}</div>
+            <div className="title">{item.typeName} ></div>
+            <div className="num">{item.number}</div>
           </div>
         );
       })}
@@ -75,80 +59,42 @@ const formLayout = {
   wrapperCol: { span: 16 },
 };
 
-// 搜索模块
-  const useSearchNode = (): React.ReactNode => {
-  const [searchForm] = Form.useForm();
-  const [layType, setLayType] = useState<any>([]);
-  const [searchContent, setSearChContent] = useState<any>({});
-  return (
-    <div className={sc('container-search')}>
-      <Form {...formLayout} form={searchForm}>
-        <Row>
-          <Col span={6}>
-            <Form.Item name="topic" label="内容标题">
-              <Input placeholder="请输入" allowClear autoComplete="off" />
-            </Form.Item>
-          </Col>
-          <Col span={6}>
-            <Form.Item name="publicUserName" label="版面">
-              <Select options={layType} mode={'multiple'} placeholder="请选择" />
-              {/*<Select placeholder="请选择" allowClear>*/}
-              {/*  <Select.Option value={0}>下架</Select.Option>*/}
-              {/*  <Select.Option value={1}>上架</Select.Option>*/}
-              {/*</Select>*/}
-            </Form.Item>
-          </Col>
-          <Col span={6}>
-            <Form.Item name="enable" label="状态">
-              <Select placeholder="请选择" allowClear>
-                <Select.Option value={0}>下架</Select.Option>
-                <Select.Option value={1}>上架</Select.Option>
-                {/*<Select.Option value={2}>暂存</Select.Option>*/}
-              </Select>
-            </Form.Item>
-          </Col>
-          <Col span={4}>
-            <Button
-              style={{ marginRight: '20px' }}
-              type="primary"
-              key="search"
-              onClick={() => {
-                const search = searchForm.getFieldsValue();
-                setSearChContent(search);
-              }}
-            >
-              查询
-            </Button>
-            <Button
-              key="reset"
-              onClick={() => {
-                searchForm.resetFields();
-                setSearChContent({});
-              }}
-            >
-              重置
-            </Button>
-          </Col>
-        </Row>
-      </Form>
-    </div>
-  );
-};
 
-export default () => {
+
+  const [layType, setLayType] = useState<any>([]);
+
   // 拿到当前角色的access权限兑现
   const access = useAccess();
   const [dataSource, setDataSource] = useState<any>([]);
-  // const [searchContent, setSearChContent] = useState<any>({});
+  const [searchContent, setSearChContent] = useState<any>({});
   const [visible, setVisible] = useState<any>(false);
   const [loading, setLoading] = useState<any>(false);
+  const [searchForm] = Form.useForm();
 
-  const [pageInfo, setPageInfo] = useState<any>({
+  const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
     pageIndex: 1,
     pageSize: 10,
     totalCount: 0,
     pageTotal: 0,
   });
+  const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
+    try {
+      const { result, totalCount, pageTotal, code, message } = await getAdvertiseList({
+        pageIndex,
+        pageSize,
+        advertiseType:'CONTENT_STREAM_ADS',
+        ...searchContent,
+      });
+      if (code === 0) {
+        setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
+        setDataSource(result?.list);
+      } else {
+        throw new Error(message);
+      }
+    } catch (error) {
+      // antdMessage.error(`请求失败，原因:{${error}}`);
+    }
+  };
   // 删除
   const remove = async (id: string) => {
     try {
@@ -186,7 +132,68 @@ export default () => {
         setLayType(labelArr);
       }
     });
+    getAdvertiseDiffTypeNum().then((res) => {
+      if (res.code === 0 && res.result) {
+        setStaNumArr(res.result)
+        // setLayType(labelArr);
+      }
+    })
   }, []);
+  useEffect(()=>{
+    getPage()
+  },[searchContent])
+  // 搜索模块
+  const useSearchNode = (): React.ReactNode => {
+    return (
+      <div className={sc('container-search')}>
+        <Form {...formLayout} form={searchForm}>
+          <Row>
+            <Col span={6}>
+              <Form.Item name="advertiseName" label="内容标题">
+                <Input placeholder="请输入" allowClear autoComplete="off" />
+              </Form.Item>
+            </Col>
+            <Col span={6}>
+              <Form.Item name="articleTypeId" label="版面">
+                <Select options={layType} mode={'multiple'} placeholder="请选择" />
+              </Form.Item>
+            </Col>
+            <Col span={6}>
+              <Form.Item name="status" label="状态">
+                <Select placeholder="请选择" allowClear>
+                  <Select.Option value={0}>暂存</Select.Option>
+                  <Select.Option value={1}>上架</Select.Option>
+                  <Select.Option value={3}>下架</Select.Option>
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={4}>
+              <Button
+                style={{ marginRight: '20px' }}
+                type="primary"
+                key="search"
+                onClick={() => {
+                  const search = searchForm.getFieldsValue();
+                  setSearChContent(search);
+                }}
+              >
+                查询
+              </Button>
+              <Button
+                key="reset"
+                onClick={() => {
+                  searchForm.resetFields();
+                  setSearChContent({});
+                }}
+              >
+                重置
+              </Button>
+            </Col>
+          </Row>
+        </Form>
+      </div>
+    );
+  };
   const columns = [
     {
       title: '序号',
@@ -197,7 +204,7 @@ export default () => {
     },
     {
       title: '内容标题',
-      dataIndex: 'title',
+      dataIndex: 'advertiseName',
       width: 150,
       render: (title: string) => {
         return title || '--';
@@ -223,36 +230,42 @@ export default () => {
     },
     {
       title: '位置',
-      dataIndex: 'crawered',
+      dataIndex: 'displayOrder',
       width: 150,
-      render: () => {
-        return <div>123</div>;
-      },
+      // render: () => {
+      //   return <div>123</div>;
+      // },
     },
     {
       title: '作用范围',
       width: 150,
-      dataIndex: 'sended',
-      render: (sended: number) => {
-        return <span>{sended === 1 ? '是' : '否'}</span>;
+      dataIndex: 'scope',
+      render: (scope: any) => {
+        return (<>
+          {scope==='ALL_USER'&&<span>全部用户</span>}
+          {scope==='ALL_LOGIN_USER'&&<span>全部登陆用户</span>}
+          {scope==='ALL_NOT_LOGIN_USER'&&<span>全部未登录用户</span>}
+          {scope==='PORTION_USER'&&<span>部分用户</span>}
+          {!scope&&<span>__</span>}
+        </>)
       },
     },
     {
       title: '浏览次数',
       width: 200,
-      dataIndex: 'createTime',
-      sorter: (a: any, b: any) => a.createTime - b.createTime,
-      render: (createTime: string) => {
-        return <span>{createTime || '--'}</span>;
+      dataIndex: 'browsedCount',
+      sorter: (a: any, b: any) => a.browsedCount - b.browsedCount,
+      render: (browsedCount: any) => {
+        return <span>{browsedCount}</span>;
       },
     },
     {
       title: '被关闭次数',
-      dataIndex: 'createByName',
+      dataIndex: 'closeCount',
       width: 200,
-      sorter: (a: any, b: any) => a.createByName - b.createByName,
-      render: (createByName: string) => {
-        return createByName || '--';
+      sorter: (a: any, b: any) => a.closeCount - b.closeCount,
+      render: (closeCount: string) => {
+        return <span>{closeCount || '--'}</span>;
       },
     },
     {
@@ -261,7 +274,7 @@ export default () => {
       width: 200,
       sorter: (a: any, b: any) => a.createByName - b.createByName,
       render: (createByName: string) => {
-        return createByName || '--';
+        return <span>{createByName || '--'}</span>;
       },
     },
     {
@@ -274,10 +287,10 @@ export default () => {
     },
     {
       title: '状态',
-      dataIndex: 'createByName',
+      dataIndex: 'status',
       width: 200,
-      render: (createByName: string) => {
-        return createByName || '--';
+      render: (status: string) => {
+        return status || '--';
       },
     },
     {
@@ -295,7 +308,7 @@ export default () => {
                 size="small"
                 type="link"
                 onClick={() => {
-                  // handleDelete(record)
+                  handleDetail(record.id)
                 }}
               >
                 详情

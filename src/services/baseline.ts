@@ -107,7 +107,7 @@ export async function articleBatchDelete(data?: Record<string, any>) {
   return request<any>(`/antelope-industrial/mng/article/batch/delete`, {
     method: 'post',
     data,
-  })
+  });
 }
 
 // 批量下架文章
@@ -115,7 +115,7 @@ export async function articleBatchOffShelves(data?: Record<string, any>) {
   return request<any>(`/antelope-industrial/mng/article/batch/up-or-down`, {
     method: 'post',
     data,
-  })
+  });
 }
 
 // 置顶/取消置顶
@@ -384,7 +384,7 @@ export async function updateSendedNews(data?: any) {
 export async function deleteHotNews(data?: Record<string, any>) {
   return request<any>(`/antelope-industrial/mng/hot/news/config/delete`, {
     method: 'delete',
-    data
+    data,
   });
 }
 
@@ -392,7 +392,7 @@ export async function deleteHotNews(data?: Record<string, any>) {
 export async function addGlobalFloatAd(data?: Record<string, any>) {
   return request<any>(`/antelope-industrial/mng/add/global-float/ads`, {
     method: 'post',
-    data
+    data,
   });
 }
 
@@ -414,7 +414,22 @@ export async function getAllLayout() {
 export async function getPartLabels(data?: Record<string, any>) {
   return request<any>(`/antelope-industrial/mng/page/query/labels`, {
     method: 'post',
-    data
+    data,
+  });
+}
+
+// 获取广告列表
+export async function getAdvertiseList(data?: Record<string, any>) {
+  return request<any>(`/antelope-industrial/mng/advertise/list`, {
+    method: 'post',
+    data,
+  });
+}
+
+// 上架/下架/刪除接口
+export async function upOrDownAdvertise(params: { id: any; status: any }) {
+  return request<any>(`/antelope-industrial/up-or-down/ads/${params.id}/${params.status}`, {
+    method: 'post',
   });
 }
 
@@ -434,3 +449,15 @@ export async  function updateAdsStatus(id: number, status: number) {
 }
 
 
+// 版内容流广告管理-各个版面的数量
+export async function getAdvertiseDiffTypeNum() {
+  return request<any>(`/antelope-industrial/mng/advertise/getAdvertiseDiffTypeNum`, {
+    method: 'get',
+  });
+}
+// 内容流广告管理- XXXX版块上线广告统计详情数量
+export async function getAdvertiseNumByType(id: any) {
+  return request<any>(`/antelope-industrial/mng/advertise/getAdvertiseNumByType/${id}`, {
+    method: 'get',
+  });
+}
