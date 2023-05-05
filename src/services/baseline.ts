@@ -461,3 +461,11 @@ export async function getAdvertiseNumByType(id: any) {
     method: 'get',
   });
 }
+
+// 新增弹窗广告
+export async function addPopupAd(data?: Record<string, any>) {
+  return request<any>(`/antelope-industrial/mng/add/pop-up/ads`, {
+    method: 'post',
+    data,
+  });
+}
