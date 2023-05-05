@@ -4,11 +4,11 @@ import { history, Access, useAccess } from 'umi';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import SelfTable from '@/components/self_table';
-import { getAdvertiseNumByType } from '@/services/baseline';
+import { getAdvertiseList, getAdvertiseNumByType } from '@/services/baseline';
 const sc = scopedClasses('content-stream-ad-statistical-detail');
 
 const typeName = history.location.query?.typeName as string;
-const articleTypeId = history.location.query?.articleTypeId as string;
+const articleTypeId = Number(history.location.query?.articleTypeId) as number;
 // 统计卡片
 
 export default () => {
@@ -21,6 +21,27 @@ export default () => {
     pageTotal: 0,
   });
   const [dataSource, setDataSource] = useState<any>([]);
+  const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
+    setLoading(true);
+    try {
+      const { result, totalCount, pageTotal, code, message } = await getAdvertiseList({
+        pageIndex,
+        articleTypeId,
+        pageSize,
+        advertiseType: 'CONTENT_STREAM_ADS',
+      });
+      setLoading(false);
+      if (code === 0) {
+        setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
+        setDataSource(result?.list);
+      } else {
+        throw new Error(message);
+      }
+    } catch (error) {
+      setLoading(false);
+      // antdMessage.error(`请求失败，原因:{${error}}`);
+    }
+  };
   useEffect(() => {
     getAdvertiseNumByType(articleTypeId).then((res: any) => {
       if (res.code === 0 && res.result) {
@@ -35,9 +56,9 @@ export default () => {
           },
         ];
         setStaNumArr(newArray);
-        // setLayType(labelArr);
       }
     });
+    getPage();
   }, []);
   const StaCard = () => {
     return (
@@ -64,7 +85,7 @@ export default () => {
     },
     {
       title: '标题',
-      dataIndex: 'title',
+      dataIndex: 'advertiseName',
       width: 150,
       render: (title: string) => {
         return title || '--';
@@ -72,33 +93,33 @@ export default () => {
     },
     {
       title: '浏览次数',
-      dataIndex: 'newUrl',
+      dataIndex: 'browsedCount',
       isEllipsis: true,
       width: 250,
-      sorter: (a: any, b: any) => a.newUrl - b.newUrl,
-      render: (newUrl: string) => {
-        return newUrl || '--';
+      sorter: (a: any, b: any) => a.browsedCount - b.browsedCount,
+      render: (browsedCount: any) => {
+        return browsedCount || 0;
       },
     },
     {
       title: '被关闭次数',
-      dataIndex: 'currentUrl',
+      dataIndex: 'closeCount',
       isEllipsis: true,
       width: 250,
-      sorter: (a: any, b: any) => a.currentUrl - b.currentUrl,
-      render: () => {
-        return <div>123</div>;
+      sorter: (a: any, b: any) => a.closeCount - b.closeCount,
+      render: (closeCount: any) => {
+        return closeCount || 0;
       },
     },
-    {
-      title: '曝光量',
-      dataIndex: 'crawered',
-      width: 150,
-      sorter: (a: any, b: any) => a.crawered - b.crawered,
-      render: () => {
-        return <div>123</div>;
-      },
-    },
+    // {
+    //   title: '曝光量',
+    //   dataIndex: 'crawered',
+    //   width: 150,
+    //   sorter: (a: any, b: any) => a.crawered - b.crawered,
+    //   render: () => {
+    //     return <div>123</div>;
+    //   },
+    // },
   ];
   return (
     <PageContainer
@@ -120,6 +141,7 @@ export default () => {
             pageInfo.totalCount === 0
               ? false
               : {
+                  onChange: getPage,
                   total: pageInfo.totalCount,
                   current: pageInfo.pageIndex,
                   pageSize: pageInfo.pageSize,

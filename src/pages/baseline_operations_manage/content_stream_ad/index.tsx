@@ -1,4 +1,4 @@
-import {Button, Select, Row,Tag, Col, Form, Input, Popconfirm, message, message as antdMessage} from 'antd';
+import {Button, Select, Row, Tag, Col, Form, Input, Popconfirm, message, message as antdMessage, Modal} from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import React, {useEffect, useState} from 'react';
 import SelfTable from '@/components/self_table';
@@ -11,7 +11,7 @@ import {updateLabel} from "@/services/purchase";
 import {
   getAdvertiseDiffTypeNum,
   getAdvertiseList,
-  getAllLayout,
+  getAllLayout, updateAdsStatus, upOrDownAdvertise,
 } from "@/services/baseline";
 import Common from "@/types/common";
 import moment from "moment/moment";
@@ -102,30 +102,43 @@ const formLayout = {
     }
   };
   // 删除
-  const remove = async (id: string) => {
-    try {
-      const removeRes = await updateLabel({id, state: 1, labelType: 0});
-      if (removeRes.code === 0) {
-        message.success(`删除成功`);
-      } else {
-        message.error(`删除失败，原因:${removeRes.message}`);
-      }
-    } catch (error) {
-      console.log(error);
-    }
+  const remove = async (record: any) => {
+    Modal.confirm({
+      title: '删除数据',
+      content: '删除该内容流广告后，系统将不再推荐该广告，确定删除？',
+      okText: '删除',
+      onOk: () => {
+        updateAdsStatus(record.id, 2).then((res) => {
+          if (res.code === 0){
+            const { totalCount, pageIndex, pageSize } = pageInfo
+            const newTotal = totalCount - 1 || 1;
+            const newPageTotal = Math.ceil(newTotal / pageSize) || 1
+            getPage(pageIndex >  newPageTotal ? newPageTotal : pageIndex)
+            antdMessage.success(`删除成功`);
+          } else {
+            antdMessage.error(res.message);
+          }
+        })
+      },
+    })
   };
-  const editState = async (id: string) => {
-    try {
-      const updateStateResult = await updateConversion(id);
-      if (updateStateResult.code === 0) {
-        message.success(`操作成功`);
-      } else {
-        message.error(`操作失败，请重试`);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const handleUpOrDown = (record: any) => {
+    Modal.confirm({
+      title: '提示',
+      content: record.status === 1 ? '确定将内容下架？' : '确定将内容上架？',
+      okText: record.status === 1 ? '下架' : '上架',
+      onOk: async () => {
+        updateAdsStatus(record.id, record.status === 1 ? 3 : 1).then((res) => {
+          if (res.code === 0){
+            getPage(pageInfo.pageIndex)
+            antdMessage.success(record.status === 1 ? '下架成功' : `上架成功`);
+          } else {
+            antdMessage.error(res.message);
+          }
+        })
+      },
+    })
+  }
   useEffect(() => {
     getAllLayout().then((res) => {
       if (res.code === 0 && res.result) {
@@ -334,6 +347,8 @@ const formLayout = {
         return (
           <div style={{ whiteSpace: 'break-spaces' }}>
             <Access accessible={access.PD_BLM_SSRDGL}>
+              {
+                [1,3].indexOf(record.status) !== -1 &&
               <Button
                 size="small"
                 type="link"
@@ -342,7 +357,9 @@ const formLayout = {
                 }}
               >
                 详情
-              </Button>
+              </Button>}
+              {
+                [0,3].indexOf(record.status) !== -1 &&
               <Button
                 size="small"
                 type="link"
@@ -351,42 +368,31 @@ const formLayout = {
                 }}
               >
                 编辑
-              </Button>
-              <Popconfirm
-                title="删除该内容流广告后，系统将不再推荐该广告，确定删除？"
-                okText="删除"
-                cancelText="取消"
-                onConfirm={() => remove(record.id as string)}
-              >
+              </Button>}
+              {
+                [0,3].indexOf(record.status) !== -1 &&
               <Button
                 size="small"
                 type="link"
                 onClick={() => {
-                  // handleDelete(record)
+                  remove(record)
                 }}
               >
                 删除
-              </Button>
-              </Popconfirm>
-              {record.state === 'ON_SHELF' && (
-                <Popconfirm
-                  title="确定将内容下架？"
-                  okText="下架"
-                  cancelText="取消"
-                  onConfirm={() => editState(record.id as any, 0)}
-                >
-                  <Button type="link">下架</Button>
-                </Popconfirm>
+              </Button>}
+              {record.status === 1 && (
+
+                  <Button size="small"  type="link"
+                          onClick={() => {
+                            handleUpOrDown(record)
+                          }}>下架</Button>
               )}
-              {record.state === 'OFF_SHELF' && (
-                <Popconfirm
-                  title="确定将内容上架？"
-                  okText="上架"
-                  cancelText="取消"
-                  onConfirm={() => editState(record.id as any, 1)}
-                >
-                  <Button type="link">上架</Button>
-                </Popconfirm>
+              {record.status === 3 && (
+
+                  <Button  size="small"  type="link"
+                          onClick={() => {
+                            handleUpOrDown(record)
+                          }}   >上架</Button>
               )}
 
             </Access>
@@ -405,7 +411,7 @@ const formLayout = {
             type="primary"
             style={{ marginBottom: '10px' }}
             onClick={() => {
-              window.open(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_ADD}`);
+              history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_ADD}`);
               // modalForm.resetFields()
               // setVisible(true)
             }}

@@ -1,13 +1,4 @@
-import {
-  Button,
-  message,
-  Avatar,
-  Space,
-  Popconfirm,
-  Form,
-  Input,
-  message as antdMessage,
-} from 'antd';
+import { Button, Tag, message as antdMessage } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import React, { useEffect, useState } from 'react';
 import { history, Access, useAccess } from 'umi';
@@ -53,9 +44,23 @@ export default () => {
           </div>
           <div className={sc('container-body-detail-item')}>
             <div className={sc('container-body-detail-item-label')}>图片：</div>
-            <div className={sc('container-body-detail-item-value')}>
-              {' '}
-              {detail?.advertiseName || '--'}
+            <div>
+              <div style={{ display: 'flex' }}>
+                {detail?.imgRelations?.length
+                  ? detail?.imgRelations?.map((item: any, index: number) => {
+                      return (
+                        <div style={{ width: '150px', height: '150px' }} className="img-box">
+                          <img
+                            style={{ width: '150px', height: '150px' }}
+                            src={item.ossUrl}
+                            key={index}
+                            alt=""
+                          />
+                        </div>
+                      );
+                    })
+                  : '--'}
+              </div>
             </div>
           </div>
           <div className={sc('container-body-detail-item')}>
@@ -65,14 +70,18 @@ export default () => {
           <div className={sc('container-body-detail-item')}>
             <div className={sc('container-body-detail-item-label')}>版面：</div>
             <div className={sc('container-body-detail-item-value')}>
-              {' '}
-              {detail?.advertiseName || '--'}
+              <div style={{ display: 'flex' }}>
+                {detail?.articleTypes?.length
+                  ? detail?.articleTypes?.map((item: any) => {
+                      return <Tag color="#0068ff">{item.typeName}</Tag>;
+                    })
+                  : '--'}
+              </div>
             </div>
           </div>
           <div className={sc('container-body-detail-item')}>
             <div className={sc('container-body-detail-item-label')}>位置：</div>
             <div className={sc('container-body-detail-item-value')}>
-              {' '}
               {detail?.displayOrder || '--'}
             </div>
           </div>

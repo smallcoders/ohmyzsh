@@ -6,7 +6,8 @@ import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import { UploadOutlined } from '@ant-design/icons';
 import {
-  addGlobalFloatAd,
+  addContentStreamAd,
+  auditImgs,
   getAllLayout,
   getGlobalFloatAdDetail,
   getPartLabels,
@@ -30,7 +31,7 @@ const allLabels = [
   },
 ];
 export default () => {
-  const [visibleLocation, setVisibleLocation] = useState<boolean>(false);
+  const [formIsChange, setFormIsChange] = useState<boolean>(false);
   const [visibleAdd, setVisibleAdd] = useState<boolean>(false);
   const [visible, setVisible] = useState<boolean>(false);
   const [form] = Form.useForm();
@@ -41,10 +42,35 @@ export default () => {
   const [pageInfo, setPageInfo] = useState<any>({ pageSize: 10, pageIndex: 1, pageTotal: 0 });
   useEffect(() => {
     if (id) {
-      getGlobalFloatAdDetail({ id }).then((res) => {
+      getGlobalFloatAdDetail(id).then((res) => {
         const { result, code, message: resultMsg } = res || {};
         if (code === 0) {
-          console.log(result);
+          setUserType(result.scope !== 'PORTION_USER' ? 'all' : 'part');
+          form.setFieldsValue({
+            advertiseName: result.advertiseName,
+            displayOrder: result?.displayOrder,
+            labelIds: result.scope === 'PORTION_USER' ? result.labelIds : result.scope,
+            siteLink: result.siteLink,
+            userType: result.scope !== 'PORTION_USER' ? 'all' : 'part',
+            imgs: result.imgRelations?.length
+              ? result.imgRelations?.map((item: any) => {
+                  return {
+                    uid: `${item.fileId}`,
+                    name: item.ossUrl,
+                    status: 'done',
+                    url: item.ossUrl,
+                  };
+                })
+              : [],
+            disPlayTaps: result.articleTypes?.length
+              ? result.articleTypes?.map((item: any) => {
+                  return {
+                    value: item.id,
+                    label: item.typeName,
+                  };
+                })
+              : [],
+          });
         } else {
           antdMessage.error(`请求失败，原因:{${resultMsg}}`);
         }
@@ -80,30 +106,86 @@ export default () => {
     });
   }, []);
 
-  const handleSubmit = async (status: any) => {
+  const handleSubmit = async (status: any, isPrompt?: boolean) => {
     await form.validateFields();
-    const { advertiseName, imgs, siteLink, labelIds } = form.getFieldsValue();
-    console.log(form.getFieldsValue());
-    const params = {
+    const { advertiseName, imgs, siteLink, labelIds, displayOrder, disPlayTaps } =
+      form.getFieldsValue();
+    const params: any = {
+      displayOrder,
       advertiseName,
       siteLink,
       imgs: imgs.map((item: any) => {
-        return item.url;
+        return { path: item.url, id: item.resData?.id || item.uid };
       }),
+      disPlayTaps: disPlayTaps[0].value
+        ? disPlayTaps.map((item: any) => {
+            return item.value;
+          })
+        : disPlayTaps,
       scope: userType === 'all' ? labelIds : 'PORTION_USER',
-      labelIds: userType === 'all' ? [] : labelIds,
-      advertiseType: 'GLOBAL_FLOAT_ADS',
+      labelIds: userType === 'all' ? [] : [...labelIds],
+      advertiseType: 'CONTENT_STREAM_ADS',
       status,
     };
-    console.log(params, '000000');
-    // todo 先获取审核接口
-    addGlobalFloatAd(params).then((res) => {
-      if (res.code === 0) {
-        history.goBack();
-      } else {
-        antdMessage.error(res.message);
-      }
-    });
+    if (id) {
+      params.id = parseInt(id);
+    }
+    if (status === 1) {
+      Modal.confirm({
+        title: '提示',
+        content: '确定上架当前内容？',
+        okText: '上架',
+        onOk: () => {
+          auditImgs({
+            ossUrls: params.imgs.map((item: any) => {
+              return item.path;
+            }),
+          }).then((result) => {
+            if (result.code === 0) {
+              addContentStreamAd(params).then((res) => {
+                if (res.code === 0) {
+                  setFormIsChange(false);
+                  antdMessage.success('上架成功');
+                  history.goBack();
+                } else {
+                  antdMessage.error(res.message);
+                }
+              });
+            } else {
+              Modal.confirm({
+                title: '风险提示',
+                content: result.message,
+                okText: '继续上架',
+                onOk: () => {
+                  addContentStreamAd(params).then((res) => {
+                    if (res.code === 0) {
+                      setFormIsChange(false);
+                      antdMessage.success('上架成功');
+                      history.goBack();
+                    } else {
+                      antdMessage.error(res.message);
+                    }
+                  });
+                },
+              });
+            }
+          });
+        },
+      });
+    } else {
+      addContentStreamAd(params).then((res) => {
+        if (res.code === 0) {
+          setFormIsChange(false);
+          antdMessage.success('暂存成功');
+          history.goBack();
+          if (isPrompt) {
+            history.goBack();
+          }
+        } else {
+          antdMessage.error(res.message);
+        }
+      });
+    }
   };
 
   const getLabels = (pageIndex: number) => {
@@ -142,15 +224,42 @@ export default () => {
       ghost
       footer={[
         <>
-          <Button type="primary" onClick={handleSubmit}>
+          <Button
+            type="primary"
+            onClick={() => {
+              handleSubmit(1);
+            }}
+          >
             立即上架
           </Button>
-          <Button onClick={handleSubmit}>暂存</Button>
-          <Button onClick={() => history.goBack()}>返回</Button>
+          <Button
+            onClick={() => {
+              handleSubmit(0);
+            }}
+          >
+            暂存
+          </Button>
+          <Button
+            onClick={() => {
+              if (formIsChange) {
+                setVisible(true);
+              } else {
+                history.goBack();
+              }
+            }}
+          >
+            返回
+          </Button>
         </>,
       ]}
     >
-      <Form className={sc('container-form')} form={form}>
+      <Form
+        className={sc('container-form')}
+        form={form}
+        onValuesChange={() => {
+          setFormIsChange(true);
+        }}
+      >
         <div className="title">弹窗广告信息</div>
         <Form.Item
           labelCol={{ span: 4 }}
@@ -174,6 +283,12 @@ export default () => {
           extra="图片格式仅支持JPG、PNG、JPEG，图片尺寸123*123"
           labelCol={{ span: 4 }}
           wrapperCol={{ span: 16 }}
+          rules={[
+            {
+              required: true,
+              message: '必填',
+            },
+          ]}
         >
           <UploaImageV2 multiple={true} accept=".png,.jpeg,.jpg" maxCount={3}>
             <Button icon={<UploadOutlined />}>上传</Button>
@@ -197,7 +312,7 @@ export default () => {
         <Form.Item
           labelCol={{ span: 4 }}
           wrapperCol={{ span: 12 }}
-          name="siteLink"
+          name="disPlayTaps"
           label="版面"
           required
           rules={[
@@ -212,9 +327,8 @@ export default () => {
         <Form.Item
           labelCol={{ span: 4 }}
           wrapperCol={{ span: 12 }}
-          name="siteLink"
+          name="displayOrder"
           label="位置"
-          extra={visibleLocation ? '广告位已被占用' : ''}
           required
           rules={[
             {
@@ -240,6 +354,7 @@ export default () => {
         >
           <Radio.Group
             onChange={(e) => {
+              form.setFieldsValue(e.target.value === 'all' ? { labelIds: '' } : { labelIds: [] });
               setUserType(e.target.value);
             }}
             options={[
@@ -296,7 +411,7 @@ export default () => {
               key="submit"
               type="primary"
               onClick={() => {
-                handleSubmit(true);
+                handleSubmit(0, true);
                 // addRecommend(false);
               }}
             >
