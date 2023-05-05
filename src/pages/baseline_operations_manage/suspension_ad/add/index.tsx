@@ -3,7 +3,7 @@ import { PageContainer } from '@ant-design/pro-layout';
 import scopedClasses from '@/utils/scopedClasses';
 import { useEffect, useState } from 'react';
 import UploaImageV2 from '@/components/upload_form/upload-image-v2';
-import { addGlobalFloatAd, getGlobalFloatAdDetail, getPartLabels } from '@/services/baseline';
+import { addGlobalFloatAd, getGlobalFloatAdDetail, getPartLabels, auditImgs } from '@/services/baseline';
 import { history, Prompt } from 'umi';
 import './index.less';
 import { ExclamationCircleOutlined, UploadOutlined } from '@ant-design/icons';
@@ -15,11 +15,11 @@ const allLabels = [
   },
   {
     label: '全部登录用户',
-    value: 'ALL_LOGIN_USE'
+    value: 'ALL_LOGIN_USER'
   },
   {
     label: '全部未登录用户',
-    value: 'ALL_NOT_LOGIN_USE'
+    value: 'ALL_NOT_LOGIN_USER'
   }
 ]
 
@@ -92,7 +92,7 @@ export default () => {
       advertiseName,
     }
     if (id) {
-      params.id = id
+      params.id = parseInt(id)
     }
     if (status === 1){
       Modal.confirm({
@@ -100,14 +100,36 @@ export default () => {
         content: '确定上架当前内容？',
         okText: '上架',
         onOk: () => {
-          // todo 先获取审核接口
-          addGlobalFloatAd(params).then((res) => {
-            if (res.code === 0){
-              setFormIsChange(false)
-              antdMessage.success('上架成功')
-              history.goBack()
+          auditImgs({
+            ossUrls: params.imgs.map((item: any) => {return item.path})
+          }).then((result) => {
+            if (result.code === 0){
+              addGlobalFloatAd(params).then((res) => {
+                if (res.code === 0){
+                  setFormIsChange(false)
+                  antdMessage.success('上架成功')
+                  history.goBack()
+                } else {
+                  antdMessage.error(res.message)
+                }
+              })
             } else {
-              antdMessage.error(res.message)
+              Modal.confirm({
+                title: '风险提示',
+                content: result.message,
+                okText: '继续上架',
+                onOk: () => {
+                  addGlobalFloatAd(params).then((res) => {
+                    if (res.code === 0){
+                      setFormIsChange(false)
+                      antdMessage.success('上架成功')
+                      history.goBack()
+                    } else {
+                      antdMessage.error(res.message)
+                    }
+                  })
+                }
+              })
             }
           })
         },
@@ -185,7 +207,7 @@ export default () => {
               setFormIsChange(false)
               setTimeout(() => {
                 history.push(location.pathname);
-              }, 1000);
+              }, 100);
             },
             onOk() {
               handleSubmit(0, true)

@@ -12,7 +12,7 @@ import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
 import { history } from 'umi';
-import { getGlobalFloatAds, updateAdsStatus } from '@/services/baseline';
+import { getGlobalFloatAds, updateAdsStatus, getGobleFloatAdsStatistics } from '@/services/baseline';
 import type Common from '@/types/common';
 import moment from 'moment';
 import SelfTable from '@/components/self_table';
@@ -41,6 +41,7 @@ export default () => {
   const [dataSource, setDataSource] = useState<any>([]);
   const [loading, setLoading] = useState<any>(false);
   const [searchContent, setSearChContent] = useState<any>({});
+  const [total, setTotal] = useState<any>({userCount: 0, onClickCount: 0})
   const [searchForm] = Form.useForm();
   const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
     pageIndex: 1,
@@ -96,7 +97,7 @@ export default () => {
       title: '提示',
       content: record.status === 1 ? '确定将内容下架？' : '确定将内容上架？',
       okText: record.status === 1 ? '下架' : '上架',
-      onOk: () => {
+      onOk: async () => {
         updateAdsStatus(record.id, record.status === 1 ? 3 : 1).then((res) => {
           if (res.code === 0){
             getPage(pageInfo.pageIndex)
@@ -153,21 +154,20 @@ export default () => {
         return <span>{scopeMap[scope] || '--'}</span>
       }
     },
-    // todo 字段
     {
       title: '点击次数',
-      dataIndex: 'clickTimes',
+      dataIndex: 'onClickCount',
       width: 100,
-      render: (clickTimes: number) => {
-        return <span>{clickTimes || '--'}</span>
+      render: (onClickCount: number) => {
+        return <span>{typeof onClickCount === 'number' ? onClickCount : '--'}</span>
       }
     },
     {
       title: '用户数',
-      dataIndex: 'amount',
+      dataIndex: 'userCount',
       width: 100,
-      render: (amount: number) => {
-        return <span>{amount || '--'}</span>
+      render: (userCount: number) => {
+        return <span>{typeof userCount === 'number' ? userCount : '--'}</span>
       }
     },
     {
@@ -274,6 +274,13 @@ export default () => {
   useEffect(() => {
     getPage();
   }, [searchContent]);
+  useEffect(() => {
+    getGobleFloatAdsStatistics().then((res) => {
+      if (res.code === 0){
+        setTotal(res.result)
+      }
+    })
+  }, [])
 
   const useSearchNode = (): React.ReactNode => {
     return (
@@ -325,6 +332,20 @@ export default () => {
 
   return (
     <PageContainer className={sc('container')}>
+      <div className="total">
+        <div className="click-amount">
+          <div>
+            点击总次数
+          </div>
+          {total.onClickCount}
+        </div>
+        <div className="user-amount">
+          <div>
+            总用户数
+          </div>
+          {total.userCount}
+        </div>
+      </div>
       {useSearchNode()}
       <div className={sc('container-table-header')}>
         <div className="title">

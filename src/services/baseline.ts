@@ -461,3 +461,18 @@ export async function getAdvertiseNumByType(id: any) {
     method: 'get',
   });
 }
+
+// 审核
+export async  function auditImgs(data?: Record<string, any>) {
+  return request<any>(`/antelope-industrial/mng/advertise/img/audit`, {
+    method: 'post',
+    data
+  });
+}
+
+// 悬浮弹窗统计
+export async  function getGobleFloatAdsStatistics() {
+  return request<any>(`/antelope-industrial/mng/advertise/getGobleFloatAdsStatistics`, {
+    method: 'get',
+  });
+}
