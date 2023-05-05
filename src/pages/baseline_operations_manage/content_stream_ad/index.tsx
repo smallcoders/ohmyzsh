@@ -26,24 +26,24 @@ const handleAdd = () => {
   // history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_HOME_SCREEN_AD_ADD}`)
   window.open(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_ADD}`);
 };
-const handleDetail = () => {
-  window.open(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_DETAIL}`);
+const handleDetail = (item:any) => {
+  window.open(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_DETAIL}?id=${item}`);
 };
-const handleStatisticalDetail = (articleTypeId: string) => {
+const handleStatisticalDetail = (item: any) => {
   history.push(
-    `${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_STATISTICAL_DETAIL}?articleTypeId=${articleTypeId}`,
+    `${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_STATISTICAL_DETAIL}?articleTypeId=${item?.articleTypeId}&typeName=${item?.typeName}`,
   );
 };
 // 统计卡片
 const StaCard = () => {
   return (
     <div className={sc('card')}>
-      {staNumArr.map((item) => {
+      {staNumArr.map((item:any) => {
         return (
           <div
             className="wrap"
             key={item.title}
-            onClick={() => handleStatisticalDetail(item.articleTypeId)}
+            onClick={() => handleStatisticalDetail(item)}
           >
             <div className="title">{item.typeName} ></div>
             <div className="num">{item.number}</div>
@@ -308,7 +308,7 @@ const formLayout = {
                 size="small"
                 type="link"
                 onClick={() => {
-                  // handleDelete(record)
+                  handleDetail(record.id)
                 }}
               >
                 详情

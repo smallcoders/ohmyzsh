@@ -439,3 +439,9 @@ export async function getAdvertiseDiffTypeNum() {
     method: 'get',
   });
 }
+// 内容流广告管理- XXXX版块上线广告统计详情数量
+export async function getAdvertiseNumByType(id: any) {
+  return request<any>(`/antelope-industrial/mng/advertise/getAdvertiseNumByType/${id}`, {
+    method: 'get',
+  });
+}
