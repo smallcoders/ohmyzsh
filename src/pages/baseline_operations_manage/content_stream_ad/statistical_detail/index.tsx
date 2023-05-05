@@ -4,40 +4,15 @@ import { history, Access, useAccess } from 'umi';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import SelfTable from '@/components/self_table';
+import { getAdvertiseNumByType } from '@/services/baseline';
 const sc = scopedClasses('content-stream-ad-statistical-detail');
 
-const staNumArr = [
-  {
-    title: '浏览总次数',
-    num: 0,
-  },
-  {
-    title: '被关闭总次数',
-    num: 0,
-  },
-  {
-    title: '曝光总量',
-    num: 0,
-  },
-];
-const title = history.location.query?.title as string;
+const typeName = history.location.query?.typeName as string;
+const articleTypeId = history.location.query?.articleTypeId as string;
 // 统计卡片
-const StaCard = () => {
-  return (
-    <div className={sc('card')}>
-      {staNumArr.map((item) => {
-        return (
-          <div className="wrap" key={item.title}>
-            <div className="title">{item.title}</div>
-            <div className="num">{item.num}</div>
-          </div>
-        );
-      })}
-    </div>
-  );
-};
 
 export default () => {
+  const [staNumArr, setStaNumArr] = useState<any>([]);
   const [loading, setLoading] = useState<any>(false);
   const [pageInfo, setPageInfo] = useState<any>({
     pageIndex: 1,
@@ -46,6 +21,39 @@ export default () => {
     pageTotal: 0,
   });
   const [dataSource, setDataSource] = useState<any>([]);
+  useEffect(() => {
+    getAdvertiseNumByType(articleTypeId).then((res: any) => {
+      if (res.code === 0 && res.result) {
+        const newArray = [
+          {
+            title: '浏览总次数',
+            num: res.result?.browsed || 0,
+          },
+          {
+            title: '被关闭总次数',
+            num: res.result?.closed || 0,
+          },
+        ];
+        setStaNumArr(newArray);
+        // setLayType(labelArr);
+      }
+    });
+  }, []);
+  const StaCard = () => {
+    return (
+      <div className={sc('card')}>
+        {staNumArr.map((item: any) => {
+          return (
+            <div className="wrap" key={item.title}>
+              <div className="title">{item.title}</div>
+              <div className="num">{item.num}</div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
+
   const columns = [
     {
       title: '序号',
@@ -96,7 +104,7 @@ export default () => {
     <PageContainer
       className={sc('container')}
       header={{
-        title: `${title}版块上线广告统计详情`,
+        title: `${typeName}版块上线广告统计详情`,
       }}
     >
       <StaCard />

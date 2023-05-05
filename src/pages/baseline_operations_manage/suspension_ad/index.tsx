@@ -11,17 +11,35 @@ import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
-import { getPageList, } from '@/services/page-creat-manage'
 import { history } from 'umi';
+import { getGlobalFloatAds, updateAdsStatus } from '@/services/baseline';
 import type Common from '@/types/common';
 import moment from 'moment';
 import SelfTable from '@/components/self_table';
 import { routeName } from '../../../../config/routes';
 const sc = scopedClasses('suspension-list');
+const scopeMap = {
+  'ALL_USER': '全部用户',
+  'ALL_LOGIN_USE': '全部登陆用户',
+  'ALL_NOT_LOGIN_USE': '全部未登录用户',
+  'ALL_LOGIN_USER': '全部登陆用户',
+  'ALL_NOT_LOGIN_USER': '全部未登录用户',
+  'PORTION_USER': '部分用户'
+}
 
+const statusOptions = [
+  {label: '上架', value: 1}, {label: '下架', value: 3}
+]
+
+const statusMap = {
+  1: '上架',
+  3: '下架',
+  0: '暂存'
+}
 
 export default () => {
   const [dataSource, setDataSource] = useState<any>([]);
+  const [loading, setLoading] = useState<any>(false);
   const [searchContent, setSearChContent] = useState<any>({});
   const [searchForm] = Form.useForm();
   const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
@@ -31,20 +49,23 @@ export default () => {
     pageTotal: 0,
   });
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
-    // todo  列表接口未提供
+    setLoading(true)
     try {
-      const { result, totalCount, pageTotal, code, message } = await getPageList({
+      const { result, total, code, message } = await getGlobalFloatAds({
         pageIndex,
         pageSize,
+        advertiseType: 'GLOBAL_FLOAT_ADS',
         ...searchContent,
       });
+      setLoading(false)
       if (code === 0) {
-        setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
-        setDataSource(result);
+        setPageInfo({ totalCount: total, pageTotal: Math.ceil(total / pageSize), pageIndex, pageSize });
+        setDataSource(result.list || []);
       } else {
         throw new Error(message);
       }
     } catch (error) {
+      setLoading(false)
       antdMessage.error(`请求失败，原因:{${error}}`);
     }
   };
@@ -56,23 +77,37 @@ export default () => {
       content: '删除该广告后，系统将不再推荐该广告，确定删除？',
       okText: '删除',
       onOk: () => {
-        // todo 删除接口
-        antdMessage.success(`删除成功`);
+        updateAdsStatus(record.id, 2).then((res) => {
+          if (res.code === 0){
+            const { totalCount, pageIndex, pageSize } = pageInfo
+            const newTotal = totalCount - 1 || 1;
+            const newPageTotal = Math.ceil(newTotal / pageSize) || 1
+            getPage(pageIndex >  newPageTotal ? newPageTotal : pageIndex)
+            antdMessage.success(`删除成功`);
+          } else {
+            antdMessage.error(res.message);
+          }
+        })
       },
     })
   }
   const handleUpOrDown = (record: any) => {
     Modal.confirm({
       title: '提示',
-      content: record.status === 1 ? '确定将内容上架？' : '确定将内容下架？',
-      okText: '下架',
+      content: record.status === 1 ? '确定将内容下架？' : '确定将内容上架？',
+      okText: record.status === 1 ? '下架' : '上架',
       onOk: () => {
-        // todo 下架上架接口
-        antdMessage.success(`下架成功`);
+        updateAdsStatus(record.id, record.status === 1 ? 3 : 1).then((res) => {
+          if (res.code === 0){
+            getPage(pageInfo.pageIndex)
+            antdMessage.success(record.status === 1 ? '下架成功' : `上架成功`);
+          } else {
+            antdMessage.error(res.message);
+          }
+        })
       },
     })
   }
-  // todo 字段定义
   const columns = [
     {
       title: '序号',
@@ -91,20 +126,20 @@ export default () => {
     },
     {
       title: '图片',
-      dataIndex: 'imgs',
+      dataIndex: 'advertiseOssRelationList',
       isEllipsis: true,
       width: 200,
-      render: (imgs: any) => {
+      render: (advertiseOssRelationList: any) => {
         return (
           <div className="img-tr">
             {
-              imgs?.map((item: any, index: number) => {
+              advertiseOssRelationList.length ? advertiseOssRelationList?.map((item: any, index: number) => {
                 return (
                   <div className="img-box">
-                    <img src={item} key={index} alt='' />
+                    <img src={item.ossUrl} key={index} alt='' />
                   </div>
                 )
-              }) || '--'
+              }) : '--'
             }
           </div>
         )
@@ -115,9 +150,10 @@ export default () => {
       dataIndex: 'scope',
       width: 100,
       render: (scope: string) => {
-        return <span>{scope || '--'}</span>
+        return <span>{scopeMap[scope] || '--'}</span>
       }
     },
+    // todo 字段
     {
       title: '点击次数',
       dataIndex: 'clickTimes',
@@ -141,7 +177,7 @@ export default () => {
       render: (status: string) => {
         return (
           <>
-            {status || '--'}
+            {statusMap[status] || '--'}
           </>
         )
       },
@@ -165,51 +201,66 @@ export default () => {
       render: (_: any, record: any) => {
         return (
           <>
-            <Button
-              size="small"
-              type="link"
-              onClick={() => {
-                history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_SUSPENSION_AD_ADD}?id=${record.id}`)
-              }}
-            >
-              编辑
-            </Button>
-            <Button
-              size="small"
-              type="link"
-              onClick={() => {
-                handleDelete(record)
-              }}
-            >
-              删除
-            </Button>
-            <Button
-              size="small"
-              type="link"
-              onClick={() => {
-                history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_SUSPENSION_AD_DETAIL}?id=${record.id}`)
-              }}
-            >
-              详情
-            </Button>
-            <Button
-              size="small"
-              type="link"
-              onClick={() => {
-                handleUpOrDown(record)
-              }}
-            >
-              上架
-            </Button>
-            <Button
-              size="small"
-              type="link"
-              onClick={() => {
-                handleUpOrDown(record)
-              }}
-            >
-              下架
-            </Button>
+            {
+              record.status === 0 &&
+              <Button
+                size="small"
+                type="link"
+                onClick={() => {
+                  history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_SUSPENSION_AD_ADD}?id=${record.id}`)
+                }}
+              >
+                编辑
+              </Button>
+            }
+            {
+              record.status === 0 &&
+              <Button
+                size="small"
+                type="link"
+                onClick={() => {
+                  handleDelete(record)
+                }}
+              >
+                删除
+              </Button>
+            }
+            {
+              [1,3].indexOf(record.status) !== -1 &&
+              <Button
+                size="small"
+                type="link"
+                onClick={() => {
+                  history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_SUSPENSION_AD_DETAIL}?id=${record.id}`)
+                }}
+              >
+                详情
+              </Button>
+            }
+            {
+              record.status === 3 &&
+              <Button
+                size="small"
+                type="link"
+                onClick={() => {
+                  handleUpOrDown(record)
+                }}
+              >
+                上架
+              </Button>
+            }
+            {
+              record.status === 1 &&
+              <Button
+                size="small"
+                type="link"
+                onClick={() => {
+                  handleUpOrDown(record)
+                }}
+              >
+                下架
+              </Button>
+            }
           </>
         )
       },
@@ -239,7 +290,7 @@ export default () => {
                 <Select
                   placeholder="请选择"
                   allowClear
-                  options={[{label: '上架', value: 0}, {label: '下架', value: 1}]}
+                  options={statusOptions}
                 />
               </Form.Item>
             </Col>
@@ -293,6 +344,7 @@ export default () => {
           rowKey="id"
           bordered
           columns={columns}
+          loading={loading}
           dataSource={dataSource}
           pagination={
             pageInfo.totalCount === 0

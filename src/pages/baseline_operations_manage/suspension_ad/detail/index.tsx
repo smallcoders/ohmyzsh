@@ -8,11 +8,12 @@ import scopedClasses from '@/utils/scopedClasses';
 
 const sc = scopedClasses('suspension-ad-detail');
 
-// todo user or use
 const scopeMap = {
   'ALL_USER': '全部用户',
   'ALL_LOGIN_USE': '全部登陆用户',
-  'ALL_NOT_LOGIN_USE': '全部未登录用户'
+  'ALL_NOT_LOGIN_USE': '全部未登录用户',
+  'ALL_LOGIN_USER': '全部登陆用户',
+  'ALL_NOT_LOGIN_USER': '全部未登录用户',
 }
 
 export default () => {
@@ -20,7 +21,7 @@ export default () => {
   const [detail, setDetail] = useState<any>({})
   useEffect(() => {
     if (id){
-      getGlobalFloatAdDetail({ id }).then((res) => {
+      getGlobalFloatAdDetail(id).then((res) => {
         const { result, code, message: resultMsg } = res || {};
         if (code === 0) {
           console.log(result)
@@ -30,7 +31,7 @@ export default () => {
         }
       });
     }
-  })
+  }, [])
   return (
     <PageContainer
       className={sc('container')}
@@ -50,14 +51,13 @@ export default () => {
           <div className="label">图片:</div>
           <div className="value">
             {
-              // todo 图片取值问题
-              detail?.imgs?.map((item: any, index: number) => {
+              detail?.ossUrls ? detail?.ossUrls?.map((item: any, index: number) => {
                 return (
                   <div className="img-box">
                     <img src={item} key={index} alt='' />
                   </div>
                 )
-              })
+              }) : '--'
             }
           </div>
         </div>
