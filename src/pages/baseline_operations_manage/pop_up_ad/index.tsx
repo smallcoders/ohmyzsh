@@ -23,11 +23,26 @@ import type Common from '@/types/common';
 import scopedClasses from '@/utils/scopedClasses';
 import { routeName } from '../../../../config/routes';
 import {
-  getPageList,
-} from '@/services/page-creat-manage'
+  getAdvertiseList
+} from '@/services/baseline'
 import dayjs from 'dayjs';
 
 const sc = scopedClasses('pop-up-ad');
+const statusObj = {
+  0: '暂存',
+  1: '上架',
+  3: '下架'
+};
+const userTypeObj = {
+  'ALL_USER': '全部用户',
+  'ALL_LOGIN_USE': '全部登陆用户',
+  'ALL_NOT_LOGIN_USE': '全部未登录用户',
+  'PORTION_USER': '部分用户',
+};
+const triggerTypeObj = {
+  'PAGE_START': '页面启动',
+  'PAGE_CLOSE': '页面离开',
+}
 
 export default () => {
   const [dataSource, setDataSource] = useState<any>([]);
@@ -41,14 +56,15 @@ export default () => {
   });
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     try {
-      const { result, totalCount, pageTotal, code, message } = await getPageList({
+      const { result, totalCount, pageTotal, code, message } = await getAdvertiseList({
         pageIndex,
         pageSize,
+        advertiseType: 'POP_UP_ADS',
         ...searchContent,
       });
       if (code === 0) {
         setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
-        setDataSource(result);
+        setDataSource(result?.list);
       } else {
         throw new Error(message);
       }
@@ -67,7 +83,7 @@ export default () => {
     },
     {
       title: '名称',
-      dataIndex: 'tmpName',
+      dataIndex: 'advertiseName',
       width: 150,
       render: (tmpName: string, record: any) => {
         return <span>{tmpName || '--'}</span>
@@ -81,22 +97,33 @@ export default () => {
     },
     {
       title: '触发机制',
-      dataIndex: 'pv',
-      render: (pv: string) => {
-        return <span>{pv || '--'}</span>
+      width: 150,
+      dataIndex: 'triggerMechanism',
+      render: (_: string) => {
+        return <div className={`state${_}`}>{triggerTypeObj[_] || '--'}</div>;
       }
     },
     {
       title: '作用范围',
-      dataIndex: 'uv',
-      render: (uv: string) => {
-        return <span>{uv || '--'}</span>
-      }
+      width: 150,
+      dataIndex: 'scope',
+      render: (_: number) => {
+        return <div className={`state${_}`}>{userTypeObj[_] || '--'}</div>;
+      },
     },
     {
       title: '开启时间段',
-      dataIndex: 'state',
-      width: 180,
+      dataIndex: 'periodType',
+      width: 240,
+      render: (_: string, _record: any) => {
+        return (
+          _ === 'ALL_TIME' ? (
+            <div>全部时间</div>
+          ) : (
+            <div>{_record.periodStartTime ? (moment(_record.periodStartTime).format('YYYY-MM-DD') + '至' + moment(_record.periodEndTime).format('YYYY-MM-DD')) : '--'}</div>
+          )
+        )
+      }   
     },
     {
       title: '操作时间',
@@ -112,8 +139,11 @@ export default () => {
     },
     {
       title: '内容状态',
-      dataIndex: 'state',
+      dataIndex: 'status',
       width: 100,
+      render: (_: number) => {
+        return <div className={`state${_}`}>{statusObj[_] || '--'}</div>;
+      },
     },
     {
       title: '操作',
@@ -140,16 +170,16 @@ export default () => {
         <Form form={searchForm}>
           <Row>
             <Col span={6} offset={1}>
-              <Form.Item name="state" label="名称">
+              <Form.Item name="advertiseName" label="名称">
                 <Input placeholder='请输入' />
               </Form.Item>
             </Col>
             <Col span={6} offset={1}>
-              <Form.Item name="state" label="内容状态">
+              <Form.Item name="status" label="内容状态">
                 <Select
                   placeholder="请选择"
                   allowClear
-                  options={[{label: '上架', value: 0}, {label: '下架', value: 1}]}
+                  options={[{label: '上架', value: 1}, {label: '下架', value: 3}, {label: '暂存', value: 0}]}
                 />
               </Form.Item>
             </Col>

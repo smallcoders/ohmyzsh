@@ -1,4 +1,4 @@
-import { Button, message, Select, Radio, Popconfirm, Form, Input, Breadcrumb, DatePicker } from 'antd';
+import { Button, message as antdMessage, Select, Radio, Popconfirm, Form, Input, Breadcrumb, DatePicker } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import React, { useEffect, useState } from 'react';
 import moment from 'moment';
