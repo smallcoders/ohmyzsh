@@ -41,7 +41,7 @@ export default () => {
   const [dataSource, setDataSource] = useState<any>([]);
   const [loading, setLoading] = useState<any>(false);
   const [searchContent, setSearChContent] = useState<any>({});
-  const [total, setTotal] = useState<any>({userCount: 0, onClickCount: 0})
+  const [totalInfo, setTotalInfo] = useState<any>({userCount: 0, onClickCount: 0})
   const [searchForm] = Form.useForm();
   const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
     pageIndex: 1,
@@ -277,7 +277,7 @@ export default () => {
   useEffect(() => {
     getGobleFloatAdsStatistics().then((res) => {
       if (res.code === 0){
-        setTotal(res.result)
+        setTotalInfo(res.result)
       }
     })
   }, [])
@@ -337,13 +337,13 @@ export default () => {
           <div>
             点击总次数
           </div>
-          {total.onClickCount}
+          {totalInfo.onClickCount}
         </div>
         <div className="user-amount">
           <div>
             总用户数
           </div>
-          {total.userCount}
+          {totalInfo.userCount}
         </div>
       </div>
       {useSearchNode()}
