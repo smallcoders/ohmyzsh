@@ -14,12 +14,14 @@ const sc = scopedClasses('pop-up-ad-add');
 
 export default () => {
   const [isClosejumpTooltip, setIsClosejumpTooltip] = useState<boolean>(true);
+  const { id } = history.location.query as { id: string | undefined };
   const [form] = Form.useForm();
   const formLayout = {
     labelCol: { span: 4 },
     wrapperCol: { span: 8 },
   };
   const [pageInfo, setPageInfo] = useState<any>({pageSize: 10, pageIndex: 1, pageTotal: 0})
+  const [ userType, setUserType] = useState<any>('all')
   const [partLabels, setPartLabels] = useState<any>([])
   const [allLabels, setAllLabels] = useState<any>([])
   const [showDatePicker, setShowDatePicker] = useState<boolean>(false)
@@ -40,27 +42,36 @@ export default () => {
 
   const onSubmit = async (status: number) => {
     console.log(status)
-    try {
-      const search = form.getFieldsValue()
-      console.log(search)
-      if (search.regularTime) {
-        search.startDate = moment(search.regularTime[0]).format('YYYY-MM-DD');
-        search.endDate = moment(search.regularTime[1]).format('YYYY-MM-DD');
-      }
-    //   if (data.publishTime) {
-    //     data.publishTime = moment(data.publishTime).valueOf()
-    //   }
-  
-    //   const cb = async () => {
-    //     const res = await (id ? editArticle({ id, ...data, status }) : addArticle({ ...data, status }))
-    //     if (res?.code == 0) {
-    //       message.success('操作成功')
-    //       setIsClosejumpTooltip(false);
-    //       status == 1 && history.push(routeName.BASELINE_CONTENT_MANAGE)
-    //     } else {
-    //       message.error(res?.message || '操作失败')
-    //     }
-    //   }
+    await form.validateFields();
+    const {advertiseName, imgs, siteLink, labelIds, regularTime, periodType} = form.getFieldsValue()
+    const params: any = {
+      scope: userType === 'all' ? labelIds : 'PORTION_USER',
+      status,
+      imgs: imgs.map((item: any) => {
+        return item.url
+      }),
+      siteLink,
+      advertiseType: 'GLOBAL_FLOAT_ADS',
+      labelIds: userType === 'all' ? [] : labelIds,
+      advertiseName,
+    }
+    if (id) {
+      params.id = id
+    }
+    if (periodType == '2' && regularTime) {
+      params.periodStartTime = moment(regularTime[0]).format('YYYY-MM-DD');
+      params.periodEndTime = moment(regularTime[1]).format('YYYY-MM-DD');
+    }
+    const cb = async () => {
+      // const res = await (id ? editArticle({ id, ...data, status }) : addArticle({ ...data, status }))
+      // if (res?.code == 0) {
+      //   message.success('操作成功')
+      //   setIsClosejumpTooltip(false);
+      //   status == 1 && history.push(routeName.BASELINE_CONTENT_MANAGE)
+      // } else {
+      //   message.error(res?.message || '操作失败')
+      // }
+    }
   
     //   if (status == 1) {
     //     await form.validateFields()
@@ -78,10 +89,6 @@ export default () => {
     //   } else {
     //     cb()
     //   }
-  
-    } catch (error) {
-      console.log(' error ', error)
-    }
   }
 
   const getLabels = (pageIndex: number) => {
@@ -108,6 +115,49 @@ export default () => {
       })
     })
   }
+
+  useEffect(() => {
+    if (id){
+      getGlobalFloatAdDetail({ id }).then((res) => {
+        const { result, code, message: resultMsg } = res || {};
+        if (code === 0) {
+          console.log(result)
+          form.setFieldsValue({
+            advertiseName: result.advertiseName,
+            labelIds: result.scope === 'PORTION_USER' ? result.labelIds : result.scope,
+            siteLink: result.siteLink,
+            userType: result.scope !== 'PORTION_USER' ? 'all' : 'part',
+            imgs: result.imgs.length ? result.imgs?.map((item: any) => {
+              return {
+                uid: item,
+                name: item,
+                status: 'done',
+                url: item
+              }
+            }) : []
+          })
+        } else {
+          antdMessage.error(`请求失败，原因:{${resultMsg}}`);
+        }
+      });
+    } else {
+      form.setFieldsValue({userType: 'all', periodType: '1', triggerMechanism: '1'})
+    }
+    getPartLabels({ ...pageInfo }).then((res) => {
+      if (res.code === 0 && res.result){
+        const labelArr = res.result.map((item: any) => {
+          return {
+            value: item.id,
+            label: item.labelName
+          }
+        })
+        setPageInfo({
+          ...pageInfo, pageTotal: Math.ceil(res.totalCount / pageInfo.pageSize)
+        })
+        setPartLabels(labelArr)
+      }
+    })
+  }, []);
 
   return (
     <PageContainer
@@ -166,7 +216,7 @@ export default () => {
               <Input placeholder="请输入" allowClear />
             </Form.Item>
             <Form.Item label="触发机制"
-              name="triggerType"
+              name="triggerMechanism"
               rules={[{ required: true, message: '请选择' }]}
             >
               <Radio.Group>
@@ -177,7 +227,7 @@ export default () => {
             <Form.Item
               label=""
               wrapperCol={{offset: 4, span: 8}}
-              name="siteAddress"
+              name="triggerAddress"
             >
               <Input placeholder="请输入页面地址" allowClear />
             </Form.Item>
@@ -185,10 +235,13 @@ export default () => {
               name="userType"
               rules={[{ required: true, message: '请选择' }]}
             >
-              <Radio.Group onChange={onRadioChange}>
-                <Radio value='all'>全部用户</Radio>
-                <Radio value='part'>部分用户</Radio>
-              </Radio.Group>
+              <Radio.Group
+                onChange={(e) => {
+                  form.setFieldsValue(e.target.value === 'all' ? {labelIds: ''} : {labelIds: []})
+                  setUserType(e.target.value)
+                }}
+                options={[{label: '全部用户', value: 'all'}, {label: '部分用户', value: 'part'}]}
+              />
             </Form.Item>
             <Form.Item
               wrapperCol={{offset: 4, span: 8}}
@@ -222,7 +275,7 @@ export default () => {
               }
             </Form.Item>
             <Form.Item label="开启时间段"
-              name="openTime"
+              name="periodType"
               rules={[{ required: true, message: '请选择' }]}
             >
               <Radio.Group onChange={onTimeChange}>
