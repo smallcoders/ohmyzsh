@@ -36,7 +36,8 @@ export default () => {
             label: '图片：',
             value: 
             <div className="img-box" style={{
-              display: 'flex',
+              display: 'grid',
+              gridTemplateColumns: '100px 100px 100px',
               gridColumnGap: '10px',
               gridRowGap: '15px'
             }}>
