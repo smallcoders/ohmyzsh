@@ -263,13 +263,15 @@ export default () => {
         );
         return (
           <div className="typeBox">
-            {arr.map((item: any) => {
-              return (
-                <div>
-                  <Tag color="#0068ff">{item.label}</Tag>
-                </div>
-              );
-            })}
+            {arr && arr.length
+              ? arr.map((item: any) => {
+                  return (
+                    <div>
+                      <Tag color="#0068ff">{item.label}</Tag>
+                    </div>
+                  );
+                })
+              : '--'}
           </div>
         );
       },
@@ -279,7 +281,7 @@ export default () => {
       dataIndex: 'displayOrder',
       width: 150,
       render: (displayOrder: any) => {
-        return <span>{displayOrder}</span>;
+        return <span>{displayOrder || '--'}</span>;
       },
     },
     {
@@ -369,7 +371,7 @@ export default () => {
                 详情
               </Button>
             )}
-            <Access accessible={access.PD_BLM_YYWGL}>
+            <Access accessible={access.PD_BLAM_NRLGG}>
               {[0, 3].indexOf(record.status) !== -1 && (
                 <Button
                   size="small"
@@ -382,7 +384,7 @@ export default () => {
                 </Button>
               )}
             </Access>
-            <Access accessible={access.PU_BLM_YYWGL}>
+            <Access accessible={access.PU_BLAM_NRLGG}>
               {[0, 3].indexOf(record.status) !== -1 && (
                 <Button
                   size="small"
@@ -427,7 +429,7 @@ export default () => {
       <StaCard />
       {useSearchNode()}
       <div className={sc('container-table-body')}>
-        <Access accessible={access.PA_BLM_YYWGL}>
+        <Access accessible={access.PA_BLAM__NRLGG}>
           <Button
             type="primary"
             style={{ marginBottom: '10px' }}
