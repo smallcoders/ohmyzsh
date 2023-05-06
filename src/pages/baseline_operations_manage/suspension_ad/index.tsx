@@ -11,7 +11,6 @@ import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
-import { history } from 'umi';
 import { getGlobalFloatAds, updateAdsStatus, getGobleFloatAdsStatistics } from '@/services/baseline';
 import type Common from '@/types/common';
 import moment from 'moment';
@@ -149,7 +148,7 @@ export default () => {
     {
       title: '作用范围',
       dataIndex: 'scope',
-      width: 100,
+      width: 200,
       render: (scope: string, record: any) => {
         return <span>
           {
@@ -184,7 +183,7 @@ export default () => {
     {
       title: '内容状态',
       dataIndex: 'status',
-      width: 200,
+      width: 100,
       render: (status: string) => {
         return (
           <>
@@ -218,7 +217,7 @@ export default () => {
                 size="small"
                 type="link"
                 onClick={() => {
-                  history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_SUSPENSION_AD_ADD}?id=${record.id}`)
+                  window.open(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_SUSPENSION_AD_ADD}?id=${record.id}`)
                 }}
               >
                 编辑
@@ -242,7 +241,7 @@ export default () => {
                 size="small"
                 type="link"
                 onClick={() => {
-                  history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_SUSPENSION_AD_DETAIL}?id=${record.id}`)
+                  window.open(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_SUSPENSION_AD_DETAIL}?id=${record.id}`)
                 }}
               >
                 详情
@@ -363,7 +362,7 @@ export default () => {
           <Button
             type="primary"
             onClick={() => {
-              history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_SUSPENSION_AD_ADD}`)
+              window.open(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_SUSPENSION_AD_ADD}`)
             }}
           >
             +新建

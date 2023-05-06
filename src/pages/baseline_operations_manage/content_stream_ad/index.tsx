@@ -26,14 +26,13 @@ export default () => {
       history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_ADD}`);
     }
   };
-  const scopeMap = {
+  const userTypeObj = {
     ALL_USER: '全部用户',
     ALL_LOGIN_USE: '全部登陆用户',
     ALL_NOT_LOGIN_USE: '全部未登录用户',
-    ALL_LOGIN_USER: '全部登陆用户',
-    ALL_NOT_LOGIN_USER: '全部未登录用户',
     PORTION_USER: '部分用户',
   };
+
   const handleDetail = (item: any) => {
     history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_DETAIL}?id=${item}`);
   };
@@ -287,8 +286,23 @@ export default () => {
       title: '作用范围',
       width: 150,
       dataIndex: 'scope',
-      render: (scope: string) => {
-        return <span>{scopeMap[scope] || '--'}</span>;
+      render: (scope: string, _record: any) => {
+        let str: string = '';
+        if (_record.labels && _record.labels.length > 0) {
+          str = _record.labels
+            .map((item: any, index: number) => {
+              if (index === _record.labels.length - 1) {
+                return item.labelName;
+              }
+              return item.labelName + '、';
+            })
+            .join('');
+        }
+        return scope == 'PORTION_USER' ? (
+          <div>{_record.labels ? str : <span>{userTypeObj[scope] || '--'}</span>}</div>
+        ) : (
+          <span>{userTypeObj[scope] || '--'}</span>
+        );
       },
     },
     {
@@ -311,11 +325,11 @@ export default () => {
     },
     {
       title: '曝光量',
-      dataIndex: 'createByName',
+      dataIndex: 'exposureCount',
       width: 200,
-      sorter: (a: any, b: any) => a.createByName - b.createByName,
-      render: (createByName: string) => {
-        return <span>{createByName || 0}</span>;
+      sorter: (a: any, b: any) => a.exposureCount - b.exposureCount,
+      render: (exposureCount: string) => {
+        return <span>{exposureCount || 0}</span>;
       },
     },
     {
@@ -344,29 +358,18 @@ export default () => {
         }
         return (
           <div style={{ whiteSpace: 'break-spaces' }}>
-            <Access accessible={access.PD_BLM_SSRDGL}>
-              {[1, 3].indexOf(record.status) !== -1 && (
-                <Button
-                  size="small"
-                  type="link"
-                  onClick={() => {
-                    handleDetail(record.id);
-                  }}
-                >
-                  详情
-                </Button>
-              )}
-              {[0, 3].indexOf(record.status) !== -1 && (
-                <Button
-                  size="small"
-                  type="link"
-                  onClick={() => {
-                    handleAdd(record.id);
-                  }}
-                >
-                  编辑
-                </Button>
-              )}
+            {[1, 3].indexOf(record.status) !== -1 && (
+              <Button
+                size="small"
+                type="link"
+                onClick={() => {
+                  handleDetail(record.id);
+                }}
+              >
+                详情
+              </Button>
+            )}
+            <Access accessible={access.PD_BLM_YYWGL}>
               {[0, 3].indexOf(record.status) !== -1 && (
                 <Button
                   size="small"
@@ -376,6 +379,19 @@ export default () => {
                   }}
                 >
                   删除
+                </Button>
+              )}
+            </Access>
+            <Access accessible={access.PU_BLM_YYWGL}>
+              {[0, 3].indexOf(record.status) !== -1 && (
+                <Button
+                  size="small"
+                  type="link"
+                  onClick={() => {
+                    handleAdd(record.id);
+                  }}
+                >
+                  编辑
                 </Button>
               )}
               {record.status === 1 && (
@@ -411,7 +427,7 @@ export default () => {
       <StaCard />
       {useSearchNode()}
       <div className={sc('container-table-body')}>
-        <Access accessible={access.PA_BLM_SSRDGL}>
+        <Access accessible={access.PA_BLM_YYWGL}>
           <Button
             type="primary"
             style={{ marginBottom: '10px' }}

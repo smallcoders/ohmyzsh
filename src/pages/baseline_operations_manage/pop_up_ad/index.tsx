@@ -1,9 +1,6 @@
 import {
   Button,
   message as antdMessage,
-  Space,
-  Popconfirm,
-  Tooltip,
   Form,
   Row,
   Col,
@@ -11,12 +8,9 @@ import {
   Input,
   Modal
 } from 'antd';
-import type { ProColumns, ActionType } from '@ant-design/pro-table';
-import type SolutionTypes from '@/types/solution';
 import { PageContainer } from '@ant-design/pro-layout';
 import SelfTable from '@/components/self_table';
-import ProTable from '@ant-design/pro-table';
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 import { history, Access, useAccess } from 'umi';
 import './index.less'
@@ -27,7 +21,6 @@ import {
   getAdvertiseList,
   updateAdsStatus
 } from '@/services/baseline'
-import dayjs from 'dayjs';
 
 const sc = scopedClasses('pop-up-ad');
 const statusObj = {
@@ -47,6 +40,7 @@ const triggerTypeObj = {
 }
 
 export default () => {
+  const access = useAccess();
   const [dataSource, setDataSource] = useState<any>([]);
   const [searchContent, setSearChContent] = useState<any>({});
   const [searchForm] = Form.useForm();
@@ -124,7 +118,7 @@ export default () => {
         pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
-      title: '名称',
+      title: '活动名称',
       dataIndex: 'advertiseName',
       width: 150,
       render: (tmpName: string, record: any) => {
@@ -135,7 +129,7 @@ export default () => {
       title: '图片',
       dataIndex: 'advertiseOssRelationList',
       isEllipsis: true,
-      width: 200,
+      width: 120,
       render: (_: any) => {
         return (
           <div className="img-tr">
@@ -154,7 +148,7 @@ export default () => {
     },
     {
       title: '触发机制',
-      width: 150,
+      width: 120,
       dataIndex: 'triggerMechanism',
       render: (_: string) => {
         return <div className={`state${_}`}>{triggerTypeObj[_] || '--'}</div>;
@@ -162,11 +156,24 @@ export default () => {
     },
     {
       title: '作用范围',
-      width: 150,
       dataIndex: 'scope',
-      render: (_: number) => {
-        return <div className={`state${_}`}>{userTypeObj[_] || '--'}</div>;
-      },
+      width: 200,
+      render: (scope: string, _record: any) => {
+        let str:string = ''
+        if(_record.labels && _record.labels.length > 0) {
+          str = _record.labels.map((item: any, index: number) => {
+            if (index === _record.labels.length - 1) {
+              return item.labelName;
+            }
+            return item.labelName + '、';
+          }).join('');
+        }
+        return scope == 'PORTION_USER' ? (
+          <div>{
+            _record.labels ? str : (<span>{userTypeObj[scope] || '--'}</span>)
+          }</div>
+        ) : (<span>{userTypeObj[scope] || '--'}</span>)
+      }
     },
     {
       title: '开启时间段',
@@ -210,41 +217,18 @@ export default () => {
         return (
           <>
             {
-              record.status === 0 &&
-              <Button
-                size="small"
-                type="link"
-                onClick={() => {
-                  history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_POPUP_AD_ADD}?id=${record.id}`)
-                }}
-              >
-                编辑
-              </Button>
-            }
-            {
-              record.status === 0 &&
-              <Button
-                size="small"
-                type="link"
-                onClick={() => {
-                  handleDelete(record)
-                }}
-              >
-                删除
-              </Button>
-            }
-            {
               [1,3].indexOf(record.status) !== -1 &&
               <Button
                 size="small"
                 type="link"
                 onClick={() => {
-                  history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_POPUP_AD_DETAIL}?id=${record.id}`)
+                  window.open(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_POPUP_AD_DETAIL}?id=${record.id}`)
                 }}
               >
                 详情
               </Button>
             }
+            <Access accessible={access['PU_BLM_YYWGL']}>
             {
               record.status === 3 &&
               <Button
@@ -269,6 +253,33 @@ export default () => {
                 下架
               </Button>
             }
+            {
+              (record.status === 0 || record.status === 3) &&
+              <Button
+                size="small"
+                type="link"
+                onClick={() => {
+                  history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_POPUP_AD_ADD}?id=${record.id}`)
+                }}
+              >
+                编辑
+              </Button>
+            }
+            </Access>
+            <Access accessible={access['PD_BLM_YYWGL']}>
+            {
+              (record.status === 0 || record.status === 3) &&
+              <Button
+                size="small"
+                type="link"
+                onClick={() => {
+                  handleDelete(record)
+                }}
+              >
+                删除
+              </Button>
+            }
+            </Access>
           </>
         )
       },
@@ -290,7 +301,7 @@ export default () => {
         <Form form={searchForm}>
           <Row>
             <Col span={6} offset={1}>
-              <Form.Item name="advertiseName" label="名称">
+              <Form.Item name="advertiseName" label="活动名称">
                 <Input placeholder='请输入' />
               </Form.Item>
             </Col>
@@ -339,6 +350,7 @@ export default () => {
   return (
     <PageContainer className={sc('container')}>
       {useSearchNode()}
+      <Access accessible={access['PA_BLM_YYWGL']}>
       <div className={sc('container-table-header')}>
         <div className="title">
           <Button
@@ -351,6 +363,7 @@ export default () => {
           </Button>
         </div>
       </div>
+      </Access>
       <div className={sc('container-table-body')}>
         <SelfTable
           rowKey="id"

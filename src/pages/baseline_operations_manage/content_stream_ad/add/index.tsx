@@ -1,7 +1,16 @@
-import { Button, Form, Input, message as antdMessage, Modal, Radio, Select } from 'antd';
+import {
+  Breadcrumb,
+  Button,
+  Form,
+  Input,
+  message as antdMessage,
+  Modal,
+  Radio,
+  Select,
+} from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import React, { useEffect, useState } from 'react';
-import { history, Access, useAccess } from 'umi';
+import { history, Access, useAccess, Link } from 'umi';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import { UploadOutlined } from '@ant-design/icons';
@@ -113,21 +122,24 @@ export default () => {
   }, []);
 
   const handleSubmit = async (status: any) => {
-    await form.validateFields();
     const { advertiseName, imgs, siteLink, labelIds, displayOrder, disPlayTaps } =
       form.getFieldsValue();
     const params: any = {
       displayOrder,
       advertiseName,
       siteLink,
-      imgs: imgs.map((item: any) => {
-        return { path: item.url, id: item.resData?.id || item.uid };
-      }),
-      disPlayTaps: disPlayTaps[0].value
-        ? disPlayTaps.map((item: any) => {
-            return item.value;
-          })
-        : disPlayTaps,
+      imgs:
+        imgs && imgs?.length
+          ? imgs.map((item: any) => {
+              return { path: item.url, id: item.resData?.id || item.uid };
+            })
+          : imgs,
+      disPlayTaps:
+        disPlayTaps && disPlayTaps[0].value
+          ? disPlayTaps.map((item: any) => {
+              return item.value;
+            })
+          : disPlayTaps,
       scope: userType === 'all' ? labelIds : 'PORTION_USER',
       labelIds: userType === 'all' ? [] : [...labelIds],
       advertiseType: 'CONTENT_STREAM_ADS',
@@ -137,50 +149,66 @@ export default () => {
       params.id = parseInt(id);
     }
     if (status === 1) {
+      await form.validateFields();
       Modal.confirm({
         title: '提示',
         content: '确定上架当前内容？',
         okText: '上架',
         onOk: () => {
           setLoading(true);
-          auditImgs({
-            ossUrls: params.imgs.map((item: any) => {
-              return item.path;
-            }),
-          })
-            .then((result) => {
-              if (result.code === 0) {
-                addContentStreamAd(params).then((res) => {
-                  if (res.code === 0) {
-                    setFormIsChange(false);
-                    antdMessage.success('上架成功');
-                    history.goBack();
-                  } else {
-                    antdMessage.error(res.message);
-                  }
-                });
-              } else {
-                Modal.confirm({
-                  title: '风险提示',
-                  content: result.message,
-                  okText: '继续上架',
-                  onOk: () => {
-                    addContentStreamAd(params).then((res) => {
-                      if (res.code === 0) {
-                        setFormIsChange(false);
-                        antdMessage.success('上架成功');
-                        history.goBack();
-                      } else {
-                        antdMessage.error(res.message);
-                      }
-                    });
-                  },
-                });
-              }
+          if (params.imgs) {
+            auditImgs({
+              ossUrls: params.imgs.map((item: any) => {
+                return item.path;
+              }),
             })
-            .finally(() => {
-              setLoading(false);
+              .then((result) => {
+                if (result.code === 0) {
+                  addContentStreamAd(params).then((res) => {
+                    if (res.code === 0) {
+                      setFormIsChange(false);
+                      setLoading(false);
+                      history.goBack();
+                      antdMessage.success('上架成功');
+                    } else {
+                      antdMessage.error(res.message);
+                    }
+                  });
+                } else {
+                  Modal.confirm({
+                    title: '风险提示',
+                    content: result.message,
+                    okText: '继续上架',
+                    onOk: () => {
+                      addContentStreamAd(params).then((res) => {
+                        if (res.code === 0) {
+                          setFormIsChange(false);
+                          setLoading(false);
+                          history.goBack();
+                          antdMessage.success('上架成功');
+                        } else {
+                          antdMessage.error(res.message);
+                        }
+                      });
+                    },
+                  });
+                }
+              })
+              .finally(() => {
+                setLoading(false);
+              });
+          } else {
+            addContentStreamAd(params).then((res) => {
+              if (res.code === 0) {
+                setFormIsChange(false);
+                setLoading(false);
+                history.goBack();
+                antdMessage.success('上架成功');
+              } else {
+                antdMessage.error(res.message);
+              }
             });
+          }
         },
       });
     } else {
@@ -234,6 +262,25 @@ export default () => {
     <PageContainer
       className={sc('page')}
       ghost
+      header={{
+        title: id ? `内容编辑` : '新增内容',
+        breadcrumb: (
+          <Breadcrumb>
+            <Breadcrumb.Item>
+              <Link to="/baseline">基线管理</Link>
+            </Breadcrumb.Item>
+            <Breadcrumb.Item>
+              <Link to="/baseline/baseline-operations-management">运营位管理</Link>
+            </Breadcrumb.Item>
+            <Breadcrumb.Item>
+              <Link to="/baseline/baseline-operations-management/content-stream-ad/index">
+                内容流广告管理
+              </Link>
+            </Breadcrumb.Item>
+            <Breadcrumb.Item>{id ? `内容编辑` : '新增内容'}</Breadcrumb.Item>
+          </Breadcrumb>
+        ),
+      }}
       loading={loading}
       footer={[
         <>
@@ -292,16 +339,9 @@ export default () => {
         <Form.Item
           name="imgs"
           label="图片"
-          required
           extra="图片格式仅支持JPG、PNG、JPEG，图片尺寸123*123"
           labelCol={{ span: 4 }}
           wrapperCol={{ span: 16 }}
-          rules={[
-            {
-              required: true,
-              message: '必填',
-            },
-          ]}
         >
           <UploaImageV2 multiple={true} accept=".png,.jpeg,.jpg" maxCount={3}>
             <Button icon={<UploadOutlined />}>上传</Button>
@@ -312,13 +352,6 @@ export default () => {
           wrapperCol={{ span: 12 }}
           name="siteLink"
           label="站内链接配置"
-          required
-          rules={[
-            {
-              required: true,
-              message: '必填',
-            },
-          ]}
         >
           <Input placeholder="请输入" />
         </Form.Item>
@@ -350,7 +383,7 @@ export default () => {
             },
           ]}
         >
-          <Input placeholder="请输入" />
+          <Input type="number" placeholder="请输入" />
         </Form.Item>
         <Form.Item
           labelCol={{ span: 4 }}
