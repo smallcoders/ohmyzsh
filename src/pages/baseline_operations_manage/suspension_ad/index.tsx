@@ -148,7 +148,7 @@ export default () => {
     {
       title: '作用范围',
       dataIndex: 'scope',
-      width: 100,
+      width: 200,
       render: (scope: string, record: any) => {
         return <span>
           {
@@ -183,7 +183,7 @@ export default () => {
     {
       title: '内容状态',
       dataIndex: 'status',
-      width: 200,
+      width: 100,
       render: (status: string) => {
         return (
           <>
