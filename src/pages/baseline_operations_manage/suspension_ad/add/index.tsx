@@ -7,6 +7,7 @@ import { addGlobalFloatAd, getGlobalFloatAdDetail, getPartLabels, auditImgs } fr
 import { history, Prompt } from 'umi';
 import './index.less';
 import { ExclamationCircleOutlined, UploadOutlined } from '@ant-design/icons';
+import { routeName } from '../../../../../config/routes';
 
 const allLabels = [
   {
@@ -109,7 +110,7 @@ export default () => {
                 if (res.code === 0){
                   setFormIsChange(false)
                   antdMessage.success('上架成功')
-                  history.goBack()
+                  history.push(routeName.BASELINE_OPERATIONS_MANAGEMENT_SUSPENSION_AD)
                 } else {
                   antdMessage.error(res.message)
                 }
@@ -124,7 +125,7 @@ export default () => {
                     if (res.code === 0){
                       setFormIsChange(false)
                       antdMessage.success('上架成功')
-                      history.goBack()
+                      history.push(routeName.BASELINE_OPERATIONS_MANAGEMENT_SUSPENSION_AD)
                     } else {
                       antdMessage.error(res.message)
                     }
@@ -141,7 +142,7 @@ export default () => {
           setFormIsChange(false)
           antdMessage.success('暂存成功')
           if (isPrompt){
-            history.goBack()
+            history.push(routeName.BASELINE_OPERATIONS_MANAGEMENT_SUSPENSION_AD)
           }
         } else {
           antdMessage.error(res.message)
@@ -192,7 +193,7 @@ export default () => {
           }}>
             暂存
           </Button>
-          <Button key={3} onClick={() => history.goBack()}>返回</Button>
+          <Button key={3} onClick={() => history.push(routeName.BASELINE_OPERATIONS_MANAGEMENT_SUSPENSION_AD)}>返回</Button>
         </>,
       ]}
     >
@@ -244,7 +245,7 @@ export default () => {
           name="imgs"
           label="图片"
           required
-          extra="图片格式仅支持JPG、PNG、JPEG"
+          extra="图片格式仅支持JPG、PNG、JPEG,图片尺寸123*123"
           labelCol={{span: 4}}
           wrapperCol={{span: 16}}
           rules={[

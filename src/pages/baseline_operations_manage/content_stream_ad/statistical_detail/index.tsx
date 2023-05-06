@@ -54,6 +54,10 @@ export default () => {
             title: '被关闭总次数',
             num: res.result?.closed || 0,
           },
+          {
+            title: '曝光量',
+            num: res.result?.exposureCount || 0,
+          },
         ];
         setStaNumArr(newArray);
       }
@@ -111,15 +115,15 @@ export default () => {
         return closeCount || 0;
       },
     },
-    // {
-    //   title: '曝光量',
-    //   dataIndex: 'crawered',
-    //   width: 150,
-    //   sorter: (a: any, b: any) => a.crawered - b.crawered,
-    //   render: () => {
-    //     return <div>123</div>;
-    //   },
-    // },
+    {
+      title: '曝光量',
+      dataIndex: 'exposureCount',
+      width: 150,
+      sorter: (a: any, b: any) => a.exposureCount - b.exposureCount,
+      render: (exposureCount: any) => {
+        return exposureCount || 0;
+      },
+    },
   ];
   return (
     <PageContainer

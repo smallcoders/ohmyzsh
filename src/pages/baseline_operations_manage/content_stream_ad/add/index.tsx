@@ -1,7 +1,16 @@
-import { Button, Form, Input, message as antdMessage, Modal, Radio, Select } from 'antd';
+import {
+  Breadcrumb,
+  Button,
+  Form,
+  Input,
+  message as antdMessage,
+  Modal,
+  Radio,
+  Select,
+} from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import React, { useEffect, useState } from 'react';
-import { history, Access, useAccess } from 'umi';
+import { history, Access, useAccess, Link } from 'umi';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import { UploadOutlined } from '@ant-design/icons';
@@ -31,6 +40,7 @@ const allLabels = [
   },
 ];
 export default () => {
+  const [loading, setLoading] = useState<any>(false);
   const [formIsChange, setFormIsChange] = useState<boolean>(false);
   const [visibleAdd, setVisibleAdd] = useState<boolean>(false);
   const [visible, setVisible] = useState<boolean>(false);
@@ -42,39 +52,44 @@ export default () => {
   const [pageInfo, setPageInfo] = useState<any>({ pageSize: 10, pageIndex: 1, pageTotal: 0 });
   useEffect(() => {
     if (id) {
-      getGlobalFloatAdDetail(id).then((res) => {
-        const { result, code, message: resultMsg } = res || {};
-        if (code === 0) {
-          setUserType(result.scope !== 'PORTION_USER' ? 'all' : 'part');
-          form.setFieldsValue({
-            advertiseName: result.advertiseName,
-            displayOrder: result?.displayOrder,
-            labelIds: result.scope === 'PORTION_USER' ? result.labelIds : result.scope,
-            siteLink: result.siteLink,
-            userType: result.scope !== 'PORTION_USER' ? 'all' : 'part',
-            imgs: result.imgRelations?.length
-              ? result.imgRelations?.map((item: any) => {
-                  return {
-                    uid: `${item.fileId}`,
-                    name: item.ossUrl,
-                    status: 'done',
-                    url: item.ossUrl,
-                  };
-                })
-              : [],
-            disPlayTaps: result.articleTypes?.length
-              ? result.articleTypes?.map((item: any) => {
-                  return {
-                    value: item.id,
-                    label: item.typeName,
-                  };
-                })
-              : [],
-          });
-        } else {
-          antdMessage.error(`请求失败，原因:{${resultMsg}}`);
-        }
-      });
+      setLoading(true);
+      getGlobalFloatAdDetail(id)
+        .then((res) => {
+          const { result, code, message: resultMsg } = res || {};
+          if (code === 0) {
+            setUserType(result.scope !== 'PORTION_USER' ? 'all' : 'part');
+            form.setFieldsValue({
+              advertiseName: result.advertiseName,
+              displayOrder: result?.displayOrder,
+              labelIds: result.scope === 'PORTION_USER' ? result.labelIds : result.scope,
+              siteLink: result.siteLink,
+              userType: result.scope !== 'PORTION_USER' ? 'all' : 'part',
+              imgs: result.imgRelations?.length
+                ? result.imgRelations?.map((item: any) => {
+                    return {
+                      uid: `${item.fileId}`,
+                      name: item.ossUrl,
+                      status: 'done',
+                      url: item.ossUrl,
+                    };
+                  })
+                : [],
+              disPlayTaps: result.articleTypes?.length
+                ? result.articleTypes?.map((item: any) => {
+                    return {
+                      value: item.id,
+                      label: item.typeName,
+                    };
+                  })
+                : [],
+            });
+          } else {
+            antdMessage.error(`请求失败，原因:{${resultMsg}}`);
+          }
+        })
+        .finally(() => {
+          setLoading(false);
+        });
     } else {
       form.setFieldsValue({ userType: 'all' });
     }
@@ -106,7 +121,7 @@ export default () => {
     });
   }, []);
 
-  const handleSubmit = async (status: any, isPrompt?: boolean) => {
+  const handleSubmit = async (status: any) => {
     await form.validateFields();
     const { advertiseName, imgs, siteLink, labelIds, displayOrder, disPlayTaps } =
       form.getFieldsValue();
@@ -114,9 +129,12 @@ export default () => {
       displayOrder,
       advertiseName,
       siteLink,
-      imgs: imgs.map((item: any) => {
-        return { path: item.url, id: item.resData?.id || item.uid };
-      }),
+      imgs:
+        imgs && imgs?.length
+          ? imgs.map((item: any) => {
+              return { path: item.url, id: item.resData?.id || item.uid };
+            })
+          : imgs,
       disPlayTaps: disPlayTaps[0].value
         ? disPlayTaps.map((item: any) => {
             return item.value;
@@ -136,55 +154,76 @@ export default () => {
         content: '确定上架当前内容？',
         okText: '上架',
         onOk: () => {
-          auditImgs({
-            ossUrls: params.imgs.map((item: any) => {
-              return item.path;
-            }),
-          }).then((result) => {
-            if (result.code === 0) {
-              addContentStreamAd(params).then((res) => {
-                if (res.code === 0) {
-                  setFormIsChange(false);
-                  antdMessage.success('上架成功');
-                  history.goBack();
-                } else {
-                  antdMessage.error(res.message);
-                }
-              });
-            } else {
-              Modal.confirm({
-                title: '风险提示',
-                content: result.message,
-                okText: '继续上架',
-                onOk: () => {
+          setLoading(true);
+          if (params.imgs) {
+            auditImgs({
+              ossUrls: params.imgs.map((item: any) => {
+                return item.path;
+              }),
+            })
+              .then((result) => {
+                if (result.code === 0) {
                   addContentStreamAd(params).then((res) => {
                     if (res.code === 0) {
                       setFormIsChange(false);
-                      antdMessage.success('上架成功');
+                      setLoading(false);
                       history.goBack();
+                      antdMessage.success('上架成功');
                     } else {
                       antdMessage.error(res.message);
                     }
                   });
-                },
+                } else {
+                  Modal.confirm({
+                    title: '风险提示',
+                    content: result.message,
+                    okText: '继续上架',
+                    onOk: () => {
+                      addContentStreamAd(params).then((res) => {
+                        if (res.code === 0) {
+                          setFormIsChange(false);
+                          setLoading(false);
+                          history.goBack();
+                          antdMessage.success('上架成功');
+                        } else {
+                          antdMessage.error(res.message);
+                        }
+                      });
+                    },
+                  });
+                }
+              })
+              .finally(() => {
+                setLoading(false);
               });
-            }
-          });
+          } else {
+            addContentStreamAd(params).then((res) => {
+              if (res.code === 0) {
+                setFormIsChange(false);
+                setLoading(false);
+                history.goBack();
+                antdMessage.success('上架成功');
+              } else {
+                antdMessage.error(res.message);
+              }
+            });
+          }
         },
       });
     } else {
-      addContentStreamAd(params).then((res) => {
-        if (res.code === 0) {
-          setFormIsChange(false);
-          antdMessage.success('暂存成功');
-          history.goBack();
-          if (isPrompt) {
+      addContentStreamAd(params)
+        .then((res) => {
+          if (res.code === 0) {
+            setFormIsChange(false);
+            antdMessage.success('暂存成功');
             history.goBack();
+          } else {
+            antdMessage.error(res.message);
           }
-        } else {
-          antdMessage.error(res.message);
-        }
-      });
+        })
+        .finally(() => {
+          setLoading(false);
+        });
     }
   };
 
@@ -222,6 +261,26 @@ export default () => {
     <PageContainer
       className={sc('page')}
       ghost
+      header={{
+        title: id ? `内容编辑` : '新增内容',
+        breadcrumb: (
+          <Breadcrumb>
+            <Breadcrumb.Item>
+              <Link to="/baseline">基线管理</Link>
+            </Breadcrumb.Item>
+            <Breadcrumb.Item>
+              <Link to="/baseline/baseline-operations-management">运营位管理</Link>
+            </Breadcrumb.Item>
+            <Breadcrumb.Item>
+              <Link to="/baseline/baseline-operations-management/content-stream-ad/index">
+                内容流广告管理
+              </Link>
+            </Breadcrumb.Item>
+            <Breadcrumb.Item>{id ? `内容编辑` : '新增内容'}</Breadcrumb.Item>
+          </Breadcrumb>
+        ),
+      }}
+      loading={loading}
       footer={[
         <>
           <Button
@@ -279,16 +338,9 @@ export default () => {
         <Form.Item
           name="imgs"
           label="图片"
-          required
           extra="图片格式仅支持JPG、PNG、JPEG，图片尺寸123*123"
           labelCol={{ span: 4 }}
           wrapperCol={{ span: 16 }}
-          rules={[
-            {
-              required: true,
-              message: '必填',
-            },
-          ]}
         >
           <UploaImageV2 multiple={true} accept=".png,.jpeg,.jpg" maxCount={3}>
             <Button icon={<UploadOutlined />}>上传</Button>
@@ -299,13 +351,6 @@ export default () => {
           wrapperCol={{ span: 12 }}
           name="siteLink"
           label="站内链接配置"
-          required
-          rules={[
-            {
-              required: true,
-              message: '必填',
-            },
-          ]}
         >
           <Input placeholder="请输入" />
         </Form.Item>
@@ -337,7 +382,7 @@ export default () => {
             },
           ]}
         >
-          <Input placeholder="请输入" />
+          <Input type="number" placeholder="请输入" />
         </Form.Item>
         <Form.Item
           labelCol={{ span: 4 }}
@@ -411,8 +456,7 @@ export default () => {
               key="submit"
               type="primary"
               onClick={() => {
-                handleSubmit(0, true);
-                // addRecommend(false);
+                handleSubmit(0);
               }}
             >
               暂存并离开
@@ -436,7 +480,7 @@ export default () => {
             key="submit"
             type="primary"
             onClick={() => {
-              handleSubmit(true);
+              handleSubmit(1);
             }}
           >
             上架

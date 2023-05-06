@@ -1,79 +1,78 @@
-import {Button, Select, Row, Tag, Col, Form, Input, Popconfirm, message, message as antdMessage, Modal} from 'antd';
+import { Button, Select, Row, Tag, Col, Form, Input, message as antdMessage, Modal } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import SelfTable from '@/components/self_table';
 import { history, Access, useAccess } from 'umi';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import { routeName } from '../../../../config/routes';
-import {updateConversion} from "@/services/achievements-manage";
-import {updateLabel} from "@/services/purchase";
 import {
   getAdvertiseDiffTypeNum,
   getAdvertiseList,
-  getAllLayout, updateAdsStatus, upOrDownAdvertise,
-} from "@/services/baseline";
-import Common from "@/types/common";
-import moment from "moment/moment";
+  getAllLayout,
+  updateAdsStatus,
+} from '@/services/baseline';
+import type Common from '@/types/common';
+import moment from 'moment/moment';
 
 const sc = scopedClasses('content-stream-ad');
 export default () => {
   const [staNumArr, setStaNumArr] = useState<any>([]);
 
-const handleAdd = (item:any) => {
-  if(item){
-    history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_ADD}?id=${item}`);
-  }else{
-    history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_ADD}`);
+  const handleAdd = (item: any) => {
+    if (item) {
+      history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_ADD}?id=${item}`);
+    } else {
+      history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_ADD}`);
+    }
+  };
+  const scopeMap = {
+    ALL_USER: '全部用户',
+    ALL_LOGIN_USE: '全部登陆用户',
+    ALL_NOT_LOGIN_USE: '全部未登录用户',
+    ALL_LOGIN_USER: '全部登陆用户',
+    ALL_NOT_LOGIN_USER: '全部未登录用户',
+    PORTION_USER: '部分用户',
+  };
+  const handleDetail = (item: any) => {
+    history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_DETAIL}?id=${item}`);
+  };
+  const handleStatisticalDetail = (item: any) => {
+    history.push(
+      `${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_STATISTICAL_DETAIL}?articleTypeId=${item?.articleTypeId}&typeName=${item?.typeName}`,
+    );
+  };
+  // 统计卡片
+  const StaCard = () => {
+    return (
+      <div className={sc('card')}>
+        {staNumArr.map((item: any) => {
+          return (
+            <div className="wrap" key={item.title} onClick={() => handleStatisticalDetail(item)}>
+              <div className="title">{item.typeName + ' >'}</div>
+              <div className="num">{item.number}</div>
+            </div>
+          );
+        })}
+      </div>
+    );
+  };
 
-  }
-};
-const handleDetail = (item:any) => {
-  history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_DETAIL}?id=${item}`);
-};
-const handleStatisticalDetail = (item: any) => {
-  history.push(
-    `${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_STATISTICAL_DETAIL}?articleTypeId=${item?.articleTypeId}&typeName=${item?.typeName}`,
-  );
-};
-// 统计卡片
-const StaCard = () => {
-  return (
-    <div className={sc('card')}>
-      {staNumArr.map((item:any) => {
-        return (
-          <div
-            className="wrap"
-            key={item.title}
-            onClick={() => handleStatisticalDetail(item)}
-          >
-            <div className="title">{item.typeName} ></div>
-            <div className="num">{item.number}</div>
-          </div>
-        );
-      })}
-    </div>
-  );
-};
-
-const formLayout = {
-  labelCol: { span: 4 },
-  wrapperCol: { span: 16 },
-};
-
-
+  const formLayout = {
+    labelCol: { span: 4 },
+    wrapperCol: { span: 16 },
+  };
 
   const [layType, setLayType] = useState<any>([]);
   const statusMap = {
     1: '上架',
     3: '下架',
-    0: '暂存'
-  }
+    0: '暂存',
+  };
   // 拿到当前角色的access权限兑现
   const access = useAccess();
   const [dataSource, setDataSource] = useState<any>([]);
   const [searchContent, setSearChContent] = useState<any>({});
-  const [visible, setVisible] = useState<any>(false);
   const [loading, setLoading] = useState<any>(false);
   const [searchForm] = Form.useForm();
 
@@ -84,13 +83,15 @@ const formLayout = {
     pageTotal: 0,
   });
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
+    setLoading(true);
     try {
       const { result, totalCount, pageTotal, code, message } = await getAdvertiseList({
         pageIndex,
         pageSize,
-        advertiseType:'CONTENT_STREAM_ADS',
+        advertiseType: 'CONTENT_STREAM_ADS',
         ...searchContent,
       });
+      setLoading(false);
       if (code === 0) {
         setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
         setDataSource(result?.list);
@@ -98,7 +99,8 @@ const formLayout = {
         throw new Error(message);
       }
     } catch (error) {
-      // antdMessage.error(`请求失败，原因:{${error}}`);
+      setLoading(false);
+      antdMessage.error(`请求失败，原因:{${error}}`);
     }
   };
   // 删除
@@ -109,18 +111,18 @@ const formLayout = {
       okText: '删除',
       onOk: () => {
         updateAdsStatus(record.id, 2).then((res) => {
-          if (res.code === 0){
-            const { totalCount, pageIndex, pageSize } = pageInfo
+          if (res.code === 0) {
+            const { totalCount, pageIndex, pageSize } = pageInfo;
             const newTotal = totalCount - 1 || 1;
-            const newPageTotal = Math.ceil(newTotal / pageSize) || 1
-            getPage(pageIndex >  newPageTotal ? newPageTotal : pageIndex)
+            const newPageTotal = Math.ceil(newTotal / pageSize) || 1;
+            getPage(pageIndex > newPageTotal ? newPageTotal : pageIndex);
             antdMessage.success(`删除成功`);
           } else {
             antdMessage.error(res.message);
           }
-        })
+        });
       },
-    })
+    });
   };
   const handleUpOrDown = (record: any) => {
     Modal.confirm({
@@ -129,16 +131,16 @@ const formLayout = {
       okText: record.status === 1 ? '下架' : '上架',
       onOk: async () => {
         updateAdsStatus(record.id, record.status === 1 ? 3 : 1).then((res) => {
-          if (res.code === 0){
-            getPage(pageInfo.pageIndex)
+          if (res.code === 0) {
+            getPage(pageInfo.pageIndex);
             antdMessage.success(record.status === 1 ? '下架成功' : `上架成功`);
           } else {
             antdMessage.error(res.message);
           }
-        })
+        });
       },
-    })
-  }
+    });
+  };
   useEffect(() => {
     getAllLayout().then((res) => {
       if (res.code === 0 && res.result) {
@@ -153,13 +155,13 @@ const formLayout = {
     });
     getAdvertiseDiffTypeNum().then((res) => {
       if (res.code === 0 && res.result) {
-        setStaNumArr(res.result)
+        setStaNumArr(res.result);
       }
-    })
+    });
   }, []);
-  useEffect(()=>{
-    getPage()
-  },[searchContent])
+  useEffect(() => {
+    getPage();
+  }, [searchContent]);
   // 搜索模块
   const useSearchNode = (): React.ReactNode => {
     return (
@@ -236,17 +238,17 @@ const formLayout = {
       render: (advertiseOssRelationList: any) => {
         return (
           <div className="img-tr">
-            {
-              advertiseOssRelationList.length ? advertiseOssRelationList?.map((item: any, index: number) => {
-                return (
-                  <div className="img-box">
-                    <img src={item.ossUrl} key={index} alt='' />
-                  </div>
-                )
-              }) : '--'
-            }
+            {advertiseOssRelationList.length
+              ? advertiseOssRelationList?.map((item: any, index: number) => {
+                  return (
+                    <div className="img-box">
+                      <img src={item.ossUrl} key={index} alt="" />
+                    </div>
+                  );
+                })
+              : '--'}
           </div>
-        )
+        );
       },
     },
     {
@@ -254,20 +256,32 @@ const formLayout = {
       dataIndex: 'advertiseArticleTypeRelationList',
       isEllipsis: true,
       width: 250,
-      render: (advertiseArticleTypeRelationList:any) => {
-        const arr = layType.filter(aItem =>
-          advertiseArticleTypeRelationList.some(bItem =>
-            aItem.value === bItem.id
-          )
+      render: (advertiseArticleTypeRelationList: any) => {
+        const arr = layType.filter((aItem: any) =>
+          advertiseArticleTypeRelationList.some(
+            (bItem: any) => aItem.value === bItem.articleTypeId,
+          ),
         );
-        return <span color="blue">{arr && arr.length > 0 ? arr[0].label : '--'}</span>
+        return (
+          <div className="typeBox">
+            {arr?.length
+              ? arr.map((item: any) => {
+                  return (
+                    <div>
+                      <Tag color="#0068ff">{item.label}</Tag>
+                    </div>
+                  );
+                })
+              : '--'}
+          </div>
+        );
       },
     },
     {
       title: '位置',
       dataIndex: 'displayOrder',
       width: 150,
-      render: (displayOrder:any) => {
+      render: (displayOrder: any) => {
         return <span>{displayOrder}</span>;
       },
     },
@@ -275,14 +289,8 @@ const formLayout = {
       title: '作用范围',
       width: 150,
       dataIndex: 'scope',
-      render: (scope: any) => {
-        return (<>
-          {scope==='ALL_USER'&&<span>全部用户</span>}
-          {scope==='ALL_LOGIN_USER'&&<span>全部登陆用户</span>}
-          {scope==='ALL_NOT_LOGIN_USER'&&<span>全部未登录用户</span>}
-          {scope==='PORTION_USER'&&<span>部分用户</span>}
-          {!scope&&<span>__</span>}
-        </>)
+      render: (scope: string) => {
+        return <span>{scopeMap[scope] || '--'}</span>;
       },
     },
     {
@@ -305,11 +313,11 @@ const formLayout = {
     },
     {
       title: '曝光量',
-      dataIndex: 'createByName',
+      dataIndex: 'exposureCount',
       width: 200,
-      sorter: (a: any, b: any) => a.createByName - b.createByName,
-      render: (createByName: string) => {
-        return <span>{createByName || 0}</span>;
+      sorter: (a: any, b: any) => a.exposureCount - b.exposureCount,
+      render: (exposureCount: string) => {
+        return <span>{exposureCount || 0}</span>;
       },
     },
     {
@@ -317,11 +325,7 @@ const formLayout = {
       dataIndex: 'updateTime',
       width: 200,
       render: (updateTime: string) => {
-        return (
-          <>
-            {updateTime ? moment(updateTime).format('YYYY-MM-DD HH:mm:ss') : '--'}
-          </>
-        )
+        return <>{updateTime ? moment(updateTime).format('YYYY-MM-DD HH:mm:ss') : '--'}</>;
       },
     },
     {
@@ -329,11 +333,7 @@ const formLayout = {
       dataIndex: 'status',
       width: 200,
       render: (status: string) => {
-        return (
-          <>
-            {statusMap[status] || '--'}
-          </>
-        )
+        return <>{statusMap[status] || '--'}</>;
       },
     },
     {
@@ -346,55 +346,64 @@ const formLayout = {
         }
         return (
           <div style={{ whiteSpace: 'break-spaces' }}>
-            <Access accessible={access.PD_BLM_SSRDGL}>
-              {
-                [1,3].indexOf(record.status) !== -1 &&
+            {[1, 3].indexOf(record.status) !== -1 && (
               <Button
                 size="small"
                 type="link"
                 onClick={() => {
-                  handleDetail(record.id)
+                  handleDetail(record.id);
                 }}
               >
                 详情
-              </Button>}
-              {
-                [0,3].indexOf(record.status) !== -1 &&
-              <Button
-                size="small"
-                type="link"
-                onClick={() => {
-                  handleAdd(record.id)
-                }}
-              >
-                编辑
-              </Button>}
-              {
-                [0,3].indexOf(record.status) !== -1 &&
-              <Button
-                size="small"
-                type="link"
-                onClick={() => {
-                  remove(record)
-                }}
-              >
-                删除
-              </Button>}
+              </Button>
+            )}
+            <Access accessible={access.PD_BLM_YYWGL}>
+              {[0, 3].indexOf(record.status) !== -1 && (
+                <Button
+                  size="small"
+                  type="link"
+                  onClick={() => {
+                    remove(record);
+                  }}
+                >
+                  删除
+                </Button>
+              )}
+            </Access>
+            <Access accessible={access.PU_BLM_YYWGL}>
+              {[0, 3].indexOf(record.status) !== -1 && (
+                <Button
+                  size="small"
+                  type="link"
+                  onClick={() => {
+                    handleAdd(record.id);
+                  }}
+                >
+                  编辑
+                </Button>
+              )}
               {record.status === 1 && (
-
-                  <Button size="small"  type="link"
-                          onClick={() => {
-                            handleUpOrDown(record)
-                          }}>下架</Button>
+                <Button
+                  size="small"
+                  type="link"
+                  onClick={() => {
+                    handleUpOrDown(record);
+                  }}
+                >
+                  下架
+                </Button>
               )}
               {record.status === 3 && (
-
-                  <Button  size="small"  type="link"
-                          onClick={() => {
-                            handleUpOrDown(record)
-                          }}   >上架</Button>
+                <Button
+                  size="small"
+                  type="link"
+                  onClick={() => {
+                    handleUpOrDown(record);
+                  }}
+                >
+                  上架
+                </Button>
               )}
-
             </Access>
           </div>
         );
@@ -406,14 +415,12 @@ const formLayout = {
       <StaCard />
       {useSearchNode()}
       <div className={sc('container-table-body')}>
-        <Access accessible={access.PA_BLM_SSRDGL}>
+        <Access accessible={access.PA_BLM_YYWGL}>
           <Button
             type="primary"
             style={{ marginBottom: '10px' }}
             onClick={() => {
               history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_ADD}`);
-              // modalForm.resetFields()
-              // setVisible(true)
             }}
           >
             新增

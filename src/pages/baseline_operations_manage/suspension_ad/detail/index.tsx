@@ -5,6 +5,7 @@ import { history } from 'umi';
 import { getGlobalFloatAdDetail } from '@/services/baseline';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
+import { routeName } from '../../../../../config/routes';
 
 const sc = scopedClasses('suspension-ad-detail');
 
@@ -36,7 +37,7 @@ export default () => {
     <PageContainer
       className={sc('container')}
       footer={[
-        <Button size="large" onClick={() => history.goBack()}>
+        <Button size="large" onClick={() => history.push(routeName.BASELINE_OPERATIONS_MANAGEMENT_SUSPENSION_AD)}>
           返回
         </Button>,
       ]}

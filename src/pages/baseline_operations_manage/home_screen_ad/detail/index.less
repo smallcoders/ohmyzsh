@@ -1,5 +1,32 @@
 @prefix: home-screen-ad-detail;
 
 .@{prefix}-container {
-  color: orange;
+  &-content {
+    padding: 24px;
+    background: #ffffff;
+    &-header {
+      font-size: 16px;
+      font-weight: 600;
+    }
+    &-form {
+      &-cell {
+        display: flex;
+        line-height: 40px;
+        > :first-child {
+          flex: 1;
+          text-align: right;
+        }
+        > :last-child {
+          margin-left: 27px;
+          font-weight: 600;
+          font-size: 16px;
+          flex: 5;
+          img {
+            width: 100px;
+            height: 100px;
+          }
+        }
+      }
+    }
+  }
 }
