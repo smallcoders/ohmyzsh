@@ -125,6 +125,8 @@ export default () => {
     if (status === 1) await form.validateFields();
     const { advertiseName, imgs, siteLink, labelIds, displayOrder, disPlayTaps } =
       form.getFieldsValue();
+    console.log(disPlayTaps, 'disPlayTaps');
+
     const params: any = {
       displayOrder,
       advertiseName,
@@ -136,7 +138,7 @@ export default () => {
             })
           : imgs,
       disPlayTaps:
-        disPlayTaps && disPlayTaps.length > 0
+        disPlayTaps && disPlayTaps[0]?.value
           ? disPlayTaps.map((item: any) => {
               return item.value;
             })

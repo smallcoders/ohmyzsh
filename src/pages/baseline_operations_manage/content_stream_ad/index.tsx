@@ -263,13 +263,15 @@ export default () => {
         );
         return (
           <div className="typeBox">
-            {arr.map((item: any) => {
-              return (
-                <div>
-                  <Tag color="#0068ff">{item.label}</Tag>
-                </div>
-              );
-            })}
+            {arr && arr.length
+              ? arr.map((item: any) => {
+                  return (
+                    <div>
+                      <Tag color="#0068ff">{item.label}</Tag>
+                    </div>
+                  );
+                })
+              : '--'}
           </div>
         );
       },
@@ -279,7 +281,7 @@ export default () => {
       dataIndex: 'displayOrder',
       width: 150,
       render: (displayOrder: any) => {
-        return <span>{displayOrder}</span>;
+        return <span>{displayOrder || '--'}</span>;
       },
     },
     {
