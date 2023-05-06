@@ -1,9 +1,6 @@
 import {
   Button,
   message as antdMessage,
-  Space,
-  Popconfirm,
-  Tooltip,
   Form,
   Row,
   Col,
@@ -11,12 +8,9 @@ import {
   Input,
   Modal
 } from 'antd';
-import type { ProColumns, ActionType } from '@ant-design/pro-table';
-import type SolutionTypes from '@/types/solution';
 import { PageContainer } from '@ant-design/pro-layout';
 import SelfTable from '@/components/self_table';
-import ProTable from '@ant-design/pro-table';
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 import { history, Access, useAccess } from 'umi';
 import './index.less'
@@ -46,6 +40,7 @@ const triggerTypeObj = {
 }
 
 export default () => {
+  const access = useAccess();
   const [dataSource, setDataSource] = useState<any>([]);
   const [searchContent, setSearChContent] = useState<any>({});
   const [searchForm] = Form.useForm();
@@ -114,14 +109,6 @@ export default () => {
     })
   }
 
-  const handleScopeLabel = (record: any) => {
-    console.log(record)
-    if (record.scope != 'PORTION_USER') {
-      return userTypeObj[record.scope]
-    }
-    return record.scope
-  }
-
   const columns = [
     {
       title: '序号',
@@ -131,7 +118,7 @@ export default () => {
         pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
     },
     {
-      title: '名称',
+      title: '活动名称',
       dataIndex: 'advertiseName',
       width: 150,
       render: (tmpName: string, record: any) => {
@@ -241,6 +228,7 @@ export default () => {
                 详情
               </Button>
             }
+            <Access accessible={access['PU_BLM_YYWGL']}>
             {
               record.status === 3 &&
               <Button
@@ -277,6 +265,8 @@ export default () => {
                 编辑
               </Button>
             }
+            </Access>
+            <Access accessible={access['PD_BLM_YYWGL']}>
             {
               (record.status === 0 || record.status === 3) &&
               <Button
@@ -289,6 +279,7 @@ export default () => {
                 删除
               </Button>
             }
+            </Access>
           </>
         )
       },
@@ -310,7 +301,7 @@ export default () => {
         <Form form={searchForm}>
           <Row>
             <Col span={6} offset={1}>
-              <Form.Item name="advertiseName" label="名称">
+              <Form.Item name="advertiseName" label="活动名称">
                 <Input placeholder='请输入' />
               </Form.Item>
             </Col>
@@ -359,6 +350,7 @@ export default () => {
   return (
     <PageContainer className={sc('container')}>
       {useSearchNode()}
+      <Access accessible={access['PA_BLM_YYWGL']}>
       <div className={sc('container-table-header')}>
         <div className="title">
           <Button
@@ -371,6 +363,7 @@ export default () => {
           </Button>
         </div>
       </div>
+      </Access>
       <div className={sc('container-table-body')}>
         <SelfTable
           rowKey="id"
