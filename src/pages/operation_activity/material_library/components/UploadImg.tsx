@@ -43,6 +43,7 @@ const UploadImg = (props: any) => {
   };
 
   const handleChange = (info: UploadChangeParam<UploadFile<any>>) => {
+    console.log('handleChangeInfo', info)
     if (info.file.status === 'uploading') {
       return;
     }
