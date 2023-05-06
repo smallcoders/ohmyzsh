@@ -171,14 +171,7 @@ export default () => {
       })
     }
   }
-  const goBack = () => {
-    setTimeout(() => {
-      history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_HOME_SCREEN_AD}`)
-      // history.goBack();
-    },800)
-  }
 
-  // const [detail, setDetail] = useState<any>()
   const perpaer = async (id: any) => {
     try {
       const res = await httpMngDetail(id)
@@ -301,14 +294,6 @@ export default () => {
               name="imgs"
               rules={[{ required: true, message: '必填' }]}
             >
-              {/* <UploadForm
-                listType="picture-card"
-                className="avatar-uploader"
-                showUploadList={false}
-                accept=".png,.jpeg,.jpg"
-                tooltip={<span className={'tooltip'}>图片格式仅支持JPG、PNG、JPEG</span>}
-                action="/antelope-common/common/file/upload/record"
-              /> */}
               <UploaImageV2 multiple={true} accept=".png,.jpeg,.jpg" maxCount={10}>
                 <Button icon={<UploadOutlined />}>上传</Button>
               </UploaImageV2>
@@ -352,8 +337,8 @@ export default () => {
             type="primary"
             onClick={() => {
               setContentInfoFormChange(false)
-              goBack()
-              // history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_HOME_SCREEN_AD}`)
+              // goBack()
+              history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_HOME_SCREEN_AD}`)
             }}
           >
             直接离开

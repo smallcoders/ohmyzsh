@@ -258,12 +258,11 @@ export default () => {
         }}
         columns={columns}
         toolBarRender={() => [
-          <Access accessible={access['PA_BLM_YYWGL']}>
+          <Access accessible={access['PA_BLAM_KPGG']}>
             <Button
               key="button"
               icon={<PlusOutlined />}
               type="primary"
-              // disabled={total >= 16}
               onClick={handleAddBtn.bind(null)}
             >
               新增
