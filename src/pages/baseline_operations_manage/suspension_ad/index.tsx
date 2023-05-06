@@ -13,6 +13,7 @@ import scopedClasses from '@/utils/scopedClasses';
 import React, { useEffect, useState } from 'react';
 import { getGlobalFloatAds, updateAdsStatus, getGobleFloatAdsStatistics } from '@/services/baseline';
 import type Common from '@/types/common';
+import { Access, useAccess } from '@@/plugin-access/access';
 import moment from 'moment';
 import SelfTable from '@/components/self_table';
 import { routeName } from '../../../../config/routes';
@@ -37,6 +38,8 @@ const statusMap = {
 }
 
 export default () => {
+  // // 拿到当前角色的access权限兑现
+  const access = useAccess()
   const [dataSource, setDataSource] = useState<any>([]);
   const [loading, setLoading] = useState<any>(false);
   const [searchContent, setSearChContent] = useState<any>({});
@@ -211,30 +214,34 @@ export default () => {
       render: (_: any, record: any) => {
         return (
           <>
-            {
-              record.status === 0 &&
-              <Button
-                size="small"
-                type="link"
-                onClick={() => {
-                  window.open(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_SUSPENSION_AD_ADD}?id=${record.id}`)
-                }}
-              >
-                编辑
-              </Button>
-            }
-            {
-              record.status === 0 &&
-              <Button
-                size="small"
-                type="link"
-                onClick={() => {
-                  handleDelete(record)
-                }}
-              >
-                删除
-              </Button>
-            }
+            <Access accessible={access['PU_BLAM_QJXFGG']}>
+              {
+                record.status === 0 &&
+                <Button
+                  size="small"
+                  type="link"
+                  onClick={() => {
+                    window.open(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_SUSPENSION_AD_ADD}?id=${record.id}`)
+                  }}
+                >
+                  编辑
+                </Button>
+              }
+            </Access>
+            <Access accessible={access['PD_BLAM_QJXFGG']}>
+              {
+                record.status === 0 &&
+                <Button
+                  size="small"
+                  type="link"
+                  onClick={() => {
+                    handleDelete(record)
+                  }}
+                >
+                  删除
+                </Button>
+              }
+            </Access>
             {
               [1,3].indexOf(record.status) !== -1 &&
               <Button
@@ -247,30 +254,32 @@ export default () => {
                 详情
               </Button>
             }
-            {
-              record.status === 3 &&
-              <Button
-                size="small"
-                type="link"
-                onClick={() => {
-                  handleUpOrDown(record)
-                }}
-              >
-                上架
-              </Button>
-            }
-            {
-              record.status === 1 &&
-              <Button
-                size="small"
-                type="link"
-                onClick={() => {
-                  handleUpOrDown(record)
-                }}
-              >
-                下架
-              </Button>
-            }
+            <Access accessible={access['PU_BLAM_QJXFGG']}>
+              {
+                record.status === 3 &&
+                <Button
+                  size="small"
+                  type="link"
+                  onClick={() => {
+                    handleUpOrDown(record)
+                  }}
+                >
+                  上架
+                </Button>
+              }
+              {
+                record.status === 1 &&
+                <Button
+                  size="small"
+                  type="link"
+                  onClick={() => {
+                    handleUpOrDown(record)
+                  }}
+                >
+                  下架
+                </Button>
+              }
+            </Access>
           </>
         )
       },
@@ -359,14 +368,16 @@ export default () => {
       {useSearchNode()}
       <div className={sc('container-table-header')}>
         <div className="title">
-          <Button
-            type="primary"
-            onClick={() => {
-              window.open(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_SUSPENSION_AD_ADD}`)
-            }}
-          >
-            +新建
-          </Button>
+          <Access accessible={access['PA_BLAM_QJXFGG']}>
+            <Button
+              type="primary"
+              onClick={() => {
+                window.open(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_SUSPENSION_AD_ADD}`)
+              }}
+            >
+              +新建
+            </Button>
+          </Access>
         </div>
       </div>
 
