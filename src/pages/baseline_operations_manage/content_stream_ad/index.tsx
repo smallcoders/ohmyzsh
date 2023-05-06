@@ -26,14 +26,13 @@ export default () => {
       history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_ADD}`);
     }
   };
-  const scopeMap = {
+  const userTypeObj = {
     ALL_USER: '全部用户',
     ALL_LOGIN_USE: '全部登陆用户',
     ALL_NOT_LOGIN_USE: '全部未登录用户',
-    ALL_LOGIN_USER: '全部登陆用户',
-    ALL_NOT_LOGIN_USER: '全部未登录用户',
     PORTION_USER: '部分用户',
   };
+
   const handleDetail = (item: any) => {
     history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_DETAIL}?id=${item}`);
   };
@@ -264,15 +263,13 @@ export default () => {
         );
         return (
           <div className="typeBox">
-            {arr?.length
-              ? arr.map((item: any) => {
-                  return (
-                    <div>
-                      <Tag color="#0068ff">{item.label}</Tag>
-                    </div>
-                  );
-                })
-              : '--'}
+            {arr.map((item: any) => {
+              return (
+                <div>
+                  <Tag color="#0068ff">{item.label}</Tag>
+                </div>
+              );
+            })}
           </div>
         );
       },
@@ -289,8 +286,23 @@ export default () => {
       title: '作用范围',
       width: 150,
       dataIndex: 'scope',
-      render: (scope: string) => {
-        return <span>{scopeMap[scope] || '--'}</span>;
+      render: (scope: string, _record: any) => {
+        let str: string = '';
+        if (_record.labels && _record.labels.length > 0) {
+          str = _record.labels
+            .map((item: any, index: number) => {
+              if (index === _record.labels.length - 1) {
+                return item.labelName;
+              }
+              return item.labelName + '、';
+            })
+            .join('');
+        }
+        return scope == 'PORTION_USER' ? (
+          <div>{_record.labels ? str : <span>{userTypeObj[scope] || '--'}</span>}</div>
+        ) : (
+          <span>{userTypeObj[scope] || '--'}</span>
+        );
       },
     },
     {

@@ -122,7 +122,6 @@ export default () => {
   }, []);
 
   const handleSubmit = async (status: any) => {
-    await form.validateFields();
     const { advertiseName, imgs, siteLink, labelIds, displayOrder, disPlayTaps } =
       form.getFieldsValue();
     const params: any = {
@@ -135,11 +134,12 @@ export default () => {
               return { path: item.url, id: item.resData?.id || item.uid };
             })
           : imgs,
-      disPlayTaps: disPlayTaps[0].value
-        ? disPlayTaps.map((item: any) => {
-            return item.value;
-          })
-        : disPlayTaps,
+      disPlayTaps:
+        disPlayTaps && disPlayTaps[0].value
+          ? disPlayTaps.map((item: any) => {
+              return item.value;
+            })
+          : disPlayTaps,
       scope: userType === 'all' ? labelIds : 'PORTION_USER',
       labelIds: userType === 'all' ? [] : [...labelIds],
       advertiseType: 'CONTENT_STREAM_ADS',
@@ -149,6 +149,7 @@ export default () => {
       params.id = parseInt(id);
     }
     if (status === 1) {
+      await form.validateFields();
       Modal.confirm({
         title: '提示',
         content: '确定上架当前内容？',
