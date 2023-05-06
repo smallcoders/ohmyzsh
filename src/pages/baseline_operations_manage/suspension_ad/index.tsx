@@ -150,8 +150,19 @@ export default () => {
       title: '作用范围',
       dataIndex: 'scope',
       width: 100,
-      render: (scope: string) => {
-        return <span>{scopeMap[scope] || '--'}</span>
+      render: (scope: string, record: any) => {
+        return <span>
+          {
+            scope ? scope !== 'PORTION_USER' ? scopeMap[scope] :
+              <div>
+                {
+                  record?.labels?.map((item: any) => {
+                    return item.labelName
+                  }).join('、') || '--'
+                }
+              </div> : '--'
+          }
+        </span>
       }
     },
     {
