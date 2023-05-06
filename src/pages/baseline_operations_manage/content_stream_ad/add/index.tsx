@@ -31,6 +31,7 @@ const allLabels = [
   },
 ];
 export default () => {
+  const [loading, setLoading] = useState<any>(false);
   const [formIsChange, setFormIsChange] = useState<boolean>(false);
   const [visibleAdd, setVisibleAdd] = useState<boolean>(false);
   const [visible, setVisible] = useState<boolean>(false);
@@ -42,39 +43,44 @@ export default () => {
   const [pageInfo, setPageInfo] = useState<any>({ pageSize: 10, pageIndex: 1, pageTotal: 0 });
   useEffect(() => {
     if (id) {
-      getGlobalFloatAdDetail(id).then((res) => {
-        const { result, code, message: resultMsg } = res || {};
-        if (code === 0) {
-          setUserType(result.scope !== 'PORTION_USER' ? 'all' : 'part');
-          form.setFieldsValue({
-            advertiseName: result.advertiseName,
-            displayOrder: result?.displayOrder,
-            labelIds: result.scope === 'PORTION_USER' ? result.labelIds : result.scope,
-            siteLink: result.siteLink,
-            userType: result.scope !== 'PORTION_USER' ? 'all' : 'part',
-            imgs: result.imgRelations?.length
-              ? result.imgRelations?.map((item: any) => {
-                  return {
-                    uid: `${item.fileId}`,
-                    name: item.ossUrl,
-                    status: 'done',
-                    url: item.ossUrl,
-                  };
-                })
-              : [],
-            disPlayTaps: result.articleTypes?.length
-              ? result.articleTypes?.map((item: any) => {
-                  return {
-                    value: item.id,
-                    label: item.typeName,
-                  };
-                })
-              : [],
-          });
-        } else {
-          antdMessage.error(`请求失败，原因:{${resultMsg}}`);
-        }
-      });
+      setLoading(true);
+      getGlobalFloatAdDetail(id)
+        .then((res) => {
+          const { result, code, message: resultMsg } = res || {};
+          if (code === 0) {
+            setUserType(result.scope !== 'PORTION_USER' ? 'all' : 'part');
+            form.setFieldsValue({
+              advertiseName: result.advertiseName,
+              displayOrder: result?.displayOrder,
+              labelIds: result.scope === 'PORTION_USER' ? result.labelIds : result.scope,
+              siteLink: result.siteLink,
+              userType: result.scope !== 'PORTION_USER' ? 'all' : 'part',
+              imgs: result.imgRelations?.length
+                ? result.imgRelations?.map((item: any) => {
+                    return {
+                      uid: `${item.fileId}`,
+                      name: item.ossUrl,
+                      status: 'done',
+                      url: item.ossUrl,
+                    };
+                  })
+                : [],
+              disPlayTaps: result.articleTypes?.length
+                ? result.articleTypes?.map((item: any) => {
+                    return {
+                      value: item.id,
+                      label: item.typeName,
+                    };
+                  })
+                : [],
+            });
+          } else {
+            antdMessage.error(`请求失败，原因:{${resultMsg}}`);
+          }
+        })
+        .finally(() => {
+          setLoading(false);
+        });
     } else {
       form.setFieldsValue({ userType: 'all' });
     }
@@ -106,7 +112,7 @@ export default () => {
     });
   }, []);
 
-  const handleSubmit = async (status: any, isPrompt?: boolean) => {
+  const handleSubmit = async (status: any) => {
     await form.validateFields();
     const { advertiseName, imgs, siteLink, labelIds, displayOrder, disPlayTaps } =
       form.getFieldsValue();
@@ -136,55 +142,61 @@ export default () => {
         content: '确定上架当前内容？',
         okText: '上架',
         onOk: () => {
+          setLoading(true);
           auditImgs({
             ossUrls: params.imgs.map((item: any) => {
               return item.path;
             }),
-          }).then((result) => {
-            if (result.code === 0) {
-              addContentStreamAd(params).then((res) => {
-                if (res.code === 0) {
-                  setFormIsChange(false);
-                  antdMessage.success('上架成功');
-                  history.goBack();
-                } else {
-                  antdMessage.error(res.message);
-                }
-              });
-            } else {
-              Modal.confirm({
-                title: '风险提示',
-                content: result.message,
-                okText: '继续上架',
-                onOk: () => {
-                  addContentStreamAd(params).then((res) => {
-                    if (res.code === 0) {
-                      setFormIsChange(false);
-                      antdMessage.success('上架成功');
-                      history.goBack();
-                    } else {
-                      antdMessage.error(res.message);
-                    }
-                  });
-                },
-              });
-            }
-          });
+          })
+            .then((result) => {
+              if (result.code === 0) {
+                addContentStreamAd(params).then((res) => {
+                  if (res.code === 0) {
+                    setFormIsChange(false);
+                    antdMessage.success('上架成功');
+                    history.goBack();
+                  } else {
+                    antdMessage.error(res.message);
+                  }
+                });
+              } else {
+                Modal.confirm({
+                  title: '风险提示',
+                  content: result.message,
+                  okText: '继续上架',
+                  onOk: () => {
+                    addContentStreamAd(params).then((res) => {
+                      if (res.code === 0) {
+                        setFormIsChange(false);
+                        antdMessage.success('上架成功');
+                        history.goBack();
+                      } else {
+                        antdMessage.error(res.message);
+                      }
+                    });
+                  },
+                });
+              }
+            })
+            .finally(() => {
+              setLoading(false);
+            });
         },
       });
     } else {
-      addContentStreamAd(params).then((res) => {
-        if (res.code === 0) {
-          setFormIsChange(false);
-          antdMessage.success('暂存成功');
-          history.goBack();
-          if (isPrompt) {
+      addContentStreamAd(params)
+        .then((res) => {
+          if (res.code === 0) {
+            setFormIsChange(false);
+            antdMessage.success('暂存成功');
             history.goBack();
+          } else {
+            antdMessage.error(res.message);
           }
-        } else {
-          antdMessage.error(res.message);
-        }
-      });
+        })
+        .finally(() => {
+          setLoading(false);
+        });
     }
   };
 
@@ -222,6 +234,7 @@ export default () => {
     <PageContainer
       className={sc('page')}
       ghost
+      loading={loading}
       footer={[
         <>
           <Button
@@ -411,8 +424,7 @@ export default () => {
               key="submit"
               type="primary"
               onClick={() => {
-                handleSubmit(0, true);
-                // addRecommend(false);
+                handleSubmit(0);
               }}
             >
               暂存并离开
@@ -436,7 +448,7 @@ export default () => {
             key="submit"
             type="primary"
             onClick={() => {
-              handleSubmit(true);
+              handleSubmit(1);
             }}
           >
             上架
