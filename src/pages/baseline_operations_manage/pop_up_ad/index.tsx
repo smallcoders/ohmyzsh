@@ -286,10 +286,6 @@ export default () => {
     },
   ];
 
-  const handleDetail = () => {
-    window.open(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_POPUP_AD_DETAIL}`)
-  }
-
   const getSearchQuery = () => {
     const search = searchForm.getFieldsValue();
     return search;
