@@ -80,18 +80,20 @@ export default () => {
   }, []);
 
   const handleSubmit = async (status: number, isPrompt?: boolean) => {
-    await form.validateFields();
+    if (status === 1){
+      await form.validateFields();
+    }
     const {advertiseName, imgs, siteLink, labelIds} = form.getFieldsValue()
     const params: any = {
-      scope: userType === 'all' ? labelIds : 'PORTION_USER',
+      scope: userType === 'all' ? labelIds || '' : 'PORTION_USER',
       status,
-      imgs: imgs.map((item: any) => {
+      imgs: imgs?.map((item: any) => {
         return {path: item.url, id: item.resData?.id || item.uid}
-      }),
-      siteLink,
+      }) || [],
+      siteLink: siteLink || '',
       advertiseType: 'GLOBAL_FLOAT_ADS',
-      labelIds: userType === 'all' ? [] : labelIds,
-      advertiseName,
+      labelIds: userType === 'all' ? [] : labelIds || [],
+      advertiseName: advertiseName || '',
     }
     if (id) {
       params.id = parseInt(id)
