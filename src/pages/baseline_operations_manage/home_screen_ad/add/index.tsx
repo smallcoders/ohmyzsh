@@ -60,34 +60,34 @@ export default () => {
     onSubmit(state, isPrompt)
   },1000)
   const onSubmit = async (status: number, isPrompt?: boolean) => {
-    await contentInfoForm.validateFields();
-    const {advertiseName, imgs, countdown, siteLink, displayFrequency} = contentInfoForm.getFieldsValue();
-    const params: any = {
-      status,
-      advertiseName,
-      imgs: imgs 
-      ? imgs.map((item: any) => {
-        const image = new Image();
-        if (imgs) {
-          image.src = item.url;
-        }
-        return {
-          path: item.url, 
-          id: item.resData?.id || item.uid,
-          width: image.width,
-          high: image.height,
-        }
-      })
-      : undefined,
-      countdown,
-      siteLink,
-      displayFrequency,
-      advertiseType: 'SPLASH_ADS',
-      id: type === 'add' 
-      ? saveId ? saveId : undefined
-      : id
-    }
     if (status === 1) {
+      await contentInfoForm.validateFields();
+      const {advertiseName, imgs, countdown, siteLink, displayFrequency} = contentInfoForm.getFieldsValue();
+      const params: any = {
+        status,
+        advertiseName,
+        imgs: imgs 
+        ? imgs.map((item: any) => {
+          const image = new Image();
+          if (imgs) {
+            image.src = item.url;
+          }
+          return {
+            path: item.url, 
+            id: item.resData?.id || item.uid,
+            width: image.width,
+            high: image.height,
+          }
+        })
+        : undefined,
+        countdown,
+        siteLink,
+        displayFrequency,
+        advertiseType: 'SPLASH_ADS',
+        id: type === 'add' 
+        ? saveId ? saveId : undefined
+        : id
+      }
       Modal.confirm({
         title: '提示',
         content: '确定上架当前内容？',
@@ -198,7 +198,32 @@ export default () => {
       // } catch (error) {
       //   message.error(`暂存失败，原因：${error}`)
       // }
-
+      const {advertiseName, imgs, countdown, siteLink, displayFrequency} = contentInfoForm.getFieldsValue();
+      const params: any = {
+        status,
+        advertiseName,
+        imgs: imgs 
+        ? imgs.map((item: any) => {
+          const image = new Image();
+          if (imgs) {
+            image.src = item.url;
+          }
+          return {
+            path: item.url, 
+            id: item.resData?.id || item.uid,
+            width: image.width,
+            high: image.height,
+          }
+        })
+        : undefined,
+        countdown,
+        siteLink,
+        displayFrequency,
+        advertiseType: 'SPLASH_ADS',
+        id: type === 'add' 
+        ? saveId ? saveId : undefined
+        : id
+      }
       httpAddSplash(params).then((res: any) => {
         if (res.code === 0){
           setContentInfoFormChange(false)
@@ -403,7 +428,8 @@ export default () => {
               }, 100);
             },
             onOk() {
-              handleSubmit(0, true)
+              // handleSubmit(0, true)
+              onSubmitDebounce(0, true)
             },
           });
           return false;

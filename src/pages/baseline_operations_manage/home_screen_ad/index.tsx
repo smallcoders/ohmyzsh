@@ -3,9 +3,6 @@ import {
   message,
   Space,
   Popconfirm,
-  Tooltip,
-  Form,
-  Input,
   Image,
 } from 'antd';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
@@ -19,8 +16,7 @@ import { history, Access, useAccess } from 'umi';
 import './index.less'
 import scopedClasses from '@/utils/scopedClasses';
 import { routeName } from '../../../../config/routes';
-import dayjs from 'dayjs';
-import { httpMngLayout, httpAdvertiseList, httpUpOrDownAds } from '@/services/home-screen-ad';
+import { httpAdvertiseList, httpUpOrDownAds } from '@/services/home-screen-ad';
 
 const sc = scopedClasses('home-screen-ad');
 
@@ -35,6 +31,7 @@ const displayFrequencyEnum = {
   DAY_THREE_TIMES: '每天最多显示3次',
 };
 export default () => {
+  const access = useAccess();
   // 手动触发table 的 reload等操作
   const actionRef = useRef<ActionType>();
   // current pageSize
@@ -166,64 +163,66 @@ export default () => {
         return (
           <Space size="middle">
             {/* 需要调整的权限 */}
-            {/* <Access accessible={access['P_BLM_FWHGL']}> */}
             {record?.status !== 0 && (
               <a href="#" onClick={handleDetail.bind(null,record?.id)}>详情</a>
             )}
-            {/* </Access> */}
-            {record?.status === 3 && (
-              <Popconfirm
-                // icon={null}
-                title="确定上架么？"
-                okText="上架"
-                cancelText="取消"
-                onConfirm={() => soldOut(record?.id.toString(), 1)}
-              >
-                <a href="#">上架</a>
-              </Popconfirm>
-            )}
-            {record?.status === 1 && (
-              <Popconfirm
-                // icon={null}
-                title="确定下架么？"
-                okText="下架"
-                cancelText="取消"
-                onConfirm={() => soldOut(record?.id.toString(), 3)}
-              >
-                <a href="#">下架</a>
-              </Popconfirm>
-            )}
-            {/* <Access accessible={access['P_BLM_FWHGL']}> */}
-            {(record?.status === 3 || record?.status === 0) && (
-              <Button
-                key="2"
-                size="small"
-                type="link"
-                onClick={() => {
-                  history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_HOME_SCREEN_AD_ADD}?type=edit&id=${record?.id}`)
-                }}
-              >
-                编辑
-              </Button>
-            )}
-            {/* </Access> */}
-            {/* <Access accessible={access['P_BLM_FWHGL']}> */}
-            {(record?.status === 3 || record?.status === 0) && (
+            <Access accessible={access['PU_BLM_YYWGL']}>
+              {record?.status === 3 && (
                 <Popconfirm
-                  title={
-                    <div>
-                      <div>删除数据</div>
-                      <div>确定删除该服务号？</div>
-                    </div>
-                  }
-                  okText="确定"
+                  // icon={null}
+                  title="确定上架么？"
+                  okText="上架"
                   cancelText="取消"
-                  onConfirm={() => soldOut(record.id.toString(),2)}
+                  onConfirm={() => soldOut(record?.id.toString(), 1)}
                 >
-                  <a href="#">删除</a>
+                  <a href="#">上架</a>
                 </Popconfirm>
-            )}
-            {/* </Access> */}
+              )}
+            </Access>
+            <Access accessible={access['PU_BLM_YYWGL']}>
+              {record?.status === 1 && (
+                <Popconfirm
+                  // icon={null}
+                  title="确定下架么？"
+                  okText="下架"
+                  cancelText="取消"
+                  onConfirm={() => soldOut(record?.id.toString(), 3)}
+                >
+                  <a href="#">下架</a>
+                </Popconfirm>
+              )}
+            </Access>
+            <Access accessible={access['PA_BLM_YYWGL']}>
+              {(record?.status === 3 || record?.status === 0) && (
+                <Button
+                  key="2"
+                  size="small"
+                  type="link"
+                  onClick={() => {
+                    history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_HOME_SCREEN_AD_ADD}?type=edit&id=${record?.id}`)
+                  }}
+                >
+                  编辑
+                </Button>
+              )}
+            </Access>
+            <Access accessible={access['PD_BLM_YYWGL']}>
+              {(record?.status === 3 || record?.status === 0) && (
+                  <Popconfirm
+                    title={
+                      <div>
+                        <div>删除数据</div>
+                        <div>确定删除该服务号？</div>
+                      </div>
+                    }
+                    okText="确定"
+                    cancelText="取消"
+                    onConfirm={() => soldOut(record.id.toString(),2)}
+                  >
+                    <a href="#">删除</a>
+                  </Popconfirm>
+              )}
+            </Access>
           </Space>
         );
       },
@@ -257,7 +256,7 @@ export default () => {
         }}
         columns={columns}
         toolBarRender={() => [
-          // <Access accessible={access['P_BLM_FWHGL']}>
+          <Access accessible={access['PA_BLM_YYWGL']}>
             <Button
               key="button"
               icon={<PlusOutlined />}
@@ -267,7 +266,7 @@ export default () => {
             >
               新增
             </Button>
-          // </Access>,
+          </Access>,
         ]}
         pagination={{ size: 'default', showQuickJumper: true, defaultPageSize: 10 }}
       />
