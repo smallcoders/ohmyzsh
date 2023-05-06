@@ -22,6 +22,7 @@ type RouterParams = {
 };
 const { confirm } = Modal;
 export default () => {
+  const access = useAccess();
   /**
    * 当前的新增还是编辑
    */
@@ -235,18 +236,18 @@ export default () => {
       }}
       footer={[
         // access后端根据
-        // <Access accessible={access['PA_BLM_NRGL']}>
-        <React.Fragment>
-            <Button onClick={() => onSubmitDebounce(1)} disabled={isExporting} type="primary" htmlType="submit">
-              立即上架
-            </Button>
-        </React.Fragment>,
-        // </Access>,
-        // <Access accessible={access['PA_BLM_NRGL']}>
-        <React.Fragment>
-          <Button disabled={isExporting} onClick={() => onSubmitDebounce(0)}>暂存</Button>
-        </React.Fragment>,
-        // </Access>,
+        <Access accessible={access['PU_BLAM_KPGG']}>
+          <React.Fragment>
+              <Button onClick={() => onSubmitDebounce(1)} disabled={isExporting} type="primary" htmlType="submit">
+                立即上架
+              </Button>
+          </React.Fragment>
+        </Access>,
+        <Access accessible={access['PU_BLAM_KPGG']}>
+          <React.Fragment>
+            <Button disabled={isExporting} onClick={() => onSubmitDebounce(0)}>暂存</Button>
+          </React.Fragment>
+        </Access>,
         <Button onClick={() => {
           if (contentInfoFormChange) {
             setVisible(true);

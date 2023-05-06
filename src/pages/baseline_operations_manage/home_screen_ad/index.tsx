@@ -163,10 +163,12 @@ export default () => {
         return (
           <Space size="middle">
             {/* 需要调整的权限 */}
-            {record?.status !== 0 && (
-              <a href="#" onClick={handleDetail.bind(null,record?.id)}>详情</a>
-            )}
-            <Access accessible={access['PU_BLM_YYWGL']}>
+            {/* <Access accessible={access['PQ_BLAM_KPGG']}> */}
+              {record?.status !== 0 && (
+                <a href="#" onClick={handleDetail.bind(null,record?.id)}>详情</a>
+              )}
+            {/* </Access> */}
+            <Access accessible={access['PU_BLAM_KPGG']}>
               {record?.status === 3 && (
                 <Popconfirm
                   // icon={null}
@@ -179,7 +181,7 @@ export default () => {
                 </Popconfirm>
               )}
             </Access>
-            <Access accessible={access['PU_BLM_YYWGL']}>
+            <Access accessible={access['PU_BLAM_KPGG']}>
               {record?.status === 1 && (
                 <Popconfirm
                   // icon={null}
@@ -192,7 +194,7 @@ export default () => {
                 </Popconfirm>
               )}
             </Access>
-            <Access accessible={access['PA_BLM_YYWGL']}>
+            <Access accessible={access['PU_BLAM_KPGG']}>
               {(record?.status === 3 || record?.status === 0) && (
                 <Button
                   key="2"
@@ -206,7 +208,7 @@ export default () => {
                 </Button>
               )}
             </Access>
-            <Access accessible={access['PD_BLM_YYWGL']}>
+            <Access accessible={access['PD_BLAM_KPGG']}>
               {(record?.status === 3 || record?.status === 0) && (
                   <Popconfirm
                     title={
