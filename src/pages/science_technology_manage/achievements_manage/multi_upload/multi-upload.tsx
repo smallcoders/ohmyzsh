@@ -85,7 +85,7 @@ export default () => {
     multiple: true,
     maxCount: 1,
     accept: '.xlsx,.xls',
-    action: '/antelope-manage/common/upload',
+    action: '/antelope-common/common/file/upload/withAuthCheck',
     onChange(info) {
       const { status, name, response } = info?.file || {};
       if (status === 'done') {
