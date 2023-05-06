@@ -35,10 +35,10 @@ export default () => {
     PORTION_USER: '部分用户',
   };
   const handleDetail = (item: any) => {
-    window.open(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_DETAIL}?id=${item}`);
+    history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_DETAIL}?id=${item}`);
   };
   const handleStatisticalDetail = (item: any) => {
-    window.open(
+    history.push(
       `${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_STATISTICAL_DETAIL}?articleTypeId=${item?.articleTypeId}&typeName=${item?.typeName}`,
     );
   };
