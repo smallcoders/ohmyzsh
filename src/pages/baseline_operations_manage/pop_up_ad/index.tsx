@@ -27,7 +27,6 @@ import {
   getAdvertiseList,
   updateAdsStatus
 } from '@/services/baseline'
-import dayjs from 'dayjs';
 
 const sc = scopedClasses('pop-up-ad');
 const statusObj = {
@@ -115,6 +114,14 @@ export default () => {
     })
   }
 
+  const handleScopeLabel = (record: any) => {
+    console.log(record)
+    if (record.scope != 'PORTION_USER') {
+      return userTypeObj[record.scope]
+    }
+    return record.scope
+  }
+
   const columns = [
     {
       title: '序号',
@@ -135,7 +142,7 @@ export default () => {
       title: '图片',
       dataIndex: 'advertiseOssRelationList',
       isEllipsis: true,
-      width: 200,
+      width: 120,
       render: (_: any) => {
         return (
           <div className="img-tr">
@@ -154,7 +161,7 @@ export default () => {
     },
     {
       title: '触发机制',
-      width: 150,
+      width: 120,
       dataIndex: 'triggerMechanism',
       render: (_: string) => {
         return <div className={`state${_}`}>{triggerTypeObj[_] || '--'}</div>;
@@ -162,11 +169,24 @@ export default () => {
     },
     {
       title: '作用范围',
-      width: 150,
       dataIndex: 'scope',
-      render: (_: number) => {
-        return <div className={`state${_}`}>{userTypeObj[_] || '--'}</div>;
-      },
+      width: 200,
+      render: (scope: string, _record: any) => {
+        let str:string = ''
+        if(_record.labels && _record.labels.length > 0) {
+          str = _record.labels.map((item: any, index: number) => {
+            if (index === _record.labels.length - 1) {
+              return item.labelName;
+            }
+            return item.labelName + '、';
+          }).join('');
+        }
+        return scope == 'PORTION_USER' ? (
+          <div>{
+            _record.labels ? str : (<span>{userTypeObj[scope] || '--'}</span>)
+          }</div>
+        ) : (<span>{userTypeObj[scope] || '--'}</span>)
+      }
     },
     {
       title: '开启时间段',
@@ -210,36 +230,12 @@ export default () => {
         return (
           <>
             {
-              record.status === 0 &&
-              <Button
-                size="small"
-                type="link"
-                onClick={() => {
-                  history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_POPUP_AD_ADD}?id=${record.id}`)
-                }}
-              >
-                编辑
-              </Button>
-            }
-            {
-              record.status === 0 &&
-              <Button
-                size="small"
-                type="link"
-                onClick={() => {
-                  handleDelete(record)
-                }}
-              >
-                删除
-              </Button>
-            }
-            {
               [1,3].indexOf(record.status) !== -1 &&
               <Button
                 size="small"
                 type="link"
                 onClick={() => {
-                  history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_POPUP_AD_DETAIL}?id=${record.id}`)
+                  window.open(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_POPUP_AD_DETAIL}?id=${record.id}`)
                 }}
               >
                 详情
@@ -267,6 +263,30 @@ export default () => {
                 }}
               >
                 下架
+              </Button>
+            }
+            {
+              (record.status === 0 || record.status === 3) &&
+              <Button
+                size="small"
+                type="link"
+                onClick={() => {
+                  history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_POPUP_AD_ADD}?id=${record.id}`)
+                }}
+              >
+                编辑
+              </Button>
+            }
+            {
+              (record.status === 0 || record.status === 3) &&
+              <Button
+                size="small"
+                type="link"
+                onClick={() => {
+                  handleDelete(record)
+                }}
+              >
+                删除
               </Button>
             }
           </>

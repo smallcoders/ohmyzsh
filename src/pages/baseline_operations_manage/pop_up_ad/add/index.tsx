@@ -5,11 +5,12 @@ import moment from 'moment';
 import { ExclamationCircleOutlined, UploadOutlined } from '@ant-design/icons';
 import { history, Access, useAccess, Link, Prompt } from 'umi';
 import './index.less';
+import { routeName } from '@/../config/routes';
 import scopedClasses from '@/utils/scopedClasses';
 import { addPopupAd, getGlobalFloatAdDetail, getAllLayout, getPartLabels, auditImgs } from '@/services/baseline';
+import UploadImageFormItem from '@/pages/purchase_manage/components/UploadImageFormItem';
 import UploadFormFile from '@/components/upload_form/upload-form-asso';
 import UploaImageV2 from '@/components/upload_form/upload-image-v2';
-import { routeName } from '../../../../../config/routes';
 
 const sc = scopedClasses('pop-up-ad-add');
 const allLabels = [
@@ -50,6 +51,7 @@ export default () => {
   }
 
   const onSubmit = async (status: number, isPrompt?: boolean) => {
+    console.log(form.getFieldsValue())
     await form.validateFields();
     const { 
       advertiseName, //名称
@@ -106,7 +108,7 @@ export default () => {
           }).then((result) => {
             if (result.code === 0){
               cb()
-              history.goBack()
+              window.open(routeName.BASELINE_OPERATIONS_MANAGEMENT_POPUP_AD)
             } else {
               Modal.confirm({
                 title: '风险提示',
@@ -220,7 +222,7 @@ export default () => {
         breadcrumb: (
           <Breadcrumb>
             <Breadcrumb.Item>
-              <Link to="/baseline-operations-management/pop-up-ad">全局悬浮窗广告</Link>
+              <Link to="/baseline-operations-management/pop-up-ad">弹窗广告</Link>
             </Breadcrumb.Item>
             <Breadcrumb.Item>{id ? '编辑' : '新增'}</Breadcrumb.Item>
           </Breadcrumb>
@@ -254,6 +256,7 @@ export default () => {
         }}
       />
       <div className={sc('container')}>
+        <div className="title">弹窗广告信息</div>
         <Form
           form={form}
           name="basic"
@@ -274,6 +277,7 @@ export default () => {
             {/* <UploadFormFile
               listType="picture-card"
               className="avatar-uploader"
+              action={'/antelope-common/common/file/upload/record'}
               maxCount={1}
               accept=".png,.jpeg,.jpg,.gif"
               tooltip={<span className={'tooltip'}>图片格式仅支持JPG、PNG、JPEG、GIF</span>}

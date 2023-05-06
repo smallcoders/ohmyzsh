@@ -676,7 +676,7 @@ export default [
           },
           {
             path: routeName.BASELINE_OPERATIONS_MANAGEMENT_POPUP_AD + '/index',
-            name: '弹窗广告',
+            name: '弹窗广告管理',
             // access: 'M_BLM_NRGL',
             hideInBreadcrumb: true,
             component: './baseline_operations_manage/pop_up_ad/index',
