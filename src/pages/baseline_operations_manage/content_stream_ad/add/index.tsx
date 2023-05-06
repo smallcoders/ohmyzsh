@@ -9,8 +9,8 @@ import {
   Select,
 } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
-import React, { useEffect, useState } from 'react';
-import { history, Access, useAccess, Link } from 'umi';
+import { useEffect, useState } from 'react';
+import { history, Link } from 'umi';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import { UploadOutlined } from '@ant-design/icons';
@@ -122,9 +122,11 @@ export default () => {
   }, []);
 
   const handleSubmit = async (status: any) => {
-    await form.validateFields();
+    if (status === 1) await form.validateFields();
     const { advertiseName, imgs, siteLink, labelIds, displayOrder, disPlayTaps } =
       form.getFieldsValue();
+    console.log(disPlayTaps, 'disPlayTaps');
+
     const params: any = {
       displayOrder,
       advertiseName,
@@ -135,11 +137,12 @@ export default () => {
               return { path: item.url, id: item.resData?.id || item.uid };
             })
           : imgs,
-      disPlayTaps: disPlayTaps[0].value
-        ? disPlayTaps.map((item: any) => {
-            return item.value;
-          })
-        : disPlayTaps,
+      disPlayTaps:
+        disPlayTaps && disPlayTaps[0]?.value
+          ? disPlayTaps.map((item: any) => {
+              return item.value;
+            })
+          : disPlayTaps,
       scope: userType === 'all' ? labelIds : 'PORTION_USER',
       labelIds: userType === 'all' ? [] : [...labelIds],
       advertiseType: 'CONTENT_STREAM_ADS',

@@ -22,6 +22,7 @@ type RouterParams = {
 };
 const { confirm } = Modal;
 export default () => {
+  const access = useAccess();
   /**
    * 当前的新增还是编辑
    */
@@ -101,7 +102,8 @@ export default () => {
                 if (res.code === 0){
                   setContentInfoFormChange(false)
                   message.success('上架成功')
-                  history.goBack()
+                  // history.goBack()
+                  history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_HOME_SCREEN_AD}`)
                 } else {
                   message.error(res.message)
                 }
@@ -116,7 +118,8 @@ export default () => {
                     if (res.code === 0){
                       setContentInfoFormChange(false)
                       message.success('上架成功')
-                      history.goBack()
+                      // history.goBack()
+                      history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_HOME_SCREEN_AD}`)
                     } else {
                       message.error(res.message)
                     }
@@ -127,77 +130,7 @@ export default () => {
           })
         },
       })
-      // contentInfoForm.validateFields().then( async (values: any) => {
-      //   console.log('上架搜集的表单', values)
-      //   const image = new Image();
-      //   image.src = values.imgs.path;
-      //   console.log('检查图片', image.width, image.height)
-      //   // 手动添加上广告类型
-      //   setContentInfoFormChange(false);
-      //   try {
-      //     const res = await httpAddSplash({
-      //       ...values,
-      //       status: 1,
-      //       imgs: [{
-      //         id: values.imgs.id,
-      //         path: values.imgs.path,
-      //         width: image.width,
-      //         high: image.height,
-      //       }], // 调整为数组格式
-      //       advertiseType: 'SPLASH_ADS',
-      //       // imgs: undefined
-      //       id: type === 'add' 
-      //         ? saveId ? saveId : undefined
-      //         : id
-      //     })
-      //     if (res?.code === 0) {
-      //       message.success('上架成功');
-      //       setTimeout(() => {
-      //         history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_HOME_SCREEN_AD}`)
-      //       }, 500);
-      //     } else {
-      //       message.error(`新增失败,原因${res?.message}`)
-      //     }
-      //   } catch (error) {
-      //     message.error(`新增失败，原因：${error}`)
-      //   }
-      // })
     } else {
-      // const formValues = contentInfoForm.getFieldsValue();
-      // console.log('暂存搜集的表单', formValues)
-      // const image = new Image();
-      // if (formValues.imgs) {
-      //   image.src = formValues.imgs.path;
-      // }
-      // try {
-      //   const res = await httpAddSplash({
-      //     ...formValues,
-      //     status: 0,
-      //     imgs: formValues.imgs
-      //     ? [{
-      //       id: formValues.imgs.id,
-      //       path: formValues.imgs.path,
-      //       width: image.width,
-      //       high: image.height,
-      //     }]
-      //     : undefined, // 调整为数组格式
-      //     advertiseType: 'SPLASH_ADS',
-      //     // imgs: undefined
-      //     id: type === 'add' 
-      //       ? saveId ? saveId : undefined 
-      //       : id
-      //   })
-      //   if (res?.code === 0) {
-      //     message.success('暂存成功');
-      //     // 保存id
-      //     setSaveId(res?.result)
-      //     // history.goBack()
-      //   } else {
-      //     message.error(`暂存失败,原因${res?.message}`)
-      //   }
-      // } catch (error) {
-      //   message.error(`暂存失败，原因：${error}`)
-      // }
       const {advertiseName, imgs, countdown, siteLink, displayFrequency} = contentInfoForm.getFieldsValue();
       const params: any = {
         status,
@@ -226,6 +159,7 @@ export default () => {
       }
       httpAddSplash(params).then((res: any) => {
         if (res.code === 0){
+          setSaveId(res?.result)
           setContentInfoFormChange(false)
           message.success('暂存成功')
           if (isPrompt) {
@@ -284,32 +218,6 @@ export default () => {
     }
   },[])
 
-  // const soldOut = () => {
-  //   return new Promise((resolve, reject) => {
-  //     contentInfoForm.validateFields().then( async (values: any) => {
-  //       console.log('上架搜集的表单', values)
-  //       // 手动添加上广告类型
-  //       try {
-  //         const res = await httpAddSplash({
-  //           ...values,
-  //           imgs: [{
-  //             id: values.imgs,
-  //             path: ''
-  //           }] // 调整为数组格式
-  //         })
-  //         if (res?.code === 0) {
-  //           console.log('查看结果')
-  //         } else {
-  //           message.error(`新增失败,原因${res?.message}`)
-  //         }
-  //       } catch (error) {
-  //         message.error(`新增失败，原因：${error}`)
-  //       }
-
-  //     })
-  //   })
-  // }
-
 
   return (
     <PageContainer
@@ -328,55 +236,18 @@ export default () => {
       }}
       footer={[
         // access后端根据
-        // <Access accessible={access['PA_BLM_NRGL']}>
-        <React.Fragment>
-          {/* {!isTry && (
-            <Popconfirm
-              title={
-                <div>
-                  <div>提示</div>
-                  <div>若设定预约发布，则会在设定的时间进行发布</div>
-                </div>
-              }
-              okText="发布"
-              cancelText="取消"
-              onConfirm={() => onSubmitDebounce(1)}
-            >
-              <Button disabled={isExporting} type="primary" htmlType="submit">
-                发布
-              </Button>
-            </Popconfirm>
-          )}
-          {isTry && (
-            <Button disabled={isExporting} type="primary" htmlType="submit" onClick={() => onSubmitDebounce(1)}>
-              发布
-            </Button>
-          )} */}
-            {/* <Popconfirm
-              title={
-                <div>
-                  <div>提示</div>
-                  <div>确定上架当前内容？</div>
-                </div>
-              }
-              okText="发布"
-              cancelText="取消"
-              onConfirm={() => onSubmitDebounce(1)}
-            >
-              <Button disabled={isExporting} type="primary" htmlType="submit">
+        <Access accessible={access['PU_BLAM_KPGG']}>
+          <React.Fragment>
+              <Button onClick={() => onSubmitDebounce(1)} disabled={isExporting} type="primary" htmlType="submit">
                 立即上架
               </Button>
-            </Popconfirm> */}
-            <Button onClick={() => onSubmitDebounce(1)} disabled={isExporting} type="primary" htmlType="submit">
-              立即上架
-            </Button>
-        </React.Fragment>,
-        // </Access>,
-        // <Access accessible={access['PA_BLM_NRGL']}>
-        <React.Fragment>
-          <Button disabled={isExporting} onClick={() => onSubmitDebounce(0)}>暂存</Button>
-        </React.Fragment>,
-        // </Access>,
+          </React.Fragment>
+        </Access>,
+        <Access accessible={access['PU_BLAM_KPGG']}>
+          <React.Fragment>
+            <Button disabled={isExporting} onClick={() => onSubmitDebounce(0)}>暂存</Button>
+          </React.Fragment>
+        </Access>,
         <Button onClick={() => {
           if (contentInfoFormChange) {
             setVisible(true);
@@ -388,33 +259,6 @@ export default () => {
     >
       <Prompt
         when={contentInfoFormChange}
-        // message={'离开此页面，将不会保存当前编辑的内容，确认离开吗？'}
-        // message={(location) => {
-        //   // 可以拿到之前的路由,和参数
-        //   // console.log('location', location)
-        //   confirm({
-        //     title: '要在离开之前对填写的信息进行保存吗?',
-        //     icon: null,
-        //     // cancelText: '放弃修改并离开',
-        //     // okText: '保存',
-        //     onCancel() {
-        //       // console.log(location);
-        //       // setFormIsChange(false);
-        //       // setTimeout(() => {
-        //       //   history.push(location.pathname);
-        //       // }, 1000);
-        //     },
-        //     onOk() {
-        //       // onOk(() => {
-        //       //   setFormIsChange(false);
-        //       //   setTimeout(() => {
-        //       //     history.push(location.pathname);
-        //       //   }, 1000);
-        //       // });
-        //     },
-        //   });
-        //   return false;
-        // }}
         message={(location: any) => {
           Modal.confirm({
             title: '要在离开之前对填写的信息进行保存吗?',
@@ -428,7 +272,6 @@ export default () => {
               }, 100);
             },
             onOk() {
-              // handleSubmit(0, true)
               onSubmitDebounce(0, true)
             },
           });

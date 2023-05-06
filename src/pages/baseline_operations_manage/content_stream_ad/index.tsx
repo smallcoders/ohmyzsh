@@ -26,14 +26,13 @@ export default () => {
       history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_ADD}`);
     }
   };
-  const scopeMap = {
+  const userTypeObj = {
     ALL_USER: '全部用户',
     ALL_LOGIN_USE: '全部登陆用户',
     ALL_NOT_LOGIN_USE: '全部未登录用户',
-    ALL_LOGIN_USER: '全部登陆用户',
-    ALL_NOT_LOGIN_USER: '全部未登录用户',
     PORTION_USER: '部分用户',
   };
+
   const handleDetail = (item: any) => {
     history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_DETAIL}?id=${item}`);
   };
@@ -70,7 +69,7 @@ export default () => {
     0: '暂存',
   };
   // 拿到当前角色的access权限兑现
-  const access = useAccess();
+  const access: any = useAccess();
   const [dataSource, setDataSource] = useState<any>([]);
   const [searchContent, setSearChContent] = useState<any>({});
   const [loading, setLoading] = useState<any>(false);
@@ -264,7 +263,7 @@ export default () => {
         );
         return (
           <div className="typeBox">
-            {arr?.length
+            {arr && arr.length
               ? arr.map((item: any) => {
                   return (
                     <div>
@@ -282,15 +281,30 @@ export default () => {
       dataIndex: 'displayOrder',
       width: 150,
       render: (displayOrder: any) => {
-        return <span>{displayOrder}</span>;
+        return <span>{displayOrder || '--'}</span>;
       },
     },
     {
       title: '作用范围',
       width: 150,
       dataIndex: 'scope',
-      render: (scope: string) => {
-        return <span>{scopeMap[scope] || '--'}</span>;
+      render: (scope: string, _record: any) => {
+        let str: string = '';
+        if (_record.labels && _record.labels.length > 0) {
+          str = _record.labels
+            .map((item: any, index: number) => {
+              if (index === _record.labels.length - 1) {
+                return item.labelName;
+              }
+              return item.labelName + '、';
+            })
+            .join('');
+        }
+        return scope == 'PORTION_USER' ? (
+          <div>{_record.labels ? str : <span>{userTypeObj[scope] || '--'}</span>}</div>
+        ) : (
+          <span>{userTypeObj[scope] || '--'}</span>
+        );
       },
     },
     {
@@ -357,7 +371,7 @@ export default () => {
                 详情
               </Button>
             )}
-            <Access accessible={access.PD_BLM_YYWGL}>
+            <Access accessible={access.PD_BLAM_NRLGG}>
               {[0, 3].indexOf(record.status) !== -1 && (
                 <Button
                   size="small"
@@ -370,7 +384,7 @@ export default () => {
                 </Button>
               )}
             </Access>
-            <Access accessible={access.PU_BLM_YYWGL}>
+            <Access accessible={access.PU_BLAM_NRLGG}>
               {[0, 3].indexOf(record.status) !== -1 && (
                 <Button
                   size="small"
@@ -415,7 +429,7 @@ export default () => {
       <StaCard />
       {useSearchNode()}
       <div className={sc('container-table-body')}>
-        <Access accessible={access.PA_BLM_YYWGL}>
+        <Access accessible={access.PA_BLAM__NRLGG}>
           <Button
             type="primary"
             style={{ marginBottom: '10px' }}
