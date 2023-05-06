@@ -228,7 +228,7 @@ export default () => {
                 详情
               </Button>
             }
-            <Access accessible={access['PU_BLM_YYWGL']}>
+            <Access accessible={access['PU_BLAM_TKGG']}>
             {
               record.status === 3 &&
               <Button
@@ -266,7 +266,7 @@ export default () => {
               </Button>
             }
             </Access>
-            <Access accessible={access['PD_BLM_YYWGL']}>
+            <Access accessible={access['PD_BLAM_TKGG']}>
             {
               (record.status === 0 || record.status === 3) &&
               <Button
@@ -350,7 +350,7 @@ export default () => {
   return (
     <PageContainer className={sc('container')}>
       {useSearchNode()}
-      <Access accessible={access['PA_BLM_YYWGL']}>
+      <Access accessible={access['PA_BLAM_TKGG']}>
       <div className={sc('container-table-header')}>
         <div className="title">
           <Button
