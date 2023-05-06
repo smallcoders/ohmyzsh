@@ -1,6 +1,6 @@
 import { Button, Tag, message as antdMessage } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { history } from 'umi';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';

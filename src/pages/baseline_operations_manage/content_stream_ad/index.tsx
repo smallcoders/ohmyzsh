@@ -69,7 +69,7 @@ export default () => {
     0: '暂存',
   };
   // 拿到当前角色的access权限兑现
-  const access = useAccess();
+  const access: any = useAccess();
   const [dataSource, setDataSource] = useState<any>([]);
   const [searchContent, setSearChContent] = useState<any>({});
   const [loading, setLoading] = useState<any>(false);
