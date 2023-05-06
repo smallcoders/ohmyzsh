@@ -395,6 +395,13 @@ export async function addGlobalFloatAd(data?: Record<string, any>) {
     data,
   });
 }
+// 新增内容流广告
+export async function addContentStreamAd(data?: Record<string, any>) {
+  return request<any>(`/antelope-industrial/mng/add/content-stream/ads`, {
+    method: 'post',
+    data,
+  });
+}
 
 // 全局悬浮窗广告详情
 export async function getGlobalFloatAdDetail(id: any) {
@@ -426,28 +433,20 @@ export async function getAdvertiseList(data?: Record<string, any>) {
   });
 }
 
-// 上架/下架/刪除接口
-export async function upOrDownAdvertise(params: { id: any; status: any }) {
-  return request<any>(`/antelope-industrial/up-or-down/ads/${params.id}/${params.status}`, {
-    method: 'post',
-  });
-}
-
 // 获取广告列表
-export async  function getGlobalFloatAds(data?: Record<string, any>) {
+export async function getGlobalFloatAds(data?: Record<string, any>) {
   return request<any>(`/antelope-industrial/mng/advertise/list`, {
     method: 'post',
-    data
+    data,
   });
 }
 
 // 删除
-export async  function updateAdsStatus(id: number, status: number) {
+export async function updateAdsStatus(id: number, status: number) {
   return request<any>(`/antelope-industrial/mng/up-or-down/ads/${id}/${status}`, {
     method: 'post',
   });
 }
-
 
 // 版内容流广告管理-各个版面的数量
 export async function getAdvertiseDiffTypeNum() {
@@ -462,16 +461,24 @@ export async function getAdvertiseNumByType(id: any) {
   });
 }
 
+// 新增弹窗广告
+export async function addPopupAd(data?: Record<string, any>) {
+  return request<any>(`/antelope-industrial/mng/add/pop-up/ads`, {
+    method: 'post',
+    data,
+  });
+}
+
 // 审核
-export async  function auditImgs(data?: Record<string, any>) {
+export async function auditImgs(data?: Record<string, any>) {
   return request<any>(`/antelope-industrial/mng/advertise/img/audit`, {
     method: 'post',
-    data
+    data,
   });
 }
 
 // 悬浮弹窗统计
-export async  function getGobleFloatAdsStatistics() {
+export async function getGobleFloatAdsStatistics() {
   return request<any>(`/antelope-industrial/mng/advertise/getGobleFloatAdsStatistics`, {
     method: 'get',
   });

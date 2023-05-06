@@ -1,6 +1,6 @@
 import {
   Button,
-  message,
+  message as antdMessage,
   Space,
   Popconfirm,
   Tooltip,
@@ -9,6 +9,7 @@ import {
   Col,
   Select,
   Input,
+  Modal
 } from 'antd';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import type SolutionTypes from '@/types/solution';
@@ -23,7 +24,8 @@ import type Common from '@/types/common';
 import scopedClasses from '@/utils/scopedClasses';
 import { routeName } from '../../../../config/routes';
 import {
-  getAdvertiseList
+  getAdvertiseList,
+  updateAdsStatus
 } from '@/services/baseline'
 import dayjs from 'dayjs';
 
@@ -73,6 +75,46 @@ export default () => {
     }
   };
 
+  const handleDelete = (record: any) => {
+    console.log(record)
+    Modal.confirm({
+      title: '删除数据',
+      content: '删除该弹窗广告后，系统将不再推荐该广告，确定删除？',
+      okText: '删除',
+      onOk: () => {
+        updateAdsStatus(record.id, 2).then((res) => {
+          if (res.code === 0){
+            const { totalCount, pageIndex, pageSize } = pageInfo
+            const newTotal = totalCount - 1 || 1;
+            const newPageTotal = Math.ceil(newTotal / pageSize) || 1
+            getPage(pageIndex >  newPageTotal ? newPageTotal : pageIndex)
+            antdMessage.success(`删除成功`);
+          } else {
+            antdMessage.error(res.message);
+          }
+        })
+      },
+    })
+  }
+
+  const handleUpOrDown = (record: any) => {
+    Modal.confirm({
+      title: '提示',
+      content: record.status === 1 ? '确定将内容下架？' : '确定将内容上架？',
+      okText: record.status === 1 ? '下架' : '上架',
+      onOk: () => {
+        updateAdsStatus(record.id, record.status === 1 ? 3 : 1).then((res) => {
+          if (res.code === 0){
+            getPage(pageInfo.pageIndex)
+            antdMessage.success(record.status === 1 ? '下架成功' : `上架成功`);
+          } else {
+            antdMessage.error(res.message);
+          }
+        })
+      },
+    })
+  }
+
   const columns = [
     {
       title: '序号',
@@ -91,9 +133,24 @@ export default () => {
     },
     {
       title: '图片',
-      dataIndex: 'tmpDesc',
+      dataIndex: 'advertiseOssRelationList',
       isEllipsis: true,
-      width: 250,
+      width: 200,
+      render: (_: any) => {
+        return (
+          <div className="img-tr">
+            {
+              _.length ? _?.map((item: any, index: number) => {
+                return (
+                  <div className="img-box">
+                    <img src={item.ossUrl} key={index} alt='' />
+                  </div>
+                )
+              }) : '--'
+            }
+          </div>
+        )
+      },
     },
     {
       title: '触发机制',
@@ -150,7 +207,70 @@ export default () => {
       hideInSearch: true,
       width: 200,
       render: (_: any, record: any) => {
-        return <span onClick={handleDetail.bind(null)}>详情</span>
+        return (
+          <>
+            {
+              record.status === 0 &&
+              <Button
+                size="small"
+                type="link"
+                onClick={() => {
+                  history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_POPUP_AD_ADD}?id=${record.id}`)
+                }}
+              >
+                编辑
+              </Button>
+            }
+            {
+              record.status === 0 &&
+              <Button
+                size="small"
+                type="link"
+                onClick={() => {
+                  handleDelete(record)
+                }}
+              >
+                删除
+              </Button>
+            }
+            {
+              [1,3].indexOf(record.status) !== -1 &&
+              <Button
+                size="small"
+                type="link"
+                onClick={() => {
+                  history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_POPUP_AD_DETAIL}?id=${record.id}`)
+                }}
+              >
+                详情
+              </Button>
+            }
+            {
+              record.status === 3 &&
+              <Button
+                size="small"
+                type="link"
+                onClick={() => {
+                  handleUpOrDown(record)
+                }}
+              >
+                上架
+              </Button>
+            }
+            {
+              record.status === 1 &&
+              <Button
+                size="small"
+                type="link"
+                onClick={() => {
+                  handleUpOrDown(record)
+                }}
+              >
+                下架
+              </Button>
+            }
+          </>
+        )
       },
     },
   ];
