@@ -264,13 +264,15 @@ export default () => {
         );
         return (
           <div className="typeBox">
-            {arr.map((item: any) => {
-              return (
-                <div>
-                  <Tag color="#0068ff">{item.label}</Tag>
-                </div>
-              );
-            })}
+            {arr?.length
+              ? arr.map((item: any) => {
+                  return (
+                    <div>
+                      <Tag color="#0068ff">{item.label}</Tag>
+                    </div>
+                  );
+                })
+              : '--'}
           </div>
         );
       },
@@ -311,11 +313,11 @@ export default () => {
     },
     {
       title: '曝光量',
-      dataIndex: 'createByName',
+      dataIndex: 'exposureCount',
       width: 200,
-      sorter: (a: any, b: any) => a.createByName - b.createByName,
-      render: (createByName: string) => {
-        return <span>{createByName || 0}</span>;
+      sorter: (a: any, b: any) => a.exposureCount - b.exposureCount,
+      render: (exposureCount: string) => {
+        return <span>{exposureCount || 0}</span>;
       },
     },
     {
@@ -344,29 +346,18 @@ export default () => {
         }
         return (
           <div style={{ whiteSpace: 'break-spaces' }}>
-            <Access accessible={access.PD_BLM_SSRDGL}>
-              {[1, 3].indexOf(record.status) !== -1 && (
-                <Button
-                  size="small"
-                  type="link"
-                  onClick={() => {
-                    handleDetail(record.id);
-                  }}
-                >
-                  详情
-                </Button>
-              )}
-              {[0, 3].indexOf(record.status) !== -1 && (
-                <Button
-                  size="small"
-                  type="link"
-                  onClick={() => {
-                    handleAdd(record.id);
-                  }}
-                >
-                  编辑
-                </Button>
-              )}
+            {[1, 3].indexOf(record.status) !== -1 && (
+              <Button
+                size="small"
+                type="link"
+                onClick={() => {
+                  handleDetail(record.id);
+                }}
+              >
+                详情
+              </Button>
+            )}
+            <Access accessible={access.PD_BLM_YYWGL}>
               {[0, 3].indexOf(record.status) !== -1 && (
                 <Button
                   size="small"
@@ -376,6 +367,19 @@ export default () => {
                   }}
                 >
                   删除
+                </Button>
+              )}
+            </Access>
+            <Access accessible={access.PU_BLM_YYWGL}>
+              {[0, 3].indexOf(record.status) !== -1 && (
+                <Button
+                  size="small"
+                  type="link"
+                  onClick={() => {
+                    handleAdd(record.id);
+                  }}
+                >
+                  编辑
                 </Button>
               )}
               {record.status === 1 && (
@@ -411,7 +415,7 @@ export default () => {
       <StaCard />
       {useSearchNode()}
       <div className={sc('container-table-body')}>
-        <Access accessible={access.PA_BLM_SSRDGL}>
+        <Access accessible={access.PA_BLM_YYWGL}>
           <Button
             type="primary"
             style={{ marginBottom: '10px' }}
