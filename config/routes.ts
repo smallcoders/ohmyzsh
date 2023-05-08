@@ -266,7 +266,8 @@
   BASELINE_SERVICE_NUMBER_MANAGEMENT: '/baseline/baseline-service-number/management', // 服务号管理
   BASELINE_SERVICE_NUMBER_MANAGEMENT_DETAIL: '/baseline/baseline-service-number/management/detail', // 服务号管理
   BASELINE_SERVICE_NUMBER_MANAGEMENT_DRAFTS_ADD: '/baseline/baseline-service-number/management/drafts/add', // 草稿箱add
-  BASELINE_HOTSPOT_MANAGE: 'baseline-hotspot-manage'
+  BASELINE_HOTSPOT_MANAGE: 'baseline-hotspot-manage',
+  BASELINE_VERSION_UPDATING_MANAGE: '/baseline/version-updating', // 版本更新管理
 };
 
 export default [
@@ -609,6 +610,13 @@ export default [
             component: './baseline/user-posting/detail/index',
           },
         ],
+      },
+      {
+        path: routeName.BASELINE_VERSION_UPDATING_MANAGE,
+        name: '版本更新管理',
+        // code: 'M_OA_LJ',
+        // access: 'M_OA_LJ',
+        component: './baseline/version_updating/index',
       },
     ],
   },
