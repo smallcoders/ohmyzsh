@@ -120,3 +120,18 @@ export async function getOrderNum(tmpId: string) {
     method: 'POST',
   });
 }
+
+// 数字化应用商品管理-商品管理
+/**
+ * 分页查询
+ * @param params
+ */
+export async function pageQuery(data: any) {
+  return request<any>(
+    '/antelope-pay/mng/product/productManage/page',
+    {
+      method: 'POST',
+      data: { ...data, pageIndex: data.current },
+    },
+  );
+}
