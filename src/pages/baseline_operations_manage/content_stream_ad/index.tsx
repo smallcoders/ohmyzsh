@@ -88,20 +88,24 @@ export default () => {
   const [searchContent, setSearChContent] = useState<any>({});
   const [loading, setLoading] = useState<any>(false);
   const [searchForm] = Form.useForm();
-
   const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
     pageIndex: 1,
     pageSize: 10,
     totalCount: 0,
     pageTotal: 0,
   });
-  const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
+  const getPage = async (
+    exposureOrder: any,
+    pageIndex: number = 1,
+    pageSize = pageInfo.pageSize,
+  ) => {
     setLoading(true);
     try {
       const { result, totalCount, pageTotal, code, message } = await getAdvertiseList({
         pageIndex,
         pageSize,
         advertiseType: 'CONTENT_STREAM_ADS',
+        exposureOrder,
         ...searchContent,
       });
       setLoading(false);
@@ -133,6 +137,15 @@ export default () => {
         setStaNumArr(res.result);
       }
     });
+  };
+  const handleTableChange = (pagination, filters, sorter, extra) => {
+    if (sorter.field === 'exposureCount' && sorter.order === 'ascend') {
+      getPage('ASC');
+    } else if (sorter.field === 'exposureCount' && sorter.order === 'descend') {
+      getPage('DESC');
+    } else {
+      getPage(null);
+    }
   };
   // 删除
   const remove = async (record: any) => {
@@ -177,7 +190,7 @@ export default () => {
 
   useEffect(() => {
     init();
-    getPage();
+    getPage(null);
   }, [searchContent]);
   // 搜索模块
   const useSearchNode = (): React.ReactNode => {
@@ -256,7 +269,7 @@ export default () => {
         return (
           <div className="img-tr">
             {advertiseOssRelationList.length
-              ? advertiseOssRelationList?.map((item: any, index: number) => {
+              ? advertiseOssRelationList?.map((item: any) => {
                   return (
                     <div className="img-box">
                       <Image
@@ -352,7 +365,14 @@ export default () => {
       title: '曝光量',
       dataIndex: 'exposureCount',
       width: 200,
-      sorter: (a: any, b: any) => a.exposureCount - b.exposureCount,
+      onHeaderCell: () => {
+        return {
+          onClick: (e: any) => {
+            console.log(e);
+          },
+        };
+      },
+      sorter: true,
       render: (exposureCount: string) => {
         return <span>{exposureCount || 0}</span>;
       },
@@ -469,6 +489,7 @@ export default () => {
           bordered
           columns={columns}
           dataSource={dataSource}
+          onChange={handleTableChange}
           scroll={{ x: 1000 }}
           pagination={
             pageInfo.totalCount === 0
