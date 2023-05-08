@@ -44,6 +44,7 @@ export default () => {
             advertiseName: result.advertiseName,
             labelIds: result.scope === 'PORTION_USER' ? result.labelIds : result.scope,
             siteLink: result.siteLink,
+            triggerAddress: result.triggerAddress,
             userType: result.scope !== 'PORTION_USER' ? 'all' : 'part',
             imgs: result.imgRelations?.length ? result.imgRelations?.map((item: any) => {
               return {
@@ -83,7 +84,7 @@ export default () => {
     if (status === 1){
       await form.validateFields();
     }
-    const {advertiseName, imgs, siteLink, labelIds} = form.getFieldsValue()
+    const {advertiseName, imgs, siteLink, labelIds, triggerAddress} = form.getFieldsValue()
     const params: any = {
       scope: userType === 'all' ? labelIds || '' : 'PORTION_USER',
       status,
@@ -92,6 +93,7 @@ export default () => {
       }) || [],
       siteLink: siteLink || '',
       advertiseType: 'GLOBAL_FLOAT_ADS',
+      triggerAddress: triggerAddress || '',
       labelIds: userType === 'all' ? [] : labelIds || [],
       advertiseName: advertiseName || '',
     }
@@ -247,7 +249,7 @@ export default () => {
           name="imgs"
           label="图片"
           required
-          extra="图片格式仅支持JPG、PNG、JPEG,图片尺寸123*123"
+          extra="图片格式仅支持JPG、PNG、JPEG，图片尺寸192*192"
           labelCol={{span: 4}}
           wrapperCol={{span: 16}}
           rules={[
@@ -257,22 +259,24 @@ export default () => {
             },
           ]}
         >
-          <UploaImageV2 multiple={true} accept=".png,.jpeg,.jpg" maxCount={3}>
+          <UploaImageV2 multiple={true} accept=".png,.jpeg,.jpg" maxCount={1}>
             <Button icon={<UploadOutlined />}>上传</Button>
           </UploaImageV2>
         </Form.Item>
         <Form.Item
           labelCol={{span: 4}}
           wrapperCol={{span: 12}}
+          name="triggerAddress"
+          label="触发地址"
+          required
+        >
+          <Input placeholder="请输入页面地址" />
+        </Form.Item>
+        <Form.Item
+          labelCol={{span: 4}}
+          wrapperCol={{span: 12}}
           name="siteLink"
           label="站内链接配置"
-          required
-          rules={[
-            {
-              required: true,
-              message: '必填',
-            },
-          ]}
         >
           <Input placeholder="请输入" />
         </Form.Item>

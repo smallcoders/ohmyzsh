@@ -762,7 +762,7 @@ export default [
           },
           {
             path: routeName.BASELINE_OPERATIONS_MANAGEMENT_SUSPENSION_AD_ADD,
-            name: '新增内容',
+            name: '新增',
             access: 'M_BLAM_QJXFGG',
             component: './baseline_operations_manage/suspension_ad/add/index',
           },
