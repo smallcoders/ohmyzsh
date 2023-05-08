@@ -1,6 +1,6 @@
 import { PageContainer } from '@ant-design/pro-layout';
-import React, { useEffect, useState, useRef } from 'react';
-import { history, Access, useAccess } from 'umi';
+import { useEffect, useState } from 'react';
+import { history } from 'umi';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import SelfTable from '@/components/self_table';
