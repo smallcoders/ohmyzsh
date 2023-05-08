@@ -1,4 +1,15 @@
-import { Button, Select, Row, Tag, Col, Form, Input, message as antdMessage, Modal } from 'antd';
+import {
+  Button,
+  Select,
+  Row,
+  Tag,
+  Col,
+  Form,
+  Input,
+  message as antdMessage,
+  Modal,
+  Image,
+} from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import React, { useEffect, useState } from 'react';
 import SelfTable from '@/components/self_table';
@@ -104,6 +115,24 @@ export default () => {
       antdMessage.error(`请求失败，原因:{${error}}`);
     }
   };
+  const init = () => {
+    getAllLayout().then((res) => {
+      if (res.code === 0 && res.result) {
+        const labelArr = res.result.map((item: any) => {
+          return {
+            value: item.id,
+            label: item.typeName,
+          };
+        });
+        setLayType(labelArr);
+      }
+    });
+    getAdvertiseDiffTypeNum().then((res) => {
+      if (res.code === 0 && res.result) {
+        setStaNumArr(res.result);
+      }
+    });
+  };
   // 删除
   const remove = async (record: any) => {
     Modal.confirm({
@@ -117,6 +146,7 @@ export default () => {
             const newTotal = totalCount - 1 || 1;
             const newPageTotal = Math.ceil(newTotal / pageSize) || 1;
             getPage(pageIndex > newPageTotal ? newPageTotal : pageIndex);
+            init();
             antdMessage.success(`删除成功`);
           } else {
             antdMessage.error(res.message);
@@ -134,6 +164,7 @@ export default () => {
         updateAdsStatus(record.id, record.status === 1 ? 3 : 1).then((res) => {
           if (res.code === 0) {
             getPage(pageInfo.pageIndex);
+            init();
             antdMessage.success(record.status === 1 ? '下架成功' : `上架成功`);
           } else {
             antdMessage.error(res.message);
@@ -142,25 +173,9 @@ export default () => {
       },
     });
   };
+
   useEffect(() => {
-    getAllLayout().then((res) => {
-      if (res.code === 0 && res.result) {
-        const labelArr = res.result.map((item: any) => {
-          return {
-            value: item.id,
-            label: item.typeName,
-          };
-        });
-        setLayType(labelArr);
-      }
-    });
-    getAdvertiseDiffTypeNum().then((res) => {
-      if (res.code === 0 && res.result) {
-        setStaNumArr(res.result);
-      }
-    });
-  }, []);
-  useEffect(() => {
+    init();
     getPage();
   }, [searchContent]);
   // 搜索模块
@@ -235,7 +250,7 @@ export default () => {
       title: '图片',
       dataIndex: 'advertiseOssRelationList',
       isEllipsis: true,
-      width: 200,
+      width: 220,
       render: (advertiseOssRelationList: any) => {
         return (
           <div className="img-tr">
@@ -243,7 +258,12 @@ export default () => {
               ? advertiseOssRelationList?.map((item: any, index: number) => {
                   return (
                     <div className="img-box">
-                      <img src={item.ossUrl} key={index} alt="" />
+                      <Image
+                        className={'table-img'}
+                        src={item.ossUrl} // 看给的值是什么, 是给的ID就用这个
+                        alt="图片损坏"
+                      />
+                      {/*<img src={item.ossUrl} key={index} alt="" />*/}
                     </div>
                   );
                 })
