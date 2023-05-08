@@ -262,6 +262,9 @@ export default () => {
       title: '序号',
       dataIndex: 'sort',
       width: 50,
+      render: (_: any, _record: any, index: number) => {
+        return index + 1
+      }
     },
     {
       title: '产品类型',
