@@ -5,6 +5,7 @@ import { history } from 'umi';
 import { getGlobalFloatAdDetail } from '@/services/baseline';
 import './index.less';
 import moment from 'moment';
+import { routeName } from '@/../config/routes';
 import scopedClasses from '@/utils/scopedClasses';
 
 const sc = scopedClasses('pop-up-ad-detail');
@@ -40,9 +41,7 @@ export default () => {
     <PageContainer
       className={sc('container')}
       footer={[
-        <Button size="large" onClick={() => history.goBack()}>
-          返回
-        </Button>,
+        <Button onClick={() => history.push(routeName.BASELINE_OPERATIONS_MANAGEMENT_POPUP_AD)}>返回</Button>
       ]}
     >
       <div className="content">

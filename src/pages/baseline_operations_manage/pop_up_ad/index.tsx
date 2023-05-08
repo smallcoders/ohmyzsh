@@ -259,7 +259,7 @@ export default () => {
                 size="small"
                 type="link"
                 onClick={() => {
-                  history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_POPUP_AD_ADD}?id=${record.id}`)
+                  window.open(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_POPUP_AD_ADD}?id=${record.id}`)
                 }}
               >
                 编辑
@@ -292,16 +292,20 @@ export default () => {
   };
 
   const useSearchNode = (): React.ReactNode => {
+    const formLayout = {
+      labelCol: { span: 6 },
+      wrapperCol: { span: 14 },
+    };
     return (
       <div className={sc('container-search')}>
-        <Form form={searchForm}>
+        <Form form={searchForm} {...formLayout}>
           <Row>
-            <Col span={6} offset={1}>
+            <Col span={6}>
               <Form.Item name="advertiseName" label="活动名称">
                 <Input placeholder='请输入' />
               </Form.Item>
             </Col>
-            <Col span={6} offset={1}>
+            <Col span={6}>
               <Form.Item name="status" label="内容状态">
                 <Select
                   placeholder="请选择"
@@ -310,7 +314,7 @@ export default () => {
                 />
               </Form.Item>
             </Col>
-            <Col offset={1} span={5}>
+            <Col offset={8} span={4} className={sc('container-search-operate')}>
               <Button
                 style={{ marginRight: 20 }}
                 type="primary"
@@ -323,7 +327,6 @@ export default () => {
                 查询
               </Button>
               <Button
-                type="primary"
                 key="reset"
                 onClick={() => {
                   searchForm.resetFields();
@@ -344,7 +347,13 @@ export default () => {
   }, [searchContent]);
 
   return (
-    <PageContainer className={sc('container')}>
+    <PageContainer className={sc('container')}
+      header={{
+        title: '',
+        breadcrumb: {},
+      }}
+    >   
+      <h3 className={sc('container-title')}>弹窗广告</h3>
       {useSearchNode()}
       <Access accessible={access['PA_BLAM_TKGG']}>
       <div className={sc('container-table-header')}>
