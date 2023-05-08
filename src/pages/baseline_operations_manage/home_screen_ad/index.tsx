@@ -4,6 +4,7 @@ import {
   Space,
   Popconfirm,
   Image,
+  Modal,
 } from 'antd';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import type SolutionTypes from '@/types/solution';
@@ -39,38 +40,47 @@ export default () => {
   const [total, setTotal] = useState<number>(0);
 
   const handleAddBtn = () => {
-    // history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_HOME_SCREEN_AD_ADD}?type=add`)
     window.open(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_HOME_SCREEN_AD_ADD}?type=add`)
   }
   const handleDetail = (itemId: any) => {
     window.open(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_HOME_SCREEN_AD_DETAIL}?id=${itemId}`)
   }
 
-  // 上/下架/删除
-  const soldOut = async (id: string,state: any) => {
-    try {
-      const res = await httpUpOrDownAds({
-        id,
-        status: state
-      })
-      if (res?.code === 0) {
-        message.success(
-          state === 3 
-          ? '下架成功' 
-          : state === 2 
-            ? '删除成功'
-            : '上架成功');
-        if (total === 11) {
-          actionRef.current?.reloadAndRest();
-          return;
-        }
-        actionRef.current?.reload(); // 让table// 刷新
-      } else {
-        message.error(`失败，原因:{${res.message}}`);
-      }
-    } catch (error) {
-      message.error(`上下架失败, 原因: ${error}`)
-    }
+  const handleUpOrDown = (record: any) => {
+    Modal.confirm({
+      title: '提示',
+      content: record.status === 1 ? '确定将内容下架？' : '确定将内容上架？',
+      okText: record.status === 1 ? '下架' : '上架',
+      onOk: () => {
+        httpUpOrDownAds(record.id, record.status === 1 ? 3 : 1).then((res) => {
+          if (res.code === 0){
+            actionRef.current?.reload(); // 让table// 刷新
+            message.success(record.status === 1 ? '下架成功' : `上架成功`);
+          } else {
+            message.error(res.message);
+          }
+        })
+      },
+    })
+  }
+
+  const handleDelete = (record: any) => {
+    console.log(record)
+    Modal.confirm({
+      title: '删除数据',
+      content: '删除该开屏广告后，系统将不再推荐该广告，确定删除？',
+      okText: '删除',
+      onOk: () => {
+        httpUpOrDownAds(record.id, 2).then((res) => {
+          if (res.code === 0){
+            actionRef.current?.reload(); // 让table// 刷新
+            message.success(`删除成功`);
+          } else {
+            message.error(res.message);
+          }
+        })
+      },
+    })
   }
 
   const columns: ProColumns<SolutionTypes.Solution>[] = [
@@ -85,13 +95,18 @@ export default () => {
     {
       title: '活动名称',
       dataIndex: 'advertiseName',
-      align: 'center',
+      width: 150,
+      align: 'left',
       valueType: 'text', // 筛选的类别
+      renderText: (advertiseName: any) => {
+        return <div className={sc('container-table-advertiseName')}>{advertiseName}</div>
+      }
     },
     {
       title: '图片',
+      width: 120,
       dataIndex: 'advertiseOssRelationList',
-      align: 'center',
+      align: 'left',
       hideInSearch: true,
       renderText: (photoId: string) => {
         return <Image
@@ -103,14 +118,16 @@ export default () => {
     },
     {
       title: '倒计时时长',
+      width: 80,
       dataIndex: 'countdown',
-      align: 'center',
+      align: 'left',
       hideInSearch: true,
     },
     {
-      title: '启动频次',
+      title: '启动频率',
+      width: 100,
       dataIndex: 'displayFrequency',
-      align: 'center',
+      align: 'left',
       hideInSearch: true,
       renderText: (_: string) => {
         return (
@@ -123,7 +140,8 @@ export default () => {
     {
       title: '操作时间',
       dataIndex: 'updateTime',
-      align: 'center',
+      width: 100,
+      align: 'left',
       hideInSearch: true,
       renderText: (_: string) => {
         return _ ? moment(_).format('YYYY-MM-DD HH:mm:ss') : '--'
@@ -132,18 +150,18 @@ export default () => {
     {
       title: '内容状态',
       dataIndex: 'status',
-      align: 'center',
+      align: 'left',
       width: 100,
       valueType: 'select',
       valueEnum: {
-        0: {
-          text: '暂存'
-        },
         1: {
           text: '上架'
         },
-        3: {
+        2: {
           text: '下架'
+        },
+        3: {
+          text: '暂存'
         },
       },
       renderText: (_: string) => {
@@ -157,7 +175,7 @@ export default () => {
     {
       title: '操作',
       hideInSearch: true, // 隐藏筛选
-      align: 'center',
+      align: 'left',
       width: 300,
       render: (_, record) => {
         return (
@@ -170,28 +188,28 @@ export default () => {
             {/* </Access> */}
             <Access accessible={access['PU_BLAM_KPGG']}>
               {record?.status === 3 && (
-                <Popconfirm
-                  // icon={null}
-                  title="确定上架么？"
-                  okText="上架"
-                  cancelText="取消"
-                  onConfirm={() => soldOut(record?.id.toString(), 1)}
+                <Button
+                  size="small"
+                  type="link"
+                  onClick={() => {
+                    handleUpOrDown(record)
+                  }}
                 >
-                  <a href="#">上架</a>
-                </Popconfirm>
+                  上架
+                </Button>
               )}
             </Access>
             <Access accessible={access['PU_BLAM_KPGG']}>
               {record?.status === 1 && (
-                <Popconfirm
-                  // icon={null}
-                  title="确定下架么？"
-                  okText="下架"
-                  cancelText="取消"
-                  onConfirm={() => soldOut(record?.id.toString(), 3)}
+                <Button
+                  size="small"
+                  type="link"
+                  onClick={() => {
+                    handleUpOrDown(record)
+                  }}
                 >
-                  <a href="#">下架</a>
-                </Popconfirm>
+                  下架
+                </Button>
               )}
             </Access>
             <Access accessible={access['PU_BLAM_KPGG']}>
@@ -201,7 +219,7 @@ export default () => {
                   size="small"
                   type="link"
                   onClick={() => {
-                    history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_HOME_SCREEN_AD_ADD}?type=edit&id=${record?.id}`)
+                    window.open(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_HOME_SCREEN_AD_ADD}?type=edit&id=${record?.id}`)
                   }}
                 >
                   编辑
@@ -210,19 +228,28 @@ export default () => {
             </Access>
             <Access accessible={access['PD_BLAM_KPGG']}>
               {(record?.status === 3 || record?.status === 0) && (
-                  <Popconfirm
-                    title={
-                      <div>
-                        <div>删除数据</div>
-                        <div>确定删除该服务号？</div>
-                      </div>
-                    }
-                    okText="确定"
-                    cancelText="取消"
-                    onConfirm={() => soldOut(record.id.toString(),2)}
+                  // <Popconfirm
+                  //   title={
+                  //     <div>
+                  //       <div>删除数据</div>
+                  //       <div>确定删除该服务号？</div>
+                  //     </div>
+                  //   }
+                  //   okText="确定"
+                  //   cancelText="取消"
+                  //   onConfirm={() => soldOut(record.id.toString(),2)}
+                  // >
+                  //   <a href="#">删除</a>
+                  // </Popconfirm>
+                  <Button
+                    size="small"
+                    type="link"
+                    onClick={() => {
+                      handleDelete(record)
+                    }}
                   >
-                    <a href="#">删除</a>
-                  </Popconfirm>
+                    删除
+                  </Button>
               )}
             </Access>
           </Space>
@@ -246,12 +273,25 @@ export default () => {
         }}
         request={async (pagination) => {
           // 查询，重置搜集的值
-          console.log('pagination', pagination);
+          let status
+          switch(pagination?.status) {
+            case '2':
+              status = '3';
+              break;
+            case '3':
+              status = '0';
+              break;
+            default:
+              status = '1';
+              break;
+          }          
           const result = await httpAdvertiseList({
             ...pagination,
+            status: pagination?.status 
+              ? status
+              : undefined,
             advertiseType: 'SPLASH_ADS'
           });
-          console.log('结果', result);
           paginationRef.current = pagination;
           setTotal(result.total);
           return result;

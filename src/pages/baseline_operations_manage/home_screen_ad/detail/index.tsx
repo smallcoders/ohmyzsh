@@ -62,7 +62,7 @@ export default () => {
             value: siteLink || '--',
           },
           {
-            label: '启动频次：',
+            label: '启动频率：',
             value: displayFrequencyEnum[displayFrequency] || '--',
           },
         ]
@@ -89,7 +89,7 @@ export default () => {
       ]}
     >
       <div className={sc('container-content')}>
-        <div className={sc('container-content-header')}>开平广告信息</div>
+        <div className={sc('container-content-header')}>开屏广告信息</div>
         <div className={sc('container-content-form')}>
           {
             detail?.map((item: any) => {

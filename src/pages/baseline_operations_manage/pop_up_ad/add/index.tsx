@@ -29,7 +29,7 @@ const allLabels = [
 ]
 
 export default () => {
-  const [isClosejumpTooltip, setIsClosejumpTooltip] = useState<boolean>(true);
+  const [formIsChange, setFormIsChange] = useState<boolean>(false);
   const { id } = history.location.query as { id: string | undefined };
   const [loading, setLoading] = useState<any>(false);
   const [form] = Form.useForm();
@@ -51,8 +51,9 @@ export default () => {
   }
 
   const onSubmit = async (status: number, isPrompt?: boolean) => {
-    console.log(form.getFieldsValue())
-    await form.validateFields();
+    if (status === 1){
+      await form.validateFields();
+    }
     const { 
       advertiseName, //名称
       imgs, //图片
@@ -88,7 +89,7 @@ export default () => {
       setLoading(true)
       addPopupAd(params).then((res) => {
         if (res.code === 0){
-          setIsClosejumpTooltip(false)
+          setFormIsChange(false)
           antdMessage.success('上架成功')
           history.goBack()
         } else {
@@ -108,7 +109,7 @@ export default () => {
           }).then((result) => {
             if (result.code === 0){
               cb()
-              window.open(routeName.BASELINE_OPERATIONS_MANAGEMENT_POPUP_AD)
+              history.push(routeName.BASELINE_OPERATIONS_MANAGEMENT_POPUP_AD)
             } else {
               Modal.confirm({
                 title: '风险提示',
@@ -125,7 +126,7 @@ export default () => {
     } else {
       addPopupAd(params).then((res) => {
         if (res.code === 0) {
-          setIsClosejumpTooltip(false)
+          setFormIsChange(false)
           antdMessage.success('暂存成功')
           if (isPrompt) {
             history.goBack()
@@ -168,6 +169,7 @@ export default () => {
       getGlobalFloatAdDetail(id).then((res) => {
         const { result, code, message: resultMsg } = res || {};
         if (code === 0) {
+          setUserType(result.scope !== 'PORTION_USER' ? 'all' : 'part')
           form.setFieldsValue({
             advertiseName: result.advertiseName,
             labelIds: result.scope === 'PORTION_USER' ? result.labelIds : result.scope,
@@ -217,6 +219,7 @@ export default () => {
   return (
     <PageContainer
       loading={loading}
+      ghost
       header={{
         title: id ? '编辑' : '新增',
         breadcrumb: (
@@ -235,7 +238,7 @@ export default () => {
       ]}
     >
       <Prompt
-        when={isClosejumpTooltip}
+        when={formIsChange}
         message={(location: any) => {
           Modal.confirm({
             title: '要在离开之前对填写的信息进行保存吗?',
@@ -243,7 +246,7 @@ export default () => {
             cancelText: '放弃修改并离开',
             okText: '暂存并离开',
             onCancel() {
-              setIsClosejumpTooltip(false)
+              setFormIsChange(false)
               setTimeout(() => {
                 history.push(location.pathname);
               }, 1000);
@@ -259,9 +262,10 @@ export default () => {
         <div className="title">弹窗广告信息</div>
         <Form
           form={form}
-          name="basic"
           {...formLayout}
-          validateTrigger={['onBlur']}
+          onValuesChange={() => {
+            setFormIsChange(true)
+          }}
         >
           <Form.Item
             label="活动名称"
@@ -270,7 +274,13 @@ export default () => {
           >
             <Input placeholder="请输入" maxLength={35} />
           </Form.Item>
-          <Form.Item label="图片" name="imgs" rules={[{ required: true, message: '必填' }]}>
+          <Form.Item
+            label="图片" 
+            name="imgs" 
+            required
+            rules={[{ required: true, message: '必填' }]}
+            extra="图片格式仅支持JPG、PNG、JPEG、GIF,图片尺寸295*390"
+          >
             <UploaImageV2 multiple={true} maxCount={1} accept=".png,.jpeg,.jpg,.gif">
               <Button icon={<UploadOutlined />}>上传</Button>
             </UploaImageV2>
@@ -302,6 +312,7 @@ export default () => {
             label=""
             wrapperCol={{ offset: 4, span: 8 }}
             name="triggerAddress"
+            rules={[{ required: true, message: '必填' }]}
           >
             <Input placeholder="请输入页面地址" allowClear />
           </Form.Item>
@@ -349,7 +360,8 @@ export default () => {
                       getLabels(pageIndex)
                     }
                   }}
-                /> : form.getFieldValue('userType') === 'all' ? <Select
+                /> : form.getFieldValue('userType') === 'all' && allLabels.length ? 
+                <Select
                   options={allLabels}
                   placeholder="请选择"
                 /> : null

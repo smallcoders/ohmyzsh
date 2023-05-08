@@ -1,6 +1,10 @@
 @prefix: home-screen-ad-detail;
 
 .@{prefix}-container {
+  background-color: #f5f5f5;
+  .ant-pro-page-container-children-content {
+    margin-top: 0px;
+  }
   &-content {
     padding: 24px;
     background: #ffffff;
@@ -12,15 +16,24 @@
       &-cell {
         display: flex;
         line-height: 40px;
+        margin-bottom: 20px;
         > :first-child {
           flex: 1;
           text-align: right;
+          font-size: 16px;
+          font-weight: 400;
+          color: #8290a6;
+          line-height: 24px;
         }
         > :last-child {
-          margin-left: 27px;
-          font-weight: 600;
+          // margin-left: 27px;
+          // font-weight: 600;
           font-size: 16px;
           flex: 5;
+          font-size: 16px;
+          font-weight: 400;
+          color: #556377;
+          line-height: 24px;
           img {
             width: 100px;
             height: 100px;
@@ -29,4 +42,7 @@
       }
     }
   }
+}
+.has-breadcrumb {
+  background-color: #f5f5f5;
 }
