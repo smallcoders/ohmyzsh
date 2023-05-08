@@ -2,7 +2,9 @@
 @import '../../../global.less';
 
 .@{prefix}-container {
-  color: orange;
+  .ant-pro-page-container-children-content {
+    margin-top: 0px;
+  }
   .banner-img {
     width: 445px;
     height: 116px;
@@ -11,8 +13,20 @@
       height: 100%;
     }
   }
+  &-table-advertiseName {
+    width: 115px;
+    .ellipseText(1)
+  }
 }
 
 .table-img {
   height: 150px;
+}
+
+.has-breadcrumb {
+  background-color: #f5f5f5;
+}
+
+.ant-pro-table-list-toolbar-left {
+  display: none;
 }

@@ -118,7 +118,6 @@ export default () => {
                     if (res.code === 0){
                       setContentInfoFormChange(false)
                       message.success('上架成功')
-                      // history.goBack()
                       history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_HOME_SCREEN_AD}`)
                     } else {
                       message.error(res.message)
@@ -162,9 +161,7 @@ export default () => {
           setSaveId(res?.result)
           setContentInfoFormChange(false)
           message.success('暂存成功')
-          if (isPrompt) {
-            history.goBack()
-          }
+          history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_HOME_SCREEN_AD}`)
         } else {
           message.error(res.message)
         }
@@ -221,6 +218,9 @@ export default () => {
         breadcrumb: (
           <Breadcrumb>
             <Breadcrumb.Item>
+              <Link to={routeName.BASELINE_OPERATIONS_MANAGEMENT}>基线运营位管理</Link>
+            </Breadcrumb.Item>
+            <Breadcrumb.Item>
               <Link to={routeName.BASELINE_OPERATIONS_MANAGEMENT_HOME_SCREEN_AD}>开屏广告</Link>
             </Breadcrumb.Item>
             <Breadcrumb.Item>{activeTitle}</Breadcrumb.Item>
@@ -242,11 +242,7 @@ export default () => {
           </React.Fragment>
         </Access>,
         <Button onClick={() => {
-          if (contentInfoFormChange) {
-            setVisible(true);
-          } else {
             history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_HOME_SCREEN_AD}`)
-          }
         }}>返回</Button>,
       ]}
     >
@@ -265,7 +261,7 @@ export default () => {
               }, 100);
             },
             onOk() {
-              onSubmitDebounce(0, true)
+              onSubmitDebounce(0)
             },
           });
           return false;
@@ -283,7 +279,7 @@ export default () => {
             }}
           >
             <Form.Item
-              label="名称" 
+              label="活动名称" 
               name="advertiseName" 
               rules={[{ required: true, message: '必填' }]}
             >
@@ -292,6 +288,7 @@ export default () => {
             <Form.Item
               label="图片" 
               name="imgs"
+              extra="图片格式仅支持JPG、PNG、JPEG, 最多可上传十张。"
               rules={[{ required: true, message: '必填' }]}
             >
               <UploaImageV2 multiple={true} accept=".png,.jpeg,.jpg" maxCount={10}>
@@ -337,7 +334,6 @@ export default () => {
             type="primary"
             onClick={() => {
               setContentInfoFormChange(false)
-              // goBack()
               history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_HOME_SCREEN_AD}`)
             }}
           >
@@ -348,7 +344,6 @@ export default () => {
             type="primary"
             onClick={() => {
               onSubmitDebounce(0)
-              // goBack()
             }}
           >
             暂存并离开

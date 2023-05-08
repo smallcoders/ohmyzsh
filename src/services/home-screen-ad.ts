@@ -72,11 +72,8 @@ export function httpIndustrialMngArticleAudit(data: {
 /**
  * 上架/下架/刪除接口
  */
-export function httpUpOrDownAds(data: {
-  id: string,
-  status: string, // 广告状态，0：暂存，1：上架，2：删除 3：下架
-}) {
-  return request(`/antelope-industrial/mng/up-or-down/ads/${data.id}/${data.status}`, {
+export function httpUpOrDownAds(id: string, status: number,) {
+  return request(`/antelope-industrial/mng/up-or-down/ads/${id}/${status}`, {
     method: 'POST',
   })
 }
