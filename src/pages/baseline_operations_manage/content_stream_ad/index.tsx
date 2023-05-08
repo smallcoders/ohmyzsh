@@ -25,6 +25,7 @@ import {
 } from '@/services/baseline';
 import type Common from '@/types/common';
 import moment from 'moment/moment';
+import { PlusOutlined } from '@ant-design/icons';
 
 const sc = scopedClasses('content-stream-ad');
 export default () => {
@@ -459,7 +460,7 @@ export default () => {
               window.open(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_ADD}`);
             }}
           >
-            新增
+            <PlusOutlined /> 新增
           </Button>
         </Access>
         <SelfTable

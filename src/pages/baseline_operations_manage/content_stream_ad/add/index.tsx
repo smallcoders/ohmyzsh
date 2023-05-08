@@ -345,7 +345,7 @@ export default () => {
         <Form.Item
           name="imgs"
           label="图片"
-          extra="图片格式仅支持JPG、PNG、JPEG，图片尺寸123*123"
+          extra="图片格式仅支持JPG、PNG、JPEG，图片尺寸312*234"
           labelCol={{ span: 4 }}
           wrapperCol={{ span: 16 }}
         >
