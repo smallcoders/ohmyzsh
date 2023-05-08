@@ -5,7 +5,7 @@ import {
   Row,
   Col,
   message as antdMessage,
-  Modal, Input,
+  Modal, Input, Image,
 } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import './index.less';
@@ -136,10 +136,15 @@ export default () => {
         return (
           <div className="img-tr">
             {
-              advertiseOssRelationList.length ? advertiseOssRelationList?.map((item: any, index: number) => {
+              advertiseOssRelationList.length ? advertiseOssRelationList.slice(0, 1)?.map((item: any, index: number) => {
                 return (
                   <div className="img-box">
-                    <img src={item.ossUrl} key={index} alt='' />
+                    <Image
+                      key={index}
+                      className={'banner-img'}
+                      src={item.ossUrl}
+                      alt="图片损坏"
+                    />
                   </div>
                 )
               }) : '--'
