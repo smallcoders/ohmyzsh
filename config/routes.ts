@@ -614,8 +614,8 @@ export default [
       {
         path: routeName.BASELINE_VERSION_UPDATING_MANAGE,
         name: '版本更新管理',
-        // code: 'M_OA_LJ',
-        // access: 'M_OA_LJ',
+        code: 'M_BLM_BBGXGL',
+        access: 'M_BLM_BBGXGL',
         component: './baseline/version_updating/index',
       },
     ],

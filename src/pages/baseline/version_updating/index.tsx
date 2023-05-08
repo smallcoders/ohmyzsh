@@ -18,13 +18,13 @@ import SelfTable from '@/components/self_table';
 import { history, Access, useAccess } from 'umi';
 import './index.less'
 import { useState, useMemo, useEffect } from 'react';
-import { getVersionAdd, getVersionDelete } from '@/services/version-updating';
+import { getVersionAdd, getVersionDelete, getVersionPage } from '@/services/version-updating';
 
 const sc = scopedClasses('baseline-version-updating');
 
 
 const systemCheckBox = [
- { label: 'IOS ', value: 'IOS ' },
+ { label: 'IOS', value: 'IOS' },
  { label: 'Android', value: 'Android' },
 ]
 export default(() => {
@@ -47,43 +47,42 @@ export default(() => {
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     setLoading(true)
     try {
-      const { result, code, message } = {
-        code: 0,
-        message: 0,
-        result: {
-          total: 1,
-        }
-      };
-      // const { result, code, message } = await getGlobalFloatAds({
-      //   pageIndex,
-      //   pageSize,
-      //   advertiseType: 'GLOBAL_FLOAT_ADS',
-      //   ...searchContent,
-      // });
+      // const { result, code, message } = {
+      //   code: 0,
+      //   message: 0,
+      //   result: {
+      //     total: 1,
+      //   }
+      // };
+      const { result, code, message } = await getVersionPage({
+        pageIndex,
+        pageSize,
+        ...searchContent,
+      });
       setLoading(false)
       if (code === 0) {
         setPageInfo({ totalCount: result.total, pageTotal: Math.ceil(result.total / pageSize), pageIndex, pageSize });
-        // setDataSource(result.list || []);
-        setDataSource([
-          {
-            id: 1,
-            date: 1675750971000,
-            system: ['Android', 'IOS '],
-            version: '2.0.1',
-            content: '关于***********************BUG修复',
-            operator: '王也',
-            updateTime: '2023-05-08'
-          },
-          {
-            id: 2,
-            date: 1675750971000,
-            system: ['Android'],
-            version: '2.0.1',
-            content: '关于***********************BUG修复',
-            operator: '诸葛青',
-            updateTime: '2023-05-09'
-          },
-        ]);
+        setDataSource(result || []);
+        // setDataSource([
+        //   {
+        //     id: 1,
+        //     date: 1675750971000,
+        //     system: ['Android', 'IOS '],
+        //     version: '2.0.1',
+        //     content: '关于***********************BUG修复',
+        //     operator: '王也',
+        //     updateTime: '2023-05-08'
+        //   },
+        //   {
+        //     id: 2,
+        //     date: 1675750971000,
+        //     system: ['Android'],
+        //     version: '2.0.1',
+        //     content: '关于***********************BUG修复',
+        //     operator: '诸葛青',
+        //     updateTime: '2023-05-09'
+        //   },
+        // ]);
       } else {
         throw new Error(message);
       }
@@ -105,14 +104,14 @@ export default(() => {
     setModalOpen(false)
   }
   const handleModalOk = async () => {
-    console.log('点击了确定')
     await formAdd.validateFields();
     const {system, version, date, content } = formAdd.getFieldsValue();
+    console.log('搜集的表单', formAdd.getFieldsValue())
     try {
       const res = await getVersionAdd({
-        system,
+        system: system ? system?.join(',') : undefined,
         version,
-        date,
+        date: date ? moment(date).format('YYYY-MM-DD') : undefined,
         content,
         id: editId ? editId : undefined
       })
@@ -170,14 +169,14 @@ export default(() => {
   const onSearch = (info: any) => {
     // 所有key的值需要根据接口调整
     console.log('info', info)
-    const { version, system, date,  ...rest } = info || {}
+    const { version, system, date, ...rest } = info || {}
     setPageInfo({ ...pageInfo, pageIndex: 1 })
     setSearChContent({
-      version, 
-      system,
+      version: version ? version : undefined, 
+      system: system ? system?.join(',') : undefined,
       // 时间这块可能要加上时分秒
-      // startDateTime: time ? moment(time[0]).startOf('days').format('YYYY-MM-DD HH:mm:ss') : '',
-      // endDateTime: time ? moment(time[1]).endOf('days').format('YYYY-MM-DD HH:mm:ss') : '',
+      startDate: date ? moment(date[0]).startOf('days').format('YYYY-MM-DD') : undefined,
+      endDate: date ? moment(date[1]).endOf('days').format('YYYY-MM-DD') : undefined,
     })
   }
   
@@ -216,7 +215,11 @@ export default(() => {
           label="上线日期"
           rules={[{ required: true, message: '必填' }]}
         >
-          <DatePicker />
+          <DatePicker 
+            disabledDate={(current) =>
+              current && current < moment().subtract(1, 'day')
+            }
+          />
         </Form.Item>
         <Form.Item
           name="content"
@@ -284,7 +287,7 @@ export default(() => {
       align: 'center',
       width: 150,
       render: (system: string[]) => {
-        return <span className={sc('container-table-system')}>{system?.length > 0 ? system?.join('、') : '--' || '--'}</span>
+        return <span className={sc('container-table-system')}>{system ? system : '--'}</span>
       }
     },
     {
@@ -341,7 +344,7 @@ export default(() => {
       render: (_: any, record: any) => {
         return (
           <>
-            {/* <Access accessible={access['PU_BLAM_QJXFGG']}> */}
+            <Access accessible={access['PU_BLM_BBGXGL']}>
               {
                 <Button
                   size="small"
@@ -351,8 +354,8 @@ export default(() => {
                   编辑
                 </Button>
               }
-            {/* </Access> */}
-            {/* <Access accessible={access['PD_BLAM_QJXFGG']}> */}
+            </Access>
+            <Access accessible={access['PD_BLM_BBGXGL']}>
               {
                 <Button
                   size="small"
@@ -364,7 +367,7 @@ export default(() => {
                   删除
                 </Button>
               }
-            {/* </Access> */}
+            </Access>
           </>
         )
       },
@@ -377,7 +380,7 @@ export default(() => {
       </div>
       <div className={sc('container-table-header')}>
         <div className={sc('container-table-header-title')}>
-          <Access accessible={access['PQ_BLM_YHFBGL']}>
+          <Access accessible={access['PA_BLM_BBGXGL']}>
             <Button 
               type="primary"
               onClick={() => handleAddList()}

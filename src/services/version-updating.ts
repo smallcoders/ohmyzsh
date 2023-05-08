@@ -4,6 +4,23 @@
 import { request } from 'umi';
 
 /**
+ * 版本更新管理列表
+ */
+export function getVersionPage(data: {
+  version?: string // 版本号
+  system?: string // 操作系统 IOS Android
+  startDate?: string // 上线日期 开始
+  endDate?: string // 上线日期 结束
+  pageSize?: number
+  pageIndex?: number
+}) {
+  return request(`/antelope-common/mng/app/version/page`, {
+    method: 'post',
+    data,
+  })
+}
+
+/**
  * 新增
  */
 export function getVersionAdd(data: {
