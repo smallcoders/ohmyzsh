@@ -18,6 +18,7 @@ import { routeName } from '../../../../../config/routes';
 import {
   addContentStreamAd,
   auditImgs,
+  getAdvertiseAudit,
   getAllLayout,
   getGlobalFloatAdDetail,
   getPartLabels,
@@ -160,6 +161,33 @@ export default () => {
         okText: '上架',
         onOk: () => {
           setLoading(true);
+          getAdvertiseAudit({ content: params.advertiseName }).then((res: any) => {
+            if (res.code !== 0) {
+              Modal.confirm({
+                title: '风险提示',
+                content: res.message,
+                okText: '继续上架',
+                onOk: () => {
+                  addContentStreamAd(params)
+                    .then((res1) => {
+                      if (res.code === 0) {
+                        setFormIsChange(false);
+                        history.push(
+                          `${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD}`,
+                        );
+                        antdMessage.success('上架成功');
+                      } else {
+                        antdMessage.error(res1.message);
+                      }
+                      setLoading(false);
+                    })
+                    .finally(() => {
+                      setLoading(false);
+                    });
+                },
+              });
+            }
+          });
           if (params.imgs) {
             auditImgs({
               ossUrls: params.imgs.map((item: any) => {
@@ -168,34 +196,45 @@ export default () => {
             })
               .then((result) => {
                 if (result.code === 0) {
-                  addContentStreamAd(params).then((res) => {
-                    if (res.code === 0) {
-                      setFormIsChange(false);
+                  addContentStreamAd(params)
+                    .then((res) => {
+                      if (res.code === 0) {
+                        setFormIsChange(false);
+                        history.push(
+                          `${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD}`,
+                        );
+                        antdMessage.success('上架成功');
+                      } else {
+                        console.log(43214312);
+                        antdMessage.error(res.message);
+                      }
                       setLoading(false);
-                      history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD}`);
-                      antdMessage.success('上架成功');
-                    } else {
-                      antdMessage.error(res.message);
-                    }
-                  });
+                    })
+                    .finally(() => {
+                      setLoading(false);
+                    });
                 } else {
                   Modal.confirm({
                     title: '风险提示',
                     content: result.message,
                     okText: '继续上架',
                     onOk: () => {
-                      addContentStreamAd(params).then((res) => {
-                        if (res.code === 0) {
-                          setFormIsChange(false);
+                      addContentStreamAd(params)
+                        .then((res) => {
+                          if (res.code === 0) {
+                            setFormIsChange(false);
+                            history.push(
+                              `${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD}`,
+                            );
+                            antdMessage.success('上架成功');
+                          } else {
+                            antdMessage.error(res.message);
+                          }
                           setLoading(false);
-                          history.push(
-                            `${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD}`,
-                          );
-                          antdMessage.success('上架成功');
-                        } else {
-                          antdMessage.error(res.message);
-                        }
-                      });
+                        })
+                        .finally(() => {
+                          setLoading(false);
+                        });
                     },
                   });
                 }

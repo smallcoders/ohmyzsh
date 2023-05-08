@@ -433,6 +433,14 @@ export async function getAdvertiseList(data?: Record<string, any>) {
   });
 }
 
+// 文章审核
+export async function getAdvertiseAudit(data?: Record<string, any>) {
+  return request<any>(`/antelope-industrial/mng/article/audit`, {
+    method: 'post',
+    data,
+  });
+}
+
 // 获取广告列表
 export async function getGlobalFloatAds(data?: Record<string, any>) {
   return request<any>(`/antelope-industrial/mng/advertise/list`, {
