@@ -5,7 +5,7 @@ import { history } from 'umi';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import { getGlobalFloatAdDetail } from '@/services/baseline';
-
+import { routeName } from '../../../../../config/routes';
 const sc = scopedClasses('content-stream-ad-detail');
 
 export default () => {
@@ -45,7 +45,12 @@ export default () => {
       loading={loading}
       ghost
       footer={[
-        <Button size="large" onClick={() => history.goBack()}>
+        <Button
+          size="large"
+          onClick={() =>
+            history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD}`)
+          }
+        >
           返回
         </Button>,
       ]}

@@ -2,7 +2,7 @@ import { Button, Select, Row, Tag, Col, Form, Input, message as antdMessage, Mod
 import { PageContainer } from '@ant-design/pro-layout';
 import React, { useEffect, useState } from 'react';
 import SelfTable from '@/components/self_table';
-import { history, Access, useAccess } from 'umi';
+import { Access, useAccess } from 'umi';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import { routeName } from '../../../../config/routes';
@@ -21,9 +21,9 @@ export default () => {
 
   const handleAdd = (item: any) => {
     if (item) {
-      history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_ADD}?id=${item}`);
+      window.open(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_ADD}?id=${item}`);
     } else {
-      history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_ADD}`);
+      window.open(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_ADD}`);
     }
   };
   const userTypeObj = {
@@ -34,10 +34,10 @@ export default () => {
   };
 
   const handleDetail = (item: any) => {
-    history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_DETAIL}?id=${item}`);
+    window.open(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_DETAIL}?id=${item}`);
   };
   const handleStatisticalDetail = (item: any) => {
-    history.push(
+    window.open(
       `${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_STATISTICAL_DETAIL}?articleTypeId=${item?.articleTypeId}&typeName=${item?.typeName}`,
     );
   };
@@ -268,7 +268,7 @@ export default () => {
             {arr && arr.length
               ? arr.map((item: any) => {
                   return (
-                    <div>
+                    <div className="typeBox-item">
                       <Tag color="#0068ff">{item.label}</Tag>
                     </div>
                   );
@@ -436,7 +436,7 @@ export default () => {
             type="primary"
             style={{ marginBottom: '10px' }}
             onClick={() => {
-              history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_ADD}`);
+              window.open(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_ADD}`);
             }}
           >
             新增

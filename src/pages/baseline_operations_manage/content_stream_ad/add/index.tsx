@@ -14,6 +14,7 @@ import { history, Link } from 'umi';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import { UploadOutlined } from '@ant-design/icons';
+import { routeName } from '../../../../../config/routes';
 import {
   addContentStreamAd,
   auditImgs,
@@ -49,6 +50,7 @@ export default () => {
   const [partLabels, setPartLabels] = useState<any>([]);
   const [userType, setUserType] = useState<any>('all');
   const [layType, setLayType] = useState<any>([]);
+
   const [pageInfo, setPageInfo] = useState<any>({ pageSize: 10, pageIndex: 1, pageTotal: 0 });
   useEffect(() => {
     if (id) {
@@ -170,7 +172,7 @@ export default () => {
                     if (res.code === 0) {
                       setFormIsChange(false);
                       setLoading(false);
-                      history.goBack();
+                      history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD}`);
                       antdMessage.success('上架成功');
                     } else {
                       antdMessage.error(res.message);
@@ -186,7 +188,9 @@ export default () => {
                         if (res.code === 0) {
                           setFormIsChange(false);
                           setLoading(false);
-                          history.goBack();
+                          history.push(
+                            `${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD}`,
+                          );
                           antdMessage.success('上架成功');
                         } else {
                           antdMessage.error(res.message);
@@ -204,7 +208,7 @@ export default () => {
               if (res.code === 0) {
                 setFormIsChange(false);
                 setLoading(false);
-                history.goBack();
+                history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD}`);
                 antdMessage.success('上架成功');
               } else {
                 antdMessage.error(res.message);
@@ -219,7 +223,7 @@ export default () => {
           if (res.code === 0) {
             setFormIsChange(false);
             antdMessage.success('暂存成功');
-            history.goBack();
+            history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD}`);
           } else {
             antdMessage.error(res.message);
           }
@@ -306,7 +310,7 @@ export default () => {
               if (formIsChange) {
                 setVisible(true);
               } else {
-                history.goBack();
+                history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD}`);
               }
             }}
           >
@@ -452,7 +456,13 @@ export default () => {
             <Button key="back" onClick={() => setVisible(false)}>
               取消
             </Button>
-            <Button type={'default'} key="submit" onClick={() => history.goBack()}>
+            <Button
+              type={'default'}
+              key="submit"
+              onClick={() =>
+                history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD}`)
+              }
+            >
               直接离开
             </Button>
             <Button
