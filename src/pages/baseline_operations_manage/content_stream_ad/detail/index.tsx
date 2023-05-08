@@ -1,4 +1,4 @@
-import { Button, Tag, message as antdMessage } from 'antd';
+import { Button, Tag, Image, message as antdMessage } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import { useEffect, useState } from 'react';
 import { history } from 'umi';
@@ -69,14 +69,13 @@ export default () => {
             <div>
               <div style={{ display: 'flex' }}>
                 {detail?.imgRelations?.length
-                  ? detail?.imgRelations?.map((item: any, index: number) => {
+                  ? detail?.imgRelations?.map((item: any) => {
                       return (
                         <div style={{ width: '150px', height: '150px' }} className="img-box">
-                          <img
+                          <Image
                             style={{ width: '150px', height: '150px' }}
                             src={item.ossUrl}
-                            key={index}
-                            alt=""
+                            alt="图片损坏"
                           />
                         </div>
                       );

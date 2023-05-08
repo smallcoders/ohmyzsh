@@ -229,7 +229,7 @@ export default () => {
           <>
             <Access accessible={access['PU_BLAM_QJXFGG']}>
               {
-                record.status === 0 &&
+                [0,3].indexOf(record.status) !== -1  &&
                 <Button
                   size="small"
                   type="link"
@@ -243,7 +243,7 @@ export default () => {
             </Access>
             <Access accessible={access['PD_BLAM_QJXFGG']}>
               {
-                record.status === 0 &&
+                [0,3].indexOf(record.status) !== -1  &&
                 <Button
                   size="small"
                   type="link"

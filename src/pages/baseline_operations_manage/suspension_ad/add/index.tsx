@@ -249,7 +249,7 @@ export default () => {
           name="imgs"
           label="图片"
           required
-          extra="图片格式仅支持JPG、PNG、JPEG,图片尺寸123*123"
+          extra="图片格式仅支持JPG、PNG、JPEG，图片尺寸192*192"
           labelCol={{span: 4}}
           wrapperCol={{span: 16}}
           rules={[

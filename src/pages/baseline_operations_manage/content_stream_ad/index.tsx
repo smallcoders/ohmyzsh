@@ -1,4 +1,15 @@
-import { Button, Select, Row, Tag, Col, Form, Input, message as antdMessage, Modal } from 'antd';
+import {
+  Button,
+  Select,
+  Row,
+  Tag,
+  Col,
+  Form,
+  Input,
+  message as antdMessage,
+  Modal,
+  Image,
+} from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import React, { useEffect, useState } from 'react';
 import SelfTable from '@/components/self_table';
@@ -14,6 +25,7 @@ import {
 } from '@/services/baseline';
 import type Common from '@/types/common';
 import moment from 'moment/moment';
+import { PlusOutlined } from '@ant-design/icons';
 
 const sc = scopedClasses('content-stream-ad');
 export default () => {
@@ -76,20 +88,24 @@ export default () => {
   const [searchContent, setSearChContent] = useState<any>({});
   const [loading, setLoading] = useState<any>(false);
   const [searchForm] = Form.useForm();
-
   const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
     pageIndex: 1,
     pageSize: 10,
     totalCount: 0,
     pageTotal: 0,
   });
-  const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
+  const getPage = async (
+    exposureOrder: any,
+    pageIndex: number = 1,
+    pageSize = pageInfo.pageSize,
+  ) => {
     setLoading(true);
     try {
       const { result, totalCount, pageTotal, code, message } = await getAdvertiseList({
         pageIndex,
         pageSize,
         advertiseType: 'CONTENT_STREAM_ADS',
+        exposureOrder,
         ...searchContent,
       });
       setLoading(false);
@@ -102,6 +118,33 @@ export default () => {
     } catch (error) {
       setLoading(false);
       antdMessage.error(`请求失败，原因:{${error}}`);
+    }
+  };
+  const init = () => {
+    getAllLayout().then((res) => {
+      if (res.code === 0 && res.result) {
+        const labelArr = res.result.map((item: any) => {
+          return {
+            value: item.id,
+            label: item.typeName,
+          };
+        });
+        setLayType(labelArr);
+      }
+    });
+    getAdvertiseDiffTypeNum().then((res) => {
+      if (res.code === 0 && res.result) {
+        setStaNumArr(res.result);
+      }
+    });
+  };
+  const handleTableChange = (pagination, filters, sorter, extra) => {
+    if (sorter.field === 'exposureCount' && sorter.order === 'ascend') {
+      getPage('ASC');
+    } else if (sorter.field === 'exposureCount' && sorter.order === 'descend') {
+      getPage('DESC');
+    } else {
+      getPage(null);
     }
   };
   // 删除
@@ -117,6 +160,7 @@ export default () => {
             const newTotal = totalCount - 1 || 1;
             const newPageTotal = Math.ceil(newTotal / pageSize) || 1;
             getPage(pageIndex > newPageTotal ? newPageTotal : pageIndex);
+            init();
             antdMessage.success(`删除成功`);
           } else {
             antdMessage.error(res.message);
@@ -134,6 +178,7 @@ export default () => {
         updateAdsStatus(record.id, record.status === 1 ? 3 : 1).then((res) => {
           if (res.code === 0) {
             getPage(pageInfo.pageIndex);
+            init();
             antdMessage.success(record.status === 1 ? '下架成功' : `上架成功`);
           } else {
             antdMessage.error(res.message);
@@ -142,26 +187,10 @@ export default () => {
       },
     });
   };
+
   useEffect(() => {
-    getAllLayout().then((res) => {
-      if (res.code === 0 && res.result) {
-        const labelArr = res.result.map((item: any) => {
-          return {
-            value: item.id,
-            label: item.typeName,
-          };
-        });
-        setLayType(labelArr);
-      }
-    });
-    getAdvertiseDiffTypeNum().then((res) => {
-      if (res.code === 0 && res.result) {
-        setStaNumArr(res.result);
-      }
-    });
-  }, []);
-  useEffect(() => {
-    getPage();
+    init();
+    getPage(null);
   }, [searchContent]);
   // 搜索模块
   const useSearchNode = (): React.ReactNode => {
@@ -235,15 +264,20 @@ export default () => {
       title: '图片',
       dataIndex: 'advertiseOssRelationList',
       isEllipsis: true,
-      width: 200,
+      width: 220,
       render: (advertiseOssRelationList: any) => {
         return (
           <div className="img-tr">
             {advertiseOssRelationList.length
-              ? advertiseOssRelationList?.map((item: any, index: number) => {
+              ? advertiseOssRelationList?.map((item: any) => {
                   return (
                     <div className="img-box">
-                      <img src={item.ossUrl} key={index} alt="" />
+                      <Image
+                        className={'table-img'}
+                        src={item.ossUrl} // 看给的值是什么, 是给的ID就用这个
+                        alt="图片损坏"
+                      />
+                      {/*<img src={item.ossUrl} key={index} alt="" />*/}
                     </div>
                   );
                 })
@@ -331,7 +365,14 @@ export default () => {
       title: '曝光量',
       dataIndex: 'exposureCount',
       width: 200,
-      sorter: (a: any, b: any) => a.exposureCount - b.exposureCount,
+      onHeaderCell: () => {
+        return {
+          onClick: (e: any) => {
+            console.log(e);
+          },
+        };
+      },
+      sorter: true,
       render: (exposureCount: string) => {
         return <span>{exposureCount || 0}</span>;
       },
@@ -439,7 +480,7 @@ export default () => {
               window.open(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_ADD}`);
             }}
           >
-            新增
+            <PlusOutlined /> 新增
           </Button>
         </Access>
         <SelfTable
@@ -448,6 +489,7 @@ export default () => {
           bordered
           columns={columns}
           dataSource={dataSource}
+          onChange={handleTableChange}
           scroll={{ x: 1000 }}
           pagination={
             pageInfo.totalCount === 0

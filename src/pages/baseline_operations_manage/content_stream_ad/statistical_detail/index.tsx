@@ -1,6 +1,6 @@
 import { PageContainer } from '@ant-design/pro-layout';
-import React, { useEffect, useState, useRef } from 'react';
-import { history, Access, useAccess } from 'umi';
+import React, { useEffect, useState } from 'react';
+import { history } from 'umi';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import SelfTable from '@/components/self_table';
@@ -21,11 +21,16 @@ export default () => {
     pageTotal: 0,
   });
   const [dataSource, setDataSource] = useState<any>([]);
-  const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
+  const getPage = async (
+    exposureOrder: any,
+    pageIndex: number = 1,
+    pageSize = pageInfo.pageSize,
+  ) => {
     setLoading(true);
     try {
       const { result, totalCount, pageTotal, code, message } = await getAdvertiseList({
         pageIndex,
+        exposureOrder,
         articleTypeId: [articleTypeId],
         pageSize,
         advertiseType: 'CONTENT_STREAM_ADS',
@@ -40,6 +45,15 @@ export default () => {
     } catch (error) {
       setLoading(false);
       // antdMessage.error(`请求失败，原因:{${error}}`);
+    }
+  };
+  const handleTableChange = (pagination, filters, sorter, extra) => {
+    if (sorter.field === 'exposureCount' && sorter.order === 'ascend') {
+      getPage('ASC');
+    } else if (sorter.field === 'exposureCount' && sorter.order === 'descend') {
+      getPage('DESC');
+    } else {
+      getPage(null);
     }
   };
   useEffect(() => {
@@ -62,7 +76,7 @@ export default () => {
         setStaNumArr(newArray);
       }
     });
-    getPage();
+    getPage(null);
   }, []);
   const StaCard = () => {
     return (
@@ -119,9 +133,16 @@ export default () => {
       title: '曝光量',
       dataIndex: 'exposureCount',
       width: 150,
-      sorter: (a: any, b: any) => a.exposureCount - b.exposureCount,
-      render: (exposureCount: any) => {
-        return exposureCount || 0;
+      onHeaderCell: () => {
+        return {
+          onClick: (e: any) => {
+            console.log(e);
+          },
+        };
+      },
+      sorter: true,
+      render: (exposureCount: string) => {
+        return <span>{exposureCount || 0}</span>;
       },
     },
   ];
@@ -136,6 +157,7 @@ export default () => {
       <div className={sc('container-table-body')}>
         <SelfTable
           rowKey="id"
+          onChange={handleTableChange}
           loading={loading}
           bordered
           columns={columns}
