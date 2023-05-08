@@ -162,10 +162,10 @@ export default () => {
         onOk: () => {
           setLoading(true);
           getAdvertiseAudit({ content: params.advertiseName }).then((res: any) => {
-            if (res.code !== 0) {
+            if (res.result) {
               Modal.confirm({
                 title: '风险提示',
-                content: res.message,
+                content: res.result,
                 okText: '继续上架',
                 onOk: () => {
                   addContentStreamAd(params)
@@ -186,39 +186,15 @@ export default () => {
                     });
                 },
               });
-            }
-          });
-          if (params.imgs) {
-            auditImgs({
-              ossUrls: params.imgs.map((item: any) => {
-                return item.path;
-              }),
-            })
-              .then((result) => {
-                if (result.code === 0) {
-                  addContentStreamAd(params)
-                    .then((res) => {
-                      if (res.code === 0) {
-                        setFormIsChange(false);
-                        history.push(
-                          `${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD}`,
-                        );
-                        antdMessage.success('上架成功');
-                      } else {
-                        console.log(43214312);
-                        antdMessage.error(res.message);
-                      }
-                      setLoading(false);
-                    })
-                    .finally(() => {
-                      setLoading(false);
-                    });
-                } else {
-                  Modal.confirm({
-                    title: '风险提示',
-                    content: result.message,
-                    okText: '继续上架',
-                    onOk: () => {
+            } else {
+              if (params.imgs) {
+                auditImgs({
+                  ossUrls: params.imgs.map((item: any) => {
+                    return item.path;
+                  }),
+                })
+                  .then((result) => {
+                    if (result.code === 0) {
                       addContentStreamAd(params)
                         .then((res) => {
                           if (res.code === 0) {
@@ -228,6 +204,7 @@ export default () => {
                             );
                             antdMessage.success('上架成功');
                           } else {
+                            console.log(43214312);
                             antdMessage.error(res.message);
                           }
                           setLoading(false);
@@ -235,25 +212,49 @@ export default () => {
                         .finally(() => {
                           setLoading(false);
                         });
-                    },
+                    } else {
+                      Modal.confirm({
+                        title: '风险提示',
+                        content: result.message,
+                        okText: '继续上架',
+                        onOk: () => {
+                          addContentStreamAd(params)
+                            .then((res) => {
+                              if (res.code === 0) {
+                                setFormIsChange(false);
+                                history.push(
+                                  `${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD}`,
+                                );
+                                antdMessage.success('上架成功');
+                              } else {
+                                antdMessage.error(res.message);
+                              }
+                              setLoading(false);
+                            })
+                            .finally(() => {
+                              setLoading(false);
+                            });
+                        },
+                      });
+                    }
+                  })
+                  .finally(() => {
+                    setLoading(false);
                   });
-                }
-              })
-              .finally(() => {
-                setLoading(false);
-              });
-          } else {
-            addContentStreamAd(params).then((res) => {
-              if (res.code === 0) {
-                setFormIsChange(false);
-                setLoading(false);
-                history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD}`);
-                antdMessage.success('上架成功');
               } else {
-                antdMessage.error(res.message);
+                addContentStreamAd(params).then((res) => {
+                  if (res.code === 0) {
+                    setFormIsChange(false);
+                    setLoading(false);
+                    history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD}`);
+                    antdMessage.success('上架成功');
+                  } else {
+                    antdMessage.error(res.message);
+                  }
+                });
               }
-            });
-          }
+            }
+          });
         },
       });
     } else {
