@@ -43,6 +43,7 @@ export default () => {
     <PageContainer
       className={sc('container')}
       loading={loading}
+      ghost
       footer={[
         <Button size="large" onClick={() => history.goBack()}>
           返回

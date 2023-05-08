@@ -47,9 +47,11 @@ export default () => {
       <div className={sc('card')}>
         {staNumArr.map((item: any) => {
           return (
-            <div className="wrap" key={item.title} onClick={() => handleStatisticalDetail(item)}>
-              <div className="title">{item.typeName + ' >'}</div>
-              <div className="num">{item.number}</div>
+            <div className="wrap" key={item.title}>
+              <div className="title">{item.typeName + '上架总数'}</div>
+              <div className="num" onClick={() => handleStatisticalDetail(item)}>
+                {item.number}
+              </div>
             </div>
           );
         })}
@@ -186,7 +188,7 @@ export default () => {
                 </Select>
               </Form.Item>
             </Col>
-            <Col span={4}>
+            <Col style={{ textAlign: 'right' }} span={6}>
               <Button
                 style={{ marginRight: '20px' }}
                 type="primary"
@@ -352,7 +354,7 @@ export default () => {
     },
     {
       title: '操作',
-      width: 150,
+      width: 220,
       fixed: 'right',
       render: (_: any, record: any) => {
         if (record.crawered === 0) {
@@ -425,11 +427,11 @@ export default () => {
     },
   ];
   return (
-    <PageContainer className={sc('container')}>
+    <PageContainer ghost className={sc('container')}>
       <StaCard />
       {useSearchNode()}
       <div className={sc('container-table-body')}>
-        <Access accessible={access.PA_BLAM__NRLGG}>
+        <Access accessible={access.PA_BLAM_NRLGG}>
           <Button
             type="primary"
             style={{ marginBottom: '10px' }}
