@@ -28,7 +28,7 @@ const scopeMap = {
 }
 
 const statusOptions = [
-  {label: '上架', value: 1}, {label: '下架', value: 3}
+  {label: '上架', value: 1}, {label: '下架', value: 3}, {label: '暂存', value: 0}
 ]
 
 const statusMap = {
@@ -165,6 +165,14 @@ export default () => {
               </div> : '--'
           }
         </span>
+      }
+    },
+    {
+      title: '触发页面',
+      dataIndex: 'triggerAddress',
+      width: 200,
+      render: (triggerAddress: string) => {
+        return <span>{triggerAddress || '--'}</span>
       }
     },
     {
@@ -320,7 +328,7 @@ export default () => {
                 />
               </Form.Item>
             </Col>
-            <Col offset={1} span={5}>
+            <Col offset={6} span={4}>
               <Button
                 style={{ marginRight: 20 }}
                 type="primary"
@@ -333,7 +341,6 @@ export default () => {
                 查询
               </Button>
               <Button
-                type="primary"
                 key="reset"
                 onClick={() => {
                   searchForm.resetFields();
@@ -350,7 +357,13 @@ export default () => {
   };
 
   return (
-    <PageContainer className={sc('container')}>
+    <PageContainer
+      className={sc('container')}
+      header={{
+        title: '全局悬浮窗广告',
+        breadcrumb: {},
+      }}
+    >
       <div className="total">
         <div className="click-amount">
           <div>

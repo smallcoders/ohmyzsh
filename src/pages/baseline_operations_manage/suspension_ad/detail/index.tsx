@@ -80,6 +80,12 @@ export default () => {
             }
           </div>
         </div>
+        <div className="item">
+          <div className="label">触发页面:</div>
+          <div className="value">
+            {detail?.triggerAddress || '--'}
+          </div>
+        </div>
       </div>
     </PageContainer>
   )
