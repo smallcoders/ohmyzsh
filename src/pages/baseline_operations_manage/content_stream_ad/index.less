@@ -26,19 +26,19 @@
   display: flex;
   justify-content: space-between;
   background-color: #fff;
-  padding: 10px 40px;
+  padding: 10px 20px;
   .wrap {
-    width: 100%;
-    cursor: pointer;
+    //width: 100%;
   }
   .title {
-    font-size: 16px;
+    //font-size: 16px;
     line-height: 30px;
   }
   .num {
     font-size: 24px;
-    font-weight: 800;
-    color: #6680FF;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
   }
 }
 .img-tr {
@@ -63,4 +63,7 @@
 .typeBox{
   display: flex;
   flex-flow: row wrap;
+  &-item{
+    margin-bottom: 8px;
+  }
 }

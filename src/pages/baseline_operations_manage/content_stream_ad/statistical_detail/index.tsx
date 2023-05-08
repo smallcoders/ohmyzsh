@@ -26,7 +26,7 @@ export default () => {
     try {
       const { result, totalCount, pageTotal, code, message } = await getAdvertiseList({
         pageIndex,
-        articleTypeId,
+        articleTypeId: [articleTypeId],
         pageSize,
         advertiseType: 'CONTENT_STREAM_ADS',
       });

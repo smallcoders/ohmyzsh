@@ -2,7 +2,7 @@ import { Button, Select, Row, Tag, Col, Form, Input, message as antdMessage, Mod
 import { PageContainer } from '@ant-design/pro-layout';
 import React, { useEffect, useState } from 'react';
 import SelfTable from '@/components/self_table';
-import { history, Access, useAccess } from 'umi';
+import { Access, useAccess } from 'umi';
 import './index.less';
 import scopedClasses from '@/utils/scopedClasses';
 import { routeName } from '../../../../config/routes';
@@ -21,9 +21,9 @@ export default () => {
 
   const handleAdd = (item: any) => {
     if (item) {
-      history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_ADD}?id=${item}`);
+      window.open(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_ADD}?id=${item}`);
     } else {
-      history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_ADD}`);
+      window.open(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_ADD}`);
     }
   };
   const userTypeObj = {
@@ -34,10 +34,10 @@ export default () => {
   };
 
   const handleDetail = (item: any) => {
-    history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_DETAIL}?id=${item}`);
+    window.open(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_DETAIL}?id=${item}`);
   };
   const handleStatisticalDetail = (item: any) => {
-    history.push(
+    window.open(
       `${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_STATISTICAL_DETAIL}?articleTypeId=${item?.articleTypeId}&typeName=${item?.typeName}`,
     );
   };
@@ -47,9 +47,11 @@ export default () => {
       <div className={sc('card')}>
         {staNumArr.map((item: any) => {
           return (
-            <div className="wrap" key={item.title} onClick={() => handleStatisticalDetail(item)}>
-              <div className="title">{item.typeName + ' >'}</div>
-              <div className="num">{item.number}</div>
+            <div className="wrap" key={item.title}>
+              <div className="title">{item.typeName + '上架总数'}</div>
+              <div className="num" onClick={() => handleStatisticalDetail(item)}>
+                {item.number}
+              </div>
             </div>
           );
         })}
@@ -186,7 +188,7 @@ export default () => {
                 </Select>
               </Form.Item>
             </Col>
-            <Col span={4}>
+            <Col style={{ textAlign: 'right' }} span={6}>
               <Button
                 style={{ marginRight: '20px' }}
                 type="primary"
@@ -266,7 +268,7 @@ export default () => {
             {arr && arr.length
               ? arr.map((item: any) => {
                   return (
-                    <div>
+                    <div className="typeBox-item">
                       <Tag color="#0068ff">{item.label}</Tag>
                     </div>
                   );
@@ -352,7 +354,7 @@ export default () => {
     },
     {
       title: '操作',
-      width: 150,
+      width: 220,
       fixed: 'right',
       render: (_: any, record: any) => {
         if (record.crawered === 0) {
@@ -425,16 +427,16 @@ export default () => {
     },
   ];
   return (
-    <PageContainer className={sc('container')}>
+    <PageContainer ghost className={sc('container')}>
       <StaCard />
       {useSearchNode()}
       <div className={sc('container-table-body')}>
-        <Access accessible={access.PA_BLAM__NRLGG}>
+        <Access accessible={access.PA_BLAM_NRLGG}>
           <Button
             type="primary"
             style={{ marginBottom: '10px' }}
             onClick={() => {
-              history.push(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_ADD}`);
+              window.open(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_ADD}`);
             }}
           >
             新增
