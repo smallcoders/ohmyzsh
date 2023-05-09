@@ -1,12 +1,13 @@
-import { pageQuery } from '@/services/order/order-manage';
+import { pageQuery, modifySortNo } from '@/services/order/order-manage';
+import { getApplicationTypeList } from '@/services/digital-application';
 import type DataCommodity from '@/types/data-commodity';
 import {DownOutlined} from "@ant-design/icons";
 import { PageContainer } from '@ant-design/pro-layout';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import { Access, useAccess } from 'umi';
-import { Button, Dropdown, Menu, Popconfirm } from 'antd';
-import { useCallback, useRef, useState } from 'react';
+import { Button, Dropdown, Menu, Popconfirm, Form, InputNumber, message, Cascader } from 'antd';
+import { useCallback, useRef, useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import {
   httpGetListRoles
@@ -24,12 +25,15 @@ export default () => {
   const history = useHistory();
   const actionRef = useRef<ActionType>();
   const [total, setTotal] = useState(0);
-  const [useListRoles, setUseListRoles] = useState<any>([]) // 查询所有角色
+  const [columnData, setColumnData] = useState<any>({})
   const [activeStatusData, setActiveStatusData] = useState({});
+  const [applicationTypeList, setApplicationTypeList] = useState<any>([]);
   const paginationRef = useRef<{ current?: number; pageSize?: number }>({
     current: 0,
     pageSize: 0,
   });
+  const [weightForm] = Form.useForm();
+  const [goodsTypeForm] = Form.useForm()
 
   const goEdit = useCallback(
     (record: { id: number }) => {
@@ -44,6 +48,43 @@ export default () => {
     },
     [history],
   );
+
+  // 编辑权重
+  const editSort = async (id: string, value: number) => {
+    const editRes = await modifySortNo({
+      id: id,
+      sortNo: value,
+    });
+    if (editRes.code === 0) {
+      message.success(`编辑权重成功！`);
+      weightForm.resetFields()
+    } else {
+      message.error(`编辑权重失败，原因:{${editRes.message}}`);
+    }
+  };
+  // 上/下架
+  const upOrDown = async (value: number) => {
+    const editRes = await modifySortNo({
+      id: columnData.id,
+      saleStatus: value,
+    });
+    if (editRes.code === 0) {
+      message.success(`${value == 1 ? '上架成功！' : '下架成功！'}`);
+      weightForm.resetFields()
+    } else {
+      message.error(`${value == 1 ? '上架' : '下架'}失败，原因:{${editRes.message}}`);
+    }
+  };
+
+  const handleGetApplicationTypeList = () => {
+    getApplicationTypeList().then(({ result }) => {
+      setApplicationTypeList(result || []);
+    });
+  };
+
+  useEffect(() => {
+    handleGetApplicationTypeList()
+  }, []);
 
   /**
    * 查询所有角色
@@ -70,14 +111,11 @@ export default () => {
     }
   }
 
-  const columns: ProColumns<DataCommodity.Commodity>[] = [
+  const columns: ProColumns<any>[] = [
     {
       title: '权重',
       hideInSearch: true,
-      renderText: (_, __, index: number) =>
-        ((paginationRef.current.current ?? 0) - 1) * (paginationRef.current.pageSize ?? 10) +
-        index +
-        1,
+      dataIndex: 'sortNo'
     },
     {
       title: '商品名称',
@@ -185,19 +223,59 @@ export default () => {
           <Button size="small" type="link" onClick={() => goDetail(record)}>
             详情
           </Button>
-
-          {record.saleStatus === 0 && (
-            <Access accessible={access['P_PM_SP']}>
-              <Button size="small" type="link" onClick={() => goEdit(record)}>
+          <Access accessible={access['P_PM_SP']}>
+            <Popconfirm
+              title={
+                <>
+                  <Form form={weightForm}>
+                    <Form.Item name={'weight'} label="权重设置"
+                      validateTrigger="onBlur"
+                      rules={[
+                        {
+                          validator: (_, value) => {
+                            console.log(_, value)
+                            if (value < 1 || value > 100) {
+                              // message.error('允许输入权重数字范围为1～100');
+                              return Promise.reject(new Error('允许输入权重数字范围为1～100'))
+                            } else if (/^\d+\.\d{4,}/.test(value)) {
+                              // message.error('小数点后最多取3位');
+                              return Promise.reject(new Error('小数点后最多取3位'))
+                            }
+                            return Promise.resolve()
+                          },
+                        },
+                      ]}
+                    >
+                      <InputNumber placeholder='数字越大排序越靠前' />
+                    </Form.Item>
+                  </Form>
+                </>
+              }
+              icon={<DownOutlined style={{ display: 'none' }} />}
+              okText="确定"
+              cancelText="取消"
+              onConfirm={async () => {
+                await weightForm.validateFields()
+                editSort(record.id, weightForm.getFieldValue('weight'));
+              }}
+            >
+              <Button
+                key="1"
+                size="small"
+                type="link"
+                onClick={() => {
+                  weightForm.setFieldsValue({ weight: record.sortNo });
+                }}
+              >
                 权重
               </Button>
-              <Dropdown overlay={moreMenu} trigger={['click']}>
-                <a className="ant-dropdown-link" onClick={()=>{handleMoreMenuClick(record as any)}}>
-                  更多 <DownOutlined />
-                </a>
-              </Dropdown>
-            </Access>
-          )}
+            </Popconfirm>
+            <Dropdown overlay={moreMenu} trigger={['click']}>
+              <a className="ant-dropdown-link" onClick={()=>{handleMoreMenuClick(record as any)}}>
+                更多 <DownOutlined />
+              </a>
+            </Dropdown>
+          </Access>
         </>
       ),
     },
@@ -205,24 +283,25 @@ export default () => {
   const access = useAccess()
   const moreMenu = (
     <Menu >
-      {activeStatusData=='DOWN'&&
       <Menu.Item key={'1'}>
         <a
           href="#"
           onClick={() => {
             // editActivity()
           }}
-        >编辑</a>
-      </Menu.Item>}
-      {activeStatusData=='UP'&&
+        >标签</a>
+      </Menu.Item>
+      {activeStatusData==1&&
       <Menu.Item key={'2'}>
         <Popconfirm
-          title="下架后该链接将会失效，确认下架？？"
+          title="确认下架？"
           overlayStyle={{translate:'10px 40px'}}
           placement="topRight"
           okText="下架"
           cancelText="取消"
-          // onConfirm={ soldOut}
+          onConfirm={() => {
+            upOrDown(0)
+          }}
         >
         <a
           href="#"
@@ -231,30 +310,74 @@ export default () => {
         >下架</a>
         </Popconfirm>
       </Menu.Item>}
+      {activeStatusData==0&&
       <Menu.Item key={'3'}>
         <Popconfirm
-          title="删除后该链接将会失效，且不可恢复，确认删除？"
-          okText="删除"
+          title="确认上架？？"
+          overlayStyle={{translate:'10px 40px'}}
+          placement="topRight"
+          okText="上架"
           cancelText="取消"
-          // onConfirm={remove}
+          onConfirm={() => {
+            upOrDown(1)
+          }}
         >
-          <a href="#">删除</a>
+        <a
+          href="#"
+          onClick={() => {
+          }}
+        >上架</a>
         </Popconfirm>
+      </Menu.Item>}
+      <Menu.Item key={'4'}>
+      <Popconfirm
+        overlayStyle={{translate:'10px 40px', zIndex: 999}}
+        title={
+          <>
+            <Form form={goodsTypeForm}>
+              <Form.Item name={'goodsType'} label="商品类型"
+                validateTrigger="onBlur"
+              >
+                <Cascader
+                  // onChange={(val) => {
+                    // setAppTypeId(val);
+                  // }}
+                  changeOnSelect
+                  style={{ width: '200px' }}
+                  fieldNames={{ label: 'name', value: 'id', children: 'children' }}
+                  options={applicationTypeList}
+                  placeholder="请选择"
+                />
+              </Form.Item>
+            </Form>
+          </>
+        }
+        icon={<DownOutlined style={{ display: 'none' }} />}
+        okText="确定"
+        cancelText="取消"
+        onConfirm={async () => {
+          // await weightForm.validateFields()
+          // editSort(record.id, weightForm.getFieldValue('weight'));
+        }}
+      >
+        <a
+          href='#'
+          onClick={() => {
+            // weightForm.setFieldsValue({ weight: record.sortNo });
+          }}
+        >
+          类型修改
+        </a>
+      </Popconfirm>
       </Menu.Item>
     </Menu>
   );
   //更多下拉
-  const handleMoreMenuClick=(e: any)=> {
-    // const {startTime ,endTime} = e
-    // const result=e
-    // const time = [
-    //   result.time=moment(startTime),
-    //   result.time=moment(endTime),
-    // ]
-    // result.time=time
-    setActiveStatusData(e.activeStatus)
+  const handleMoreMenuClick=(record: any)=> {
+    console.log(record)
+    setActiveStatusData(record.saleStatus)
     // setRemoveData(e.id)
-    // setColumnData(result)
+    setColumnData(record)
   }
   return (
     <PageContainer>

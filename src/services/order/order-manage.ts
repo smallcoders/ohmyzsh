@@ -135,3 +135,18 @@ export async function pageQuery(data: any) {
     },
   );
 }
+
+/**
+ * 修改权重
+ * @param params
+ */
+export async function modifySortNo(data: any) {
+  return request<any>(
+    '/antelope-pay/mng/product/productManage/modify',
+    {
+      method: 'PUT',
+      data
+    },
+  );
+}
+
