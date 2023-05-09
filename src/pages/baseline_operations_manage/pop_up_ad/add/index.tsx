@@ -91,7 +91,6 @@ export default () => {
         if (res.code === 0){
           setFormIsChange(false)
           antdMessage.success('上架成功')
-          history.goBack()
         } else {
           antdMessage.error(res.message)
         }
@@ -225,6 +224,9 @@ export default () => {
         breadcrumb: (
           <Breadcrumb>
             <Breadcrumb.Item>
+              <Link to={routeName.BASELINE_OPERATIONS_MANAGEMENT}>基线运营位管理</Link>
+            </Breadcrumb.Item>
+            <Breadcrumb.Item>
               <Link to="/baseline-operations-management/pop-up-ad">弹窗广告</Link>
             </Breadcrumb.Item>
             <Breadcrumb.Item>{id ? '编辑' : '新增'}</Breadcrumb.Item>
@@ -279,7 +281,7 @@ export default () => {
             name="imgs"
             required
             rules={[{ required: true, message: '必填' }]}
-            extra="图片格式仅支持JPG、PNG、JPEG、GIF,图片尺寸295*390"
+            extra="图片格式仅支持JPG、PNG、JPEG、GIF,图片尺寸885*1170"
           >
             <UploaImageV2 multiple={true} maxCount={1} accept=".png,.jpeg,.jpg,.gif">
               <Button icon={<UploadOutlined />}>上传</Button>
@@ -329,26 +331,26 @@ export default () => {
           >
             <Radio.Group
               onChange={(e) => {
-                form.setFieldsValue(e.target.value === 'all' ? {labelIds: ''} : {labelIds: []})
+                form.setFieldsValue(e.target.value === 'all' ? {labelIds: null} : {labelIds: []})
                 setUserType(e.target.value)
               }}
               options={[{label: '全部用户', value: 'all'}, {label: '部分用户', value: 'part'}]}
             />
           </Form.Item>
-          <Form.Item
-            wrapperCol={{offset: 4, span: 8}}
-            name="labelIds"
-            required
-            validateTrigger="onBlur"
-            rules={[
-              {
-                required: true,
-                message: '必选',
-              },
-            ]}
-          >
-            {
-              form.getFieldValue('userType') === 'part' && partLabels.length ?
+          {
+            form.getFieldValue('userType') === 'part' && partLabels.length && (
+              <Form.Item
+                wrapperCol={{offset: 4, span: 8}}
+                name="labelIds"
+                required
+                validateTrigger="onBlur"
+                rules={[
+                  {
+                    required: true,
+                    message: '必选',
+                  },
+                ]}
+              >
                 <Select
                   options={partLabels}
                   mode={'multiple'}
@@ -360,13 +362,31 @@ export default () => {
                       getLabels(pageIndex)
                     }
                   }}
-                /> : form.getFieldValue('userType') === 'all' && allLabels.length ?
+                />
+              </Form.Item>
+            )
+          }
+          {
+            form.getFieldValue('userType') === 'all' && allLabels.length && (
+              <Form.Item
+                wrapperCol={{offset: 4, span: 8}}
+                name="labelIds"
+                required
+                validateTrigger="onBlur"
+                rules={[
+                  {
+                    required: true,
+                    message: '必选',
+                  },
+                ]}
+              >
                 <Select
                   options={allLabels}
                   placeholder="请选择"
-                /> : null
-            }
-          </Form.Item>
+                />
+              </Form.Item>
+            )
+          }
           <Form.Item label="开启时间段"
             name="periodType"
             rules={[{ required: true, message: '请选择' }]}

@@ -30,7 +30,7 @@ const statusObj = {
 };
 const userTypeObj = {
   'ALL_USER': '全部用户',
-  'ALL_LOGIN_USER': '全部登陆用户',
+  'ALL_LOGIN_USER': '全部登录用户',
   'ALL_NOT_LOGIN_USER': '全部未登录用户',
   'PORTION_USER': '部分用户',
 };
