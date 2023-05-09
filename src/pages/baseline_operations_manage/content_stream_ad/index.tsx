@@ -60,7 +60,7 @@ export default () => {
         {staNumArr.map((item: any) => {
           return (
             <div className="wrap" key={item.title}>
-              <div className="title">{item.typeName + '上架总数'}</div>
+              <div className="title">{item.typeName + '上架总数' + ' >'}</div>
               <div className="num" onClick={() => handleStatisticalDetail(item)}>
                 {item.number}
               </div>
