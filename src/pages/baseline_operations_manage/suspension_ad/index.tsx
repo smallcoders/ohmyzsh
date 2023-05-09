@@ -20,8 +20,6 @@ import { routeName } from '../../../../config/routes';
 const sc = scopedClasses('suspension-list');
 const scopeMap = {
   'ALL_USER': '全部用户',
-  'ALL_LOGIN_USE': '全部登陆用户',
-  'ALL_NOT_LOGIN_USE': '全部未登录用户',
   'ALL_LOGIN_USER': '全部登陆用户',
   'ALL_NOT_LOGIN_USER': '全部未登录用户',
   'PORTION_USER': '部分用户'
@@ -227,34 +225,6 @@ export default () => {
       render: (_: any, record: any) => {
         return (
           <>
-            <Access accessible={access['PU_BLAM_QJXFGG']}>
-              {
-                [0,3].indexOf(record.status) !== -1  &&
-                <Button
-                  size="small"
-                  type="link"
-                  onClick={() => {
-                    window.open(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_SUSPENSION_AD_ADD}?id=${record.id}`)
-                  }}
-                >
-                  编辑
-                </Button>
-              }
-            </Access>
-            <Access accessible={access['PD_BLAM_QJXFGG']}>
-              {
-                [0,3].indexOf(record.status) !== -1  &&
-                <Button
-                  size="small"
-                  type="link"
-                  onClick={() => {
-                    handleDelete(record)
-                  }}
-                >
-                  删除
-                </Button>
-              }
-            </Access>
             {
               [1,3].indexOf(record.status) !== -1 &&
               <Button
@@ -290,6 +260,34 @@ export default () => {
                   }}
                 >
                   下架
+                </Button>
+              }
+            </Access>
+            <Access accessible={access['PU_BLAM_QJXFGG']}>
+              {
+                [0,3].indexOf(record.status) !== -1  &&
+                <Button
+                  size="small"
+                  type="link"
+                  onClick={() => {
+                    window.open(`${routeName.BASELINE_OPERATIONS_MANAGEMENT_SUSPENSION_AD_ADD}?id=${record.id}`)
+                  }}
+                >
+                  编辑
+                </Button>
+              }
+            </Access>
+            <Access accessible={access['PD_BLAM_QJXFGG']}>
+              {
+                [0,3].indexOf(record.status) !== -1  &&
+                <Button
+                  size="small"
+                  type="link"
+                  onClick={() => {
+                    handleDelete(record)
+                  }}
+                >
+                  删除
                 </Button>
               }
             </Access>

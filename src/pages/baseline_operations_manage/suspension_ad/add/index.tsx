@@ -1,10 +1,10 @@
-import { Input, Form, Select, Button, message as antdMessage, Radio, Modal } from 'antd';
+import { Input, Form, Select, Button, message as antdMessage, Radio, Modal, Breadcrumb } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import scopedClasses from '@/utils/scopedClasses';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import UploaImageV2 from '@/components/upload_form/upload-image-v2';
 import { addGlobalFloatAd, getGlobalFloatAdDetail, getPartLabels, auditImgs } from '@/services/baseline';
-import { history, Prompt } from 'umi';
+import { history, Link, Prompt } from 'umi';
 import './index.less';
 import { ExclamationCircleOutlined, UploadOutlined } from '@ant-design/icons';
 import { routeName } from '../../../../../config/routes';
@@ -185,6 +185,20 @@ export default () => {
       className={sc('page')}
       ghost
       loading={loading}
+      header={{
+        title: id ? '编辑' : '新增',
+        breadcrumb: (
+          <Breadcrumb>
+            <Breadcrumb.Item>
+              <Link to={routeName.BASELINE_OPERATIONS_MANAGEMENT}>基线运营位管理</Link>
+            </Breadcrumb.Item>
+            <Breadcrumb.Item>
+              <Link to={routeName.BASELINE_OPERATIONS_MANAGEMENT_SUSPENSION_AD}>开屏广告</Link>
+            </Breadcrumb.Item>
+            <Breadcrumb.Item>{id ? '编辑' : '新增'}</Breadcrumb.Item>
+          </Breadcrumb>
+        ),
+      }}
       footer={[
         <>
           <Button key={1} type="primary" onClick={() => {

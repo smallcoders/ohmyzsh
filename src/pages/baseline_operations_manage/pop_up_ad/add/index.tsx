@@ -20,11 +20,11 @@ const allLabels = [
   },
   {
     label: '全部登录用户',
-    value: 'ALL_LOGIN_USE'
+    value: 'ALL_LOGIN_USER'
   },
   {
     label: '全部未登录用户',
-    value: 'ALL_NOT_LOGIN_USE'
+    value: 'ALL_NOT_LOGIN_USER'
   }
 ]
 
@@ -54,11 +54,11 @@ export default () => {
     if (status === 1){
       await form.validateFields();
     }
-    const { 
+    const {
       advertiseName, //名称
       imgs, //图片
       siteLink, //站内链接
-      labelIds, 
+      labelIds,
       regularTime, //固定时间所选时间段
       periodType, //开启时间类型 全部时间（ALL_TIME），固定时间(FIXED_TIME)
       triggerMechanism, //触发机制
@@ -275,8 +275,8 @@ export default () => {
             <Input placeholder="请输入" maxLength={35} />
           </Form.Item>
           <Form.Item
-            label="图片" 
-            name="imgs" 
+            label="图片"
+            name="imgs"
             required
             rules={[{ required: true, message: '必填' }]}
             extra="图片格式仅支持JPG、PNG、JPEG、GIF,图片尺寸295*390"
@@ -360,7 +360,7 @@ export default () => {
                       getLabels(pageIndex)
                     }
                   }}
-                /> : form.getFieldValue('userType') === 'all' && allLabels.length ? 
+                /> : form.getFieldValue('userType') === 'all' && allLabels.length ?
                 <Select
                   options={allLabels}
                   placeholder="请选择"

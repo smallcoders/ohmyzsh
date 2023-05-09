@@ -95,25 +95,32 @@ export default () => {
     {
       title: '活动名称',
       dataIndex: 'advertiseName',
-      width: 150,
+      width: 230,
       align: 'left',
       valueType: 'text', // 筛选的类别
       renderText: (advertiseName: any) => {
-        return <div className={sc('container-table-advertiseName')}>{advertiseName}</div>
+        return <div className={sc('container-table-advertiseName')}>{advertiseName || '--'}</div>
       }
     },
     {
       title: '图片',
-      width: 120,
+      width: 150,
       dataIndex: 'advertiseOssRelationList',
       align: 'left',
       hideInSearch: true,
       renderText: (photoId: string) => {
-        return <Image
-          className={'table-img'}
-          src={`/antelope-common/common/file/download/${photoId[0]?.fileId}`} // 看给的值是什么, 是给的ID就用这个
-          alt="图片损坏"
-        />
+        return (
+          photoId?.length > 0 
+          ? 
+          <Image
+            className={'table-img'}
+            // src={`/antelope-common/common/file/download/${photoId[0]?.fileId}`} // 看给的值是什么, 是给的ID就用这个
+            src={photoId[0]?.ossUrl} // 看给的值是什么, 是给的ID就用这个
+            alt="图片损坏"
+          />
+          : '--'
+        )
+        
       },
     },
     {
@@ -140,7 +147,7 @@ export default () => {
     {
       title: '操作时间',
       dataIndex: 'updateTime',
-      width: 100,
+      width: 200,
       align: 'left',
       hideInSearch: true,
       renderText: (_: string) => {
@@ -176,14 +183,20 @@ export default () => {
       title: '操作',
       hideInSearch: true, // 隐藏筛选
       align: 'left',
-      width: 300,
+      width: 150,
       render: (_, record) => {
         return (
           <Space size="middle">
             {/* 需要调整的权限 */}
             {/* <Access accessible={access['PQ_BLAM_KPGG']}> */}
               {record?.status !== 0 && (
-                <a href="#" onClick={handleDetail.bind(null,record?.id)}>详情</a>
+                <Button
+                  size="small"
+                  type="link"
+                  onClick={handleDetail.bind(null,record?.id)}
+                >
+                  上架
+                </Button>
               )}
             {/* </Access> */}
             <Access accessible={access['PU_BLAM_KPGG']}>
@@ -259,7 +272,13 @@ export default () => {
   ];
 
   return (
-    <PageContainer className={sc('container')}>
+    <PageContainer
+      className={sc('container')}
+      header={{
+        title: '开屏广告',
+        breadcrumb: {},
+      }}
+    >
       <ProTable
         headerTitle={`开屏广告管理列表（共${total}个）`}
         options={false} // 工具栏隐藏
@@ -284,10 +303,10 @@ export default () => {
             default:
               status = '1';
               break;
-          }          
+          }
           const result = await httpAdvertiseList({
             ...pagination,
-            status: pagination?.status 
+            status: pagination?.status
               ? status
               : undefined,
             advertiseType: 'SPLASH_ADS'

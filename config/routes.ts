@@ -1,4 +1,4 @@
-﻿export const routeName = {
+export const routeName = {
   DATA_COLUMN: '/service-config/data-column', // 数据栏
   DIAGNOSTIC_TASKS: '/service-config/diagnostic-tasks/index', // 诊断任务
   DIAGNOSTIC_TASKS_DETAIL: '/diagnose-manage/diagnostic-tasks/detail', // 诊断记录
@@ -660,7 +660,7 @@ export default [
           },
           {
             path: routeName.BASELINE_OPERATIONS_MANAGEMENT_HOME_SCREEN_AD_ADD,
-            name: '新增内容',
+            name: '新增',
             access: 'M_BLAM_KPGG',
             component: './baseline_operations_manage/home_screen_ad/add/index',
           },
@@ -692,7 +692,7 @@ export default [
           },
           {
             path: routeName.BASELINE_OPERATIONS_MANAGEMENT_POPUP_AD_ADD,
-            name: '新增内容',
+            name: '新增',
             access: 'M_BLAM_TKGG',
             component: './baseline_operations_manage/pop_up_ad/add/index',
           },
@@ -706,7 +706,7 @@ export default [
       },
       {
         path: routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD,
-        name: '内容流广告管理',
+        name: '内容流广告',
         access: 'M_BLAM_NRLGG',
         hideChildrenInMenu: true,
         routes: [
@@ -717,14 +717,14 @@ export default [
           },
           {
             path: routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD + '/index',
-            name: '内容流广告管理',
+            name: '内容流广告',
             access: 'M_BLAM_NRLGG',
             hideInBreadcrumb: true,
             component: './baseline_operations_manage/content_stream_ad/index',
           },
           {
             path: routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_ADD,
-            name: '新增内容',
+            name: '新增',
             access: 'PQ_BLM_YYWGL',
             component: './baseline_operations_manage/content_stream_ad/add/index',
           },

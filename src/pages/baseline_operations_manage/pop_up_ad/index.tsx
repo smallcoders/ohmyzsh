@@ -30,8 +30,8 @@ const statusObj = {
 };
 const userTypeObj = {
   'ALL_USER': '全部用户',
-  'ALL_LOGIN_USE': '全部登陆用户',
-  'ALL_NOT_LOGIN_USE': '全部未登录用户',
+  'ALL_LOGIN_USER': '全部登陆用户',
+  'ALL_NOT_LOGIN_USER': '全部未登录用户',
   'PORTION_USER': '部分用户',
 };
 const triggerTypeObj = {
@@ -187,7 +187,7 @@ export default () => {
             <div>{_record.periodStartTime ? (moment(_record.periodStartTime).format('YYYY-MM-DD') + '至' + moment(_record.periodEndTime).format('YYYY-MM-DD')) : '--'}</div>
           )
         )
-      }   
+      }
     },
     {
       title: '操作时间',
@@ -352,7 +352,7 @@ export default () => {
         title: '',
         breadcrumb: {},
       }}
-    >   
+    >
       <h3 className={sc('container-title')}>弹窗广告</h3>
       {useSearchNode()}
       <Access accessible={access['PA_BLAM_TKGG']}>
