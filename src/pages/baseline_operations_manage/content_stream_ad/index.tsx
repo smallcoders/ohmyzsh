@@ -60,7 +60,7 @@ export default () => {
         {staNumArr.map((item: any) => {
           return (
             <div className="wrap" key={item.title}>
-              <div className="title">{item.typeName + '上架总数' + ' >'}</div>
+              <div className="title">{item.typeName + '上架总数'}</div>
               <div className="num" onClick={() => handleStatisticalDetail(item)}>
                 {item.number}
               </div>
@@ -95,13 +95,13 @@ export default () => {
     pageTotal: 0,
   });
   const getPage = async (
-    exposureOrder: any,
     pageIndex: number = 1,
     pageSize = pageInfo.pageSize,
+    exposureOrder: null,
   ) => {
     setLoading(true);
     try {
-      const { result, totalCount, pageTotal, code, message } = await getAdvertiseList({
+      const { result, code, message } = await getAdvertiseList({
         pageIndex,
         pageSize,
         advertiseType: 'CONTENT_STREAM_ADS',
@@ -110,7 +110,12 @@ export default () => {
       });
       setLoading(false);
       if (code === 0) {
-        setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
+        setPageInfo({
+          totalCount: result.total,
+          pageTotal: Math.ceil(result.total / pageSize),
+          pageIndex,
+          pageSize,
+        });
         setDataSource(result?.list);
       } else {
         throw new Error(message);
@@ -138,13 +143,23 @@ export default () => {
       }
     });
   };
-  const handleTableChange = (pagination, filters, sorter, extra) => {
-    if (sorter.field === 'exposureCount' && sorter.order === 'ascend') {
-      getPage('ASC');
-    } else if (sorter.field === 'exposureCount' && sorter.order === 'descend') {
-      getPage('DESC');
-    } else {
-      getPage(null);
+  const handleTableChange = (pagination: any, filters: any, sorter: any, extra: any) => {
+    console.log(sorter.field, sorter.order, pagination, filters, extra);
+    const { current } = pagination;
+    if (extra.action === 'sort' && sorter.field === 'exposureCount' && sorter.order === 'ascend') {
+      getPage(current, pageInfo.pageSize, 'ASC');
+    } else if (
+      extra.action === 'sort' &&
+      sorter.field === 'exposureCount' &&
+      sorter.order === 'descend'
+    ) {
+      getPage(current, pageInfo.pageSize, 'DESC');
+    } else if (
+      extra.action === 'sort' &&
+      sorter.field === 'exposureCount' &&
+      sorter.order === undefined
+    ) {
+      getPage(current, pageInfo.pageSize, null);
     }
   };
   // 删除
@@ -159,7 +174,7 @@ export default () => {
             const { totalCount, pageIndex, pageSize } = pageInfo;
             const newTotal = totalCount - 1 || 1;
             const newPageTotal = Math.ceil(newTotal / pageSize) || 1;
-            getPage(pageIndex > newPageTotal ? newPageTotal : pageIndex);
+            getPage(pageIndex > newPageTotal ? newPageTotal : pageIndex, pageInfo.pageSize, null);
             init();
             antdMessage.success(`删除成功`);
           } else {
@@ -177,7 +192,7 @@ export default () => {
       onOk: async () => {
         updateAdsStatus(record.id, record.status === 1 ? 3 : 1).then((res) => {
           if (res.code === 0) {
-            getPage(pageInfo.pageIndex);
+            getPage(pageInfo.pageIndex, pageInfo.pageSize, null);
             init();
             antdMessage.success(record.status === 1 ? '下架成功' : `上架成功`);
           } else {
@@ -190,7 +205,7 @@ export default () => {
 
   useEffect(() => {
     init();
-    getPage(null);
+    getPage(pageInfo.pageIndex, pageInfo.pageSize, null);
   }, [searchContent]);
   // 搜索模块
   const useSearchNode = (): React.ReactNode => {

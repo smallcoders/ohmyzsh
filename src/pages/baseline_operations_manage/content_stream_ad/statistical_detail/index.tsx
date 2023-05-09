@@ -22,13 +22,13 @@ export default () => {
   });
   const [dataSource, setDataSource] = useState<any>([]);
   const getPage = async (
-    exposureOrder: any,
     pageIndex: number = 1,
     pageSize = pageInfo.pageSize,
+    exposureOrder: null,
   ) => {
     setLoading(true);
     try {
-      const { result, totalCount, pageTotal, code, message } = await getAdvertiseList({
+      const { result, code, message } = await getAdvertiseList({
         pageIndex,
         exposureOrder,
         articleTypeId: [articleTypeId],
@@ -38,7 +38,12 @@ export default () => {
       });
       setLoading(false);
       if (code === 0) {
-        setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
+        setPageInfo({
+          totalCount: result.total,
+          pageTotal: Math.ceil(result.total / pageSize),
+          pageIndex,
+          pageSize,
+        });
         setDataSource(result?.list);
       } else {
         throw new Error(message);
@@ -48,13 +53,23 @@ export default () => {
       // antdMessage.error(`请求失败，原因:{${error}}`);
     }
   };
-  const handleTableChange = (pagination, filters, sorter, extra) => {
-    if (sorter.field === 'exposureCount' && sorter.order === 'ascend') {
-      getPage('ASC');
-    } else if (sorter.field === 'exposureCount' && sorter.order === 'descend') {
-      getPage('DESC');
-    } else {
-      getPage(null);
+  const handleTableChange = (pagination: any, filters: any, sorter: any, extra: any) => {
+    console.log(sorter.field, sorter.order, pagination, filters, extra);
+    const { current } = pagination;
+    if (extra.action === 'sort' && sorter.field === 'exposureCount' && sorter.order === 'ascend') {
+      getPage(current, pageInfo.pageSize, 'ASC');
+    } else if (
+      extra.action === 'sort' &&
+      sorter.field === 'exposureCount' &&
+      sorter.order === 'descend'
+    ) {
+      getPage(current, pageInfo.pageSize, 'DESC');
+    } else if (
+      extra.action === 'sort' &&
+      sorter.field === 'exposureCount' &&
+      sorter.order === undefined
+    ) {
+      getPage(current, pageInfo.pageSize, null);
     }
   };
   useEffect(() => {
@@ -77,7 +92,7 @@ export default () => {
         setStaNumArr(newArray);
       }
     });
-    getPage(null);
+    getPage(pageInfo.pageIndex, pageInfo.pageSize, null);
   }, []);
   const StaCard = () => {
     return (
