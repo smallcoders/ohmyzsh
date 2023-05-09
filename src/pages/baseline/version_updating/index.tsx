@@ -190,7 +190,8 @@ export default(() => {
           label="版本号"
           rules={[{ required: true, message: '必填' }]}
         >
-          <InputNumber min={0} max={999999999} step={0.1} />
+          {/* <InputNumber min={0} max={999999999} step={0.01} /> */}
+          <Input />
         </Form.Item>
         <Form.Item
           name="date"
