@@ -252,21 +252,25 @@
   BASELINE_ASSOCIATION_MANAGE: 'baseline-association-manage',
   BASELINE_ASSOCIATION_MANAGE_DETAIL: 'baseline-association-manage/detail',
   BASELINE_ASSOCIATION_MANAGE_EDIT: 'baseline-association-manage/add',
-  
+
   BASELINE_USER_POSTING_MANAGE: '/baseline/baseline-user-posting-manage', // 用户发布管理
   BASELINE_USER_POSTING_MANAGE_INDEX: '/baseline/baseline-user-posting-manage/index', // 用户发布管理
   BASELINE_USER_POSTING_MANAGE_DETAIL: '/baseline/baseline-user-posting-manage/detail', // 用户发布管理详情
   VERIFY_AGENCY_USER_POSTING_VERIFY: '/verify-agency/user-posting-verify', // 用户发布审核
   VERIFY_AGENCY_USER_POSTING_VERIFY_INDEX: '/verify-agency/user-posting-verify/index', // 用户发布审核
   VERIFY_AGENCY_USER_POSTING_VERIFY_DETAIL: '/verify-agency/user-posting-verify/detail', // 用户发布审核详情
-  
+
   BASELINE_SERVICE_NUMBER: '/baseline/baseline-service-number',
   BASELINE_SERVICE_NUMBER_INDEX: '/baseline/baseline-service-number/index',
   BASELINE_SERVICE_NUMBER_SETTING: '/baseline/baseline-service-number-setting',
   BASELINE_SERVICE_NUMBER_MANAGEMENT: '/baseline/baseline-service-number/management', // 服务号管理
   BASELINE_SERVICE_NUMBER_MANAGEMENT_DETAIL: '/baseline/baseline-service-number/management/detail', // 服务号管理
   BASELINE_SERVICE_NUMBER_MANAGEMENT_DRAFTS_ADD: '/baseline/baseline-service-number/management/drafts/add', // 草稿箱add
-  BASELINE_HOTSPOT_MANAGE: 'baseline-hotspot-manage'
+  BASELINE_HOTSPOT_MANAGE: 'baseline-hotspot-manage',
+
+  // 数据中心
+  DATA_CENTER: '/data-center', // 数据中心
+  TOOLKIT_ORDER_MONITORING: '/data-center/toolkit-order_monitoring', //工具包订单监控
 };
 
 export default [
@@ -328,6 +332,30 @@ export default [
         access: 'M_OD_YYSJ',
         name: '用户认证数据',
         component: './operate_data/data_manage/index',
+      },
+    ],
+  },
+  {
+    path: routeName.DATA_CENTER,
+    code: 'M_OD',
+    access: 'M_OD',
+    name: '数据中心',
+    icon: 'BarChartOutlined',
+    routes: [
+      {
+        path: routeName.DATA_CENTER,
+        code: 'M_OD_GMV',
+        access: 'M_OD_GMV',
+        redirect: routeName.DATA_CENTER,
+      },
+      {
+        path: routeName.TOOLKIT_ORDER_MONITORING,
+        code: 'M_OD_GMV',
+        access: 'M_OD_GMV',
+        name: '工具包订单监控',
+        component: './data_center/toolkit_order_monitoring/index',
+        layout: false,
+        target: '_blank',
       },
     ],
   },
@@ -585,7 +613,7 @@ export default [
         ]
       },
       {
-        path: routeName.BASELINE_USER_POSTING_MANAGE, 
+        path: routeName.BASELINE_USER_POSTING_MANAGE,
         name: '用户发布管理',
         access: 'M_BLM_YHFBGL',
         hideChildrenInMenu: true,
@@ -913,7 +941,7 @@ export default [
         ],
       },
       {
-        path: routeName.VERIFY_AGENCY_USER_POSTING_VERIFY, 
+        path: routeName.VERIFY_AGENCY_USER_POSTING_VERIFY,
         name: '用户发布审核',
         access: 'M_BLM_YHFBSH',
         hideChildrenInMenu: true,
