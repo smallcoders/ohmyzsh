@@ -337,21 +337,21 @@ export default [
   },
   {
     path: routeName.DATA_CENTER,
-    code: 'M_OD',
-    access: 'M_OD',
+    code: 'M_DC',
+    access: 'M_DC',
     name: '数据中心',
     icon: 'BarChartOutlined',
     routes: [
       {
         path: routeName.DATA_CENTER,
-        code: 'M_OD_GMV',
-        access: 'M_OD_GMV',
+        code: 'M_DC_GJBDD',
+        access: 'M_DC_GJBDD',
         redirect: routeName.DATA_CENTER,
       },
       {
         path: routeName.TOOLKIT_ORDER_MONITORING,
-        code: 'M_OD_GMV',
-        access: 'M_OD_GMV',
+        code: 'M_DC_GJBDD',
+        access: 'M_DC_GJBDD',
         name: '工具包订单监控',
         component: './data_center/toolkit_order_monitoring/index',
         layout: false,
