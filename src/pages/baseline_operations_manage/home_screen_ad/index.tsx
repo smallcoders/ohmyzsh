@@ -194,7 +194,7 @@ export default () => {
                   type="link"
                   onClick={handleDetail.bind(null,record?.id)}
                 >
-                  上架
+                  详情
                 </Button>
               )}
             {/* </Access> */}
