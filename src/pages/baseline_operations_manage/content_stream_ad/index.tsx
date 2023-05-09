@@ -40,8 +40,8 @@ export default () => {
   };
   const userTypeObj = {
     ALL_USER: '全部用户',
-    ALL_LOGIN_USER: '全部登陆用户',
-    ALL_NOT_LOGIN_USER: '全部未登录用户',
+    ALL_LOGIN_USE: '全部登录用户',
+    ALL_NOT_LOGIN_USE: '全部未登录用户',
     PORTION_USER: '部分用户',
   };
 
@@ -60,7 +60,7 @@ export default () => {
         {staNumArr.map((item: any) => {
           return (
             <div className="wrap" key={item.title}>
-              <div className="title">{item.typeName + '上架总数'}</div>
+              <div className="title">{item.typeName + '上架总数' + ' >'}</div>
               <div className="num" onClick={() => handleStatisticalDetail(item)}>
                 {item.number}
               </div>
@@ -414,7 +414,31 @@ export default () => {
                 详情
               </Button>
             )}
+            <Access accessible={access.PD_BLAM_NRLGG}>
+              {[0, 3].indexOf(record.status) !== -1 && (
+                <Button
+                  size="small"
+                  type="link"
+                  onClick={() => {
+                    remove(record);
+                  }}
+                >
+                  删除
+                </Button>
+              )}
+            </Access>
             <Access accessible={access.PU_BLAM_NRLGG}>
+              {[0, 3].indexOf(record.status) !== -1 && (
+                <Button
+                  size="small"
+                  type="link"
+                  onClick={() => {
+                    handleAdd(record.id);
+                  }}
+                >
+                  编辑
+                </Button>
+              )}
               {record.status === 1 && (
                 <Button
                   size="small"
@@ -437,30 +461,6 @@ export default () => {
                   上架
                 </Button>
               )}
-              {[0, 3].indexOf(record.status) !== -1 && (
-                <Button
-                  size="small"
-                  type="link"
-                  onClick={() => {
-                    handleAdd(record.id);
-                  }}
-                >
-                  编辑
-                </Button>
-              )}
-            </Access>
-            <Access accessible={access.PD_BLAM_NRLGG}>
-              {[0, 3].indexOf(record.status) !== -1 && (
-                <Button
-                  size="small"
-                  type="link"
-                  onClick={() => {
-                    remove(record);
-                  }}
-                >
-                  删除
-                </Button>
-              )}
             </Access>
           </div>
         );
@@ -468,14 +468,7 @@ export default () => {
     },
   ];
   return (
-    <PageContainer
-      ghost
-      className={sc('container')}
-      header={{
-        title: '内容流广告',
-        breadcrumb: {},
-      }}
-    >
+    <PageContainer ghost className={sc('container')}>
       <StaCard />
       {useSearchNode()}
       <div className={sc('container-table-body')}>
