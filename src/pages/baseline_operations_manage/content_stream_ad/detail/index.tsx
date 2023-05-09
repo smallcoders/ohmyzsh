@@ -92,7 +92,7 @@ export default () => {
               <div style={{ display: 'flex' }}>
                 {detail?.articleTypes?.length
                   ? detail?.articleTypes?.map((item: any) => {
-                      return <Tag color="#0068ff">{item.typeName}</Tag>;
+                      return <Tag color="#0068ff">{item?.typeName || '--'}</Tag>;
                     })
                   : '--'}
               </div>
