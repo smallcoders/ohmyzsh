@@ -414,31 +414,7 @@ export default () => {
                 详情
               </Button>
             )}
-            <Access accessible={access.PD_BLAM_NRLGG}>
-              {[0, 3].indexOf(record.status) !== -1 && (
-                <Button
-                  size="small"
-                  type="link"
-                  onClick={() => {
-                    remove(record);
-                  }}
-                >
-                  删除
-                </Button>
-              )}
-            </Access>
             <Access accessible={access.PU_BLAM_NRLGG}>
-              {[0, 3].indexOf(record.status) !== -1 && (
-                <Button
-                  size="small"
-                  type="link"
-                  onClick={() => {
-                    handleAdd(record.id);
-                  }}
-                >
-                  编辑
-                </Button>
-              )}
               {record.status === 1 && (
                 <Button
                   size="small"
@@ -459,6 +435,30 @@ export default () => {
                   }}
                 >
                   上架
+                </Button>
+              )}
+              {[0, 3].indexOf(record.status) !== -1 && (
+                <Button
+                  size="small"
+                  type="link"
+                  onClick={() => {
+                    handleAdd(record.id);
+                  }}
+                >
+                  编辑
+                </Button>
+              )}
+            </Access>
+            <Access accessible={access.PD_BLAM_NRLGG}>
+              {[0, 3].indexOf(record.status) !== -1 && (
+                <Button
+                  size="small"
+                  type="link"
+                  onClick={() => {
+                    remove(record);
+                  }}
+                >
+                  删除
                 </Button>
               )}
             </Access>
