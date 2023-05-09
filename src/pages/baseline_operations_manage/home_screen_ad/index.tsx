@@ -120,7 +120,6 @@ export default () => {
           />
           : '--'
         )
-        
       },
     },
     {
@@ -271,6 +270,11 @@ export default () => {
     },
   ];
 
+  // 重置
+  const handleReset = () => {
+    actionRef.current.reset()
+  }
+
   return (
     <PageContainer
       className={sc('container')}
@@ -290,6 +294,7 @@ export default () => {
           defaultCollapsed: false, // 默认是否收起
           optionRender: (searchConfig, formProps, dom) => [dom[1], dom[0]],
         }}
+        onReset={handleReset}
         request={async (pagination) => {
           // 查询，重置搜集的值
           let status
