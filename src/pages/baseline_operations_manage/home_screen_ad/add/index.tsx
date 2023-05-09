@@ -306,7 +306,7 @@ export default () => {
               label="站内链接配置" 
               name="siteLink"
             >
-              <Input addonBefore="http://" addonAfter=".com" placeholder="请输入" />
+              <Input placeholder="请输入" />
             </Form.Item>
             <Form.Item
               label="启动频率" 
