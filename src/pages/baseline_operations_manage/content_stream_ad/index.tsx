@@ -72,7 +72,7 @@ export default () => {
   };
 
   const formLayout = {
-    labelCol: { span: 4 },
+    labelCol: { span: 6 },
     wrapperCol: { span: 16 },
   };
 
@@ -213,7 +213,7 @@ export default () => {
       <div className={sc('container-search')}>
         <Form {...formLayout} form={searchForm}>
           <Row>
-            <Col span={6}>
+            <Col span={8}>
               <Form.Item name="advertiseName" label="内容标题">
                 <Input placeholder="请输入" allowClear autoComplete="off" />
               </Form.Item>
@@ -232,7 +232,7 @@ export default () => {
                 </Select>
               </Form.Item>
             </Col>
-            <Col style={{ textAlign: 'right' }} span={6}>
+            <Col style={{ textAlign: 'right' }} span={4}>
               <Button
                 style={{ marginRight: '20px' }}
                 type="primary"
