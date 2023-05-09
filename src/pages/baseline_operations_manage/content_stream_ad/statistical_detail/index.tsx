@@ -34,6 +34,7 @@ export default () => {
         articleTypeId: [articleTypeId],
         pageSize,
         advertiseType: 'CONTENT_STREAM_ADS',
+        status: 1,
       });
       setLoading(false);
       if (code === 0) {
