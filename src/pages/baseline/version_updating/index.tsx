@@ -190,8 +190,7 @@ export default(() => {
           label="版本号"
           rules={[{ required: true, message: '必填' }]}
         >
-          {/* <InputNumber min={0} max={999999999} step={0.01} /> */}
-          <Input />
+          <Input placeholder='请输入' />
         </Form.Item>
         <Form.Item
           name="date"
@@ -209,7 +208,7 @@ export default(() => {
           label="版本更新内容"
           rules={[{ required: true, message: '必填' }]}
         >
-          <TextArea rows={3} maxLength={100} />
+          <TextArea placeholder='请输入' rows={3} maxLength={100} />
         </Form.Item>
       </Form>
     </Modal>
