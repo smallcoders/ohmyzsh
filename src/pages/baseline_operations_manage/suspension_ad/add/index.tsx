@@ -283,6 +283,12 @@ export default () => {
           name="triggerAddress"
           label="触发地址"
           required
+          rules={[
+            {
+              required: true,
+              message: '触发地址必填',
+            },
+          ]}
         >
           <Input placeholder="请输入页面地址" />
         </Form.Item>
