@@ -6,6 +6,7 @@ import {
   Checkbox,
   Input,
   DatePicker,
+  InputNumber,
 } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import scopedClasses from '@/utils/scopedClasses';
@@ -18,7 +19,7 @@ import SelfTable from '@/components/self_table';
 import { history, Access, useAccess } from 'umi';
 import './index.less'
 import { useState, useMemo, useEffect } from 'react';
-import { getVersionAdd, getVersionDelete, getVersionPage } from '@/services/version-updating';
+import { getVersionAdd, getVersionDelete, getVersionPage, getVersionUpdate } from '@/services/version-updating';
 
 const sc = scopedClasses('baseline-version-updating');
 
@@ -32,7 +33,7 @@ export default(() => {
   const { TextArea } = Input;
   const [formSearch] = Form.useForm()
   const [formAdd] = Form.useForm()
-  const [titleMotal, setTitleMotal] = useState<string>('新建')
+  const [titleMotal, setTitleMotal] = useState<string>('新增')
   const [modalOpen, setModalOpen] = useState<boolean>(false)
   const [loading, setLoading] = useState<any>(false);
   const [dataSource, setDataSource] = useState<any>([]);
@@ -47,42 +48,15 @@ export default(() => {
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     setLoading(true)
     try {
-      // const { result, code, message } = {
-      //   code: 0,
-      //   message: 0,
-      //   result: {
-      //     total: 1,
-      //   }
-      // };
-      const { result, code, message } = await getVersionPage({
+      const { result, code, message, pageTotal, totalCount } = await getVersionPage({
         pageIndex,
         pageSize,
         ...searchContent,
       });
       setLoading(false)
       if (code === 0) {
-        setPageInfo({ totalCount: result.total, pageTotal: Math.ceil(result.total / pageSize), pageIndex, pageSize });
+        setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
         setDataSource(result || []);
-        // setDataSource([
-        //   {
-        //     id: 1,
-        //     date: 1675750971000,
-        //     system: ['Android', 'IOS '],
-        //     version: '2.0.1',
-        //     content: '关于***********************BUG修复',
-        //     operator: '王也',
-        //     updateTime: '2023-05-08'
-        //   },
-        //   {
-        //     id: 2,
-        //     date: 1675750971000,
-        //     system: ['Android'],
-        //     version: '2.0.1',
-        //     content: '关于***********************BUG修复',
-        //     operator: '诸葛青',
-        //     updateTime: '2023-05-09'
-        //   },
-        // ]);
       } else {
         throw new Error(message);
       }
@@ -108,18 +82,26 @@ export default(() => {
     const {system, version, date, content } = formAdd.getFieldsValue();
     console.log('搜集的表单', formAdd.getFieldsValue())
     try {
-      const res = await getVersionAdd({
+      const res = editId 
+      ? await getVersionUpdate({
         system: system ? system?.join(',') : undefined,
         version,
         date: date ? moment(date).format('YYYY-MM-DD') : undefined,
         content,
         id: editId ? editId : undefined
       })
+      : await getVersionAdd({
+        system: system ? system?.join(',') : undefined,
+        version,
+        date: date ? moment(date).format('YYYY-MM-DD') : undefined,
+        content,
+      })
+
       if (res?.code === 0) {
         // 重新获取页面
-        // getPage()
         message.success(`${titleMotal}完成`)
         clearForm()
+        getPage()
       } else {
         message.error(`${titleMotal}失败, 原因:${res?.message}`)
       }
@@ -208,7 +190,7 @@ export default(() => {
           label="版本号"
           rules={[{ required: true, message: '必填' }]}
         >
-          <Input maxLength={20} />
+          <InputNumber min={0} max={999999999} step={0.1} />
         </Form.Item>
         <Form.Item
           name="date"
@@ -237,9 +219,11 @@ export default(() => {
   }
   const handleEdit = (value: any) => {
     setTitleMotal('编辑')
+    setEditId(value?.id);
     console.log('编辑', value)
+    console.log('编辑的系统', value?.system?.split(','))
     formAdd.setFieldsValue({
-      system: value?.system || '',
+      system: value?.system?.split(',') || '',
       version: value?.version || '',
       date: value?.date && moment(value?.date),
       content: value?.content || '',
@@ -249,18 +233,24 @@ export default(() => {
   }
 
   const handleDelete = async (deleteId: any) => {
-    try {
-      const res = await getVersionDelete(deleteId)
-      if (res?.code === 0) {
-        message.success('删除成功')
-        // 重新获取页面
-        // getPage()
-      } else {
-        message.error(`删除失败, 原因：${res?.message}`)
+    Modal.confirm({
+      title: '提示',
+      content: '确定将内容删除？',
+      onOk: async () => {
+        try {
+          const res = await getVersionDelete(deleteId)
+          if (res?.code === 0) {
+            message.success('删除成功')
+            // 重新获取页面
+            getPage()
+          } else {
+            message.error(`删除失败, 原因：${res?.message}`)
+          }
+        } catch (error) {
+          message.error(`删除失败, 原因：${error}`)
+        }
       }
-    } catch (error) {
-      message.error(`删除失败, 原因：${error}`)
-    }
+    })
   }
   // table
   const columns = [
@@ -384,7 +374,7 @@ export default(() => {
             <Button 
               type="primary"
               onClick={() => handleAddList()}
-            >+新建</Button>
+            >+新增</Button>
           </Access>
         </div>
       </div>

@@ -29,8 +29,6 @@ export function getVersionAdd(data: {
   system?: string // 操作系统
   version?: string // 版本号
   content?: string // 版本更新内容
-
-
 }) {
   return request(`/antelope-common/mng/app/version/add`, {
     method: 'post',
@@ -39,8 +37,26 @@ export function getVersionAdd(data: {
 }
 
 /**
+ * 编辑
+ */
+export function getVersionUpdate(data: {
+  id?: number
+  date?: string // 上线日期
+  system?: string // 操作系统
+  version?: string // 版本号
+  content?: string // 版本更新内容
+}) {
+  return request(`/antelope-common/mng/app/version/update`, {
+    method: 'put',
+    data,
+  })
+}
+
+/**
  * 删除
  */
 export function getVersionDelete(id: string) {
-  return request(`/antelope-common/mng/app/version/delete?id=${id}`)
+  return request(`/antelope-common/mng/app/version/delete?id=${id}`, {
+    method: 'DELETE',
+  })
 }
