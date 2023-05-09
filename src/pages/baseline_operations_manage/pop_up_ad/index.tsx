@@ -53,14 +53,19 @@ export default () => {
   });
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
     try {
-      const { result, totalCount, pageTotal, code, message } = await getAdvertiseList({
+      const { result, code, message } = await getAdvertiseList({
         pageIndex,
         pageSize,
         advertiseType: 'POP_UP_ADS',
         ...searchContent,
       });
       if (code === 0) {
-        setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
+        setPageInfo({
+          totalCount: result.total, 
+          pageIndex: result.pageIndex, 
+          pageSize: result.pageSize,
+          pageTotal: Math.ceil(result.total / pageInfo.pageSize) 
+        });
         setDataSource(result?.list);
       } else {
         throw new Error(message);

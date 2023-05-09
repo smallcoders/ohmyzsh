@@ -76,7 +76,7 @@ export default () => {
               detail?.scope ? detail.scope !== 'PORTION_USER' ? scopeMap[detail.scope] :
                 <div>{
                   detail.labels.map((item: any, index: number) => {
-                    return <span key={index}>{item.labelName}</span>
+                    return <span className="user-label" key={index}>{item.labelName}</span>
                   })
                 }</div>
                 : ''
