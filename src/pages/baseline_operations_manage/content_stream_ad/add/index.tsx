@@ -34,11 +34,11 @@ const allLabels = [
   },
   {
     label: '全部登录用户',
-    value: 'ALL_LOGIN_USE',
+    value: 'ALL_LOGIN_USER',
   },
   {
     label: '全部未登录用户',
-    value: 'ALL_NOT_LOGIN_USE',
+    value: 'ALL_NOT_LOGIN_USER',
   },
 ];
 export default () => {
