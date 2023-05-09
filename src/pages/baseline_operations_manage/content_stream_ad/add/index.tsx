@@ -313,13 +313,10 @@ export default () => {
         breadcrumb: (
           <Breadcrumb>
             <Breadcrumb.Item>
-              <Link to="/baseline">基线管理</Link>
+              <Link to="/baseline-operations-management">基线运营位管理</Link>
             </Breadcrumb.Item>
             <Breadcrumb.Item>
-              <Link to="/baseline/baseline-operations-management">运营位管理</Link>
-            </Breadcrumb.Item>
-            <Breadcrumb.Item>
-              <Link to="/baseline/baseline-operations-management/content-stream-ad/index">
+              <Link to="/baseline-operations-management/content-stream-ad/index">
                 内容流广告管理
               </Link>
             </Breadcrumb.Item>
@@ -327,7 +324,6 @@ export default () => {
           </Breadcrumb>
         ),
       }}
-      loading={loading}
       footer={[
         <>
           <Button
@@ -366,7 +362,7 @@ export default () => {
           setFormIsChange(true);
         }}
       >
-        <div className="title">弹窗广告信息</div>
+        <div className="title">内容流广告信息</div>
         <Form.Item
           labelCol={{ span: 4 }}
           wrapperCol={{ span: 12 }}
@@ -446,7 +442,9 @@ export default () => {
         >
           <Radio.Group
             onChange={(e) => {
-              form.setFieldsValue(e.target.value === 'all' ? { labelIds: '' } : { labelIds: [] });
+              form.setFieldsValue(
+                e.target.value === 'all' ? { labelIds: undefined } : { labelIds: [] },
+              );
               setUserType(e.target.value);
             }}
             options={[
@@ -455,19 +453,19 @@ export default () => {
             ]}
           />
         </Form.Item>
-        <Form.Item
-          wrapperCol={{ offset: 4, span: 12 }}
-          name="labelIds"
-          required
-          validateTrigger="onBlur"
-          rules={[
-            {
-              required: true,
-              message: '必选',
-            },
-          ]}
-        >
-          {form.getFieldValue('userType') === 'part' ? (
+        {form.getFieldValue('userType') === 'part' && (
+          <Form.Item
+            wrapperCol={{ offset: 4, span: 12 }}
+            name="labelIds"
+            required
+            validateTrigger="onBlur"
+            rules={[
+              {
+                required: true,
+                message: '必选',
+              },
+            ]}
+          >
             <Select
               options={partLabels}
               mode={'multiple'}
@@ -480,10 +478,24 @@ export default () => {
                 }
               }}
             />
-          ) : (
+          </Form.Item>
+        )}
+        {form.getFieldValue('userType') === 'all' && (
+          <Form.Item
+            wrapperCol={{ offset: 4, span: 12 }}
+            name="labelIds"
+            required
+            validateTrigger="onBlur"
+            rules={[
+              {
+                required: true,
+                message: '必选',
+              },
+            ]}
+          >
             <Select options={allLabels} placeholder="请选择" />
-          )}
-        </Form.Item>
+          </Form.Item>
+        )}
       </Form>
       <Modal
         visible={visible}
