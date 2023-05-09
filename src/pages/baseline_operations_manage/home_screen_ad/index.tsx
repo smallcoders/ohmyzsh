@@ -259,7 +259,13 @@ export default () => {
   ];
 
   return (
-    <PageContainer className={sc('container')}>
+    <PageContainer
+      className={sc('container')}
+      header={{
+        title: '开屏广告',
+        breadcrumb: {},
+      }}
+    >
       <ProTable
         headerTitle={`开屏广告管理列表（共${total}个）`}
         options={false} // 工具栏隐藏
@@ -284,10 +290,10 @@ export default () => {
             default:
               status = '1';
               break;
-          }          
+          }
           const result = await httpAdvertiseList({
             ...pagination,
-            status: pagination?.status 
+            status: pagination?.status
               ? status
               : undefined,
             advertiseType: 'SPLASH_ADS'

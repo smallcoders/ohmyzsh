@@ -468,7 +468,14 @@ export default () => {
     },
   ];
   return (
-    <PageContainer ghost className={sc('container')}>
+    <PageContainer
+      ghost
+      className={sc('container')}
+      header={{
+        title: '内容流广告',
+        breadcrumb: {},
+      }}
+    >
       <StaCard />
       {useSearchNode()}
       <div className={sc('container-table-body')}>

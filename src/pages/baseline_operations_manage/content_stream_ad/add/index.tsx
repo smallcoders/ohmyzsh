@@ -309,7 +309,7 @@ export default () => {
       className={sc('page')}
       ghost
       header={{
-        title: id ? `内容编辑` : '新增内容',
+        title: id ? `编辑` : '新增',
         breadcrumb: (
           <Breadcrumb>
             <Breadcrumb.Item>
@@ -323,7 +323,7 @@ export default () => {
                 内容流广告管理
               </Link>
             </Breadcrumb.Item>
-            <Breadcrumb.Item>{id ? `内容编辑` : '新增内容'}</Breadcrumb.Item>
+            <Breadcrumb.Item>{id ? `编辑` : '新增'}</Breadcrumb.Item>
           </Breadcrumb>
         ),
       }}
