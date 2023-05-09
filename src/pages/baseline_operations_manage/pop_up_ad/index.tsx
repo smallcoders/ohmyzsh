@@ -6,7 +6,8 @@ import {
   Col,
   Select,
   Input,
-  Modal
+  Modal,
+  Image
 } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import SelfTable from '@/components/self_table';
@@ -137,7 +138,12 @@ export default () => {
               _.length ? _?.map((item: any, index: number) => {
                 return (
                   <div className="img-box">
-                    <img src={item.ossUrl} key={index} alt='' />
+                    <Image
+                      key={index}
+                      className={'banner-img'}
+                      src={item.ossUrl}
+                      alt="图片损坏"
+                    />
                   </div>
                 )
               }) : '--'

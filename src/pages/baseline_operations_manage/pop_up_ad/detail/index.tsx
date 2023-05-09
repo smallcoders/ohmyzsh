@@ -1,4 +1,4 @@
-import { Button, message as antdMessage } from 'antd';
+import { Button, message as antdMessage, Image } from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import { useEffect, useState } from 'react';
 import { history } from 'umi';
@@ -55,7 +55,12 @@ export default () => {
               detail?.ossUrls ? detail?.ossUrls?.map((item: any, index: number) => {
                 return (
                   <div className="img-box">
-                    <img src={item} key={index} alt='' />
+                    <Image
+                      key={index}
+                      className={'banner-img'}
+                      src={item}
+                      alt="图片损坏"
+                    />
                   </div>
                 )
               }) : '--'
