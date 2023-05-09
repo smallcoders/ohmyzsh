@@ -316,9 +316,7 @@ export default () => {
               <Link to="/baseline-operations-management">基线运营位管理</Link>
             </Breadcrumb.Item>
             <Breadcrumb.Item>
-              <Link to="/baseline-operations-management/content-stream-ad/index">
-                内容流广告管理
-              </Link>
+              <Link to="/baseline-operations-management/content-stream-ad/index">内容流广告</Link>
             </Breadcrumb.Item>
             <Breadcrumb.Item>{id ? `编辑` : '新增'}</Breadcrumb.Item>
           </Breadcrumb>
