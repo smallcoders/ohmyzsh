@@ -47,8 +47,8 @@ export default () => {
   // 返回 模态框的状态
   const [visible, setVisible] = useState<boolean>(false);
   const formLayout = {
-    labelCol: { span: 6 },
-    wrapperCol: { span: 18 },
+    labelCol: { span: 4 },
+    wrapperCol: { span: 15 },
   };
   // 内容信息form
   const [contentInfoForm] = Form.useForm();
