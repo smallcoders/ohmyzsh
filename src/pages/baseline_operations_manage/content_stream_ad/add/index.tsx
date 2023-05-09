@@ -442,7 +442,9 @@ export default () => {
         >
           <Radio.Group
             onChange={(e) => {
-              form.setFieldsValue(e.target.value === 'all' ? { labelIds: '' } : { labelIds: [] });
+              form.setFieldsValue(
+                e.target.value === 'all' ? { labelIds: undefined } : { labelIds: [] },
+              );
               setUserType(e.target.value);
             }}
             options={[
@@ -451,19 +453,19 @@ export default () => {
             ]}
           />
         </Form.Item>
-        <Form.Item
-          wrapperCol={{ offset: 4, span: 12 }}
-          name="labelIds"
-          required
-          validateTrigger="onBlur"
-          rules={[
-            {
-              required: true,
-              message: '必选',
-            },
-          ]}
-        >
-          {form.getFieldValue('userType') === 'part' ? (
+        {form.getFieldValue('userType') === 'part' && (
+          <Form.Item
+            wrapperCol={{ offset: 4, span: 12 }}
+            name="labelIds"
+            required
+            validateTrigger="onBlur"
+            rules={[
+              {
+                required: true,
+                message: '必选',
+              },
+            ]}
+          >
             <Select
               options={partLabels}
               mode={'multiple'}
@@ -476,10 +478,24 @@ export default () => {
                 }
               }}
             />
-          ) : (
+          </Form.Item>
+        )}
+        {form.getFieldValue('userType') === 'all' && (
+          <Form.Item
+            wrapperCol={{ offset: 4, span: 12 }}
+            name="labelIds"
+            required
+            validateTrigger="onBlur"
+            rules={[
+              {
+                required: true,
+                message: '必选',
+              },
+            ]}
+          >
             <Select options={allLabels} placeholder="请选择" />
-          )}
-        </Form.Item>
+          </Form.Item>
+        )}
       </Form>
       <Modal
         visible={visible}
