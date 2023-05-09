@@ -40,7 +40,7 @@ export default () => {
   };
   const userTypeObj = {
     ALL_USER: '全部用户',
-    ALL_LOGIN_USE: '全部登陆用户',
+    ALL_LOGIN_USE: '全部登录用户',
     ALL_NOT_LOGIN_USE: '全部未登录用户',
     PORTION_USER: '部分用户',
   };
@@ -60,7 +60,7 @@ export default () => {
         {staNumArr.map((item: any) => {
           return (
             <div className="wrap" key={item.title}>
-              <div className="title">{item.typeName + '上架总数'}</div>
+              <div className="title">{item.typeName + '上架总数' + ' >'}</div>
               <div className="num" onClick={() => handleStatisticalDetail(item)}>
                 {item.number}
               </div>
