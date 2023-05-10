@@ -1,0 +1,81 @@
+@prefix: pop-up-ad;
+@import '../../../global.less';
+
+.@{prefix}-container {
+  .ant-form-item-control-input {
+    white-space: nowrap;
+  }
+  &-title {
+    font-size: 20px;
+    font-family: MicrosoftYaHei, MicrosoftYaHei-Bold;
+    font-weight: 700;
+    color: #1e232a;
+    line-height: 32px;
+    padding-top: 8px;
+    margin-bottom: 24px;
+  }
+  &-table-header {
+    padding: 20px;
+    background-color: #fff;
+    .title {
+      display: flex;
+      justify-content: space-between;
+      > span {
+        color: rgba(0, 0, 0, 0.85);
+        font-weight: 600;
+        font-size: 16px;
+        line-height: 22px;
+      }
+    }
+  }
+  &-table-body {
+    padding: 0 20px 20px;
+    background-color: #fff;
+    .ant-table-row {
+      .ant-table-cell {
+        &:last-child {
+          white-space: nowrap;
+        }
+      }
+    }
+  }
+  &-search {
+    margin-bottom: 20px;
+    padding: 20px 0 0 0;
+    background-color: #fff;
+    &-operate {
+      display: flex;
+      justify-content: flex-end;
+      padding-right: 20px;
+    }
+  }
+  .img-tr {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    .img-box {
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 4px;
+      img {
+        height: auto;
+        width: auto;
+        max-width: 60px;
+        max-height: 60px;
+      }
+    }
+  }
+}
+.operation-list {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f8f8f8;
+  .title {
+    margin-right: 40px;
+  }
+}

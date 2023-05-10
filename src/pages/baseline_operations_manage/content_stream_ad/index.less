@@ -1,0 +1,68 @@
+@prefix: content-stream-ad;
+@import '../../../global.less';
+
+.@{prefix}-container {
+  &-search {
+    padding:24px 16px 0 16px;
+    background-color: #fff;
+    margin-bottom: 20px;
+    margin-top: 10px;
+  }
+  &-table-body {
+    padding: 20px;
+    background-color: #fff;
+    .ant-table-row {
+      .ant-table-cell {
+        &:last-child {
+          white-space: nowrap;
+        }
+      }
+    }
+  }
+
+}
+
+.@{prefix}-card {
+  display: flex;
+  justify-content: space-between;
+  background-color: #fff;
+  padding: 10px 20px;
+  .wrap {
+    //width: 100%;
+  }
+  .title {
+    //font-size: 16px;
+    line-height: 30px;
+  }
+  .num {
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
+  }
+}
+.img-tr {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  .img-box {
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 4px;
+    .table-img {
+      height: auto;
+      width: auto;
+      max-width: 60px;
+      max-height: 100px;
+    }
+  }
+}
+.typeBox{
+  display: flex;
+  flex-flow: row wrap;
+  &-item{
+    margin-bottom: 8px;
+  }
+}
