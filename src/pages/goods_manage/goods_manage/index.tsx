@@ -1,31 +1,16 @@
 import { pageQuery, modifySortNo } from '@/services/order/order-manage';
 import { getApplicationTypeList } from '@/services/digital-application';
-import type DataCommodity from '@/types/data-commodity';
 import {DownOutlined} from "@ant-design/icons";
 import { PageContainer } from '@ant-design/pro-layout';
-import type { ActionType, ProColumns } from '@ant-design/pro-table';
-import ProTable from '@ant-design/pro-table';
 import { Access, useAccess } from 'umi';
 import './index.less'
 import { Button, Dropdown, Menu, Popconfirm, Form, InputNumber, message, Cascader, Row, Col, Input, Select, TreeSelect, Image } from 'antd';
 const { Option } = Select;
 import { useCallback, useRef, useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import {
-  httpGetListRoles
-} from '@/services/account';
 import SelfTable from '@/components/self_table';
 import scopedClasses from '@/utils/scopedClasses';
 const sc = scopedClasses('page-goods-list');
-// import {routeName} from '@/../con'
-// 内容类型
-const contentType = {
-  '1': '供需简讯',
-  '2': '企业动态',
-  '3': '经验分享',
-  '4': '供需简讯',
-  '5': '供需简讯',
-}
 // 商品来源字典
 const productSourceType = {
   0:'采购商品', 
@@ -34,16 +19,10 @@ const productSourceType = {
 }
 export default () => {
   const history = useHistory();
-  const actionRef = useRef<ActionType>();
-  const [total, setTotal] = useState(0);
   const [columnData, setColumnData] = useState<any>({})
   const [activeStatusData, setActiveStatusData] = useState({});
   const [applicationTypeList, setApplicationTypeList] = useState<any>([]);
   const [searchForm] = Form.useForm();
-  const paginationRef = useRef<{ current?: number; pageSize?: number }>({
-    current: 0,
-    pageSize: 0,
-  });
   const [pageInfo, setPageInfo] = useState<any>({
     pageIndex: 1,
     pageSize: 10,
@@ -111,6 +90,19 @@ export default () => {
       weightForm.resetFields()
     } else {
       message.error(`${value == 1 ? '上架' : '下架'}失败，原因:{${editRes.message}}`);
+    }
+  };
+  // 类型修改
+  const modifyType = async (value: number) => {
+    const editRes = await modifySortNo({
+      id: columnData.id,
+      appTypeId: value,
+    });
+    if (editRes.code === 0) {
+      message.success(`类型修改成功！`);
+      weightForm.resetFields()
+    } else {
+      message.error(`类型修改失败，原因:{${editRes.message}}`);
     }
   };
 
@@ -322,8 +314,8 @@ export default () => {
         okText="确定"
         cancelText="取消"
         onConfirm={async () => {
-          // await weightForm.validateFields()
-          // editSort(record.id, weightForm.getFieldValue('weight'));
+          await goodsTypeForm.validateFields()
+          modifyType(goodsTypeForm.getFieldValue('goodsType'));
         }}
       >
         <a
@@ -342,7 +334,7 @@ export default () => {
     handleGetApplicationTypeList()
   }, []);
   const formLayout = {
-    labelCol: { span: 6 },
+    labelCol: { span: 7 },
     wrapperCol: { span: 16 },
   };
   const useSearchNode = (): React.ReactNode => {

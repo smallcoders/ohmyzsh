@@ -84,9 +84,43 @@ export default () => {
             <Form labelCol={{ span: 4 }}>
               <Form.Item label="商品来源">{commodity && commodity.payProduct.productSource && productSourceType[commodity.payProduct.productSource]}</Form.Item> 
               <Form.Item label="数字化应用">{commodity?.payProduct.productName}</Form.Item>
-              <Form.Item label="商品服务端">{commodity?.payProduct.productName}</Form.Item>
-              <Form.Item label="商品体验地址">{commodity?.payProduct.productName}</Form.Item>
-              <Form.Item label="商品类型">{commodity?.payProduct.productName}</Form.Item>
+              <Form.Item label="商品服务端">
+                {(commodity?.payProduct.appType == 1 || commodity?.payProduct.appType == 3) && (
+                  <div>
+                    Web端：{commodity?.payProduct.pcHomeUrl}  
+                    <a href='#' onClick={() => {
+                      window.open(commodity?.payProduct.pcHomeUrl)
+                    }}>查看</a>
+                  </div>
+                )}
+                {(commodity?.payProduct.appType == 0 || commodity?.payProduct.appType == 3) && (
+                  <div>
+                    App端：{commodity?.payProduct.appHomeUrl}  
+                    <a href='#' onClick={() => {
+                      window.open(commodity?.payProduct.appHomeUrl)
+                    }}>查看</a>
+                  </div>
+                )}
+              </Form.Item>
+              <Form.Item label="商品体验地址">
+                {(commodity?.payProduct.appType == 1 || commodity?.payProduct.appType == 3) && (
+                  <div>
+                    Web端：{commodity?.payProduct.pcDemoUrl}  
+                    <a href='#' onClick={() => {
+                      window.open(commodity?.payProduct.pcDemoUrl)
+                    }}>查看</a>
+                  </div>
+                )}
+                {(commodity?.payProduct.appType == 0 || commodity?.payProduct.appType == 3) && (
+                  <div>
+                    App端：{commodity?.payProduct.appDemoUrl}  
+                    <a href='#' onClick={() => {
+                      window.open(commodity?.payProduct.appDemoUrl)
+                    }}>查看</a>
+                  </div>
+                )}
+              </Form.Item>
+              <Form.Item label="商品类型">{commodity?.payProduct.typeName}</Form.Item>
               <Form.Item label="商品名称">{commodity?.payProduct.productName}</Form.Item>
               <Form.Item label="商品型号">{commodity?.payProduct.productModel}</Form.Item>
               {/* <Form.Item label="商品促销标签">
@@ -112,7 +146,7 @@ export default () => {
                   </Space>
                 </Image.PreviewGroup>
               </Form.Item>
-              <Form.Item label="免费试用">{commodity?.payProduct.productName}</Form.Item>
+              <Form.Item label="免费试用">{commodity && commodity.payProduct.isFree ? '是' : '否'}</Form.Item>
               {/* <Form.Item label="供应商">{commodity?.payProduct?.supplierName}</Form.Item> */}
             </Form>
           </ProCard>

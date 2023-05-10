@@ -20,6 +20,13 @@ namespace DataCommodity {
     productBrandCn: string;
     productBrandEn: string;
     spreadWord: string;
+    appType: number;
+    typeName: string;
+    isFree: number;
+    pcHomeUrl: string;
+    pcDemoUrl: string;
+    appDemoUrl: string;
+    appHomeUrl: string;
     productModel: string;
     supplier: number;
     supplierName: string;
