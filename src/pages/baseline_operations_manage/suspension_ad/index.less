@@ -1,0 +1,68 @@
+@prefix: suspension-list;
+
+.@{prefix}-container {
+  .total {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    background: #fff;
+    margin-bottom: 10px;
+    padding: 20px 0 20px 30px;
+    .click-amount {
+      margin-right: 40px;
+    }
+    .user-amount, .click-amount {
+      font-size: 24px;
+      font-weight: bold;
+      text-align: center;
+      >div {
+        font-size: 14px;
+        font-weight: normal;
+      }
+    }
+  }
+  .ant-form-item-control-input {
+    white-space: nowrap;
+  }
+  &-table-header {
+    padding: 20px;
+    background-color: #fff;
+    .title {
+      display: flex;
+      justify-content: space-between;
+      > span {
+        color: rgba(0, 0, 0, 0.85);
+        font-weight: 600;
+        font-size: 16px;
+        line-height: 22px;
+      }
+    }
+  }
+  &-table-body {
+    padding: 0 20px;
+    background-color: #fff;
+    .ant-table-row {
+      .ant-table-cell {
+        &:last-child {
+          white-space: nowrap;
+        }
+      }
+    }
+  }
+  &-search {
+    margin-bottom: 20px;
+    padding: 20px 0 0 0;
+    background-color: #fff;
+  }
+  .img-tr {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    .img-box {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+}
