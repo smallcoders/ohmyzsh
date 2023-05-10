@@ -53,6 +53,8 @@ type RouterParams = {
   name?: string;
 };
 export default () => {
+  // 是否展示发布按钮， 只有暂存成功才展示发布按钮， 且内容更新，要关闭发布按钮。再次暂存成功，展示发布按钮
+  const [showPublish, setShowPublish] = useState<boolean>(false)
   // 模态框的状态
   const [visibleAdd, setVisibleAdd] = useState<boolean>(false);
   const [visible, setVisible] = useState<boolean>(false);
@@ -247,6 +249,7 @@ export default () => {
           validateTrigger={['onBlur']}
           onValuesChange={() => {
             setContentInfoFormChange(true);
+            setShowPublish(false);
           }}
         >
           <Form.Item label="标题" name="title" rules={[{ required: true, message: '必填' }]}>
@@ -297,6 +300,7 @@ export default () => {
           validateTrigger={['onBlur']} 
           onValuesChange={() => {
             setContentInfoFormChange(true);
+            setShowPublish(false);
           }}
         >
           <Form.Item label="标题" name="title" rules={[{ required: true, message: '必填' }]}>
@@ -378,6 +382,7 @@ export default () => {
           validateTrigger={['onBlur']}
           onValuesChange={() => {
             setContentInfoFormChange(true);
+            setShowPublish(false);
           }}
         >
           <Form.Item label="文本内容" name="content" rules={[{ required: true, message: '必填' }]}>
@@ -402,6 +407,7 @@ export default () => {
           validateTrigger={['onBlur']}
           onValuesChange={() => {
             setContentInfoFormChange(true);
+            setShowPublish(false);
           }}
         >
           <Form.Item label="标题" name="title" rules={[{ required: true, message: '必填' }]}>
@@ -467,6 +473,7 @@ export default () => {
           validateTrigger={['onBlur']}
           onValuesChange={() => {
             setContentInfoFormChange(true);
+            setShowPublish(false);
           }}
         >
           <Form.Item label="标题" name="title" rules={[{ required: true, message: '必填' }]}>
@@ -628,6 +635,7 @@ export default () => {
         });
         console.log('暂存返回的res', res);
         if (res.code === 0) {
+          setShowPublish(true); // 暂存成功 展示发布按钮
           message.success('操作成功');
           setIsExporting(false);
           setContentInfoFormChange(false);
@@ -728,12 +736,15 @@ export default () => {
               onConfirm={() => onSubmitDebounce(1)}
             >
               {/* <Button type="primary" htmlType="submit"  onClick={() => onSubmit(1)}> */}
-              <Button disabled={isExporting} type="primary" htmlType="submit">
-                发布
-              </Button>
+              {
+                showPublish && 
+                <Button disabled={isExporting} type="primary" htmlType="submit">
+                  发布
+                </Button>
+              }
             </Popconfirm>
           )}
-          {isTry && (
+          {isTry && showPublish && (
             <Button disabled={isExporting} type="primary" htmlType="submit" onClick={() => onSubmitDebounce(1)}>
               发布
             </Button>
@@ -771,6 +782,7 @@ export default () => {
                 validateTrigger={['onBlur']}
                 onValuesChange={() => {
                   setFormPostMessageChange(true);
+                  setShowPublish(false);
                 }}
               >
                 <Form.Item
