@@ -8,6 +8,12 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useHistory } from 'umi';
 const { Column } = Table;
 const { Link } = Anchor;
+// 商品来源字典
+const productSourceType = {
+  0:'采购商品', 
+  1:'应用商品', 
+  2:'其他商品'
+}
 export default () => {
   const history = useHistory();
   const query = useQuery();
@@ -76,19 +82,24 @@ export default () => {
           <ProCard>
             <h2 id="anchor-base-info">商品基础信息</h2>
             <Form labelCol={{ span: 4 }}>
+              <Form.Item label="商品来源">{commodity && commodity.payProduct.productSource && productSourceType[commodity.payProduct.productSource]}</Form.Item> 
+              <Form.Item label="数字化应用">{commodity?.payProduct.productName}</Form.Item>
+              <Form.Item label="商品服务端">{commodity?.payProduct.productName}</Form.Item>
+              <Form.Item label="商品体验地址">{commodity?.payProduct.productName}</Form.Item>
+              <Form.Item label="商品类型">{commodity?.payProduct.productName}</Form.Item>
               <Form.Item label="商品名称">{commodity?.payProduct.productName}</Form.Item>
               <Form.Item label="商品型号">{commodity?.payProduct.productModel}</Form.Item>
-              <Form.Item label="商品促销标签">
+              {/* <Form.Item label="商品促销标签">
                 {commodity?.payProduct.saleContent?.map((item) => {
                   return <Tag key={item.id}>{item.label}</Tag>;
                 })}
-              </Form.Item>
-              <Form.Item label="服务标签">
+              </Form.Item> */}
+              {/* <Form.Item label="服务标签">
                 {commodity?.payProduct.serverContent?.map((item) => {
                   return <Tag key={item.id}>{item.label}</Tag>;
                 })}
               </Form.Item>
-              <Form.Item label="商品单位">{commodity?.payProduct.productOrg}</Form.Item>
+              <Form.Item label="商品单位">{commodity?.payProduct.productOrg}</Form.Item> */}
               <Form.Item label="商品封面图">
                 <Image width={100} src={commodity?.payProduct.productPic} />
               </Form.Item>
@@ -101,7 +112,8 @@ export default () => {
                   </Space>
                 </Image.PreviewGroup>
               </Form.Item>
-              <Form.Item label="供应商">{commodity?.payProduct?.supplierName}</Form.Item>
+              <Form.Item label="免费试用">{commodity?.payProduct.productName}</Form.Item>
+              {/* <Form.Item label="供应商">{commodity?.payProduct?.supplierName}</Form.Item> */}
             </Form>
           </ProCard>
           <ProCard>
@@ -154,7 +166,7 @@ export default () => {
         </ProCard>
         <ProCard colSpan="200px" />
       </ProCard>
-      <div style={{ width: 200, position: 'fixed', right: 10, top: 100 }}>
+      <div style={{ width: 200, background: '#fff', position: 'fixed', right: 10, top: 100 }}>
         <Anchor offsetTop={150} showInkInFixed={true} affix={false}>
           <Link href="#anchor-base-info" title="商品基础信息" />
           <Link href="#anchor-specs" title="商品规格信息" />

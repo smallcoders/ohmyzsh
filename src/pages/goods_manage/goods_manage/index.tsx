@@ -6,12 +6,17 @@ import { PageContainer } from '@ant-design/pro-layout';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import { Access, useAccess } from 'umi';
-import { Button, Dropdown, Menu, Popconfirm, Form, InputNumber, message, Cascader } from 'antd';
+import './index.less'
+import { Button, Dropdown, Menu, Popconfirm, Form, InputNumber, message, Cascader, Row, Col, Input, Select, TreeSelect, Image } from 'antd';
+const { Option } = Select;
 import { useCallback, useRef, useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import {
   httpGetListRoles
 } from '@/services/account';
+import SelfTable from '@/components/self_table';
+import scopedClasses from '@/utils/scopedClasses';
+const sc = scopedClasses('page-goods-list');
 // import {routeName} from '@/../con'
 // 内容类型
 const contentType = {
@@ -21,6 +26,12 @@ const contentType = {
   '4': '供需简讯',
   '5': '供需简讯',
 }
+// 商品来源字典
+const productSourceType = {
+  0:'采购商品', 
+  1:'应用商品', 
+  2:'其他商品'
+}
 export default () => {
   const history = useHistory();
   const actionRef = useRef<ActionType>();
@@ -28,26 +39,53 @@ export default () => {
   const [columnData, setColumnData] = useState<any>({})
   const [activeStatusData, setActiveStatusData] = useState({});
   const [applicationTypeList, setApplicationTypeList] = useState<any>([]);
+  const [searchForm] = Form.useForm();
   const paginationRef = useRef<{ current?: number; pageSize?: number }>({
     current: 0,
     pageSize: 0,
   });
+  const [pageInfo, setPageInfo] = useState<any>({
+    pageIndex: 1,
+    pageSize: 10,
+    totalCount: 0,
+    pageTotal: 0,
+  });
+  const [searchContent, setSearChContent] = useState<any>({});
+  const [dataSource, setDataSource] = useState<any>([]);
   const [weightForm] = Form.useForm();
   const [goodsTypeForm] = Form.useForm()
 
-  const goEdit = useCallback(
+  const getSearchQuery = () => {
+    const search = searchForm.getFieldsValue();
+    console.log(search)
+    return search;
+  };
+
+  const getPages = async(pageIndex = pageInfo.pageIndex, pageSize = pageInfo.pageSize) => {
+    try {
+      const { result, code, totalCount, pageTotal } = await pageQuery({
+        current: pageIndex,
+        pageSize,
+        ...searchContent
+      });
+      if (code === 0) {
+        setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
+        setDataSource(result);
+      } else {
+        message.error(`请求分页数据失败`);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const goDetail = useCallback(
     (record: { id: number }) => {
-      history.push(`/purchase-manage/commodity-create?id=${record.id}`);
+      window.open(`/goods-manage/goods_manage/detail?id=${record.id}`);
     },
     [history],
   );
 
-  const goDetail = useCallback(
-    (record: { id: number }) => {
-      window.open(`/purchase-manage/commodity-detail?id=${record.id}`);
-    },
-    [history],
-  );
 
   // 编辑权重
   const editSort = async (id: string, value: number) => {
@@ -83,35 +121,10 @@ export default () => {
   };
 
   useEffect(() => {
-    handleGetApplicationTypeList()
-  }, []);
+    getPages()
+  }, [searchContent])
 
-  /**
-   * 查询所有角色
-   */
-  const getListRolesData = async (enable?: boolean) => {
-    try {
-      const res = await httpGetListRoles(enable)
-      if (res?.code === 0) {
-        const list = res?.result?.map((item: any) => {
-          return {
-            label: item?.name,
-            value: item?.id,
-          }
-        })
-        // enable
-        //   ? setUseListRoles(list || [])
-        //   : setListRoles(list || [])
-        return list
-      } else {
-        throw new Error("");
-      }
-    } catch (error) {
-      // message.error('获取所有角色失败，请重试')
-    }
-  }
-
-  const columns: ProColumns<any>[] = [
+  const columns = [
     {
       title: '权重',
       hideInSearch: true,
@@ -120,99 +133,52 @@ export default () => {
     {
       title: '商品名称',
       dataIndex: 'productName',
-      valueType: 'textarea',
-      order: 5,
+      render: (text: string, record: any) => {
+        return (
+          <div className='product-info'>
+            <Image src={record.productPic} />
+            <div>
+              <h3>{text}</h3>
+              <p>{record.productDesc}</p>
+            </div>
+          </div>
+        )
+      }
     },
     {
       title: '商品来源',
-      dataIndex: 'appTypeName',
-      valueType: 'textarea',
-      hideInSearch: true,
+      dataIndex: 'productSource',
+      render: (_: number) => {
+        return <div>{productSourceType[_]}</div>
+      }
     },
     {
       title: '商品类型',
-      dataIndex: 'appTypeName',
-      valueType: 'select',
-      order: 5,
-      request: async () => getListRolesData(false)
-      // valueEnum: {
-      //   1: {
-      //     text: '供需简讯'
-      //   },
-      //   2: {
-      //     text: '企业动态'
-      //   },
-      //   3: {
-      //     text: '经验分享'
-      //   },
-      // },
-      // renderText: (_: string) => {
-      //   return (
-      //     <div className={`state${_}`}>
-      //       {Object.prototype.hasOwnProperty.call(contentType, _) ? contentType[_] : '--'}
-      //     </div>
-      //   );
-      // },
+      dataIndex: 'appTypeName'
     },
     {
       title: '所属组织',
-      dataIndex: 'orgId',
-      valueType: 'textarea',
-      order: 4
+      dataIndex: 'providerName'
     },
     {
       title: '价格区间',
       dataIndex: 'minSalePrice',
       valueType: 'textarea',
-      renderText: (text: any, record: any) => record.minSalePrice && record.maxSalePrice ? (record.minSalePrice + '~' + record.maxSalePrice) : '--',
+      render: (text: any, record: any) => record.minSalePrice && record.maxSalePrice ? (record.minSalePrice + '~' + record.maxSalePrice) : '--',
       hideInSearch: true,
     },
     {
       title: '商品状态',
       dataIndex: 'saleStatus',
-      valueType: 'select',
-      valueEnum: {
-        1: {
-          text: '发布中',
-        },
-        0: {
-          text: '已下架',
-        },
-      },
+      render: (text: number) => text == 0 ? '已下架' : '发布中'
     },
     {
       title: '所属标签',
-      dataIndex: 'productTagNames',
-      valueType: 'select',
-      valueEnum: {
-        2: {
-          text: '行业精选',
-        },
-        1: {
-          text: '消费券',
-        },
-        0: {
-          text: '平台优选',
-        },
-      },
-      // renderText: (text: any, record: any) => 
+      dataIndex: 'productTagNames'
     },
     {
       title: '商业服务端',
       dataIndex: 'appType',
-      valueType: 'select',
-      width: 120,
-      valueEnum: {
-        1: {
-          text: 'Web端',
-        },
-        0: {
-          text: 'App端',
-        },
-        3: {
-          text: 'App端、Web端'
-        }
-      },
     },
     {
       title: '操作',
@@ -363,7 +329,7 @@ export default () => {
         <a
           href='#'
           onClick={() => {
-            // weightForm.setFieldsValue({ weight: record.sortNo });
+            goodsTypeForm.setFieldsValue({ goodsType: columnData.deepTypeId && columnData.deepTypeId.split(',') });
           }}
         >
           类型修改
@@ -372,42 +338,125 @@ export default () => {
       </Menu.Item>
     </Menu>
   );
+  useEffect(() => {
+    handleGetApplicationTypeList()
+  }, []);
+  const formLayout = {
+    labelCol: { span: 6 },
+    wrapperCol: { span: 16 },
+  };
+  const useSearchNode = (): React.ReactNode => {
+    return (
+      <div className={sc('container-search')}>
+        <Form {...formLayout} form={searchForm}>
+          <Row>
+            <Col span={6}>
+              <Form.Item name="productName" label="商品名称">
+                <Input placeholder="请输入" />
+              </Form.Item>
+            </Col>
+            <Col span={6}>
+              <Form.Item name="productTypes" label="商品类型">
+                <TreeSelect
+                  showSearch
+                  treeNodeFilterProp="name"
+                  style={{ width: '100%' }}
+                  dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+                  treeData={applicationTypeList}
+                  placeholder="请选择"
+                  fieldNames={{ label: 'name', value: 'id', children: 'children' }}
+                />
+              </Form.Item>
+            </Col>
+            <Col span={6}>
+              <Form.Item name="orgName" label="所属组织">
+                <Input placeholder="请输入" />
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row>
+            <Col span={6}>
+              <Form.Item name="saleStatus" label="商品状态">
+                <Select placeholder="请选择">
+                  <Option value={1} key='1'>发布中</Option>
+									<Option value={0} key='2'>已下架</Option>
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={6}>
+              <Form.Item name="productTag" label="所属标签">
+                <Select placeholder="请选择">
+                  <Option value={2} key='0'>行业精选</Option>
+                  <Option value={1} key='1'>消费券</Option>
+									<Option value={0} key='2'>平台优选</Option>
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={6}>
+              <Form.Item name="appType" label="商品服务端">
+                <Select placeholder="请选择">
+                  <Option value={1} key='1'>Web端</Option>
+									<Option value={0} key='2'>App端</Option>
+                  <Option value={3} key='2'>App端、Web端</Option>
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col offset={2} span={4}>
+              <Button
+                style={{ marginRight: 20 }}
+                type="primary"
+                key="search"
+                onClick={() => {
+                  const search = getSearchQuery();
+                  setSearChContent(search);
+                }}
+              >
+                查询
+              </Button>
+              <Button
+                type="primary"
+                key="reset"
+                onClick={() => {
+                  searchForm.resetFields();
+                  setSearChContent({});
+                }}
+              >
+                重置
+              </Button>
+            </Col>
+          </Row>
+        </Form>
+      </div>
+    );
+  };
   //更多下拉
   const handleMoreMenuClick=(record: any)=> {
-    console.log(record)
     setActiveStatusData(record.saleStatus)
-    // setRemoveData(e.id)
     setColumnData(record)
   }
   return (
     <PageContainer>
-      <ProTable
-        headerTitle={`商品列表（共${total}个）`}
-        options={false}
-        rowKey="id"
-        search={{
-          span: 6,
-          labelWidth: 100,
-          defaultCollapsed: false,
-          collapseRender: () => false,
-          optionRender: (searchConfig, formProps, dom) => [dom[1], dom[0]],
-        }}
-        actionRef={actionRef}
-        request={async (pagination) => {
-          const timer = pagination.updateTime
-            ? {
-                timeStart: pagination.updateTime[0],
-                timeEnd: pagination.updateTime[1],
+      {useSearchNode()}
+      <div className={sc('container-table-body')}>
+        <SelfTable
+          rowKey="id"
+          bordered
+          columns={columns}
+          dataSource={dataSource}
+          pagination={
+            pageInfo.totalCount === 0
+              ? false
+              : {
+                onChange: getPages,
+                total: pageInfo.totalCount,
+                current: pageInfo.pageIndex,
+                pageSize: pageInfo.pageSize,
+                showTotal: (total: number) =>
+                  `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
               }
-            : {};
-          const result = await pageQuery({ ...pagination, ...timer });
-          paginationRef.current = pagination;
-          setTotal(result.totalCount);
-          return { total: result.totalCount, success: true, data: result.result };
-        }}
-        columns={columns}
-        pagination={{ size: 'default', showQuickJumper: true, defaultPageSize: 10 }}
-      />
+          }
+        />
+      </div>
     </PageContainer>
   );
 };

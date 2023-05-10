@@ -2043,8 +2043,8 @@ export default [
       },
       {
         path: routeName.GOODS_MANAGE,
-        code: 'M_DG_SJGL',
-        access: 'M_DG_SJGL',
+        code: 'M_DG_SPGL',
+        access: 'M_DG_SPGL',
         name: '商品管理',
         hideChildrenInMenu: true,
         routes: [

@@ -15,6 +15,7 @@ namespace DataCommodity {
 
   export type ProductInfo = {
     id: number;
+    productSource: number;
     productName: string;
     productBrandCn: string;
     productBrandEn: string;
