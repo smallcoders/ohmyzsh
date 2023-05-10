@@ -36,6 +36,7 @@ const hostMap = {
 export default () => {
   const id = history.location.query?.id as string;
   const [publishType, setPublishType] = useState<string>("公开发布")
+  const [authType, setAuthType] = useState<number>(1)
   const [templateJson, setTemplateJson] = useState<any>({})
   const [templateInfo, setTemplateInfo] = useState<any>({})
   const [areaCodeOptions, setAreaCodeOptions] = useState<any>({county: [], city: [], province: []})
@@ -84,9 +85,9 @@ export default () => {
   const getLink = (isMobile: boolean) => {
     const { origin } = window.location
     if (isMobile){
-      return `${hostMap[origin]}/antelope-activity-h5/template-page/index.html#/?isApp=false&id=${id}&login=${publishType === '公开发布' ? '' : '1'}&timeStamp=${+new Date()}`
+      return `${hostMap[origin]}/antelope-activity-h5/template-page/index.html#/?id=${id}&login=${publishType === '公开发布' ? '' : authType === 1 ? '1' : '2'}&timeStamp=${+new Date()}`
     } else {
-      return `${hostMap[origin]}/front/template-page?id=${id}&login=${publishType === '公开发布' ? '' : '1'}&timeStamp=${+new Date()}`
+      return `${hostMap[origin]}/front/template-page?id=${id}&login=${publishType === '公开发布' ? '' : authType === 1 ? '1' : '2'}&timeStamp=${+new Date()}`
     }
   }
 
@@ -194,6 +195,19 @@ export default () => {
               publishType === '公开发布' ? `使用此方式发布${templateInfo.tmpType === 1 ? '网页' : '表单'}，访问时不需要登录` : `使用此方法发布${templateInfo.tmpType === 1 ? '网页' : '表单'}，访问时需要登录羚羊平台账号`
             }
           </div>
+          {
+            publishType !== '公开发布' &&
+            <div className="authority-info">
+              <div className="authority-info-desc">
+                设置成员权限，角色成员登录后根据权限访问
+              </div>
+              <Radio.Group
+                value={authType}
+                options={[{value: 1, label: '支持全部用户访问'}, {value: 2, label: '仅支持组织管理员访问'}]}
+                onChange={(event) => setAuthType(event.target.value)}
+              />
+            </div>
+          }
           {
             templateInfo.tmpType !== 1 &&
             <div className="link-info">
