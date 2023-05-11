@@ -2008,39 +2008,39 @@ export default [
     routes: [
       {
         path: '/goods-manage',
-        code: 'M_DG_SJGL',
-        access: 'M_DG_SJGL',
-        redirect: routeName.SHELVES_MANAGE,
+        code: 'M_DG_SPGL',
+        access: 'M_DG_SPGL',
+        redirect: routeName.GOODS_MANAGE,
       },
-      {
-        path: routeName.SHELVES_MANAGE,
-        code: 'M_DG_SJGL',
-        access: 'M_DG_SJGL',
-        name: '上架管理',
-        hideChildrenInMenu: true,
-        routes: [
-          {
-            path: routeName.SHELVES_MANAGE,
-            redirect: routeName.SHELVES_MANAGE_INDEX,
-          },
-          {
-            path: routeName.SHELVES_MANAGE_INDEX,
-            hideInBreadcrumb: true,
-            name: '上架管理',
-            component: './goods_manage/shelves_manage/index',
-          },
-          {
-            path: routeName.SHELVES_MANAGE_CREATE,
-            name: '活动新增',
-            component: './goods_manage/shelves_manage/create',
-          },
-          {
-            path: routeName.SHELVES_MANAGE_DETAIL,
-            name: '活动详情',
-            component: './goods_manage/shelves_manage/detail',
-          },
-        ],
-      },
+      // {
+      //   path: routeName.SHELVES_MANAGE,
+      //   code: 'M_DG_SJGL',
+      //   access: 'M_DG_SJGL',
+      //   name: '上架管理',
+      //   hideChildrenInMenu: true,
+      //   routes: [
+      //     {
+      //       path: routeName.SHELVES_MANAGE,
+      //       redirect: routeName.SHELVES_MANAGE_INDEX,
+      //     },
+      //     {
+      //       path: routeName.SHELVES_MANAGE_INDEX,
+      //       hideInBreadcrumb: true,
+      //       name: '上架管理',
+      //       component: './goods_manage/shelves_manage/index',
+      //     },
+      //     {
+      //       path: routeName.SHELVES_MANAGE_CREATE,
+      //       name: '活动新增',
+      //       component: './goods_manage/shelves_manage/create',
+      //     },
+      //     {
+      //       path: routeName.SHELVES_MANAGE_DETAIL,
+      //       name: '活动详情',
+      //       component: './goods_manage/shelves_manage/detail',
+      //     },
+      //   ],
+      // },
       {
         path: routeName.GOODS_MANAGE,
         code: 'M_DG_SPGL',
