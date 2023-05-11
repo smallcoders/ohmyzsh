@@ -83,7 +83,7 @@ export default () => {
             <h2 id="anchor-base-info">商品基础信息</h2>
             <Form labelCol={{ span: 4 }}>
               <Form.Item label="商品来源">{commodity && commodity.payProduct.productSource && productSourceType[commodity.payProduct.productSource]}</Form.Item> 
-              <Form.Item label="数字化应用">{commodity?.payProduct.productName}</Form.Item>
+              <Form.Item label="数字化应用">{commodity?.payProduct.appName}</Form.Item>
               <Form.Item label="商品服务端">
                 {(commodity?.payProduct.appType == 1 || commodity?.payProduct.appType == 3) && (
                   <div>

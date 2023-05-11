@@ -1,8 +1,22 @@
 @prefix: page-goods-list;
 
 .@{prefix}-container {
-  &-table-body {
+  &-table-header {
     padding: 20px;
+    background-color: #fff;
+    .title {
+      display: flex;
+      justify-content: space-between;
+      > span {
+        color: rgba(0, 0, 0, 0.85);
+        font-weight: 600;
+        font-size: 16px;
+        line-height: 22px;
+      }
+    }
+  }
+  &-table-body {
+    padding: 0 20px;
     background-color: #fff;
     .product-info {
       display: flex;
@@ -11,8 +25,15 @@
         width: 60px;
         margin-right: 10px;
       }
+      h3 {
+        cursor: pointer;
+      }
       p {
         margin: 0;
+        max-width: 200px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
       }
     }
   }

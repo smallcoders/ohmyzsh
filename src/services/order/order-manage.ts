@@ -150,3 +150,17 @@ export async function modifySortNo(data: any) {
   );
 }
 
+/**
+ * 修改标签
+ * @param params
+ */
+export async function modifyTags(data: any) {
+  return request<any>(
+    '/antelope-pay/mng/product/productManage/modifyTags',
+    {
+      method: 'POST',
+      data
+    },
+  );
+}
+

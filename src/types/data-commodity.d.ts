@@ -21,6 +21,7 @@ namespace DataCommodity {
     productBrandEn: string;
     spreadWord: string;
     appType: number;
+    appName: string;
     typeName: string;
     isFree: number;
     pcHomeUrl: string;

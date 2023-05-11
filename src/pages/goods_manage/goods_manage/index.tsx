@@ -1,11 +1,12 @@
-import { pageQuery, modifySortNo } from '@/services/order/order-manage';
+import { pageQuery, modifySortNo, modifyTags } from '@/services/order/order-manage';
 import { getApplicationTypeList } from '@/services/digital-application';
 import {DownOutlined} from "@ant-design/icons";
 import { PageContainer } from '@ant-design/pro-layout';
 import { Access, useAccess } from 'umi';
 import './index.less'
-import { Button, Dropdown, Menu, Popconfirm, Form, InputNumber, message, Cascader, Row, Col, Input, Select, TreeSelect, Image } from 'antd';
+import { Button, Dropdown, Menu, Popconfirm, Form, InputNumber, message, Cascader, Row, Col, Input, Select, TreeSelect, Image, Tag } from 'antd';
 const { Option } = Select;
+const { CheckableTag } = Tag;
 import { useCallback, useRef, useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import SelfTable from '@/components/self_table';
@@ -17,6 +18,19 @@ const productSourceType = {
   1:'应用商品', 
   2:'其他商品'
 }
+// 商品服务端
+const appTypeObj = {
+  0:'App端', 
+  1:'Web端', 
+  3:'App端、Web端'
+}
+// 标签数据
+const tagsData = [
+  {name: '消费卷', value: 1},
+  {name: '平台优选', value: 2},
+  {name: '行业精选', value: 3},
+  {name: 'App预置', value: 4}
+]
 export default () => {
   const history = useHistory();
   const [columnData, setColumnData] = useState<any>({})
@@ -33,6 +47,7 @@ export default () => {
   const [dataSource, setDataSource] = useState<any>([]);
   const [weightForm] = Form.useForm();
   const [goodsTypeForm] = Form.useForm()
+  const [selectedTags, setSelectedTags] = useState<number[]>([]);
 
   const getSearchQuery = () => {
     const search = searchForm.getFieldsValue();
@@ -65,6 +80,25 @@ export default () => {
     [history],
   );
 
+  const handleChange = (tag: number, checked: boolean) => {
+    const nextSelectedTags = checked
+      ? [...selectedTags, tag]
+      : selectedTags.filter((t) => t !== tag);
+    setSelectedTags(nextSelectedTags);
+  };
+  const handleModifyTags = async () => {
+    const res = await modifyTags({
+      productId: columnData.id,
+      tagId: selectedTags
+    })
+    if(res.code === 0) {
+      message.success(`编辑标签成功！`);
+      setSelectedTags([])
+      getPages()
+    } else {
+      message.error(res.message)
+    }
+  }
 
   // 编辑权重
   const editSort = async (id: string, value: number) => {
@@ -75,6 +109,7 @@ export default () => {
     if (editRes.code === 0) {
       message.success(`编辑权重成功！`);
       weightForm.resetFields()
+      getPages()
     } else {
       message.error(`编辑权重失败，原因:{${editRes.message}}`);
     }
@@ -88,6 +123,7 @@ export default () => {
     if (editRes.code === 0) {
       message.success(`${value == 1 ? '上架成功！' : '下架成功！'}`);
       weightForm.resetFields()
+      getPages()
     } else {
       message.error(`${value == 1 ? '上架' : '下架'}失败，原因:{${editRes.message}}`);
     }
@@ -96,11 +132,12 @@ export default () => {
   const modifyType = async (value: number) => {
     const editRes = await modifySortNo({
       id: columnData.id,
-      appTypeId: value,
+      appTypeId: value[1],
     });
     if (editRes.code === 0) {
       message.success(`类型修改成功！`);
-      weightForm.resetFields()
+      goodsTypeForm.resetFields()
+      getPages()
     } else {
       message.error(`类型修改失败，原因:{${editRes.message}}`);
     }
@@ -130,8 +167,8 @@ export default () => {
           <div className='product-info'>
             <Image src={record.productPic} />
             <div>
-              <h3>{text}</h3>
-              <p>{record.productDesc}</p>
+              <h3 onClick={() => goDetail(record)}>{text}</h3>
+              <p title={record.productDesc}>{record.productDesc}</p>
             </div>
           </div>
         )
@@ -155,13 +192,12 @@ export default () => {
     {
       title: '价格区间',
       dataIndex: 'minSalePrice',
-      valueType: 'textarea',
       render: (text: any, record: any) => record.minSalePrice && record.maxSalePrice ? (record.minSalePrice + '~' + record.maxSalePrice) : '--',
-      hideInSearch: true,
     },
     {
       title: '商品状态',
       dataIndex: 'saleStatus',
+      width: 96,
       render: (text: number) => text == 0 ? '已下架' : '发布中'
     },
     {
@@ -169,14 +205,16 @@ export default () => {
       dataIndex: 'productTagNames'
     },
     {
-      title: '商业服务端',
+      title: '商品服务端',
       dataIndex: 'appType',
+      width: 144,
+      render: (_: number) => <div>{appTypeObj[_]}</div>
     },
     {
       title: '操作',
       hideInSearch: true,
       width: 200,
-      render: (_, record) => (
+      render: (_: any, record: any) => (
         <>
           <Button size="small" type="link" onClick={() => goDetail(record)}>
             详情
@@ -186,25 +224,26 @@ export default () => {
               title={
                 <>
                   <Form form={weightForm}>
-                    <Form.Item name={'weight'} label="权重设置"
+                    <Form.Item name={'weight'} label="请输入权重"
                       validateTrigger="onBlur"
                       rules={[
                         {
                           validator: (_, value) => {
                             console.log(_, value)
+                            if(!value) {
+                              return Promise.resolve()
+                            }
                             if (value < 1 || value > 100) {
-                              // message.error('允许输入权重数字范围为1～100');
                               return Promise.reject(new Error('允许输入权重数字范围为1～100'))
                             } else if (/^\d+\.\d{4,}/.test(value)) {
-                              // message.error('小数点后最多取3位');
-                              return Promise.reject(new Error('小数点后最多取3位'))
+                              return Promise.reject(new Error('小数点后最多取三位'))
                             }
                             return Promise.resolve()
                           },
                         },
                       ]}
                     >
-                      <InputNumber placeholder='数字越大排序越靠前' />
+                      <InputNumber style={{width: '216px'}} placeholder='数字越大排序越靠前' />
                     </Form.Item>
                   </Form>
                 </>
@@ -214,7 +253,7 @@ export default () => {
               cancelText="取消"
               onConfirm={async () => {
                 await weightForm.validateFields()
-                editSort(record.id, weightForm.getFieldValue('weight'));
+                editSort(record.id, weightForm.getFieldValue('weight') || 1);
               }}
             >
               <Button
@@ -242,12 +281,36 @@ export default () => {
   const moreMenu = (
     <Menu >
       <Menu.Item key={'1'}>
-        <a
-          href="#"
-          onClick={() => {
-            // editActivity()
+        <Popconfirm
+          title={
+            <div>
+              <p>请选择将要给该组织标注的标签：</p>
+              {tagsData.map((tag: any) => (
+                <div style={{marginBottom: 8}}>
+                  <CheckableTag
+                    key={tag.value}
+                    checked={selectedTags.includes(tag.value)}
+                    onChange={(checked) => handleChange(tag.value, checked)}
+                  >
+                    {tag.name}
+                  </CheckableTag>
+                </div>
+              ))}
+            </div>
+          }
+          icon={<DownOutlined style={{ display: 'none' }} />}
+          okText="确定"
+          cancelText="取消"
+          onConfirm={() => {
+            handleModifyTags()
           }}
-        >标签</a>
+        >
+          <a
+            href="#"
+            onClick={() => {
+            }}
+          >标签</a>
+        </Popconfirm>
       </Menu.Item>
       {activeStatusData==1&&
       <Menu.Item key={'2'}>
@@ -297,14 +360,12 @@ export default () => {
                 validateTrigger="onBlur"
               >
                 <Cascader
-                  // onChange={(val) => {
-                    // setAppTypeId(val);
-                  // }}
                   changeOnSelect
                   style={{ width: '200px' }}
                   fieldNames={{ label: 'name', value: 'id', children: 'children' }}
                   options={applicationTypeList}
                   placeholder="请选择"
+                  getPopupContainer={(trigger) => trigger as HTMLElement}
                 />
               </Form.Item>
             </Form>
@@ -321,7 +382,7 @@ export default () => {
         <a
           href='#'
           onClick={() => {
-            goodsTypeForm.setFieldsValue({ goodsType: columnData.deepTypeId && columnData.deepTypeId.split(',') });
+            goodsTypeForm.setFieldsValue({ goodsType: columnData.deepTypeId && columnData.deepTypeId.split(',').map(parseFloat) });
           }}
         >
           类型修改
@@ -378,9 +439,10 @@ export default () => {
             <Col span={6}>
               <Form.Item name="productTag" label="所属标签">
                 <Select placeholder="请选择">
-                  <Option value={2} key='0'>行业精选</Option>
                   <Option value={1} key='1'>消费券</Option>
-									<Option value={0} key='2'>平台优选</Option>
+									<Option value={2} key='2'>平台优选</Option>
+                  <Option value={3} key='3'>行业精选</Option>
+                  <Option value={4} key='4'>App预置</Option>
                 </Select>
               </Form.Item>
             </Col>
@@ -400,13 +462,15 @@ export default () => {
                 key="search"
                 onClick={() => {
                   const search = getSearchQuery();
+                  if(search.productTypes) {
+                    search.productTypes = [search.productTypes]
+                  }
                   setSearChContent(search);
                 }}
               >
                 查询
               </Button>
               <Button
-                type="primary"
                 key="reset"
                 onClick={() => {
                   searchForm.resetFields();
@@ -425,10 +489,18 @@ export default () => {
   const handleMoreMenuClick=(record: any)=> {
     setActiveStatusData(record.saleStatus)
     setColumnData(record)
+    if(record && record.productTagIds) {
+      setSelectedTags(record.productTagIds.split(',').map(parseFloat))
+    }
   }
   return (
     <PageContainer>
       {useSearchNode()}
+      <div className={sc('container-table-header')}>
+        <div className="title">
+          <span>商品列表（共{pageInfo.totalCount || 0}个）</span>
+        </div>
+      </div>
       <div className={sc('container-table-body')}>
         <SelfTable
           rowKey="id"
