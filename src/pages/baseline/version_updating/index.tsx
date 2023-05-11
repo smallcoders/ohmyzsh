@@ -190,7 +190,7 @@ export default(() => {
           label="版本号"
           rules={[{ required: true, message: '必填' }]}
         >
-          <Input placeholder='请输入' />
+          <Input placeholder='请输入' maxLength={20} />
         </Form.Item>
         <Form.Item
           name="date"
