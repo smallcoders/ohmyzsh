@@ -296,7 +296,6 @@
   // 数据中心
   DATA_CENTER: '/data-center', // 数据中心
   TOOLKIT_ORDER_MONITORING: '/data-center/toolkit-order_monitoring', //工具包订单监控
-  
   BASELINE_VERSION_UPDATING_MANAGE: '/baseline/version-updating', // 版本更新管理
 };
 
