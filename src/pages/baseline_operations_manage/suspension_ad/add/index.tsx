@@ -193,7 +193,7 @@ export default () => {
               <Link to={routeName.BASELINE_OPERATIONS_MANAGEMENT}>基线运营位管理</Link>
             </Breadcrumb.Item>
             <Breadcrumb.Item>
-              <Link to={routeName.BASELINE_OPERATIONS_MANAGEMENT_SUSPENSION_AD}>开屏广告</Link>
+              <Link to={routeName.BASELINE_OPERATIONS_MANAGEMENT_SUSPENSION_AD}>全局悬浮广告</Link>
             </Breadcrumb.Item>
             <Breadcrumb.Item>{id ? '编辑' : '新增'}</Breadcrumb.Item>
           </Breadcrumb>
