@@ -62,6 +62,7 @@ const SearchBar = ({
       loading,
       showSearch,
       onChange,
+      selectModeType
     } = searchItem || {}
     switch (type) {
       case Common.SearchItemControlEnum.INPUT:
@@ -83,6 +84,7 @@ const SearchBar = ({
               fieldNames={fieldNames || { label: 'name', value: 'id' }}
               onChange={onChange}
               onSearch={onChange}
+              mode={selectModeType}
             />
           </Form.Item>
         )
