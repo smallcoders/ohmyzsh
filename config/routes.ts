@@ -296,6 +296,8 @@ export const routeName = {
   // 数据中心
   DATA_CENTER: '/data-center', // 数据中心
   TOOLKIT_ORDER_MONITORING: '/data-center/toolkit-order_monitoring', //工具包订单监控
+  
+  BASELINE_VERSION_UPDATING_MANAGE: '/baseline/version-updating', // 版本更新管理
 };
 
 export default [
@@ -662,6 +664,13 @@ export default [
             component: './baseline/user-posting/detail/index',
           },
         ],
+      },
+      {
+        path: routeName.BASELINE_VERSION_UPDATING_MANAGE,
+        name: '版本更新管理',
+        code: 'M_BLM_BBGXGL',
+        access: 'M_BLM_BBGXGL',
+        component: './baseline/version_updating/index',
       },
     ],
   },
