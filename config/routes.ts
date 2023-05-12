@@ -1,4 +1,4 @@
-export const routeName = {
+﻿export const routeName = {
   DATA_COLUMN: '/service-config/data-column', // 数据栏
   DIAGNOSTIC_TASKS: '/service-config/diagnostic-tasks/index', // 诊断任务
   DIAGNOSTIC_TASKS_DETAIL: '/diagnose-manage/diagnostic-tasks/detail', // 诊断记录
@@ -2734,6 +2734,26 @@ export default [
         name: '权限管理',
         component: './system_config/auth',
       },
+    ],
+  },
+  {
+    path: '/business-channel',
+    access: 'M_SJ_DR',
+    name: '商机/渠道管理',
+    icon: 'hdd',
+    routes: [
+      {
+        path: '/business-channel',
+        access: 'M_SJ_DR',
+        redirect: '/business-channel/opportunity',
+      },
+      {
+        path: '/business-channel/opportunity',
+        code: 'M_SJ_DR',
+        access: 'M_SJ_DR',
+        name: '商机池',
+        component: './business_channel/opportunity/index',
+      }
     ],
   },
   {
