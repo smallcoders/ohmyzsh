@@ -6,6 +6,7 @@ import { PageContainer } from '@ant-design/pro-layout';
 import { Anchor, Button, Form, Image, Space, Table, Tag } from 'antd';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useHistory } from 'umi';
+import { numdiv } from '@/utils/util';
 const { Column } = Table;
 const { Link } = Anchor;
 // 商品来源字典
@@ -14,6 +15,33 @@ const productSourceType = {
   1:'应用商品', 
   2:'其他商品'
 }
+enum PayMethodAppEnum {
+  YEAR = 1,
+  SET,
+  TIME,
+}
+
+const filterNames = ['交付方式', '商品付费方式'];
+
+const commodityPaymentTypes = [
+  { value: PayMethodAppEnum.YEAR, content: '元/年' },
+  { value: PayMethodAppEnum.SET, content: '元/套' },
+  { value: PayMethodAppEnum.TIME, content: '元/次' },
+];
+enum ExpireTimeEnum {
+  ONE = 1,
+  TWO = 2,
+  THREE = 3,
+  FOUR = 4,
+  FIVE = 5,
+}
+const yearMap = {
+  [ExpireTimeEnum.ONE]: '一',
+  [ExpireTimeEnum.TWO]: '二',
+  [ExpireTimeEnum.THREE]: '三',
+  [ExpireTimeEnum.FOUR]: '四',
+  [ExpireTimeEnum.FIVE]: '五',
+};
 export default () => {
   const history = useHistory();
   const query = useQuery();
@@ -64,12 +92,6 @@ export default () => {
 
     return <Column title="规格(无)" dataIndex="specs0" />;
   }, [commodity]);
-
-  const renderHtml = useCallback((html) => {
-    return {
-      __html: html,
-    };
-  }, []);
 
   useEffect(() => {
     init();
@@ -123,17 +145,6 @@ export default () => {
               <Form.Item label="商品类型">{commodity?.payProduct.typeName}</Form.Item>
               <Form.Item label="商品名称">{commodity?.payProduct.productName}</Form.Item>
               <Form.Item label="商品型号">{commodity?.payProduct.productModel}</Form.Item>
-              {/* <Form.Item label="商品促销标签">
-                {commodity?.payProduct.saleContent?.map((item) => {
-                  return <Tag key={item.id}>{item.label}</Tag>;
-                })}
-              </Form.Item> */}
-              {/* <Form.Item label="服务标签">
-                {commodity?.payProduct.serverContent?.map((item) => {
-                  return <Tag key={item.id}>{item.label}</Tag>;
-                })}
-              </Form.Item>
-              <Form.Item label="商品单位">{commodity?.payProduct.productOrg}</Form.Item> */}
               <Form.Item label="商品封面图">
                 <Image width={100} src={commodity?.payProduct.productPic} />
               </Form.Item>
@@ -147,56 +158,132 @@ export default () => {
                 </Image.PreviewGroup>
               </Form.Item>
               <Form.Item label="免费试用">{commodity && commodity.payProduct.isFree ? '是' : '否'}</Form.Item>
-              {/* <Form.Item label="供应商">{commodity?.payProduct?.supplierName}</Form.Item> */}
             </Form>
           </ProCard>
           <ProCard>
             <h2 id="anchor-specs">商品规格信息</h2>
-            <Table rowKey="id" dataSource={commodity?.payProductSpecsList} pagination={false}>
+            {/* <Table rowKey="id" dataSource={commodity?.payProductSpecsList} pagination={false}>
               <Column title="序号" render={(_, __, i) => i + 1} />
               <Column title="规格名" dataIndex="specsName" />
               <Column title="规格值" dataIndex="specsValue" />
+            </Table> */}
+            <Table
+              rowKey="id"
+              bordered
+              dataSource={commodity?.payProductSpecsList || []}
+              pagination={false}
+              style={{ width: 400 }}
+            >
+              <Column title="规格" dataIndex="specsValue" />
+              <Column
+                title="规格信息"
+                dataIndex="type"
+                render={(text, record: any) => {
+                  switch (text) {
+                    case PayMethodAppEnum.YEAR:
+                      return `用户数：${record?.userNum > 0 ? `${record?.userNum}人` : '无限制'
+                        }；有效时间：${record?.expireTime > 0 ? `${yearMap[record?.expireTime]}年` : '无限制'
+                        }`;
+                    case PayMethodAppEnum.SET:
+                      return `使用次数：${record?.count > 0 ? `${record?.count}次` : '无限制'
+                        }；有效时间：${record?.expireTime > 0 ? `${yearMap[record?.expireTime]}年` : '无限制'
+                        }`;
+                    case PayMethodAppEnum.TIME:
+                      return `使用次数：${record?.count > 0 ? `${record?.count}次` : '无限制'}`;
+                    default:
+                      return '--';
+                  }
+                }}
+              />
             </Table>
           </ProCard>
           <ProCard>
             <h2 id="anchor-price">商品价格信息</h2>
-            <Table dataSource={price} pagination={false}>
-              <Column title="序号" render={(_, __, i) => i + 1} />
-              {specsTitle}
-              <Column title="订货编码" dataIndex="productNo" />
-              <Column title="商品采购价格（元）" dataIndex="purchasePrice"  render={(_, __) => _/100}/>
-              <Column title="商品销售价格（元）" dataIndex="salePrice"   render={(_, __) => _/100}/>
+            <Table
+              rowKey="id"
+              bordered
+              dataSource={commodity?.payProductSpecsPriceList || []}
+              pagination={false}
+            >
+              <Column title="规格" dataIndex={'specs'} />
+              <Column title="订货编号" dataIndex="productNo" />
+              <Column
+                title="商品原价（元)"
+                dataIndex="originPrice"
+                render={(_) => numdiv(_, 100)}
+              />
+              <Column
+                title="商品促销价（元)"
+                dataIndex="salePrice"
+                render={(_) => numdiv(_, 100)}
+              />
             </Table>
           </ProCard>
           <ProCard>
             <h2 id="anchor-parameters">商品参数信息</h2>
-            <Table rowKey="id" dataSource={commodity?.payProductParamList} pagination={false}>
-              <Column title="序号" render={(_, __, i) => i + 1} />
-              <Column title="名称" dataIndex="name" />
-              <Column title="内容" dataIndex="content" />
+            <Table
+              rowKey="id"
+              dataSource={(commodity?.payProductParamList || [])?.filter(
+                (item: Record<string, string | number>) => !filterNames.includes(`${item?.name}`),
+              )}
+              bordered
+              pagination={false}
+            >
+              <Column title="名称" dataIndex={'name'} />
+              <Column
+                title="内容"
+                dataIndex="content"
+                render={(text: string, record: any) => {
+                  if (record?.name === '可售范围') {
+                    const areas = (text ?? '')
+                      .split?.(';')
+                      .map?.((code: string) =>
+                        code.split('-').map?.((item) => item.split(':')?.[1]),
+                      )
+                      .map?.((area) => area.join('-'));
+                    return (
+                      <>
+                        {(areas ?? []).map((area) => (
+                          <div key={area}>{area}</div>
+                        ))}
+                      </>
+                    );
+                  }
+                  return text;
+                }}
+              />
             </Table>
           </ProCard>
           <ProCard>
             <h2 id="anchor-details">商品详情</h2>
             <Form layout="vertical" labelCol={{ span: 4 }}>
               <Form.Item label="商品介绍">
-                <div dangerouslySetInnerHTML={renderHtml(commodity?.payProduct.productContent)} />
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: commodity?.payProduct?.productContent || '/',
+                  }}
+                />
               </Form.Item>
-              <Form.Item label="商品参数">
-                <div dangerouslySetInnerHTML={renderHtml(commodity?.payProduct.productArgs)} />
+              <Form.Item label="商品价值">
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: commodity?.payProduct?.productWorth || '/',
+                  }}
+                />
               </Form.Item>
-              <Form.Item label="商品细节">
-                <div dangerouslySetInnerHTML={renderHtml(commodity?.payProduct.productDetail)} />
-              </Form.Item>
-              <Form.Item label="商品应用">
-                <div dangerouslySetInnerHTML={renderHtml(commodity?.payProduct.productApp)} />
+              <Form.Item label="商品应用场景">
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: commodity?.payProduct?.productScene || '/',
+                  }}
+                />
               </Form.Item>
             </Form>
           </ProCard>
 
-          <ProCard layout="center">
+          {/* <ProCard layout="center">
             <Button onClick={() => history.goBack()}>返回</Button>
-          </ProCard>
+          </ProCard> */}
         </ProCard>
         <ProCard colSpan="200px" />
       </ProCard>

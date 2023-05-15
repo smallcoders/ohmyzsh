@@ -37,6 +37,8 @@ namespace DataCommodity {
     productContent: string;
     productArgs: string;
     productDetail: string;
+    productWorth: string;
+    productScene: string;
     state: 0 | 1;
     createTime: string;
     updateTime: string;

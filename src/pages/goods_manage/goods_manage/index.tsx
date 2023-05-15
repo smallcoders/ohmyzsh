@@ -26,7 +26,7 @@ const appTypeObj = {
 }
 // 标签数据
 const tagsData = [
-  {name: '消费卷', value: 1},
+  {name: '消费券', value: 1},
   {name: '平台优选', value: 2},
   {name: '行业精选', value: 3},
   {name: 'App预置', value: 4}
