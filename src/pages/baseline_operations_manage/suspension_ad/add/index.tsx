@@ -193,7 +193,7 @@ export default () => {
               <Link to={routeName.BASELINE_OPERATIONS_MANAGEMENT}>基线运营位管理</Link>
             </Breadcrumb.Item>
             <Breadcrumb.Item>
-              <Link to={routeName.BASELINE_OPERATIONS_MANAGEMENT_SUSPENSION_AD}>开屏广告</Link>
+              <Link to={routeName.BASELINE_OPERATIONS_MANAGEMENT_SUSPENSION_AD}>全局悬浮广告</Link>
             </Breadcrumb.Item>
             <Breadcrumb.Item>{id ? '编辑' : '新增'}</Breadcrumb.Item>
           </Breadcrumb>
@@ -263,7 +263,7 @@ export default () => {
           name="imgs"
           label="图片"
           required
-          extra="图片格式仅支持JPG、PNG、JPEG，图片尺寸192*192"
+          extra="图片格式仅支持JPG、PNG、JPEG、GIF，图片尺寸192*192"
           labelCol={{span: 4}}
           wrapperCol={{span: 16}}
           rules={[
@@ -273,7 +273,7 @@ export default () => {
             },
           ]}
         >
-          <UploaImageV2 multiple={true} accept=".png,.jpeg,.jpg" maxCount={1}>
+          <UploaImageV2 multiple={true} accept=".png,.jpeg,.jpg,.gif" maxCount={1}>
             <Button icon={<UploadOutlined />}>上传</Button>
           </UploaImageV2>
         </Form.Item>
