@@ -283,7 +283,24 @@ export default () => {
             />
           </Form.Item>
           <Form.Item label="内容" name="content" rules={[{ required: true, message: '请输入' }]}>
-            <FormEdit width="100%" />
+            <FormEdit 
+              width="100%" 
+              selfToolbar={[
+                'heading',
+                '|',
+                'bold',
+                'italic',
+                'bulletedList',
+                'numberedList',
+                '|',
+                'uploadImage',
+                'undo',
+                'redo',
+                '|',
+                'blockQuote',
+                'insertTable',
+              ]} 
+            />
           </Form.Item>
         </Form>
       </div>

@@ -9,6 +9,7 @@ export default (props: {
   value?: string;
   width?: number | string;
   onChange?: (value: string) => void;
+  selfToolbar?: any
 }) => {
   const [contentHtml, setContentHtml] = useState<string | undefined>();
 
@@ -16,7 +17,9 @@ export default (props: {
   const CKEditorConfig = {
     placeholder: '请输入',
     language: 'zh-cn',
-    toolbar: [
+    toolbar: props.selfToolbar
+    ? props.selfToolbar
+    : [
       'heading',
       '|',
       'bold',
