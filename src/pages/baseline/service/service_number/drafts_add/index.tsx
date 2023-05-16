@@ -654,6 +654,7 @@ export default () => {
         if (res.code === 0) {
           setShowPublish(true); // 暂存成功 展示发布按钮
           message.success('操作成功');
+          setIsClosejumpTooltip(false);
           setIsExporting(false);
           setContentInfoFormChange(false);
           setFormPostMessageChange(false);
@@ -696,32 +697,25 @@ export default () => {
    */
   const [sync, setSync] = useState<boolean>(false);
 
-  const listener = (e: any) => {
-    e.preventDefault();
-    e.returnValue = '离开当前页后，所编辑的数据将不可恢复';
-  };
+  const [isClosejumpTooltip, setIsClosejumpTooltip] = useState<boolean>(false);
 
-  useEffect(() => {
-    window.addEventListener('beforeunload', listener);
-    return () => {
-      window.removeEventListener('beforeunload', listener);
-    };
-  }, []);
-
-  const [isClosejumpTooltip, setIsClosejumpTooltip] = useState<boolean>(true);
 
   const goBack = () => {
-    setIsClosejumpTooltip(false);
     // 服务号管理
     if (activeTab) {
       // 如果是发布记录进入的这样返回
       history.push(`${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT}?id=${backid}&name=${backname}&activeTabValue=${activeTab}`);
     } else {
       history.goBack();
-
     }
     // history.push(`${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT}?id=${id}&name=${name}`);
   };
+
+  useEffect(() => {
+    if (formPostMessageChange || contentInfoFormChange) {
+      setIsClosejumpTooltip(true)
+    }
+  },[formPostMessageChange,contentInfoFormChange])
   return (
     <PageContainer
       loading={loading}
@@ -776,8 +770,10 @@ export default () => {
         <Button onClick={() => {
           if (contentInfoFormChange || formPostMessageChange) {
             console.log('有改变')
+            // 如果是编辑的改变，如何区分一下
             setVisible(true);
           } else {
+            // 就是返回
             goBack()
           }
         }}>返回</Button>,
@@ -812,32 +808,6 @@ export default () => {
                     <Radio value={false}>预约发布</Radio>
                   </Radio.Group>
                 </Form.Item>
-                {/* <Form.Item
-                  label="发布服务号"
-                  name="serviceAccountId"
-                  rules={[{ required: true, message: '必填' }]}
-                >
-                  <Select placeholder="请选择">
-                  {[
-                    {
-                      id: 1,
-                      name: '选项1'
-                    },
-                    {
-                      id: 2,
-                      name: '选项2'
-                    },
-                    {
-                      id: 3,
-                      name: '选项3'
-                    }
-                  ].map((p) => (
-                    <Select.Option key={'type' + p.id} value={p.id}>
-                      {p.name}
-                    </Select.Option>
-                  ))}
-                  </Select>
-                </Form.Item> */}
                 {timeShow && (
                   <Form.Item
                     label="发布时间"
