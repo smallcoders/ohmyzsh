@@ -301,6 +301,9 @@ export default () => {
           icon={<DownOutlined style={{ display: 'none' }} />}
           okText="确定"
           cancelText="取消"
+          onCancel={() => {
+            setSelectedTags([])
+          }}
           onConfirm={() => {
             handleModifyTags()
           }}
