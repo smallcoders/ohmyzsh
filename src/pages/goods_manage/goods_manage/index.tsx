@@ -468,6 +468,7 @@ export default () => {
                   if(search.productTypes) {
                     search.productTypes = [search.productTypes]
                   }
+                  setPageInfo({...pageInfo, pageIndex: 1})
                   setSearChContent(search);
                 }}
               >
@@ -477,6 +478,7 @@ export default () => {
                 key="reset"
                 onClick={() => {
                   searchForm.resetFields();
+                  setPageInfo({...pageInfo, pageIndex: 1})
                   setSearChContent({});
                 }}
               >
