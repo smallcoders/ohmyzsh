@@ -49,12 +49,13 @@ export default () => {
   const [commodity, setCommodity] = useState<{
     payProduct: DataCommodity.ProductInfo;
     payProductSpecsList: DataCommodity.SpecInfo[];
+    payProductSpecsListV2: DataCommodity.SpecInfo[];
     payProductSpecsPriceList: DataCommodity.PriceInfo[];
     payProductParamList: DataCommodity.ParamInfo[];
   }>();
 
   const init = useCallback(async () => {
-    const commodityRes = await queryProductDetail(query.id).finally(() => setLoading(false));
+    const commodityRes: any = await queryProductDetail(query.id).finally(() => setLoading(false));
     setLoading(false);
     if (!commodityRes.code) {
       setCommodity(commodityRes.result);
@@ -170,7 +171,7 @@ export default () => {
             <Table
               rowKey="id"
               bordered
-              dataSource={commodity?.payProductSpecsList || []}
+              dataSource={commodity?.payProductSpecsListV2 || []}
               pagination={false}
               style={{ width: 400 }}
             >
