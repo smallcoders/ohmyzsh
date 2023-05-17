@@ -15,10 +15,19 @@ namespace DataCommodity {
 
   export type ProductInfo = {
     id: number;
+    productSource: number;
     productName: string;
     productBrandCn: string;
     productBrandEn: string;
     spreadWord: string;
+    appType: number;
+    appName: string;
+    typeName: string;
+    isFree: number;
+    pcHomeUrl: string;
+    pcDemoUrl: string;
+    appDemoUrl: string;
+    appHomeUrl: string;
     productModel: string;
     supplier: number;
     supplierName: string;
@@ -28,6 +37,8 @@ namespace DataCommodity {
     productContent: string;
     productArgs: string;
     productDetail: string;
+    productWorth: string;
+    productScene: string;
     state: 0 | 1;
     createTime: string;
     updateTime: string;
