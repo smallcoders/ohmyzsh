@@ -16,19 +16,103 @@ import {
   Select,
   Tooltip,
   Upload,
+  Radio, DatePicker,
 } from 'antd';
 import SelfTable from '@/components/self_table';
 import { CloudUploadOutlined, PlusOutlined } from '@ant-design/icons';
 import { history } from '@@/core/history';
 import { useAccess, Access } from '@@/plugin-access/access';
 import type { RcFile, UploadChangeParam } from 'antd/lib/upload/interface';
+import moment from 'moment';
+const sc = scopedClasses('baseline-association');
+
+const tableOptions = [
+  {
+    label: '商机录入',
+    value: 0,
+  },
+  {
+    label: '商机审核',
+    value: 1,
+  },
+  {
+    label: '商机分发',
+    value: 2,
+  },
+]
 
 export default () => {
   // // 拿到当前角色的access权限兑现
   const access = useAccess();
-  const sc = scopedClasses('baseline-association');
   const [loading, setLoading] = useState<boolean>(false);
   const [createModalVisible, setModalVisible] = useState<boolean>(false);
+  const [activeTab, setActiveTab] = useState<number>(0)
+  const [searchForm] = Form.useForm()
+
+  const getSearchQuery = () => {
+    const search = searchForm.getFieldsValue();
+    if (search.updateTime) {
+      search.updateTimeStart = moment(search.updateTime[0]).startOf('days').format('YYYY-MM-DD HH:mm:ss');
+      search.updateTimeEnd = moment(search.updateTime[1]).endOf('days').format('YYYY-MM-DD HH:mm:ss');
+    }
+    if (search.state){
+      search.state = search.state * 1
+    }
+    delete search.updateTime;
+    return search;
+  };
+
+  const useSearchNode = (): React.ReactNode => {
+    return (
+      <div className={sc('container-search')}>
+        <Form form={searchForm}>
+          <Row>
+            <Col span={6}>
+              <Form.Item labelCol={{span: 8}} name="advertiseName" label="商机编号">
+                <Input placeholder="请输入" maxLength={35} />
+              </Form.Item>
+            </Col>
+            <Col span={5}>
+              <Form.Item labelCol={{span: 8}} name="advertiseName" label="企业名称">
+                <Input placeholder="请输入" maxLength={35} />
+              </Form.Item>
+            </Col>
+            <Col span={6}>
+              <Form.Item labelCol={{span: 8}} name="updateTime" label="发布时间">
+                <DatePicker.RangePicker
+                  allowClear
+                  disabledDate={(current) => {
+                    return current > moment().endOf('day');
+                  }}
+                />
+              </Form.Item>
+            </Col>
+            <Col span={5} offset={1}>
+              <Button
+                style={{ marginRight: 20 }}
+                type="primary"
+                key="search"
+                onClick={() => {
+                  const search = getSearchQuery();
+                  console.log(search)
+                }}
+              >
+                查询
+              </Button>
+              <Button
+                key="reset"
+                onClick={() => {
+                  searchForm.resetFields();
+                }}
+              >
+                重置
+              </Button>
+            </Col>
+          </Row>
+        </Form>
+      </div>
+    );
+  };
 
   const errorColumns = [
     {
@@ -149,31 +233,6 @@ export default () => {
         {uploadNum === 0 ? (
           <div style={{ height: '300px' }}>
             <div style={{ height: '180px' }}>
-              {/* <div className={uploadNum.progress === 'true' ? 'supplierStaus' : ''}>
-                <div style={{ marginBottom: '24px' }}>
-                  请先下载
-                  <span
-                    style={{ color: 'rgba(143, 165, 255)', cursor: 'pointer' }}
-                    onClick={async () => {
-                      const { code, result } = await getAllianceImportTemplate();
-                      if (code === 0) {
-                        const res = await getFileInfo(result);
-                        debugger;
-                        if (res.code === 0) {
-                          window.location.href = res?.result[0].path;
-                        } else {
-                          message.error('下载失败');
-                        }
-                      } else {
-                        message.error('下载失败');
-                      }
-                    }}
-                  >
-                    导入模版
-                  </span>
-                  ，按要求填写后上传
-                </div>
-              </div> */}
               <Dragger {...props} className={uploadNum.progress === 'true' ? 'supplierStaus' : ''}>
                 <p className="ant-upload-text">
                   <CloudUploadOutlined />
@@ -198,6 +257,10 @@ export default () => {
   };
   return (
     <PageContainer className={sc('container')}>
+      <div className="table-box">
+        <Radio.Group value={activeTab} options={tableOptions} optionType="button" buttonStyle="solid"/>
+      </div>
+      {useSearchNode()}
       <div className={sc('container-table-header')}>
         <Access accessible={access['P_BLM_XHXXPZ']}>
           <div>
