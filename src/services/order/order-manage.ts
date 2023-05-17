@@ -120,3 +120,47 @@ export async function getOrderNum(tmpId: string) {
     method: 'POST',
   });
 }
+
+// 数字化应用商品管理-商品管理
+/**
+ * 分页查询
+ * @param params
+ */
+export async function pageQuery(data: any) {
+  return request<any>(
+    '/antelope-pay/mng/product/productManage/page',
+    {
+      method: 'POST',
+      data: { ...data, pageIndex: data.current },
+    },
+  );
+}
+
+/**
+ * 修改权重
+ * @param params
+ */
+export async function modifySortNo(data: any) {
+  return request<any>(
+    '/antelope-pay/mng/product/productManage/modify',
+    {
+      method: 'PUT',
+      data
+    },
+  );
+}
+
+/**
+ * 修改标签
+ * @param params
+ */
+export async function modifyTags(data: any) {
+  return request<any>(
+    '/antelope-pay/mng/product/productManage/modifyTags',
+    {
+      method: 'POST',
+      data
+    },
+  );
+}
+
