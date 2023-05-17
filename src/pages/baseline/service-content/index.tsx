@@ -10,6 +10,14 @@ import './index.less'
 import { routeName } from '../../../../config/routes';
 import {queryServiceArticlePage} from '@/services/baseline'
 import type Common from '@/types/common';
+
+const articleTypes = {
+  PICTURE_TEXT: '图文',
+  PICTURE: '图片',
+  TEXT: '文本',
+  VIDEO: '视频',
+  AUDIO: '音频'
+}
 export default(()=>{
     const [loading,setLoading] = useState(false)
     const [searchContent, setSearChContent] = useState<any>({});
@@ -52,17 +60,19 @@ export default(()=>{
       {
         title: '序号',
         dataIndex: 'sort',
-        width: 80,
+        align: 'center',
+        width: 35,
         render: (_: any, _record: any, index: number) =>
           pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
       },
       {
         title: '标题',
         dataIndex: 'title',
-        render: (_: any, record: any) => <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-          <span>
+        render: (_: any, record: any) => 
+        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+          <div>
             {_|| '--'}
-          </span>
+          </div>
           {record?.repeatFlag && <div style={{ background: '#D7001A', color: '#FFF', padding: '0 2px', borderRadius: '2px', whiteSpace: 'nowrap' }}>内容重复</div>}
           {/* {record?.riskInfo && <Tooltip title={record?.riskInfo}><div style={{ background: '#D7001A', color: '#FFF', padding: '0 2px', borderRadius: '2px', whiteSpace: 'nowrap' }}>风险</div></Tooltip>} */}
         </div>,
@@ -71,28 +81,31 @@ export default(()=>{
       {
         title: '内容类型',
         dataIndex: 'articleType',
-        render: (_: any[]) =>  _ || '--',
-        width: 200,
+        render: (_: any) =>  {
+          return (
+            <div>
+              {Object.prototype.hasOwnProperty.call(articleTypes, _) ? articleTypes[_] : '--' }
+            </div>
+          )
+        },
+        width: 50,
       },
       {
         title: '发布服务号',
         dataIndex: 'serviceAccountName',
-        isEllipsis: true,
         render: (_: any[]) => _ || '--',
-        width: 200,
+        width: 110,
       },
       {
         title: '发布账号',
         dataIndex: 'publisherName',
-        isEllipsis: true,
         render: (_: any[]) => _ || '--',
-        width: 300,
+        width: 110,
       },
       {
         title: '审核状态',
         dataIndex: 'auditStatus',
-        isEllipsis: true,
-        width: 80,
+        width: 50,
         render: (_: any[],record:any) => {
           return(
             <div>
@@ -108,13 +121,12 @@ export default(()=>{
       {
         title: '发布时间',
         dataIndex: 'publishTime',
-        isEllipsis: true,
         render: (_: string) => _ ? moment(_).format('YYYY-MM-DD HH:mm:ss') : '--',
-        width: 250,
+        width: 130,
       },
       {
         title: '操作',
-        width: 150,
+        width: 80,
         dataIndex: 'option',
         fixed: 'right',
         render: (_: any, record: any) => {
@@ -303,7 +315,7 @@ export default(()=>{
               <SelfTable
           loading={loading}
           bordered
-          scroll={{ x: 2580 }}
+          scroll={{ x: 1580 }}
           rowSelection={{
             fixed: true,
             selectedRowKeys,

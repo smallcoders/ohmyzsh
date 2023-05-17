@@ -482,7 +482,7 @@ export default () => {
         return (
           <div className={`state${_}`}>
             {Object.prototype.hasOwnProperty.call(syncIndustrialState, _) ? syncIndustrialState[_] : '--'}
-            {record.syncIndustrialState==='NOT_PASS'&&<span>{record.industrialAuditReason}</span>}
+            {record.syncIndustrialState==='NOT_PASS'&&<span>（{record.industrialAuditReason}）</span>}
           </div>
         );
       },
