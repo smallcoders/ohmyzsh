@@ -1,4 +1,4 @@
-﻿export const routeName = {
+export const routeName = {
   DATA_COLUMN: '/service-config/data-column', // 数据栏
   DIAGNOSTIC_TASKS: '/service-config/diagnostic-tasks/index', // 诊断任务
   DIAGNOSTIC_TASKS_DETAIL: '/diagnose-manage/diagnostic-tasks/detail', // 诊断记录
@@ -257,21 +257,52 @@
   BASELINE_ASSOCIATION_MANAGE: 'baseline-association-manage',
   BASELINE_ASSOCIATION_MANAGE_DETAIL: 'baseline-association-manage/detail',
   BASELINE_ASSOCIATION_MANAGE_EDIT: 'baseline-association-manage/add',
-  
+
   BASELINE_USER_POSTING_MANAGE: '/baseline/baseline-user-posting-manage', // 用户发布管理
   BASELINE_USER_POSTING_MANAGE_INDEX: '/baseline/baseline-user-posting-manage/index', // 用户发布管理
   BASELINE_USER_POSTING_MANAGE_DETAIL: '/baseline/baseline-user-posting-manage/detail', // 用户发布管理详情
   VERIFY_AGENCY_USER_POSTING_VERIFY: '/verify-agency/user-posting-verify', // 用户发布审核
   VERIFY_AGENCY_USER_POSTING_VERIFY_INDEX: '/verify-agency/user-posting-verify/index', // 用户发布审核
   VERIFY_AGENCY_USER_POSTING_VERIFY_DETAIL: '/verify-agency/user-posting-verify/detail', // 用户发布审核详情
-  
+
   BASELINE_SERVICE_NUMBER: '/baseline/baseline-service-number',
   BASELINE_SERVICE_NUMBER_INDEX: '/baseline/baseline-service-number/index',
   BASELINE_SERVICE_NUMBER_SETTING: '/baseline/baseline-service-number-setting',
   BASELINE_SERVICE_NUMBER_MANAGEMENT: '/baseline/baseline-service-number/management', // 服务号管理
   BASELINE_SERVICE_NUMBER_MANAGEMENT_DETAIL: '/baseline/baseline-service-number/management/detail', // 服务号管理
-  BASELINE_SERVICE_NUMBER_MANAGEMENT_DRAFTS_ADD: '/baseline/baseline-service-number/management/drafts/add', // 草稿箱add
-  BASELINE_HOTSPOT_MANAGE: 'baseline-hotspot-manage'
+  BASELINE_SERVICE_NUMBER_MANAGEMENT_DRAFTS_ADD:
+    '/baseline/baseline-service-number/management/drafts/add', // 草稿箱add
+  BASELINE_HOTSPOT_MANAGE: 'baseline-hotspot-manage',
+
+  BASELINE_OPERATIONS_MANAGEMENT: '/baseline-operations-management', // 基线运营位管理
+  BASELINE_OPERATIONS_MANAGEMENT_HOME_SCREEN_AD: '/baseline-operations-management/home-screen-ad', // 开屏广告
+  BASELINE_OPERATIONS_MANAGEMENT_HOME_SCREEN_AD_ADD:
+    '/baseline-operations-management/home-screen-ad/add', // 开屏广告 - 新增
+  BASELINE_OPERATIONS_MANAGEMENT_HOME_SCREEN_AD_DETAIL:
+    '/baseline-operations-management/home-screen-ad/detail', // 开屏广告 - 详情
+  BASELINE_OPERATIONS_MANAGEMENT_POPUP_AD: '/baseline-operations-management/pop-up-ad', // 弹窗广告
+  BASELINE_OPERATIONS_MANAGEMENT_POPUP_AD_ADD: '/baseline-operations-management/pop-up-ad/add', // 弹窗广告 - 新增
+  BASELINE_OPERATIONS_MANAGEMENT_POPUP_AD_DETAIL:
+    '/baseline-operations-management/pop-up-ad/detail', // 弹窗广告 - 详情
+  BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD:
+    '/baseline-operations-management/content-stream-ad', // 内容流广告
+  BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_STATISTICAL_DETAIL:
+    '/baseline-operations-management/content-stream-ad/statistical-detail', // 内容流广告 - 统计详情
+  BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_ADD:
+    '/baseline-operations-management/content-stream-ad/add', // 内容流广告 - 新增
+  BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_DETAIL:
+    '/baseline-operations-management/content-stream-ad/detail', // 内容流广告 - 详情
+  BASELINE_OPERATIONS_MANAGEMENT_SUSPENSION_AD: '/baseline-operations-management/suspension-ad', // 全局悬浮窗广告
+  BASELINE_OPERATIONS_MANAGEMENT_SUSPENSION_AD_ADD:
+    '/baseline-operations-management/suspension-ad/add', // 全局悬浮窗广告
+  BASELINE_OPERATIONS_MANAGEMENT_SUSPENSION_AD_DETAIL:
+    '/baseline-operations-management/suspension-ad/detail', // 全局悬浮窗广告
+
+  // 数据中心
+  DATA_CENTER: '/data-center', // 数据中心
+  TOOLKIT_ORDER_MONITORING: '/data-center/toolkit-order_monitoring', //工具包订单监控
+  
+  BASELINE_VERSION_UPDATING_MANAGE: '/baseline/version-updating', // 版本更新管理
 };
 
 export default [
@@ -333,6 +364,30 @@ export default [
         access: 'M_OD_YYSJ',
         name: '用户认证数据',
         component: './operate_data/data_manage/index',
+      },
+    ],
+  },
+  {
+    path: routeName.DATA_CENTER,
+    code: 'M_DC',
+    access: 'M_DC',
+    name: '数据中心',
+    icon: 'BarChartOutlined',
+    routes: [
+      {
+        path: routeName.DATA_CENTER,
+        code: 'M_DC_GJBDD',
+        access: 'M_DC_GJBDD',
+        redirect: routeName.DATA_CENTER,
+      },
+      {
+        path: routeName.TOOLKIT_ORDER_MONITORING,
+        code: 'M_DC_GJBDD',
+        access: 'M_DC_GJBDD',
+        name: '工具包订单监控',
+        component: './data_center/toolkit_order_monitoring/index',
+        layout: false,
+        target: '_blank',
       },
     ],
   },
@@ -586,11 +641,11 @@ export default [
             // access: 'PA_BLM_NRGL',
             hideInBreadcrumb: true,
             component: './baseline/service/service_number/service_management_detail/index',
-          }
-        ]
+          },
+        ],
       },
       {
-        path: routeName.BASELINE_USER_POSTING_MANAGE, 
+        path: routeName.BASELINE_USER_POSTING_MANAGE,
         name: '用户发布管理',
         access: 'M_BLM_YHFBGL',
         hideChildrenInMenu: true,
@@ -612,6 +667,160 @@ export default [
             name: '用户发布详情',
             hideInBreadcrumb: true,
             component: './baseline/user-posting/detail/index',
+          },
+        ],
+      },
+      {
+        path: routeName.BASELINE_VERSION_UPDATING_MANAGE,
+        name: '版本更新管理',
+        code: 'M_BLM_BBGXGL',
+        access: 'M_BLM_BBGXGL',
+        component: './baseline/version_updating/index',
+      },
+    ],
+  },
+  {
+    path: routeName.BASELINE_OPERATIONS_MANAGEMENT,
+    access: 'M_BLAM',
+    name: '基线运营位管理',
+    icon: 'hdd',
+    routes: [
+      {
+        path: routeName.BASELINE_OPERATIONS_MANAGEMENT,
+        access: 'M_BLAM_KPGG',
+        redirect: routeName.BASELINE_OPERATIONS_MANAGEMENT_HOME_SCREEN_AD,
+      },
+      {
+        path: routeName.BASELINE_OPERATIONS_MANAGEMENT_HOME_SCREEN_AD,
+        name: '开屏广告',
+        access: 'M_BLAM_KPGG',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            access: 'M_BLAM_KPGG',
+            path: routeName.BASELINE_OPERATIONS_MANAGEMENT_HOME_SCREEN_AD,
+            redirect: routeName.BASELINE_OPERATIONS_MANAGEMENT_HOME_SCREEN_AD + '/index',
+          },
+          {
+            path: routeName.BASELINE_OPERATIONS_MANAGEMENT_HOME_SCREEN_AD + '/index',
+            name: '开屏广告',
+            access: 'M_BLAM_KPGG',
+            hideInBreadcrumb: true,
+            component: './baseline_operations_manage/home_screen_ad/index',
+          },
+          {
+            path: routeName.BASELINE_OPERATIONS_MANAGEMENT_HOME_SCREEN_AD_ADD,
+            name: '新增',
+            access: 'M_BLAM_KPGG',
+            component: './baseline_operations_manage/home_screen_ad/add/index',
+          },
+          {
+            path: routeName.BASELINE_OPERATIONS_MANAGEMENT_HOME_SCREEN_AD_DETAIL,
+            name: '内容详情',
+            access: 'M_BLAM_KPGG',
+            component: './baseline_operations_manage/home_screen_ad/detail/index',
+          },
+        ],
+      },
+      {
+        path: routeName.BASELINE_OPERATIONS_MANAGEMENT_POPUP_AD,
+        name: '弹窗广告',
+        access: 'M_BLAM_TKGG',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            access: 'M_BLAM_TKGG',
+            path: routeName.BASELINE_OPERATIONS_MANAGEMENT_POPUP_AD,
+            redirect: routeName.BASELINE_OPERATIONS_MANAGEMENT_POPUP_AD + '/index',
+          },
+          {
+            path: routeName.BASELINE_OPERATIONS_MANAGEMENT_POPUP_AD + '/index',
+            name: '弹窗广告',
+            access: 'M_BLAM_TKGG',
+            hideInBreadcrumb: true,
+            component: './baseline_operations_manage/pop_up_ad/index',
+          },
+          {
+            path: routeName.BASELINE_OPERATIONS_MANAGEMENT_POPUP_AD_ADD,
+            name: '新增',
+            access: 'M_BLAM_TKGG',
+            component: './baseline_operations_manage/pop_up_ad/add/index',
+          },
+          {
+            path: routeName.BASELINE_OPERATIONS_MANAGEMENT_POPUP_AD_DETAIL,
+            name: '内容详情',
+            access: 'M_BLAM_TKGG',
+            component: './baseline_operations_manage/pop_up_ad/detail/index',
+          },
+        ],
+      },
+      {
+        path: routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD,
+        name: '内容流广告',
+        access: 'M_BLAM_NRLGG',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            access: 'M_BLAM_NRLGG',
+            path: routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD,
+            redirect: routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD + '/index',
+          },
+          {
+            path: routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD + '/index',
+            name: '内容流广告',
+            access: 'M_BLAM_NRLGG',
+            hideInBreadcrumb: true,
+            component: './baseline_operations_manage/content_stream_ad/index',
+          },
+          {
+            path: routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_ADD,
+            name: '新增',
+            access: 'PQ_BLM_YYWGL',
+            component: './baseline_operations_manage/content_stream_ad/add/index',
+          },
+          {
+            path: routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_DETAIL,
+            name: '内容详情',
+            access: 'M_BLAM_NRLGG',
+            component: './baseline_operations_manage/content_stream_ad/detail/index',
+          },
+          {
+            path: routeName.BASELINE_OPERATIONS_MANAGEMENT_CONTENT_STREAM_AD_STATISTICAL_DETAIL,
+            name: '统计详情',
+            access: 'M_BLAM_NRLGG',
+            component: './baseline_operations_manage/content_stream_ad/statistical_detail/index',
+          },
+        ],
+      },
+      {
+        path: routeName.BASELINE_OPERATIONS_MANAGEMENT_SUSPENSION_AD,
+        name: '全局悬浮窗广告',
+        access: 'M_BLAM_QJXFGG',
+        hideChildrenInMenu: true,
+        routes: [
+          {
+            access: 'M_BLAM_QJXFGG',
+            path: routeName.BASELINE_OPERATIONS_MANAGEMENT_SUSPENSION_AD,
+            redirect: routeName.BASELINE_OPERATIONS_MANAGEMENT_SUSPENSION_AD + '/index',
+          },
+          {
+            path: routeName.BASELINE_OPERATIONS_MANAGEMENT_SUSPENSION_AD + '/index',
+            name: '全局悬浮窗广告',
+            access: 'M_BLAM_QJXFGG',
+            hideInBreadcrumb: true,
+            component: './baseline_operations_manage/suspension_ad/index',
+          },
+          {
+            path: routeName.BASELINE_OPERATIONS_MANAGEMENT_SUSPENSION_AD_ADD,
+            name: '新增',
+            access: 'M_BLAM_QJXFGG',
+            component: './baseline_operations_manage/suspension_ad/add/index',
+          },
+          {
+            path: routeName.BASELINE_OPERATIONS_MANAGEMENT_SUSPENSION_AD_DETAIL,
+            name: '内容详情',
+            access: 'M_BLAM_QJXFGG',
+            component: './baseline_operations_manage/suspension_ad/detail/index',
           },
         ],
       },
@@ -918,7 +1127,7 @@ export default [
         ],
       },
       {
-        path: routeName.VERIFY_AGENCY_USER_POSTING_VERIFY, 
+        path: routeName.VERIFY_AGENCY_USER_POSTING_VERIFY,
         name: '用户发布审核',
         access: 'M_BLM_YHFBSH',
         hideChildrenInMenu: true,
@@ -1794,7 +2003,7 @@ export default [
             path: routeName.FINANCIAL_DIAGNOSTIC_RECORD_DEMAND,
             name: '需求反馈',
             component: './banking/financial_diagnostic_record/demand/index',
-          }
+          },
         ],
       },
       {
@@ -1896,7 +2105,7 @@ export default [
         code: 'M_FM_DBTZ',
         access: 'M_FM_DBTZ',
         component: './banking/financial_notification/index',
-      }
+      },
     ],
   },
   {

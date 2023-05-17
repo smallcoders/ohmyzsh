@@ -16,6 +16,8 @@ const UploadForm = (
       isMore?: boolean;
       setValue?: (value: any) => void;
       setValueId?: (value: any) => void;
+      setValueOss?: (value: any) => void;
+      action?: string;
     },
 ) => {
   const [fileId, setFileId] = useState<string | undefined | any>();

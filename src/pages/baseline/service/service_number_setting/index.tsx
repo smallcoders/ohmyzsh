@@ -237,6 +237,9 @@ export default () => {
   const changeFormMunuName = async (_: any, value: string) => {
     console.log('value', value)
     console.log('_', _)
+    if (!value) {
+      return Promise.resolve();
+    }
     if (!value.trim()) {
       message.warning('服务号内部名称不要为空')
       return Promise.resolve();

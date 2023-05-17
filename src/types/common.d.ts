@@ -113,6 +113,7 @@ namespace Common {
     loading?: boolean;
     showSearch?: boolean;
     onChange?: (v: string | any[]) => void;
+    selectModeType?: multiple | tags | undefined;
   }
 
   export interface ActionItem {
