@@ -266,7 +266,8 @@
   BASELINE_SERVICE_NUMBER_MANAGEMENT: '/baseline/baseline-service-number/management', // 服务号管理
   BASELINE_SERVICE_NUMBER_MANAGEMENT_DETAIL: '/baseline/baseline-service-number/management/detail', // 服务号管理
   BASELINE_SERVICE_NUMBER_MANAGEMENT_DRAFTS_ADD: '/baseline/baseline-service-number/management/drafts/add', // 草稿箱add
-  BASELINE_HOTSPOT_MANAGE: 'baseline-hotspot-manage'
+  BASELINE_HOTSPOT_MANAGE: 'baseline-hotspot-manage',
+  BASELINE_SERVICE_CONTENT_MANAGE: '/baseline/baseline-service-content-manage'
 };
 
 export default [
@@ -375,6 +376,14 @@ export default [
           },
         ],
       },
+      {
+        path: routeName.BASELINE_SERVICE_CONTENT_MANAGE,
+        name: '服务号内容管理',
+        // code: 'M_BLM_SSRDGL',
+        // access: 'M_BLM_SSRDGL',
+        component: './baseline/service-content',
+      },
+      
       {
         path: routeName.BASELINE_HOTSPOT_MANAGE,
         name: '实时热点管理',
