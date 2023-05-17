@@ -54,6 +54,20 @@ export default () => {
 
   // 审核
   const audit = async (id: string, state: any) => {
+    try {
+      const res = await httpEnterpriseAudit({
+        id: Number(id),
+        auditStatus: 2
+      });
+      if (res.code === 0) {
+        message.success('审核通过');
+        actionRef.current?.reload(); // 让table// 刷新
+      } else {
+        message.error(`失败，原因:{${res?.message}}`);
+      }
+    } catch (error) {
+      console.log(error);
+    }
     if (state === 1) {
       // 多一个推荐
       try {
@@ -69,20 +83,6 @@ export default () => {
       } catch (error) {
         console.log(error);
       }
-    }
-    try {
-      const res = await httpEnterpriseAudit({
-        id: Number(id),
-        auditStatus: 2
-      });
-      if (res.code === 0) {
-        message.success('审核通过');
-        actionRef.current?.reload(); // 让table// 刷新
-      } else {
-        message.error(`失败，原因:{${res?.message}}`);
-      }
-    } catch (error) {
-      console.log(error);
     }
   };
   // 不通过
