@@ -100,5 +100,10 @@ export default {
       changeOrigin: true,
       pathRewrite: { '^': '' },
     },
+    '/antelope-channel/': {
+      target: 'http://172.30.33.222:10086',
+      changeOrigin: true,
+      pathRewrite: { '^': '' },
+    },
   },
 };
