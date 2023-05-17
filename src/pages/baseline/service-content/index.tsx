@@ -1,13 +1,14 @@
 import { PageContainer } from "@ant-design/pro-layout"
 import scopedClasses from '@/utils/scopedClasses';
-import { useState } from "react";
-import {Button, Col,Tooltip, Form,DatePicker, Input, Row,  Space, Select,Modal} from "antd";
+import {Button, Col,message, Form,DatePicker, Input, Row,  Space, Select,Modal} from "antd";
 import SelfTable from '@/components/self_table';
 import { Access, useAccess } from 'umi';
+import React, { useEffect, useState } from 'react';
 const sc = scopedClasses('service-content-manage')
 import moment from 'moment';
 import './index.less'
 import { routeName } from '../../../../config/routes';
+import {queryServiceArticlePage} from '@/services/baseline'
 import type Common from '@/types/common';
 export default(()=>{
     const [loading,setLoading] = useState(false)
@@ -20,6 +21,33 @@ export default(()=>{
       totalCount: 0,
       pageTotal: 0,
     });
+    const access:any = useAccess()
+    const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
+      setLoading(true);
+      try {
+        const [res1] = await Promise.all([queryServiceArticlePage({
+          pageIndex,
+          pageSize,
+          ...searchContent,
+        })])
+        const { result, totalCount, pageTotal, code } = res1
+  
+        if (code === 0) {
+          setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
+          setDataSource(result);
+          setLoading(false);
+        } else {
+          message.error(`请求分页数据失败`);
+          setLoading(false);
+        }
+      } catch (error) {
+        console.log(error);
+        setLoading(false);
+      }
+    };
+    useEffect(() => {
+      getPage();
+    }, [searchContent]);
     const columns = [
       {
         title: '序号',
@@ -33,25 +61,49 @@ export default(()=>{
         dataIndex: 'title',
         render: (_: any, record: any) => <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
           <span>
-            {_}
+            {_|| '--'}
           </span>
-          {record?.isTop && <div style={{ background: '#169BD5', color: '#FFF', padding: '0 2px', borderRadius: '2px', whiteSpace: 'nowrap' }}>已置顶</div>}
-          {record?.riskInfo && <Tooltip title={record?.riskInfo}><div style={{ background: '#D7001A', color: '#FFF', padding: '0 2px', borderRadius: '2px', whiteSpace: 'nowrap' }}>风险</div></Tooltip>}
+          {record?.repeatFlag && <div style={{ background: '#D7001A', color: '#FFF', padding: '0 2px', borderRadius: '2px', whiteSpace: 'nowrap' }}>内容重复</div>}
+          {/* {record?.riskInfo && <Tooltip title={record?.riskInfo}><div style={{ background: '#D7001A', color: '#FFF', padding: '0 2px', borderRadius: '2px', whiteSpace: 'nowrap' }}>风险</div></Tooltip>} */}
         </div>,
-        width: 300,
+        width: 200,
       },
       {
         title: '内容类型',
-        dataIndex: 'types',
-        render: (_: any[]) => _?.length > 0 ? _?.map(p => p.typeName).join(',') : '--',
+        dataIndex: 'articleType',
+        render: (_: any[]) =>  _ || '--',
         width: 200,
       },
       {
         title: '发布服务号',
-        dataIndex: 'source',
+        dataIndex: 'serviceAccountName',
+        isEllipsis: true,
+        render: (_: any[]) => _ || '--',
+        width: 200,
+      },
+      {
+        title: '发布账号',
+        dataIndex: 'publisherName',
         isEllipsis: true,
         render: (_: any[]) => _ || '--',
         width: 300,
+      },
+      {
+        title: '审核状态',
+        dataIndex: 'auditStatus',
+        isEllipsis: true,
+        width: 80,
+        render: (_: any[],record:any) => {
+          return(
+            <div>
+              {(record.auditStatus === 2&&record.status===0)&&<div>已下架</div>}
+             {(record.auditStatus === 2&&record.status===1)&&<div>通过</div>}
+             {(record.auditStatus === 3)&&<div>拒绝</div>}
+             {(record.auditStatus === 1)&&<div>待审核</div>}
+             {(!record.auditStatus)&&<div>--</div>}
+            </div>
+          )
+        },
       },
       {
         title: '发布时间',
@@ -62,29 +114,13 @@ export default(()=>{
       },
       {
         title: '操作',
-        width: 200,
+        width: 150,
         dataIndex: 'option',
         fixed: 'right',
         render: (_: any, record: any) => {
-          // const accessible = access?.[permissions?.[edge].replace(new RegExp("Q"), "")]
           return (
             <Space wrap>
-              {record?.status == 2 &&
-                <>
-                  <Access accessible={access['P_BLM_NRGL']}>
-                    <Button
-                      type="link"
-                      style={{ padding: 0 }}
-                      onClick={() => {
-                        window.open(routeName.BASELINE_CONTENT_MANAGE_ADDORUPDATE + `?id=${record?.id}`);
-                      }}
-                    >
-                      编辑
-                    </Button>
-                  </Access>
-                </>
-              }
-              {record?.status == 1 &&
+              {record?.auditStatus == 1 &&
                 <>
                   <Button
                     style={{ padding: 0 }}
@@ -111,65 +147,8 @@ export default(()=>{
                   </Access>
                 </>
               }
-              {record?.status == 0 &&
-                <>
-                  <Button
-                    style={{ padding: 0 }}
-                    type="link"
-                    onClick={() => {
-                      window.open(routeName.BASELINE_CONTENT_MANAGE_DETAIL + `?id=${record?.id}`);
-                    }}
-                  >
-                    详情
-                  </Button>
-  
-                  {record?.auditCommon ? <Access accessible={access['P_BLM_NRGL']}><Button
-                    type="link"
-                    style={{ padding: 0 }}
-                    onClick={() => {
-                      Modal.confirm({
-                        title: '提示',
-                        content: '确定将内容上架？',
-                        okText: '上架'
-                      })
-                    }}
-                  >
-                    上架
-                  </Button></Access> : <>
-                    <Access accessible={access['P_BLM_NRGL']}>
-                        <Button
-                        type="link"
-                        style={{ padding: 0 }}
-                        onClick={() => {
-                          window.open(routeName.BASELINE_CONTENT_MANAGE_ADDORUPDATE + `?id=${record?.id}`);
-                        }}
-                      >
-                        编辑
-                      </Button>
-                    </Access>
-                  </>
-                  }
-                </>
-              }
-              {
-                record?.status !== 1 &&
-                <Access accessible={access['PD_BLM_NRGL']}>
-                    <Button type="link" style={{ padding: 0, color: 'red' }} onClick={() => {
-                        Modal.confirm({
-                          title: '删除数据',
-                          content: '删除该内容后，系统将不再推荐该内容，确定删除？',
-                          okText: '删除'
-                        })
-                      }}>
-                        删除
-                    </Button>
-                  </Access>
-              }
             </Space>
-            // </Access>
           )
-  
-  
         },
       },
     ].filter(p => p);
@@ -177,7 +156,29 @@ export default(()=>{
         labelCol: { span: 6 },
         wrapperCol: { span: 16 },
       };
-      const [searchForm] = Form.useForm();
+    const addTypes = [
+        {
+          type: 'PICTURE_TEXT',
+          name: '图文',
+        },
+        {
+          type: 'PICTURE',
+          name: '图片',
+        },
+        {
+          type: 'TEXT',
+          name: '文字',
+        },
+        {
+          type: 'VIDEO',
+          name: '视频',
+        },
+        {
+          type: 'AUDIO',
+          name: '音频',
+        },
+      ];
+    const [searchForm] = Form.useForm();
 
       // 搜索模块
   const useSearchNode = (): React.ReactNode => {
@@ -186,17 +187,17 @@ export default(()=>{
         <Form {...formLayout} form={searchForm}>
           <Row>
             <Col span={8}>
-              <Form.Item name="topic" label="标题">
+              <Form.Item name="title" label="标题">
                 <Input placeholder="请输入" allowClear  autoComplete="off"/>
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="publicUserName" label="服务号名称">
+              <Form.Item name="serviceAccountName" label="服务号名称">
                 <Input placeholder="请输入" allowClear  autoComplete="off" />
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="enable" label="发布账号">
+              <Form.Item name="publisherName" label="发布账号">
                 <Select placeholder="请选择" allowClear >
                   <Select.Option value={0}>下架</Select.Option>
                   <Select.Option value={1}>上架</Select.Option>
@@ -204,18 +205,21 @@ export default(()=>{
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="enable" label="时间范围">
+              <Form.Item name="time" label="时间范围">
               <DatePicker.RangePicker allowClear showTime />
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="enable" label="内容类型">
-                <Select placeholder="请选择" allowClear >
-                  <Select.Option value={0}>图文</Select.Option>
-                  <Select.Option value={1}>图片</Select.Option>
-                  <Select.Option value={2}>下架</Select.Option>
-                  <Select.Option value={3}>上架</Select.Option>
-                  <Select.Option value={4}>下架</Select.Option>
+              <Form.Item name="articleType" label="内容类型">
+                <Select placeholder="请选择" allowClear>
+                {/* <Select.Option value={'PICTURE_TEXT'}>图文</Select.Option>
+                <Select.Option value={'PICTURE'}>图片</Select.Option>
+                <Select.Option value={'TEXT'}>文字</Select.Option>
+                <Select.Option value={'VIDEO'}>视频</Select.Option>
+                <Select.Option value={'AUDIO'}>音频</Select.Option> */}
+                  {addTypes.map((item) => (
+                    <Select.Option value={item.type}>{item.name}</Select.Option>
+                  ))}
                 </Select>
               </Form.Item>
             </Col>
@@ -226,8 +230,8 @@ export default(()=>{
                 key="search"
                 onClick={() => {
                   const search = searchForm.getFieldsValue();
-                  search.startTime = moment(search.time[0]).format('YYYY-MM-DD HH:mm:ss');
-                  search.endTime = moment(search.time[1]).format('YYYY-MM-DD HH:mm:ss');
+                  search.publishStartTime = moment(search.time[0]).format('YYYY-MM-DD HH:mm:ss');
+                  search.endTpublishEndTime = moment(search.time[1]).format('YYYY-MM-DD HH:mm:ss');
                   delete search.time;
                   setSearChContent(search);
                 }}
@@ -249,9 +253,7 @@ export default(()=>{
       </div>
     );
   };
-  const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
-   
-  };
+ 
 
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
     setSelectedRowKeys(newSelectedRowKeys);
@@ -263,7 +265,7 @@ export default(()=>{
               <div className={sc('container-table-header')}>
           <div>
             <Button
-              type="default"
+              type="primary"
               key="pass"
               onClick={() => {
                 Modal.confirm({
@@ -280,7 +282,7 @@ export default(()=>{
             </Button>
             <Button
               style={{ marginLeft: '10px' }}
-              type="default"
+              type="primary"
               key="reject"
               onClick={() => {
                 Modal.confirm({

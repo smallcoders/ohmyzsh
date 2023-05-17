@@ -387,3 +387,12 @@ export async function deleteHotNews(data?: Record<string, any>) {
     data
   });
 }
+
+
+// 服务号管理内容条件查询接口
+export async function queryServiceArticlePage(data?: Record<string, any>) {
+  return request<any>('/antelope-industrial/mng/service/article/page/query', {
+    method: 'post',
+    data,
+  });
+}
