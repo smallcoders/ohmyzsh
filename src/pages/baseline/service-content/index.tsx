@@ -63,20 +63,6 @@ export default () => {
     getPage();
   }, [searchContent]);
 
-  const _httpArticleAudit = async (id: string, auditStatus: number) => {
-    try {
-      const res = await httpArticleAudit({ id, auditStatus });
-      if (res?.code === 0) {
-        message.success(auditStatus === 2 ? '显示至推荐页面' : '未显示于推荐页面');
-        getPage();
-      } else {
-        message.error(res?.message);
-      }
-    } catch (error) {
-      message.error(error);
-    }
-  };
-
   const handleAudit = (id: string, state: number) => {
     Modal.confirm({
       title: '提示',
@@ -186,16 +172,18 @@ export default () => {
           <Space wrap>
             {record?.auditStatus == 1 && (
               <>
-                <Button
-                  style={{ padding: 0 }}
-                  type="link"
-                  onClick={() => {
-                    handleAudit(record?.id.toString(), 2);
-                  }}
-                >
-                  通过
-                </Button>
-                <Access accessible={access['P_BLM_NRGL']}>
+                <Access accessible={access['PU_BLM_FWHNRGL']}>
+                  <Button
+                    style={{ padding: 0 }}
+                    type="link"
+                    onClick={() => {
+                      handleAudit(record?.id.toString(), 2);
+                    }}
+                  >
+                    通过
+                  </Button>
+                </Access>
+                <Access accessible={access['PU_BLM_FWHNRGL']}>
                   <Button
                     style={{ padding: 0 }}
                     type="link"
@@ -365,27 +353,31 @@ export default () => {
       <div className={sc('container-table-body')}>
         <div className={sc('container-table-header')}>
           <div>
-            <Button
-              disabled={batchState}
-              type="primary"
-              key="pass"
-              onClick={() => {
-                handleBatchCheck(2);
-              }}
-            >
-              批量通过
-            </Button>
-            <Button
-              disabled={batchState}
-              style={{ marginLeft: '10px' }}
-              type="primary"
-              key="reject"
-              onClick={() => {
-                handleBatchCheck(3);
-              }}
-            >
-              批量拒绝
-            </Button>
+            <Access accessible={access['PU_BLM_FWHNRGL']}>
+              <Button
+                disabled={batchState}
+                type="primary"
+                key="pass"
+                onClick={() => {
+                  handleBatchCheck(2);
+                }}
+              >
+                批量通过
+              </Button>
+            </Access>
+            <Access accessible={access['PU_BLM_FWHNRGL']}>
+              <Button
+                disabled={batchState}
+                style={{ marginLeft: '10px' }}
+                type="primary"
+                key="reject"
+                onClick={() => {
+                  handleBatchCheck(3);
+                }}
+              >
+                批量拒绝
+              </Button>
+            </Access>
           </div>
         </div>
         <SelfTable

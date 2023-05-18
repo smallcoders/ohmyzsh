@@ -379,8 +379,8 @@ export default [
       {
         path: routeName.BASELINE_SERVICE_CONTENT_MANAGE,
         name: '服务号内容管理',
-        // code: 'M_BLM_SSRDGL',
-        // access: 'M_BLM_SSRDGL',
+        code: 'M_BLM_FWHNRGL',
+        access: 'M_BLM_FWHNRGL',
         component: './baseline/service-content',
       },
       
