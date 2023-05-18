@@ -1,14 +1,18 @@
-import { PageContainer } from "@ant-design/pro-layout"
+import { PageContainer } from '@ant-design/pro-layout';
 import scopedClasses from '@/utils/scopedClasses';
-import {Button, Col,message, Form,DatePicker, Input, Row,  Space, Select,Modal} from "antd";
+import { Button, Col, message, Form, DatePicker, Input, Row, Space, Select, Modal } from 'antd';
 import SelfTable from '@/components/self_table';
 import { Access, useAccess } from 'umi';
 import React, { useEffect, useState } from 'react';
-const sc = scopedClasses('service-content-manage')
+const sc = scopedClasses('service-content-manage');
 import moment from 'moment';
-import './index.less'
+import './index.less';
 import { routeName } from '../../../../config/routes';
-import { queryServiceArticlePage, httpArticleAudit, httpArticleBatchAudit } from '@/services/baseline'
+import {
+  queryServiceArticlePage,
+  httpArticleAudit,
+  httpArticleBatchAudit,
+} from '@/services/baseline';
 import type Common from '@/types/common';
 
 const articleTypes = {
@@ -16,215 +20,228 @@ const articleTypes = {
   PICTURE: '图片',
   TEXT: '文字',
   VIDEO: '视频',
-  AUDIO: '音频'
-}
-export default(()=>{
-    const [loading,setLoading] = useState(false)
-    const [searchContent, setSearChContent] = useState<any>({});
-    const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-    const [dataSource, setDataSource] = useState<any>([]);
-    const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
-      pageIndex: 1,
-      pageSize: 20,
-      totalCount: 0,
-      pageTotal: 0,
-    });
-    const access:any = useAccess()
-    const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
-      setLoading(true);
-      try {
-        const [res1] = await Promise.all([queryServiceArticlePage({
+  AUDIO: '音频',
+};
+export default () => {
+  const [loading, setLoading] = useState(false);
+  const [searchContent, setSearChContent] = useState<any>({});
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const [dataSource, setDataSource] = useState<any>([]);
+  const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
+    pageIndex: 1,
+    pageSize: 20,
+    totalCount: 0,
+    pageTotal: 0,
+  });
+  const access: any = useAccess();
+  const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
+    setLoading(true);
+    try {
+      const [res1] = await Promise.all([
+        queryServiceArticlePage({
           pageIndex,
           pageSize,
           ...searchContent,
-        })])
-        const { result, totalCount, pageTotal, code } = res1
-  
-        if (code === 0) {
-          setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
-          setDataSource(result);
-          setLoading(false);
-        } else {
-          message.error(`请求分页数据失败`);
-          setLoading(false);
-        }
-      } catch (error) {
-        console.log(error);
+        }),
+      ]);
+      const { result, totalCount, pageTotal, code } = res1;
+
+      if (code === 0) {
+        setPageInfo({ totalCount, pageTotal, pageIndex, pageSize });
+        setDataSource(result);
+        setLoading(false);
+      } else {
+        message.error(`请求分页数据失败`);
         setLoading(false);
       }
-    };
-    useEffect(() => {
-      getPage();
-    }, [searchContent]);
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    getPage();
+  }, [searchContent]);
 
-    const _httpArticleAudit = async (id: string, auditStatus: number) => {
-      try {
-        const res = await httpArticleAudit({id, auditStatus})
-        if (res?.code === 0) {
-          message.success(auditStatus === 2 ? '显示至推荐页面' : '未显示于推荐页面' )
-          getPage();
-        } else {
-          message.error(res?.message)
-        }
-      } catch (error) {
-        message.error(error)
+  const _httpArticleAudit = async (id: string, auditStatus: number) => {
+    try {
+      const res = await httpArticleAudit({ id, auditStatus });
+      if (res?.code === 0) {
+        message.success(auditStatus === 2 ? '显示至推荐页面' : '未显示于推荐页面');
+        getPage();
+      } else {
+        message.error(res?.message);
       }
+    } catch (error) {
+      message.error(error);
     }
+  };
 
-    const handleAudit = (id: string, state: number) => {
-      Modal.confirm({
-        title: '提示',
-        content:  state === 2 ? '确定通过同步至产业圈？' : '确定拒绝同步至产业圈？',
-        okText: state === 2 ? '通过' : '拒绝',
-        onOk: () => {
-          httpArticleAudit({id, auditStatus: state}).then((res: any) => {
-            if (res?.code == 0) {
-              message.success(state === 2 ? '显示至推荐页面' : '未显示于推荐页面' )
-              setTimeout(() => {
-                getPage();
-              }, 500);
-            } else {
-              message.error(res?.message)
-            }
-          })
-        }
-      })
-    }
-
-    const columns = [
-      {
-        title: '序号',
-        dataIndex: 'sort',
-        align: 'center',
-        width: 35,
-        render: (_: any, _record: any, index: number) =>
-          pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
+  const handleAudit = (id: string, state: number) => {
+    Modal.confirm({
+      title: '提示',
+      content: state === 2 ? '确定通过同步至产业圈？' : '确定拒绝同步至产业圈？',
+      okText: state === 2 ? '通过' : '拒绝',
+      onOk: () => {
+        httpArticleAudit({ id, auditStatus: state }).then((res: any) => {
+          if (res?.code == 0) {
+            message.success(state === 2 ? '显示至推荐页面' : '未显示于推荐页面');
+            setTimeout(() => {
+              getPage();
+            }, 500);
+          } else {
+            message.error(res?.message);
+          }
+        });
       },
-      {
-        title: '标题',
-        dataIndex: 'title',
-        render: (_: any, record: any) => 
+    });
+  };
+
+  const columns = [
+    {
+      title: '序号',
+      dataIndex: 'sort',
+      align: 'center',
+      width: 35,
+      render: (_: any, _record: any, index: number) =>
+        pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
+    },
+    {
+      title: '标题',
+      dataIndex: 'title',
+      render: (_: any, record: any) => (
         <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-          <div>
-            {_|| '--'}
-          </div>
-          {record?.repeatFlag && <div style={{ background: '#D7001A', color: '#FFF', padding: '0 2px', borderRadius: '2px', whiteSpace: 'nowrap' }}>内容重复</div>}
+          <div>{_ || '--'}</div>
+          {record?.repeatFlag && (
+            <div
+              style={{
+                background: '#D7001A',
+                color: '#FFF',
+                padding: '0 2px',
+                borderRadius: '2px',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              内容重复
+            </div>
+          )}
           {/* {record?.riskInfo && <Tooltip title={record?.riskInfo}><div style={{ background: '#D7001A', color: '#FFF', padding: '0 2px', borderRadius: '2px', whiteSpace: 'nowrap' }}>风险</div></Tooltip>} */}
-        </div>,
-        width: 200,
+        </div>
+      ),
+      width: 200,
+    },
+    {
+      title: '内容类型',
+      dataIndex: 'articleType',
+      render: (_: any) => {
+        return (
+          <div>
+            {Object.prototype.hasOwnProperty.call(articleTypes, _) ? articleTypes[_] : '--'}
+          </div>
+        );
       },
-      {
-        title: '内容类型',
-        dataIndex: 'articleType',
-        render: (_: any) =>  {
-          return (
-            <div>
-              {Object.prototype.hasOwnProperty.call(articleTypes, _) ? articleTypes[_] : '--' }
-            </div>
-          )
-        },
-        width: 50,
+      width: 50,
+    },
+    {
+      title: '发布服务号',
+      dataIndex: 'serviceAccountName',
+      render: (_: any[]) => _ || '--',
+      width: 110,
+    },
+    {
+      title: '发布账号',
+      dataIndex: 'publisherName',
+      render: (_: any[]) => _ || '--',
+      width: 110,
+    },
+    {
+      title: '审核状态',
+      dataIndex: 'auditStatus',
+      width: 50,
+      render: (_: any[], record: any) => {
+        return (
+          <div>
+            {record.auditStatus === 2 && record.status === 0 && <div>已下架</div>}
+            {record.auditStatus === 2 && record.status === 1 && <div>通过</div>}
+            {record.auditStatus === 3 && <div>拒绝</div>}
+            {record.auditStatus === 1 && <div>待审核</div>}
+            {!record.auditStatus && <div>--</div>}
+          </div>
+        );
       },
-      {
-        title: '发布服务号',
-        dataIndex: 'serviceAccountName',
-        render: (_: any[]) => _ || '--',
-        width: 110,
-      },
-      {
-        title: '发布账号',
-        dataIndex: 'publisherName',
-        render: (_: any[]) => _ || '--',
-        width: 110,
-      },
-      {
-        title: '审核状态',
-        dataIndex: 'auditStatus',
-        width: 50,
-        render: (_: any[],record:any) => {
-          return(
-            <div>
-              {(record.auditStatus === 2&&record.status===0)&&<div>已下架</div>}
-             {(record.auditStatus === 2&&record.status===1)&&<div>通过</div>}
-             {(record.auditStatus === 3)&&<div>拒绝</div>}
-             {(record.auditStatus === 1)&&<div>待审核</div>}
-             {(!record.auditStatus)&&<div>--</div>}
-            </div>
-          )
-        },
-      },
-      {
-        title: '发布时间',
-        dataIndex: 'publishTime',
-        render: (_: string) => _ ? moment(_).format('YYYY-MM-DD HH:mm:ss') : '--',
-        width: 130,
-      },
-      {
-        title: '操作',
-        width: 80,
-        dataIndex: 'option',
-        fixed: 'right',
-        render: (_: any, record: any) => {
-          return (
-            <Space wrap>
-              {record?.auditStatus == 1 &&
-                <>
+    },
+    {
+      title: '发布时间',
+      dataIndex: 'publishTime',
+      render: (_: string) => (_ ? moment(_).format('YYYY-MM-DD HH:mm:ss') : '--'),
+      width: 130,
+    },
+    {
+      title: '操作',
+      width: 80,
+      dataIndex: 'option',
+      fixed: 'right',
+      render: (_: any, record: any) => {
+        return (
+          <Space wrap>
+            {record?.auditStatus == 1 && (
+              <>
+                <Button
+                  style={{ padding: 0 }}
+                  type="link"
+                  onClick={() => {
+                    handleAudit(record?.id.toString(), 2);
+                  }}
+                >
+                  通过
+                </Button>
+                <Access accessible={access['P_BLM_NRGL']}>
                   <Button
                     style={{ padding: 0 }}
                     type="link"
                     onClick={() => {
-                      handleAudit(record?.id.toString(), 2)
+                      handleAudit(record?.id.toString(), 3);
                     }}
                   >
-                    通过
+                    拒绝
                   </Button>
-                  <Access accessible={access['P_BLM_NRGL']}>
-                    <Button
-                      style={{ padding: 0 }}
-                      type="link"
-                      onClick={() => {
-                        handleAudit(record?.id.toString(), 3)
-                      }}
-                    >
-                      拒绝
-                    </Button>
-                  </Access>
-                </>
-              }
-            </Space>
-          )
-        },
+                </Access>
+              </>
+            )}
+          </Space>
+        );
       },
-    ].filter(p => p);
-    const formLayout = {
-        labelCol: { span: 6 },
-        wrapperCol: { span: 16 },
-      };
-    const addTypes = [
-        {
-          type: 'PICTURE_TEXT',
-          name: '图文',
-        },
-        {
-          type: 'PICTURE',
-          name: '图片',
-        },
-        {
-          type: 'TEXT',
-          name: '文字',
-        },
-        {
-          type: 'VIDEO',
-          name: '视频',
-        },
-        {
-          type: 'AUDIO',
-          name: '音频',
-        },
-      ];
-    const [searchForm] = Form.useForm();
+    },
+  ].filter((p) => p);
+  const formLayout = {
+    labelCol: { span: 6 },
+    wrapperCol: { span: 16 },
+  };
+  const addTypes = [
+    {
+      type: 'PICTURE_TEXT',
+      name: '图文',
+    },
+    {
+      type: 'PICTURE',
+      name: '图片',
+    },
+    {
+      type: 'TEXT',
+      name: '文字',
+    },
+    {
+      type: 'VIDEO',
+      name: '视频',
+    },
+    {
+      type: 'AUDIO',
+      name: '音频',
+    },
+  ];
+  const [searchForm] = Form.useForm();
 
-      // 搜索模块
+  // 搜索模块
   const useSearchNode = (): React.ReactNode => {
     return (
       <div className={sc('container-search')}>
@@ -232,12 +249,12 @@ export default(()=>{
           <Row>
             <Col span={8}>
               <Form.Item name="title" label="标题">
-                <Input placeholder="请输入" allowClear  autoComplete="off"/>
+                <Input placeholder="请输入" allowClear autoComplete="off" />
               </Form.Item>
             </Col>
             <Col span={8}>
               <Form.Item name="serviceAccountName" label="服务号名称">
-                <Input placeholder="请输入" allowClear  autoComplete="off" />
+                <Input placeholder="请输入" allowClear autoComplete="off" />
               </Form.Item>
             </Col>
             <Col span={8}>
@@ -246,18 +263,18 @@ export default(()=>{
                   <Select.Option value={0}>下架</Select.Option>
                   <Select.Option value={1}>上架</Select.Option>
                 </Select> */}
-                <Input placeholder="请输入" allowClear  autoComplete="off" />
+                <Input placeholder="请输入" allowClear autoComplete="off" />
               </Form.Item>
             </Col>
             <Col span={8}>
               <Form.Item name="time" label="时间范围">
-              <DatePicker.RangePicker allowClear showTime />
+                <DatePicker.RangePicker allowClear showTime />
               </Form.Item>
             </Col>
             <Col span={8}>
               <Form.Item name="articleType" label="内容类型">
                 <Select placeholder="请选择" allowClear>
-                {/* <Select.Option value={'PICTURE_TEXT'}>图文</Select.Option>
+                  {/* <Select.Option value={'PICTURE_TEXT'}>图文</Select.Option>
                 <Select.Option value={'PICTURE'}>图片</Select.Option>
                 <Select.Option value={'TEXT'}>文字</Select.Option>
                 <Select.Option value={'VIDEO'}>视频</Select.Option>
@@ -270,7 +287,7 @@ export default(()=>{
             </Col>
             <Col span={4} offset={4}>
               <Button
-                style={{ marginRight:'20px'}}
+                style={{ marginRight: '20px' }}
                 type="primary"
                 key="search"
                 onClick={() => {
@@ -281,7 +298,7 @@ export default(()=>{
                     delete search.time;
                   }
                   // 清空复选框
-                  setSelectedRowKeys([])
+                  setSelectedRowKeys([]);
                   setSearChContent(search);
                 }}
               >
@@ -292,7 +309,7 @@ export default(()=>{
                 onClick={() => {
                   searchForm.resetFields();
                   // 清空复选框
-                  setSelectedRowKeys([])
+                  setSelectedRowKeys([]);
                   setSearChContent({});
                 }}
               >
@@ -304,15 +321,13 @@ export default(()=>{
       </div>
     );
   };
- 
 
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
-    console.log('newSelectedRowKeys', newSelectedRowKeys)
     setSelectedRowKeys(newSelectedRowKeys);
   };
 
   // 批量按钮的状态
-  const [batchState, setBatchState] = useState<boolean>(true)
+  const [batchState, setBatchState] = useState<boolean>(true);
   const handleBatchCheck = (status: number) => {
     Modal.confirm({
       title: '提示',
@@ -324,46 +339,38 @@ export default(()=>{
           auditStatus: status,
         }).then((res) => {
           if (res?.code === 0) {
-            message.success(status === 2 ? '显示至推荐页面' : '未显示于推荐页面' )
+            message.success(status === 2 ? '显示至推荐页面' : '未显示于推荐页面');
             setTimeout(() => {
               getPage();
             }, 500);
           } else {
-            message.error(res?.message)
+            message.error(res?.message);
           }
-        })
-      }
-    })
-  }
+        });
+      },
+    });
+  };
 
   useEffect(() => {
-    if (selectedRowKeys.length  === 0) {
-      setBatchState(true)
+    if (selectedRowKeys.length === 0) {
+      setBatchState(true);
     } else {
-      setBatchState(false)
+      setBatchState(false);
     }
-  },[selectedRowKeys])
+  }, [selectedRowKeys]);
 
-    return(
-        <PageContainer  className={sc('container')}>
-              {useSearchNode()}
-              <div className={sc('container-table-body')}>
-              <div className={sc('container-table-header')}>
+  return (
+    <PageContainer className={sc('container')}>
+      {useSearchNode()}
+      <div className={sc('container-table-body')}>
+        <div className={sc('container-table-header')}>
           <div>
             <Button
               disabled={batchState}
               type="primary"
               key="pass"
               onClick={() => {
-                handleBatchCheck(2)
-                // Modal.confirm({
-                //   title: '提示',
-                //   content: '确定批量通过同步至产业圈',
-                //   okText: '确定',
-                //   onOk: () => {
-                //     handleBatchCheck()
-                //   },
-                // })
+                handleBatchCheck(2);
               }}
             >
               批量通过
@@ -374,23 +381,14 @@ export default(()=>{
               type="primary"
               key="reject"
               onClick={() => {
-                handleBatchCheck(3)
-                // Modal.confirm({
-                //   title: '提示',
-                //   content: '确定批量拒绝同步至产业圈',
-                //   okText: '确定',
-                //   onOk: () => {
-                //     console.log('拒绝');
-                    
-                //   },
-                // })
+                handleBatchCheck(3);
               }}
             >
               批量拒绝
             </Button>
           </div>
-      </div>
-              <SelfTable
+        </div>
+        <SelfTable
           loading={loading}
           bordered
           scroll={{ x: 1580 }}
@@ -406,16 +404,16 @@ export default(()=>{
             pageInfo.totalCount === 0
               ? false
               : {
-                onChange: getPage,
-                total: pageInfo.totalCount,
-                current: pageInfo.pageIndex,
-                pageSize: pageInfo.pageSize,
-                showTotal: (total: number) =>
-                  `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
-              }
+                  onChange: getPage,
+                  total: pageInfo.totalCount,
+                  current: pageInfo.pageIndex,
+                  pageSize: pageInfo.pageSize,
+                  showTotal: (total: number) =>
+                    `共${total}条记录 第${pageInfo.pageIndex}/${pageInfo.pageTotal || 1}页`,
+                }
           }
         />
-        </div>
-        </PageContainer>
-    )
-})
+      </div>
+    </PageContainer>
+  );
+};
