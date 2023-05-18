@@ -1,10 +1,12 @@
-import { useState, useImperativeHandle, forwardRef } from 'react';
-import { Modal, Radio, Input, Form } from 'antd';
+import { useState, useImperativeHandle, forwardRef, useEffect } from 'react';
+import { Modal, Radio, Input, Form, Cascader, Row, Col } from 'antd';
+import { getAreaCode } from '@/services/business-channel';
 
 
 const UploadModal = forwardRef((props: any, ref: any) => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [auditStatus, setAuditStatus] = useState<number>(0)
+  const [areaOptions, setAreaOptions] = useState<any>([])
   const [activeTab, setActiveTab] = useState<number>(0)
   const [infoList, setInfoList] = useState<any>([])
   const [form] = Form.useForm()
@@ -45,6 +47,14 @@ const UploadModal = forwardRef((props: any, ref: any) => {
       setInfoList(list)
     }
   }))
+  useEffect(() => {
+    getAreaCode({parentCode: 340000}).then((res: any) => {
+      console.log(res, '00000')
+      if (res.code === 0){
+        setAreaOptions(res.result)
+      }
+    })
+  }, [])
   const handleSubmit = async () => {
     await form.validateFields()
   }
@@ -110,14 +120,16 @@ const UploadModal = forwardRef((props: any, ref: any) => {
               [1,2,3,4,5,6].map(() => {
                 return (
                   <div className="follow-up-list-item">
-                    <div className="time">
-                      4月10日 16:20
-                    </div>
-                    <div className="name">
-                      Admin
-                    </div>
-                    <div className="location">
-                      定位：蚌埠高新区望江西路666号
+                    <div className="list-item-left">
+                      <div className="time">
+                        4月10日 16:20
+                      </div>
+                      <div className="name">
+                        Admin
+                      </div>
+                      <div className="location">
+                        定位：蚌埠高新区望江西路666号
+                      </div>
                     </div>
                     <div className="detail-btn">查看详情</div>
                   </div>
@@ -126,7 +138,7 @@ const UploadModal = forwardRef((props: any, ref: any) => {
             }
           </div>
       }
-      <div className="operation-area">
+      <div className="audit-operation-area">
         <Form form={form}>
           <Form.Item initialValue={0} name="auditStatus">
             <Radio.Group
@@ -144,6 +156,43 @@ const UploadModal = forwardRef((props: any, ref: any) => {
             }
           >
             <Input.TextArea maxLength={300} placeholder={auditStatus === 0 ? "备注信息" : "请简要描述驱回事由，字数不少于10字。"} />
+          </Form.Item>
+        </Form>
+      </div>
+      <div className="distribute-operation-area">
+        <Form form={form}>
+          <Form.Item label="渠道商名称">
+            <Row>
+              <Col span={8}>
+                <Form.Item
+                  name="area"
+                >
+                  <Cascader allowClear fieldNames={{ label: 'name', value: 'code', children: 'childList' }} placeholder="请选择" options={areaOptions} />
+                </Form.Item>
+              </Col>
+              <Col span={8} offset={1}>
+                <Form.Item
+                  name="name"
+                >
+                  <Cascader
+                    allowClear
+                    fieldNames={{ label: 'name', value: 'code', children: 'childList' }}
+                    placeholder="请选择"
+                    showSearch
+                    onSearch={(value) => {
+                      console.log(value)
+                    }}
+                    options={
+                      [
+                        {name: '123123    历史渠道商', code: '1', disabled: true},
+                        {name: '123123    历史渠道商', code: '2', disabled: true},
+                        {name: '123123    历史渠道商', code: '3', disabled: true}
+                      ]
+                    }
+                  />
+                </Form.Item>
+              </Col>
+            </Row>
           </Form.Item>
         </Form>
       </div>

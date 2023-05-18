@@ -302,6 +302,11 @@
   DATA_CENTER: '/data-center', // 数据中心
   TOOLKIT_ORDER_MONITORING: '/data-center/toolkit-order_monitoring', //工具包订单监控
   BASELINE_VERSION_UPDATING_MANAGE: '/baseline/version-updating', // 版本更新管理
+
+  // 商机渠道管理
+  BUSINESS_CHANNEL: '/business-channel',
+  BUSINESS_CHANNEL_FOLLOW_UP_DETAIL: '/business-channel/follow-up-detail', // 跟进记录详情
+  BUSINESS_CHANNEL_OPPORTUNITY: '/business-channel/opportunity', // 商机池
 };
 
 export default [
@@ -2765,22 +2770,30 @@ export default [
     ],
   },
   {
-    path: '/business-channel',
+    path: routeName.BUSINESS_CHANNEL,
     access: 'M_SJ_DR',
     name: '商机/渠道管理',
     icon: 'hdd',
     routes: [
       {
-        path: '/business-channel',
+        path: routeName.BUSINESS_CHANNEL,
         access: 'M_SJ_DR',
         redirect: '/business-channel/opportunity',
       },
       {
-        path: '/business-channel/opportunity',
+        path: routeName.BUSINESS_CHANNEL_OPPORTUNITY,
         code: 'M_SJ_DR',
         access: 'M_SJ_DR',
         name: '商机池',
         component: './business_channel/opportunity/index',
+      },
+      {
+        path: routeName.BUSINESS_CHANNEL_FOLLOW_UP_DETAIL,
+        code: 'M_SJ_DR',
+        access: 'M_SJ_DR',
+        name: '记录详情',
+        hideInMenu: true,
+        component: './business_channel/opportunity/follow-up-detail/index',
       }
     ],
   },

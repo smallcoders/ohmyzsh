@@ -216,6 +216,90 @@ export default () => {
     },
   ]
 
+  const distributeColumns = [
+    {
+      title: '商机编号',
+      dataIndex: 'advertiseName',
+      width: 150,
+      render: (advertiseName: string) => {
+        return <span>{advertiseName || '--'}</span>
+      }
+    },
+    {
+      title: '商机名称',
+      dataIndex: 'advertiseName',
+      width: 150,
+      render: (advertiseName: string) => {
+        return <span>{advertiseName || '--'}</span>
+      }
+    },
+    {
+      title: '商机来源',
+      dataIndex: 'advertiseName',
+      width: 150,
+      render: (advertiseName: string) => {
+        return <span>{advertiseName || '--'}</span>
+      }
+    },
+    {
+      title: '商机类型',
+      dataIndex: 'advertiseName',
+      width: 150,
+      render: (advertiseName: string) => {
+        return <span>{advertiseName || '--'}</span>
+      }
+    },
+    {
+      title: '关联企业',
+      dataIndex: 'advertiseName',
+      width: 150,
+      render: (advertiseName: string) => {
+        return <span>{advertiseName || '--'}</span>
+      }
+    },
+    {
+      title: '企业所属地区',
+      dataIndex: 'advertiseName',
+      width: 150,
+      render: (advertiseName: string) => {
+        return <span>{advertiseName || '--'}</span>
+      }
+    },
+    {
+      title: '审核时间',
+      dataIndex: 'creatTime',
+      width: 200,
+      render: (updateTime: string) => {
+        return (
+          <>
+            {updateTime ? moment(updateTime).format('YYYY-MM-DD HH:mm:ss') : '--'}
+          </>
+        )
+      },
+    },
+    {
+      title: '操作',
+      hideInSearch: true,
+      width: 200,
+      render: (_: any, record: any) => {
+        return (
+          <>
+            <Access accessible={access['PU_BLAM_QJXFGG']}>
+              <Button
+                size="small"
+                type="link"
+                onClick={() => {
+                  console.log(record)
+                }}
+              >
+                分发
+              </Button>
+            </Access>
+          </>
+        )
+      },
+    },
+  ]
   useEffect(() => {
     getAreaCode({parentCode: 340000}).then((res: any) => {
       console.log(res, '00000')
@@ -366,7 +450,7 @@ export default () => {
         <SelfTable
           bordered
           loading={loading}
-          columns={activeTab === 0 ? recordColumns : auditColumns}
+          columns={activeTab === 0 ? recordColumns : activeTab === 1 ? auditColumns : distributeColumns}
           dataSource={[]}
           pagination={
             pageInfo.totalCount === 0
