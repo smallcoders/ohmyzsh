@@ -83,6 +83,10 @@ export default () => {
     });
   };
 
+  useEffect(() => {
+    console.log('access', access['PU_BLM_FWHNRGL']);
+  }, [access]);
+
   const columns = [
     {
       title: '序号',
@@ -162,7 +166,7 @@ export default () => {
       render: (_: string) => (_ ? moment(_).format('YYYY-MM-DD HH:mm:ss') : '--'),
       width: 130,
     },
-    {
+    access?.['PU_BLM_FWHNRGL'] && {
       title: '操作',
       width: 80,
       dataIndex: 'option',
@@ -384,11 +388,13 @@ export default () => {
           loading={loading}
           bordered
           scroll={{ x: 1580 }}
-          rowSelection={{
-            fixed: true,
-            selectedRowKeys,
-            onChange: onSelectChange,
-          }}
+          rowSelection={
+            access?.['PU_BLM_FWHNRGL'] && {
+              fixed: true,
+              selectedRowKeys,
+              onChange: onSelectChange,
+            }
+          }
           rowKey={'id'}
           columns={columns}
           dataSource={dataSource}
