@@ -8,13 +8,13 @@ const sc = scopedClasses('service-content-manage')
 import moment from 'moment';
 import './index.less'
 import { routeName } from '../../../../config/routes';
-import {queryServiceArticlePage} from '@/services/baseline'
+import { queryServiceArticlePage, httpArticleAudit, httpArticleBatchAudit } from '@/services/baseline'
 import type Common from '@/types/common';
 
 const articleTypes = {
   PICTURE_TEXT: '图文',
   PICTURE: '图片',
-  TEXT: '文本',
+  TEXT: '文字',
   VIDEO: '视频',
   AUDIO: '音频'
 }
@@ -56,6 +56,41 @@ export default(()=>{
     useEffect(() => {
       getPage();
     }, [searchContent]);
+
+    const _httpArticleAudit = async (id: string, auditStatus: number) => {
+      try {
+        const res = await httpArticleAudit({id, auditStatus})
+        if (res?.code === 0) {
+          message.success(auditStatus === 2 ? '显示至推荐页面' : '未显示于推荐页面' )
+          getPage();
+        } else {
+          message.error(res?.message)
+        }
+      } catch (error) {
+        message.error(error)
+      }
+    }
+
+    const handleAudit = (id: string, state: number) => {
+      Modal.confirm({
+        title: '提示',
+        content:  state === 2 ? '确定通过同步至产业圈？' : '确定拒绝同步至产业圈？',
+        okText: state === 2 ? '通过' : '拒绝',
+        onOk: () => {
+          httpArticleAudit({id, auditStatus: state}).then((res: any) => {
+            if (res?.code == 0) {
+              message.success(state === 2 ? '显示至推荐页面' : '未显示于推荐页面' )
+              setTimeout(() => {
+                getPage();
+              }, 500);
+            } else {
+              message.error(res?.message)
+            }
+          })
+        }
+      })
+    }
+
     const columns = [
       {
         title: '序号',
@@ -138,6 +173,7 @@ export default(()=>{
                     style={{ padding: 0 }}
                     type="link"
                     onClick={() => {
+                      handleAudit(record?.id.toString(), 2)
                     }}
                   >
                     通过
@@ -147,11 +183,7 @@ export default(()=>{
                       style={{ padding: 0 }}
                       type="link"
                       onClick={() => {
-                        Modal.confirm({
-                          title: '提示',
-                          content: '确定将内容下架？',
-                          okText: '下架'
-                        })
+                        handleAudit(record?.id.toString(), 3)
                       }}
                     >
                       拒绝
@@ -210,10 +242,11 @@ export default(()=>{
             </Col>
             <Col span={8}>
               <Form.Item name="publisherName" label="发布账号">
-                <Select placeholder="请选择" allowClear >
+                {/* <Select placeholder="请选择" allowClear >
                   <Select.Option value={0}>下架</Select.Option>
                   <Select.Option value={1}>上架</Select.Option>
-                </Select>
+                </Select> */}
+                <Input placeholder="请输入" allowClear  autoComplete="off" />
               </Form.Item>
             </Col>
             <Col span={8}>
@@ -242,9 +275,13 @@ export default(()=>{
                 key="search"
                 onClick={() => {
                   const search = searchForm.getFieldsValue();
-                  search.publishStartTime = moment(search.time[0]).format('YYYY-MM-DD HH:mm:ss');
-                  search.endTpublishEndTime = moment(search.time[1]).format('YYYY-MM-DD HH:mm:ss');
-                  delete search.time;
+                  if (search.time) {
+                    search.publishStartTime = moment(search.time[0]).valueOf();
+                    search.publishEndTime = moment(search.time[1]).valueOf();
+                    delete search.time;
+                  }
+                  // 清空复选框
+                  setSelectedRowKeys([])
                   setSearChContent(search);
                 }}
               >
@@ -254,6 +291,8 @@ export default(()=>{
                 key="reset"
                 onClick={() => {
                   searchForm.resetFields();
+                  // 清空复选框
+                  setSelectedRowKeys([])
                   setSearChContent({});
                 }}
               >
@@ -268,8 +307,43 @@ export default(()=>{
  
 
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
+    console.log('newSelectedRowKeys', newSelectedRowKeys)
     setSelectedRowKeys(newSelectedRowKeys);
   };
+
+  // 批量按钮的状态
+  const [batchState, setBatchState] = useState<boolean>(true)
+  const handleBatchCheck = (status: number) => {
+    Modal.confirm({
+      title: '提示',
+      content: status === 2 ? '确定批量通过同步至产业圈' : '确定批量拒绝同步至产业圈',
+      okText: '确定',
+      onOk: () => {
+        httpArticleBatchAudit({
+          articleIds: selectedRowKeys,
+          auditStatus: status,
+        }).then((res) => {
+          if (res?.code === 0) {
+            message.success(status === 2 ? '显示至推荐页面' : '未显示于推荐页面' )
+            setTimeout(() => {
+              getPage();
+            }, 500);
+          } else {
+            message.error(res?.message)
+          }
+        })
+      }
+    })
+  }
+
+  useEffect(() => {
+    if (selectedRowKeys.length  === 0) {
+      setBatchState(true)
+    } else {
+      setBatchState(false)
+    }
+  },[selectedRowKeys])
+
     return(
         <PageContainer  className={sc('container')}>
               {useSearchNode()}
@@ -277,35 +351,39 @@ export default(()=>{
               <div className={sc('container-table-header')}>
           <div>
             <Button
+              disabled={batchState}
               type="primary"
               key="pass"
               onClick={() => {
-                Modal.confirm({
-                  title: '提示',
-                  content: '确定批量通过同步至产业圈',
-                  okText: '确定',
-                  onOk: () => {
-                    console.log('通过');
-                  },
-                })
+                handleBatchCheck(2)
+                // Modal.confirm({
+                //   title: '提示',
+                //   content: '确定批量通过同步至产业圈',
+                //   okText: '确定',
+                //   onOk: () => {
+                //     handleBatchCheck()
+                //   },
+                // })
               }}
             >
               批量通过
             </Button>
             <Button
+              disabled={batchState}
               style={{ marginLeft: '10px' }}
               type="primary"
               key="reject"
               onClick={() => {
-                Modal.confirm({
-                  title: '提示',
-                  content: '确定批量拒绝同步至产业圈',
-                  okText: '确定',
-                  onOk: () => {
-                    console.log('拒绝');
+                handleBatchCheck(3)
+                // Modal.confirm({
+                //   title: '提示',
+                //   content: '确定批量拒绝同步至产业圈',
+                //   okText: '确定',
+                //   onOk: () => {
+                //     console.log('拒绝');
                     
-                  },
-                })
+                //   },
+                // })
               }}
             >
               批量拒绝

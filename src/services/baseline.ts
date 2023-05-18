@@ -396,3 +396,24 @@ export async function queryServiceArticlePage(data?: Record<string, any>) {
     data,
   });
 }
+
+// 单个审核接口
+export async function httpArticleAudit(data: {
+  id: string,
+  auditStatus: number // 	审核状态：2：审核通过，3：审核不通过
+}) {
+  return request(`/antelope-industrial/mng/service/article/audit/${data?.id}/${data?.auditStatus}`, {
+    method: 'post',
+  })
+}
+
+// 批量审核接口
+export async function httpArticleBatchAudit(data: {
+  articleIds: any[],
+  auditStatus: number // 审核状态：2：审核通过，3：审核不通过
+}) {
+  return request(`/antelope-industrial/mng/service/article/batch/audit`,{
+    method: 'post',
+    data,
+  })
+}
