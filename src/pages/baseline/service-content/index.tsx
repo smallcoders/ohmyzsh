@@ -35,6 +35,7 @@ export default () => {
   });
   const access: any = useAccess();
   const getPage = async (pageIndex: number = 1, pageSize = pageInfo.pageSize) => {
+    console.log('翻页', pageIndex, pageSize)
     setLoading(true);
     try {
       const [res1] = await Promise.all([
@@ -314,9 +315,37 @@ export default () => {
     );
   };
 
-  const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
-    setSelectedRowKeys(newSelectedRowKeys);
-  };
+  // 用户手动选择
+  const handleOnSelect = (record: React.Key[], selected: any[]) => {
+    console.log('用户手动选择单个record', record)
+    console.log('用户手动选择单个selected', selected)
+    let keys = [...selectedRowKeys]
+    if (selected) {
+      keys = [...selectedRowKeys, record?.id]
+    } else {
+      keys = selectedRowKeys.filter((item) => item !== record.id)
+    }
+    setSelectedRowKeys(keys)
+  }
+  // 用户手动选择所有回调
+  const handleOnSelectAll = (selected: any, selectedRows: any[], changeRows: any) => {
+    console.log('选择全部selected', selected)
+    console.log('选择全部selectedRows', selectedRows)
+    console.log('选择全部changeRows', changeRows)
+    if (selected) {
+      const addCheckedKeys = changeRows.map((item: any) => {
+        return item?.id
+      })
+      setSelectedRowKeys([...selectedRowKeys, ...addCheckedKeys])
+    } else {
+      const subCheckedKeys = selectedRowKeys.filter((id) => {
+        return !changeRows.some((item: any) => {
+          return item.id === id
+        })
+      })
+      setSelectedRowKeys(subCheckedKeys)
+    }
+  }
 
   // 批量按钮的状态
   const [batchState, setBatchState] = useState<boolean>(true);
@@ -392,7 +421,8 @@ export default () => {
             access?.['PU_BLM_FWHNRGL'] && {
               fixed: true,
               selectedRowKeys,
-              onChange: onSelectChange,
+              onSelectAll: handleOnSelectAll,
+              onSelect: handleOnSelect
             }
           }
           rowKey={'id'}
