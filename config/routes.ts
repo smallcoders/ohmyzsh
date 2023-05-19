@@ -2781,6 +2781,13 @@ export default [
         access: 'M_SJ_DR',
         name: '商机池',
         component: './business_channel/opportunity/index',
+      },
+      {
+        path: '/business-channel/pool',
+        code: 'M_SJ_DR',
+        access: 'M_SJ_DR',
+        name: '渠道商池',
+        component: './business_channel/pool/index'
       }
     ],
   },
