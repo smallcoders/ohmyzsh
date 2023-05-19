@@ -54,7 +54,7 @@ type RouterParams = {
 };
 export default () => {
   // 是否展示发布按钮， 只有暂存成功才展示发布按钮， 且内容更新，要关闭发布按钮。再次暂存成功，展示发布按钮
-  const [showPublish, setShowPublish] = useState<boolean>(false)
+  const [showPublish, setShowPublish] = useState<boolean>(false);
   // 模态框的状态
   const [visibleAdd, setVisibleAdd] = useState<boolean>(false);
   const [visible, setVisible] = useState<boolean>(false);
@@ -115,7 +115,15 @@ export default () => {
   const [activeTitle, setActiveTitle] = useState<any>('新增');
 
   // 根据路由获取参数
-  const { type, state = 'tuwen', id, name = '', backid, backname, activeTab } = history.location.query as RouterParams;
+  const {
+    type,
+    state = 'tuwen',
+    id,
+    name = '',
+    backid,
+    backname,
+    activeTab,
+  } = history.location.query as RouterParams;
 
   const perpaer = async (id?: string) => {
     if (!id) return;
@@ -184,7 +192,6 @@ export default () => {
 
         // 结尾处，搜集所有的表单信息
         // 当点击返回是，校验所有的表单信息是否 全等, 如果有一个不全等  提示数据未保存
-
       } else {
         throw new Error('');
       }
@@ -216,7 +223,7 @@ export default () => {
       perpaer(id);
     }
     if (type === 'add' && id) {
-      detail(id)
+      detail(id);
     }
   }, []);
 
@@ -243,9 +250,9 @@ export default () => {
     <div className={sc('container-left-top-content')}>
       <div className={sc('container-left-top-content-title')}>内容信息</div>
       <div className={sc('container-left-top-content-form')}>
-        <Form 
-          {...formLayout} 
-          form={contentInfoForm} 
+        <Form
+          {...formLayout}
+          form={contentInfoForm}
           validateTrigger={['onBlur']}
           onValuesChange={() => {
             setContentInfoFormChange(true);
@@ -279,12 +286,12 @@ export default () => {
               setValue={(e) => coverOnChange(e)}
               setValueId={(e) => coverOnChangeId(e)}
               // imgCropAccept={16/9}
-              imgCropAccept={343/144}
+              imgCropAccept={343 / 144}
             />
           </Form.Item>
           <Form.Item label="内容" name="content" rules={[{ required: true, message: '请输入' }]}>
-            <FormEdit 
-              width="100%" 
+            <FormEdit
+              width="100%"
               selfToolbar={[
                 'heading',
                 '|',
@@ -299,7 +306,7 @@ export default () => {
                 '|',
                 'blockQuote',
                 'insertTable',
-              ]} 
+              ]}
             />
           </Form.Item>
         </Form>
@@ -311,10 +318,10 @@ export default () => {
     <div className={sc('container-left-top-content')}>
       <div className={sc('container-left-top-content-title')}>内容信息</div>
       <div className={sc('container-left-top-content-form')}>
-        <Form 
-          {...formLayout} 
-          form={contentInfoForm} 
-          validateTrigger={['onBlur']} 
+        <Form
+          {...formLayout}
+          form={contentInfoForm}
+          validateTrigger={['onBlur']}
           onValuesChange={() => {
             setContentInfoFormChange(true);
             setShowPublish(false);
@@ -351,7 +358,7 @@ export default () => {
               // shape={false}
               setValue={(e) => coverOnChange(e)}
               setValueId={(e) => coverOnChangeId(e)}
-              imgCropAccept={343/144}
+              imgCropAccept={343 / 144}
             />
           </Form.Item>
           {/* 多张上传 */}
@@ -393,9 +400,9 @@ export default () => {
     <div className={sc('container-left-top-content')}>
       <div className={sc('container-left-top-content-title')}>内容信息</div>
       <div className={sc('container-left-top-content-form')}>
-        <Form 
-          {...formLayout} 
-          form={contentInfoForm} 
+        <Form
+          {...formLayout}
+          form={contentInfoForm}
           validateTrigger={['onBlur']}
           onValuesChange={() => {
             setContentInfoFormChange(true);
@@ -418,9 +425,9 @@ export default () => {
     <div className={sc('container-left-top-content')}>
       <div className={sc('container-left-top-content-title')}>内容信息</div>
       <div className={sc('container-left-top-content-form')}>
-        <Form 
-          {...formLayout} 
-          form={contentInfoForm} 
+        <Form
+          {...formLayout}
+          form={contentInfoForm}
           validateTrigger={['onBlur']}
           onValuesChange={() => {
             setContentInfoFormChange(true);
@@ -456,7 +463,7 @@ export default () => {
               // shape={false}
               setValue={(e) => coverOnChange(e)}
               setValueId={(e) => coverOnChangeId(e)}
-              imgCropAccept={343/144}
+              imgCropAccept={343 / 144}
             />
           </Form.Item>
           <Form.Item label="视频" name="attachmentId" rules={[{ required: true, message: '必填' }]}>
@@ -484,9 +491,9 @@ export default () => {
     <div className={sc('container-left-top-content')}>
       <div className={sc('container-left-top-content-title')}>内容信息</div>
       <div className={sc('container-left-top-content-form')}>
-        <Form 
-          {...formLayout} 
-          form={contentInfoForm} 
+        <Form
+          {...formLayout}
+          form={contentInfoForm}
           validateTrigger={['onBlur']}
           onValuesChange={() => {
             setContentInfoFormChange(true);
@@ -565,8 +572,8 @@ export default () => {
 
   const [isExporting, setIsExporting] = useState<boolean>(false);
   const onSubmitDebounce = debounce((value, back?) => {
-    onSubmit(value, back)
-  },1000);
+    onSubmit(value, back);
+  }, 1000);
   const onSubmit = async (statue: number, back?) => {
     if (statue === 1) {
       // 发布
@@ -583,17 +590,9 @@ export default () => {
             const res = await contentInfoHttp({
               ...formData,
               // 新增需要添加id
-              serviceAccountId: type === 'edit' 
-                ? undefined
-                : saveId 
-                  ? undefined
-                  : id,
+              serviceAccountId: type === 'edit' ? undefined : saveId ? undefined : id,
               // 编辑需要传id
-              id: type === 'edit' 
-                ? id 
-                : saveId 
-                  ? saveId
-                  :undefined,
+              id: type === 'edit' ? id : saveId ? saveId : undefined,
               // 裁切的封面图
               // coverId: Number(formData.coverId),
               coverId: imgUrlId,
@@ -612,7 +611,9 @@ export default () => {
               setIsClosejumpTooltip(false);
               setIsExporting(false);
               history.goBack();
-              history.push(`${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT}?id=${backid}&name=${backname}&activeTabValue=${activeTab}`);
+              history.push(
+                `${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT}?id=${backid}&name=${backname}&activeTabValue=${activeTab}`,
+              );
             } else {
               message.error(`发布失败，原因:{${res?.message}}`);
               setIsExporting(false);
@@ -665,7 +666,7 @@ export default () => {
             }
           }
           if (back) {
-            goBack()
+            goBack();
           }
         } else {
           message.error(`暂存失败，原因:{${res?.message}}`);
@@ -699,12 +700,13 @@ export default () => {
 
   const [isClosejumpTooltip, setIsClosejumpTooltip] = useState<boolean>(false);
 
-
   const goBack = () => {
     // 服务号管理
     if (activeTab) {
       // 如果是发布记录进入的这样返回
-      history.push(`${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT}?id=${backid}&name=${backname}&activeTabValue=${activeTab}`);
+      history.push(
+        `${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT}?id=${backid}&name=${backname}&activeTabValue=${activeTab}`,
+      );
     } else {
       history.goBack();
     }
@@ -713,9 +715,9 @@ export default () => {
 
   useEffect(() => {
     if (formPostMessageChange || contentInfoFormChange) {
-      setIsClosejumpTooltip(true)
+      setIsClosejumpTooltip(true);
     }
-  },[formPostMessageChange,contentInfoFormChange])
+  }, [formPostMessageChange, contentInfoFormChange]);
   return (
     <PageContainer
       loading={loading}
@@ -730,54 +732,113 @@ export default () => {
           </Breadcrumb>
         ),
       }}
-      footer={[
-        // access后端根据
-        // <Access accessible={access['PA_BLM_NRGL']}>
-        <React.Fragment>
-          {!isTry && (
-            <Popconfirm
-              title={
-                <div>
-                  <div>提示</div>
-                  <div>若设定预约发布，则会在设定的时间进行发布</div>
-                </div>
-              }
-              okText="发布"
-              cancelText="取消"
-              onConfirm={() => onSubmitDebounce(1)}
-            >
-              {/* <Button type="primary" htmlType="submit"  onClick={() => onSubmit(1)}> */}
-              {
-                showPublish && 
-                <Button disabled={isExporting} type="primary" htmlType="submit">
-                  发布
+      footer={
+        activeTab === '发布记录'
+          ? [
+              <React.Fragment>
+                {!isTry && (
+                  <Popconfirm
+                    title={
+                      <div>
+                        <div>提示</div>
+                        <div>若设定预约发布，则会在设定的时间进行发布</div>
+                      </div>
+                    }
+                    okText="发布"
+                    cancelText="取消"
+                    onConfirm={() => onSubmitDebounce(1)}
+                  >
+                    {
+                      <Button disabled={isExporting} type="primary" htmlType="submit">
+                        发布
+                      </Button>
+                    }
+                  </Popconfirm>
+                )}
+                {isTry && (
+                  <Button
+                    disabled={isExporting}
+                    type="primary"
+                    htmlType="submit"
+                    onClick={() => onSubmitDebounce(1)}
+                  >
+                    发布
+                  </Button>
+                )}
+              </React.Fragment>,
+              <Button
+                onClick={() => {
+                  if (contentInfoFormChange || formPostMessageChange) {
+                    // 如果是编辑的改变，如何区分一下
+                    setVisible(true);
+                  } else {
+                    // 就是返回
+                    goBack();
+                  }
+                }}
+              >
+                返回
+              </Button>,
+            ]
+          : [
+              // access后端根据
+              // <Access accessible={access['PA_BLM_NRGL']}>
+              <React.Fragment>
+                {!isTry && (
+                  <Popconfirm
+                    title={
+                      <div>
+                        <div>提示</div>
+                        <div>若设定预约发布，则会在设定的时间进行发布</div>
+                      </div>
+                    }
+                    okText="发布"
+                    cancelText="取消"
+                    onConfirm={() => onSubmitDebounce(1)}
+                  >
+                    {/* <Button type="primary" htmlType="submit"  onClick={() => onSubmit(1)}> */}
+                    {showPublish && (
+                      <Button disabled={isExporting} type="primary" htmlType="submit">
+                        发布
+                      </Button>
+                    )}
+                  </Popconfirm>
+                )}
+                {isTry && showPublish && (
+                  <Button
+                    disabled={isExporting}
+                    type="primary"
+                    htmlType="submit"
+                    onClick={() => onSubmitDebounce(1)}
+                  >
+                    发布
+                  </Button>
+                )}
+              </React.Fragment>,
+              // </Access>,
+              // <Access accessible={access['PA_BLM_NRGL']}>
+              <React.Fragment>
+                <Button disabled={isExporting} onClick={() => onSubmitDebounce(2)}>
+                  暂存
                 </Button>
-              }
-            </Popconfirm>
-          )}
-          {isTry && showPublish && (
-            <Button disabled={isExporting} type="primary" htmlType="submit" onClick={() => onSubmitDebounce(1)}>
-              发布
-            </Button>
-          )}
-        </React.Fragment>,
-        // </Access>,
-        // <Access accessible={access['PA_BLM_NRGL']}>
-        <React.Fragment>
-          <Button disabled={isExporting} onClick={() => onSubmitDebounce(2)}>暂存</Button>
-        </React.Fragment>,
-        // </Access>,
-        <Button onClick={() => {
-          if (contentInfoFormChange || formPostMessageChange) {
-            console.log('有改变')
-            // 如果是编辑的改变，如何区分一下
-            setVisible(true);
-          } else {
-            // 就是返回
-            goBack()
-          }
-        }}>返回</Button>,
-      ]}
+              </React.Fragment>,
+              // </Access>,
+              <Button
+                onClick={() => {
+                  if (contentInfoFormChange || formPostMessageChange) {
+                    console.log('有改变');
+                    // 如果是编辑的改变，如何区分一下
+                    setVisible(true);
+                  } else {
+                    // 就是返回
+                    goBack();
+                  }
+                }}
+              >
+                返回
+              </Button>,
+            ]
+      }
     >
       <Prompt
         when={isClosejumpTooltip}
@@ -789,9 +850,9 @@ export default () => {
           <div className={sc('container-left-bottom')}>
             <div className={sc('container-left-bottom-title')}>发布信息</div>
             <div className={sc('container-left-bottom-form')}>
-              <Form 
-                form={formPostMessage} 
-                {...formLayout} 
+              <Form
+                form={formPostMessage}
+                {...formLayout}
                 validateTrigger={['onBlur']}
                 onValuesChange={() => {
                   setFormPostMessageChange(true);
@@ -843,10 +904,7 @@ export default () => {
                 <div className={sc('container-right-serve-content-header-name')}>
                   {/* 服务号的名称再确定一下 */}
                   {/* {name || serveDetail.name || '服务号名称'} */}
-                  {name === 'null' 
-                    ? '' 
-                    : name || serveDetail.name || ''
-                  }
+                  {name === 'null' ? '' : name || serveDetail.name || ''}
                 </div>
               </div>
               {
@@ -923,7 +981,17 @@ export default () => {
                 // 如果是文字展示 文本内容
                 ['TEXT'].includes(state) && (
                   <div className={sc('container-right-serve-content-content')}>
-                    {contentInfoFormContent && <div>{<Input.TextArea value={contentInfoFormContent} autoSize={{ minRows: 3, maxRows: 5 }} maxLength={500} /> || '文本内容...'}</div>}
+                    {contentInfoFormContent && (
+                      <div>
+                        {(
+                          <Input.TextArea
+                            value={contentInfoFormContent}
+                            autoSize={{ minRows: 3, maxRows: 5 }}
+                            maxLength={500}
+                          />
+                        ) || '文本内容...'}
+                      </div>
+                    )}
                     {/* {contentInfoFormContent && <div>{contentInfoFormContent || '文本内容...'}</div>} */}
                   </div>
                 )
@@ -991,7 +1059,7 @@ export default () => {
             // key="submit"
             type="primary"
             onClick={() => {
-              goBack()
+              goBack();
             }}
           >
             直接离开
@@ -1000,7 +1068,7 @@ export default () => {
             // key="submit"
             type="primary"
             onClick={() => {
-              onSubmitDebounce(2,true)
+              onSubmitDebounce(2, true);
               // goBack()
             }}
           >
