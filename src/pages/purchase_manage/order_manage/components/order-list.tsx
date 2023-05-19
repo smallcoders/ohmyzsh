@@ -1,6 +1,6 @@
 import OrderManage from '@/types/order/order-manage';
 import { EditTwoTone, QuestionCircleOutlined } from '@ant-design/icons';
-import { Button, Empty, Input, InputNumber, message, Popconfirm, Radio, Tooltip } from 'antd';
+import { Button, Empty, Input, InputNumber, message, Popconfirm, Radio, Tooltip, Modal } from 'antd';
 import { useCallback, useRef, useState } from 'react';
 import { Access, useAccess } from 'umi';
 import { routeName } from '@/../config/routes';
@@ -8,6 +8,7 @@ import './index.less';
 import {
   cancelOrder,
   ensureShip,
+  applyRefund,
   getOrderLog,
   sendShip,
   updateOrderRemark,
@@ -70,6 +71,7 @@ export const ButtonManage = ({
   const [sendContent, setSendContent] = useState<number>(1);
   const [closeType, setCloseType] = useState<number>();
   const [closeContent, setCloseContent] = useState<string>('');
+  const [isShow, setIsShow] = useState<boolean>(false)
 
   const collection = async () => {
     const tooltipMessage = '确认收款';
@@ -106,6 +108,23 @@ export const ButtonManage = ({
       message.error(`${tooltipMessage}失败，原因:{${error}}`);
     }
   };
+
+  const applyReturn = async () => {
+    const tooltipMessage = '申请退货'
+    try {
+      const result = await applyRefund({
+        orderNo: record?.orderNo
+      })
+      if (result.code === 0) {
+        message.success(`${tooltipMessage}成功`)
+        callback()
+      } else {
+        throw new Error(result.message)
+      }
+    } catch (error) {
+      message.error(`${tooltipMessage}失败，原因:{${error}}`)
+    }
+  }
 
   const deliverGoods = async () => {
     const tooltipMessage = '发货';
@@ -269,6 +288,22 @@ export const ButtonManage = ({
             <Button type="link">发货</Button>
           </Popconfirm>
         </Access>
+      ),
+      10: (
+        <Popconfirm
+          icon={null}
+          title={
+            <div className="sending-confirm-modal">
+              <h3>确认退货</h3>
+              <span>退货后，货款将退回消费券余额中，应用将不可再使用</span>
+            </div>
+          }
+          okText="确定"
+          cancelText="取消"
+          onConfirm={() => applyReturn()}
+        >
+          <a>申请退货</a>
+        </Popconfirm>
       ),
     }[type] || <span />
   );
