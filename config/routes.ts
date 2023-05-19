@@ -2789,7 +2789,7 @@ export default [
         component: './business_channel/opportunity/index',
       },
       {
-        path: '/business-channel/pool',
+        path: routeName.BUSINESS_CHANNEL_POOL,
         code: 'M_SJ_DR',
         access: 'M_SJ_DR',
         name: '渠道商池',

@@ -4,40 +4,41 @@ import React, { useState, useRef, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { ModalForm, ProFormText, ProFormSelect, ProFormSwitch, ProFormDigit } from '@ant-design/pro-form';
+import { ModalForm, ProFormText, ProFormSelect,ProFormCascader, ProFormSwitch, ProFormDigit } from '@ant-design/pro-form';
 import {
-  pageQuery,
-  addAccount,
-  updateAccount,
   deleteAccount,
   resetPassword,
-  getUapDefaultPwd,
 } from '@/services/account';
+import {
+  getCities,
+  queryChannelBusiness,
+  queryOrgList,
+  AddChannelBusiness,
+  UpdateChannelBusiness
+} from '@/services/business-pool'
 import type BusinessPool from '@/types/business-pool';
 import type Common from '@/types/common';
-import { decryptWithAES } from '@/utils/crypto';
 import style  from './index.less'
-
-// 是否为管理员
-const isAdmin = (type: string) => type === 'MANAGER_ADMIN';
 
 const AccountTable: React.FC = () => {
   const [createModalVisible, setCreateModalVisible] = useState<boolean>(false);
   const [updateModalVisible, setUpdateModalVisible] = useState<boolean>(false);
   const [currentRow, setCurrentRow] = useState<BusinessPool.TableFrom>();
+  const [provinceData, setProvinceData ]= useState<any>()
   const actionRef = useRef<ActionType>();
-  const defaultPwdRef = useRef<string>('');
   const paginationRef = useRef<any>();
+  const [orgListOptions, setOrgListOptions] = useState([])
+  const [fetching, setFetching] = useState(false);
 
-  /**
-   * 查询默认密码
-   */
+
   useEffect(() => {
-    getUapDefaultPwd().then((json) => {
-      console.log(json);
-      defaultPwdRef.current = decryptWithAES(json.result);
-    });
-  }, []);
+    getCities(340000).then((res) => {
+      console.log('res =>', res)
+      if (res.code === 0) {
+        setProvinceData(res.result)
+      }
+    })
+  }, [])
 
   /**
    * 新增或修改
@@ -47,8 +48,8 @@ const AccountTable: React.FC = () => {
   const handleSave = async (isAdd: boolean, fields: BusinessPool.SaveAccountRequest) => {
     try {
       const result: Common.ResultCode = isAdd
-        ? await addAccount(fields)
-        : await updateAccount(fields);
+        ? await AddChannelBusiness(fields)
+        : await UpdateChannelBusiness(fields);
       if (result.code === 0) {
         message.success(`${isAdd ? '添加' : '修改'}账号成功`);
         const { reset, reload } = actionRef.current || {};
@@ -109,28 +110,45 @@ const AccountTable: React.FC = () => {
       ellipsis: true,
       width: 250,
       hideInSearch: true,
-      render: (_, record) => <span className={record.status === '0' ? 'text' : 'text'}>{_}</span>
+      render: (_, record) => <span className={record.status === 1 ? 'text cursor' : 'normal cursor'}>{_}</span>
     },
     {
       title: '渠道商人数',
       dataIndex: 'name',
       width: 150,
       hideInSearch: true,
+      render: (_, record) => <span className={record.status === 1 ? 'text' : ''}>{_}</span>
     },
     {
       title: '商机承载量',
-      dataIndex: 'business',
+      dataIndex: 'maxTaskSize',
       width: 150,
       hideInSearch: true,
+      render: (_, record) => <span className={record.status === 1 ? 'text' : ''}>{_}</span>
     },
     {
       title: '承接区域',
       dataIndex: 'serviceArea',
       width: 350,
       ellipsis: true,
+      render: (_, record) => <span className={record.status === 1 ? 'text' : ''}>{_}</span>,
       valueType: 'cascader',
       fieldProps: {
-        placeholder: '请选择区域'
+        placeholder: '请选择区域',
+        displayRender: (label, options) => {
+          // @ts-ignore
+          const [v1, v2] = options
+          return `${v1.name}/${v2.name}`
+        },
+        showCheckedStrategy: 'SHOW_CHILD',
+        options: provinceData,
+        multiple: true,
+        maxTagCount: 'responsive',
+        fieldNames: {
+          children: 'nodes',
+          label: 'name',
+          value: 'code'
+        },
       }
     },
     {
@@ -146,11 +164,11 @@ const AccountTable: React.FC = () => {
           },
           {
             label: '启用',
-            value: '1'
+            value: 0
           },
           {
             label: '禁用',
-            value: '0'
+            value: 1
           }
         ]
       },
@@ -167,10 +185,11 @@ const AccountTable: React.FC = () => {
     },
     {
       title: '管理员名称',
-      dataIndex: 'channelName',
+      dataIndex: 'adminName',
       width: 250,
       valueType: 'textarea',
       hideInSearch: true,
+      render: (_, record) => <span className={record.status === 1 ? 'text' : ''}>{_}</span>
     },
     {
       title: '联系方式',
@@ -178,6 +197,7 @@ const AccountTable: React.FC = () => {
       width: 150,
       valueType: 'textarea',
       hideInSearch: true,
+      render: (_, record) => <span className={record.status === 1 ? 'text' : ''}>{_}</span>
     },
     {
       title: '加入时间',
@@ -185,6 +205,7 @@ const AccountTable: React.FC = () => {
       width: 250,
       valueType: 'textarea',
       hideInSearch: true,
+      render: (_, record) => <span className={record.status === 1 ? 'text' : ''}>{_}</span>
     },
     {
       title: '操作',
@@ -196,7 +217,6 @@ const AccountTable: React.FC = () => {
           key="2"
           size="small"
           type="link"
-          disabled={isAdmin(record.type)}
           onClick={() => {
             setCurrentRow(record);
             setUpdateModalVisible(true);
@@ -211,9 +231,8 @@ const AccountTable: React.FC = () => {
           cancelText="取消"
           placement="bottomRight"
           onConfirm={() => handleModify(true, record.id)}
-          disabled={isAdmin(record.type)}
         >
-          <Button size="small" type="link" disabled={isAdmin(record.type)}>
+          <Button size="small" type="link">
             禁用
           </Button>
         </Popconfirm>,
@@ -231,21 +250,58 @@ const AccountTable: React.FC = () => {
           labelCol={{ span: 6 }}
           visible={createModalVisible}
           onVisibleChange={setCreateModalVisible}
-          onFinish={async (value) => await handleSave(true, value as BusinessPool.SaveAccountRequest)}
+          onFinish={async (value) => {
+            const { serviceArea, channelName, maxTaskSize } = value
+            const [serviceName, serviceCode] = handleArea(serviceArea, provinceData)
+            const { id, phone, scale, legalName  } = channelName
+            await handleSave(true, {serviceName, serviceCode, maxTaskSize, contactPhone: phone, adminName: legalName,channelBusinessNum: scale, id  } as BusinessPool.SaveAccountRequest)
+          }}
         >
-          <ProFormText
-            rules={[{ required: true }, { type: 'string', max: 35 }]}
+          <ProFormSelect
+            rules={[{ required: true }]}
             width="lg"
             name="channelName"
             label="渠道商名称"
+            debounceTime={300}
+            options={[]}
+            showSearch
+            request={async ({keyWords}) => await queryOrgList(keyWords).then((res) => {
+              if (res.code !== 0) return []
+              return res.result
+            })}
+            fieldProps={{
+              fieldNames: {
+                label: 'orgName',
+                value: 'id'
+              },
+              labelInValue: true
+            }}
           />
-          <ProFormText
-            rules={[{ required: true }, { type: 'string', max: 35 }]}
+          <ProFormCascader
+            rules={[{ required: true }]}
             width="lg"
             name="serviceArea"
             label="承接商机的区域"
+            fieldProps={{
+              placeholder: '请选择区域',
+              displayRender: (label, options) => {
+                // @ts-ignore
+                const [v1, v2] = options
+                return `${v1.name}/${v2.name}`
+              },
+              showCheckedStrategy: 'SHOW_CHILD',
+              options: provinceData,
+              multiple: true,
+              maxTagCount: 'responsive',
+              fieldNames: {
+                children: 'nodes',
+                label: 'name',
+                value: 'code'
+              }}
+            }
           />
           <ProFormDigit
+            rules={[{ required: true }]}
             min={0}
             max={1000}
             fieldProps={{
@@ -272,6 +328,7 @@ const AccountTable: React.FC = () => {
           onVisibleChange={setUpdateModalVisible}
           initialValues={{ loginName, name, roleIds: roles ? roles?.map((item: any) => item?.id) : [], phone }}
           onFinish={async (value) =>
+
             await handleSave(false, { ...value, id } as BusinessPool.SaveAccountRequest)
           }
         >
@@ -303,9 +360,28 @@ const AccountTable: React.FC = () => {
           </Button>
         ]}
         request={async (pagination) => {
-          const result = await pageQuery(pagination);
+          const { serviceArea } = pagination
+          const [serviceName, serviceCode] = handleArea(serviceArea, provinceData)
+          const params = {
+            pageIndex: pagination.current,
+            serviceName,
+            serviceCode,
+            ...pagination,
+            keywords: pagination.keywords?.trim(),
+          }
+          // @ts-ignore
+          delete params.serviceArea
+          delete params.current
+          console.log('params =>', params)
+          const { result, code } = await queryChannelBusiness(params);
+          if (code !== 0) return
           paginationRef.current = pagination;
-          return result;
+          const { record } = result
+          return {
+            data: record.records,
+            success: true,
+            total: record.total
+          }
         }}
         columns={ columns }
         pagination={{ size: 'default', showQuickJumper: true, defaultPageSize: 10 }}
@@ -315,5 +391,25 @@ const AccountTable: React.FC = () => {
     </PageContainer>
   );
 };
+
+
+
+
+function handleArea(serviceArea: any, provinceData: any) {
+    const serviceAreaTemp = serviceArea?.map?.((ele: any) => {
+    const [v1, v2] = ele
+    const city = provinceData.filter((item: any) => item.code === v1)[0] || {}
+    const area = city?.nodes?.filter((item: any) => item.code === v2)[0] || {}
+    return [city, area]
+  })
+  const serviceName = serviceAreaTemp?.map((ele: any) => {
+    const [v1, v2] = ele
+    return [v1.name, v2.name].join('/')
+  }).join()
+  const serviceCode = serviceAreaTemp?.map((ele: any) => {
+    return ele[1]?.code
+  }).join()
+  return [serviceName, serviceCode]
+}
 
 export default AccountTable;

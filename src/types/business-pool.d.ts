@@ -17,24 +17,26 @@ namespace BusinessPool {
 
   export type TableFrom = {
     id: number;
+    adminName: string;
+    channelBusinessNum: number;
+    maxTaskSize: number;
+    serviceArea: string;
+    adminName: string;
+    contactPhone: string;
     createTime: string;
-    updateTime: string;
-    loginName: string;
-    name: string;
-    status: string;
-    phone: string;
-    type: string;
-    uapUserId: string;
-    creator?: Account;
-    roles?: number[];
+    status: number;
+    keywords: string;
   };
 
   export type SaveAccountRequest = {
-    id?: number;
-    loginName?: string;
-    name: string;
-    phone: string;
-    roleIds?: number[];
+    channelName: string;
+    maxTaskSize: number;
+    channelBusinessNum: number;
+    adminName: string;
+    contactPhone: string;
+    serviceName: string;
+    serviceCode: string;
+    id: number
   };
 }
 export default BusinessPool;
