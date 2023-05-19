@@ -1,4 +1,4 @@
-@prefix: baseline-association;
+@prefix: business-channel-manage;
 
 .@{prefix}-container{
   &-search {
@@ -23,7 +23,109 @@
       padding-left: 0;
     }
   }
+
+  .main-content {
+    background: #fff;
+    padding: 24px;
+  }
+
+  .top-area {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    .left-title {
+      font-weight: bold;
+    }
+  }
 }
+
+.audit-modal {
+  .table-box {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding-left: 10px;
+    .table-item {
+      cursor: pointer;
+      &.active {
+        font-size: 15px;
+        color: #333;
+        position: relative;
+        &::after {
+          content: '';
+          position: absolute;
+          left: 2px;
+          right: 2px;
+          bottom: -2px;
+          height: 2px;
+          background: #0068ff;
+        }
+      }
+      font-size: 14px;
+      color: #666666;
+      margin-right: 20px;
+    }
+  }
+  .content {
+    margin-top: 20px;
+    .info-item {
+      display: inline-block;
+      width: 50%;
+      margin-bottom: 16px;
+      padding-left: 10px;
+      &.one-line {
+        width: 100%;
+      }
+      .label {
+        color: #666666;
+        display: inline-block;
+        vertical-align: middle;
+      }
+      .value {
+        color: #333333;
+        margin-left: 10px;
+        display: inline-block;
+        vertical-align: middle;
+      }
+    }
+    &.follow-up-list {
+      overflow: auto;
+      max-height: 200px;
+      padding: 0 10px;
+      .follow-up-list-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 15px;
+        .list-item-left {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          color: #000;
+          .name {
+            margin: 0 30px;
+            color: #666;
+          }
+          .location {
+            color: #666;
+          }
+        }
+        .detail-btn {
+          color: #0068ff;
+        }
+      }
+    }
+  }
+  .audit-operation-area,.distribute-operation-area {
+    padding-left: 10px;
+    margin-top: 10px;
+  }
+}
+
+
+
+
 .supplier-uploads-file {
   .ant-modal-content {
     height: 340px;
