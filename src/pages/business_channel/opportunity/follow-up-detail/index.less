@@ -36,6 +36,38 @@
           margin-top: 10px;
         }
       }
+      .top-right {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        .pre-page, .next-page {
+          height: 80px;
+          cursor: pointer;
+          width: 160px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          text-align: right;
+          color: #999999;
+          &:hover {
+            background: #f3f7fa;
+            color: #333333;
+          }
+        }
+        .pre-page {
+          position: relative;
+          &::after {
+            content: '';
+            display: block;
+            background: url("../../imgs/pre_grey.png") no-repeat center;
+            background-size: 100% 100%;
+
+          }
+        }
+        span {
+          display: block;
+        }
+      }
     }
     .follow-up-content {
       margin-top: 20px;

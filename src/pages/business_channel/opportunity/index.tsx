@@ -9,11 +9,12 @@ import {
   Input,
   Row,
   Radio, DatePicker,
-  Cascader
+  Cascader, message as antdMessage,
+  Tooltip
 } from 'antd';
 import SelfTable from '@/components/self_table';
 import UploadModal from './components/uploadModal';
-import { getAreaCode } from '@/services/business-channel';
+import { getAreaCode, getBusinessList } from '@/services/business-channel';
 import AddBusinessModal from './components/addBusinessModal'
 import AuditModal from './components/auditModal'
 import { useAccess, Access } from '@@/plugin-access/access';
@@ -24,27 +25,77 @@ const sc = scopedClasses('business-channel-manage');
 const tableOptions = [
   {
     label: '商机录入',
-    value: 0,
+    value: 'ALL',
   },
   {
     label: '商机审核',
-    value: 1,
+    value: 'AUDIT',
   },
   {
     label: '商机分发',
-    value: 2,
+    value: 'DISPATH',
   },
 ]
+
+const chanceTypeMap = {
+  1: '研发设计',
+  2: '生产制造',
+  3: '仓储物流',
+  4: '管理数字化',
+  5: '其他'
+}
+
+const statusMap = {
+  0: '跟进中',
+  1: '已释放',
+  2: '待审核',
+  3: '待分发',
+  4: '被驳回',
+  5: '已完成'
+}
+
+const statusColorMap = {
+  0: {
+    color: '#0FEA97',
+    background: 'rgba(15, 234, 151, 0.3)'
+  },
+  1: {
+    color: '#526275',
+    background: 'rgba(82,98, 117, 0.3)'
+  },
+  2: {
+    color: '#1CD8ED',
+    background: 'rgba(28, 216, 237, 0.3)'
+  },
+  3: {
+    color: '#0FEA97',
+    background: 'rgba(15, 234, 151, 0.3)'
+  },
+  4: {
+    color: '#FFD902',
+    background: 'rgba(255, 217, 2, 0.3)'
+  },
+  5: {
+    color: '#526275',
+    background: 'rgba(82,98, 117, 0.3)'
+  }
+}
 
 export default () => {
   // 拿到当前角色的access权限兑现
   const access = useAccess();
-  const [activeTab, setActiveTab] = useState<number>(0)
+  const [activeTab, setActiveTab] = useState<string>('ALL')
   const [searchForm] = Form.useForm()
+  const [params, setParams] = useState<any>({
+    pageIndex: 1,
+    pageSize: 10,
+    queryType: 'ALL'
+  });
   const uploadModalRef = useRef<any>(null)
   const addBusinessModalRef = useRef<any>(null)
-  const AuditModalRef = useRef<any>(null)
+  const auditModalRef = useRef<any>(null)
   const [areaOptions, setAreaOptions] = useState<any>([])
+  const [dataSource, setDataSource] = useState<any>([])
   const [loading, setLoading] = useState<boolean>(false);
   const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
     pageIndex: 1,
@@ -57,52 +108,66 @@ export default () => {
   const recordColumns = [
     {
       title: '商机编号',
-      dataIndex: 'advertiseName',
+      dataIndex: 'chanceNo',
       width: 150,
-      render: (advertiseName: string) => {
-        return <span>{advertiseName || '--'}</span>
+      render: (chanceNo: string, record: any) => {
+        return (
+          <span
+            style={chanceNo ? {color: '#0068ff', cursor: 'pointer'} : {}}
+            onClick={() => {
+              auditModalRef.current.openModal(record, 'detail')
+            }}
+          >
+            {chanceNo || '--'}
+          </span>
+        )
       }
     },
     {
       title: '商机名称',
-      dataIndex: 'advertiseName',
+      dataIndex: 'chanceName',
       width: 150,
-      render: (advertiseName: string) => {
-        return <span>{advertiseName || '--'}</span>
+      render: (chanceName: string) => {
+        return <span>{chanceName || '--'}</span>
       }
     },
     {
       title: '商机类型',
-      dataIndex: 'advertiseName',
+      dataIndex: 'chanceType',
       width: 150,
-      render: (advertiseName: string) => {
-        return <span>{advertiseName || '--'}</span>
+      render: (chanceType: number) => {
+        return <span>{chanceTypeMap[chanceType] || '--'}</span>
       }
     },
     {
       title: '商机状态',
-      dataIndex: 'advertiseName',
+      dataIndex: 'status',
       width: 150,
-      render: (advertiseName: string) => {
-        return <span>{advertiseName || '--'}</span>
+      render: (status: number, record: any) => {
+        return (
+          status === 4 && record.auditTxt ? <Tooltip placement="top" title={`驳回事由:${record.auditTxt}`}>
+            <span style={statusColorMap[status]} className="status">{statusMap[status] || '--'}</span>
+            </Tooltip> : <span style={statusColorMap[status]} className="status">{statusMap[status] || '--'}</span>
+
+        )
       }
     },
     {
       title: '企业所属地区',
-      dataIndex: 'advertiseName',
+      dataIndex: 'areaName',
       width: 150,
-      render: (advertiseName: string) => {
-        return <span>{advertiseName || '--'}</span>
+      render: (areaName: string) => {
+        return <span>{areaName || '--'}</span>
       }
     },
     {
-      title: '操作时间',
-      dataIndex: 'creatTime',
+      title: '发布时间',
+      dataIndex: 'createTime',
       width: 200,
-      render: (updateTime: string) => {
+      render: (createTime: string) => {
         return (
           <>
-            {updateTime ? moment(updateTime).format('YYYY-MM-DD HH:mm:ss') : '--'}
+            {createTime ? moment(createTime).format('YYYY-MM-DD HH:mm') : '--'}
           </>
         )
       },
@@ -115,15 +180,28 @@ export default () => {
         return (
           <>
             <Access accessible={access['PU_BLAM_QJXFGG']}>
-              <Button
-                size="small"
-                type="link"
-                onClick={() => {
-                  console.log(record)
-                }}
-              >
-                编辑
-              </Button>
+              {
+                record.status === 2 || record.status === 4 ?
+                <Button
+                  size="small"
+                  type="link"
+                  onClick={() => {
+                    console.log(record)
+                    addBusinessModalRef.current.openModal(record)
+                  }}
+                >
+                  编辑
+                </Button> :
+                  <Button
+                    size="small"
+                    type="link"
+                    onClick={() => {
+                      auditModalRef.current.openModal(record, 'detail')
+                    }}
+                  >
+                    查看
+                  </Button>
+              }
             </Access>
           </>
         )
@@ -134,60 +212,69 @@ export default () => {
   const auditColumns = [
     {
       title: '商机编号',
-      dataIndex: 'advertiseName',
+      dataIndex: 'chanceNo',
       width: 150,
-      render: (advertiseName: string) => {
-        return <span>{advertiseName || '--'}</span>
+      render: (chanceNo: string) => {
+        return (
+          <span
+            style={chanceNo ? {color: '#0068ff', cursor: 'pointer'} : {}}
+            onClick={() => {
+              console.log(1)
+            }}
+          >
+            {chanceNo || '--'}
+          </span>
+        )
       }
     },
     {
       title: '商机名称',
-      dataIndex: 'advertiseName',
+      dataIndex: 'chanceName',
       width: 150,
-      render: (advertiseName: string) => {
-        return <span>{advertiseName || '--'}</span>
+      render: (chanceName: string) => {
+        return <span>{chanceName || '--'}</span>
       }
     },
     {
       title: '商机来源',
-      dataIndex: 'advertiseName',
+      dataIndex: 'creatorOrgType',
       width: 150,
-      render: (advertiseName: string) => {
-        return <span>{advertiseName || '--'}</span>
+      render: (creatorOrgType: number) => {
+        return <span>{creatorOrgType === 1 ? '渠道商' : creatorOrgType === 1 ? '羚羊平台' : '--'}</span>
       }
     },
     {
       title: '商机类型',
-      dataIndex: 'advertiseName',
+      dataIndex: 'auditType',
       width: 150,
-      render: (advertiseName: string) => {
-        return <span>{advertiseName || '--'}</span>
+      render: (chanceType: number) => {
+        return <span>{chanceTypeMap[chanceType] || '--'}</span>
       }
     },
     {
       title: '关联企业',
-      dataIndex: 'advertiseName',
+      dataIndex: 'orgName',
       width: 150,
-      render: (advertiseName: string) => {
-        return <span>{advertiseName || '--'}</span>
+      render: (orgName: string) => {
+        return <span>{orgName || '--'}</span>
       }
     },
     {
       title: '审核类型',
-      dataIndex: 'advertiseName',
+      dataIndex: 'auditType',
       width: 150,
-      render: (advertiseName: string) => {
-        return <span>{advertiseName || '--'}</span>
+      render: (auditType: string) => {
+        return <span>{{1: '商机发布', 2: '商机释放', 3: '更换渠道商'}[auditType] || '--'}</span>
       }
     },
     {
       title: '提交时间',
       dataIndex: 'creatTime',
       width: 200,
-      render: (updateTime: string) => {
+      render: (createTime: string) => {
         return (
           <>
-            {updateTime ? moment(updateTime).format('YYYY-MM-DD HH:mm:ss') : '--'}
+            {createTime ? moment(createTime).format('YYYY-MM-DD HH:mm:ss') : '--'}
           </>
         )
       },
@@ -204,7 +291,7 @@ export default () => {
                 size="small"
                 type="link"
                 onClick={() => {
-                  console.log(record)
+                  auditModalRef.current.openModal(record, 'audit')
                 }}
               >
                 审核
@@ -219,55 +306,64 @@ export default () => {
   const distributeColumns = [
     {
       title: '商机编号',
-      dataIndex: 'advertiseName',
+      dataIndex: 'chanceNo',
       width: 150,
-      render: (advertiseName: string) => {
-        return <span>{advertiseName || '--'}</span>
+      render: (chanceNo: string) => {
+        return (
+          <span
+            style={chanceNo ? {color: '#0068ff', cursor: 'pointer'} : {}}
+            onClick={() => {
+              console.log(1)
+            }}
+          >
+            {chanceNo || '--'}
+          </span>
+        )
       }
     },
     {
       title: '商机名称',
-      dataIndex: 'advertiseName',
+      dataIndex: 'chanceName',
       width: 150,
-      render: (advertiseName: string) => {
-        return <span>{advertiseName || '--'}</span>
+      render: (chanceName: string) => {
+        return <span>{chanceName || '--'}</span>
       }
     },
     {
       title: '商机来源',
-      dataIndex: 'advertiseName',
+      dataIndex: 'creatorOrgType',
       width: 150,
-      render: (advertiseName: string) => {
-        return <span>{advertiseName || '--'}</span>
+      render: (creatorOrgType: number) => {
+        return <span>{creatorOrgType === 1 ? '渠道商' : creatorOrgType === 1 ? '羚羊平台' : '--'}</span>
       }
     },
     {
       title: '商机类型',
-      dataIndex: 'advertiseName',
+      dataIndex: 'auditType',
       width: 150,
-      render: (advertiseName: string) => {
-        return <span>{advertiseName || '--'}</span>
+      render: (chanceType: number) => {
+        return <span>{chanceTypeMap[chanceType] || '--'}</span>
       }
     },
     {
       title: '关联企业',
-      dataIndex: 'advertiseName',
+      dataIndex: 'orgName',
       width: 150,
-      render: (advertiseName: string) => {
-        return <span>{advertiseName || '--'}</span>
+      render: (orgName: string) => {
+        return <span>{orgName || '--'}</span>
       }
     },
     {
       title: '企业所属地区',
-      dataIndex: 'advertiseName',
+      dataIndex: 'areaName',
       width: 150,
-      render: (advertiseName: string) => {
-        return <span>{advertiseName || '--'}</span>
+      render: (areaName: string) => {
+        return <span>{areaName || '--'}</span>
       }
     },
     {
       title: '审核时间',
-      dataIndex: 'creatTime',
+      dataIndex: 'updateTime',
       width: 200,
       render: (updateTime: string) => {
         return (
@@ -289,7 +385,7 @@ export default () => {
                 size="small"
                 type="link"
                 onClick={() => {
-                  console.log(record)
+                  auditModalRef.current.openModal(record, 'distribute')
                 }}
               >
                 分发
@@ -300,53 +396,69 @@ export default () => {
       },
     },
   ]
+  const getPage = async (data: any) => {
+    setLoading(true)
+    try {
+      const { result, totalCount, pageTotal, code, message } = await getBusinessList(data);
+      setLoading(false)
+      if (code === 0) {
+        setPageInfo({...pageInfo, totalCount, pageTotal, pageIndex: data.pageIndex });
+        setDataSource(result);
+      } else {
+        throw new Error(message);
+      }
+    } catch (error) {
+      setLoading(false)
+      antdMessage.error(`请求失败，原因:{${error}}`);
+    }
+  };
   useEffect(() => {
     getAreaCode({parentCode: 340000}).then((res: any) => {
-      console.log(res, '00000')
       if (res.code === 0){
         setAreaOptions(res.result)
       }
     })
+
   }, [])
 
-  const getPage = async () => {
-    setLoading(true)
-    console.log(1)
-  };
+  useEffect(() => {
+    getPage(params);
+  }, [params])
 
   const getSearchQuery = () => {
     const search = searchForm.getFieldsValue();
-    if (search.updateTime) {
-      search.updateTimeStart = moment(search.updateTime[0]).startOf('days').format('YYYY-MM-DD HH:mm:ss');
-      search.updateTimeEnd = moment(search.updateTime[1]).endOf('days').format('YYYY-MM-DD HH:mm:ss');
+    if (search.time) {
+      search.startDate = moment(search.time[0]).startOf('days').format('YYYY-MM-DD HH:mm:ss');
+      search.endDate = moment(search.time[1]).endOf('days').format('YYYY-MM-DD HH:mm:ss');
     }
-    if (search.state){
-      search.state = search.state * 1
+    delete search.time;
+    if (search.area) {
+      search.orgArea = search.area[1]
     }
-    delete search.updateTime;
+    delete search.area
     return search;
   };
 
   const useSearchNode = (): React.ReactNode => {
-    const timeLabel = activeTab === 0 ? '发布时间' : '提交时间'
+    const timeLabel = activeTab === 'ALL' ? '发布时间' : '提交时间'
     return (
       <div className={sc('container-search')}>
         <Form form={searchForm}>
           <Row>
-            <Col span={6}>
-              <Form.Item labelCol={{span: 8}} name="advertiseName" label="商机编号">
+            <Col span={5}>
+              <Form.Item labelCol={{span: 8}} name="chanceNo" label="商机编号">
                 <Input placeholder="请输入" maxLength={35} />
               </Form.Item>
             </Col>
             <Col span={5}>
-              <Form.Item labelCol={{span: 8}} name="advertiseName" label="企业名称">
+              <Form.Item labelCol={{span: 8}} name="orgName" label="企业名称">
                 <Input placeholder="请输入" maxLength={35} />
               </Form.Item>
             </Col>
             {
-              activeTab !== 2 &&
-              <Col span={7}>
-                <Form.Item labelCol={{span: 8}} name="updateTime" label={timeLabel}>
+              activeTab !== 'DISPATH' &&
+              <Col span={8}>
+                <Form.Item labelCol={{span: 8}} name="time" label={timeLabel}>
                   <DatePicker.RangePicker
                     allowClear
                     disabledDate={(current) => {
@@ -357,7 +469,7 @@ export default () => {
               </Col>
             }
             {
-              activeTab === 2 && areaOptions.length &&
+              activeTab === 'DISPATH' && areaOptions.length &&
               <Col span={7}>
                 <Form.Item
                   name="area"
@@ -375,7 +487,20 @@ export default () => {
                 key="search"
                 onClick={() => {
                   const search = getSearchQuery();
-                  console.log(search)
+                  const newParams = {
+                    ...search,
+                    pageIndex: 1,
+                    pageSize: 10,
+                    queryType: activeTab
+                  }
+                  // setPageInfo({
+                  //   pageIndex: 1,
+                  //   pageSize: 10,
+                  //   totalCount: 0,
+                  //   pageTotal: 0,
+                  // })
+                  setParams(newParams)
+
                 }}
               >
                 查询
@@ -384,6 +509,17 @@ export default () => {
                 key="reset"
                 onClick={() => {
                   searchForm.resetFields();
+                  setParams({
+                    pageIndex: 1,
+                    pageSize: 10,
+                    queryType: activeTab
+                  })
+                  // setPageInfo({
+                  //   pageIndex: 1,
+                  //   pageSize: 10,
+                  //   totalCount: 0,
+                  //   pageTotal: 0,
+                  // })
                 }}
               >
                 重置
@@ -400,7 +536,19 @@ export default () => {
       <div className="table-box">
         <Radio.Group
           onChange={(e) => {
+            searchForm.resetFields();
             setActiveTab(e.target.value)
+            // setPageInfo({
+            //   pageIndex: 1,
+            //   pageSize: 10,
+            //   totalCount: 0,
+            //   pageTotal: 0,
+            // })
+            setParams({
+              pageIndex: 1,
+              pageSize: 10,
+              queryType: e.target.value
+            })
           }}
           value={activeTab}
           options={tableOptions}
@@ -413,11 +561,11 @@ export default () => {
         <div className="top-area">
           <div className="left-title">
             {
-              activeTab === 0 ? '我的全部' : activeTab === 1 ? '全部待审核' : '全部待分发'
+              activeTab === 'ALL' ? '我的全部' : activeTab === 'AUDIT' ? '全部待审核' : '全部待分发'
             }
           </div>
           {
-            activeTab === 0 &&
+            activeTab === 'ALL' &&
             <div className="button-box">
               <Access accessible={access['P_BLM_XHXXPZ']}>
                 <Button
@@ -437,8 +585,7 @@ export default () => {
                   type="primary"
                   key="addStyle"
                   onClick={() => {
-                    // addBusinessModalRef.current.openModal()
-                    AuditModalRef.current.openModal()
+                    addBusinessModalRef.current.openModal()
                   }}
                 >
                   +新增
@@ -450,13 +597,15 @@ export default () => {
         <SelfTable
           bordered
           loading={loading}
-          columns={activeTab === 0 ? recordColumns : activeTab === 1 ? auditColumns : distributeColumns}
-          dataSource={[]}
+          columns={activeTab === 'ALL' ? recordColumns : activeTab === 'AUDIT' ? auditColumns : distributeColumns}
+          dataSource={dataSource}
           pagination={
             pageInfo.totalCount === 0
               ? false
               : {
-                onChange: getPage,
+                onChange: (current: number) => {
+                  setParams({...params, pageIndex: current})
+                },
                 total: pageInfo.totalCount,
                 current: pageInfo.pageIndex,
                 pageSize: pageInfo.pageSize,
@@ -467,8 +616,21 @@ export default () => {
         />
       </div>
       <UploadModal ref={uploadModalRef} />
-      <AddBusinessModal ref={addBusinessModalRef}/>
-      <AuditModal ref={AuditModalRef}></AuditModal>
+      <AddBusinessModal
+        successCallBack={() => {
+          getPage(params)
+        }}
+        ref={addBusinessModalRef}
+      />
+      <AuditModal
+        ref={auditModalRef}
+        successCallBack={() => {
+          const { totalCount, pageIndex, pageSize } = pageInfo
+          const newTotal = totalCount - 1 || 1;
+          const newPageTotal = Math.ceil(newTotal / pageSize) || 1
+          setParams({...params, pageIndex: pageIndex >  newPageTotal ? newPageTotal : pageIndex})
+        }}
+      />
     </PageContainer>
   );
 };

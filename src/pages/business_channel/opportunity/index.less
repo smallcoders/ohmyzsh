@@ -16,12 +16,10 @@
     padding: 0 20px 20px 20px;
     background-color: #fff;
   }
-  &-option{
-    display: flex;
-    flex-flow: row;
-    button{
-      padding-left: 0;
-    }
+
+  .status {
+    display: inline-block;
+    padding: 4px;
   }
 
   .main-content {
@@ -36,6 +34,34 @@
     margin-bottom: 20px;
     .left-title {
       font-weight: bold;
+    }
+  }
+}
+
+
+.add-modal {
+  .ant-modal-body {
+    padding-left: 0;
+    padding-top: 0;
+    padding-right: 0;
+  }
+  .ant-form {
+    padding-left: 24px;
+    padding-top: 24px;
+    padding-right: 24px;
+  }
+  .audit-text {
+    padding: 12px;
+    background: #f2f2f2;
+  }
+  .chanceNo {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: 24px;
+    .label {
+      width: 21%;
+      text-align: right;
     }
   }
 }

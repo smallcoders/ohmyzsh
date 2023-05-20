@@ -1,77 +1,244 @@
 import { useState, useImperativeHandle, forwardRef, useEffect } from 'react';
-import { Modal, Radio, Input, Form, Cascader, Row, Col } from 'antd';
-import { getAreaCode } from '@/services/business-channel';
-
+import { Modal, Radio, Input, Form, Cascader, Row, Col, Button, message, Select } from 'antd';
+import {
+  getAreaCode,
+  auditChannel,
+  dispathChannel,
+  getHistoryChannel,
+  getChannelByArea,
+  getChannelByName,
+  getAccessList
+} from '@/services/business-channel';
+import moment from 'moment';
+import { routeName } from '../../../../../config/routes';
+const chanceTypeMap = {
+  1: '研发设计',
+  2: '生产制造',
+  3: '仓储物流',
+  4: '管理数字化',
+  5: '其他'
+}
 
 const UploadModal = forwardRef((props: any, ref: any) => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const [auditStatus, setAuditStatus] = useState<number>(0)
+  const [auditStatus, setAuditStatus] = useState<number>(1)
   const [areaOptions, setAreaOptions] = useState<any>([])
+  const [currentRecord, setCurrentRecord] = useState<any>({})
+  const [modalType, setModalType] = useState<string>('audit')
   const [activeTab, setActiveTab] = useState<number>(0)
   const [infoList, setInfoList] = useState<any>([])
+  const [pageInfo, setPageInfo] = useState<any>({
+    pageIndex: 1,
+    pageTotal: 0,
+    pageSize: 10
+  })
+  const [historyChannel, setHistoryChannel] = useState<any>([])
+  const [channelName, setChannelName] = useState<string>('')
+  const [channelList, setChannelList] = useState<any>([])
+  const [area, setArea] = useState<any>(0)
+  const [accessList, setAccessList] = useState<any>([])
   const [form] = Form.useForm()
   useImperativeHandle(ref, () => ({
-    openModal: () => {
-      setModalVisible(true)
+    openModal: async (record: any, type: string) => {
       const list = [
         {
           label: '商机编码',
-          value: '202023123231'
+          value: record.chanceNo
         },
         {
           label: '商机来源',
-          value: '202023123231'
+          value: record.creatorOrgType === 1 ? '渠道商' : record.creatorOrgType === 1 ? '羚羊平台' : '--'
         },
         {
           label: '商机名称',
-          value: '202023123231'
+          value: record.chanceName
         },
         {
           label: '关联企业',
-          value: '202023123231'
+          value: record.orgName
         },
         {
           label: '商机类型',
-          value: '202023123231'
+          value: chanceTypeMap[record.chanceType] || '--'
         },
         {
-          label: '企业所属地',
-          value: '企业所属地',
+          label: '请求类型',
+          value: {1: '商机发布', 2: '商机释放', 3: '更换渠道商'}[record.auditType] || '--',
         },
         {
           label: '商机描述',
-          value: '商机描述',
+          value: record.chanceDesc,
           isOneLine: true
         },
       ]
+      if (record.auditType === 3 && type !== 'detail') {
+        list.splice(5, 1)
+        list.push({
+          label: '当前渠道商',
+          value: 'channelName',
+          isOneLine: true
+        })
+        list.push({
+          label: '更换事由',
+          value: record.applyReason,
+          isOneLine: true
+        })
+      }
+      if (record.auditType === 2 && type !== 'detail') {
+        list.splice(5, 1)
+        list.push({
+          label: '渠道商',
+          value: 'channelName',
+          isOneLine: true
+        })
+        list.push({
+          label: '释放事由',
+          value: record.applyReason,
+          isOneLine: true
+        })
+      }
+      getHistoryChannel({chanceId: record.id}).then((res) => {
+        if(res.code === 0){
+          setHistoryChannel(res.result)
+        }
+      })
+      getAccessList({chanceId: record.id}).then((res) => {
+        if(res.code === 0){
+          console.log(res)
+          setAccessList(res.result)
+        }
+      })
       setInfoList(list)
+      setModalType(type)
+      setCurrentRecord(record)
+      setModalVisible(true)
     }
   }))
   useEffect(() => {
     getAreaCode({parentCode: 340000}).then((res: any) => {
-      console.log(res, '00000')
       if (res.code === 0){
         setAreaOptions(res.result)
       }
     })
   }, [])
+
+  const onCancel = () => {
+    form.resetFields()
+    setModalVisible(false);
+    setInfoList([])
+    setActiveTab(0)
+    setAuditStatus(1)
+    setModalType('audit')
+    setCurrentRecord({})
+    setHistoryChannel([])
+    setChannelName('')
+    setChannelList([])
+    setArea(0)
+    setAccessList([])
+    setPageInfo({
+      pageIndex: 1,
+      pageTotal: 0,
+      pageSize: 10
+    })
+  }
+
   const handleSubmit = async () => {
     await form.validateFields()
+    const { chanceId, auditTxt } = form.getFieldsValue()
+    const params: any = {
+      chanceId: currentRecord.id
+    }
+    if (modalType === 'audit') {
+      params.result = auditStatus
+      params.auditTxt = auditTxt
+    } else {
+      params.channelId = chanceId
+      params.status = 0
+    }
+    if (modalType === 'audit') {
+      auditChannel(params).then((res) => {
+        if (res.code === 0){
+          message.success('审核成功')
+          onCancel()
+          if (props.successCallBack) {
+            props.successCallBack()
+          }
+        } else {
+          message.error(res.message)
+        }
+      })
+    } else {
+      dispathChannel(params).then((res) => {
+        if (res.code === 0){
+          message.success('分发成功')
+          onCancel()
+          if (props.successCallBack) {
+            props.successCallBack()
+          }
+        } else {
+          message.error(res.message)
+        }
+      })
+    }
+
   }
+
+  const renderFooter = () => {
+    if (modalType === 'detail') {
+      return (
+        <div className="custom-footer flex-end">
+          <div className="button-box">
+            <Button
+              type="primary"
+              onClick={() => {
+                onCancel()
+              }}
+            >
+              关闭
+            </Button>
+          </div>
+        </div>
+      )
+    }
+    return (
+      <div className="custom-footer flex-end">
+        <div className="button-box">
+          <Button
+            onClick={() => {
+              onCancel()
+            }}
+          >
+            取消
+          </Button>
+          <Button
+            type="primary"
+            onClick={() => {
+              handleSubmit()
+            }}
+          >
+            {modalType === 'audit' ? '提交' : '分发'}
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <Modal
-      title="新增商机-审核"
+      title={
+        modalType === 'audit' ?
+          `${{1: '商机发布', 2: '商机释放', 3: '更换渠道商'}[currentRecord.auditType]}-审核` :
+          modalType === 'distribute' ? '商机分发' : '商机信息'
+      }
       visible={modalVisible}
       width={700}
       style={{ height: '500px' }}
       maskClosable={false}
       destroyOnClose
+      footer={renderFooter()}
       wrapClassName="audit-modal"
       okText="发布"
-      onOk={handleSubmit}
-      onCancel={() => {
-        setModalVisible(false);
-      }}
+      onCancel={onCancel}
     >
       <div className="table-box">
         <div
@@ -85,17 +252,20 @@ const UploadModal = forwardRef((props: any, ref: any) => {
         >
           商机信息
         </div>
-        <div
-          onClick={() => {
-            if (activeTab === 1) {
-              return
-            }
-            setActiveTab(1)
-          }}
-          className={activeTab === 1 ? "table-item active" : 'table-item'}
-        >
-          跟进记录
-        </div>
+        {
+          accessList.length > 0 &&
+          <div
+            onClick={() => {
+              if (activeTab === 1) {
+                return
+              }
+              setActiveTab(1)
+            }}
+            className={activeTab === 1 ? "table-item active" : 'table-item'}
+          >
+            跟进记录
+          </div>
+        }
       </div>
       {
         activeTab === 0 ?
@@ -117,85 +287,212 @@ const UploadModal = forwardRef((props: any, ref: any) => {
           </div> :
           <div className="content follow-up-list">
             {
-              [1,2,3,4,5,6].map(() => {
+              accessList.map((item: any, index: number) => {
                 return (
-                  <div className="follow-up-list-item">
+                  <div className="follow-up-list-item" key={index}>
                     <div className="list-item-left">
                       <div className="time">
-                        4月10日 16:20
+                        { item.updateTime ? moment(item.updateTime).format('MM-DD HH:mm') : '--'}
                       </div>
                       <div className="name">
-                        Admin
+                        {
+                          item.adminName || '--'
+                        }
                       </div>
                       <div className="location">
-                        定位：蚌埠高新区望江西路666号
+                        定位：{item.cityName}{item.areaName}
                       </div>
                     </div>
-                    <div className="detail-btn">查看详情</div>
+                    <div
+                      className="detail-btn"
+                      onClick={() => {
+                        window.open(`${routeName.BUSINESS_CHANNEL_FOLLOW_UP_DETAIL}?chanceId=${currentRecord.id}&accessId=${item.id}`)
+                      }}
+                    >
+                      查看详情
+                    </div>
                   </div>
                 )
               })
             }
           </div>
       }
-      <div className="audit-operation-area">
-        <Form form={form}>
-          <Form.Item initialValue={0} name="auditStatus">
-            <Radio.Group
-              onChange={(e) => {
-                setAuditStatus(e.target.value)
-              }}
-              options={[{label: '通过', value: 0},{label: '驳回', value: 1}]}
-            />
-          </Form.Item>
-          <Form.Item
-            name="desc"
-            required={auditStatus !== 0}
-            rules={
-              auditStatus === 0 ? [{}] : [{required: true, message: '为方便业务修改，请简要描述驳回事由'}]
-            }
-          >
-            <Input.TextArea maxLength={300} placeholder={auditStatus === 0 ? "备注信息" : "请简要描述驱回事由，字数不少于10字。"} />
-          </Form.Item>
-        </Form>
-      </div>
-      <div className="distribute-operation-area">
-        <Form form={form}>
-          <Form.Item label="渠道商名称">
-            <Row>
-              <Col span={8}>
-                <Form.Item
-                  name="area"
-                >
-                  <Cascader allowClear fieldNames={{ label: 'name', value: 'code', children: 'childList' }} placeholder="请选择" options={areaOptions} />
-                </Form.Item>
-              </Col>
-              <Col span={8} offset={1}>
-                <Form.Item
-                  name="name"
-                >
-                  <Cascader
-                    allowClear
-                    fieldNames={{ label: 'name', value: 'code', children: 'childList' }}
-                    placeholder="请选择"
-                    showSearch
-                    onSearch={(value) => {
-                      console.log(value)
+      {
+       modalType === 'audit' && <div className="audit-operation-area">
+          <Form form={form}>
+            <Form.Item initialValue={1} name="auditStatus">
+              <Radio.Group
+                onChange={(e) => {
+                  setAuditStatus(e.target.value)
+                }}
+                options={[{label: '通过', value: 1},{label: '驳回', value: 0}]}
+              />
+            </Form.Item>
+            <Form.Item
+              name="auditTxt"
+              required={auditStatus !== 1}
+              rules={
+                auditStatus === 1 ?
+                  [{}] :
+                  [
+                    {required: true, message: '为方便业务修改，请简要描述驳回事由'},
+                    {validator: (rule, value) => {
+                      if (value.length < 10) {
+                        return Promise.reject('字数不得小于10字')
+                      }
+                      return Promise.resolve()
                     }}
-                    options={
-                      [
-                        {name: '123123    历史渠道商', code: '1', disabled: true},
-                        {name: '123123    历史渠道商', code: '2', disabled: true},
-                        {name: '123123    历史渠道商', code: '3', disabled: true}
-                      ]
-                    }
-                  />
-                </Form.Item>
-              </Col>
-            </Row>
-          </Form.Item>
-        </Form>
-      </div>
+                  ]
+              }
+            >
+              <Input.TextArea maxLength={300} placeholder={auditStatus === 1 ? "备注信息" : "请简要描述驱回事由，字数不少于10字。"} />
+            </Form.Item>
+          </Form>
+        </div>
+      }
+      {
+        modalType === 'distribute' &&
+        <div className="distribute-operation-area">
+          <Form form={form}>
+            <Form.Item label="渠道商名称">
+              <Row>
+                <Col span={8}>
+                  <Form.Item
+                    name="area"
+                  >
+                    <Cascader
+                      allowClear
+                      fieldNames={{ label: 'name', value: 'code', children: 'childList' }}
+                      placeholder="请选择所属区域" options={areaOptions}
+                      onChange={(value) => {
+                        if (value[1]) {
+                          form.resetFields(['channelId'])
+                          setChannelName('')
+                          setPageInfo({
+                            pageIndex: 1,
+                            pageSize: 10,
+                            pageTotal: 0
+                          })
+                          setArea(value[1])
+                          getChannelByArea({
+                            areaCode: value[1],
+                            pageIndex: 1,
+                            pageSize: 10,
+                          }).then((res) => {
+                            if (res.code === 0) {
+                              setChannelList(res.result?.map((item: any) => {
+                                return {
+                                  label: historyChannel.indexOf(item.id) !== -1 ? `${item.channelName}    历史渠道商` : item.channelName,
+                                  value: item.id,
+                                  disabled: historyChannel.indexOf(item.id) !== -1 ? true : false
+                                }
+                              }) || [])
+                              setPageInfo({
+                                ...pageInfo,
+                                pageTotal: res.pageTotal
+                              })
+                            }
+                            console.log(res)
+                          })
+                        }
+                      }}
+                    />
+                  </Form.Item>
+                </Col>
+                <Col span={12} offset={1}>
+                  <Form.Item
+                    name="channelId"
+                  >
+                    <Select
+                      showSearch
+                      onSearch={(value) => {
+                        if (value) {
+                          form.resetFields(['area'])
+                          setArea('')
+                          setPageInfo({pageIndex: 1, pageTotal: 0, pageSize: 10})
+                          getChannelByName({
+                            pageIndex: 1,
+                            pageSize: 10,
+                            channelName: value
+                          }).then((res) => {
+                            if (res.code === 0) {
+                              setChannelList(res.result?.map((item: any) => {
+                                return {
+                                  label: historyChannel.indexOf(item.id) !== -1 ? `${item.channelName}    历史渠道商` : item.channelName,
+                                  value: item.id,
+                                  disabled: historyChannel.indexOf(item.id) !== -1 ? true : false
+                                }
+                              }) || [])
+                              setPageInfo({
+                                ...pageInfo,
+                                pageTotal: res.pageTotal
+                              })
+                            }
+                          })
+                        }
+                      }}
+                      onChange={(value, option) => {
+                        setChannelName(option.label)
+                      }}
+                      filterOption={false}
+                      placeholder="请选择渠道商"
+                      options={[...channelList]}
+                      onPopupScroll={() => {
+                        if (pageInfo.pageTotal > pageInfo.pageIndex) {
+                          const pageIndex = pageInfo.pageIndex + 1
+                          setPageInfo({...pageInfo, pageIndex})
+                          if (area) {
+                            getChannelByArea({...pageInfo, pageIndex, areaCode: area}).then((res) => {
+                              if (res.code === 0) {
+                                setChannelList(channelList.concat(
+                                  res.result?.map((item: any) => {
+                                    return {
+                                      label: historyChannel.indexOf(item.id) !== -1 ? `${item.channelName}    历史渠道商` : item.channelName,
+                                      value: item.id,
+                                      disabled: historyChannel.indexOf(item.id) !== -1
+                                    }
+                                  }) || []
+                                ))
+                                setPageInfo({
+                                  ...pageInfo,
+                                  pageTotal: res.pageTotal
+                                })
+                              }
+                            })
+                          }
+                          if (channelName) {
+                            getChannelByName({
+                              ...pageInfo,
+                              pageIndex,
+                              channelName: channelName
+                            }).then((res) => {
+                              if (res.code === 0) {
+                                setChannelList(channelList.concat(
+                                  res.result?.map((item: any) => {
+                                    return {
+                                      label: historyChannel.indexOf(item.id) !== -1 ? `${item.channelName}    历史渠道商` : item.channelName,
+                                      value: item.id,
+                                      disabled: historyChannel.indexOf(item.id) !== -1
+                                    }
+                                  }) || []
+                                ))
+                                setPageInfo({
+                                  ...pageInfo,
+                                  pageTotal: res.pageTotal
+                                })
+                              }
+                            })
+                          }
+                        }
+                      }}
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
+            </Form.Item>
+          </Form>
+        </div>
+      }
     </Modal>
   )
 })
