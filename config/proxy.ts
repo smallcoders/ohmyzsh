@@ -25,7 +25,7 @@ export default {
   dev: {
     '/antelope-manage/': {
       target: 'http://172.30.33.222:10086',
-      // target: 'http://10.8.7.227:9093',
+      // target: 'http://10.8.5.92:9208',
       // target: 'http://10.8.5.110:9093',
       // target: 'http://172.30.35.217:9095',
       // target: 'http://172.30.35.217:8089',

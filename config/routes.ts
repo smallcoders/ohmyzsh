@@ -307,6 +307,7 @@
   BUSINESS_CHANNEL: '/business-channel',
   BUSINESS_CHANNEL_FOLLOW_UP_DETAIL: '/business-channel/follow-up-detail', // 跟进记录详情
   BUSINESS_CHANNEL_OPPORTUNITY: '/business-channel/opportunity', // 商机池
+  BUSINESS_CHANNEL_POOL: '/business-channel/pool' // 渠道商池
 };
 
 export default [
@@ -2786,6 +2787,13 @@ export default [
         access: 'M_SJ_DR',
         name: '商机池',
         component: './business_channel/opportunity/index',
+      },
+      {
+        path: routeName.BUSINESS_CHANNEL_POOL,
+        code: 'M_SJ_DR',
+        access: 'M_SJ_DR',
+        name: '渠道商池',
+        component: './business_channel/pool/index'
       },
       {
         path: routeName.BUSINESS_CHANNEL_FOLLOW_UP_DETAIL,
