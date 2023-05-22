@@ -71,7 +71,13 @@ const UploadModal = forwardRef((props: any, ref: any) => {
           isOneLine: true
         },
       ]
-      if (record.auditType === 3 && type !== 'detail') {
+      if (type === 'distribute') {
+        list.splice(5, 1, {
+          label: '企业所属地',
+          value: record.cityName || record.areaName ? `${record.cityName}${record.cityName && record.areaName ? '/' : ''}${record.areaName}` : '--'
+        })
+      }
+      if (record.auditType === 3 && type === 'audit') {
         list.splice(5, 1)
         list.push({
           label: '当前渠道商',
@@ -84,7 +90,7 @@ const UploadModal = forwardRef((props: any, ref: any) => {
           isOneLine: true
         })
       }
-      if (record.auditType === 2 && type !== 'detail') {
+      if (record.auditType === 2 && type === 'audit') {
         list.splice(5, 1)
         list.push({
           label: '渠道商',
@@ -541,7 +547,7 @@ const UploadModal = forwardRef((props: any, ref: any) => {
           onClick={() => {
             setModalType(currentRecord.status === 2 ? 'audit' : 'distribute')
             const tmpList = infoList
-            if (currentRecord.auditType === 3) {
+            if (currentRecord.auditType === 3 && currentRecord.status === 2) {
               tmpList.splice(5, 1)
               tmpList.push({
                 label: '当前渠道商',
@@ -554,7 +560,7 @@ const UploadModal = forwardRef((props: any, ref: any) => {
                 isOneLine: true
               })
             }
-            if (currentRecord.auditType === 2) {
+            if (currentRecord.auditType === 2 && currentRecord.status === 2) {
               tmpList.splice(5, 1)
               tmpList.push({
                 label: '渠道商',
@@ -565,6 +571,12 @@ const UploadModal = forwardRef((props: any, ref: any) => {
                 label: '释放事由',
                 value: currentRecord.applyReason,
                 isOneLine: true
+              })
+            }
+            if (currentRecord.status === 3){
+              tmpList.splice(5, 1, {
+                label: '企业所属地',
+                value: currentRecord.cityName || currentRecord.areaName ? `${currentRecord.cityName}${currentRecord.cityName && currentRecord.areaName ? '/' : ''}${currentRecord.areaName}` : '--'
               })
             }
             setInfoList(tmpList)
