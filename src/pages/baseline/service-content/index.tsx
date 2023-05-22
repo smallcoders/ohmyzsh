@@ -14,6 +14,7 @@ import {
   httpArticleBatchAudit,
 } from '@/services/baseline';
 import type Common from '@/types/common';
+import { disabled } from 'glamor';
 
 const articleTypes = {
   PICTURE_TEXT: '图文',
@@ -422,7 +423,10 @@ export default () => {
               fixed: true,
               selectedRowKeys,
               onSelectAll: handleOnSelectAll,
-              onSelect: handleOnSelect
+              onSelect: handleOnSelect,
+              getCheckboxProps: (record: any) => ({
+                disabled: record.auditStatus !== 1
+              })
             }
           }
           rowKey={'id'}
