@@ -101,6 +101,29 @@ const UploadModal = forwardRef((props: any, ref: any) => {
         if(res.code === 0){
           setHistoryChannel(res.result)
         }
+        if (record.orgArea){
+          setArea(record.orgArea)
+          getChannelByArea({
+            areaCode: record.orgArea,
+            pageIndex: 1,
+            pageSize: 10,
+          }).then((result) => {
+            if (result.code === 0) {
+              setChannelList(result.result?.map((item: any) => {
+                return {
+                  label: historyChannel.indexOf(item.id) !== -1 ? `${item.channelName}    历史渠道商` : item.channelName,
+                  value: item.id,
+                  disabled: historyChannel.indexOf(item.id) !== -1 ? true : false
+                }
+              }) || [])
+              setPageInfo({
+                ...pageInfo,
+                pageTotal: result.pageTotal
+              })
+            }
+            console.log(result)
+          })
+        }
       })
       getAccessList({chanceId: record.id}).then((res) => {
         if(res.code === 0){

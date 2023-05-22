@@ -53,15 +53,40 @@
             background: #f3f7fa;
             color: #333333;
           }
+          &.disabled {
+            &:hover {
+              background: #fff;
+              color: #999999;
+            }
+          }
         }
         .pre-page {
           position: relative;
+          >div {
+            padding-right: 10px;
+          }
           &::after {
             content: '';
             display: block;
             background: url("../../imgs/pre_grey.png") no-repeat center;
             background-size: 100% 100%;
-
+            width: 20px;
+            height: 20px;
+          }
+        }
+        .next-page {
+          position: relative;
+          >div {
+            padding-left: 10px;
+          }
+          &::before {
+            content: '';
+            display: block;
+            background: url("../../imgs/pre_grey.png") no-repeat center;
+            background-size: 100% 100%;
+            width: 20px;
+            height: 20px;
+            transform: rotateZ(180deg);
           }
         }
         span {

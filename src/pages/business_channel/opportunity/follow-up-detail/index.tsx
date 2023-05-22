@@ -17,7 +17,7 @@ export default () => {
   const { chanceId,  accessId} = history.location.query as { chanceId: string | undefined, accessId: string | undefined  };
   const [detail, setDetail] = useState<any>({})
   const [list, setList] = useState<any>([])
-  const [index, setIndex] = useState<number>(-1)
+  const [index, setIndex] = useState<number>(0)
   const [soundRecords, setSoundRecords] = useState<any>([])
   const [recordIndex, setRecordIndex] = useState<number>(0)
   useEffect(() => {
@@ -86,10 +86,13 @@ export default () => {
                   }
                 }}
               >
-                <div>
-                  上一条记录
-                  <span className="time">4月20 16:20</span>
-                </div>
+                {
+                  index === 0 ? <div>当前是第一条</div> :
+                    <div>
+                      上一条记录
+                      <span className="time">4月20 16:20</span>
+                    </div>
+                }
               </div>
               <div
                 className={index === list.length - 1 ? "next-page disabled" : 'next-page'}
@@ -111,10 +114,13 @@ export default () => {
                   }
                 }}
               >
-                <div>
-                  下一条记录
-                  <span className="time">4月20 16:20</span>
-                </div>
+                {
+                  index === list.length - 1 ? <div>当前是最后一条</div> :
+                    <div>
+                      下一条记录
+                      <span className="time">4月20 16:20</span>
+                    </div>
+                }
               </div>
             </div>
           }
