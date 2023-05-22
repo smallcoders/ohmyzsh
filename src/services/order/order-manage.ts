@@ -169,10 +169,10 @@ export async function modifyTags(data: any) {
  * @param data
  * @returns
  */
-export async function applyRefund(data?: { [key: string]: any }) {
+export async function applyRefund(params?: { [key: string]: any }) {
   return request<any>('/antelope-pay/mng/order/refund', {
-    method: 'post',
-    data,
+    method: 'get',
+    params
   });
 }
 

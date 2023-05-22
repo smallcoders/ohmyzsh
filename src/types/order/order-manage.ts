@@ -9,6 +9,7 @@ namespace OrderManage {
     '4': '已发货',
     '6': '交易关闭',
     '5': '交易成功',
+    '8': '退款售后'
   };
   export const StateOrderDetailJson = {
     '25': '订单待确认',
@@ -17,6 +18,7 @@ namespace OrderManage {
     '4': '已发货',
     '6': '交易关闭',
     '5': '交易成功',
+    '8': '退款售后'
   };
   export const StateJsonInOrderDetail = {
     ...StateOrderDetailJson,
