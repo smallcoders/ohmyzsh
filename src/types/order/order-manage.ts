@@ -31,6 +31,7 @@ namespace OrderManage {
     P04: '对公转账',
     P32: '人社数字化礼包',
     P33: '招聘季礼包',
+    P34: '消费券全额抵扣'
   };
 
   export type ResultList = {
