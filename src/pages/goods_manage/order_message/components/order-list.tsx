@@ -1,17 +1,72 @@
 import OrderManage from '@/types/order/order-manage';
+import { Popconfirm, message } from 'antd';
 
 import { history } from 'umi';
 import { routeName } from '@/../config/routes';
+import {
+  applyRefund
+} from '@/services/order/order-manage';
 import './index.less';
 
 import { dateFormat } from '@/utils/date';
 
-export const OrderItem = ({
-  record = {},
-  type = 'ORDER',
+export const ButtonManage = ({
+  record,
+  type,
+  callback,
 }: {
   record: OrderManage.Content;
   type: string;
+  callback: () => void;
+}) => {
+  const applyReturn = async () => {
+    const tooltipMessage = '申请退货'
+    console.log(record.orderNo, 999)
+    try {
+      const result = await applyRefund({
+        orderNo: record?.orderNo
+      })
+      if (result.code === 0) {
+        message.success(`${tooltipMessage}成功`)
+        callback()
+      } else {
+        throw new Error(result.message)
+      }
+    } catch (error) {
+      message.error(`${tooltipMessage}失败，原因:{${error}}`)
+    }
+  }
+
+  return (
+    {
+      10: (
+        <Popconfirm
+          icon={null}
+          title={
+            <div className="sending-confirm-modal">
+              <h3>确认退货</h3>
+              <span>退货后，货款将退回消费券余额中，应用将不可再使用</span>
+            </div>
+          }
+          okText="确定"
+          cancelText="取消"
+          onConfirm={() => applyReturn()}
+        >
+          <a>申请退货</a>
+        </Popconfirm>
+      ),
+    }[type] || <span />
+  );
+};
+
+export const OrderItem = ({
+  record = {},
+  type = 'ORDER',
+  callback,
+}: {
+  record: OrderManage.Content;
+  type: string;
+  callback: () => void;
 }) => {
   return (
     <div className="order-item">
@@ -123,6 +178,13 @@ export const OrderItem = ({
                   订单详情
                 </a>
               </div>
+              <div
+                style={{ flex: 1, display: 'grid', textAlign: 'center', alignContent: 'center' }}
+              >
+                {record?.mngButtonList?.map((b) => {
+                  return <ButtonManage type={b as any} record={record} callback={callback} />;
+                })}
+              </div>
             </>
           )}
         </div>
@@ -131,7 +193,15 @@ export const OrderItem = ({
   );
 };
 
-export default ({ dataSource, type = 'ORDER' }: { dataSource: any[]; type: string }) => {
+export default ({ 
+  dataSource, 
+  type = 'ORDER',
+  callback, 
+}: { 
+  dataSource: any[]; 
+  type: string;
+  callback: () => void;
+}) => {
   return (
     <div className="order-list-page">
       <div className="order-list-page-header">
@@ -151,13 +221,14 @@ export default ({ dataSource, type = 'ORDER' }: { dataSource: any[]; type: strin
           {type === 'ORDER' && (
             <>
               <div style={{ flex: 1, textAlign: 'center' }}>订单状态</div>
+              <div style={{ flex: 1, textAlign: 'center' }}>交易操作</div>
             </>
           )}
         </div>
       </div>
       <div className="order-list-page-body">
         {dataSource?.map((item, i) => (
-          <OrderItem key={i} type={type} record={item} />
+          <OrderItem key={i} type={type} record={item} callback={callback} />
         ))}
       </div>
     </div>
