@@ -167,7 +167,7 @@ export default () => {
       render: (createTime: string) => {
         return (
           <>
-            {createTime ? moment(createTime).format('YYYY-MM-DD HH:mm') : '--'}
+            {createTime || '--'}
           </>
         )
       },
@@ -240,7 +240,7 @@ export default () => {
       dataIndex: 'creatorOrgType',
       width: 150,
       render: (creatorOrgType: number) => {
-        return <span>{creatorOrgType === 1 ? '渠道商' : creatorOrgType === 1 ? '羚羊平台' : '--'}</span>
+        return <span>{creatorOrgType === 1 ? '渠道商' : creatorOrgType === 0 ? '羚羊平台' : '--'}</span>
       }
     },
     {
@@ -269,12 +269,12 @@ export default () => {
     },
     {
       title: '提交时间',
-      dataIndex: 'creatTime',
+      dataIndex: 'createTime',
       width: 200,
       render: (createTime: string) => {
         return (
           <>
-            {createTime ? moment(createTime).format('YYYY-MM-DD HH:mm:ss') : '--'}
+            {createTime || '--'}
           </>
         )
       },
@@ -334,7 +334,7 @@ export default () => {
       dataIndex: 'creatorOrgType',
       width: 150,
       render: (creatorOrgType: number) => {
-        return <span>{creatorOrgType === 1 ? '渠道商' : creatorOrgType === 1 ? '羚羊平台' : '--'}</span>
+        return <span>{creatorOrgType === 1 ? '渠道商' : creatorOrgType === 0 ? '羚羊平台' : '--'}</span>
       }
     },
     {
@@ -368,7 +368,7 @@ export default () => {
       render: (updateTime: string) => {
         return (
           <>
-            {updateTime ? moment(updateTime).format('YYYY-MM-DD HH:mm:ss') : '--'}
+            {updateTime || '--'}
           </>
         )
       },
