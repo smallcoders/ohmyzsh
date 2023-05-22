@@ -19,7 +19,7 @@ import AddBusinessModal from './components/addBusinessModal'
 import AuditModal from './components/auditModal'
 import { useAccess, Access } from '@@/plugin-access/access';
 import moment from 'moment';
-import Common from '@/types/common';
+import type Common from '@/types/common';
 const sc = scopedClasses('business-channel-manage');
 
 const tableOptions = [
@@ -83,7 +83,7 @@ const statusColorMap = {
 
 export default () => {
   // 拿到当前角色的access权限兑现
-  const access = useAccess();
+  const access: any = useAccess();
   const [activeTab, setActiveTab] = useState<string>('ALL')
   const [searchForm] = Form.useForm()
   const [params, setParams] = useState<any>({
@@ -156,8 +156,8 @@ export default () => {
       title: '企业所属地区',
       dataIndex: 'areaName',
       width: 150,
-      render: (areaName: string) => {
-        return <span>{areaName || '--'}</span>
+      render: (areaName: string, record: any) => {
+        return <span>{record.cityName || areaName ? `${record.cityName}${record.cityName && areaName ? '/' : ''}${areaName}` : '--'}</span>
       }
     },
     {
@@ -179,7 +179,7 @@ export default () => {
       render: (_: any, record: any) => {
         return (
           <>
-            <Access accessible={access['PU_BLAM_QJXFGG']}>
+            <Access accessible={access.PU_BLAM_QJXFGG}>
               {
                 record.status === 2 || record.status === 4 ?
                 <Button
@@ -214,12 +214,12 @@ export default () => {
       title: '商机编号',
       dataIndex: 'chanceNo',
       width: 150,
-      render: (chanceNo: string) => {
+      render: (chanceNo: string, record: any) => {
         return (
           <span
             style={chanceNo ? {color: '#0068ff', cursor: 'pointer'} : {}}
             onClick={() => {
-              console.log(1)
+              auditModalRef.current.openModal(record, 'detail')
             }}
           >
             {chanceNo || '--'}
@@ -286,7 +286,7 @@ export default () => {
       render: (_: any, record: any) => {
         return (
           <>
-            <Access accessible={access['PU_BLAM_QJXFGG']}>
+            <Access accessible={access.PU_BLAM_QJXFGG}>
               <Button
                 size="small"
                 type="link"
@@ -308,12 +308,12 @@ export default () => {
       title: '商机编号',
       dataIndex: 'chanceNo',
       width: 150,
-      render: (chanceNo: string) => {
+      render: (chanceNo: string, record: any) => {
         return (
           <span
             style={chanceNo ? {color: '#0068ff', cursor: 'pointer'} : {}}
             onClick={() => {
-              console.log(1)
+              auditModalRef.current.openModal(record, 'detail')
             }}
           >
             {chanceNo || '--'}
@@ -357,8 +357,8 @@ export default () => {
       title: '企业所属地区',
       dataIndex: 'areaName',
       width: 150,
-      render: (areaName: string) => {
-        return <span>{areaName || '--'}</span>
+      render: (areaName: string, record: any) => {
+        return <span>{record.cityName || areaName ? `${record.cityName}${record.cityName && areaName ? '/' : ''}${areaName}` : '--'}</span>
       }
     },
     {
@@ -380,7 +380,7 @@ export default () => {
       render: (_: any, record: any) => {
         return (
           <>
-            <Access accessible={access['PU_BLAM_QJXFGG']}>
+            <Access accessible={access.PU_BLAM_QJXFGG}>
               <Button
                 size="small"
                 type="link"
@@ -567,7 +567,7 @@ export default () => {
           {
             activeTab === 'ALL' &&
             <div className="button-box">
-              <Access accessible={access['P_BLM_XHXXPZ']}>
+              <Access accessible={access.P_BLM_XHXXPZ}>
                 <Button
                   style={{ marginRight: '20px' }}
                   type="default"
@@ -579,7 +579,7 @@ export default () => {
                   导入商机
                 </Button>
               </Access>
-              <Access accessible={access['P_BLM_XHXXPZ']}>
+              <Access accessible={access.P_BLM_XHXXPZ}>
                 <Button
                   style={{ marginLeft: '10px' }}
                   type="primary"
@@ -599,6 +599,7 @@ export default () => {
           loading={loading}
           columns={activeTab === 'ALL' ? recordColumns : activeTab === 'AUDIT' ? auditColumns : distributeColumns}
           dataSource={dataSource}
+          key="id"
           pagination={
             pageInfo.totalCount === 0
               ? false

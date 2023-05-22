@@ -97,6 +97,11 @@ const UploadModal = forwardRef((props: any, ref: any) => {
           isOneLine: true
         })
       }
+      if(record.cityCode && record.orgArea) {
+        form.setFieldsValue({
+          area: [record.cityCode, record.orgArea]
+        })
+      }
       getHistoryChannel({chanceId: record.id}).then((res) => {
         if(res.code === 0){
           setHistoryChannel(res.result)
@@ -113,7 +118,9 @@ const UploadModal = forwardRef((props: any, ref: any) => {
                 return {
                   label: historyChannel.indexOf(item.id) !== -1 ? `${item.channelName}    历史渠道商` : item.channelName,
                   value: item.id,
-                  disabled: historyChannel.indexOf(item.id) !== -1 ? true : false
+                  disabled: historyChannel.indexOf(item.id) !== -1,
+                  areaCode: item.areaCode,
+                  cityCode: item.cityCode
                 }
               }) || [])
               setPageInfo({
@@ -167,7 +174,7 @@ const UploadModal = forwardRef((props: any, ref: any) => {
 
   const handleSubmit = async () => {
     await form.validateFields()
-    const { chanceId, auditTxt } = form.getFieldsValue()
+    const { channelId, auditTxt } = form.getFieldsValue()
     const params: any = {
       chanceId: currentRecord.id
     }
@@ -175,7 +182,7 @@ const UploadModal = forwardRef((props: any, ref: any) => {
       params.result = auditStatus
       params.auditTxt = auditTxt
     } else {
-      params.channelId = chanceId
+      params.channelId = channelId
       params.status = 0
     }
     if (modalType === 'audit') {
@@ -245,7 +252,7 @@ const UploadModal = forwardRef((props: any, ref: any) => {
       </div>
     )
   }
-
+  console.log(modalType, 'tmpList')
   return (
     <Modal
       title={
@@ -319,11 +326,11 @@ const UploadModal = forwardRef((props: any, ref: any) => {
                       </div>
                       <div className="name">
                         {
-                          item.adminName || '--'
+                          item.dockingName || '--'
                         }
                       </div>
                       <div className="location">
-                        定位：{item.cityName}{item.areaName}
+                        定位：{item.accessLocation}
                       </div>
                     </div>
                     <div
@@ -407,7 +414,9 @@ const UploadModal = forwardRef((props: any, ref: any) => {
                                 return {
                                   label: historyChannel.indexOf(item.id) !== -1 ? `${item.channelName}    历史渠道商` : item.channelName,
                                   value: item.id,
-                                  disabled: historyChannel.indexOf(item.id) !== -1 ? true : false
+                                  disabled: historyChannel.indexOf(item.id) !== -1,
+                                  areaCode: item.areaCode,
+                                  cityCode: item.cityCode
                                 }
                               }) || [])
                               setPageInfo({
@@ -443,7 +452,9 @@ const UploadModal = forwardRef((props: any, ref: any) => {
                                 return {
                                   label: historyChannel.indexOf(item.id) !== -1 ? `${item.channelName}    历史渠道商` : item.channelName,
                                   value: item.id,
-                                  disabled: historyChannel.indexOf(item.id) !== -1 ? true : false
+                                  disabled: historyChannel.indexOf(item.id) !== -1 ? true : false,
+                                  areaCode: item.areaCode,
+                                  cityCode: item.cityCode
                                 }
                               }) || [])
                               setPageInfo({
@@ -456,6 +467,11 @@ const UploadModal = forwardRef((props: any, ref: any) => {
                       }}
                       onChange={(value, option) => {
                         setChannelName(option.label)
+                        if(option.cityCode && option.areaCode) {
+                          form.setFieldsValue({
+                            area: [option.cityCode, option.areaCode]
+                          })
+                        }
                       }}
                       filterOption={false}
                       placeholder="请选择渠道商"
@@ -495,7 +511,9 @@ const UploadModal = forwardRef((props: any, ref: any) => {
                                     return {
                                       label: historyChannel.indexOf(item.id) !== -1 ? `${item.channelName}    历史渠道商` : item.channelName,
                                       value: item.id,
-                                      disabled: historyChannel.indexOf(item.id) !== -1
+                                      disabled: historyChannel.indexOf(item.id) !== -1,
+                                      areaCode: item.areaCode,
+                                      cityCode: item.cityCode
                                     }
                                   }) || []
                                 ))
@@ -516,8 +534,48 @@ const UploadModal = forwardRef((props: any, ref: any) => {
           </Form>
         </div>
       }
+      {
+        (currentRecord.status === 2 || currentRecord.status === 3) && modalType === 'detail' &&
+        <div
+          className="other-btn"
+          onClick={() => {
+            setModalType(currentRecord.status === 2 ? 'audit' : 'distribute')
+            const tmpList = infoList
+            if (currentRecord.auditType === 3) {
+              tmpList.splice(5, 1)
+              tmpList.push({
+                label: '当前渠道商',
+                value: 'channelName',
+                isOneLine: true
+              })
+              tmpList.push({
+                label: '更换事由',
+                value: currentRecord.applyReason,
+                isOneLine: true
+              })
+            }
+            if (currentRecord.auditType === 2) {
+              tmpList.splice(5, 1)
+              tmpList.push({
+                label: '渠道商',
+                value: 'channelName',
+                isOneLine: true
+              })
+              tmpList.push({
+                label: '释放事由',
+                value: currentRecord.applyReason,
+                isOneLine: true
+              })
+            }
+            setInfoList(tmpList)
+          }}
+        >
+          {currentRecord.status === 2 ? '审核商机' : '分发至渠道'}
+        </div>
+      }
     </Modal>
   )
 })
+
 
 export default UploadModal
