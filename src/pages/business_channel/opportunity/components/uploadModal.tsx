@@ -1,7 +1,10 @@
 import { useState, useImperativeHandle, forwardRef } from 'react';
-import { message as antdMessage, Modal, Tooltip, Upload, UploadProps } from 'antd';
+import { message as antdMessage, Modal, Tooltip, Upload, UploadProps, Button } from 'antd';
 import { RcFile, UploadChangeParam } from 'antd/lib/upload/interface';
 import { CloudUploadOutlined } from '@ant-design/icons';
+import {
+  downloadBusinessTemplate
+} from '@/services/business-channel';
 import SelfTable from '@/components/self_table';
 
 
@@ -128,6 +131,20 @@ const UploadModal = forwardRef((props: any, ref: any) => {
     >
       {uploadNum === 0 ? (
         <div style={{ height: '300px' }}>
+          <Button onClick={() => {
+            downloadBusinessTemplate().then((res) => {
+              const content = res?.data;
+              const blob  = new Blob([content], {type: "application/vnd.ms-excel;charset=utf-8"});
+              const fileName = `商机模版.xlsx`
+              const url = window.URL.createObjectURL(blob);
+              const link = document.createElement('a')
+              link.style.display = 'none'
+              link.href = url;
+              link.setAttribute('download', fileName)
+              document.body.appendChild(link);
+              link.click();
+            })
+          }} style={{color: '#0068ff', marginBottom: '20px'}}>下载商机模板</Button>
           <div style={{ height: '180px' }}>
             <Dragger {...uploadProps} className={uploadNum.progress === 'true' ? 'supplierStaus' : ''}>
               <p className="ant-upload-text">

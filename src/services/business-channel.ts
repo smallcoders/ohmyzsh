@@ -80,9 +80,18 @@ export async function getAccessList(params?: any) {
 }
 // 跟进详情
 export async function getAccessDetail(params?: any) {
-  return request<any>('/mng/chance/access/detail', {
+  return request<any>('/antelope-channel/mng/chance/access/detail', {
     method: 'get',
     params,
+  });
+}
+
+// 下载商机模版
+export async function downloadBusinessTemplate() {
+  return request<any>('/antelope-channel/mng/importAndExport/downloadBusinessTemplate', {
+    method: 'get',
+    responseType: 'blob',
+    getResponse: true,
   });
 }
 
