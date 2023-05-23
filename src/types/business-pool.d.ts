@@ -21,6 +21,7 @@ namespace BusinessPool {
     channelBusinessNum: number;
     maxTaskSize: number;
     serviceArea: string;
+    serviceName: string;
     adminName: string;
     contactPhone: string;
     createTime: string;
@@ -29,14 +30,17 @@ namespace BusinessPool {
   };
 
   export type SaveAccountRequest = {
-    channelName: string;
-    maxTaskSize: number;
-    channelBusinessNum: number;
-    adminName: string;
-    contactPhone: string;
-    serviceName: string;
-    serviceCode: string;
-    id: number
+    channelName?: string;
+    maxTaskSize?: number;
+    channelBusinessNum?: number;
+    adminName?: string;
+    contactPhone?: string;
+    serviceName?: string;
+    serviceArea?: string;
+    orgId?: number;
+    id: number;
+    status: number;
+    [key as string]: string | number
   };
 }
 export default BusinessPool;

@@ -6,10 +6,6 @@ import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import { ModalForm, ProFormText, ProFormSelect,ProFormCascader, ProFormSwitch, ProFormDigit } from '@ant-design/pro-form';
 import {
-  deleteAccount,
-  resetPassword,
-} from '@/services/account';
-import {
   getCities,
   queryChannelBusiness,
   queryOrgList,
@@ -27,8 +23,7 @@ const AccountTable: React.FC = () => {
   const [provinceData, setProvinceData ]= useState<any>()
   const actionRef = useRef<ActionType>();
   const paginationRef = useRef<any>();
-  const [orgListOptions, setOrgListOptions] = useState([])
-  const [fetching, setFetching] = useState(false);
+  const [isEdit, setIsEdit] = useState<boolean>(false)
 
 
   useEffect(() => {
@@ -45,13 +40,13 @@ const AccountTable: React.FC = () => {
    * @param isAdd
    * @param fields
    */
-  const handleSave = async (isAdd: boolean, fields: BusinessPool.SaveAccountRequest) => {
+  const handleSave = async (isAdd: boolean, fields: BusinessPool.SaveAccountRequest, isStatus?: boolean) => {
     try {
       const result: Common.ResultCode = isAdd
         ? await AddChannelBusiness(fields)
         : await UpdateChannelBusiness(fields);
       if (result.code === 0) {
-        message.success(`${isAdd ? '添加' : '修改'}账号成功`);
+        message.success( isStatus ? '已禁用' : isAdd ? '操作成功' : '保存成功');
         const { reset, reload } = actionRef.current || {};
         if (isAdd) {
           if (reset) {
@@ -68,30 +63,7 @@ const AccountTable: React.FC = () => {
         message.error(result.message);
       }
     } catch (error) {
-      message.error(`${isAdd ? '添加' : '修改'}账号失败，请重试！`);
-    }
-  };
-
-  /**
-   * 删除或重置密码
-   * @param isDelete
-   * @param id
-   */
-  const handleModify = async (isDelete: boolean, id: number) => {
-    try {
-      const result: Common.ResultCode = isDelete
-        ? await deleteAccount(id)
-        : await resetPassword(id);
-      if (result.code === 0) {
-        message.success(`${isDelete ? '删除账号' : '重置密码'}成功`);
-        if (actionRef.current) {
-          actionRef.current.reload();
-        }
-      } else {
-        message.error(result.message);
-      }
-    } catch (error) {
-      message.error(`${isDelete ? '删除账号' : '重置密码'}失败，请重试！`);
+      message.error('操作失败');
     }
   };
 
@@ -110,11 +82,11 @@ const AccountTable: React.FC = () => {
       ellipsis: true,
       width: 250,
       hideInSearch: true,
-      render: (_, record) => <span className={record.status === 1 ? 'text cursor' : 'normal cursor'}>{_}</span>
+      render: (_, record) => <span onClick={() =>{setUpdateModalVisible(true); setCurrentRow(record)}}  className={record.status === 1 ? 'text cursor' : 'normal cursor'}>{_}</span>
     },
     {
       title: '渠道商人数',
-      dataIndex: 'name',
+      dataIndex: 'channelBusinessNum',
       width: 150,
       hideInSearch: true,
       render: (_, record) => <span className={record.status === 1 ? 'text' : ''}>{_}</span>
@@ -128,11 +100,19 @@ const AccountTable: React.FC = () => {
     },
     {
       title: '承接区域',
+      dataIndex: 'serviceNames',
+      ellipsis: true,
+      width: 350,
+      hideInSearch: true,
+      render: (_, record) => <span className={record.status === 1 ? 'text' : ''}>{_}</span>
+    },
+    {
+      title: '承接区域',
       dataIndex: 'serviceArea',
       width: 350,
       ellipsis: true,
-      render: (_, record) => <span className={record.status === 1 ? 'text' : ''}>{_}</span>,
       valueType: 'cascader',
+      hideInTable: true,
       fieldProps: {
         placeholder: '请选择区域',
         displayRender: (label, options) => {
@@ -219,18 +199,23 @@ const AccountTable: React.FC = () => {
           type="link"
           onClick={() => {
             setCurrentRow(record);
+            setIsEdit(true)
             setUpdateModalVisible(true);
           }}
         >
           编辑
         </Button>,
+        record.status === 0 &&
         <Popconfirm
           key="3"
           title="禁用后，渠道商将无法接收新商机，是否确认禁用？"
           okText="确定"
           cancelText="取消"
           placement="bottomRight"
-          onConfirm={() => handleModify(true, record.id)}
+          onConfirm={() => handleSave(false, {
+            id: record.id,
+            status: 1
+          }, true)}
         >
           <Button size="small" type="link">
             禁用
@@ -250,11 +235,14 @@ const AccountTable: React.FC = () => {
           labelCol={{ span: 6 }}
           visible={createModalVisible}
           onVisibleChange={setCreateModalVisible}
+          modalProps={{
+            destroyOnClose: true
+          }}
           onFinish={async (value) => {
             const { serviceArea, channelName, maxTaskSize } = value
             const [serviceName, serviceCode] = handleArea(serviceArea, provinceData)
-            const { id, phone, scale, legalName  } = channelName
-            await handleSave(true, {serviceName, serviceCode, maxTaskSize, contactPhone: phone, adminName: legalName,channelBusinessNum: scale, id  } as BusinessPool.SaveAccountRequest)
+            const {  phone, scale, legalName, id  } = channelName
+            await handleSave(true, { serviceName, serviceArea: serviceCode, maxTaskSize, channelName: channelName.orgName, contactPhone: phone, adminName: legalName,channelBusinessNum: scale, orgId: id } as BusinessPool.SaveAccountRequest)
           }}
         >
           <ProFormSelect
@@ -274,7 +262,11 @@ const AccountTable: React.FC = () => {
                 label: 'orgName',
                 value: 'id'
               },
-              labelInValue: true
+              labelInValue: true,
+              onChange(val, option) {
+                console.log('val =>', val)
+                console.log('option =>', option)
+              }
             }}
           />
           <ProFormCascader
@@ -302,11 +294,11 @@ const AccountTable: React.FC = () => {
           />
           <ProFormDigit
             rules={[{ required: true }]}
-            min={0}
+            min={1}
             max={1000}
+            initialValue={50}
             fieldProps={{
-              precision: 0,
-              defaultValue: 50
+              precision: 0
             }}
             width="lg"
             name="maxTaskSize"
@@ -317,26 +309,132 @@ const AccountTable: React.FC = () => {
   };
 
   const renderUpdateModal = () => {
-    const { id, loginName, name, phone, roles } = currentRow || {};
+    console.log('currentRow =>', currentRow)
+    const serviceName = currentRow?.serviceName?.split(',').map((ele: any) => ele.split('/'))
+    const [serviceArea] = handleName(serviceName, provinceData)
+    const initVal = Object.assign({}, currentRow, {
+      status: (currentRow?.status || 0) === 0,
+      serviceArea,
+      serviceName: currentRow?.serviceName?.split(',').join('；')
+    })
+    console.log('initVal =>', initVal)
     return (
         <ModalForm
-          title={'编辑渠道商'}
-          width="500px"
+          title={ isEdit ? '编辑渠道商' : '渠道商详情'}
+          width="600px"
           layout="horizontal"
           labelCol={{ span: 6 }}
           visible={updateModalVisible}
-          onVisibleChange={setUpdateModalVisible}
-          initialValues={{ loginName, name, roleIds: roles ? roles?.map((item: any) => item?.id) : [], phone }}
-          onFinish={async (value) =>
-
-            await handleSave(false, { ...value, id } as BusinessPool.SaveAccountRequest)
+          modalProps={{
+            destroyOnClose: true,
+            okText: '保存',
+            bodyStyle: {
+              maxHeight: '500px',
+              overflow: 'auto'
+            },
+          }}
+          submitter={{
+            render: (props, defaultDom) => {
+              return [
+                !isEdit ?
+                <Button
+                  type="primary"
+                  key="ok"
+                  onClick={() => {
+                    setUpdateModalVisible(false)
+                  }}
+                >
+                  关闭
+                </Button>
+                : defaultDom
+              ];
+            },
+          }}
+          onVisibleChange={(bool) => {
+            if (!bool) {
+              setIsEdit(false)
+            }
+            setUpdateModalVisible(bool)
+          }}
+          initialValues={initVal}
+          onFinish={async (value) => {
+              const { serviceArea: c } = value
+              const [serviceNameTemp, serviceCode] = handleArea(c, provinceData)
+              const params = {
+                ...value,
+                serviceName: serviceNameTemp,
+                serviceArea: serviceCode,
+                status: value.status ? 0 : 1,
+                id: currentRow?.id
+              }
+              console.log('params =>', params)
+              await handleSave(false, params as BusinessPool.SaveAccountRequest)
+              setIsEdit(false)
+            }
           }
         >
-          <ProFormText width="lg" name="channelBusinessNum" label="渠道商人数" fieldProps={{ value: '50' }} readonly />
-          <ProFormText width="lg" name="adminName" label="管理员姓名" fieldProps={{ value: '李木子' }} readonly />
-          <ProFormText width="lg" name="contactPhone" label="联系方式" fieldProps={{ value: '18210001086' }} readonly />
-          <ProFormText width="lg" name="loginName" label="加入时间" fieldProps={{ value: '230505 16:12' }} readonly />
-          <ProFormSwitch width="lg" name="loginName" label="服务状态" fieldProps={{ defaultChecked: false}} disabled />
+          <ProFormSelect
+            rules={[{ required: true }]}
+            width="lg"
+            name="channelName"
+            label="渠道商名称"
+            debounceTime={300}
+            options={[]}
+            showSearch
+
+            fieldProps={{
+              fieldNames: {
+                label: 'orgName',
+                value: 'id'
+              },
+              labelInValue: true
+            }}
+            readonly
+          />
+          {!isEdit ?
+            <ProFormText width="lg" name="serviceName" label="承接商机的区域" readonly />
+          : <ProFormCascader
+            rules={[{ required: true }]}
+            width="lg"
+            name="serviceArea"
+            label="承接区域"
+            fieldProps={{
+              displayRender: (label, options) => {
+                // @ts-ignore
+                const [v1, v2] = options
+                return `${v1.name}/${v2.name}`
+              },
+              placeholder: '请选择区域',
+              showCheckedStrategy: 'SHOW_CHILD',
+              options: provinceData,
+              multiple: true,
+              maxTagCount: 'responsive',
+              fieldNames: {
+                children: 'nodes',
+                label: 'name',
+                value: 'code'
+              }}
+            }
+          />
+          }
+          <ProFormDigit
+            rules={[{ required: true }]}
+            min={0}
+            max={1000}
+            initialValue={50}
+            fieldProps={{
+              precision: 0
+            }}
+            width="lg"
+            name="maxTaskSize"
+            label="商机承载量"
+            readonly={!isEdit}
+          />
+          <ProFormText width="lg" name="channelBusinessNum" label="渠道商人数" readonly />
+          <ProFormText width="lg" name="adminName" label="管理员姓名" readonly />
+          <ProFormText width="lg" name="contactPhone" label="联系方式" readonly />
+          <ProFormText width="lg" name="createTime" label="加入时间" readonly />
+          <ProFormSwitch width="lg" checkedChildren="已启用" unCheckedChildren="已禁用" name="status" label="服务状态" disabled={!isEdit} />
         </ModalForm>
     );
   };
@@ -365,18 +463,20 @@ const AccountTable: React.FC = () => {
           const params = {
             pageIndex: pagination.current,
             serviceName,
-            serviceCode,
             ...pagination,
             keywords: pagination.keywords?.trim(),
+            serviceArea: serviceCode,
           }
           // @ts-ignore
-          delete params.serviceArea
           delete params.current
           console.log('params =>', params)
           const { result, code } = await queryChannelBusiness(params);
           if (code !== 0) return
           paginationRef.current = pagination;
           const { record } = result
+          record?.records.forEach((ele: any) => {
+            ele.serviceNames = ele.serviceName?.split(',').join('；')
+          })
           return {
             data: record.records,
             success: true,
@@ -410,6 +510,21 @@ function handleArea(serviceArea: any, provinceData: any) {
     return ele[1]?.code
   }).join()
   return [serviceName, serviceCode]
+}
+
+function handleName(serviceArea: any, provinceData: any) {
+  const serviceAreaTemp = serviceArea?.map?.((ele: any) => {
+    const [v1, v2] = ele
+    const city = provinceData.filter((item: any) => item.name === v1)[0] || {}
+    const area = city?.nodes?.filter((item: any) => item.name === v2)[0] || {}
+    return [city, area]
+  })
+  const serviceCode = serviceAreaTemp?.map((ele: any) => {
+    const [v1, v2] = ele
+    return [v1.code, v2.code]
+  })
+
+  return [serviceCode]
 }
 
 export default AccountTable;
