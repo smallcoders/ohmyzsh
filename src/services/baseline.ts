@@ -417,3 +417,13 @@ export async function httpArticleBatchAudit(data: {
     data,
   })
 }
+
+// 服务管理获取详情id
+export function httpGetArtcleDetailId(params: {
+  industrialArticleId: string
+}) {
+  return request(`/antelope-business/mng/serviceAccount/article/detailId`, {
+    method: 'get',
+    params,
+  })
+}

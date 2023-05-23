@@ -12,6 +12,7 @@ import {
   queryServiceArticlePage,
   httpArticleAudit,
   httpArticleBatchAudit,
+  httpGetArtcleDetailId,
 } from '@/services/baseline';
 import type Common from '@/types/common';
 import { disabled } from 'glamor';
@@ -89,6 +90,20 @@ export default () => {
   useEffect(() => {
     console.log('access', access['PU_BLM_FWHNRGL']);
   }, [access]);
+
+  const handleDetail = async (id: string) => {
+    // 调接口成功了跳转
+    try {
+      const res = await httpGetArtcleDetailId({industrialArticleId: id})
+      if (res?.code === 0) {
+        window.open(`${routeName.BASELINE_SERVICE_CONTENT_MANAGE_DETAIL}?id=${res?.result}`);
+      } else {
+        message.error(`跳转详情失败，原因：${res?.message}`)
+      }
+    } catch (error) {
+      message.error(`跳转详情失败,原因：${error}`)
+    }
+  }
 
   const columns = [
     {
@@ -179,6 +194,15 @@ export default () => {
       render: (_: any, record: any) => {
         return (
           <Space wrap>
+            <Button
+              style={{ padding: 0 }}
+              type="link"
+              onClick={() => {
+                handleDetail(record?.id.toString());
+              }}
+            >
+              详情
+            </Button>
             {record?.auditStatus == 1 && (
               <>
                 <Access accessible={access['PU_BLM_FWHNRGL']}>

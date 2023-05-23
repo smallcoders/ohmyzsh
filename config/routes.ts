@@ -269,6 +269,7 @@
     '/baseline/baseline-service-number/management/drafts/add', // 草稿箱add
   BASELINE_HOTSPOT_MANAGE: 'baseline-hotspot-manage',
   BASELINE_SERVICE_CONTENT_MANAGE: '/baseline/baseline-service-content-manage', // 服务号管理
+  BASELINE_SERVICE_CONTENT_MANAGE_DETAIL: '/baseline/baseline-service-content-manage/detail', // 服务号管理
 };
 
 export default [
@@ -382,7 +383,28 @@ export default [
         name: '服务号内容管理',
         code: 'M_BLM_FWHNRGL',
         access: 'M_BLM_FWHNRGL',
-        component: './baseline/service-content',
+        hideChildrenInMenu: true,
+        // component: './baseline/service-content',
+        routes: [
+          {
+            path: routeName.BASELINE_SERVICE_CONTENT_MANAGE,
+            access: 'M_BLM_NRBQGL',
+            redirect: routeName.BASELINE_SERVICE_CONTENT_MANAGE + '/index',
+          },
+          {
+            path: routeName.BASELINE_SERVICE_CONTENT_MANAGE + '/index',
+            access: 'M_BLM_NRBQGL',
+            name: '服务号内容管理',
+            hideInBreadcrumb: true,
+            component: './baseline/service-content',
+          },
+          {
+            path: routeName.BASELINE_SERVICE_CONTENT_MANAGE_DETAIL,
+            name: '服务号内容详情',
+            hideInBreadcrumb: true,
+            component: './baseline/service-content/detail',
+          }
+        ]
       },
       
       {
