@@ -153,6 +153,14 @@ export default () => {
       }
     },
     {
+      title: '关联企业',
+      dataIndex: 'orgName',
+      width: 150,
+      render: (orgName: string) => {
+        return <span>{orgName || '--'}</span>
+      }
+    },
+    {
       title: '企业所属地区',
       dataIndex: 'areaName',
       width: 150,
