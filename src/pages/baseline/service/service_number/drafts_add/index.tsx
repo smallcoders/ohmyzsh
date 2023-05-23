@@ -28,6 +28,7 @@ import { routeName } from '../../../../../../config/routes';
 import { history, Link, useAccess, Access, Prompt } from 'umi';
 import './index.less';
 import ServiceItem from '../components/service-item';
+import { PlusOutlined } from '@ant-design/icons';
 import {
   httpServiceAccountPictureTextSubmit,
   httpServiceAccountPictureSubmit,
@@ -65,6 +66,8 @@ export default () => {
 
   // 内容信息form
   const [contentInfoForm] = Form.useForm();
+  // 链接信息form
+  const [linkForm] = Form.useForm();
   // 发布信息form
   const [formPostMessage] = Form.useForm();
   // 监听的标题 title
@@ -300,6 +303,47 @@ export default () => {
                 'blockQuote',
                 'insertTable',
               ]} 
+            />
+          </Form.Item>
+        </Form>
+      </div>
+      {/* 链接新增的标识 */}
+      <div className={sc('container-left-top-content-title')}>
+        链接
+        <span><Button type="primary" icon={<PlusOutlined />}>新增</Button></span>
+      </div>
+      <div className={sc('container-left-top-content-form')}>
+        <Form
+          {...formLayout} 
+          form={linkForm}
+          validateTrigger={['onBlur']}
+          onValuesChange={() => {
+            setContentInfoFormChange(true);
+            setShowPublish(false);
+          }}
+        >
+          <Form.Item
+            label="链接标题" 
+            name="链接标题" 
+            rules={[{ required: true, message: '必填' }]}
+          >
+            <Input maxLength={10} placeholder="请输入" allowClear />
+          </Form.Item>
+          <Form.Item
+            label="链接简介" 
+            name="链接简介"
+          >
+            <Input maxLength={10} placeholder="请输入" allowClear />
+          </Form.Item>
+          <Form.Item
+            label="链接地址" 
+            name="链接简介"
+            rules={[{ required: true, message: '必填' }]}
+          >
+            <Input.TextArea
+              placeholder="请输入"
+              autoSize={{ minRows: 3, maxRows: 5 }}
+              maxLength={300}
             />
           </Form.Item>
         </Form>

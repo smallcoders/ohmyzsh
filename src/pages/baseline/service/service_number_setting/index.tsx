@@ -112,7 +112,7 @@ export default () => {
     },
     {
       title: '服务号内部名',
-      dataIndex: 'innerName',
+      dataIndex: 'name',
       align: 'center',
       valueType: 'text', // 筛选的类别
     },
@@ -281,8 +281,17 @@ export default () => {
         }}
       >
         <Form form={form} labelCol={{ span: 7 }} wrapperCol={{ span: 16 }} validateTrigger={['onBlur']}>
+          {
+            modalTitle === '编辑' &&
+            <Form.Item
+              name="serviceId"
+              label="服务号ID"
+            >
+              <div>{editId}</div>
+            </Form.Item>
+          }
           <Form.Item
-            name="innerName"
+            name="name"
             label="服务号内部名称"
             rules={[
               { required: true, message: '必填' },
