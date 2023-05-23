@@ -74,7 +74,7 @@ const UploadModal = forwardRef((props: any, ref: any) => {
       if (type === 'distribute') {
         list.splice(5, 1, {
           label: '企业所属地',
-          value: record.cityName || record.areaName ? `${record.cityName}${record.cityName && record.areaName ? '/' : ''}${record.areaName}` : '--'
+          value: record.cityName || record.areaName ? `${record.cityName || ''}${record.cityName && record.areaName ? '/' : ''}${record.areaName || ''}` : '--'
         })
       }
       if (record.auditType === 3 && type === 'audit') {

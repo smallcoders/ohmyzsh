@@ -165,7 +165,7 @@ export default () => {
       dataIndex: 'areaName',
       width: 150,
       render: (areaName: string, record: any) => {
-        return <span>{record.cityName || areaName ? `${record.cityName}${record.cityName && areaName ? '/' : ''}${areaName}` : '--'}</span>
+        return <span>{record.cityName || areaName ? `${record.cityName || ''}${record.cityName && areaName ? '/' : ''}${areaName || ''}` : '--'}</span>
       }
     },
     {
@@ -366,7 +366,7 @@ export default () => {
       dataIndex: 'areaName',
       width: 150,
       render: (areaName: string, record: any) => {
-        return <span>{record.cityName || areaName ? `${record.cityName}${record.cityName && areaName ? '/' : ''}${areaName}` : '--'}</span>
+        return <span>{record.cityName || areaName ? `${record.cityName || ''}${record.cityName && areaName ? '/' : ''}${areaName || ''}` : '--'}</span>
       }
     },
     {
