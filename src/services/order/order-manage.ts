@@ -164,3 +164,15 @@ export async function modifyTags(data: any) {
   );
 }
 
+/**
+ * 申请退货
+ * @param data
+ * @returns
+ */
+export async function applyRefund(params?: { [key: string]: any }) {
+  return request<any>('/antelope-pay/mng/order/refund', {
+    method: 'get',
+    params
+  });
+}
+
