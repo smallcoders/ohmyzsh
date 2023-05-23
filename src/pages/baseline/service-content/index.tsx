@@ -24,7 +24,6 @@ const articleTypes = {
   VIDEO: '视频',
   AUDIO: '音频',
 };
-const newDate = new Date()
 export default () => {
   const [loading, setLoading] = useState(false);
   const [searchContent, setSearChContent] = useState<any>({});
@@ -182,7 +181,8 @@ export default () => {
       title: '发布时间',
       dataIndex: 'publishTime',
       render: (_: string) => {
-        return (_ ? <div style={{color: moment(_).diff(newDate, 'minute') > 0 ? 'orange' : 'black'}}>{moment(_).format('YYYY-MM-DD HH:mm:ss')}</div> : '--')
+        // const newDate = new Date()
+        return (_ ? <div style={{color: moment(_).diff(new Date(), 'minute') > 0 ? 'orange' : 'black'}}>{moment(_).format('YYYY-MM-DD HH:mm:ss')}</div> : '--')
       },
       width: 130,
     },
