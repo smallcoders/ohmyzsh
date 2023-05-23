@@ -276,7 +276,7 @@ export default () => {
       }
     },
     {
-      title: '提交时间',
+      title: '发布时间',
       dataIndex: 'createTime',
       width: 200,
       render: (createTime: string) => {
@@ -448,7 +448,6 @@ export default () => {
   };
 
   const useSearchNode = (): React.ReactNode => {
-    const timeLabel = activeTab === 'ALL' ? '发布时间' : '提交时间'
     return (
       <div className={sc('container-search')}>
         <Form form={searchForm}>
@@ -466,7 +465,7 @@ export default () => {
             {
               activeTab !== 'DISPATH' &&
               <Col span={8}>
-                <Form.Item labelCol={{span: 8}} name="time" label={timeLabel}>
+                <Form.Item labelCol={{span: 8}} name="time" label='发布时间'>
                   <DatePicker.RangePicker
                     allowClear
                     disabledDate={(current) => {
