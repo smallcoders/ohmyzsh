@@ -240,7 +240,7 @@ export default () => {
       dataIndex: 'creatorOrgType',
       width: 150,
       render: (creatorOrgType: number) => {
-        return <span>{creatorOrgType === 1 ? '渠道商' : creatorOrgType === 0 ? '羚羊平台' : '--'}</span>
+        return <span>{creatorOrgType === 1 ? '渠道挖掘' : creatorOrgType === 0 ? '平台录入' : '--'}</span>
       }
     },
     {
@@ -334,7 +334,7 @@ export default () => {
       dataIndex: 'creatorOrgType',
       width: 150,
       render: (creatorOrgType: number) => {
-        return <span>{creatorOrgType === 1 ? '渠道商' : creatorOrgType === 0 ? '羚羊平台' : '--'}</span>
+        return <span>{creatorOrgType === 1 ? '渠道挖掘' : creatorOrgType === 0 ? '平台录入' : '--'}</span>
       }
     },
     {

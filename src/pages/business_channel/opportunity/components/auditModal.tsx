@@ -47,7 +47,7 @@ const UploadModal = forwardRef((props: any, ref: any) => {
         },
         {
           label: '商机来源',
-          value: record.creatorOrgType === 1 ? '渠道商' : record.creatorOrgType === 0 ? '羚羊平台' : '--'
+          value: record.creatorOrgType === 1 ? '渠道挖掘' : record.creatorOrgType === 0 ? '平台录入' : '--'
         },
         {
           label: '商机名称',
