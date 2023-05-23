@@ -153,11 +153,19 @@ export default () => {
       }
     },
     {
+      title: '关联企业',
+      dataIndex: 'orgName',
+      width: 150,
+      render: (orgName: string) => {
+        return <span>{orgName || '--'}</span>
+      }
+    },
+    {
       title: '企业所属地区',
       dataIndex: 'areaName',
       width: 150,
       render: (areaName: string, record: any) => {
-        return <span>{record.cityName || areaName ? `${record.cityName}${record.cityName && areaName ? '/' : ''}${areaName}` : '--'}</span>
+        return <span>{record.cityName || areaName ? `${record.cityName || ''}${record.cityName && areaName ? '/' : ''}${areaName || ''}` : '--'}</span>
       }
     },
     {
@@ -240,7 +248,7 @@ export default () => {
       dataIndex: 'creatorOrgType',
       width: 150,
       render: (creatorOrgType: number) => {
-        return <span>{creatorOrgType === 1 ? '渠道商' : creatorOrgType === 0 ? '羚羊平台' : '--'}</span>
+        return <span>{creatorOrgType === 1 ? '渠道挖掘' : creatorOrgType === 0 ? '平台录入' : '--'}</span>
       }
     },
     {
@@ -268,7 +276,7 @@ export default () => {
       }
     },
     {
-      title: '提交时间',
+      title: '发布时间',
       dataIndex: 'createTime',
       width: 200,
       render: (createTime: string) => {
@@ -334,7 +342,7 @@ export default () => {
       dataIndex: 'creatorOrgType',
       width: 150,
       render: (creatorOrgType: number) => {
-        return <span>{creatorOrgType === 1 ? '渠道商' : creatorOrgType === 0 ? '羚羊平台' : '--'}</span>
+        return <span>{creatorOrgType === 1 ? '渠道挖掘' : creatorOrgType === 0 ? '平台录入' : '--'}</span>
       }
     },
     {
@@ -358,7 +366,7 @@ export default () => {
       dataIndex: 'areaName',
       width: 150,
       render: (areaName: string, record: any) => {
-        return <span>{record.cityName || areaName ? `${record.cityName}${record.cityName && areaName ? '/' : ''}${areaName}` : '--'}</span>
+        return <span>{record.cityName || areaName ? `${record.cityName || ''}${record.cityName && areaName ? '/' : ''}${areaName || ''}` : '--'}</span>
       }
     },
     {
@@ -440,7 +448,6 @@ export default () => {
   };
 
   const useSearchNode = (): React.ReactNode => {
-    const timeLabel = activeTab === 'ALL' ? '发布时间' : '提交时间'
     return (
       <div className={sc('container-search')}>
         <Form form={searchForm}>
@@ -458,7 +465,7 @@ export default () => {
             {
               activeTab !== 'DISPATH' &&
               <Col span={8}>
-                <Form.Item labelCol={{span: 8}} name="time" label={timeLabel}>
+                <Form.Item labelCol={{span: 8}} name="time" label='发布时间'>
                   <DatePicker.RangePicker
                     allowClear
                     disabledDate={(current) => {
