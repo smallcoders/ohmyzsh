@@ -44,6 +44,7 @@ import {
   httpServiceAccountOperationDetail,
 } from '@/services/service-management';
 import debounce from 'lodash/debounce';
+import removeImg from '@/assets/banking_loan/remove.png';
 const sc = scopedClasses('service-number-drafts-add');
 
 type RouterParams = {
@@ -240,6 +241,19 @@ export default () => {
   const coverOnChangeId = (value: any) => {
     setImgUrlId(value);
   };
+  // link的数量 本次先不做，下次更新
+  const [linkList, setLinkList] = useState<number[]>([])
+  // link新增
+  const handleLinkAdd = () => {
+    const newList = [...linkList]
+    newList.push(linkList?.length + 1)
+    console.log('新增', newList)
+    setLinkList(newList)
+  }
+  // link移除
+  const handleLinkRemove = (item: any) => {
+    console.log('移除',item)
+  }
 
   // 内容信息 - 图文信息
   const Tuwen = (
@@ -308,46 +322,55 @@ export default () => {
         </Form>
       </div>
       {/* 链接新增的标识 */}
-      <div className={sc('container-left-top-content-title')}>
+      {/* <div className={sc('container-left-top-content-link')}>
         链接
-        <span><Button type="primary" icon={<PlusOutlined />}>新增</Button></span>
+        <span style={{marginLeft: '20px'}}><Button onClick={handleLinkAdd} size="small" type="primary" icon={<PlusOutlined />}>新增</Button></span>
       </div>
-      <div className={sc('container-left-top-content-form')}>
-        <Form
-          {...formLayout} 
-          form={linkForm}
-          validateTrigger={['onBlur']}
-          onValuesChange={() => {
-            setContentInfoFormChange(true);
-            setShowPublish(false);
-          }}
-        >
-          <Form.Item
-            label="链接标题" 
-            name="链接标题" 
-            rules={[{ required: true, message: '必填' }]}
-          >
-            <Input maxLength={10} placeholder="请输入" allowClear />
-          </Form.Item>
-          <Form.Item
-            label="链接简介" 
-            name="链接简介"
-          >
-            <Input maxLength={10} placeholder="请输入" allowClear />
-          </Form.Item>
-          <Form.Item
-            label="链接地址" 
-            name="链接简介"
-            rules={[{ required: true, message: '必填' }]}
-          >
-            <Input.TextArea
-              placeholder="请输入"
-              autoSize={{ minRows: 3, maxRows: 5 }}
-              maxLength={300}
-            />
-          </Form.Item>
-        </Form>
-      </div>
+      <Form
+        {...formLayout} 
+        form={linkForm}
+        validateTrigger={['onBlur']}
+        onValuesChange={() => {
+          setContentInfoFormChange(true);
+          setShowPublish(false);
+        }}
+      >
+        {
+          linkList?.length > 0 && linkList?.map((item: any) => {
+            return (              
+              <div key={item} className={sc('container-left-top-content-link-form')}>
+                <img className={sc('container-left-top-content-link-form-remove')} src={removeImg} onClick={handleLinkRemove.bind(null, item)} />
+                <div>
+                  <Form.Item
+                    label={'链接标题' + item}
+                    name={'链接标题' + item}
+                    rules={[{ required: true, message: '必填' }]}
+                  >
+                    <Input maxLength={10} placeholder="请输入" allowClear />
+                  </Form.Item>
+                  <Form.Item
+                    label="链接简介" 
+                    name="链接简介"
+                  >
+                    <Input maxLength={10} placeholder="请输入" allowClear />
+                  </Form.Item>
+                  <Form.Item
+                    label="链接地址" 
+                    name="链接简介"
+                    rules={[{ required: true, message: '必填' }]}
+                  >
+                    <Input.TextArea
+                      placeholder="请输入"
+                      autoSize={{ minRows: 3, maxRows: 5 }}
+                      maxLength={300}
+                    />
+                  </Form.Item>
+                </div>
+              </div>
+            )
+          })
+        }
+      </Form> */}
     </div>
   );
   // 内容信息 - 图片信息
