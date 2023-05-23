@@ -46,7 +46,7 @@ const AccountTable: React.FC = () => {
         ? await AddChannelBusiness(fields)
         : await UpdateChannelBusiness(fields);
       if (result.code === 0) {
-        message.success( isStatus ? '已禁用' : '操作成功');
+        message.success( isStatus ? '已禁用' : isAdd ? '操作成功' : '保存成功');
         const { reset, reload } = actionRef.current || {};
         if (isAdd) {
           if (reset) {
@@ -294,7 +294,7 @@ const AccountTable: React.FC = () => {
           />
           <ProFormDigit
             rules={[{ required: true }]}
-            min={0}
+            min={1}
             max={1000}
             initialValue={50}
             fieldProps={{
@@ -327,6 +327,7 @@ const AccountTable: React.FC = () => {
           visible={updateModalVisible}
           modalProps={{
             destroyOnClose: true,
+            okText: '保存',
             bodyStyle: {
               maxHeight: '500px',
               overflow: 'auto'
@@ -396,7 +397,7 @@ const AccountTable: React.FC = () => {
             rules={[{ required: true }]}
             width="lg"
             name="serviceArea"
-            label="承接商机的区域"
+            label="承接区域"
             fieldProps={{
               displayRender: (label, options) => {
                 // @ts-ignore
