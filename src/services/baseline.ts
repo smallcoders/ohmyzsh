@@ -491,3 +491,43 @@ export async function getGobleFloatAdsStatistics() {
     method: 'get',
   });
 }
+
+
+// 服务号管理内容条件查询接口
+export async function queryServiceArticlePage(data?: Record<string, any>) {
+  return request<any>('/antelope-industrial/mng/service/article/page/query', {
+    method: 'post',
+    data,
+  });
+}
+
+// 单个审核接口
+export async function httpArticleAudit(data: {
+  id: string,
+  auditStatus: number // 	审核状态：2：审核通过，3：审核不通过
+}) {
+  return request(`/antelope-industrial/mng/service/article/audit/${data?.id}/${data?.auditStatus}`, {
+    method: 'post',
+  })
+}
+
+// 批量审核接口
+export async function httpArticleBatchAudit(data: {
+  articleIds: any[],
+  auditStatus: number // 审核状态：2：审核通过，3：审核不通过
+}) {
+  return request(`/antelope-industrial/mng/service/article/batch/audit`,{
+    method: 'post',
+    data,
+  })
+}
+
+// 服务管理获取详情id
+export function httpGetArtcleDetailId(params: {
+  industrialArticleId: string
+}) {
+  return request(`/antelope-business/mng/serviceAccount/article/detailId`, {
+    method: 'get',
+    params,
+  })
+}

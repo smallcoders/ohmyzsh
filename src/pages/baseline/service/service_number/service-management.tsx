@@ -357,6 +357,13 @@ export default () => {
     OFF_SHELF: '已下架',
     APPOINTMENT_ON_SHELF: '预约发布',
   };
+  const syncIndustrialState= {
+    PASS: '已通过',
+    AUDITING: '审核中 ',
+    NOT_PASS: '未通过',
+    NOT_SYNC: '未同步',
+    OFF_SHELF:'已下架'
+  }
   const [total, setTotal] = useState<number>(0);
   const paginationRef = useRef<any>();
   const handleEditBtn = (item: any) => {
@@ -461,6 +468,21 @@ export default () => {
         return (
           <div className={`state${_}`}>
             {Object.prototype.hasOwnProperty.call(stateColumn, _) ? stateColumn[_] : '--'}
+          </div>
+        );
+      },
+    },
+    {
+      title: '同步至产业圈状态',
+      dataIndex: 'syncIndustrialState',
+      align: 'center',
+      width: 150,
+      hideInSearch: true,
+      renderText: (_: string,record:any) => {
+        return (
+          <div className={`state${_}`}>
+            {Object.prototype.hasOwnProperty.call(syncIndustrialState, _) ? syncIndustrialState[_] : '--'}
+            {record.syncIndustrialState==='NOT_PASS'&&<span>（{record.industrialAuditReason}）</span>}
           </div>
         );
       },

@@ -273,6 +273,8 @@
   BASELINE_SERVICE_NUMBER_MANAGEMENT_DRAFTS_ADD:
     '/baseline/baseline-service-number/management/drafts/add', // 草稿箱add
   BASELINE_HOTSPOT_MANAGE: 'baseline-hotspot-manage',
+  BASELINE_SERVICE_CONTENT_MANAGE: '/baseline/baseline-service-content-manage', // 服务号管理
+  BASELINE_SERVICE_CONTENT_MANAGE_DETAIL: '/baseline/baseline-service-content-manage/detail', // 服务号管理
 
   BASELINE_OPERATIONS_MANAGEMENT: '/baseline-operations-management', // 基线运营位管理
   BASELINE_OPERATIONS_MANAGEMENT_HOME_SCREEN_AD: '/baseline-operations-management/home-screen-ad', // 开屏广告
@@ -434,6 +436,35 @@ export default [
           },
         ],
       },
+      {
+        path: routeName.BASELINE_SERVICE_CONTENT_MANAGE,
+        name: '服务号内容管理',
+        code: 'M_BLM_FWHNRGL',
+        access: 'M_BLM_FWHNRGL',
+        hideChildrenInMenu: true,
+        // component: './baseline/service-content',
+        routes: [
+          {
+            path: routeName.BASELINE_SERVICE_CONTENT_MANAGE,
+            access: 'M_BLM_NRBQGL',
+            redirect: routeName.BASELINE_SERVICE_CONTENT_MANAGE + '/index',
+          },
+          {
+            path: routeName.BASELINE_SERVICE_CONTENT_MANAGE + '/index',
+            access: 'M_BLM_NRBQGL',
+            name: '服务号内容管理',
+            hideInBreadcrumb: true,
+            component: './baseline/service-content',
+          },
+          {
+            path: routeName.BASELINE_SERVICE_CONTENT_MANAGE_DETAIL,
+            name: '服务号内容详情',
+            hideInBreadcrumb: true,
+            component: './baseline/service-content/detail',
+          }
+        ]
+      },
+      
       {
         path: routeName.BASELINE_HOTSPOT_MANAGE,
         name: '实时热点管理',
