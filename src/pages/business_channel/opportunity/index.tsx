@@ -12,9 +12,12 @@ import {
   Cascader, message as antdMessage,
   Tooltip
 } from 'antd';
+import {
+  getCities,
+} from '@/services/business-pool'
 import SelfTable from '@/components/self_table';
 import UploadModal from './components/uploadModal';
-import { getAreaCode, getBusinessList } from '@/services/business-channel';
+import { getBusinessList } from '@/services/business-channel';
 import AddBusinessModal from './components/addBusinessModal'
 import AuditModal from './components/auditModal'
 import { useAccess, Access } from '@@/plugin-access/access';
@@ -421,7 +424,7 @@ export default () => {
     }
   };
   useEffect(() => {
-    getAreaCode({parentCode: 340000}).then((res: any) => {
+    getCities(340000).then((res: any) => {
       if (res.code === 0){
         setAreaOptions(res.result)
       }
@@ -483,7 +486,7 @@ export default () => {
                   label="企业所属地"
                   labelCol={{ span: 8 }}
                 >
-                  <Cascader allowClear fieldNames={{ label: 'name', value: 'code', children: 'childList' }} placeholder="请选择" options={areaOptions} />
+                  <Cascader allowClear fieldNames={{ label: 'name', value: 'code', children: 'nodes' }} placeholder="请选择" options={areaOptions} />
                 </Form.Item>
               </Col>
             }

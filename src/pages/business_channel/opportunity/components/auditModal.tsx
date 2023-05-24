@@ -1,7 +1,6 @@
 import { useState, useImperativeHandle, forwardRef, useEffect } from 'react';
 import { Modal, Radio, Input, Form, Cascader, Row, Col, Button, message, Select } from 'antd';
 import {
-  getAreaCode,
   auditChannel,
   dispathChannel,
   getHistoryChannel,
@@ -9,6 +8,9 @@ import {
   getChannelByName,
   getAccessList
 } from '@/services/business-channel';
+import {
+  getCities,
+} from '@/services/business-pool'
 import moment from 'moment';
 import { routeName } from '../../../../../config/routes';
 const chanceTypeMap = {
@@ -151,7 +153,7 @@ const UploadModal = forwardRef((props: any, ref: any) => {
     }
   }))
   useEffect(() => {
-    getAreaCode({parentCode: 340000}).then((res: any) => {
+    getCities(340000).then((res: any) => {
       if (res.code === 0){
         setAreaOptions(res.result)
       }
@@ -194,7 +196,7 @@ const UploadModal = forwardRef((props: any, ref: any) => {
     if (modalType === 'audit') {
       auditChannel(params).then((res) => {
         if (res.code === 0){
-          message.success('审核成功')
+          message.success(auditStatus === 1 ? '已通过' : '已驳回')
           onCancel()
           if (props.successCallBack) {
             props.successCallBack()
@@ -400,7 +402,7 @@ const UploadModal = forwardRef((props: any, ref: any) => {
                   >
                     <Cascader
                       allowClear
-                      fieldNames={{ label: 'name', value: 'code', children: 'childList' }}
+                      fieldNames={{ label: 'name', value: 'code', children: 'nodes' }}
                       placeholder="请选择所属区域" options={areaOptions}
                       onChange={(value) => {
                         if (value[1]) {
