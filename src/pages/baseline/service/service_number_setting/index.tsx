@@ -298,12 +298,12 @@ export default () => {
           }
           <Form.Item
             name="name"
-            label="服务号内部名称"
+            label="服务号名称"
             rules={[
               { required: true, message: '必填' },
               {
                 validator: changeFormMunuName,
-                message: '该服务号内部名称已存在',
+                message: '该服务号名称已存在',
                 validateTrigger: 'onBlur',
               },
             ]}
