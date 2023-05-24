@@ -183,7 +183,7 @@ export default () => {
     {
       title: '操作',
       hideInSearch: true,
-      width: 200,
+      width: 100,
       render: (_: any, record: any) => {
         return (
           <>
@@ -290,7 +290,7 @@ export default () => {
     {
       title: '操作',
       hideInSearch: true,
-      width: 200,
+      width: 100,
       render: (_: any, record: any) => {
         return (
           <>
@@ -384,7 +384,7 @@ export default () => {
     {
       title: '操作',
       hideInSearch: true,
-      width: 200,
+      width: 100,
       render: (_: any, record: any) => {
         return (
           <>
