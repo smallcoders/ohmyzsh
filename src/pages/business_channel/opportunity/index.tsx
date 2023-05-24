@@ -57,27 +57,27 @@ const statusMap = {
 const statusColorMap = {
   0: {
     color: '#0FEA97',
-    background: 'rgba(15, 234, 151, 0.3)'
+    background: 'rgba(15, 234, 151, 0.1)'
   },
   1: {
     color: '#526275',
-    background: 'rgba(82,98, 117, 0.3)'
+    background: 'rgba(82,98, 117, 0.1)'
   },
   2: {
     color: '#1CD8ED',
-    background: 'rgba(28, 216, 237, 0.3)'
+    background: 'rgba(28, 216, 237, 0.1)'
   },
   3: {
     color: '#0FEA97',
-    background: 'rgba(15, 234, 151, 0.3)'
+    background: 'rgba(15, 234, 151, 0.1)'
   },
   4: {
     color: '#FFD902',
-    background: 'rgba(255, 217, 2, 0.3)'
+    background: 'rgba(255, 217, 2, 0.1)'
   },
   5: {
     color: '#526275',
-    background: 'rgba(82,98, 117, 0.3)'
+    background: 'rgba(82,98, 117, 0.1)'
   }
 }
 
