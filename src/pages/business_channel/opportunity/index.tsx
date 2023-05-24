@@ -253,7 +253,7 @@ export default () => {
     },
     {
       title: '商机类型',
-      dataIndex: 'auditType',
+      dataIndex: 'chanceType',
       width: 150,
       render: (chanceType: number) => {
         return <span>{chanceTypeMap[chanceType] || '--'}</span>
@@ -347,7 +347,7 @@ export default () => {
     },
     {
       title: '商机类型',
-      dataIndex: 'auditType',
+      dataIndex: 'chanceType',
       width: 150,
       render: (chanceType: number) => {
         return <span>{chanceTypeMap[chanceType] || '--'}</span>

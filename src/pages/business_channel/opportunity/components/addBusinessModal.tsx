@@ -51,7 +51,7 @@ const UploadModal = forwardRef((props: any, ref: any) => {
   useImperativeHandle(ref, () => ({
     openModal: (data: any) => {
       if (data){
-        setIsEdit(true)
+        setIsEdit(data.status === 4)
         setRecord(data)
         form.setFieldsValue({
           chanceName: data.chanceName,
