@@ -117,7 +117,7 @@ export default () => {
       hideInSearch: true,
     },
     {
-      title: '服务号内部名',
+      title: '服务号名称',
       dataIndex: 'name',
       align: 'center',
       valueType: 'text', // 筛选的类别
