@@ -78,10 +78,10 @@ const UploadModal = forwardRef((props: any, ref: any) => {
         })
       }
       if (record.auditType === 3 && type === 'audit') {
-        list.splice(5, 1)
+        list.splice(6, 1)
         list.push({
           label: '当前渠道商',
-          value: 'channelName',
+          value: record.channelName,
           isOneLine: true
         })
         list.push({
@@ -91,10 +91,10 @@ const UploadModal = forwardRef((props: any, ref: any) => {
         })
       }
       if (record.auditType === 2 && type === 'audit') {
-        list.splice(5, 1)
+        list.splice(6, 1)
         list.push({
           label: '渠道商',
-          value: 'channelName',
+          value: record.channelName,
           isOneLine: true
         })
         list.push({
@@ -548,10 +548,10 @@ const UploadModal = forwardRef((props: any, ref: any) => {
             setModalType(currentRecord.status === 2 ? 'audit' : 'distribute')
             const tmpList = infoList
             if (currentRecord.auditType === 3 && currentRecord.status === 2) {
-              tmpList.splice(5, 1)
+              tmpList.splice(6, 1)
               tmpList.push({
                 label: '当前渠道商',
-                value: 'channelName',
+                value: currentRecord.channelName,
                 isOneLine: true
               })
               tmpList.push({
@@ -561,10 +561,10 @@ const UploadModal = forwardRef((props: any, ref: any) => {
               })
             }
             if (currentRecord.auditType === 2 && currentRecord.status === 2) {
-              tmpList.splice(5, 1)
+              tmpList.splice(6, 1)
               tmpList.push({
                 label: '渠道商',
-                value: 'channelName',
+                value: currentRecord.channelName,
                 isOneLine: true
               })
               tmpList.push({
