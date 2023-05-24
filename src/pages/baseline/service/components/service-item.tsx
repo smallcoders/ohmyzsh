@@ -10,6 +10,7 @@ import scopedClasses from '@/utils/scopedClasses';
 import LeftIcon from '@/assets/service/icon_left.png';
 import { history, Access, useAccess, useModel } from 'umi';
 import './service-item.less'
+import iconDefault from '@/assets/service/default.png';
 const sc = scopedClasses('service-item');
 
 const stateType = {
@@ -25,7 +26,7 @@ export default (props: {
 }) => {
   const { onOffShelves, handleRouter, dataSoueceItem } = props
   // 当前数组项
-  const { id, name, state } = dataSoueceItem
+  const { id, name, state, logoUrl } = dataSoueceItem
   const access = useAccess();
 
   // 服务号管理
@@ -42,7 +43,7 @@ export default (props: {
     <div className={sc('container-card-item')}>
       <div className={sc('container-card-item-title')}>
         <div className={sc('container-card-item-title-left')}>
-          <img className={sc('container-card-item-title-left-img')} src="" alt="" />
+          <img className={sc('container-card-item-title-left-img')} src={logoUrl || iconDefault} alt="" />
           <div className={sc('container-card-item-title-left-text')}>
             {name || '--'}
           </div>
