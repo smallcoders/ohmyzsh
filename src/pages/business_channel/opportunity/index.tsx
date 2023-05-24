@@ -170,12 +170,12 @@ export default () => {
     },
     {
       title: '发布时间',
-      dataIndex: 'createTime',
+      dataIndex: 'updateTime',
       width: 200,
-      render: (createTime: string) => {
+      render: (updateTime: string) => {
         return (
           <>
-            {createTime || '--'}
+            {updateTime || '--'}
           </>
         )
       },
@@ -277,12 +277,12 @@ export default () => {
     },
     {
       title: '发布时间',
-      dataIndex: 'createTime',
+      dataIndex: 'updateTime',
       width: 200,
-      render: (createTime: string) => {
+      render: (updateTime: string) => {
         return (
           <>
-            {createTime || '--'}
+            {updateTime || '--'}
           </>
         )
       },
