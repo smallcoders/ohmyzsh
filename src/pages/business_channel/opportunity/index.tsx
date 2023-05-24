@@ -464,8 +464,8 @@ export default () => {
             </Col>
             {
               activeTab !== 'DISPATH' &&
-              <Col span={8}>
-                <Form.Item labelCol={{span: 8}} name="time" label='发布时间'>
+              <Col span={7}>
+                <Form.Item labelCol={{span: 6}} name="time" label='发布时间'>
                   <DatePicker.RangePicker
                     allowClear
                     disabledDate={(current) => {
@@ -477,7 +477,7 @@ export default () => {
             }
             {
               activeTab === 'DISPATH' && areaOptions.length &&
-              <Col span={7}>
+              <Col span={6}>
                 <Form.Item
                   name="area"
                   label="企业所属地"
