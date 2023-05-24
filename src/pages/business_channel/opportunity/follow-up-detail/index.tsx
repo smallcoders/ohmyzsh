@@ -199,9 +199,9 @@ export default () => {
                       return (
                         <div
                           onClick={() => {
-                            setRecordIndex(index)
+                            setRecordIndex(id)
                           }}
-                          className={recordIndex === index ? "sound-list-item active" : "sound-list-item"}
+                          className={recordIndex === id ? "sound-list-item active" : "sound-list-item"}
                           key={id}
                         >
                           <div className="record-name">录音文件</div>
