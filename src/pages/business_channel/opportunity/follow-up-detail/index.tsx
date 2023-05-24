@@ -165,7 +165,7 @@ export default () => {
           {
             soundRecords.length > 0 &&
             <div className="sound-record">
-              <div className="title">录音文件</div>
+              <div className="title">录音文件{recordIndex + 1}</div>
               <div className="record-content">
                 <div className="record-left">
                   <div className="record-text-box">
@@ -204,7 +204,7 @@ export default () => {
                           className={recordIndex === id ? "sound-list-item active" : "sound-list-item"}
                           key={id}
                         >
-                          <div className="record-name">录音文件</div>
+                          <div className="record-name">录音文件{id + 1}</div>
                           <div className="record-status">{{0: '未转写', 1: '转写成功'}[item.transState]}</div>
                           <div className="record-duration">{item.videoTimeLength?.split('-')?.[1]}</div>
                         </div>

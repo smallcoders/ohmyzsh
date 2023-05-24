@@ -615,6 +615,7 @@ export default () => {
                   setParams({...params, pageIndex: current})
                 },
                 total: pageInfo.totalCount,
+                showSizeChanger:false,
                 current: pageInfo.pageIndex,
                 pageSize: pageInfo.pageSize,
                 showTotal: (total: number) =>
