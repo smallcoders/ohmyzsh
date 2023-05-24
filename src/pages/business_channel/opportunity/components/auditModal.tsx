@@ -584,7 +584,7 @@ const UploadModal = forwardRef((props: any, ref: any) => {
             setInfoList(tmpList)
           }}
         >
-          {currentRecord.status === 2 ? '审核商机' : '分发至渠道'}
+          {currentRecord.status === 2 ? '审核商机' : '分发至渠道商'}
         </div>
       }
     </Modal>
