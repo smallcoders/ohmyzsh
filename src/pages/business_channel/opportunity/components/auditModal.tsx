@@ -371,8 +371,10 @@ const UploadModal = forwardRef((props: any, ref: any) => {
                 auditStatus === 1 ?
                   [{}] :
                   [
-                    {required: true, message: '为方便业务修改，请简要描述驳回事由'},
                     {validator: (rule, value) => {
+                      if (!value) {
+                        return Promise.reject('为方便业务修改，请简要描述驳回事由')
+                      }
                       if (value.length < 10) {
                         return Promise.reject('字数不得小于10字')
                       }
