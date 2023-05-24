@@ -40,13 +40,13 @@ const AccountTable: React.FC = () => {
    * @param isAdd
    * @param fields
    */
-  const handleSave = async (isAdd: boolean, fields: BusinessPool.SaveAccountRequest, isStatus?: boolean) => {
+  const handleSave = async (isAdd: boolean, fields: BusinessPool.SaveAccountRequest, isCustom?: boolean, msg?: string) => {
     try {
       const result: Common.ResultCode = isAdd
         ? await AddChannelBusiness(fields)
         : await UpdateChannelBusiness(fields);
       if (result.code === 0) {
-        message.success( isStatus ? '已禁用' : isAdd ? '操作成功' : '保存成功');
+        message.success( isCustom ? '已禁用' : isAdd ? '操作成功' : '保存成功');
         const { reset, reload } = actionRef.current || {};
         if (isAdd) {
           if (reset) {
@@ -205,7 +205,7 @@ const AccountTable: React.FC = () => {
         >
           编辑
         </Button>,
-        record.status === 0 &&
+        record.status === 0 ?
         <Popconfirm
           key="3"
           title="禁用后，渠道商将无法接收新商机，是否确认禁用？"
@@ -215,12 +215,26 @@ const AccountTable: React.FC = () => {
           onConfirm={() => handleSave(false, {
             id: record.id,
             status: 1
-          }, true)}
+          }, true, '已禁用')}
         >
           <Button size="small" type="link">
             禁用
           </Button>
-        </Popconfirm>,
+        </Popconfirm> : <Popconfirm
+          key="3"
+          title="启用后，渠道商将接收新商机，是否确认启用？"
+          okText="确定"
+          cancelText="取消"
+          placement="bottomRight"
+          onConfirm={() => handleSave(false, {
+            id: record.id,
+            status: 0
+          }, true, '已启用')}
+        >
+          <Button size="small" type="link">
+            启用
+          </Button>
+        </Popconfirm>
       ],
     },
   ];
