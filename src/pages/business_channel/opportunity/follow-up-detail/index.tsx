@@ -58,7 +58,7 @@ export default () => {
             <img src={detail?.accessImage} alt='' />
             <div className="top-main-info">
               <div>
-                <span className="time">{ detail.updateTime ? moment(detail.updateTime).format('MM-DD HH:mm') : '--'}</span>
+                <span className="time">{ detail.updateTime ? moment(detail.updateTime).format('MM月DD日 HH:mm') : '--'}</span>
                 <span className="name">{detail.dockingName}</span>
               </div>
               <div className="location">定位:{detail.accessLocation}</div>
@@ -91,7 +91,7 @@ export default () => {
                   index === 0 ? <div>当前是第一条</div> :
                     <div>
                       上一条记录
-                      <span className="time">{list?.[index - 1]?.updateTime ? moment(list[index - 1].updateTime).format('MM-DD HH:mm') : '--'}</span>
+                      <span className="time">{list?.[index - 1]?.updateTime ? moment(list[index - 1].updateTime).format('MM月DD日 HH:mm') : '--'}</span>
                     </div>
                 }
               </div>
@@ -119,7 +119,7 @@ export default () => {
                   index === list.length - 1 ? <div>当前是最后一条</div> :
                     <div>
                       下一条记录
-                      <span className="time">{list?.[index + 1]?.updateTime ? moment(list[index + 1].updateTime).format('MM-DD HH:mm') : '--'}</span>
+                      <span className="time">{list?.[index + 1]?.updateTime ? moment(list[index + 1].updateTime).format('MM月DD日 HH:mm') : '--'}</span>
                     </div>
                 }
               </div>

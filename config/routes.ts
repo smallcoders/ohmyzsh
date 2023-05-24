@@ -2799,7 +2799,7 @@ export default [
         path: routeName.BUSINESS_CHANNEL_FOLLOW_UP_DETAIL,
         code: 'M_SJ_DR',
         access: 'M_SJ_DR',
-        name: '记录详情',
+        name: '跟进记录详情',
         hideInMenu: true,
         component: './business_channel/opportunity/follow-up-detail/index',
       }
