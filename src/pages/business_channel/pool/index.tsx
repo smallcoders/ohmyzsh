@@ -46,7 +46,7 @@ const AccountTable: React.FC = () => {
         ? await AddChannelBusiness(fields)
         : await UpdateChannelBusiness(fields);
       if (result.code === 0) {
-        message.success( isCustom ? '已禁用' : isAdd ? '操作成功' : '保存成功');
+        message.success( isCustom ? msg : isAdd ? '操作成功' : '保存成功');
         const { reset, reload } = actionRef.current || {};
         if (isAdd) {
           if (reset) {
@@ -464,6 +464,7 @@ const AccountTable: React.FC = () => {
           span: 6,
           labelWidth: 70,
           collapseRender: () => false,
+          className: 'search-content'
         }}
         scroll={{ x: 1500 }}
         toolBarRender={() => [
@@ -471,6 +472,7 @@ const AccountTable: React.FC = () => {
             <PlusOutlined /> 新建渠道商
           </Button>
         ]}
+
         request={async (pagination) => {
           const { serviceArea } = pagination
           const [serviceName, serviceCode] = handleArea(serviceArea, provinceData)
@@ -498,7 +500,7 @@ const AccountTable: React.FC = () => {
           }
         }}
         columns={ columns }
-        pagination={{ size: 'default', showQuickJumper: true, defaultPageSize: 10 }}
+        pagination={{ size: 'default', showQuickJumper: true, defaultPageSize: 10,  showTotal: (total, range) => `共${total}条记录 第${Math.floor(range[0]/10) + 1}/${Math.ceil(total/10)}页` }}
       />
       {renderAddModal()}
       {renderUpdateModal()}
