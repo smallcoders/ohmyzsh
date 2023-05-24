@@ -351,15 +351,18 @@ const AccountTable: React.FC = () => {
             render: (props, defaultDom) => {
               return [
                 !isEdit ?
-                <Button
-                  type="primary"
-                  key="ok"
-                  onClick={() => {
-                    setUpdateModalVisible(false)
-                  }}
-                >
-                  关闭
-                </Button>
+                <div style={{width: '100%', display: 'flex', justifyContent: 'space-between', justifyItems: 'center'}}>
+                  <Button type="link" onClick={() => setIsEdit(true)}>编辑渠道商</Button>
+                  <Button
+                    type="primary"
+                    key="ok"
+                    onClick={() => {
+                      setUpdateModalVisible(false)
+                    }}
+                  >
+                    关闭
+                  </Button>
+                </div>
                 : defaultDom
               ];
             },
