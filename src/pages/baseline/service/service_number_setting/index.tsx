@@ -111,6 +111,12 @@ export default () => {
         (paginationRef.current.current - 1) * paginationRef.current.pageSize + index + 1,
     },
     {
+      title: '服务号ID',
+      dataIndex: 'id',
+      align: 'center',
+      hideInSearch: true,
+    },
+    {
       title: '服务号内部名',
       dataIndex: 'name',
       align: 'center',
