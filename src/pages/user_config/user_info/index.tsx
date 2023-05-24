@@ -189,12 +189,12 @@ export default () => {
       width: 100,
     },
     {
-      title: '渠道值',
+      title: '注册渠道值',
       dataIndex: 'channelName',
       width: 100,
     },
     {
-      title: '场景值',
+      title: '注册场景值',
       dataIndex: 'sceneName',
       width: 100,
     },
@@ -338,7 +338,7 @@ export default () => {
               </Form.Item>
             </Col>
             <Col span={6}>
-              <Form.Item name="channelName" label="渠道值">
+              <Form.Item name="channelName" label="注册渠道值">
                 <Select placeholder="请选择" allowClear>
                   {selectChannelListAll.map((item, index) => (
                     <Select.Option key={index} value={item}>
@@ -349,7 +349,7 @@ export default () => {
               </Form.Item>
             </Col>
             <Col span={6}>
-              <Form.Item name="sceneName" label="场景值">
+              <Form.Item name="sceneName" label="注册场景值">
                 <Select placeholder="请选择" allowClear>
                   {selectSceneListAll.map((item, index) => (
                     <Select.Option key={index} value={item}>
