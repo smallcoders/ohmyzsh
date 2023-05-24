@@ -178,7 +178,7 @@ export default () => {
                   <div className="sound-info">
                     <div className="record-name">录音文件{recordIndex + 1}</div>
                     <div className="sound-info-right">
-                      <div className="record-duration">{soundRecords[recordIndex]?.videoTimeLength}</div>
+                      <div className="record-duration">{soundRecords[recordIndex]?.videoTimeLength?.split('-')?.[1]}</div>
                       {
                         soundRecords[recordIndex]?.videoUrl &&
                         <video width={300} height={50} controls src={soundRecords[recordIndex]?.videoUrl} />
@@ -186,6 +186,7 @@ export default () => {
                       <div className="copy-area">
                         <img src={copyIcon} className="copy-icon" alt='' />
                         <span className="copy-text" onClick={() => {
+                          antdMessage.success('复制成功')
                           copy(soundRecords[recordIndex]?.videoText || '')
                         }}>复制内容</span>
                       </div>
@@ -205,7 +206,7 @@ export default () => {
                         >
                           <div className="record-name">录音文件</div>
                           <div className="record-status">{{0: '未转写', 1: '转写成功'}[item.transState]}</div>
-                          <div className="record-duration">{item.videoTimeLength}</div>
+                          <div className="record-duration">{item.videoTimeLength?.split('-')?.[1]}</div>
                         </div>
                       )
                     })
