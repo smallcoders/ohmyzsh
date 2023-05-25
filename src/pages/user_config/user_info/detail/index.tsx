@@ -11,6 +11,7 @@ import SelfTable from '@/components/self_table';
 import { httpGetAuditList } from '@/services/audit';
 import VerifyStepsDetail from '@/components/verify_steps';
 const sc = scopedClasses('user-config-user-detail');
+import moment from 'moment';
 
 const scaleText = { 1: '0~50人', 2: '50~100人', 3: '100~200人', 4: '200~500人', 5: '500人以上' }
 const businessTypeText = { 1: '国营', 2: '民营', 3: '三资', 4: '其他（事业单位、科研院所等）' }
@@ -368,7 +369,7 @@ export default () => {
               </Col>
               <Col span={12}>
                 <span>完善时间：</span>
-                <span>{detail?.userInfoCompleteChannel?.updateTime || '-'}</span>
+                <span>{detail?.userInfoCompleteChannel?.updateTime ? moment(detail.userInfoCompleteChannel.updateTime).format('YYYY-MM-DD HH:mm:ss') : '-'}</span>
               </Col>
             </Row>
             <Row style={{ marginTop: 10 }}>
