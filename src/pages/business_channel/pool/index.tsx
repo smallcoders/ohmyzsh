@@ -12,11 +12,13 @@ import {
   AddChannelBusiness,
   UpdateChannelBusiness
 } from '@/services/business-pool'
+import { useAccess, Access } from '@@/plugin-access/access';
 import type BusinessPool from '@/types/business-pool';
 import type Common from '@/types/common';
 import style  from './index.less'
 
 const AccountTable: React.FC = () => {
+  const access: any = useAccess();
   const [createModalVisible, setCreateModalVisible] = useState<boolean>(false);
   const [updateModalVisible, setUpdateModalVisible] = useState<boolean>(false);
   const [currentRow, setCurrentRow] = useState<BusinessPool.TableFrom>();
@@ -193,48 +195,54 @@ const AccountTable: React.FC = () => {
       width: 200,
       fixed: 'right',
       render: (_, record) => [
-        <Button
-          key="2"
-          size="small"
-          type="link"
-          onClick={() => {
-            setCurrentRow(record);
-            setIsEdit(true)
-            setUpdateModalVisible(true);
-          }}
-        >
-          编辑
-        </Button>,
+        <Access accessible={access.PU_QD_DR}>
+          <Button
+            key="2"
+            size="small"
+            type="link"
+            onClick={() => {
+              setCurrentRow(record);
+              setIsEdit(true)
+              setUpdateModalVisible(true);
+            }}
+          >
+            编辑
+          </Button>
+        </Access>,
         record.status === 0 ?
-        <Popconfirm
-          key="3"
-          title="禁用后，渠道商将无法接收新商机，是否确认禁用？"
-          okText="确定"
-          cancelText="取消"
-          placement="bottomRight"
-          onConfirm={() => handleSave(false, {
-            id: record.id,
-            status: 1
-          }, true, '已禁用')}
-        >
-          <Button size="small" type="link">
-            禁用
-          </Button>
-        </Popconfirm> : <Popconfirm
-          key="3"
-          title="启用后，渠道商将接收新商机，是否确认启用？"
-          okText="确定"
-          cancelText="取消"
-          placement="bottomRight"
-          onConfirm={() => handleSave(false, {
-            id: record.id,
-            status: 0
-          }, true, '已启用')}
-        >
-          <Button size="small" type="link">
-            启用
-          </Button>
-        </Popconfirm>
+          <Access accessible={access.PU_QD_DR}>
+            <Popconfirm
+              key="3"
+              title="禁用后，渠道商将无法接收新商机，是否确认禁用？"
+              okText="确定"
+              cancelText="取消"
+              placement="bottomRight"
+              onConfirm={() => handleSave(false, {
+                id: record.id,
+                status: 1
+              }, true, '已禁用')}
+            >
+              <Button size="small" type="link">
+                禁用
+              </Button>
+            </Popconfirm>
+          </Access> : <Access accessible={access.PU_QD_DR}>
+              <Popconfirm
+                key="3"
+                title="启用后，渠道商将接收新商机，是否确认启用？"
+                okText="确定"
+                cancelText="取消"
+                placement="bottomRight"
+                onConfirm={() => handleSave(false, {
+                  id: record.id,
+                  status: 0
+                }, true, '已启用')}
+              >
+                <Button size="small" type="link">
+                  启用
+                </Button>
+              </Popconfirm>
+          </Access>
       ],
     },
   ];
@@ -471,9 +479,11 @@ const AccountTable: React.FC = () => {
         }}
         scroll={{ x: 1500 }}
         toolBarRender={() => [
-          <Button type="primary" key="createAccount" onClick={() => setCreateModalVisible(true)}>
-            <PlusOutlined /> 新建渠道商
-          </Button>
+          <Access accessible={access.PU_QD_DR}>
+            <Button type="primary" key="createAccount" onClick={() => setCreateModalVisible(true)}>
+              <PlusOutlined /> 新建渠道商
+            </Button>
+          </Access>
         ]}
 
         request={async (pagination) => {
