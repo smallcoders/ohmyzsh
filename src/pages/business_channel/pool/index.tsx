@@ -269,8 +269,8 @@ const AccountTable: React.FC = () => {
           onFinish={async (value) => {
             const { serviceArea, channelName, maxTaskSize } = value
             const [serviceName, serviceCode] = handleArea(serviceArea, provinceData)
-            const {  adminPhone, scale, legalName, id  } = channelName
-            await handleSave(true, { serviceName, serviceArea: serviceCode, maxTaskSize, channelName: channelName.orgName, contactPhone: adminPhone, adminName: legalName,channelBusinessNum: scale, orgId: id } as BusinessPool.SaveAccountRequest)
+            const {  adminPhone, scale, adminName, id  } = channelName
+            await handleSave(true, { serviceName, serviceArea: serviceCode, maxTaskSize, channelName: channelName.orgName, contactPhone: adminPhone, adminName,channelBusinessNum: scale, orgId: id } as BusinessPool.SaveAccountRequest)
           }}
         >
           <ProFormSelect
