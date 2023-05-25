@@ -1,4 +1,4 @@
-import { PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined, ExclamationCircleFilled } from '@ant-design/icons';
 import { Button, Popconfirm, message } from 'antd';
 import React, { useState, useRef, useEffect } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
@@ -26,6 +26,7 @@ const AccountTable: React.FC = () => {
   const paginationRef = useRef<any>();
   const [isEdit, setIsEdit] = useState<boolean>(false)
   const access: any = useAccess()
+  const [isUse, setIsUse] = useState(false)
 
   useEffect(() => {
     getCities(340000).then((res) => {
@@ -335,6 +336,10 @@ const AccountTable: React.FC = () => {
     );
   };
 
+  useEffect(() => {
+    setIsUse((currentRow?.status || 0) === 0)
+  }, [currentRow])
+
   const renderUpdateModal = () => {
     console.log('currentRow =>', currentRow)
     const serviceName = currentRow?.serviceName?.split(',').map((ele: any) => ele.split('/'))
@@ -465,7 +470,12 @@ const AccountTable: React.FC = () => {
           <ProFormText width="lg" name="adminName" label="管理员姓名" readonly />
           <ProFormText width="lg" name="contactPhone" label="联系方式" readonly />
           <ProFormText width="lg" name="createTime" label="加入时间" readonly />
-          <ProFormSwitch width="lg" checkedChildren="已启用" unCheckedChildren="已禁用" name="status" label="服务状态" disabled={!isEdit} />
+          <ProFormSwitch width="lg" checkedChildren="已启用" unCheckedChildren="已禁用" name="status" label="服务状态" disabled={!isEdit} fieldProps={{
+            onChange(val: boolean){
+              setIsUse(val)
+            }
+          }} />
+          {isUse && <div style={{color: 'orange', marginLeft: '140px', marginTop: '-1.5em'}}><ExclamationCircleFilled style={{marginRight: '6px'}}  />禁用后，渠道商将无法接收新商机，已分发商机将自动释放</div>}
         </ModalForm>
     );
   };
