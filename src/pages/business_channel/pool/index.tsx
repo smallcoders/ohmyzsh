@@ -12,6 +12,7 @@ import {
   AddChannelBusiness,
   UpdateChannelBusiness
 } from '@/services/business-pool'
+import { Access, useAccess } from 'umi'
 import type BusinessPool from '@/types/business-pool';
 import type Common from '@/types/common';
 import style  from './index.less'
@@ -24,7 +25,7 @@ const AccountTable: React.FC = () => {
   const actionRef = useRef<ActionType>();
   const paginationRef = useRef<any>();
   const [isEdit, setIsEdit] = useState<boolean>(false)
-
+  const access: any = useAccess()
 
   useEffect(() => {
     getCities(340000).then((res) => {
@@ -82,7 +83,12 @@ const AccountTable: React.FC = () => {
       ellipsis: true,
       width: 250,
       hideInSearch: true,
-      render: (_, record) => <span onClick={() =>{setUpdateModalVisible(true); setCurrentRow(record)}}  className={record.status === 1 ? 'text cursor' : 'normal cursor'}>{_}</span>
+      render: (_, record) => <span onClick={() =>{
+        if (access.PQ_QD_DR) {
+          setUpdateModalVisible(true)
+          setCurrentRow(record)
+        }
+      }}  className={record.status === 1 ? 'text cursor' : 'normal cursor'}>{_}</span>
     },
     {
       title: '渠道商人数',
@@ -193,18 +199,20 @@ const AccountTable: React.FC = () => {
       width: 200,
       fixed: 'right',
       render: (_, record) => [
-        <Button
-          key="2"
-          size="small"
-          type="link"
-          onClick={() => {
-            setCurrentRow(record);
-            setIsEdit(true)
-            setUpdateModalVisible(true);
-          }}
-        >
-          编辑
-        </Button>,
+        <Access key="4" accessible={access.PU_QD_DR}>
+          <Button
+            key="2"
+            size="small"
+            type="link"
+            onClick={() => {
+              setCurrentRow(record);
+              setIsEdit(true)
+              setUpdateModalVisible(true);
+            }}
+          >
+            编辑
+          </Button>
+        </Access>,
         record.status === 0 ?
         <Popconfirm
           key="3"
@@ -220,7 +228,8 @@ const AccountTable: React.FC = () => {
           <Button size="small" type="link">
             禁用
           </Button>
-        </Popconfirm> : <Popconfirm
+        </Popconfirm> :
+        <Popconfirm
           key="3"
           title="启用后，渠道商将接收新商机，是否确认启用？"
           okText="确定"
@@ -352,13 +361,14 @@ const AccountTable: React.FC = () => {
               return [
                 !isEdit ?
                 <div style={{width: '100%', display: 'flex', justifyContent: 'space-between', justifyItems: 'center'}}>
-                  <Button type="link" onClick={() => setIsEdit(true)}>编辑渠道商</Button>
+                  <Access key="4" accessible={access.PU_QD_DR}><Button type="link" onClick={() => setIsEdit(true)}>编辑渠道商</Button></Access>
                   <Button
                     type="primary"
                     key="ok"
                     onClick={() => {
                       setUpdateModalVisible(false)
                     }}
+                    style={{marginLeft: 'auto'}}
                   >
                     关闭
                   </Button>

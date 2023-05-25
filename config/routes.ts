@@ -2790,8 +2790,8 @@ export default [
       },
       {
         path: routeName.BUSINESS_CHANNEL_POOL,
-        code: 'M_SJ_DR',
-        access: 'M_SJ_DR',
+        code: 'M_QD_DR',
+        access: 'M_QD_DR',
         name: '渠道商池',
         component: './business_channel/pool/index'
       },
