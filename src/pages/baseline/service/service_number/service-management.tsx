@@ -150,9 +150,9 @@ export default () => {
                 id: item.id,
                 type: item.type,
                 bottom: item.type !== 'add',
-                content: item.content,
+                content: item.content || '--',
                 filePath: item.filePath,
-                title: item.title,
+                title: item.title || typeEnum[item.type],
                 updateTime: item.updateTime,
               };
             })
@@ -163,7 +163,7 @@ export default () => {
                 bottom: item.type !== 'add',
                 content: item.content || '--',
                 filePath: item.filePath,
-                title: item.title || '--',
+                title: item.title || typeEnum[item.type],
                 updateTime: item.updateTime,
               };
             });
