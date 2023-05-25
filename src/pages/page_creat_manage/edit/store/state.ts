@@ -20,6 +20,9 @@ export const initState: State = {
     inputBtnBgColor: '#0068FF',
     formStyle: 'split',
     showRegister: false,
+    successTitle: '提交成功',
+    successSubTitle: '工业互联网，价值在羚羊，快去羚羊平台逛逛吧！',
+
   },
   formConfig: {
     colon: true,

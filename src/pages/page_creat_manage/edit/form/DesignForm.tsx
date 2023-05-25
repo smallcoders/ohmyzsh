@@ -10,6 +10,7 @@ import Header from './Header'
 import WidgetForm from './WidgetForm'
 import WidgetConfig from './WidgetConfig'
 import GlobalConfig from './GlobalConfig'
+import ResultConfig from './ResultConfig'
 import WebGlobalConfig from './WebGlobalConfig';
 import { DesignContext, DesignProvider } from '../store'
 import { ActionType } from '../store/action'
@@ -21,7 +22,7 @@ const DesignForm = () => {
   const [formInstance] = Form.useForm()
   const id = history.location.query?.id as string;
   const tmpType = history.location.query?.type as string
-  const [currentTab, setCurrentTab] = useState<'Global' | 'Local'>('Global')
+  const [currentTab, setCurrentTab] = useState<'Global' | 'Local' | 'Result'>('Global')
   const [areaCodeOptions, setAreaCodeOptions] = useState<any>({county: [], city: [], province: []})
   const [initJson, setInitJson] = useState<string>('')
   const [publishSuccess, setPublishSuccess] = useState<boolean>(false)
@@ -138,9 +139,15 @@ const DesignForm = () => {
                 <div className={`config-tab ${currentTab === 'Global' && 'active'}`} onClick={() => setCurrentTab('Global')}>
                   {tmpType === '1' ? '网页属性' : '表单属性' }
                 </div>
+                {
+                  tmpType !== '1' &&
+                  <div className={`config-tab ${currentTab === 'Result' && 'active'}`} onClick={() => setCurrentTab('Result')}>
+                    结果页属性
+                  </div>
+                }
               </Layout.Header>
               <Content className="config-content">
-                {currentTab === 'Local' ? <WidgetConfig /> : tmpType === '1' ? <WebGlobalConfig /> : <GlobalConfig />}
+                {currentTab === 'Local' ? <WidgetConfig /> : currentTab === 'Result' ? <ResultConfig /> : tmpType === '1' ? <WebGlobalConfig /> : <GlobalConfig />}
               </Content>
             </>
           </Layout>
