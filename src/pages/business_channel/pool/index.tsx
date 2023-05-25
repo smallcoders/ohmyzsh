@@ -197,7 +197,7 @@ const AccountTable: React.FC = () => {
     {
       title: '操作',
       hideInSearch: true,
-      width: 200,
+      width: 120,
       fixed: 'right',
       render: (_, record) => [
         <Access key="4" accessible={access.PU_QD_DR}>
@@ -218,7 +218,7 @@ const AccountTable: React.FC = () => {
         { record.status === 0 ?
             <Popconfirm
               key="3"
-              title="禁用后，渠道商将无法接收新商机，是否确认禁用？"
+              title="禁用后，渠道商将无法接收新商机，已分发商机将自动释放，是否确认禁用？"
               okText="确定"
               cancelText="取消"
               placement="bottomRight"
