@@ -385,7 +385,7 @@ const UploadModal = forwardRef((props: any, ref: any) => {
                   ]
               }
             >
-              <Input.TextArea maxLength={300} placeholder={auditStatus === 1 ? "备注信息" : "请简要描述驱回事由，字数不少于10字。"} />
+              <Input.TextArea maxLength={300} placeholder={auditStatus === 1 ? "备注信息" : "请简要描述驳回事由，字数不少于10字。"} />
             </Form.Item>
           </Form>
         </div>
