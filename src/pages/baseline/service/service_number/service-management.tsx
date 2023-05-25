@@ -161,9 +161,9 @@ export default () => {
                 id: item.id,
                 type: item.type,
                 bottom: item.type !== 'add',
-                content: item.content,
+                content: item.content || '--',
                 filePath: item.filePath,
-                title: item.title,
+                title: item.title || '--',
                 updateTime: item.updateTime,
               };
             });
@@ -303,7 +303,7 @@ export default () => {
               // 音频
               <audio controls={true} src={dataSource.filePath} />
             )}
-            {dataSource.type === 'TEXT' && dataSource.content && <div>{dataSource.content}</div>}
+            {dataSource.type === 'TEXT' && dataSource.content && <div>{dataSource.content || '--'}</div>}
           </div>
           {dataSource.title && (
             // 文本
