@@ -82,6 +82,7 @@ const AccountTable: React.FC = () => {
       title: '渠道商名称',
       dataIndex: 'channelName',
       ellipsis: true,
+      fixed: 'left',
       width: 250,
       hideInSearch: true,
       render: (_, record) => <span onClick={() =>{
