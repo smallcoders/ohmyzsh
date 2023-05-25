@@ -48,6 +48,9 @@
       &.center {
         align-items: center;
       }
+      &.size-config {
+        margin-top: 0;
+      }
       .flex {
         display: flex;
         justify-content: flex-start;
@@ -169,6 +172,15 @@
       align-items: center;
       justify-content: space-between;
       margin: 8px 8px 0;
+      &.success-config {
+        margin-right: 0;
+        margin-left: 0;
+        >div {
+          &:last-child {
+            flex: 1;
+          }
+        }
+      }
       .ant-upload-picture-card-wrapper {
         width: 50px;
         height: 50px;

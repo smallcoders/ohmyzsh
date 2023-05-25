@@ -26,7 +26,11 @@ export const initState: State = {
     pcImg: '',
     mobileImg: '',
     pcLink: '',
-    mobileLink: ''
+    mobileLink: '',
+    pcImgHeight: 460,
+    pcImgWidth: 344,
+    mobileImgHeight: 460,
+    mobileImgWidth: 344,
   },
   formConfig: {
     colon: true,
