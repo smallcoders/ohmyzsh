@@ -213,37 +213,41 @@ const AccountTable: React.FC = () => {
             编辑
           </Button>
         </Access>,
-        record.status === 0 ?
-        <Popconfirm
-          key="3"
-          title="禁用后，渠道商将无法接收新商机，是否确认禁用？"
-          okText="确定"
-          cancelText="取消"
-          placement="bottomRight"
-          onConfirm={() => handleSave(false, {
-            id: record.id,
-            status: 1
-          }, true, '已禁用')}
-        >
-          <Button size="small" type="link">
-            禁用
-          </Button>
-        </Popconfirm> :
-        <Popconfirm
-          key="3"
-          title="启用后，渠道商将接收新商机，是否确认启用？"
-          okText="确定"
-          cancelText="取消"
-          placement="bottomRight"
-          onConfirm={() => handleSave(false, {
-            id: record.id,
-            status: 0
-          }, true, '已启用')}
-        >
-          <Button size="small" type="link">
-            启用
-          </Button>
-        </Popconfirm>
+        <Access key="5" accessible={access.PU_QD_DR}>
+        { record.status === 0 ?
+            <Popconfirm
+              key="3"
+              title="禁用后，渠道商将无法接收新商机，是否确认禁用？"
+              okText="确定"
+              cancelText="取消"
+              placement="bottomRight"
+              onConfirm={() => handleSave(false, {
+                id: record.id,
+                status: 1
+              }, true, '已禁用')}
+            >
+              <Button size="small" type="link">
+                禁用
+              </Button>
+            </Popconfirm> :
+            <Popconfirm
+              key="3"
+              title="启用后，渠道商将接收新商机，是否确认启用？"
+              okText="确定"
+              cancelText="取消"
+              placement="bottomRight"
+              onConfirm={() => handleSave(false, {
+                id: record.id,
+                status: 0
+              }, true, '已启用')}
+            >
+              <Button size="small" type="link">
+                启用
+              </Button>
+
+            </Popconfirm>
+          }
+        </Access>
       ],
     },
   ];
@@ -481,9 +485,10 @@ const AccountTable: React.FC = () => {
         }}
         scroll={{ x: 1500 }}
         toolBarRender={() => [
-          <Button type="primary" key="createAccount" onClick={() => setCreateModalVisible(true)}>
+          <Access key="4" accessible={access.PU_QD_DR}><Button type="primary" key="createAccount" onClick={() => setCreateModalVisible(true)}>
             <PlusOutlined /> 新建渠道商
           </Button>
+          </Access>
         ]}
 
         request={async (pagination) => {

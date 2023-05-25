@@ -190,7 +190,7 @@ export default () => {
       render: (_: any, record: any) => {
         return (
           <>
-            <Access accessible={access.PU_BLAM_QJXFGG}>
+            <Access accessible={access.PU_SJ_DR}>
               {
                 record.status === 2 || record.status === 4 ?
                 <Button
@@ -297,7 +297,7 @@ export default () => {
       render: (_: any, record: any) => {
         return (
           <>
-            <Access accessible={access.PU_BLAM_QJXFGG}>
+            <Access accessible={access.PU_SJ_DR}>
               <Button
                 size="small"
                 type="link"
@@ -391,7 +391,7 @@ export default () => {
       render: (_: any, record: any) => {
         return (
           <>
-            <Access accessible={access.PU_BLAM_QJXFGG}>
+            <Access accessible={access.PU_SJ_DR}>
               <Button
                 size="small"
                 type="link"
@@ -577,7 +577,7 @@ export default () => {
           {
             activeTab === 'ALL' &&
             <div className="button-box">
-              <Access accessible={access.P_BLM_XHXXPZ}>
+              <Access accessible={access.PU_SJ_DR}>
                 <Button
                   style={{ marginRight: '20px' }}
                   type="default"
@@ -589,7 +589,7 @@ export default () => {
                   导入商机
                 </Button>
               </Access>
-              <Access accessible={access.P_BLM_XHXXPZ}>
+              <Access accessible={access.PU_SJ_DR}>
                 <Button
                   style={{ marginLeft: '10px' }}
                   type="primary"
