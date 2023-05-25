@@ -152,7 +152,7 @@ export default () => {
                 bottom: item.type !== 'add',
                 content: item.content || '--',
                 filePath: item.filePath,
-                title: item.title || typeEnum[item.type],
+                title: item.title || typeText[item.type],
                 updateTime: item.updateTime,
               };
             })
@@ -163,7 +163,7 @@ export default () => {
                 bottom: item.type !== 'add',
                 content: item.content || '--',
                 filePath: item.filePath,
-                title: item.title || typeEnum[item.type],
+                title: item.title || typeText[item.type],
                 updateTime: item.updateTime,
               };
             });
@@ -349,6 +349,13 @@ export default () => {
     TEXT: '文本',
     VIDEO: '视频',
     AUDIO: '音频',
+  };
+  const typeText = {
+    PICTURE_TEXT: '图文消息',
+    PICTURE: '图片消息',
+    TEXT: '文本消息',
+    VIDEO: '视频消息',
+    AUDIO: '音频消息',
   };
   // 状态
   const stateColumn = {
