@@ -635,6 +635,7 @@ export default () => {
         ref={addBusinessModalRef}
       />
       <AuditModal
+        activeTab={activeTab}
         ref={auditModalRef}
         successCallBack={() => {
           const { totalCount, pageIndex, pageSize } = pageInfo

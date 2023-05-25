@@ -124,9 +124,9 @@ const UploadModal = forwardRef((props: any, ref: any) => {
             if (result.code === 0) {
               setChannelList(result.result?.map((item: any) => {
                 return {
-                  label: historyChannel.indexOf(item.id) !== -1 ? `${item.channelName}    历史渠道商` : item.channelName,
+                  label: res.result?.indexOf(item.id) !== -1 ? `${item.channelName}    历史渠道商` : item.channelName,
                   value: item.id,
-                  disabled: historyChannel.indexOf(item.id) !== -1,
+                  disabled: res.result?.indexOf(item.id) !== -1,
                   areaCode: item.areaCode,
                   cityCode: item.cityCode
                 }
@@ -260,7 +260,7 @@ const UploadModal = forwardRef((props: any, ref: any) => {
       </div>
     )
   }
-  console.log(modalType, 'tmpList')
+  console.log(props.activeTab, 'tmpList')
   return (
     <Modal
       title={
@@ -545,7 +545,7 @@ const UploadModal = forwardRef((props: any, ref: any) => {
         </div>
       }
       {
-        (currentRecord.status === 2 || currentRecord.status === 3) && modalType === 'detail' &&
+        (currentRecord.status === 2 || currentRecord.status === 3) && modalType === 'detail' && props.activeTab !== 'ALL' &&
         <div
           className="other-btn"
           onClick={() => {
