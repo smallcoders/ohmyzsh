@@ -106,8 +106,11 @@
   }
   .content {
     margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
     .info-item {
-      display: inline-block;
+      display: flex;
+      align-items: flex-start;
       width: 50%;
       margin-bottom: 16px;
       padding-left: 10px;
@@ -118,6 +121,7 @@
         color: #666666;
         display: inline-block;
         vertical-align: middle;
+        white-space: nowrap;
       }
       .value {
         color: #333333;
