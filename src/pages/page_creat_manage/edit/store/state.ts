@@ -22,7 +22,11 @@ export const initState: State = {
     showRegister: false,
     successTitle: '提交成功',
     successSubTitle: '工业互联网，价值在羚羊，快去羚羊平台逛逛吧！',
-
+    successConfigType: '',
+    pcImg: '',
+    mobileImg: '',
+    pcLink: '',
+    mobileLink: ''
   },
   formConfig: {
     colon: true,
