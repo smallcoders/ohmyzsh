@@ -59,7 +59,7 @@ export default () => {
             <div className="top-main-info">
               <div>
                 <span className="time">{ detail.updateTime ? moment(detail.updateTime).format('MM月DD日 HH:mm') : '--'}</span>
-                <span className="name">{detail.dockingName}</span>
+                <span className="name">{detail.accessUserName}</span>
               </div>
               <div className="location">定位:{detail.accessLocation}</div>
             </div>

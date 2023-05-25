@@ -334,7 +334,7 @@ const UploadModal = forwardRef((props: any, ref: any) => {
                       </div>
                       <div className="name">
                         {
-                          item.dockingName || '--'
+                          item.accessUserName || '--'
                         }
                       </div>
                       <div className="location">
