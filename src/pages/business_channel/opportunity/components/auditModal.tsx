@@ -260,7 +260,7 @@ const UploadModal = forwardRef((props: any, ref: any) => {
       </div>
     )
   }
-  console.log(channelList, 'tmpList')
+  console.log(props.activeTab, 'tmpList')
   return (
     <Modal
       title={
@@ -545,7 +545,7 @@ const UploadModal = forwardRef((props: any, ref: any) => {
         </div>
       }
       {
-        (currentRecord.status === 2 || currentRecord.status === 3) && modalType === 'detail' &&
+        (currentRecord.status === 2 || currentRecord.status === 3) && modalType === 'detail' && props.activeTab !== 'ALL' &&
         <div
           className="other-btn"
           onClick={() => {

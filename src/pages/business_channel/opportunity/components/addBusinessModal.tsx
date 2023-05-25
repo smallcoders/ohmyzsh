@@ -105,7 +105,7 @@ const UploadModal = forwardRef((props: any, ref: any) => {
   }
   return (
     <Modal
-      title={isEdit ? '编辑商机' : '新增商机'}
+      title={Object.keys(record)?.length ? '编辑商机' : '新增商机'}
       visible={modalVisible}
       width={700}
       style={{ height: '500px' }}
