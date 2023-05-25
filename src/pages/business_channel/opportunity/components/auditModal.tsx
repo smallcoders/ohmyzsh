@@ -124,9 +124,9 @@ const UploadModal = forwardRef((props: any, ref: any) => {
             if (result.code === 0) {
               setChannelList(result.result?.map((item: any) => {
                 return {
-                  label: res.result.indexOf(item.id) !== -1 ? `${item.channelName}    历史渠道商` : item.channelName,
+                  label: res.result?.indexOf(item.id) !== -1 ? `${item.channelName}    历史渠道商` : item.channelName,
                   value: item.id,
-                  disabled: res.result.indexOf(item.id) !== -1,
+                  disabled: res.result?.indexOf(item.id) !== -1,
                   areaCode: item.areaCode,
                   cityCode: item.cityCode
                 }
