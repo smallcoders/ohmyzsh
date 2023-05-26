@@ -10,6 +10,7 @@ import scopedClasses from '@/utils/scopedClasses';
 import LeftIcon from '@/assets/service/icon_left.png';
 import { history, Access, useAccess, useModel } from 'umi';
 import './service-item.less'
+import iconDefault from '@/assets/service/default.png';
 const sc = scopedClasses('service-item');
 
 const stateType = {
@@ -25,32 +26,8 @@ export default (props: {
 }) => {
   const { onOffShelves, handleRouter, dataSoueceItem } = props
   // 当前数组项
-  const { id, innerName, menuNameList, name, state } = dataSoueceItem
-  const [loading, setLoading] = useState<boolean>(false);
+  const { id, name, state, logoUrl } = dataSoueceItem
   const access = useAccess();
-  // 根据menuNameList配置菜单项
-  const [dataList, setDataList] = useState<any>([])
-
-  useEffect(() => {
-    if (menuNameList && menuNameList.length > 0) {
-      const newList = menuNameList?.map((item: any) => {
-        return {
-          id: id,
-          name:  item,
-          // chilrden: (
-          //   <Menu>
-          //     <Menu.Item>导出筛选结果</Menu.Item>
-          //     <Menu.Item>导出选中数据</Menu.Item>
-          //     <Menu.Item>导出选中数据</Menu.Item>
-          //     <Menu.Item>导出选中数据</Menu.Item>
-          //   </Menu>
-          // ),
-        }
-      })
-      setDataList(newList)
-
-    }
-  },[menuNameList])
 
   // 服务号管理
   const handleManagement = () => {
@@ -65,66 +42,17 @@ export default (props: {
   return (
     <div className={sc('container-card-item')}>
       <div className={sc('container-card-item-title')}>
-        {innerName || '--'}
-        <span className={sc('container-card-item-title-span')} style={{color: state === 'ON_SHELF' ? '#52c41a' : '#000000'}}>{stateType[state]}</span>
-      </div>
-      <div className={sc('container-card-item-preview')}>
-        <div className={sc('container-card-item-preview-header')}>
-          {/* 放张图 */}
-          <img className={sc('container-card-item-preview-header-img')} src={PhoneHeader} />
-          <div className={sc('container-card-item-preview-header-content')}>
-            <div className={sc('container-card-item-preview-header-content-left')}>
-              <img
-                className={sc('container-card-item-preview-header-content-left-img')}
-                src={LeftIcon}
-              />
-            </div>
-            <div className={sc('container-card-item-preview-header-content-center')}>{name || '--'}</div>
-            <div className={sc('container-card-item-preview-header-content-right')}>主页</div>
+        <div className={sc('container-card-item-title-left')}>
+          <img className={sc('container-card-item-title-left-img')} src={logoUrl || iconDefault} alt="" />
+          <div className={sc('container-card-item-title-left-text')}>
+            {name || '--'}
           </div>
         </div>
-        <div className={sc('container-card-item-preview-content')}></div>
-        <div className={sc('container-card-item-preview-menu')}>
-          {/* 根据item 中的菜单menu获取值 */}
-          {/* { true && 
-            <div className={sc('container-card-item-preview-menu-nodata')}>
-              {'暂无菜单'}
-            </div>
-          } */}
-          {true && (
-            <div className={sc('container-card-item-preview-menu-list')}>
-              {dataList && dataList.map((item: any) => {
-                return (
-                  <React.Fragment key={item.id}>
-                    <div className={sc('container-card-item-preview-menu-list-item')}>
-                      {
-                        item.chilrden && (
-                          <Dropdown overlay={item.chilrden} placement="top" arrow>
-                            <span
-                              className={sc('container-card-item-preview-menu-list-item-text')}
-                            >
-                              {item.name}
-                            </span>
-                          </Dropdown>
-                        )
-                      }
-                      {
-                        !item.chilrden && (
-                          <span
-                            className={sc('container-card-item-preview-menu-list-item-text')}
-                          >
-                            {item.name}
-                          </span>
-                        )
-                      }
-                    </div>
-                  </React.Fragment>
-                );
-              })}
-            </div>
-          )}
+        <div className={sc('container-card-item-title-right')}>
+          <span className={sc('container-card-item-title-right-span')} style={{ backgroundColor: state === 'ON_SHELF' ? '#52c41a' : '#d7d7d7'}}>{stateType[state]}</span>
         </div>
       </div>
+      <div className={sc('container-card-item-divider')}></div>
       <div className={sc('container-card-item-bottom')}>
         {
           state === 'ON_SHELF' &&

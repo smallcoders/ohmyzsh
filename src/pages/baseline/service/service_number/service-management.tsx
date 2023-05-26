@@ -150,9 +150,9 @@ export default () => {
                 id: item.id,
                 type: item.type,
                 bottom: item.type !== 'add',
-                content: item.content,
+                content: item.content || '--',
                 filePath: item.filePath,
-                title: item.title,
+                title: item.title || typeText[item.type],
                 updateTime: item.updateTime,
               };
             })
@@ -161,9 +161,9 @@ export default () => {
                 id: item.id,
                 type: item.type,
                 bottom: item.type !== 'add',
-                content: item.content,
+                content: item.content || '--',
                 filePath: item.filePath,
-                title: item.title,
+                title: item.title || typeText[item.type],
                 updateTime: item.updateTime,
               };
             });
@@ -303,7 +303,7 @@ export default () => {
               // 音频
               <audio controls={true} src={dataSource.filePath} />
             )}
-            {dataSource.type === 'TEXT' && dataSource.content && <div>{dataSource.content}</div>}
+            {dataSource.type === 'TEXT' && dataSource.content && <div>{dataSource.content || '--'}</div>}
           </div>
           {dataSource.title && (
             // 文本
@@ -349,6 +349,13 @@ export default () => {
     TEXT: '文本',
     VIDEO: '视频',
     AUDIO: '音频',
+  };
+  const typeText = {
+    PICTURE_TEXT: '图文消息',
+    PICTURE: '图片消息',
+    TEXT: '文本消息',
+    VIDEO: '视频消息',
+    AUDIO: '音频消息',
   };
   // 状态
   const stateColumn = {

@@ -111,8 +111,14 @@ export default () => {
         (paginationRef.current.current - 1) * paginationRef.current.pageSize + index + 1,
     },
     {
-      title: '服务号内部名',
-      dataIndex: 'innerName',
+      title: '服务号ID',
+      dataIndex: 'id',
+      align: 'center',
+      hideInSearch: true,
+    },
+    {
+      title: '服务号名称',
+      dataIndex: 'name',
       align: 'center',
       valueType: 'text', // 筛选的类别
     },
@@ -281,14 +287,23 @@ export default () => {
         }}
       >
         <Form form={form} labelCol={{ span: 7 }} wrapperCol={{ span: 16 }} validateTrigger={['onBlur']}>
+          {
+            modalTitle === '编辑' &&
+            <Form.Item
+              name="serviceId"
+              label="服务号ID"
+            >
+              <div>{editId}</div>
+            </Form.Item>
+          }
           <Form.Item
-            name="innerName"
-            label="服务号内部名称"
+            name="name"
+            label="服务号名称"
             rules={[
               { required: true, message: '必填' },
               {
                 validator: changeFormMunuName,
-                message: '该服务号内部名称已存在',
+                message: '该服务号名称已存在',
                 validateTrigger: 'onBlur',
               },
             ]}
