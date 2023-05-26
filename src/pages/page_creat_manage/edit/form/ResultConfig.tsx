@@ -4,7 +4,6 @@ import { DesignContext } from '../store'
 import { ActionType } from '../store/action'
 import UploadForm from '@/pages/page_creat_manage/edit/components/upload_form/upload-form';
 import questionIcon from '@/assets/page_creat_manage/question_icon.png';
-import { clone } from 'lodash-es';
 
 const GlobalConfig: FC = () => {
   const {
@@ -129,7 +128,7 @@ const GlobalConfig: FC = () => {
                 </div>
                 <div>
                   图片上传
-                  <Tooltip title="点击图片缩略图区域可上传图片,缩略图后方输入框可设置填写成功跳转链接">
+                  <Tooltip title="点击图片缩略图区域可上传图片,缩略图后方输入框可设置图片跳转链接">
                     <img className="question-icon" src={questionIcon} alt='' />
                   </Tooltip>
                 </div>
@@ -197,7 +196,7 @@ const GlobalConfig: FC = () => {
                 </div>
                 <div>
                   图片上传
-                  <Tooltip title="点击图片缩略图区域可上传图片,缩略图后方输入框可设置填写成功跳转链接">
+                  <Tooltip title="点击图片缩略图区域可上传图片,缩略图后方输入框可设置图片跳转链接">
                     <img className="question-icon" src={questionIcon} alt='' />
                   </Tooltip>
                 </div>
