@@ -369,17 +369,17 @@ export default () => {
               </Col>
               <Col span={12}>
                 <span>完善时间：</span>
-                <span>{detail?.userInfoCompleteChannel?.updateTime ? moment(detail.userInfoCompleteChannel.updateTime).format('YYYY-MM-DD HH:mm:ss') : '-'}</span>
+                <span>{detail?.userInfoCompleteChannel?.infoIsComplete && detail?.userInfoCompleteChannel?.updateTime ? moment(detail.userInfoCompleteChannel.updateTime).format('YYYY-MM-DD HH:mm:ss') : '-'}</span>
               </Col>
             </Row>
             <Row style={{ marginTop: 10 }}>
               <Col span={12}>
                 <span>完善渠道值：</span>
-                <span >{detail?.userInfoCompleteChannel?.channelName || '-'}</span>
+                <span >{detail?.userInfoCompleteChannel?.infoIsComplete && detail?.userInfoCompleteChannel?.channelName || '-'}</span>
               </Col>
               <Col span={12}>
                 <span>完善场景值：</span>
-                <span>{detail?.userInfoCompleteChannel?.sceneName || '-'}</span>
+                <span>{detail?.userInfoCompleteChannel?.infoIsComplete && detail?.userInfoCompleteChannel?.sceneName || '-'}</span>
               </Col>
             </Row>
           </Col>
