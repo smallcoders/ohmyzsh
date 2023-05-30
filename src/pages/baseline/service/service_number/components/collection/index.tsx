@@ -87,6 +87,12 @@ export default () => {
     copy(`https://www.lingyangplat.com/antelope-activity-h5/share-code/index.html`)
     message.success('链接复制成功');
   }
+
+  const handleDetail = (detailId: string) => {
+    window.open(
+      `${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_COLLECTION_DETAIL}?backid=${id}&backname=${name}&activeTab=${'合集标签'}&id=${detailId}`,
+    );
+  }
   const columns: ProColumns<SolutionTypes.Solution>[] = [
     {
       title: '序号',
@@ -164,10 +170,7 @@ export default () => {
               <Button
                 size="small"
                 type="link"
-                onClick={() => {
-                  // 草稿的新新增页面
-                  handleDetail(record.id.toString());
-                }}
+                onClick={handleDetail.bind(null, record.id.toString())}
               >
                 详情
               </Button>

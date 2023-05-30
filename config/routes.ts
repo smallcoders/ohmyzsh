@@ -313,6 +313,7 @@
 
   // 服务号 - 合集标签
   BASELINE_SERVICE_NUMBER_MANAGEMENT_COLLECTION_ADD: '/baseline/baseline-service-number/management/collection/add', // 新增合集标签
+  BASELINE_SERVICE_NUMBER_MANAGEMENT_COLLECTION_DETAIL: '/baseline/baseline-service-number/management/collection/detail', // 合集标签详情
 };
 
 export default [
@@ -688,6 +689,13 @@ export default [
             hideInBreadcrumb: true,
             component: './baseline/service/service_number/collection_add/index',
           },
+          {
+            path: routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_COLLECTION_DETAIL,
+            name: '详情',
+            // access: 'PA_BLM_NRGL',
+            hideInBreadcrumb: true,
+            component: './baseline/service/service_number/service_collection_detail/index',
+          }
         ],
       },
       {

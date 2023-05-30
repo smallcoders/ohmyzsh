@@ -65,6 +65,13 @@ type RouterParams = {
   id?: string;
   name?: string;
 };
+  // 状态
+  const stateColumn = {
+    NOT_SUBMITTED: '暂存',
+    ON_SHELF: '已发布',
+    OFF_SHELF: '已下架',
+    APPOINTMENT_ON_SHELF: '预约发布',
+  };
 export default () => {
   const access: any = useAccess();
   // const { backid, backname } = props || {}
@@ -126,6 +133,7 @@ export default () => {
   const [modalOpen, setModalOpen] = useState<boolean>(false)
   const handleAdd = () => {
     console.log('新增')
+    // 调用list结构，如果有选中的，需要传对应id，后端帮忙去除了选中的数据
     setModalOpen(true)
 
   }
@@ -393,6 +401,93 @@ export default () => {
     </Modal>
   )
 
+  const currentColumns = [
+    {
+      title: '序号',
+      dataIndex: 'sort',
+      align: 'center',
+      width: 35,
+      render: (_: any, _record: any, index: number) =>
+        pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
+    },
+    {
+      title: '标题',
+      dataIndex: 'title',
+      render: (_: any, record: any) => (
+        <div className={sc(`title`)}>
+          {_ || '--'}
+        </div>
+      ),
+      width: 200,
+    },
+    {
+      title: '发布时间',
+      dataIndex: 'publishTime',
+      render: (_: string) => {
+        // const newDate = new Date()
+        return (_ ? <div style={{color: moment(_).diff(new Date(), 'minute') > 0 ? 'orange' : 'black'}}>{moment(_).format('YYYY-MM-DD HH:mm:ss')}</div> : '--')
+      },
+      width: 130,
+    },
+    {
+      title: '文章状态',
+      dataIndex: 'state',
+      render: (_: string) => {
+        <div className={`state${_}`}>
+        {Object.prototype.hasOwnProperty.call(stateColumn, _) ? stateColumn[_] : '--'}
+      </div>
+      },
+      width: 130,
+    },
+    // access?.['PU_BLM_FWHNRGL'] && {
+    {
+      title: '操作',
+      width: 80,
+      dataIndex: 'option',
+      fixed: 'right',
+      render: (_: any, record: any) => {
+        return (
+          <Space wrap>
+            <Button
+              style={{ padding: 0 }}
+              type="link"
+              onClick={() => {
+                handleDetail(record?.id.toString());
+              }}
+            >
+              详情
+            </Button>
+            {record?.auditStatus == 1 && (
+              <>
+                <Access accessible={access['PU_BLM_FWHNRGL']}>
+                  <Button
+                    style={{ padding: 0 }}
+                    type="link"
+                    onClick={() => {
+                      handleAudit(record?.id.toString(), 2);
+                    }}
+                  >
+                    通过
+                  </Button>
+                </Access>
+                <Access accessible={access['PU_BLM_FWHNRGL']}>
+                  <Button
+                    style={{ padding: 0 }}
+                    type="link"
+                    onClick={() => {
+                      handleAudit(record?.id.toString(), 3);
+                    }}
+                  >
+                    拒绝
+                  </Button>
+                </Access>
+              </>
+            )}
+          </Space>
+        );
+      },
+    },
+  ].filter((p) => p);
 
   return (
     <PageContainer
@@ -404,7 +499,7 @@ export default () => {
               <Link to="/baseline/baseline-service-number">服务号管理</Link>
             </Breadcrumb.Item>
             <Breadcrumb.Item>
-              <Link to={`/baseline/baseline-service-number/management?id=${backid}&name=${backname}&activeTab=${'合集标签'}`} >标签合集</Link>
+              <Link to={`/baseline/baseline-service-number/management?id=${backid}&name=${backname}&activeTabValue=${'合集标签'}`} >合集标签</Link>
             </Breadcrumb.Item>
             <Breadcrumb.Item>{activeTitle}</Breadcrumb.Item>
           </Breadcrumb>
@@ -467,10 +562,23 @@ export default () => {
         </div>
         <div className={sc('container-collection')}>
           <div className={sc('container-collection-title')}>合集文章</div>
-          <Button style={{marginLeft: '30px'}} type="primary" icon={<PlusOutlined />} onClick={() => handleAdd()}>新增</Button>
+          <Button style={{marginLeft: '30px', marginBottom: '30px'}} type="primary" icon={<PlusOutlined />} onClick={() => handleAdd()}>新增</Button>
         </div>
+        {/* 新增文章选中 */}
+        {
+          selectedRow.length > 0 && (
+            <div className={sc('container-table')}>
+              <SelfTable
+                bordered
+                rowKey={'id'}
+                columns={columns}
+                dataSource={selectedRow}
+                pagination={null}
+              />
+            </div>
+          )
+        }
       </div>
-      {/* 新增文章选中 */}
       {AddModal}
     </PageContainer>
   )
