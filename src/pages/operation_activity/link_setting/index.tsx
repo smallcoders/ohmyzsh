@@ -248,20 +248,22 @@ export default () => {
             const activeImageId1=res.result
             window.location.href=(`/antelope-common/common/file/download/${res.result}`)
             message.success('下载成功')
-            if(edge==4){
-              if(types.indexOf("新建") !== -1){
-                const data={...formData,...{activeImageId:activeImageId1}}
-                postAddActivity(data).then(res1=>{
-                  if (res1.code === 0) {
-                    getOperationActivity().then(r=>{
-                      console.log(r)
-                    });
-                  } else {
-                    message.error(res1.message);
-                  }
-                })
+            setTimeout(() => {
+              if(edge==4){
+                if(types.indexOf("新建") !== -1){
+                  const data={...formData,...{activeImageId:activeImageId1}}
+                  postAddActivity(data).then(res1=>{
+                    if (res1.code === 0) {
+                      getOperationActivity().then(r=>{
+                        console.log(r)
+                      });
+                    } else {
+                      message.error(res1.message);
+                    }
+                  })
+                }
               }
-            }
+            }, 1000)
           }
         })
       }
