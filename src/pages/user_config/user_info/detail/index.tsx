@@ -11,6 +11,7 @@ import SelfTable from '@/components/self_table';
 import { httpGetAuditList } from '@/services/audit';
 import VerifyStepsDetail from '@/components/verify_steps';
 const sc = scopedClasses('user-config-user-detail');
+import moment from 'moment';
 
 const scaleText = { 1: '0~50人', 2: '50~100人', 3: '100~200人', 4: '200~500人', 5: '500人以上' }
 const businessTypeText = { 1: '国营', 2: '民营', 3: '三资', 4: '其他（事业单位、科研院所等）' }
@@ -313,37 +314,77 @@ export default () => {
     >
       <div className='user-content' >
         <Row>
-          <Col span={6}>
-            <span style={{ fontSize: '20px', fontWeight: 'bold' }}>{detail?.name}</span>
+          <Col span={2} style={{ fontSize: '20px', fontWeight: 'bold', display: 'flex', alignItems: 'center' }}>{detail?.name}</Col>
+          <Col span={4} style={{ display: 'flex', alignItems: 'center' }}>{detail?.phone}</Col>
+          <Col span={4} style={{ display: 'flex', alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: 10 }}>{detail?.userIdentities?.map(p => {
+              return <span style={{ color: '#F59A23', background: 'rgba(254, 246, 241, 1)', padding: '0 5px', height: 20 }}>
+                {p?.desc}</span>
+            })
+            }</div>
           </Col>
-          <Col span={6}>
-            <span style={{ fontWeight: 'bold' }}>注册端：</span>
-            <span >{detail?.registerSource?.desc}</span>
-          </Col>
-          <Col span={6}>
-            <span style={{ fontWeight: 'bold' }}>渠道值：</span>
-            <span >{detail?.channelName}</span>
-          </Col>
-          <Col span={6}>
-          </Col>
-          <Col span={6}>
-            <span>{detail?.phone}</span>
-          </Col>
-          <Col span={6}>
-            <span style={{ fontWeight: 'bold' }}>注册时间：</span>
-            <span>{detail?.createTime}</span>
-          </Col>
-          <Col span={6}>
-            <span style={{ fontWeight: 'bold' }}>场景值：</span>
-            <span >{detail?.sceneName}</span>
-          </Col>
-          <Col span={6}></Col>
-          <div style={{ display: 'flex', gap: 10 }}>{detail?.userIdentities?.map(p => {
-            return <span style={{ color: '#F59A23', background: 'rgba(254, 246, 241, 1)', padding: '0 5px', height: 20 }}>
-              {p?.desc}</span>
-          })
-          }</div>
         </Row>
+
+        <Row style={{ marginTop: 20 }}>
+          <Col span={3}>
+            <div style={{ display: 'flex', alignItems: 'center', fontSize: '15px', height: '100%' }}>
+              注册信息
+            </div>
+          </Col>
+          <Col span={15} style={{ alignItems: 'center' }}>
+            <Row>
+              <Col span={12}>
+                <span>注册端：</span>
+                <span >{detail?.registerSource?.desc}</span>
+              </Col>
+              <Col span={12}>
+                <span>注册时间：</span>
+                <span>{detail?.createTime}</span>
+              </Col>
+            </Row>
+            <Row style={{ marginTop: 10 }}>
+              <Col span={12}>
+                <span>注册渠道值：</span>
+                <span >{detail?.channelName}</span>
+              </Col>
+              <Col span={12}>
+                <span>注册场景值：</span>
+                <span>{detail?.sceneName}</span>
+              </Col>
+            </Row>
+          </Col>
+        </Row>
+
+        <Row style={{ marginTop: 20 }}>
+          <Col span={3}>
+            <div style={{ display: 'flex', alignItems: 'center', fontSize: '15px', height: '100%' }}>
+              个人信息完善
+            </div>
+          </Col>
+          <Col span={15} style={{ alignItems: 'center' }}>
+            <Row>
+              <Col span={12}>
+                <span>完善信息状态：</span>
+                <span >{detail?.userInfoCompleteChannel?.infoIsComplete ? '已完善' : '未完善'}</span>
+              </Col>
+              <Col span={12}>
+                <span>完善时间：</span>
+                <span>{detail?.userInfoCompleteChannel?.infoIsComplete && detail?.userInfoCompleteChannel?.updateTime ? moment(detail.userInfoCompleteChannel.updateTime).format('YYYY-MM-DD HH:mm:ss') : '-'}</span>
+              </Col>
+            </Row>
+            <Row style={{ marginTop: 10 }}>
+              <Col span={12}>
+                <span>完善渠道值：</span>
+                <span >{detail?.userInfoCompleteChannel?.infoIsComplete && detail?.userInfoCompleteChannel?.channelName || '-'}</span>
+              </Col>
+              <Col span={12}>
+                <span>完善场景值：</span>
+                <span>{detail?.userInfoCompleteChannel?.infoIsComplete && detail?.userInfoCompleteChannel?.sceneName || '-'}</span>
+              </Col>
+            </Row>
+          </Col>
+        </Row>
+        
       </div>
       <Radio.Group style={{ margin: '20px 0' }} value={contentType} onChange={(e) => setContentType(e.target.value)}>
         {detail?.orgSimpleList?.length > 0 && <Radio.Button value={1}>组织信息</Radio.Button>}

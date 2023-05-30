@@ -85,6 +85,18 @@ export default () => {
     total: 0,
   });
 
+  const ipHost = () => {
+    if (!!~window.location.host.indexOf('localhost')) {
+      return 'http://172.30.33.222'
+    } else if(!!~window.location.host.indexOf('172.30.33')){
+      return  window.location.protocol + '//' + window.location.host.split(':')[0]
+    } else if(!!~window.location.host.indexOf('10.103.142.216')){
+      return 'https://preprod.lingyangplat.com'
+    } else {
+      return 'https://www.lingyangplat.com'
+    }
+  }
+
   //方法
   /*
   * 获取分页数据
@@ -205,14 +217,14 @@ export default () => {
     console.log(image.width)
     image.onload = function () {
       const canvas = document.createElement("canvas");
-      canvas.width = 1080;
-      canvas.height = 1920;
+      canvas.width = 600;
+      canvas.height = 600;
       const context = canvas.getContext("2d");
       // @ts-ignore
       if(idName=='#imgWechat'&& context){
         context.drawImage(image, 0, 0,0,0);
       }else if(idName=='#imgShare1'&& context){
-        context.drawImage(image, 0, 0,1080, 1920,);
+        context.drawImage(image, 0, 0,600, 600,);
       }
       const urlName = canvas.toDataURL("image/png"); //得到图片的base64编码数据
       const arr = urlName.split(',')
@@ -236,20 +248,22 @@ export default () => {
             const activeImageId1=res.result
             window.location.href=(`/antelope-common/common/file/download/${res.result}`)
             message.success('下载成功')
-            if(edge==4){
-              if(types.indexOf("新建") !== -1){
-                const data={...formData,...{activeImageId:activeImageId1}}
-                postAddActivity(data).then(res1=>{
-                  if (res1.code === 0) {
-                    getOperationActivity().then(r=>{
-                      console.log(r)
-                    });
-                  } else {
-                    message.error(res1.message);
-                  }
-                })
+            setTimeout(() => {
+              if(edge==4){
+                if(types.indexOf("新建") !== -1){
+                  const data={...formData,...{activeImageId:activeImageId1}}
+                  postAddActivity(data).then(res1=>{
+                    if (res1.code === 0) {
+                      getOperationActivity().then(r=>{
+                        console.log(r)
+                      });
+                    } else {
+                      message.error(res1.message);
+                    }
+                  })
+                }
               }
-            }
+            }, 1000)
           }
         })
       }
@@ -330,7 +344,7 @@ export default () => {
             value.url=res?.result
           }
         }
-        value.activeUrl= `https://www.lingyangplat.com/antelope-activity-h5/share-code/index.html?preview=true&targetLinkType=${value.targetLinkType}&buttonText=${value.buttonText}&targetLink=${value.targetLink}&url=${value.url}`
+        value.activeUrl= `${ipHost()}/antelope-activity-h5/share-code/index.html?preview=true&targetLinkType=${value.targetLinkType}&buttonText=${value.buttonText}&targetLink=${value.targetLink}&url=${value.url}`
         setCurrent(1)
         setFormData(value)
       }else if(edge==3){
@@ -379,12 +393,12 @@ export default () => {
     console.log(e)
     if(e.id){
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      copy(`https://www.lingyangplat.com/antelope-activity-h5/share-code/index.html?preview=false&targetLinkType=${e.targetLinkType}&id=${e.id}`)
+      copy(`${ipHost()}/antelope-activity-h5/share-code/index.html?preview=false&targetLinkType=${e.targetLinkType}&id=${e.id}`)
         message.success('链接复制成功');
 
     }else{
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      copy(`https://www.lingyangplat.com/antelope-activity-h5/share-code/index.html?preview=true&targetLinkType=${e.targetLinkType}&buttonText=${e.buttonText}&targetLink=${e.targetLink}&url=${e.url}`)
+      copy(`${ipHost()}/antelope-activity-h5/share-code/index.html?preview=true&targetLinkType=${e.targetLinkType}&buttonText=${e.buttonText}&targetLink=${e.targetLink}&url=${e.url}`)
         message.success('链接复制成功');
     }
   };
@@ -1111,7 +1125,7 @@ export default () => {
             <h2 >以下链接用于预览效果用，不计入数据统计</h2>
             {formData&&(
               <div>
-            <h2 className={sc('modelWord-link')}>{ `https://www.lingyangplat.com/antelope-activity-h5/share-code/index.html?preview=true&targetLinkType=${formData.targetLinkType}&buttonText=${formData.buttonText}&targetLink=${formData.targetLink}&url=${formData.url}`}
+            <h2 className={sc('modelWord-link')}>{ `${ipHost()}/antelope-activity-h5/share-code/index.html?preview=true&targetLinkType=${formData.targetLinkType}&buttonText=${formData.buttonText}&targetLink=${formData.targetLink}&url=${formData.url}`}
             </h2>
             <Button
               type="primary"
@@ -1134,9 +1148,9 @@ export default () => {
               <div className={sc('modelWord-bk-invite')}>邀请人：{shardCodeMaster}</div>
               <div className="qr-anhui-pf">
                 <QRCode
-                  value={(`https://www.lingyangplat.com/antelope-activity-h5/antelope-download/index.html?shardCodeMaster=${shardCodeMaster}&preview=true`) }
+                  value={(`${ipHost()}/antelope-activity-h5/antelope-download/index.html?shardCodeMaster=${shardCodeMaster}&preview=true`) }
                   renderAs={'canvas'}
-                  size={113}
+                  size={300}
                   bgColor={'#FFFFFF'}
                   fgColor={'#000000'}
                   level="H"
@@ -1148,9 +1162,9 @@ export default () => {
               <div className={sc('modelWord-bk1-invite')}>邀请人：{shardCodeMaster}</div>
               <div className="qr-anhui-pf">
                 <QRCode
-                  value={(`https://www.lingyangplat.com/antelope-activity-h5/antelope-download/index.html?shardCodeMaster=${shardCodeMaster}&preview=false`)}
+                  value={(`${ipHost()}/antelope-activity-h5/antelope-download/index.html?shardCodeMaster=${shardCodeMaster}&preview=false`)}
                   renderAs={'canvas'}
-                  size={113}
+                  size={300}
                   bgColor={'#FFFFFF'}
                   fgColor={'#000000'}
                   level="H"
