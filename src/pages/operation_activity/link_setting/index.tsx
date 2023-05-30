@@ -93,7 +93,7 @@ export default () => {
     } else if(!!~window.location.host.indexOf('10.103.142.216')){
       return 'https://preprod.lingyangplat.com'
     } else {
-      return '${ipHost()}'
+      return 'https://www.lingyangplat.com'
     }
   }
 
