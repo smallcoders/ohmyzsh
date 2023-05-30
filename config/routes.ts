@@ -309,7 +309,10 @@
   BUSINESS_CHANNEL: '/business-channel',
   BUSINESS_CHANNEL_FOLLOW_UP_DETAIL: '/business-channel/follow-up-detail', // 跟进记录详情
   BUSINESS_CHANNEL_OPPORTUNITY: '/business-channel/opportunity', // 商机池
-  BUSINESS_CHANNEL_POOL: '/business-channel/pool' // 渠道商池
+  BUSINESS_CHANNEL_POOL: '/business-channel/pool', // 渠道商池
+
+  // 服务号 - 合集标签
+  BASELINE_SERVICE_NUMBER_MANAGEMENT_COLLECTION_ADD: '/baseline/baseline-service-number/management/collection/add', // 新增合集标签
 };
 
 export default [
@@ -677,6 +680,13 @@ export default [
             // access: 'PA_BLM_NRGL',
             hideInBreadcrumb: true,
             component: './baseline/service/service_number/service_management_detail/index',
+          },
+          {
+            path: routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_COLLECTION_ADD,
+            name: '新增',
+            // access: 'PA_BLM_NRGL',
+            hideInBreadcrumb: true,
+            component: './baseline/service/service_number/collection_add/index',
           },
         ],
       },

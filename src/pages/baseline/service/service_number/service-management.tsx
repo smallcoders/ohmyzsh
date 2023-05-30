@@ -39,9 +39,10 @@ import {
   httpServiceAccountManageNameAble,
 } from '@/services/service-management';
 import debounce from 'lodash/debounce';
+import Collection from './components/collection/index';
 const sc = scopedClasses('service-number-management');
 
-type AuditType = '草稿箱' | '发布记录' | '服务号设置';
+type AuditType = '草稿箱' | '发布记录' | '服务号设置' | '合集标签';
 export default () => {
   const sortArrayByWeight = (arr: any) => {
     return arr.sort((a: any, b: any) => b.weight - a.weight);
@@ -626,6 +627,16 @@ export default () => {
       />
     </div>
   );
+
+  // 合集标签
+  // const CollectionTag = (
+  //   <div className={sc('container-tab-collection')}>
+  //     <ProTable
+  //       headerTitle={`合集标签列表（共${total}个）`}
+
+  //     />
+  //   </div>
+  // ) 
 
   // 服务号设置
   const [formBasic] = Form.useForm();
@@ -1856,6 +1867,7 @@ export default () => {
       setActiveTab(activeTabValue)
     }
   },[activeTabValue])
+  
   return (
     <PageContainer
       className={sc('container')}
@@ -1895,6 +1907,11 @@ export default () => {
           <Tabs.TabPane tab="发布记录" key="发布记录">
             {/* 发布记录 */}
             {ReleaseRecord}
+          </Tabs.TabPane>
+          <Tabs.TabPane tab="合集标签" key="合集标签">
+            {/* 合集标签 */}
+            {/* {CollectionTag} */}
+            <Collection />
           </Tabs.TabPane>
           <Tabs.TabPane tab="服务号设置" key="服务号设置">
             {/* 服务号设置 */}

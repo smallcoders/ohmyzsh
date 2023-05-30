@@ -260,7 +260,17 @@ export default () => {
   // link移除
   const handleLinkRemove = (item: any) => {
     console.log('移除',item)
+    let newList = [...linkList]
+    newList = newList.filter((value: any) => value !== item)
+    console.log('移除之后', newList)
+    setLinkList(newList)
   }
+  // 初始化link标签
+  useEffect(() => {
+    // 根据详情的值，添加linkList
+    setLinkList([1,2,3])
+    linkForm.setFieldsValue({'链接标题1': '标题一号'})
+  },[])
 
   // 内容信息 - 图文信息
   const Tuwen = (
@@ -329,7 +339,7 @@ export default () => {
         </Form>
       </div>
       {/* 链接新增的标识 */}
-      {/* <div className={sc('container-left-top-content-link')}>
+      <div className={sc('container-left-top-content-link')}>
         链接
         <span style={{marginLeft: '20px'}}><Button onClick={handleLinkAdd} size="small" type="primary" icon={<PlusOutlined />}>新增</Button></span>
       </div>
@@ -356,14 +366,14 @@ export default () => {
                     <Input maxLength={10} placeholder="请输入" allowClear />
                   </Form.Item>
                   <Form.Item
-                    label="链接简介" 
-                    name="链接简介"
+                    label={"链接简介" + item} 
+                    name={"链接简介" + item}
                   >
                     <Input maxLength={10} placeholder="请输入" allowClear />
                   </Form.Item>
                   <Form.Item
-                    label="链接地址" 
-                    name="链接简介"
+                    label={"链接地址" + item} 
+                    name={"链接地址" + item}
                     rules={[{ required: true, message: '必填' }]}
                   >
                     <Input.TextArea
@@ -377,7 +387,7 @@ export default () => {
             )
           })
         }
-      </Form> */}
+      </Form>
     </div>
   );
   // 内容信息 - 图片信息
@@ -645,9 +655,10 @@ export default () => {
     if (statue === 1) {
       // 发布
       // 需要来一个当前的内容信息表单, 看所有的是不是一个
-      Promise.all([contentInfoForm.validateFields(), formPostMessage.validateFields()]).then(
-        async ([contentInfoFormValues, formPostMessageValues]) => {
+      Promise.all([contentInfoForm.validateFields(), formPostMessage.validateFields(), linkForm.validateFields()]).then(
+        async ([contentInfoFormValues, formPostMessageValues, linkFormValues]) => {
           const formData = { ...contentInfoFormValues, ...formPostMessageValues };
+          console.log('搜集的链接', linkFormValues)
           console.log('搜集的form', formData);
           // 视频id
           const attachmentId = formData.attachmentId && formData.attachmentId[0].uid;
