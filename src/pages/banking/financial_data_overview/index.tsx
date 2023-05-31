@@ -5,8 +5,8 @@ import {
 } from 'antd';
 import * as echarts from 'echarts';
 import moment from 'moment';
-import { useEffect, useRef, useState } from 'react';
-import { getCockPit, getSummaryAndMap, queryCVR } from '@/services/financial_data_overview';
+import { useEffect, useRef, useState, useCallback } from 'react';
+import { getCockPit, getSummaryAndMap, queryCVR, queryMonthlyAnalysi } from '@/services/financial_data_overview';
 import scopedClasses from '@/utils/scopedClasses';
 import { customToFixed, formatPrice } from '@/utils/util';
 import OverViewModal from './components/OverViewModal'
@@ -34,6 +34,7 @@ export default () => {
   const analysisFunnelEcharts = useRef<any>(null)
   const analysisPieEcharts = useRef<any>(null)
   const analysisStackLineEcharts = useRef<any>(null)
+  const monthlyActiveEcharts = useRef<any>(null)
   const modalRef = useRef<any>(null)
   const [ mainInfo, setMainInfo ] = useState<any>(null)
   const [currentCityCode, setCurrentCityCode] = useState<number>(340100)
@@ -43,6 +44,7 @@ export default () => {
     startDate: moment('2023-01-01', 'YYYY-MM-DD'),
     endDate: moment(new Date(), 'YYYY-MM-DD')
   })
+  const timer = useRef<any>(null)
 
   // 获取静态数据  目标  地图  总览
   const getMainInfo = () => {
@@ -400,6 +402,151 @@ export default () => {
     }
   }, [])
 
+  const getOption = useCallback((result, xData) => {
+    return {
+      tooltip: {
+        trigger: 'axis',
+        formatter: (params: any) => {
+          const total = params[0].data.total
+          return `${(params[0]?.data || {}).time} <br/> <span>本月累计活跃度：${total}人</span> <br/> ${params[0].marker}Web端活跃度: ${params[0].value || '0'}人 <br/> ${params[1].marker}App端活跃度: ${params[1].value || '0'}人`
+        },
+        backgroundColor: '#2b2f39',
+        textStyle: {
+          color: '#fff',
+          fontWeight: 'bold',
+        },
+        borderColor: '#2b2f39',
+        axisPointer: {
+          lineStyle: {
+            type: 'solid'
+          }
+        }
+      },
+      legend: {
+        show: true,
+        data: ['Web端', 'App端'],
+        textStyle: {
+          color: '#fff',
+          lineHeight: 20,
+        },
+        left: 'right',
+        selectedMode: false,
+      },
+      color: ["#D9A900", "#55E9F5"],
+      xAxis: {
+        type: 'category',
+        boundaryGap: true,
+        data: xData,
+        axisLabel: {
+          textStyle: {
+            color: '#fff',
+          }
+        },
+        axisLine: {
+          lineStyle: {
+            color: '#072B5F'
+          }
+        },
+        axisTick: {
+          show: false
+        }
+      },
+      yAxis: {
+        show: true,
+        type: 'value',
+        name: "人",
+        minInterval: 1,
+        nameTextStyle: {
+          color: '#fff',
+          align: 'right',
+          padding: [0, 8, 8, 0]
+        },
+        axisLabel: {
+          textStyle: {
+            color: '#fff'
+          }
+        },
+        axisLine: {
+          show: true,
+          lineStyle: {
+            color: '#072B5F',
+            width: 1,
+            type: 'solid'
+          }
+        },
+        splitLine: {
+          lineStyle: {
+            color: ['#2b3248']
+          },
+        },
+        axisTick: {
+          show: false
+        }
+      },
+      series: [
+        {
+          name: 'Web端',
+          type: 'line',
+          data: result.map((item: any) => {
+            return {
+              value: item.webCount,
+              name: 'Web端',
+              time: item?.month,
+              total: item.totalCount
+            }
+          })
+        },
+        {
+          name: 'App端',
+          type: 'line',
+          data: result.map((item: any) => item.appCount)
+        }
+      ]
+    }
+  }, [])
+  /*
+  *超过12个月循环
+  const loopLine = (data: any) => {
+    let start = 0;
+    let end = 12;
+    timer.current = setInterval(() => {
+      if (end > data.length) {
+        start = 0
+        end = 12
+      }
+      const arr = data.slice(start, end)
+      const xAxisData = arr.map((item: any) => {
+        return item.month.split('-')[1]
+      })
+      const option = getOption(arr, xAxisData);
+      monthlyActiveEcharts.current.setOption(option);
+      start++
+      end++
+    }, 2000)
+  }
+
+  useEffect(() => {
+    return () => {
+      clearInterval(timer.current)
+    }
+  }, [])
+  */
+
+  const monthlyActiveRef = useCallback(async (node) => {
+    if(node !== null) {
+      const { startDate, endDate } = time
+      const params = {startDate: moment(startDate).format('YYYY-MM-DD'), endDate: moment(endDate).format('YYYY-MM-DD')}
+      const { result = [] } = await queryMonthlyAnalysi(params)
+      monthlyActiveEcharts.current = echarts.init(node)
+
+      const xAxisData = result.map((item: any) => {
+        return item?.month?.split('-')[1]
+      })
+      const option = getOption(result, xAxisData)
+      monthlyActiveEcharts.current.setOption(option);
+    }
+  }, [time])
+
 
 
 
@@ -581,13 +728,18 @@ export default () => {
             </div>
           </div>
           <div className="middle-bottom">
-            <div className="rate-analysis">
+            {/* <div className="rate-analysis">
               <div className="analysis-title">各业务类型授信占比</div>
               <div ref={analysisPie} className="analysis-pie" />
             </div>
             <div className="amount-analysis">
               <div className="analysis-title">融资申请及授信月度分析</div>
               <div ref={analysisStackLine} className="analysis-stack-line" />
+            </div> */}
+            {/* 金融月活分析 */}
+            <div className='monthly-active'>
+              <div className="monthli-active-title">金融月活分析</div>
+              <div className="monthli-active-chart" ref={monthlyActiveRef}></div>
             </div>
           </div>
         </div>

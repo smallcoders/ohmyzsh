@@ -1,0 +1,37 @@
+.pagelayout {
+  margin: -24px -24px 0;
+  .pageHeader {
+    height: 72px;
+    padding: 16px 24px;
+    background-color: transparent;
+    span {
+      font-weight: bold;
+      font-size: 20px;
+    }
+  }
+  .content {
+    margin: 0 24px;
+    .queryForm {
+      margin-bottom: 20px;
+      background-color: #fff;
+    }
+    .tableWrapper {
+      padding: 20px;
+      background-color: #fff;
+      .operate {
+        margin-bottom: 16px;
+      }
+      :global {
+        .ant-pagination {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            margin-top: 16px;
+            .ant-pagination-total-text {
+                flex-grow: 2;
+            }
+        }
+      }
+    }
+  }
+}

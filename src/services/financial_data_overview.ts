@@ -69,3 +69,11 @@ export async function addOrUpdateProjectContract(data?: { [key: string]: any }) 
     data
   });
 }
+
+/** 金融月活分析 */
+export async function queryMonthlyAnalysi(data?: { [key: string]: any }) {
+  return request<any>('/antelope-finance/mng/cockpit/queryMonthlyAnalysis', {
+    method: 'post',
+    data
+  });
+}

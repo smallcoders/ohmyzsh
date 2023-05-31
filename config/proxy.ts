@@ -105,7 +105,6 @@ export default {
       // target: 'http://10.8.4.222:9208',
       changeOrigin: true,
       pathRewrite: { '^': '' },
-      // pathRewrite: { '^/antelope-channel': '' },
-    },
+    }
   },
 };
