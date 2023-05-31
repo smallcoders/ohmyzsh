@@ -64,7 +64,7 @@ const GenerateForm = (props: GenerateFormProps) => {
               )
             }
             {
-              globalConfig.successConfigType === 'link' && (
+              globalConfig.successConfigType === 'link' && (isMobile ? globalConfig.mobileLink : globalConfig.pcLink) && (
                 <div className="link-info">
                   <div className="link">{isMobile ? globalConfig.mobileLink : globalConfig.pcLink}</div>
                   <div className="timer"><span>3</span>秒后自动跳转</div>
