@@ -22,6 +22,17 @@ const GlobalConfig: FC = () => {
     dispatch(action)
   }
 
+  const handleGlobalConfigListChange = (configs: any) => {
+    const action = {
+      type: ActionType.SET_GLOBAL_CONFIG,
+      payload: {
+        ...globalConfig,
+        ...configs
+      }
+    }
+    dispatch(action)
+  }
+
 
   return (
     <>
@@ -58,7 +69,23 @@ const GlobalConfig: FC = () => {
                 value={globalConfig?.successConfigType}
                 allowClear
                 onChange={(value) => {
-                  handleGlobalConfigChange('successConfigType', value)
+                  let params: any = {
+                    successConfigType: value
+                  }
+                  if (!value){
+                    params = {
+                      pcImg: '',
+                      mobileImg: '',
+                      pcLink: '',
+                      mobileLink: '',
+                      pcImgHeight: 460,
+                      pcImgWidth: 344,
+                      mobileImgHeight: 460,
+                      mobileImgWidth: 344,
+                      successConfigType: value
+                    }
+                  }
+                  handleGlobalConfigListChange(params)
                 }}
                 options={[
                   {
@@ -144,7 +171,8 @@ const GlobalConfig: FC = () => {
                     accept=".bmp,.gif,.png,.jpeg,.jpg"
                     noUploadText={true}
                     onChange={(value: any) => {
-                      handleGlobalConfigChange('pcImg', value)
+                      console.log(value, '99999')
+                      handleGlobalConfigChange('pcImg', value?.path || value)
                     }}
                   />
                   <div>
@@ -212,7 +240,7 @@ const GlobalConfig: FC = () => {
                     accept=".bmp,.gif,.png,.jpeg,.jpg"
                     noUploadText={true}
                     onChange={(value: any) => {
-                      handleGlobalConfigChange('mobileImg', value)
+                      handleGlobalConfigChange('mobileImg', value?.path || value)
                     }}
                   />
                   <div>
