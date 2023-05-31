@@ -59,7 +59,7 @@ const GlobalConfig: FC = () => {
                 onChange={(event) => handleGlobalConfigChange('successSubTitle',event.target.value)}
                 onBlur={(event) => {
                   if(!event.target.value){
-                    handleGlobalConfigChange('successSubTitle', '提交成功')
+                    handleGlobalConfigChange('successSubTitle', '工业互联网，价值在羚羊，快去羚羊平台逛逛吧！')
                   }
                 }}
               />
