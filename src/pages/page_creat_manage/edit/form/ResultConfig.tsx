@@ -78,10 +78,10 @@ const GlobalConfig: FC = () => {
                       mobileImg: '',
                       pcLink: '',
                       mobileLink: '',
-                      pcImgHeight: 460,
-                      pcImgWidth: 344,
-                      mobileImgHeight: 460,
-                      mobileImgWidth: 344,
+                      pcImgHeight: 150,
+                      pcImgWidth: 150,
+                      mobileImgHeight: 150,
+                      mobileImgWidth: 150,
                       successConfigType: value
                     }
                   }
