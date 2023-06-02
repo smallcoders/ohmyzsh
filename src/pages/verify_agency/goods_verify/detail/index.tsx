@@ -502,7 +502,7 @@ export default () => {
                 </Button>
               )}
 
-              <Button onClick={gobackList}>返回</Button>
+              {/* <Button onClick={gobackList}>返回</Button> */}
             </div>
           </ProCard>
 

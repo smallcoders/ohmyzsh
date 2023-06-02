@@ -54,8 +54,8 @@ export default () => {
   },[])
 
   const formLayout = {
-    labelCol: { span: 6 },
-    wrapperCol: { span: 16 },
+    labelCol: { span: 9 },
+    wrapperCol: { span: 14 },
   };
 
   const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
@@ -128,27 +128,31 @@ export default () => {
       title: '是否注册平台',
       dataIndex: 'registerStatus',
       width: 120,
+      render: (_: number) => _ === 1 ? '是' : '否',
     },
     {
       title: '领取状态',
       dataIndex: 'receiveState',
       width: 100,
+      render: (_: number) => _ === 1 ? '已领取' : '未领取',
     },
     {
       title: '领取金额（元）',
       dataIndex: 'amount',
       width: 144,
+      render: (_: number) => _/100
     },
     {
       title: '使用金额（元）',
       dataIndex: 'usedAmount',
       width: 144,
+      render: (_: number) => _/100
     },
     {
       title: '消费券状态',
       dataIndex: 'state',
       width: 200,
-      render: (_: string) => _ ? _ : '--',
+      render: (_: number) => _ === 2 ? '已过期' : _ === 1 ? '生效中' : '未生效',
     },
   ];
 

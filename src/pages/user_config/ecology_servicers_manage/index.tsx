@@ -1,27 +1,76 @@
-import { getActivityManageList } from '@/services/purchase';
-import type DataCommodity from '@/types/data-commodity';
-import type DataPromotions from '@/types/data-promotions';
+import type EcologyProviders from '@/types/ecology-providers'
 import { PageContainer } from '@ant-design/pro-layout';
 import type { ActionType, ProColumns } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
-import { Button } from 'antd';
+import { Button, message as antdMessage } from 'antd';
 import { useRef, useState } from 'react';
 import { Access, useAccess } from 'umi';
+import {
+  getEnterpriseSizeList,
+  getIndustryList,
+  getEcoProviderPage
+} from '@/services/commissioner-service'
 
 export default () => {
   const actionRef = useRef<ActionType>();
   const [total, setTotal] = useState<number>(0);
+  const [industryList, setIndustryList] = useState<any>([]);
 
-  const columns: ProColumns<DataPromotions.Promotions>[] = [
+  const getServiceList = async () => {
+    try {
+      const res = await getEnterpriseSizeList()
+      if (res?.code === 0) {
+        const list = res?.result?.map((item: any) => {
+          return {
+            label: item?.desc,
+            value: item?.code,
+          }
+        })
+        return list
+      } else {
+        throw new Error("");
+      }
+    } catch (error) {
+      antdMessage.error('获取企业规模失败，请重试')
+    }
+  }
+
+  const getIndustry = async () => {
+    try {
+      const res = await getIndustryList()
+      if (res?.code === 0) {
+        const list = res?.result?.map((item: any) => {
+          return {
+            label: item?.desc,
+            value: item?.code,
+          }
+        })
+        setIndustryList(list)
+        return list
+      } else {
+        throw new Error("");
+      }
+    } catch (error) {
+      antdMessage.error('获取服务行业失败，请重试')
+    }
+  }
+
+  const handleIndustry = (industry: string) => {
+    const arr = industryList.filter(item => industry.indexOf(item.value.toString()) > -1)
+    return arr.map(item => item.label).join(',')
+  }
+
+  const columns: ProColumns<EcologyProviders.ProductInfo>[] = [
     {
       title: '企业名称',
-      dataIndex: 'actNo',
+      dataIndex: 'enterpriseName',
       valueType: 'textarea',
     },
     {
       title: '管理员名称',
-      dataIndex: 'name',
-      valueType: 'textarea'
+      dataIndex: 'adminName',
+      valueType: 'textarea',
+      hideInSearch: true
     },
     {
       title: '商品名称',
@@ -31,58 +80,73 @@ export default () => {
     },
     {
       title: '管理员电话',
-      dataIndex: 'actName',
+      dataIndex: 'adminPhone',
       valueType: 'textarea',
       hideInSearch: true,
       order: 5,
     },
     {
       title: '服务行业',
-      dataIndex: 'commoditys',
+      dataIndex: 'industryType',
+      valueType: 'select',
+      request: async () => getIndustry(),
+      hideInTable: true
+    },
+    {
+      title: '服务行业',
+      dataIndex: 'serviceIndustry',
       valueType: 'textarea',
-      // order: 4,
-      renderText: (_: string, _record: any) => _record.product ?  _record.product.length : 0
+      renderText: (text: any, record: any) => handleIndustry(record.serviceIndustry) || '--',
+      hideInSearch: true
     },
     {
       title: '企业规模',
-      dataIndex: 'productName',
-      valueType: 'textarea'
+      dataIndex: 'enterpriseSize',
+      valueType: 'select',
+      width: 120,
+      request: async () => getServiceList()
     },
     {
       title: '服务案例',
-      dataIndex: 'sortNo',
+      dataIndex: 'caseName',
       valueType: 'textarea',
+      width: 120,
       hideInSearch: true,
     },
     {
       title: '服务企业数量（家）',
-      dataIndex: 'productName',
+      dataIndex: 'serviceCompaniesNumber',
       valueType: 'textarea',
       hideInSearch: true,
       order: 5,
     },
     {
       title: '累计客户数量（人）',
-      dataIndex: 'sortNo',
+      dataIndex: 'customerCount',
       valueType: 'textarea',
       hideInSearch: true,
     },
     {
       title: '入驻时间',
+      dataIndex: 'createTime',
+      valueType: 'textarea',
+      hideInSearch: true
+    },
+    {
+      title: '入驻时间',
       dataIndex: 'time',
       valueType: 'dateRange',
-      renderText: (_: string, _record: any) => _record?.startTime + '~' + _record?.endTime
+      hideInTable: true
     },
     {
       title: '已合作平台',
-      dataIndex: 'time',
-      hideInSearch: true,
-      renderText: (_: string, _record: any) => _record?.startTime + '~' + _record?.endTime
+      dataIndex: 'partneredPlatforms',
+      hideInSearch: true
     }
   ];
 
   const expandedRowRender = (record: any) => {
-    const _columns: ProColumns<DataCommodity.Commodity>[] = [
+    const _columns: ProColumns<EcologyProviders.SpecInfo>[] = [
       {
         title: '商品名称',
         dataIndex: 'productName',
@@ -90,28 +154,25 @@ export default () => {
       },
       {
         title: '商品适用端',
-        dataIndex: 'productModel',
+        dataIndex: 'appType',
         valueType: 'textarea',
       },
       {
         title: '接入应用名称',
-        dataIndex: 'purchasePricePart',
+        dataIndex: 'appName',
         valueType: 'textarea',
       },
       {
         title: '商品状态',
-        dataIndex: 'addedState',
+        dataIndex: 'saleStatus',
         valueType: 'select',
         valueEnum: {
           0: {
-            text: '上架',
+            text: '已下架',
           },
           1: {
-            text: '下架',
-          },
-          2: {
-            text: '暂存',
-          },
+            text: '发布中',
+          }
         },
       }
     ];
@@ -134,7 +195,7 @@ export default () => {
     try {
       const table = {...tableData};
       const loading = {...loadingObj};
-      const data:any = record.product || [];
+      const data:any = record.products || [];
       table[key] = data;
       loading[key] = false;
       setTableData(table);
@@ -160,7 +221,7 @@ export default () => {
       <ProTable
         headerTitle={
           <div>
-            <p>{`活动列表（共${total}个）`}</p>
+            <p>{`生态服务商列表（共${total}家）`}</p>
           </div>
         }
         options={false}
@@ -172,6 +233,7 @@ export default () => {
         search={{
           span: 8,
           labelWidth: 100,
+          defaultCollapsed: false, // 默认是否收起
           optionRender: (searchConfig, formProps, dom) => [dom[1], dom[0]],
         }}
         actionRef={actionRef}
@@ -183,8 +245,9 @@ export default () => {
           </Access>
         ]}
         request={async (pagination) => {
-          const result = await getActivityManageList({
-            ...pagination,
+          console.log(pagination, '----------------------')
+          const result = await getEcoProviderPage({
+            ...pagination
           });
           setTotal(result.total);
           return result
