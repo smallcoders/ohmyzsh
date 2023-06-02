@@ -219,7 +219,7 @@ export default () => {
           <Button size="small" type="link" onClick={() => goDetail(record)}>
             详情
           </Button>
-          <Access accessible={access['P_PM_SP']}>
+          <Access accessible={access['PU_DG_SPGL']}>
             <Popconfirm
               title={
                 <>
