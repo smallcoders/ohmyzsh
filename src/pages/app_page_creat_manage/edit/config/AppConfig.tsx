@@ -234,7 +234,7 @@ const AppConfig = () => {
           accept=".bmp,.gif,.png,.jpeg,.jpg"
           value={config!.icon}
           onChange={(value: any) => {
-            handleChangeProduct(value, 'icon', key)
+            handleChangeProduct(value?.path || value || '', 'icon', key)
           }}
           noUploadText={true}
         />
