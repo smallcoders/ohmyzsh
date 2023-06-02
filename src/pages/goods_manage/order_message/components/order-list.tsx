@@ -76,7 +76,8 @@ export const OrderItem = ({
             <span> 订单编号：{record?.orderNo || '--'} </span>
             <span style={{ marginLeft: 10 }}> {dateFormat(record?.createTime) || '--'} </span>|
             下单手机号：
-            {record?.userPhone || '--'}
+            {record?.userPhone || '--'} |
+            <span> 下单企业：{record?.orderOrgName || '--'} </span>
           </div>
         </div>
       )}
@@ -120,9 +121,13 @@ export const OrderItem = ({
                   >
                     {p.productName}
                   </span>
-                  <div>
-                    <span style={{ color: 'rgba(0, 0, 0, 0.45)' }}>规格：</span>
-                    <span>{p?.specVoList?.[0]?.specValue}</span>
+                  <div style={{marginTop: 8, fontSize: 12}} className="spec-items">
+                    {p?.specVoList?.map((spec: any) => (
+                      <div key={spec.spec}>
+                        <span style={{ color: 'rgba(0, 0, 0, 0.45)' }}>{spec.spec}：</span>
+                        <span>{spec.specValue}</span>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -168,11 +173,13 @@ export const OrderItem = ({
               </div>
               <div style={{ flex: 1, display: 'grid', textAlign: 'center' }}>
                 <span>{OrderManage.StateJsonInOrderDetail[record?.state || ''] || '--'}</span>
+                {/* 交易关闭及原因 */}
                 {record?.state == 6 && <span style={{ color: '#999' }}>{record?.remarkMsg}</span>}
-
+                {/* 交易完成及完成时间 */}
+                {record?.state == 5 && <span style={{ color: '#999' }}>成功时间：{dateFormat(record?.endSuccTime) || '--'}</span>}
                 <a
                   onClick={() => {
-                    history.push(`${routeName.ORDER_MESSAGE_DETAIL}?id=${record.orderNo}`);
+                    window.open(`${routeName.ORDER_MESSAGE_DETAIL}?id=${record.orderNo}`);
                   }}
                 >
                   订单详情
