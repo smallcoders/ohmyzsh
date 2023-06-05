@@ -25,7 +25,8 @@ import type { ProColumns, ActionType } from '@ant-design/pro-table';
 import ProTable from '@ant-design/pro-table';
 import scopedClasses from '@/utils/scopedClasses';
 import {
-  httpServiceAccountPublishPage,
+  httpPageCollectionArticleSearch,
+  httpServiceAccountCollectionDel,
 } from '@/services/service-management';
 import copy from 'copy-to-clipboard';
 const sc = scopedClasses('service-number-management-collection');
@@ -64,33 +65,40 @@ export default () => {
   // 删除
   const remove = async (id: string) => {
     console.log('删除', id);
-    // try {
-    //   const res = await httpServiceAccountArticleDel(id);
-    //   if (res?.code === 0) {
-    //     message.success(`删除成功`);
-    //     if (total === 11) {
-    //       actionRef.current?.reloadAndRest();
-    //       return;
-    //     }
-    //     actionRef.current?.reload(); // 让table// 刷新
-    //   } else {
-    //     message.error(`删除失败，原因:{${res.message}}`);
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    // }
+    try {
+      const res = await httpServiceAccountCollectionDel({serviceAccountCollectionId: id});
+      if (res?.code === 0) {
+        message.success(`删除成功`);
+        if (total === 11) {
+          // 刷新并清空,页码也会重置，不包括表单
+          actionRef.current?.reloadAndRest();
+          return;
+        }
+        actionRef.current?.reload(); // 让table// 刷新
+      } else {
+        message.error(`删除失败，原因:{${res.message}}`);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
   // 复制
   const handleCopy = (value: any) => {
     if (value)
     // 找唐超要链接
-    copy(`https://www.lingyangplat.com/antelope-activity-h5/share-code/index.html`)
+    copy(`/industry-moments/#/articles-collection?collectionId=${value}&type=OTHER`)
     message.success('链接复制成功');
   }
 
   const handleDetail = (detailId: string) => {
     window.open(
       `${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_COLLECTION_DETAIL}?backid=${id}&backname=${name}&activeTab=${'合集标签'}&id=${detailId}`,
+    );
+  }
+
+  const handleEditBtn = (detailId: string) => {
+    window.open(
+      `${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_COLLECTION_ADD}?type=edit&backid=${id}&backname=${name}&activeTab=${'合集标签'}&id=${detailId}`,
     );
   }
   const columns: ProColumns<SolutionTypes.Solution>[] = [
@@ -109,14 +117,14 @@ export default () => {
       renderText: (_: string) => {
         return (
           <div className={sc(`title`)}>
-            {_ || '--'}
+            {_ || '图文合集'}
           </div>
         );
       },
     },
     {
       title: '合集名称',
-      dataIndex: 'title',
+      dataIndex: 'name',
       align: 'center',
       valueType: 'text', // 筛选的类别
       renderText: (_: string) => {
@@ -129,26 +137,26 @@ export default () => {
     },
     {
       title: '文末连续阅读状态',
-      dataIndex: 'type',
+      dataIndex: 'continuousRead',
       align: 'center',
       hideInSearch: true,
       renderText: (_: string) => {
         return (
           <div className={`state${_}`}>
-            {Object.prototype.hasOwnProperty.call(typeEnum, _) ? typeEnum[_] : '--'}
+            {_ ? '连续阅读' : '不连续阅读' }
           </div>
         );
       },
     },
     {
       title: '当前内容数',
-      dataIndex: 'serviceAccountName',
+      dataIndex: 'articleNum',
       align: 'center',
       hideInSearch: true,
     },
     {
       title: '最后更新时间',
-      dataIndex: 'publishTime',
+      dataIndex: 'updateTime',
       align: 'center',
       hideInSearch: true,
     },
@@ -188,24 +196,21 @@ export default () => {
             <Button
               size="small"
               type="link"
-              onClick={() => {
-                // 草稿的新新增页面
-                handleEditBtn(record);
-              }}
+              onClick={handleEditBtn.bind(null,record.id.toString())}
             >
               编辑
             </Button>
             {(
               <Popconfirm
                 title={
-                  <div>
+                  <div style={{width: '110px'}}>
                     <div>删除</div>
                     <div>确定删除集合？</div>
                   </div>
                 }
                 okText="确定"
                 cancelText="取消"
-                onConfirm={() => remove(record.id.toString())}
+                onConfirm={remove.bind(null,record.id.toString())}
               >
                 <a href="#">删除</a>
               </Popconfirm>
@@ -218,7 +223,7 @@ export default () => {
 
   const handleAddBtn = () => {
     history.push(
-      `${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_COLLECTION_ADD}?backid=${id}&backname=${name}&activeTab=${'合集标签'}`,
+      `${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_COLLECTION_ADD}?type=add&backid=${id}&backname=${name}&activeTab=${'合集标签'}`,
     );
   };
 
@@ -238,7 +243,7 @@ export default () => {
         request={async (pagination) => {
           // 查询，重置搜集的值
           console.log('pagination', pagination);
-          const result = await httpServiceAccountPublishPage({
+          const result = await httpPageCollectionArticleSearch({
             ...pagination,
             serviceAccountId: id && Number(id),
           });

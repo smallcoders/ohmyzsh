@@ -203,7 +203,23 @@
 
 .@{prefix} {
   &-title {
-    max-width: 320px;
+    max-width: 150px;
     .ellipseText(1);
+  }
+  &-collectionNameList {
+    display: flex;
+    justify-content: space-around;
+    &-item {
+      background-color: #6680FF;
+      color: #fff;
+      display: inline-block;
+      padding: 0px 3px;
+      max-width: 110px;
+      .ellipseText(1);
+      &:hover {
+        overflow: hidden !important;
+        white-space: nowrap !important;
+      }
+    }
   }
 }

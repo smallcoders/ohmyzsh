@@ -14,7 +14,7 @@ import {
   Radio,
   InputNumber,
   Spin,
-  Modal
+  Modal,
 } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
@@ -80,11 +80,11 @@ export default () => {
     if (serveDetail) {
       // 如果返回了Logo
       if (serveDetail?.logoUrl) {
-        console.log('有图片')
+        console.log('有图片');
         setImgUrl(serveDetail?.logoUrl);
         setImgUrlId(serveDetail?.logoId);
       }
-      console.log('imgUrl', imgUrl)
+      console.log('imgUrl', imgUrl);
       formBasic.setFieldsValue({
         ...serveDetail,
         // 服务号logo
@@ -124,7 +124,7 @@ export default () => {
       // console.log('初始化菜单设置', menus);
       setDataSouceList(menus);
       // 在这里校验菜单
-      console.log('menus', menus)
+      console.log('menus', menus);
     }
   }, [serveDetail]);
 
@@ -221,7 +221,9 @@ export default () => {
     const handleEdit = () => {
       console.log('编辑');
       history.push(
-        `${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DRAFTS_ADD}?type=edit&state=${dataSource.type}&id=${dataSource.id}&name=${name}&backid=${id}&backname=${name}&activeTab=${'草稿箱'}`,
+        `${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DRAFTS_ADD}?type=edit&state=${
+          dataSource.type
+        }&id=${dataSource.id}&name=${name}&backid=${id}&backname=${name}&activeTab=${'草稿箱'}`,
       );
       // window.open(
       //   `${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DRAFTS_ADD}?type=edit&state=${dataSource.type}&id=${dataSource.id}&name=${name}`,
@@ -254,7 +256,9 @@ export default () => {
     const handleAddItem = (value: string) => {
       console.log('ADD', value);
       history.push(
-        `${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DRAFTS_ADD}?type=add&state=${value}&id=${id}&name=${name}&backid=${id}&backname=${name}&activeTab=${'草稿箱'}`,
+        `${
+          routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DRAFTS_ADD
+        }?type=add&state=${value}&id=${id}&name=${name}&backid=${id}&backname=${name}&activeTab=${'草稿箱'}`,
       );
     };
     const items = (
@@ -304,7 +308,9 @@ export default () => {
               // 音频
               <audio controls={true} src={dataSource.filePath} />
             )}
-            {dataSource.type === 'TEXT' && dataSource.content && <div>{dataSource.content || '--'}</div>}
+            {dataSource.type === 'TEXT' && dataSource.content && (
+              <div>{dataSource.content || '--'}</div>
+            )}
           </div>
           {dataSource.title && (
             // 文本
@@ -365,24 +371,20 @@ export default () => {
     OFF_SHELF: '已下架',
     APPOINTMENT_ON_SHELF: '预约发布',
   };
-  const syncIndustrialState= {
+  const syncIndustrialState = {
     PASS: '已通过',
     AUDITING: '审核中 ',
     NOT_PASS: '未通过',
     NOT_SYNC: '未同步',
-    OFF_SHELF:'已下架'
-  }
+    OFF_SHELF: '已下架',
+  };
   const [total, setTotal] = useState<number>(0);
   const paginationRef = useRef<any>();
   const handleEditBtn = (item: any) => {
-    console.log('编辑的当前值', item);
-    console.log('backid',id)
-    console.log('backname',name)
-    // history.push(
-    //   `${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DRAFTS_ADD}?type=edit&state=${item.type}&id=${item.id}&name=${name}`,
-    // );
     window.open(
-      `${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DRAFTS_ADD}?type=edit&state=${item.type}&id=${item.id}&name=${name}&backid=${id}&backname=${name}&activeTab=${'发布记录'}`,
+      `${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DRAFTS_ADD}?type=edit&state=${item.type}&id=${
+        item.id
+      }&name=${name}&backid=${id}&backname=${name}&activeTab=${'发布记录'}`,
     );
   };
   // 删除
@@ -423,11 +425,16 @@ export default () => {
   const handleDetail = (detailId: string) => {
     console.log('详情', detailId);
     // history.push(`${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DETAIL}?id=${id}`);
-    window.open(`${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DETAIL}?id=${detailId}&backid=${id}&backname=${name}&activeTab=${'发布记录'}`);
+    window.open(
+      `${
+        routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_DETAIL
+      }?id=${detailId}&backid=${id}&backname=${name}&activeTab=${'发布记录'}`,
+    );
   };
 
   const columns: ProColumns<SolutionTypes.Solution>[] = [
     {
+      width: 60,
       title: '序号',
       align: 'center',
       hideInSearch: true, // 隐藏筛选
@@ -436,15 +443,12 @@ export default () => {
     },
     {
       title: '标题',
+      width: 150,
       dataIndex: 'title',
       align: 'center',
       valueType: 'text', // 筛选的类别
       renderText: (_: string) => {
-        return (
-          <div className={sc(`title`)}>
-            {_ || '--'}
-          </div>
-        );
+        return <div className={sc(`title`)}>{_ || '--'}</div>;
       },
     },
     {
@@ -467,6 +471,26 @@ export default () => {
       hideInSearch: true,
     },
     {
+      width: 250,
+      title: '归属合集',
+      dataIndex: 'collectionNameList',
+      align: 'center',
+      hideInSearch: true,
+      renderText: (_: any[]) => {
+        return (
+          <div className={sc('collectionNameList')}>
+            {_?.length > 0
+              ? _?.map((item: any, index: any) => {
+                  if (index >= 2) return
+                  return <div key={index} className={sc('collectionNameList-item')}>{'#' + item}</div>;
+                })
+              : '--'}
+            {_?.length >= 2 && <div className={sc('collectionNameList-item')}>{'...'}</div>} 
+          </div>
+        );
+      },
+    },
+    {
       title: '状态',
       dataIndex: 'state',
       align: 'center',
@@ -486,11 +510,15 @@ export default () => {
       align: 'center',
       width: 150,
       hideInSearch: true,
-      renderText: (_: string,record:any) => {
+      renderText: (_: string, record: any) => {
         return (
           <div className={`state${_}`}>
-            {Object.prototype.hasOwnProperty.call(syncIndustrialState, _) ? syncIndustrialState[_] : '--'}
-            {record.syncIndustrialState==='NOT_PASS'&&<span>（{record.industrialAuditReason}）</span>}
+            {Object.prototype.hasOwnProperty.call(syncIndustrialState, _)
+              ? syncIndustrialState[_]
+              : '--'}
+            {record.syncIndustrialState === 'NOT_PASS' && (
+              <span>（{record.industrialAuditReason}）</span>
+            )}
           </div>
         );
       },
@@ -511,7 +539,8 @@ export default () => {
       title: '操作',
       hideInSearch: true, // 隐藏筛选
       align: 'center',
-      width: 300,
+      width: 260,
+      fixed: 'right',
       render: (_, record) => {
         return (
           <Space size="middle">
@@ -624,6 +653,7 @@ export default () => {
         }}
         columns={columns}
         pagination={{ size: 'default', showQuickJumper: true, defaultPageSize: 10 }}
+        scroll={{x: 1600}}
       />
     </div>
   );
@@ -636,7 +666,7 @@ export default () => {
 
   //     />
   //   </div>
-  // ) 
+  // )
 
   // 服务号设置
   const [formBasic] = Form.useForm();
@@ -651,8 +681,8 @@ export default () => {
   // 服务号设置 - 暂存、提交
   const [isExporting, setIsExporting] = useState<boolean>(false);
   const onSubmitDebounce = debounce((value) => {
-    onSubmit(value)
-  },1000)
+    onSubmit(value);
+  }, 1000);
   const onSubmit = async (statue: number) => {
     if (statue === 1) {
       // 上架
@@ -693,7 +723,7 @@ export default () => {
               menuLayer: item.menuLayer,
               name: item.name,
               weight: item.weight,
-              id: item.id ? item.id : undefined
+              id: item.id ? item.id : undefined,
             };
           }
           return {
@@ -702,7 +732,7 @@ export default () => {
             menuLayer: item.menuLayer,
             name: item.name,
             weight: item.weight,
-            id: item.id ? item.id : undefined
+            id: item.id ? item.id : undefined,
           };
         });
         setIsExporting(true);
@@ -765,7 +795,7 @@ export default () => {
             menuLayer: item.menuLayer,
             name: item.name,
             weight: item.weight,
-            id: item.id ? item.id : undefined
+            id: item.id ? item.id : undefined,
           };
         }
         return {
@@ -774,7 +804,7 @@ export default () => {
           menuLayer: item.menuLayer,
           name: item.name,
           weight: item.weight,
-          id: item.id ? item.id : undefined
+          id: item.id ? item.id : undefined,
         };
       });
       setIsExporting(true);
@@ -783,9 +813,9 @@ export default () => {
           id: id,
           ...formBasicValues,
           logoId: imgUrlId,
-          name: formBasicValues.name 
-            ? formBasicValues.name.trim() 
-              ? formBasicValues.name.trim() 
+          name: formBasicValues.name
+            ? formBasicValues.name.trim()
+              ? formBasicValues.name.trim()
               : undefined
             : undefined,
           menus: c,
@@ -846,8 +876,8 @@ export default () => {
   const [currentMenu, setCurrentMenu] = useState({});
   // 菜单项item
   const handleMenuItem = (item: any) => {
-    console.log('item', item)
-    console.log('点击了一级菜单当前项', currentMenu)
+    console.log('item', item);
+    console.log('点击了一级菜单当前项', currentMenu);
     // 清空子级
     setCurrentChilrden({});
     // 切换一级菜单
@@ -892,7 +922,7 @@ export default () => {
         newItem.childMenu = childMunuDataList;
       }
       // b.unshift(newItem);
-      b.splice(b.length - 1 , 0, newItem)
+      b.splice(b.length - 1, 0, newItem);
       const c = sortArrayByWeight(b);
       setDataSouceList(b);
       // 如果点了两层菜单，结束需要重置菜单状态
@@ -932,12 +962,12 @@ export default () => {
       let newItem = values;
       let a = JSON.stringify(dataSoueceList);
       let b = JSON.parse(a);
-      console.log('一级菜单项dataSoueceList', dataSoueceList)
-      console.log('一级菜单项currentMenu', currentMenu)
+      console.log('一级菜单项dataSoueceList', dataSoueceList);
+      console.log('一级菜单项currentMenu', currentMenu);
       // 在添加之前，判断当前项是否有id
-      if(currentMenu?.id) {
-        newItem = {...values, id: currentMenu?.id}
-      } 
+      if (currentMenu?.id) {
+        newItem = { ...values, id: currentMenu?.id };
+      }
       if (currentMenu?.childMenu) {
         if (values?.menuLayer === 2) {
           // 如果还是选两层菜单，保留当前的子菜单
@@ -961,7 +991,6 @@ export default () => {
           b.splice(currentId, 1, newItem);
           const c = sortArrayByWeight(b);
           setDataSouceList(b);
-
         }
       } else {
         // 是否 选两层
@@ -1150,9 +1179,9 @@ export default () => {
       let currentId;
       let a = JSON.stringify(dataSoueceList);
       let b = JSON.parse(a);
-      console.log('编辑子菜单当前项', currentChilrden)
+      console.log('编辑子菜单当前项', currentChilrden);
       if (currentChilrden?.id) {
-        newItem = {...newItem, id: currentChilrden?.id}
+        newItem = { ...newItem, id: currentChilrden?.id };
       }
       b?.forEach((j: any) => {
         if (j.name === currentMenu?.name) {
@@ -1183,66 +1212,66 @@ export default () => {
 
   // 服务号名称的校验规则
   const changeFormMunuName = async (_: any, value: string) => {
-    console.log('value', value)
-    console.log('_', _)
+    console.log('value', value);
+    console.log('_', _);
     // value 是当前拿到的值
     // if (value) {
-      // }
+    // }
     if (!value.trim()) {
-      message.warning('服务号名称不可为空格')
+      message.warning('服务号名称不可为空格');
       return Promise.resolve();
     }
     try {
-        const res = await httpServiceAccountManageNameAble({
-          manage: false,
-          name: value,
-          id: serveDetail?.id,
-        })
-        if (res?.code === 0) {
-          if (res?.result) {
-            return Promise.resolve();
-          } else {
-            return Promise.reject(new Error('该服务号名称已存在'));
-          }
+      const res = await httpServiceAccountManageNameAble({
+        manage: false,
+        name: value,
+        id: serveDetail?.id,
+      });
+      if (res?.code === 0) {
+        if (res?.result) {
+          return Promise.resolve();
         } else {
-          message.warning(res?.message)
+          return Promise.reject(new Error('该服务号名称已存在'));
         }
+      } else {
+        message.warning(res?.message);
+      }
     } catch (error) {
-      message.error(`服务号名称校验失败:`,error)
+      message.error(`服务号名称校验失败:`, error);
       return Promise.reject(new Error('菜单名称重复'));
     }
-  }
+  };
   const logoIdChange = (value: any) => {
-    console.log('logoIdChange',value)
-    setImgUrl(value)
-  }
+    console.log('logoIdChange', value);
+    setImgUrl(value);
+  };
   const logoIdChangeId = (value: any) => {
-    console.log('logoIdChangeId',value)
+    console.log('logoIdChangeId', value);
     setImgUrlId(value);
-  }
+  };
 
   // 基础信息的改变
   const [infoFormChange, setnfoFormChange] = useState<boolean>(false);
   const [visible, setVisible] = useState<boolean>(false);
   const [visibleTwo, setVisibleTwo] = useState<boolean>(false);
   // 监听当前的tab
-  const [text, setText] = useState()
+  const [text, setText] = useState();
   useEffect(() => {
     if (activeTab === '服务号设置') {
       // 监听当前的菜单设置
-      console.log('当前的TAB', activeTab)
-      console.log('菜单设置', dataSoueceList)
-      setText(dataSoueceList)
+      console.log('当前的TAB', activeTab);
+      console.log('菜单设置', dataSoueceList);
+      setText(dataSoueceList);
       let a = JSON.stringify(dataSoueceList);
     }
-  },[activeTab, dataSoueceList])
+  }, [activeTab, dataSoueceList]);
 
   useEffect(() => {
     if (dataSoueceList && text) {
       // 并且更新
-      console.log('并且更新', JSON.stringify(text) === JSON.stringify(dataSoueceList))
+      console.log('并且更新', JSON.stringify(text) === JSON.stringify(dataSoueceList));
     }
-  },[dataSoueceList])
+  }, [dataSoueceList]);
 
   // 服务号设置
   const SetService = (
@@ -1250,17 +1279,17 @@ export default () => {
       <div className={sc('container-tab-set-top')}>
         <div className={sc('container-tab-set-top-title')}>服务号基本信息</div>
         <div className={sc('container-tab-set-top-form')}>
-          <Form 
-            form={formBasic} 
-            {...formLayout} 
+          <Form
+            form={formBasic}
+            {...formLayout}
             validateTrigger={['onBlur']}
             onValuesChange={() => {
               setnfoFormChange(true);
             }}
           >
-            <Form.Item 
-              label="服务号名称" 
-              name="name" 
+            <Form.Item
+              label="服务号名称"
+              name="name"
               rules={[
                 { required: true, message: '必填' },
                 {
@@ -1328,7 +1357,7 @@ export default () => {
         <div className={sc('container-tab-set-menu-header')}>菜单设置</div>
         <div className={sc('container-tab-set-menu-content')}>
           <div className={sc('container-tab-set-menu-content-left')}>
-            <div style={{border: '1px solid'}}>
+            <div style={{ border: '1px solid' }}>
               <div className={sc('container-tab-set-menu-content-left-content')}>
                 {/* <div className={sc('container-tab-set-menu-left-content-title')}>预览</div>
                 <div>图片信息</div>
@@ -1436,9 +1465,9 @@ export default () => {
                 {/* 一级菜单 */}
                 <div className={sc('container-tab-set-menu-content-right-title')}>一级菜单</div>
                 <div className={sc('container-tab-set-menu-content-right-form')}>
-                  <Form 
-                    form={formMunu} 
-                    {...formLayoutMenu} 
+                  <Form
+                    form={formMunu}
+                    {...formLayoutMenu}
                     validateTrigger={['onBlur']}
                     onValuesChange={() => {
                       setnfoFormChange(true);
@@ -1747,7 +1776,7 @@ export default () => {
           {serveDetail?.state === 'OFF_SHELF' && (
             <React.Fragment>
               <div className={sc('container-tab-set-bottom-left')}>
-                <Button disabled={isExporting}  type="primary" onClick={() => onSubmitDebounce(1)}>
+                <Button disabled={isExporting} type="primary" onClick={() => onSubmitDebounce(1)}>
                   立即上架
                 </Button>
               </div>
@@ -1762,7 +1791,9 @@ export default () => {
                 cancelText="取消"
                 onConfirm={() => onSubmitDebounce(1)}
               >
-                <Button disabled={isExporting} type="primary">更新服务号</Button>
+                <Button disabled={isExporting} type="primary">
+                  更新服务号
+                </Button>
               </Popconfirm>
             </React.Fragment>
           )}
@@ -1772,20 +1803,24 @@ export default () => {
               marginLeft: '20px',
             }}
           >
-            <Button onClick={() => {
-              if (infoFormChange) {
-                if (serveDetail?.state !== 'OFF_SHELF') {
-                  // 已上架
-                  // history.goBack()
-                  setVisibleTwo(true)
+            <Button
+              onClick={() => {
+                if (infoFormChange) {
+                  if (serveDetail?.state !== 'OFF_SHELF') {
+                    // 已上架
+                    // history.goBack()
+                    setVisibleTwo(true);
+                  } else {
+                    // 未上架, 有暂存
+                    setVisible(true);
+                  }
                 } else {
-                  // 未上架, 有暂存
-                  setVisible(true)
+                  history.goBack();
                 }
-              } else {
-                history.goBack()
-              }
-            }}>返回</Button>
+              }}
+            >
+              返回
+            </Button>
           </div>
         </div>
       </Affix>
@@ -1804,7 +1839,7 @@ export default () => {
             key="submit"
             type="primary"
             onClick={() => {
-              history.goBack()
+              history.goBack();
             }}
           >
             直接离开
@@ -1813,8 +1848,8 @@ export default () => {
             key="submit"
             type="primary"
             onClick={() => {
-              onSubmitDebounce(2)
-              history.goBack()
+              onSubmitDebounce(2);
+              history.goBack();
             }}
           >
             暂存并离开
@@ -1838,7 +1873,7 @@ export default () => {
             key="submit"
             type="primary"
             onClick={() => {
-              history.goBack()
+              history.goBack();
             }}
           >
             直接离开
@@ -1847,8 +1882,8 @@ export default () => {
             key="submit"
             type="primary"
             onClick={() => {
-              onSubmitDebounce(1)
-              history.goBack()
+              onSubmitDebounce(1);
+              history.goBack();
             }}
           >
             更新服务号并离开
@@ -1862,12 +1897,12 @@ export default () => {
 
   useEffect(() => {
     if (activeTabValue) {
-      console.log('发布记录返回的tab', activeTabValue)
+      console.log('发布记录返回的tab', activeTabValue);
       // 如果有重置active的值
-      setActiveTab(activeTabValue)
+      setActiveTab(activeTabValue);
     }
-  },[activeTabValue])
-  
+  }, [activeTabValue]);
+
   return (
     <PageContainer
       className={sc('container')}

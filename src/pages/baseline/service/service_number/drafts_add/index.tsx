@@ -194,8 +194,33 @@ export default () => {
             }),
         });
 
-        // 结尾处，搜集所有的表单信息
-        // 当点击返回是，校验所有的表单信息是否 全等, 如果有一个不全等  提示数据未保存
+        // 链接
+        if (detail?.links) {
+          let arr = [] as any
+          detail?.links.forEach((item: any, index: any) => {
+            arr.push(index + 1)
+          })
+          console.log('检查链接，', arr)
+          setLinkList(arr)
+          // 添加对应的form值
+          arr.forEach((item: any,index: any) => {
+            if (detail?.links[index].title) {
+              linkForm.setFieldsValue({
+                ['链接标题' + item]: detail?.links[index].title,
+              })
+            }
+            if (detail?.links[index].introduction) {
+              linkForm.setFieldsValue({
+                ['链接简介' + item]: detail?.links[index].introduction,
+              })
+            }
+            if (detail?.links[index].address) {
+              linkForm.setFieldsValue({
+                ['链接地址' + item]: detail?.links[index].address,
+              })
+            }
+          })
+        }
       } else {
         throw new Error('');
       }
@@ -253,24 +278,24 @@ export default () => {
   // link新增
   const handleLinkAdd = () => {
     const newList = [...linkList]
-    newList.push(linkList?.length + 1)
+    console.log('newList', newList)
+    if (newList.length === 0) {
+      newList.push(1)
+    } else {
+      newList.push(newList[linkList?.length - 1] + 1)
+    }
+    // newList.push(linkList?.length + 1)
     console.log('新增', newList)
     setLinkList(newList)
   }
   // link移除
   const handleLinkRemove = (item: any) => {
-    console.log('移除',item)
     let newList = [...linkList]
     newList = newList.filter((value: any) => value !== item)
-    console.log('移除之后', newList)
     setLinkList(newList)
+    // 清空当前对应的表单值
+    linkForm.resetFields(['链接标题' + item, '链接简介' + item, '链接地址' + item])
   }
-  // 初始化link标签
-  useEffect(() => {
-    // 根据详情的值，添加linkList
-    setLinkList([1,2,3])
-    linkForm.setFieldsValue({'链接标题1': '标题一号'})
-  },[])
 
   // 内容信息 - 图文信息
   const Tuwen = (
@@ -359,20 +384,20 @@ export default () => {
                 <img className={sc('container-left-top-content-link-form-remove')} src={removeImg} onClick={handleLinkRemove.bind(null, item)} />
                 <div>
                   <Form.Item
-                    label={'链接标题' + item}
+                    label={'链接标题'}
                     name={'链接标题' + item}
                     rules={[{ required: true, message: '必填' }]}
                   >
                     <Input maxLength={10} placeholder="请输入" allowClear />
                   </Form.Item>
                   <Form.Item
-                    label={"链接简介" + item} 
+                    label={"链接简介"} 
                     name={"链接简介" + item}
                   >
                     <Input maxLength={10} placeholder="请输入" allowClear />
                   </Form.Item>
                   <Form.Item
-                    label={"链接地址" + item} 
+                    label={"链接地址"} 
                     name={"链接地址" + item}
                     rules={[{ required: true, message: '必填' }]}
                   >
@@ -651,7 +676,7 @@ export default () => {
   const onSubmitDebounce = debounce((value, back?) => {
     onSubmit(value, back);
   }, 1000);
-  const onSubmit = async (statue: number, back?) => {
+  const onSubmit = async (statue: number, back?: any) => {
     if (statue === 1) {
       // 发布
       // 需要来一个当前的内容信息表单, 看所有的是不是一个
@@ -660,6 +685,17 @@ export default () => {
           const formData = { ...contentInfoFormValues, ...formPostMessageValues };
           console.log('搜集的链接', linkFormValues)
           console.log('搜集的form', formData);
+          let links = [] as any
+          // 根据linkList 数组的长度
+          linkList?.forEach((item: any, index: any) => {
+            links.push({
+              title: linkFormValues['链接标题' + item],
+              introduction: linkFormValues['链接简介' + item],
+              address: linkFormValues['链接地址' + item],
+            })
+          })
+
+          console.log('验证linkst', links)
           // 视频id
           const attachmentId = formData.attachmentId && formData.attachmentId[0].uid;
           console.log('attachmentId', attachmentId);
@@ -682,6 +718,10 @@ export default () => {
                 formData.attachmentIdList?.map((item: any) => item.uid),
               // 视频
               attachmentId: attachmentId,
+              // 如果是图文
+              links: state === 'PICTURE_TEXT' 
+                ? links
+                : undefined
             });
             console.log('添加返回的res', res);
             if (res.code === 0) {
@@ -706,6 +746,19 @@ export default () => {
       // 暂存
       const contentInfoFormValues = contentInfoForm.getFieldsValue();
       const formPostMessageValues = formPostMessage.getFieldsValue();
+      const linkValues = linkForm.getFieldsValue();
+      let links = [] as any
+      if (linkList.length >= 0) {
+        // 根据linkList 数组的长度
+        linkList?.forEach((item: any, index: any) => {
+          links.push({
+            title: linkValues['链接标题' + item],
+            introduction: linkValues['链接简介' + item],
+            address: linkValues['链接地址' + item],
+          })
+        })
+      }
+      console.log('暂存的link', links)
       const formData = { ...contentInfoFormValues, ...formPostMessageValues };
       console.log('搜集的form', formData);
       // 视频id
@@ -728,6 +781,10 @@ export default () => {
             formData.attachmentIdList && formData.attachmentIdList?.map((item: any) => item.uid),
           // 视频
           attachmentId: attachmentId,
+          // 如果是图文
+          links: state === 'PICTURE_TEXT' 
+            ? links.length > 0 && links[0].title  ? links : undefined
+            : undefined
         });
         console.log('暂存返回的res', res);
         if (res.code === 0) {

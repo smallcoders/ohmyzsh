@@ -396,3 +396,104 @@ export function httpServiceAccountManageNameAble(params: {
     params,
   })
 }
+
+// 文章筛选分页
+export function httpPageCollectionArticleSearch(data: {
+  pageSize?: number;
+  pageIndex?: number;
+  current?: number;
+  serviceAccountId: any; // 服务号id
+  name?: string; // 合集名称
+  
+}) {
+  return request(`/antelope-business/mng/serviceAccount/collection/page`, {
+    method: 'post',
+    data: {...data, pageIndex: data.current},
+  }).then((e: {code: number; totalCount: any; result: any;}) => (
+    {
+      success: e.code === 0,
+      total: e.totalCount,
+      data: e.result,
+    }
+  ))
+}
+
+// 合集 - 删除
+export function httpServiceAccountCollectionDel(params: {
+  serviceAccountCollectionId: any // 合集id
+}) {
+  return request(`/antelope-business/mng/serviceAccount/collection/del`, {
+    method: 'delete',
+    params,
+  })
+}
+
+// 合集详情-文章列表
+export function httpCollectionListArticle(params: {
+  serviceAccountCollectionId: any // 服务号合集id
+}) {
+  return request(`/antelope-business/mng/serviceAccount/collection/listArticle`, {
+    method: 'get',
+    params,
+  })
+} 
+
+// 合集编辑 - 文章列表   删除，新增， 置顶使用此接口
+export function httpCollectionListArticleByParam(data: {
+  serviceAccountId: number // 服务号id
+  serviceAccountArticleIdList: number[] // 所有文章id列表
+  topServiceAccountArticleIdList: number[] | undefined // 置顶文章Id列表
+}) {
+  return request(`/antelope-business/mng/serviceAccount/collection/listArticleByParam`, {
+    method: 'post',
+    data
+  })
+}
+
+// 合集 - 详情
+export function httpCollectionDetail(params: {
+  serviceAccountCollectionId: any // 合集id
+}) {
+  return request(`/antelope-business/mng/serviceAccount/collection/detail`, {
+    method: 'get',
+    params,
+  })
+}
+
+// 合集编辑-文章筛选分页
+export function httpCollectionPageCollectionArticleSearch(data: {
+  pageIndex: number;
+  pageSize: number;
+  serviceAccountId: number // 服务号id
+  title?: string // 标题
+  serviceAccountArticleIdList?: number[] // 已添加文章ID
+}) {
+  return request(`/antelope-business/mng/serviceAccount/collection/pageCollectionArticleSearch`, {
+    method: 'post',
+    data,
+  })
+}
+
+// 合集 - 保存
+export function httpServiceAccountCollectionSave(data: {
+  id?: any // 主见id
+  serviceAccountId: number // 服务号id
+  name: string // 合集名称
+  continuousRead: boolean // 连续阅读 true连续阅读 false不连续阅读
+  articleList?: any[] // 文章合集
+}) {
+  return request(`/antelope-business/mng/serviceAccount/collection/save`, {
+    method: 'post',
+    data,
+  })
+}
+
+// 合集 - 日志
+export function httpServiceAccountCollectionLog(params: {
+  serviceAccountCollectionId?: string // 合集ID
+}) {
+  return request(`/antelope-business/mng/serviceAccount/collection/log`, {
+    method: 'get',
+    params,
+  })
+}
