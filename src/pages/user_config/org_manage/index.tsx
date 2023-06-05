@@ -24,9 +24,10 @@ import {
 } from '@/services/user-feedback';
 import { listAllAreaCode } from '@/services/common';
 import { PageContainer } from '@ant-design/pro-layout';
-import { getOrgManagePage, signOrgTag } from '@/services/org-type-manage';
+import { getOrgManagePage, signOrgTag, httpOrgExport } from '@/services/org-type-manage';
 import { Access, useAccess,history } from 'umi';
 import {routeName} from "../../../../config/routes";
+import { UploadOutlined } from '@ant-design/icons';
 const sc = scopedClasses('user-config-org-manage');
 enum Edge {
   HOME = 0,
@@ -340,6 +341,48 @@ export default () => {
     );
   };
 
+  const exportList = async () => {
+    const {
+      orgName,
+      orgTypeId,
+      areaCode,
+      orgSign,
+      industryCategoryName,
+      startTime,
+      endTime,
+    } = searchContent;
+    console.log('startTime', startTime)
+    console.log('@searchContent', searchContent);
+
+    try {
+      const res = await httpOrgExport({
+        orgName,
+        orgTypeId: Number(orgTypeId),
+        areaCode,
+        orgSign,
+        startTime,
+        endTime,
+        industryCategoryName,
+      });
+      if (res?.data.size == 67 || res?.data.type == 'application/json')
+        return message.warning('操作太过频繁，请稍后再试');
+      const content = res?.data;
+      const blob = new Blob([content], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8',
+      });
+      const fileName = '组织管理.xlsx';
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.style.display = 'none';
+      link.href = url;
+      link.setAttribute('download', fileName);
+      document.body.appendChild(link);
+      link.click();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <PageContainer className={sc('container')}>
       {useSearchNode()}
@@ -347,6 +390,11 @@ export default () => {
         <div className="title">
           <span>组织列表(共{pageInfo.totalCount || 0}个)</span>
         </div>
+        <Access accessible={access.PX_UM_ZZGL}>
+          <Button icon={<UploadOutlined />} onClick={exportList}>
+            导出
+          </Button>
+        </Access>
       </div>
       <div className={sc('container-table-body')}>
         <SelfTable

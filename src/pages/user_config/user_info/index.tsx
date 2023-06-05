@@ -511,7 +511,7 @@ export default () => {
       userIdentity,
       createTimeStart,
       createTimeEnd,
-    } = searchForm.getFieldsValue();
+    } = searchContent;
     console.log('@searchContent', searchContent);
 
     try {
