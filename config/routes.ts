@@ -402,8 +402,8 @@ export default [
       },
       {
         path: routeName.CONSUME_STATISTIC,
-        code: 'M_UM_ZXJL',
-        access: 'M_UM_ZXJL',
+        code: 'M_XFQ_TJ',
+        access: 'M_XFQ_TJ',
         name: '消费券统计',
         hideInBreadcrumb: true,
         component: './data_center/consume_statistic',
@@ -2725,8 +2725,8 @@ export default [
       },
       {
         path: '/user-config/ecology-servicers-manage',
-        code: 'M_PM_HD',
-        access: 'M_PM_HD',
+        code: 'M_ST_FWS',
+        access: 'M_ST_FWS',
         hideInBreadcrumb: true,
         name: '生态服务商管理',
         component: './user_config/ecology_servicers_manage',
