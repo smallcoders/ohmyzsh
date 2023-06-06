@@ -366,7 +366,10 @@ export default () => {
       {/* 链接新增的标识 */}
       <div className={sc('container-left-top-content-link')}>
         链接
-        <span style={{marginLeft: '20px'}}><Button onClick={handleLinkAdd} size="small" type="primary" icon={<PlusOutlined />}>新增</Button></span>
+        {
+          linkList?.length < 5 &&
+          <span style={{marginLeft: '20px'}}><Button onClick={handleLinkAdd} size="small" type="primary" icon={<PlusOutlined />}>新增</Button></span>
+        }
       </div>
       <Form
         {...formLayout} 
