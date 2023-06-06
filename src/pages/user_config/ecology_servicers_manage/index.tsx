@@ -96,7 +96,7 @@ export default () => {
       title: '服务行业',
       dataIndex: 'serviceIndustry',
       valueType: 'textarea',
-      renderText: (text: any, record: any) => handleIndustry(record.serviceIndustry) || '--',
+      renderText: (text: any, record: any) => record.serviceIndustry && handleIndustry(record.serviceIndustry) || '--',
       hideInSearch: true
     },
     {
