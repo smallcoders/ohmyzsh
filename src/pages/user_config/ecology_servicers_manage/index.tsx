@@ -10,7 +10,12 @@ import {
   getIndustryList,
   getEcoProviderPage
 } from '@/services/commissioner-service'
-
+import './index.less';
+const appTypeObj = {
+  0: '移动端',
+  1: 'Web端',
+  3: 'Web端、移动端'
+};
 export default () => {
   const actionRef = useRef<ActionType>();
   const [total, setTotal] = useState<number>(0);
@@ -156,6 +161,7 @@ export default () => {
         title: '商品适用端',
         dataIndex: 'appType',
         valueType: 'textarea',
+        renderText: (_, record) => _ !== null && appTypeObj[_]
       },
       {
         title: '接入应用名称',
@@ -168,7 +174,7 @@ export default () => {
         valueType: 'select',
         valueEnum: {
           0: {
-            text: '已下架',
+            text: '未发布',
           },
           1: {
             text: '发布中',
@@ -219,6 +225,7 @@ export default () => {
   return (
     <PageContainer>
       <ProTable
+        className="ecology-provider-info"
         headerTitle={
           <div>
             <p>{`生态服务商列表（共${total}家）`}</p>
