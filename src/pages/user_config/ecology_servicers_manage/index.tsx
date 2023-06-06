@@ -245,11 +245,10 @@ export default () => {
           </Access>
         ]}
         request={async (pagination) => {
-          console.log(pagination, '----------------------')
           const result = await getEcoProviderPage({
             ...pagination
           });
-          setTotal(result.total);
+          setTotal(result.total || 0);
           return result
         }}
         columns={columns}

@@ -110,8 +110,9 @@ export default () => {
     },
     {
       title: '行业代码',
-      dataIndex: 'phone',
+      dataIndex: 'industryCode',
       width: 100,
+      render: (_: string) => _ && _ != 'null' ? _ : '--',
     },
     {
       title: '名单来源',
@@ -140,13 +141,13 @@ export default () => {
       title: '领取金额（元）',
       dataIndex: 'amount',
       width: 144,
-      render: (_: number) => _/100
+      render: (_: number) => (_ || _ == 0) ? _/100 : '--'
     },
     {
       title: '使用金额（元）',
       dataIndex: 'usedAmount',
       width: 144,
-      render: (_: number) => _/100
+      render: (_: number) => (_ || _ == 0) ? _/100 : '--'
     },
     {
       title: '消费券状态',
