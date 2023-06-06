@@ -433,6 +433,9 @@ export default () => {
         right: 20,
         selectedMode: false,
       },
+      grid: {
+        bottom: 30,
+      },
       color: ["#5B8FF9", "#5AD8A6"],
       xAxis: {
         type: 'category',
