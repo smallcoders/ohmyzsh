@@ -192,15 +192,16 @@ export default () => {
               复制
             </Button>
             {/* 需要调整的权限 */}
-            {/* <Access accessible={access['P_OA_DSXCY']}> */}
-            <Button
-              size="small"
-              type="link"
-              onClick={handleEditBtn.bind(null,record.id.toString())}
-            >
-              编辑
-            </Button>
-            {(
+            <Access accessible={access['P_BLM_FWHYY']}>
+              <Button
+                size="small"
+                type="link"
+                onClick={handleEditBtn.bind(null,record.id.toString())}
+              >
+                编辑
+              </Button>
+            </Access>
+            <Access accessible={access['P_BLM_FWHYY']}>
               <Popconfirm
                 title={
                   <div style={{width: '110px'}}>
@@ -214,7 +215,7 @@ export default () => {
               >
                 <a href="#">删除</a>
               </Popconfirm>
-            )}
+            </Access>
           </Space>
         );
       },
@@ -253,12 +254,11 @@ export default () => {
           return result;
         }}
         toolBarRender={() => [
-          <Access accessible={access['P_BLM_FWHGL']}>
+          <Access accessible={access['P_BLM_FWHYY']}>
             <Button
               key="button"
               icon={<PlusOutlined />}
               type="primary"
-              // disabled={total >= 16}
               onClick={() => {
                 handleAddBtn();
               }}
