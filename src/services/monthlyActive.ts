@@ -12,6 +12,7 @@ export async function getActiveData(data?: Record<string, any>) {
 export async function exportFile(data:any) {
   return request('/antelope-finance/active/mng/export', {
     method: 'post',
+    responseType: 'blob',
     data
   });
 }

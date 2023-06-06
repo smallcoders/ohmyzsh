@@ -410,12 +410,12 @@ export default () => {
           const total = params[0].data.total
           return `${(params[0]?.data || {}).time} <br/> <span>本月累计活跃度：${total}人</span> <br/> ${params[0].marker}Web端活跃度: ${params[0].value || '0'}人 <br/> ${params[1].marker}App端活跃度: ${params[1].value || '0'}人`
         },
-        backgroundColor: '#2b2f39',
+        backgroundColor: '#0D3780',
         textStyle: {
           color: '#fff',
           fontWeight: 'bold',
         },
-        borderColor: '#2b2f39',
+        borderColor: '#0D3780',
         axisPointer: {
           lineStyle: {
             type: 'solid'
@@ -429,22 +429,23 @@ export default () => {
           color: '#fff',
           lineHeight: 20,
         },
-        left: 'right',
+        // left: 'right',
+        right: 20,
         selectedMode: false,
       },
-      color: ["#D9A900", "#55E9F5"],
+      color: ["#5B8FF9", "#5AD8A6"],
       xAxis: {
         type: 'category',
         boundaryGap: true,
         data: xData,
         axisLabel: {
           textStyle: {
-            color: '#fff',
+            color: 'rgba(255,243,243,0.8)',
           }
         },
         axisLine: {
           lineStyle: {
-            color: '#072B5F'
+            color: 'rgba(255,243,243,0.8)'
           }
         },
         axisTick: {
@@ -463,20 +464,14 @@ export default () => {
         },
         axisLabel: {
           textStyle: {
-            color: '#fff'
+            color: 'rgba(255,243,243,0.8)'
           }
         },
-        axisLine: {
-          show: true,
-          lineStyle: {
-            color: '#072B5F',
-            width: 1,
-            type: 'solid'
-          }
-        },
+        splitNumber: 4, // 坐标轴分割段数,只是参考值
         splitLine: {
           lineStyle: {
-            color: ['#2b3248']
+            type: 'dashed',
+            color: ['rgba(255,255,255,0.19)']
           },
         },
         axisTick: {
@@ -487,6 +482,12 @@ export default () => {
         {
           name: 'Web端',
           type: 'line',
+          areaStyle: {
+            color: new echarts.graphic.LinearGradient(0,0,0,1,[
+              {offset: 0, color: 'rgba(91,143,249,0.4)'},
+              {offset: 1, color: 'rgba(91,143,249,0)'}
+            ])
+          },
           data: result.map((item: any) => {
             return {
               value: item.webCount,
@@ -499,6 +500,12 @@ export default () => {
         {
           name: 'App端',
           type: 'line',
+          areaStyle: {
+            color: new echarts.graphic.LinearGradient(0,0,0,1,[
+              {offset: 0, color: 'rgba(90,216,166,0.4)'},
+              {offset: 1, color: 'rgba(90,216,166,0)'}
+            ])
+          },
           data: result.map((item: any) => item.appCount)
         }
       ]
@@ -738,8 +745,8 @@ export default () => {
             </div> */}
             {/* 金融月活分析 */}
             <div className='monthly-active'>
-              <div className="monthli-active-title">金融月活分析</div>
-              <div className="monthli-active-chart" ref={monthlyActiveRef}></div>
+              <div className="analysis-title">金融月活分析</div>
+              <div className="monthly-active-chart" ref={monthlyActiveRef}></div>
             </div>
           </div>
         </div>

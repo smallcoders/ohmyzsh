@@ -4,9 +4,9 @@ import {
     ProFormText,
     QueryFilter,
 } from '@ant-design/pro-components';
-import type { MenuProps, PaginationProps } from 'antd';
+import type { PaginationProps } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
-import { Button, Space, Dropdown, Table, Pagination, message } from 'antd';
+import { Button, Space, Dropdown, Table, Pagination, message, Menu } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import { history } from 'umi';
@@ -43,22 +43,8 @@ interface DataType {
 
 type SearchParams = Pick<DataType, "scUserId" | "userName" | "lyStaff">
 
-enum ExportType {
-    ALL = "ALL", // 导出全部
-    SELECT = "SELECT"  // 导出选中
-}
 
 
-const items: MenuProps['items'] = [
-    {
-        label: '导出筛选结果',
-        key: ExportType['ALL']
-    },
-    {
-        label: '导出选中数据',
-        key: ExportType['SELECT']
-    }
-]
 
 const userInfoToMonthlyActive: React.FC<{}> = () => {
     const [dataSource, setDataSource] = useState<DataType[]>([])
@@ -80,9 +66,7 @@ const userInfoToMonthlyActive: React.FC<{}> = () => {
         setCurrent(1)
     }
 
-    const handleMenuClick: MenuProps['onClick'] = async (e) => {
-        console.log('click', e);
-        const selectType = e.key
+    const handleMenuClick = async (selectType: string) => {
         if (selectType === 'SELECT' && selectedRowKeys.length === 0) {
             message.warning('请选择数据');
             return;
@@ -94,8 +78,7 @@ const userInfoToMonthlyActive: React.FC<{}> = () => {
             } else {
                 data = { ...searchContent };
             }
-            const res = await exportFile({ ...data });
-            const content = res?.data;
+            const content = await exportFile({ ...data });
             const blob = new Blob([content], {
                 type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8',
             });
@@ -141,7 +124,10 @@ const userInfoToMonthlyActive: React.FC<{}> = () => {
                 dataIndex: 'userName',
                 key: 'userName',
                 width: 96,
-                align: 'center'
+                align: 'center',
+                render: v => {
+                    return v || '--'
+                }
             },
             {
                 title: '用户类型',
@@ -252,10 +238,16 @@ const userInfoToMonthlyActive: React.FC<{}> = () => {
     }, [searchContent])
 
 
-    const menuProps = {
-        items,
-        onClick: handleMenuClick
-    }
+    const menuProps = (
+        <Menu>
+            <Menu.Item onClick={() => handleMenuClick('ALL')}>
+                导出筛选结果
+            </Menu.Item>
+            <Menu.Item onClick={() => handleMenuClick('SELECT')}>
+                导出选中数据
+            </Menu.Item>
+        </Menu>
+    );
     const rowSelection = {
         onChange: (selectedRowKeys: React.Key[]) => {
             setSelectedRowKeys(selectedRowKeys)
@@ -267,7 +259,7 @@ const userInfoToMonthlyActive: React.FC<{}> = () => {
                 <span>月活用户信息</span>
             </div>
             <div className={style.content}>
-                <QueryFilter className={style.queryForm} labelWidth="auto" collapsed={false} onFinish={handleSearch} submitter={{
+                <QueryFilter autoFocusFirstInput={false} className={style.queryForm} labelWidth="auto" collapsed={false} onFinish={handleSearch} submitter={{
                     render: (props) => {
                         return [
                             <Button
@@ -294,12 +286,12 @@ const userInfoToMonthlyActive: React.FC<{}> = () => {
                     <ProFormSelect valueEnum={{
                         1: '是',
                         0: '否',
-                    }} name="lyStaff" label="是否为羚羊用户" />
+                    }} name="lyStaff" label="是否为羚羊员工" />
                 </QueryFilter>
                 <div className={style.tableWrapper}>
                     <Space className={style.operate}>
                         <Button onClick={() => { setImportModalVisible(true) }}>导入</Button>
-                        <Dropdown menu={menuProps}>
+                        <Dropdown overlay={menuProps}>
                             <Button>
                                 <Space>
                                     导出

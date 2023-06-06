@@ -123,7 +123,7 @@ const ImportData: React.FC<Import> = (props) => {
         <Modal
             className="supplier-uploads-file"
             title="导入"
-            open={visible}
+            visible={visible}
             width={600}
             footer={false}
             maskClosable={false}
