@@ -42,6 +42,7 @@ import {
   httpServiceAccountAudioSave,
   httpServiceAccountArticleDetail,
   httpServiceAccountOperationDetail,
+  httpServiceAccountCollectionList,
 } from '@/services/service-management';
 import debounce from 'lodash/debounce';
 import removeImg from '@/assets/banking_loan/remove.png';
@@ -53,6 +54,7 @@ type RouterParams = {
   state?: string;
   id?: string;
   name?: string;
+  backid?: string;
 };
 export default () => {
   // 是否展示发布按钮， 只有暂存成功才展示发布按钮， 且内容更新，要关闭发布按钮。再次暂存成功，展示发布按钮
@@ -163,6 +165,8 @@ export default () => {
         // 内容信息
         contentInfoForm.setFieldsValue({
           ...detail,
+          // 合集标签
+          serviceAccountCollectionIdList: detail?.collectionList?.length > 0 ? detail?.collectionList?.map(p => p.id) : undefined,
           // 裁切的封面图要用Url地址
           coverId: detail?.coverUrl,
           // 图片
@@ -247,6 +251,7 @@ export default () => {
   };
   useEffect(() => {
     console.log('新增页获取的参数', type, state, id, name);
+    _httpServiceAccountCollectionList()
     if (type && type === 'edit' && id) {
       // 初始化
       perpaer(id);
@@ -296,7 +301,24 @@ export default () => {
     // 清空当前对应的表单值
     linkForm.resetFields(['链接标题' + item, '链接简介' + item, '链接地址' + item])
   }
+  // 合集标签
+  const [types, setTypes] = useState<any>([]);
 
+  const _httpServiceAccountCollectionList = async () => {
+    if (!backid) return
+    try {
+      const res = await httpServiceAccountCollectionList({
+        serviceAccountId: backid
+      })
+      if (res?.code === 0) {
+        setTypes(res?.result)
+      } else {
+        message.error(`获取合集标签失败, 原因：${res?.message}`)
+      }
+    } catch (error) {
+      message.error(`获取合集标签失败，原因:${error}`)
+    }
+  }
   // 内容信息 - 图文信息
   const Tuwen = (
     <div className={sc('container-left-top-content')}>
@@ -316,6 +338,19 @@ export default () => {
           </Form.Item>
           <Form.Item label="作者" name="authorName">
             <Input maxLength={30} placeholder="请输入" allowClear />
+          </Form.Item>
+          <Form.Item
+            label="合集标签"
+            name="serviceAccountCollectionIdList"
+            rules={[{ required: true, message: '请输入' }]}
+          >
+            <Select mode="multiple" placeholder="请选择" allowClear>
+              {types?.map((item: any) => (
+                <Select.Option key={item?.id} value={Number(item?.id)}>
+                  {item?.name}
+                </Select.Option>
+              ))}
+            </Select>
           </Form.Item>
           <Form.Item label="封面图" name="coverId" rules={[{ required: true, message: '必填' }]}>
             {/* <UploadForm
@@ -384,7 +419,20 @@ export default () => {
           linkList?.length > 0 && linkList?.map((item: any) => {
             return (              
               <div key={item} className={sc('container-left-top-content-link-form')}>
-                <img className={sc('container-left-top-content-link-form-remove')} src={removeImg} onClick={handleLinkRemove.bind(null, item)} />
+              <Popconfirm
+                title={
+                  <div>
+                    <div>提示</div>
+                    <div>确定将内容删除？</div>
+                  </div>
+                }
+                okText="删除"
+                cancelText="取消"
+                onConfirm={handleLinkRemove.bind(null, item)}
+              >
+
+                <img className={sc('container-left-top-content-link-form-remove')} src={removeImg} />
+              </Popconfirm>
                 <div>
                   <Form.Item
                     label={'链接标题'}
@@ -686,7 +734,7 @@ export default () => {
       Promise.all([contentInfoForm.validateFields(), formPostMessage.validateFields(), linkForm.validateFields()]).then(
         async ([contentInfoFormValues, formPostMessageValues, linkFormValues]) => {
           const formData = { ...contentInfoFormValues, ...formPostMessageValues };
-          console.log('搜集的链接', linkFormValues)
+          console.log('搜集的链接', contentInfoFormValues)
           console.log('搜集的form', formData);
           let links = [] as any
           // 根据linkList 数组的长度

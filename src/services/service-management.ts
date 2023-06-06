@@ -103,6 +103,7 @@ export async function httpArticlePictureTextSave(data: {
   id?: number |undefined // 主键
   serviceAccountId?: number |undefined // 服务号Id
   title?: string // 标题
+  serviceAccountCollectionIdList?: any // 合集id列表
   authorName?: string // 作者
   coverId?: number // 封面图文件id
   content?: string // 文章内容
@@ -493,6 +494,16 @@ export function httpServiceAccountCollectionLog(params: {
   serviceAccountCollectionId?: string // 合集ID
 }) {
   return request(`/antelope-business/mng/serviceAccount/collection/log`, {
+    method: 'get',
+    params,
+  })
+}
+
+// 合集 - 列表 服务号下所有合集列表
+export function httpServiceAccountCollectionList(params: {
+  serviceAccountId?: string
+}) {
+  return request(`/antelope-business/mng/serviceAccount/collection/list`, {
     method: 'get',
     params,
   })

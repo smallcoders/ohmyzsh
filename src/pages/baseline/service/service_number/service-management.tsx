@@ -40,6 +40,7 @@ import {
 } from '@/services/service-management';
 import debounce from 'lodash/debounce';
 import Collection from './components/collection/index';
+import copy from 'copy-to-clipboard';
 const sc = scopedClasses('service-number-management');
 
 type AuditType = '草稿箱' | '发布记录' | '服务号设置' | '合集标签';
@@ -432,6 +433,14 @@ export default () => {
     );
   };
 
+  // 复制
+  const handleCopy = (value: any) => {
+    if (value)
+    // 找唐超要链接
+    copy(`/industry-moments/#/articles-collection?collectionId=${value}&type=OTHER`)
+    message.success('链接复制成功');
+  }
+
   const columns: ProColumns<SolutionTypes.Solution>[] = [
     {
       width: 60,
@@ -555,6 +564,17 @@ export default () => {
                 }}
               >
                 详情
+              </Button>
+            )}
+            {record?.state === 'ON_SHELF' && (
+              <Button
+                size="small"
+                type="link"
+                onClick={() => {
+                  handleCopy(record.id)
+                }}
+              >
+                复制
               </Button>
             )}
             {/* 需要调整的权限 */}

@@ -16,22 +16,13 @@ import {
   Row,
   Col,
 } from 'antd';
-import FormEdit from '@/components/FormEdit';
 import SelfTable from '@/components/self_table';
-import UploadFormFile from '@/components/upload_form/upload-form-file';
-// import UploadFormFile from '@/pages/page_creat_manage/edit/components/upload_form/upload-form-file'
-import { useConfig } from '@/pages/page_creat_manage/edit/hooks/hooks';
-import UploadFormAvatar from '@/components/upload_form/upload-form-avatar';
-import { UploadOutlined } from '@ant-design/icons';
-import dayjs from 'dayjs';
-import UploadForm from '@/components/upload_form';
 import moment from 'moment';
 import { PageContainer } from '@ant-design/pro-layout';
 import scopedClasses from '@/utils/scopedClasses';
 import { routeName } from '../../../../../../config/routes';
 import { history, Link, useAccess, Access, Prompt } from 'umi';
 import './index.less';
-import ServiceItem from '../components/service-item';
 import { PlusOutlined } from '@ant-design/icons';
 import {
   httpCollectionListArticle,
@@ -39,16 +30,7 @@ import {
   httpCollectionDetail,
   httpCollectionPageCollectionArticleSearch,
   httpServiceAccountCollectionSave,
-  httpServiceAccountCollectionDel,
 } from '@/services/service-management';
-import {
-  queryServiceArticlePage,
-  httpArticleAudit,
-  httpArticleBatchAudit,
-  httpGetArtcleDetailId,
-} from '@/services/baseline';
-import debounce from 'lodash/debounce';
-import removeImg from '@/assets/banking_loan/remove.png';
 import type Common from '@/types/common';
 const sc = scopedClasses('service-number-collection-add');
 
