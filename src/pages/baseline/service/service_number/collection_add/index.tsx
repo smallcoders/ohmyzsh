@@ -160,17 +160,11 @@ export default () => {
     setModalOpen(false);
   };
   const handleAddOk = () => {
-    console.log('点击了确定选中的key', selectedRowKeys);
-    console.log('点击了确定选中的list', selectedRow);
     if (selectedRowKeys?.length === 0) {
       return handleAddCancel();
     }
     // 先处理参数，再调用编辑 - 文章列表
     let newList = [...selectedRowKeys, ...listArticle];
-    // setSelectedRowList(selectedRowList);
-    console.log('确定新增前的文章', listArticle);
-    console.log('确定新增后的文章', newList);
-    console.log('topServiceAccountArticleIdList', topServiceAccountArticleIdList);
     setListArticle(newList);
     _httpCollectionListArticleByParam(newList, topServiceAccountArticleIdList);
     handleAddCancel();
