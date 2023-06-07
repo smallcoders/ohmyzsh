@@ -382,7 +382,7 @@ export default () => {
     >
       <div className={sc('container-modal')}>
         {useSearchNode()}
-        <div className={sc('container-modal-count')}>已选{0}</div>
+        <div className={sc('container-modal-count')}>已选{selectedRowKeys.length}</div>
         <div className={sc('container-modal-table')}>
           <SelfTable
             size="small"

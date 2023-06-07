@@ -314,6 +314,7 @@
   // 服务号 - 合集标签
   BASELINE_SERVICE_NUMBER_MANAGEMENT_COLLECTION_ADD: '/baseline/baseline-service-number/management/collection/add', // 新增合集标签
   BASELINE_SERVICE_NUMBER_MANAGEMENT_COLLECTION_DETAIL: '/baseline/baseline-service-number/management/collection/detail', // 合集标签详情
+  OPERATIONAL_CAMPAIGN_TARGET_MONITORING: '/data-center/target-monitoring', // 运营战役目标监控
 };
 
 export default [
@@ -397,6 +398,15 @@ export default [
         access: 'M_DC_GJBDD',
         name: '工具包订单监控',
         component: './data_center/toolkit_order_monitoring/index',
+        layout: false,
+        target: '_blank',
+      },
+      {
+        path: routeName.OPERATIONAL_CAMPAIGN_TARGET_MONITORING,
+        code: 'M_DC_YYZYMB',
+        access: 'M_DC_YYZYMB',
+        name: '运营战役目标监控',
+        component: './data_center/target_monitoring/index',
         layout: false,
         target: '_blank',
       },

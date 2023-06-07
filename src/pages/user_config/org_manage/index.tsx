@@ -28,6 +28,7 @@ import { getOrgManagePage, signOrgTag, httpOrgExport } from '@/services/org-type
 import { Access, useAccess,history } from 'umi';
 import {routeName} from "../../../../config/routes";
 import { UploadOutlined } from '@ant-design/icons';
+import dayjs from 'dayjs';
 const sc = scopedClasses('user-config-org-manage');
 enum Edge {
   HOME = 0,
@@ -370,7 +371,7 @@ export default () => {
       const blob = new Blob([content], {
         type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8',
       });
-      const fileName = '组织管理.xlsx';
+      const fileName = `组织管理${dayjs().format('YYYY-MM-DD HH时mm分ss秒')}.xlsx`;
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.style.display = 'none';
