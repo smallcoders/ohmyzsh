@@ -444,7 +444,7 @@ export default () => {
                     label={"链接简介"} 
                     name={"链接简介" + item}
                   >
-                    <Input maxLength={10} placeholder="请输入" allowClear />
+                    <Input maxLength={50} placeholder="请输入" allowClear />
                   </Form.Item>
                   <Form.Item
                     label={"链接地址"} 
