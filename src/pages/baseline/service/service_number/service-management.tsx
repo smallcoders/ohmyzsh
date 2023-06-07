@@ -437,7 +437,7 @@ export default () => {
   const handleCopy = (value: any) => {
     if (value)
     // 找唐超要链接
-    copy(`/industry-moments/#/articles-collection?collectionId=${value}&type=OTHER`)
+    copy(`/industry-moments/#/detail?id=${value}&type=OTHER`)
     message.success('链接复制成功');
   }
 
@@ -494,7 +494,7 @@ export default () => {
                   return <div key={index} className={sc('collectionNameList-item')}>{'#' + item}</div>;
                 })
               : '--'}
-            {_?.length >= 2 && <div className={sc('collectionNameList-item')}>{'...'}</div>} 
+            {_?.length >= 3 && <div className={sc('collectionNameList-item')}>{'...'}</div>} 
           </div>
         );
       },
