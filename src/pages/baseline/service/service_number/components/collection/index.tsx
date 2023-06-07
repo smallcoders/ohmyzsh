@@ -46,8 +46,10 @@ const typeEnum = {
   VIDEO: '视频',
   AUDIO: '音频',
 };
-export default () => {
-  // const { backid, backname } = props || {}
+export default (props: {
+  activeTab?: string
+}) => {
+  const { activeTab } = props || {}
   const access = useAccess();
   // 手动触发table 的 reload等操作
   const actionRef = useRef<ActionType>();
@@ -59,8 +61,10 @@ export default () => {
   } = history.location.query as RouterParams;
 
   useEffect(() => {
-    console.log('合集标签',  id, name)
-  },[])
+    if (activeTab === '合集标签') {
+      actionRef.current?.reloadAndRest();
+    }
+  },[activeTab])
 
   // 删除
   const remove = async (id: string) => {

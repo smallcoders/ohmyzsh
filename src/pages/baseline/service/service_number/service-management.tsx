@@ -1966,7 +1966,7 @@ export default () => {
           <Tabs.TabPane tab="合集标签" key="合集标签">
             {/* 合集标签 */}
             {/* {CollectionTag} */}
-            <Collection />
+            <Collection activeTab={activeTab} />
           </Tabs.TabPane>
           <Tabs.TabPane tab="服务号设置" key="服务号设置">
             {/* 服务号设置 */}
