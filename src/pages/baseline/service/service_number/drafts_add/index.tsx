@@ -342,7 +342,6 @@ export default () => {
           <Form.Item
             label="合集标签"
             name="serviceAccountCollectionIdList"
-            rules={[{ required: true, message: '请输入' }]}
           >
             <Select mode="multiple" placeholder="请选择" allowClear>
               {types?.map((item: any) => (
