@@ -310,11 +310,7 @@ export default () => {
                           },
                         ]}
                       >
-                        <TextArea
-                          autoSize={{ minRows: 2, maxRows: 10 }}
-                          placeholder="请输入"
-                          maxLength={50}
-                        />
+                        <TextArea autoSize={{ minRows: 2, maxRows: 10 }} placeholder="请输入" />
                       </Form.Item>
                     </Card>
                   ))}
