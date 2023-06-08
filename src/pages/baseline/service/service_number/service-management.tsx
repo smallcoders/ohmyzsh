@@ -571,7 +571,7 @@ export default () => {
                 size="small"
                 type="link"
                 onClick={() => {
-                  handleCopy(record.id)
+                  handleCopy(record.industrialArticleId)
                 }}
               >
                 复制
