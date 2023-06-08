@@ -14,15 +14,31 @@ import {
   banksMap,
   regStatusMap,
 } from '../constants';
+import { getDetail } from '@/services/monthlyActive';
 
 import './detail.less';
 import { routeName } from '../../../../../config/routes';
 
 export default () => {
-  const { id } = history.location.query as { id: string | undefined };
+  const { id, scUserId } = history.location.query as { id: string | undefined, scUserId: string | undefined };
   const [detail, setDetail] = useState<any>({});
 
   useEffect(() => {
+      id ? getCustomDetail() : scUserId ? getScidDetail() : null
+  }, []);
+
+  const getScidDetail = () => {
+    getDetail(scUserId).then(res => {
+      const { code, message: resultMsg } = res || {};
+      if (code === 0) {
+        setDetail(res.result);
+      } else {
+        antdMessage.error(`请求失败，原因:{${resultMsg}}`);
+      }
+    })
+  }
+
+  const getCustomDetail = () => {
     getCustomersDetail({ id }).then((res) => {
       const { code, message: resultMsg } = res || {};
       if (code === 0) {
@@ -31,7 +47,7 @@ export default () => {
         antdMessage.error(`请求失败，原因:{${resultMsg}}`);
       }
     });
-  }, []);
+  }
   return (
     <PageContainer
       className="customer-detail-pages"
@@ -41,7 +57,7 @@ export default () => {
         <Button size="large" onClick={() => history.goBack()}>
           返回
         </Button>,
-        <Button size="large" type="primary" onClick={() => {
+        id && <Button size="large" type="primary" onClick={() => {
           history.push(`${routeName.FINANCIAL_CUSTOMERS_MANAGE_EDIT}?id=${id}`);
         }}>
           编辑
