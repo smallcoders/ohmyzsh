@@ -585,7 +585,8 @@ export default () => {
         let topListId = [] as any[];
         res?.result?.forEach((item: any) => {
           if (item?.top) {
-            topListId.push(item?.id);
+            console.log('有置顶', item)
+            topListId.push(item?.articleId.toString());
           }
         });
         console.log('检查指定文章列表', topListId);
