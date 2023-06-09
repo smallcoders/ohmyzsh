@@ -197,7 +197,7 @@ export default () => {
                   }
                   if (search.successTime) {
                     search.firmSucTimeStart = moment(search.successTime[0]).format('YYYY-MM-DD');
-                    search.createTimeEnd = moment(search.successTime[1]).format('YYYY-MM-DD');
+                    search.firmSucTimeEnd = moment(search.successTime[1]).format('YYYY-MM-DD');
                   }
                   setSearChContent(search);
                 }}
