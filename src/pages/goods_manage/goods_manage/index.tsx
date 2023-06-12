@@ -192,7 +192,7 @@ export default () => {
     {
       title: '价格区间',
       dataIndex: 'minSalePrice',
-      render: (text: any, record: any) => record.minSalePrice && record.maxSalePrice ? (record.minSalePrice + '~' + record.maxSalePrice) : '--',
+      render: (text: any, record: any) => record.minSalePrice + '~' + record.maxSalePrice,
     },
     {
       title: '商品状态',
