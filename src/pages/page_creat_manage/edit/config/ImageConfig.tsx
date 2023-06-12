@@ -216,7 +216,6 @@ const ImageConfig = () => {
                   >
                     <Input
                       value={option.link}
-                      maxLength={50}
                       className="ellipsis"
                       placeholder="https://"
                       onChange={(event) => {

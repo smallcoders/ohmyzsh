@@ -542,11 +542,6 @@ const WidgetFormItem: FC<Props> = (props) => {
                                 borderRadius: '4px'
                               }}
                               src={imgItem.img}
-                              onClick={() => {
-                                if (imgItem.link){
-                                  window.location.href = imgItem.link
-                                }
-                              }}
                               alt=''
                             /> :
                             <div
@@ -582,11 +577,6 @@ const WidgetFormItem: FC<Props> = (props) => {
                                   borderRadius: config?.imgStyle === 'main' ? '8px' : '0'
                                 }}
                                 src={imgItem.img}
-                                onClick={() => {
-                                  if (imgItem.link){
-                                    window.location.href = imgItem.link
-                                  }
-                                }}
                                 alt=''
                               /> :
                               <div
@@ -615,11 +605,6 @@ const WidgetFormItem: FC<Props> = (props) => {
                             borderRadius: config?.imgStyle === 'main' ? '8px' : '0'
                           }}
                           src={config?.imgList[0].img}
-                          onClick={() => {
-                            if (config?.imgList[0].link){
-                              window.location.href = config?.imgList[0].link
-                            }
-                          }}
                           alt=''
                         /> :
                         <div
