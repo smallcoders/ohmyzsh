@@ -101,7 +101,8 @@ export default () => {
       title: '服务行业',
       dataIndex: 'serviceIndustry',
       valueType: 'textarea',
-      renderText: (text: any, record: any) => record.serviceIndustry && handleIndustry(record.serviceIndustry) || '-',
+      ellipsis: true,
+      renderText: (text: any, record: any) => <span>{record.serviceIndustry && handleIndustry(record.serviceIndustry) || '-'}</span>,
       hideInSearch: true
     },
     {
@@ -115,6 +116,7 @@ export default () => {
       title: '服务案例',
       dataIndex: 'caseName',
       valueType: 'textarea',
+      ellipsis: true,
       width: 120,
       hideInSearch: true,
     },
@@ -135,6 +137,7 @@ export default () => {
       title: '入驻时间',
       dataIndex: 'createTime',
       valueType: 'textarea',
+      width: 168,
       hideInSearch: true
     },
     {
@@ -146,6 +149,7 @@ export default () => {
     {
       title: '已合作平台',
       dataIndex: 'partneredPlatforms',
+      ellipsis: true,
       hideInSearch: true
     }
   ];
