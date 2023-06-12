@@ -310,7 +310,7 @@ export default () => {
               <audio controls={true} src={dataSource.filePath} />
             )}
             {dataSource.type === 'TEXT' && dataSource.content && (
-              <div>{dataSource.content || '--'}</div>
+              <div className={sc('container-tab-drafts-item-content-img-text')}>{dataSource.content || '--'}</div>
             )}
           </div>
           {dataSource.title && (
