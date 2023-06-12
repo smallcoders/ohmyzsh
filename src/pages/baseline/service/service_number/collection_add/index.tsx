@@ -454,7 +454,9 @@ export default () => {
       align: 'center',
       width: 35,
       render: (_: any, _record: any, index: number) =>
-        pageInfo.pageSize * (pageInfo.pageIndex - 1) + index + 1,
+      {
+        return _
+      }
     },
     {
       title: '标题',
@@ -613,7 +615,16 @@ export default () => {
       if (res?.code === 0) {
         console.log('编辑 - 文章列表', res?.result);
         // setListArticle(res?.result);
-        setSelectedRowList(res?.result);
+        setSelectedRowList(res?.result.map((item: any, index: any) => {
+          return {
+            articleId: item.articleId,
+            publishTime: item.publishTime,
+            state: item.state,
+            title: item.title,
+            top: item.top,
+            sort: index + 1
+          }
+        }));
         setLoadingCurrent(false);
         // 整理出置顶文章id列表
         // let a = [] as any[]
