@@ -126,7 +126,7 @@ export default () => {
     if (!value?.address.startsWith('/')) {
       window.open(value?.address)
     } else if (value?.address.startsWith('/')) {
-      window.open('http://' + window.location.hostname + '/antelope-baseline' + value?.address)
+      window.open('http://www.lingyangplat.com/antelope-baseline' + value?.address)
     }
   }
 
