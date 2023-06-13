@@ -153,7 +153,7 @@ export default () => {
       title: '消费券状态',
       dataIndex: 'state',
       width: 200,
-      render: (_: number) => _ === 2 ? '已过期' : _ === 1 ? '生效中' : '未生效',
+      render: (_: number) => _ === 2 ? '已过期' : _ === 1 ? '生效中' :  _ === 0 ? '未生效' : '--',
     },
   ];
 

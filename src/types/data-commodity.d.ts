@@ -29,6 +29,7 @@ namespace DataCommodity {
     appDemoUrl: string;
     appHomeUrl: string;
     productModel: string;
+    productDesc: string;
     supplier: number;
     supplierName: string;
     productOrg: string;
