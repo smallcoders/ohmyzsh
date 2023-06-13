@@ -249,7 +249,7 @@ export default () => {
       {useSearchNode()}
       <div className={sc('container-table-header')}>
         <div className="title">
-          <span>消费券领取及使用情况统计列表</span>
+          <span>消费券领取及使用情况统计列表（共{pageInfo.totalCount || 0}个）</span>
         </div>
       </div>
       <div className={sc('container-table-body')}>
