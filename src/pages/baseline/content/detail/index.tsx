@@ -133,7 +133,9 @@ export default () => {
       dataIndex: 'title',
       render: (_: any[], record: any) => (
         <a
-          href={`${hostMap[location.origin] || 'http://172.30.33.222'}${record.address}`}
+          href={`${hostMap[location.origin] || 'http://172.30.33.222'}/antelope-baseline${
+            record.address
+          }`}
           target="_blank"
           rel="noreferrer"
         >
