@@ -133,16 +133,9 @@ export default () => {
       dataIndex: 'title',
       render: (_: any[], record: any) => (
         <a
-          type="primary"
-          onClick={() => {
-            if (!record?.address.startsWith('/')) {
-              window.open(record?.address);
-            } else if (record?.address.startsWith('/')) {
-              window.open(
-                'http://' + window.location.hostname + '/antelope-baseline' + record?.address,
-              );
-            }
-          }}
+          href={`${hostMap[location.origin] || 'http://172.30.33.222'}${record.address}`}
+          target="_blank"
+          rel="noreferrer"
         >
           {record.title}
         </a>
