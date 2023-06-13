@@ -135,7 +135,13 @@ export default () => {
         <a
           type="primary"
           onClick={() => {
-            window.open(record.address);
+            if (!record?.address.startsWith('/')) {
+              window.open(record?.address);
+            } else if (record?.address.startsWith('/')) {
+              window.open(
+                'http://' + window.location.hostname + '/antelope-baseline' + record?.address,
+              );
+            }
           }}
         >
           {record.title}
