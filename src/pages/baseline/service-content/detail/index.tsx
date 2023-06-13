@@ -122,6 +122,14 @@ export default () => {
 
   const [showControls, setShowControls] = useState<boolean>(false);
 
+  const handleTitle = (value: any) => {
+    if (!value?.address.startsWith('/')) {
+      window.open(value?.address)
+    } else if (value?.address.startsWith('/')) {
+      window.open('http://' + window.location.hostname + '/antelope-baseline' + value?.address)
+    }
+  }
+
   // table
   const columns = [
     {
@@ -129,9 +137,9 @@ export default () => {
       dataIndex: 'title',
       align: 'center',
       width: 200,
-      render: (version: string) => {
+      render: (version: string, record: any) => {
         return (
-          <span>{version || '--'}</span>
+          <span style={{cursor: 'pointer', color: '#6680FF'}} onClick={handleTitle.bind(null, record)}>{version || '--'}</span>
         )
       },
     },
