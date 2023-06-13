@@ -130,7 +130,7 @@ export default () => {
       window.open(value?.address)
     } else {
       console.log('内练', window.location.hostname)
-      window.open('http://' + window.location.hostname + value?.address)
+      window.open('http://' + window.location.hostname + '/antelope-baseline' + value?.address)
     }
   }
 
