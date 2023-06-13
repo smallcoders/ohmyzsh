@@ -23,6 +23,16 @@ interface dataDetailType {
   content?: string;
   publishTime?: string;
 }
+const hostMap = {
+  'http://172.30.33.222:10086': 'http://172.30.33.222',
+  'http://172.30.33.212:10086': 'http://172.30.33.212',
+  'http://10.103.142.216': 'https://preprod.lingyangplat.com',
+  'http://10.103.142.222': 'https://greenenv.lingyangplat.com',
+  'http://manage.lingyangplat.com': 'https://www.lingyangplat.com',
+  'https://manage.lingyangplat.com': 'https://www.lingyangplat.com',
+  'http://localhost:8000': 'http://172.30.33.222',
+};
+
 export default () => {
   const { id } = history.location.query as { id: string | undefined };
   const [dataDetail, setDataDetail] = useState<dataDetailType[]>();
@@ -126,7 +136,7 @@ export default () => {
     if (!value?.address.startsWith('/')) {
       window.open(value?.address)
     } else if (value?.address.startsWith('/')) {
-      window.open('http://www.lingyangplat.com/antelope-baseline' + value?.address)
+      window.open(`${hostMap[window.location.origin]}/antelope-baseline` + value?.address)
     }
   }
 
