@@ -126,14 +126,9 @@ export default () => {
   };
 
   const handleTitle = (value: any) => {
-    if (value?.address.includes('www.')) {
-      if (value?.address.includes('http')) {
-        window.open(value?.address)
-      } else {
-        window.open('http://' + value?.address)
-      }
-    } else {
-      console.log('内练', window.location.hostname)
+    if (!value?.address.startsWith('/')) {
+      window.open(value?.address)
+    } else if (value?.address.startsWith('/')) {
       window.open('http://' + window.location.hostname + '/antelope-baseline' + value?.address)
     }
   }
