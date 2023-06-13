@@ -472,7 +472,7 @@ export default [
           }
         ]
       },
-      
+
       {
         path: routeName.BASELINE_HOTSPOT_MANAGE,
         name: '实时热点管理',
@@ -1868,8 +1868,8 @@ export default [
       {
         path: routeName.MONTHLY_ACTIVE_USERINFO,
         name: '月活用户信息',
-        code: 'M_FM_YHXX',
-        access: 'M_FM_YHXX',
+        code: 'M_FM_YHYH',
+        access: 'M_FM_YHYH',
         component: './banking/userInfo_active_monthly'
       },
       {
