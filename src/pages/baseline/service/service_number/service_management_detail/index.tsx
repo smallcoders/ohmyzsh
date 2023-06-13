@@ -126,8 +126,12 @@ export default () => {
   };
 
   const handleTitle = (value: any) => {
-    if (value?.address.includes('http')) {
-      window.open(value?.address)
+    if (value?.address.includes('www.')) {
+      if (value?.address.includes('http')) {
+        window.open(value?.address)
+      } else {
+        window.open('http://' + value?.address)
+      }
     } else {
       console.log('内练', window.location.hostname)
       window.open('http://' + window.location.hostname + '/antelope-baseline' + value?.address)
@@ -143,7 +147,7 @@ export default () => {
       width: 200,
       render: (version: string, record: any) => {
         return (
-          <span style={{cursor: 'pointer'}} onClick={handleTitle.bind(null, record)}>{version || '--'}</span>
+          <span style={{cursor: 'pointer', color: '#6680FF'}} onClick={handleTitle.bind(null, record)}>{version || '--'}</span>
         )
       },
     },
