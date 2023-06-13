@@ -152,9 +152,9 @@ export default () => {
     }
     setPageIsClosing(true);
     setModalOpen(true);
+    buttonRef.current.blur()
   };
   const handleAddCancel = () => {
-    console.log('点击了取消');
     setSelectedRowKeys([]);
     setSelectedRow([]);
     setModalOpen(false);
@@ -664,6 +664,7 @@ export default () => {
       message.error(`合集详情获取失败: ${error}`);
     }
   };
+  const buttonRef = useRef<any>(null)
   return (
     <PageContainer
       header={{
@@ -739,7 +740,8 @@ export default () => {
             style={{ marginLeft: '30px', marginBottom: '30px' }}
             type="primary"
             icon={<PlusOutlined />}
-            onClick={() => handleAdd()}
+            onClick={handleAdd.bind(null)}
+            ref={buttonRef}
           >
             新增
           </Button>
