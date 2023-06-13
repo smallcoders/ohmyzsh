@@ -126,15 +126,11 @@ export default () => {
   };
 
   const handleTitle = (value: any) => {
-    console.log(
-      '链接',value
-    )
     if (value?.address.includes('http')) {
-      console.log('外链')
       window.open(value?.address)
     } else {
-      console.log('内练', window.location.origin)
-      window.open(window.location.origin + value?.address)
+      console.log('内练', window.location.hostname)
+      window.open('http://' + window.location.hostname + value?.address)
     }
   }
 
