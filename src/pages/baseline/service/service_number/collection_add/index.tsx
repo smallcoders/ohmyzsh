@@ -201,8 +201,8 @@ export default () => {
                 onClick={() => {
                   const search = searchForm.getFieldsValue();
                   // 清空复选框
-                  setSelectedRowKeys([]);
-                  setSelectedRow([]);
+                  // setSelectedRowKeys([]);
+                  // setSelectedRow([]);
                   setSearChContent(search);
                 }}
               >
@@ -213,8 +213,8 @@ export default () => {
                 onClick={() => {
                   searchForm.resetFields();
                   // 清空复选框
-                  setSelectedRowKeys([]);
-                  setSelectedRow([]);
+                  // setSelectedRowKeys([]);
+                  // setSelectedRow([]);
                   setSearChContent({});
                 }}
               >
@@ -580,6 +580,7 @@ export default () => {
       });
       if (res?.code === 0) {
         console.log('查看详情', res?.result);
+        if (res?.result?.length === 0) return; 
         let listId = res?.result?.map((item: any) => item?.articleId);
         setListArticle(listId);
         // setSelectedRowList(res?.result);
@@ -591,7 +592,6 @@ export default () => {
             topListId.push(item?.articleId.toString());
           }
         });
-        console.log('检查指定文章列表', topListId);
         setTopServiceAccountArticleIdList(topListId);
         // 拿到详情的合集列表之后，调用编辑-文章列表
         _httpCollectionListArticleByParam(listId, topListId);

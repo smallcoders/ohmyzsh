@@ -174,7 +174,7 @@ export default (props: {
       title: '操作',
       hideInSearch: true, // 隐藏筛选
       align: 'center',
-      width: 250,
+      width: 270,
       render: (_, record) => {
         return (
           <Space size="middle">
@@ -193,7 +193,7 @@ export default (props: {
                 handleCopy(record.id)
               }}
             >
-              复制
+              复制链接
             </Button>
             {/* 需要调整的权限 */}
             <Access accessible={access['P_BLM_FWHYY']}>

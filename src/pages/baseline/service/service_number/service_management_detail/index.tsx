@@ -125,6 +125,19 @@ export default () => {
     );
   };
 
+  const handleTitle = (value: any) => {
+    console.log(
+      '链接',value
+    )
+    if (value?.address.includes('http')) {
+      console.log('外链')
+      window.open(value?.address)
+    } else {
+      console.log('内练', window.location.origin)
+      window.open(window.location.origin + value?.address)
+    }
+  }
+
   // table
   const columns = [
     {
@@ -132,9 +145,9 @@ export default () => {
       dataIndex: 'title',
       align: 'center',
       width: 200,
-      render: (version: string) => {
+      render: (version: string, record: any) => {
         return (
-          <span>{version || '--'}</span>
+          <span style={{cursor: 'pointer'}} onClick={handleTitle.bind(null, record)}>{version || '--'}</span>
         )
       },
     },

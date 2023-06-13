@@ -15,6 +15,7 @@ import {
   InputNumber,
   Spin,
   Modal,
+  Tooltip,
 } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
@@ -491,7 +492,11 @@ export default () => {
             {_?.length > 0
               ? _?.map((item: any, index: any) => {
                   if (index >= 2) return
-                  return <div key={index} className={sc('collectionNameList-item')}>{'#' + item}</div>;
+                  return <div key={index} className={sc('collectionNameList-item')}>
+                    <Tooltip  title={item} trigger="hover">
+                    {'#' + item}
+                    </Tooltip>
+                    </div>;
                 })
               : '--'}
             {_?.length >= 3 && <div className={sc('collectionNameList-item')}>{'...'}</div>} 
@@ -574,7 +579,7 @@ export default () => {
                   handleCopy(record.industrialArticleId)
                 }}
               >
-                复制
+                复制链接
               </Button>
             )}
             {/* 需要调整的权限 */}
