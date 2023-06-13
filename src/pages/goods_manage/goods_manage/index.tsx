@@ -429,6 +429,14 @@ export default () => {
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
+            <Col span={6}>
+              <Form.Item name="productSource" label="商品来源">
+                <Select placeholder="请选择">
+									<Option value={1} key='1'>应用商品</Option>
+                  <Option value={2} key='2'>其他商品</Option>
+                </Select>
+              </Form.Item>
+            </Col>
           </Row>
           <Row>
             <Col span={6}>
