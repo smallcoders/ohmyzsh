@@ -313,7 +313,9 @@
   BUSINESS_CHANNEL: '/business-channel',
   BUSINESS_CHANNEL_FOLLOW_UP_DETAIL: '/business-channel/follow-up-detail', // 跟进记录详情
   BUSINESS_CHANNEL_OPPORTUNITY: '/business-channel/opportunity', // 商机池
-  BUSINESS_CHANNEL_POOL: '/business-channel/pool' // 渠道商池
+  BUSINESS_CHANNEL_POOL: '/business-channel/pool', // 渠道商池
+  // 月活用户信息
+  MONTHLY_ACTIVE_USERINFO: '/banking/userInfo_active_monthly'
 };
 
 export default [
@@ -482,7 +484,7 @@ export default [
           }
         ]
       },
-      
+
       {
         path: routeName.BASELINE_HOTSPOT_MANAGE,
         name: '实时热点管理',
@@ -1874,6 +1876,13 @@ export default [
         component: './banking/financial_data_overview',
         layout: false,
         target: '_blank',
+      },
+      {
+        path: routeName.MONTHLY_ACTIVE_USERINFO,
+        name: '月活用户信息',
+        code: 'M_FM_YHYH',
+        access: 'M_FM_YHYH',
+        component: './banking/userInfo_active_monthly'
       },
       {
         path: routeName.LOAN_RECORD,
