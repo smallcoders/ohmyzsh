@@ -1,0 +1,97 @@
+@prefix: service-collection-detail;
+
+.@{prefix}-container {
+  &-top {
+    padding-top: 26px;
+    background: #ffffff;
+    border: 1px solid rgba(0,0,0,0.05);
+    &-item {
+      display: flex;
+      align-items: center;
+      &-left {
+        width: 240px;
+        height: 36px;
+        font-size: 12px;
+        font-weight: normal;
+        text-align: right;
+        color: rgba(0,0,0,0.65);
+        // line-height: 22px;
+      }
+      &-right {
+        height: 36px;
+        font-size: 12px;
+        font-weight: normal;
+      }
+    }
+    &-collection {
+      padding-left: 43px;
+      &-title {
+        font-size: 16px;
+        font-weight: bold;
+        color: #000000;
+        margin-bottom: 20px;
+      }
+      &-table {
+        width: 800px;
+      }
+    }
+  }
+  &-bottom {
+    padding-left: 43px;
+    margin-top: 17px;
+    background: #ffffff;
+    border: 1px solid rgba(0,0,0,0.05);
+    &-title {
+      margin-top: 17px;
+      font-size: 16px;
+      font-weight: bold;
+      color: #000000;
+    }
+    &-content {
+      margin-top: 33px;
+      &-item {
+        position: relative;
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+        &-img {
+          width: 28px;
+          height: 28px;
+        }
+        &-name {
+          margin-left: 28px;
+          font-size: 12px;
+          font-weight: bold;
+          color: #555555;
+          line-height: 22px;
+        }
+        &-type {
+          margin-left: 72px;
+          font-size: 12px;
+          font-weight: normal;
+          color: #000000;
+          line-height: 22px;
+        }
+        &-time {
+          margin-left: 80px;
+          font-size: 12px;
+          font-weight: normal;
+          color: #000000;
+          line-height: 22px;
+        }
+        // &::before {
+        //   position: absolute;
+        //   bottom: -12px;
+        //   left: 14px;
+        //   content: '';
+        //   width: 1px;
+        //   height: 12px;
+        //   background-color: #aaaaaa;
+        // }
+        // &:last-child::before {
+        //   display: none;
+        // } 
+      }
+    }
+  }
+}

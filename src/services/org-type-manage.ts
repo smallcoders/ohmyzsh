@@ -145,3 +145,23 @@ export async function putChangeAdmin(data:{orgId:any,userId:any}) {
     method: 'put',
   });
 }
+
+/**
+ * 组织导出，每个运营人员半分钟只能导出一次
+ */
+export function httpOrgExport(data: {
+  orgName?: string
+  orgTypeId?: number
+  areaCode?: string
+  orgSign?: string
+  startTime?: string
+  endTime?: string
+  industryCategoryName?: string 
+}) {
+  return request(`/antelope-user/mng/org/export`,{
+    method: 'post',
+    data,
+    responseType: 'blob',
+    getResponse: true,
+  })
+}

@@ -315,7 +315,12 @@
   BUSINESS_CHANNEL_OPPORTUNITY: '/business-channel/opportunity', // 商机池
   BUSINESS_CHANNEL_POOL: '/business-channel/pool', // 渠道商池
   // 月活用户信息
-  MONTHLY_ACTIVE_USERINFO: '/banking/userInfo_active_monthly'
+  MONTHLY_ACTIVE_USERINFO: '/banking/userInfo_active_monthly',
+
+  // 服务号 - 合集标签
+  BASELINE_SERVICE_NUMBER_MANAGEMENT_COLLECTION_ADD: '/baseline/baseline-service-number/management/collection/add', // 新增合集标签
+  BASELINE_SERVICE_NUMBER_MANAGEMENT_COLLECTION_DETAIL: '/baseline/baseline-service-number/management/collection/detail', // 合集标签详情
+  OPERATIONAL_CAMPAIGN_TARGET_MONITORING: '/data-center/target-monitoring', // 运营战役目标监控
 };
 
 export default [
@@ -410,6 +415,15 @@ export default [
         hideInBreadcrumb: true,
         component: './data_center/consume_statistic',
       },
+      {
+        path: routeName.OPERATIONAL_CAMPAIGN_TARGET_MONITORING,
+        code: 'M_DC_YYZYMB',
+        access: 'M_DC_YYZYMB',
+        name: '运营战役目标监控',
+        component: './data_center/target_monitoring/index',
+        layout: false,
+        target: '_blank',
+      }
     ],
   },
   {
@@ -692,6 +706,20 @@ export default [
             hideInBreadcrumb: true,
             component: './baseline/service/service_number/service_management_detail/index',
           },
+          {
+            path: routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_COLLECTION_ADD,
+            name: '新增',
+            // access: 'PA_BLM_NRGL',
+            hideInBreadcrumb: true,
+            component: './baseline/service/service_number/collection_add/index',
+          },
+          {
+            path: routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT_COLLECTION_DETAIL,
+            name: '详情',
+            // access: 'PA_BLM_NRGL',
+            hideInBreadcrumb: true,
+            component: './baseline/service/service_number/service_collection_detail/index',
+          }
         ],
       },
       {
