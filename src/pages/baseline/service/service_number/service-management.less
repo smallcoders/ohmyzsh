@@ -40,6 +40,14 @@
               height: 100%;
 
             }
+            &-text {
+              height: 100%;
+              overflow: hidden;
+              white-space: nowrap;
+              text-overflow: ellipsis;
+              word-break: keep-all;
+              -webkit-line-clamp: 1;
+            }
           }
           &-title {
             // position: absolute;
@@ -203,7 +211,23 @@
 
 .@{prefix} {
   &-title {
-    max-width: 320px;
+    max-width: 150px;
     .ellipseText(1);
+  }
+  &-collectionNameList {
+    display: flex;
+    justify-content: space-around;
+    &-item {
+      background-color: #6680FF;
+      color: #fff;
+      display: inline-block;
+      padding: 0px 3px;
+      max-width: 90px;
+      .ellipseText(1);
+      &:hover {
+        overflow: hidden !important;
+        white-space: nowrap !important;
+      }
+    }
   }
 }

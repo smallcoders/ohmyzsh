@@ -42,6 +42,7 @@ import {
   httpServiceAccountAudioSave,
   httpServiceAccountArticleDetail,
   httpServiceAccountOperationDetail,
+  httpServiceAccountCollectionList,
 } from '@/services/service-management';
 import debounce from 'lodash/debounce';
 import removeImg from '@/assets/banking_loan/remove.png';
@@ -53,6 +54,7 @@ type RouterParams = {
   state?: string;
   id?: string;
   name?: string;
+  backid?: string;
 };
 export default () => {
   // 是否展示发布按钮， 只有暂存成功才展示发布按钮， 且内容更新，要关闭发布按钮。再次暂存成功，展示发布按钮
@@ -163,6 +165,8 @@ export default () => {
         // 内容信息
         contentInfoForm.setFieldsValue({
           ...detail,
+          // 合集标签
+          serviceAccountCollectionIdList: detail?.collectionList?.length > 0 ? detail?.collectionList?.map(p => p.id) : undefined,
           // 裁切的封面图要用Url地址
           coverId: detail?.coverUrl,
           // 图片
@@ -194,8 +198,33 @@ export default () => {
             }),
         });
 
-        // 结尾处，搜集所有的表单信息
-        // 当点击返回是，校验所有的表单信息是否 全等, 如果有一个不全等  提示数据未保存
+        // 链接
+        if (detail?.links) {
+          let arr = [] as any
+          detail?.links.forEach((item: any, index: any) => {
+            arr.push(index + 1)
+          })
+          console.log('检查链接，', arr)
+          setLinkList(arr)
+          // 添加对应的form值
+          arr.forEach((item: any,index: any) => {
+            if (detail?.links[index].title) {
+              linkForm.setFieldsValue({
+                ['链接标题' + item]: detail?.links[index].title,
+              })
+            }
+            if (detail?.links[index].introduction) {
+              linkForm.setFieldsValue({
+                ['链接简介' + item]: detail?.links[index].introduction,
+              })
+            }
+            if (detail?.links[index].address) {
+              linkForm.setFieldsValue({
+                ['链接地址' + item]: detail?.links[index].address,
+              })
+            }
+          })
+        }
       } else {
         throw new Error('');
       }
@@ -222,6 +251,7 @@ export default () => {
   };
   useEffect(() => {
     console.log('新增页获取的参数', type, state, id, name);
+    _httpServiceAccountCollectionList()
     if (type && type === 'edit' && id) {
       // 初始化
       perpaer(id);
@@ -253,15 +283,42 @@ export default () => {
   // link新增
   const handleLinkAdd = () => {
     const newList = [...linkList]
-    newList.push(linkList?.length + 1)
+    console.log('newList', newList)
+    if (newList.length === 0) {
+      newList.push(1)
+    } else {
+      newList.push(newList[linkList?.length - 1] + 1)
+    }
+    // newList.push(linkList?.length + 1)
     console.log('新增', newList)
     setLinkList(newList)
   }
   // link移除
   const handleLinkRemove = (item: any) => {
-    console.log('移除',item)
+    let newList = [...linkList]
+    newList = newList.filter((value: any) => value !== item)
+    setLinkList(newList)
+    // 清空当前对应的表单值
+    linkForm.resetFields(['链接标题' + item, '链接简介' + item, '链接地址' + item])
   }
+  // 合集标签
+  const [types, setTypes] = useState<any>([]);
 
+  const _httpServiceAccountCollectionList = async () => {
+    if (!backid) return
+    try {
+      const res = await httpServiceAccountCollectionList({
+        serviceAccountId: backid
+      })
+      if (res?.code === 0) {
+        setTypes(res?.result)
+      } else {
+        message.error(`获取合集标签失败, 原因：${res?.message}`)
+      }
+    } catch (error) {
+      message.error(`获取合集标签失败，原因:${error}`)
+    }
+  }
   // 内容信息 - 图文信息
   const Tuwen = (
     <div className={sc('container-left-top-content')}>
@@ -281,6 +338,18 @@ export default () => {
           </Form.Item>
           <Form.Item label="作者" name="authorName">
             <Input maxLength={30} placeholder="请输入" allowClear />
+          </Form.Item>
+          <Form.Item
+            label="合集标签"
+            name="serviceAccountCollectionIdList"
+          >
+            <Select mode="multiple" placeholder="请选择" allowClear>
+              {types?.map((item: any) => (
+                <Select.Option key={item?.id} value={Number(item?.id)}>
+                  {item?.name}
+                </Select.Option>
+              ))}
+            </Select>
           </Form.Item>
           <Form.Item label="封面图" name="coverId" rules={[{ required: true, message: '必填' }]}>
             {/* <UploadForm
@@ -329,9 +398,12 @@ export default () => {
         </Form>
       </div>
       {/* 链接新增的标识 */}
-      {/* <div className={sc('container-left-top-content-link')}>
+      <div className={sc('container-left-top-content-link')}>
         链接
-        <span style={{marginLeft: '20px'}}><Button onClick={handleLinkAdd} size="small" type="primary" icon={<PlusOutlined />}>新增</Button></span>
+        {
+          linkList?.length < 5 &&
+          <span style={{marginLeft: '20px'}}><Button onClick={handleLinkAdd} size="small" type="primary" icon={<PlusOutlined />}>新增</Button></span>
+        }
       </div>
       <Form
         {...formLayout} 
@@ -346,24 +418,37 @@ export default () => {
           linkList?.length > 0 && linkList?.map((item: any) => {
             return (              
               <div key={item} className={sc('container-left-top-content-link-form')}>
-                <img className={sc('container-left-top-content-link-form-remove')} src={removeImg} onClick={handleLinkRemove.bind(null, item)} />
+              <Popconfirm
+                title={
+                  <div>
+                    <div>提示</div>
+                    <div>确定将内容删除？</div>
+                  </div>
+                }
+                okText="删除"
+                cancelText="取消"
+                onConfirm={handleLinkRemove.bind(null, item)}
+              >
+
+                <img className={sc('container-left-top-content-link-form-remove')} src={removeImg} />
+              </Popconfirm>
                 <div>
                   <Form.Item
-                    label={'链接标题' + item}
+                    label={'链接标题'}
                     name={'链接标题' + item}
                     rules={[{ required: true, message: '必填' }]}
                   >
                     <Input maxLength={10} placeholder="请输入" allowClear />
                   </Form.Item>
                   <Form.Item
-                    label="链接简介" 
-                    name="链接简介"
+                    label={"链接简介"} 
+                    name={"链接简介" + item}
                   >
-                    <Input maxLength={10} placeholder="请输入" allowClear />
+                    <Input maxLength={50} placeholder="请输入" allowClear />
                   </Form.Item>
                   <Form.Item
-                    label="链接地址" 
-                    name="链接简介"
+                    label={"链接地址"} 
+                    name={"链接地址" + item}
                     rules={[{ required: true, message: '必填' }]}
                   >
                     <Input.TextArea
@@ -377,7 +462,7 @@ export default () => {
             )
           })
         }
-      </Form> */}
+      </Form>
     </div>
   );
   // 内容信息 - 图片信息
@@ -641,14 +726,26 @@ export default () => {
   const onSubmitDebounce = debounce((value, back?) => {
     onSubmit(value, back);
   }, 1000);
-  const onSubmit = async (statue: number, back?) => {
+  const onSubmit = async (statue: number, back?: any) => {
     if (statue === 1) {
       // 发布
       // 需要来一个当前的内容信息表单, 看所有的是不是一个
-      Promise.all([contentInfoForm.validateFields(), formPostMessage.validateFields()]).then(
-        async ([contentInfoFormValues, formPostMessageValues]) => {
+      Promise.all([contentInfoForm.validateFields(), formPostMessage.validateFields(), linkForm.validateFields()]).then(
+        async ([contentInfoFormValues, formPostMessageValues, linkFormValues]) => {
           const formData = { ...contentInfoFormValues, ...formPostMessageValues };
+          console.log('搜集的链接', contentInfoFormValues)
           console.log('搜集的form', formData);
+          let links = [] as any
+          // 根据linkList 数组的长度
+          linkList?.forEach((item: any, index: any) => {
+            links.push({
+              title: linkFormValues['链接标题' + item],
+              introduction: linkFormValues['链接简介' + item],
+              address: linkFormValues['链接地址' + item],
+            })
+          })
+
+          console.log('验证linkst', links)
           // 视频id
           const attachmentId = formData.attachmentId && formData.attachmentId[0].uid;
           console.log('attachmentId', attachmentId);
@@ -671,6 +768,10 @@ export default () => {
                 formData.attachmentIdList?.map((item: any) => item.uid),
               // 视频
               attachmentId: attachmentId,
+              // 如果是图文
+              links: state === 'PICTURE_TEXT' 
+                ? links
+                : undefined
             });
             console.log('添加返回的res', res);
             if (res.code === 0) {
@@ -695,6 +796,19 @@ export default () => {
       // 暂存
       const contentInfoFormValues = contentInfoForm.getFieldsValue();
       const formPostMessageValues = formPostMessage.getFieldsValue();
+      const linkValues = linkForm.getFieldsValue();
+      let links = [] as any
+      if (linkList.length >= 0) {
+        // 根据linkList 数组的长度
+        linkList?.forEach((item: any, index: any) => {
+          links.push({
+            title: linkValues['链接标题' + item],
+            introduction: linkValues['链接简介' + item],
+            address: linkValues['链接地址' + item],
+          })
+        })
+      }
+      console.log('暂存的link', links)
       const formData = { ...contentInfoFormValues, ...formPostMessageValues };
       console.log('搜集的form', formData);
       // 视频id
@@ -717,6 +831,10 @@ export default () => {
             formData.attachmentIdList && formData.attachmentIdList?.map((item: any) => item.uid),
           // 视频
           attachmentId: attachmentId,
+          // 如果是图文
+          links: state === 'PICTURE_TEXT' 
+            ? links.length > 0 && links[0].title  ? links : undefined
+            : undefined
         });
         console.log('暂存返回的res', res);
         if (res.code === 0) {

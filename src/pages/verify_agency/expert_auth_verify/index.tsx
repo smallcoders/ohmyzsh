@@ -103,7 +103,7 @@ export default () => {
       render: (cityName: string, record: ExpertAuthVerify.Content) => (record?.provinceName || '') + (cityName || ''),
     },
     {
-      title: '所属组织',
+      title: '工作单位',
       dataIndex: 'orgName',
       isEllipsis: true,
       width: 300,

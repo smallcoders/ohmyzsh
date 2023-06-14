@@ -10,6 +10,7 @@ import {
   httpServiceAccountArticleLogList,
 } from '@/services/service-management';
 import {routeName} from '../../../../../config/routes'
+import SelfTable from '@/components/self_table';
 const sc = scopedClasses('service-content-manage-detail');
 
 interface dataDetailType {
@@ -22,6 +23,16 @@ interface dataDetailType {
   content?: string;
   publishTime?: string;
 }
+const hostMap = {
+  'http://172.30.33.222:10086': 'http://172.30.33.222',
+  'http://172.30.33.212:10086': 'http://172.30.33.212',
+  'http://10.103.142.216': 'https://preprod.lingyangplat.com',
+  'http://10.103.142.222': 'https://greenenv.lingyangplat.com',
+  'http://manage.lingyangplat.com': 'https://www.lingyangplat.com',
+  'https://manage.lingyangplat.com': 'https://www.lingyangplat.com',
+  'http://localhost:8000': 'http://172.30.33.222',
+};
+
 export default () => {
   const { id } = history.location.query as { id: string | undefined };
   const [dataDetail, setDataDetail] = useState<dataDetailType[]>();
@@ -120,6 +131,40 @@ export default () => {
   };
 
   const [showControls, setShowControls] = useState<boolean>(false);
+
+  const handleTitle = (value: any) => {
+    if (!value?.address.startsWith('/')) {
+      window.open(value?.address)
+    } else if (value?.address.startsWith('/')) {
+      window.open(`${hostMap[window.location.origin]}/antelope-baseline` + value?.address)
+    }
+  }
+
+  // table
+  const columns = [
+    {
+      title: '链接标题',
+      dataIndex: 'title',
+      align: 'center',
+      width: 200,
+      render: (version: string, record: any) => {
+        return (
+          <span style={{cursor: 'pointer', color: '#6680FF'}} onClick={handleTitle.bind(null, record)}>{version || '--'}</span>
+        )
+      },
+    },
+    {
+      title: '链接简介',
+      dataIndex: 'introduction',
+      align: 'center',
+      render: (content: string) => {
+        return (
+          <div className={sc('container-table-content')}>{content || '--'}</div>
+        )
+      },
+    },
+  ];
+  
   return (
     <PageContainer
       className={sc('container')}
@@ -128,7 +173,7 @@ export default () => {
         breadcrumb: (
           <Breadcrumb>
             <Breadcrumb.Item>
-              <Link to="/baseline/baseline-service-number">服务号管理</Link>
+              <Link to="/baseline/baseline-service-content-manage">服务号内容管理</Link>
             </Breadcrumb.Item>
             <Breadcrumb.Item>详情</Breadcrumb.Item>
           </Breadcrumb>
@@ -218,6 +263,42 @@ export default () => {
             )
           }
         </div>
+        {/* 链接 和 合集标签 */}
+        {
+          dataDetail?.collectionList?.length > 0 &&
+          <div className={sc('container-top-collection')}>
+            <div className={sc('container-top-collection-title')}>归属合集</div>
+            <div className={sc('container-top-collection-content')}>
+              {dataDetail?.collectionList?.length > 0
+              ? dataDetail?.collectionList?.map((item: any) => {
+                return (
+                  <div key={item.id} className={sc('container-top-collection-content-item')}>
+                    {'#' + item.name}
+                  </div>
+                );
+              })
+              : ''
+            }
+            </div>
+          </div>
+        }
+        {
+          dataDetail?.links?.length > 0 &&
+          <div className={sc('container-top-link')}>
+            <div className={sc('container-top-link-title')}>链接</div>
+            <div className={sc('container-top-link-content')}>
+            <SelfTable
+              rowKey="id"
+              bordered
+              columns={columns}
+              dataSource={dataDetail?.links}
+              pagination={
+                false
+              }
+            />
+            </div>
+          </div>
+        }
       </div>
       <div className={sc('container-center')}>
         <div className={sc('container-center-title')}>发布信息</div>

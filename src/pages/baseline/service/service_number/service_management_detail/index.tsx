@@ -9,7 +9,8 @@ import {
   httpServiceAccountArticleDetail,
   httpServiceAccountArticleLogList,
 } from '@/services/service-management';
-import {routeName} from '../../../../../../config/routes'
+import SelfTable from '@/components/self_table';
+import { routeName } from '../../../../../../config/routes';
 const sc = scopedClasses('service-number-management-detail');
 
 interface dataDetailType {
@@ -21,7 +22,17 @@ interface dataDetailType {
   coverUrl?: string;
   content?: string;
   publishTime?: string;
+  collectionList: any[];
 }
+const hostMap = {
+  'http://172.30.33.222:10086': 'http://172.30.33.222',
+  'http://172.30.33.212:10086': 'http://172.30.33.212',
+  'http://10.103.142.216': 'https://preprod.lingyangplat.com',
+  'http://10.103.142.222': 'https://greenenv.lingyangplat.com',
+  'http://manage.lingyangplat.com': 'https://www.lingyangplat.com',
+  'https://manage.lingyangplat.com': 'https://www.lingyangplat.com',
+  'http://localhost:8000': 'http://172.30.33.222',
+};
 export default () => {
   const { id, backid, backname, activeTab } = history.location.query as { id: string | undefined };
   const [dataDetail, setDataDetail] = useState<dataDetailType[]>();
@@ -118,8 +129,43 @@ export default () => {
   const onBack = () => {
     // console.log('返回值之前检查参数id和name')
     // history.goBack();
-    history.push(`${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT}?id=${backid}&name=${backname}&activeTabValue=${activeTab}`);
+    history.push(
+      `${routeName.BASELINE_SERVICE_NUMBER_MANAGEMENT}?id=${backid}&name=${backname}&activeTabValue=${activeTab}`,
+    );
   };
+
+  const handleTitle = (value: any) => {
+    if (!value?.address.startsWith('/')) {
+      window.open(value?.address)
+    } else if (value?.address.startsWith('/')) {
+      window.open(`${hostMap[window.location.origin]}/antelope-baseline` + value?.address)
+    }
+  }
+
+  // table
+  const columns = [
+    {
+      title: '链接标题',
+      dataIndex: 'title',
+      align: 'center',
+      width: 200,
+      render: (version: string, record: any) => {
+        return (
+          <span style={{cursor: 'pointer', color: '#6680FF'}} onClick={handleTitle.bind(null, record)}>{version || '--'}</span>
+        )
+      },
+    },
+    {
+      title: '链接简介',
+      dataIndex: 'introduction',
+      align: 'center',
+      render: (content: string) => {
+        return (
+          <div className={sc('container-table-content')}>{content || '--'}</div>
+        )
+      },
+    },
+  ];
 
   const [showControls, setShowControls] = useState<boolean>(false);
   return (
@@ -168,7 +214,9 @@ export default () => {
           {
             // 非图文正常展示
             !['PICTURE_TEXT'].includes(dataDetail?.type) && (
-              <div className={sc('container-top-content-text')}>{dataDetail?.content || '------'}</div>
+              <div className={sc('container-top-content-text')}>
+                {dataDetail?.content || '------'}
+              </div>
             )
           }
           {
@@ -220,6 +268,42 @@ export default () => {
             )
           }
         </div>
+        {/* 链接 和 合集标签 */}
+        {
+          dataDetail?.collectionList?.length > 0 &&
+          <div className={sc('container-top-collection')}>
+            <div className={sc('container-top-collection-title')}>归属合集</div>
+            <div className={sc('container-top-collection-content')}>
+              {dataDetail?.collectionList?.length > 0
+              ? dataDetail?.collectionList?.map((item: any) => {
+                return (
+                  <div key={item.id} className={sc('container-top-collection-content-item')}>
+                    {'#' + item.name}
+                  </div>
+                );
+              })
+              : ''
+            }
+            </div>
+          </div>
+        }
+        {
+          dataDetail?.links?.length > 0 &&
+          <div className={sc('container-top-link')}>
+            <div className={sc('container-top-link-title')}>链接</div>
+            <div className={sc('container-top-link-content')}>
+            <SelfTable
+              rowKey="id"
+              bordered
+              columns={columns}
+              dataSource={dataDetail?.links}
+              pagination={
+                false
+              }
+            />
+            </div>
+          </div>
+        }
       </div>
       <div className={sc('container-center')}>
         <div className={sc('container-center-title')}>发布信息</div>
