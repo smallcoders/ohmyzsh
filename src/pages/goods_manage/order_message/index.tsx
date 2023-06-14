@@ -164,6 +164,14 @@ export default () => {
               </Form.Item>
             </Col>
             <Col span={6}>
+              <Form.Item
+                name="successTime" // firmSucTimeStart  firmSucTimeEnd
+                label="交易成功时间"
+              >
+                <RangePicker allowClear showTime />
+              </Form.Item>
+            </Col>
+            <Col span={6}>
               <Form.Item name="payMethod" label="订单来源">
                 <Select placeholder="请选择" allowClear>
                   {sourceList?.map((p) => (
@@ -176,7 +184,7 @@ export default () => {
             </Col>
 
 
-            <Col span={6} style={{ textAlign: 'right' }}>
+            <Col span={6} offset={18} style={{ textAlign: 'right' }}>
               <Button
                 style={{ marginRight: 20 }}
                 type="primary"
@@ -186,6 +194,10 @@ export default () => {
                   if (search.time) {
                     search.createTimeStart = moment(search.time[0]).format('YYYY-MM-DD HH:mm:ss');
                     search.createTimeEnd = moment(search.time[1]).format('YYYY-MM-DD HH:mm:ss');
+                  }
+                  if (search.successTime) {
+                    search.firmSucTimeStart = moment(search.successTime[0]).format('YYYY-MM-DD');
+                    search.firmSucTimeEnd = moment(search.successTime[1]).format('YYYY-MM-DD');
                   }
                   setSearChContent(search);
                 }}

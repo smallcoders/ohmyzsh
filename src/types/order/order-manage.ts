@@ -51,13 +51,14 @@ namespace OrderManage {
     street?: string; // 街道
     addressDetail?: string; //	收获地址-详细地址
     orderNo?: string; //	订单号
+    orderOrgName?: string; // 下单企业
     createTime?: string; //	订单创建时间
     shipTimeNumList?: any[]; // 发货时间
     payTime?: string; //	订单支付时间
 
     shipTime?: string; //	物流发货时间
 
-    endTime?: string; //	物流结束时间
+    endSuccTime?: string; // 成功时间
 
     userPhone?: string; //	用户下单手机号
     totalPrice?: number; //	订单总金额

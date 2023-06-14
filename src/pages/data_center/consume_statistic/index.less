@@ -1,11 +1,6 @@
-@import '../../../global.less';
-@prefix: order-manage;
+@prefix: user-config-logout-verify;
 
 .@{prefix}-container {
-  .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
-    color: #fff;
-    background-color: @primary !important;
-  }
   &-table-header {
     padding: 20px;
     background-color: #fff;
@@ -26,8 +21,11 @@
   }
   &-search {
     margin-bottom: 20px;
-    padding:20px 20px 20px 20px;
+    padding: 20px 0 0 0;
     background-color: #fff;
+    // .ant-form-item {
+    //   margin-bottom: 0;
+    // }
   }
   &-reupload {
     position: relative;
@@ -50,7 +48,7 @@
       opacity: 0.5;
     }
   }
-  .state0 {
+  .state2 {
     position: relative;
     padding-left: 15px;
     &::before {
@@ -64,7 +62,7 @@
       content: ' ';
     }
   }
-  .state1 {
+  .state3 {
     position: relative;
     padding-left: 15px;
     &::before {
@@ -78,7 +76,7 @@
       content: ' ';
     }
   }
-  .state2 {
+  .state4 {
     position: relative;
     padding-left: 15px;
     &::before {

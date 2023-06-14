@@ -217,6 +217,9 @@
   GOODS_MANAGE_INDEX: '/goods-manage/goods_manage/index',
   GOODS_MANAGE_DETAIL: '/goods-manage/goods_manage/detail',
 
+  // 商品管理-生态服务商管理
+  ECOLOGY_SERVICERS_MANAGE: '/goods-manage/ecology-servicers-manage',
+
   //商品管理---订单信息
   ORDER_MESSAGE: '/goods-manage/order_manage',
   ORDER_MESSAGE_INDEX: '/goods-manage/order_manage/index',
@@ -303,6 +306,7 @@
   // 数据中心
   DATA_CENTER: '/data-center', // 数据中心
   TOOLKIT_ORDER_MONITORING: '/data-center/toolkit-order_monitoring', //工具包订单监控
+  CONSUME_STATISTIC: '/data-center/consume-statistic', // 消费券统计
   BASELINE_VERSION_UPDATING_MANAGE: '/baseline/version-updating', // 版本更新管理
 
   // 商机渠道管理
@@ -397,6 +401,14 @@ export default [
         component: './data_center/toolkit_order_monitoring/index',
         layout: false,
         target: '_blank',
+      },
+      {
+        path: routeName.CONSUME_STATISTIC,
+        code: 'M_XFQ_TJ',
+        access: 'M_XFQ_TJ',
+        name: '消费券统计',
+        hideInBreadcrumb: true,
+        component: './data_center/consume_statistic',
       },
     ],
   },
@@ -2719,6 +2731,14 @@ export default [
             component: './user_config/expert_manage/expert_detail/index',
           },
         ],
+      },
+      {
+        path: '/user-config/ecology-servicers-manage',
+        code: 'M_ST_FWS',
+        access: 'M_ST_FWS',
+        hideInBreadcrumb: true,
+        name: '生态服务商管理',
+        component: './user_config/ecology_servicers_manage',
       },
       {
         path: routeName.USER_FEEDBACK,

@@ -184,7 +184,7 @@ export default () => {
             <Button
               type="link"
               onClick={() => {
-                history.push(
+                window.open(
                   `${routeName.GOODS_VERIFY_DETAIL}?productId=${record.productId}&id=${record.id}`,
                 );
               }}
@@ -217,24 +217,29 @@ export default () => {
       <div className={sc('container-search')}>
         <Form {...formLayout} form={searchForm}>
           <Row>
-            <Col span={8}>
+            <Col span={6}>
               <Form.Item name="productName" label="商品名称">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
-            <Col span={8}>
+            <Col span={6}>
+              <Form.Item name="orgName" label="申请组织">
+                <Input placeholder="请输入" />
+              </Form.Item>
+            </Col>
+            <Col span={6}>
               <Form.Item name="userName" label="申请人">
                 <Input placeholder="请输入" />
               </Form.Item>
             </Col>
-            <Col span={8}>
+          </Row>
+          <Row>
+            <Col span={6}>
               <Form.Item name="time" label="申请时间">
                 <DatePicker.RangePicker allowClear showTime />
               </Form.Item>
             </Col>
-          </Row>
-          <Row>
-            <Col span={8}>
+            <Col span={6}>
               <Form.Item name="productSource" label="商品来源">
                 <Select placeholder="请选择" allowClear>
                   <Select.Option value={1}>应用管理库</Select.Option>
@@ -242,7 +247,7 @@ export default () => {
                 </Select>
               </Form.Item>
             </Col>
-            <Col span={8}>
+            <Col span={6}>
               <Form.Item name="handleResult" label="审核状态">
                 <Select placeholder="请选择" allowClear>
                   <Select.Option value={-1}>待审核</Select.Option>
@@ -251,7 +256,7 @@ export default () => {
                 </Select>
               </Form.Item>
             </Col>
-            <Col span={8} style={{ textAlign: 'right' }}>
+            <Col span={6} style={{ textAlign: 'right' }}>
               <Button
                 style={{ marginRight: 20 }}
                 type="primary"

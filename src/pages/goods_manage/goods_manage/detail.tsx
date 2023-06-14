@@ -146,6 +146,7 @@ export default () => {
               <Form.Item label="商品类型">{commodity?.payProduct.typeName}</Form.Item>
               <Form.Item label="商品名称">{commodity?.payProduct.productName}</Form.Item>
               <Form.Item label="商品型号">{commodity?.payProduct.productModel}</Form.Item>
+              <Form.Item label="商品简介">{commodity?.payProduct.productDesc}</Form.Item>
               <Form.Item label="商品封面图">
                 <Image width={100} src={commodity?.payProduct.productPic} />
               </Form.Item>

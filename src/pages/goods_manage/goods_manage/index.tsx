@@ -192,7 +192,7 @@ export default () => {
     {
       title: '价格区间',
       dataIndex: 'minSalePrice',
-      render: (text: any, record: any) => record.minSalePrice && record.maxSalePrice ? (record.minSalePrice + '~' + record.maxSalePrice) : '--',
+      render: (text: any, record: any) => record.minSalePrice + '~' + record.maxSalePrice,
     },
     {
       title: '商品状态',
@@ -219,7 +219,7 @@ export default () => {
           <Button size="small" type="link" onClick={() => goDetail(record)}>
             详情
           </Button>
-          <Access accessible={access['P_PM_SP']}>
+          <Access accessible={access['PU_DG_SPGL']}>
             <Popconfirm
               title={
                 <>

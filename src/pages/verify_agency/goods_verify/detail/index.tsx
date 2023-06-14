@@ -363,7 +363,7 @@ export default () => {
               </Form.Item>
               {detail?.payProduct?.productSource === 1 && (
                 <Form.Item label="免费试用">
-                  {detail?.payProduct?.freeDayApp ? `${detail?.payProduct?.freeDayApp}天` : '--'}
+                  {detail?.payProduct?.freeDayAppStr ? `${detail?.payProduct?.freeDayAppStr}` : '--'}
                 </Form.Item>
               )}
             </Form>
@@ -502,7 +502,7 @@ export default () => {
                 </Button>
               )}
 
-              <Button onClick={gobackList}>返回</Button>
+              {/* <Button onClick={gobackList}>返回</Button> */}
             </div>
           </ProCard>
 
