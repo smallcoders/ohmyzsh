@@ -7,9 +7,12 @@ import SelfTable from '@/components/self_table';
 import UploadModal from './components/uploadModal';
 import { getTradeList, deleteByIds } from '@/services/data-manage';
 import { useAccess, Access } from '@@/plugin-access/access';
+import { history } from 'umi';
 import moment from 'moment';
 import type Common from '@/types/common';
-const sc = scopedClasses('business-channel-manage');
+import { routeName } from "../../../../config/routes";
+
+const sc = scopedClasses('trade-manage');
 
 export default () => {
   // 拿到当前角色的access权限兑现
@@ -132,6 +135,7 @@ export default () => {
               size="small"
               type="link"
               onClick={() => {
+                history.push(`${routeName.DATA_MANAGE_TRADE_MANAGE_DETAIL}?id=${record.id}`);
               }}
             >
               详情
