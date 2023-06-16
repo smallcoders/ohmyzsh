@@ -6,7 +6,6 @@ import { Button, Col, Form, Input, Row, DatePicker, message as antdMessage, Moda
 import SelfTable from '@/components/self_table';
 import UploadModal from './components/uploadModal';
 import { getTradeList, deleteByIds } from '@/services/data-manage';
-import AddBusinessModal from './components/addBusinessModal';
 import { useAccess, Access } from '@@/plugin-access/access';
 import moment from 'moment';
 import type Common from '@/types/common';
@@ -21,7 +20,6 @@ export default () => {
     pageSize: 10,
   });
   const uploadModalRef = useRef<any>(null);
-  const addBusinessModalRef = useRef<any>(null);
   const [dataSource, setDataSource] = useState<any>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
@@ -130,19 +128,15 @@ export default () => {
       render: (_: any, record: any) => {
         return (
           <>
-            <Access accessible={access.PU_SJ_DR}>
-              <Button
-                size="small"
-                type="link"
-                onClick={() => {
-                  console.log(record);
-                  addBusinessModalRef.current.openModal(record);
-                }}
-              >
-                编辑
-              </Button>
-            </Access>
-            <Access accessible={access.PD_UM_YHFBBMD}>
+            <Button
+              size="small"
+              type="link"
+              onClick={() => {
+              }}
+            >
+              详情
+            </Button>
+            <Access accessible={access.P_BSDM_JYGL}>
               <Button
                 type="link"
                 style={{ padding: 0, color: 'red' }}
@@ -175,14 +169,15 @@ export default () => {
       <div className={sc('container-search')}>
         <Form form={searchForm}>
           <Row>
-            <Col span={5}>
-              <Form.Item labelCol={{ span: 8 }} name="providerName" label="供应商名称">
+            <Col span={8}>
+              <Form.Item labelCol={{ span: 6 }} name="providerName" label="供应商名称">
                 <Input placeholder="请输入" maxLength={35} />
               </Form.Item>
             </Col>
-            <Col span={7}>
+            <Col span={8}>
               <Form.Item labelCol={{ span: 6 }} name="time" label="发布时间">
                 <DatePicker.RangePicker
+                  style={{ width: '100%' }}
                   allowClear
                   disabledDate={(current) => {
                     return current > moment().endOf('day');
@@ -190,7 +185,7 @@ export default () => {
                 />
               </Form.Item>
             </Col>
-            <Col span={5} offset={1}>
+            <Col span={8} style={{textAlign: 'right'}}>
               <Button
                 style={{ marginRight: 20 }}
                 type="primary"
@@ -232,7 +227,7 @@ export default () => {
       <div className="main-content">
         <div className="top-area">
           <div className="button-box">
-            <Access accessible={access.PU_SJ_DR}>
+            <Access accessible={access.P_BSDM_JYGL}>
               <Button
                 style={{ marginRight: '20px' }}
                 type="default"
@@ -243,8 +238,6 @@ export default () => {
               >
                 导入
               </Button>
-            </Access>
-            <Access accessible={access.PU_SJ_DR}>
               <Button
                 style={{ marginLeft: '10px' }}
                 onClick={() => {
@@ -296,12 +289,6 @@ export default () => {
         />
       </div>
       <UploadModal ref={uploadModalRef} />
-      <AddBusinessModal
-        successCallBack={() => {
-          getPage(params);
-        }}
-        ref={addBusinessModalRef}
-      />
     </PageContainer>
   );
 };

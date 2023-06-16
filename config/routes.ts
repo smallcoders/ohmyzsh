@@ -2900,26 +2900,26 @@ export default [
   },
   {
     path: routeName.DATA_MANAGE,
-    access: 'M_SJ_DR',
+    access: 'M_BSDM',
     name: '大屏数据管理',
     icon: 'hdd',
     routes: [
       {
         path: routeName.DATA_MANAGE,
-        access: 'M_SJ_DR',
+        access: 'M_BSDM_ZLSJ',
         redirect: '/data_manage/all_data',
       },
       {
         path: routeName.DATA_MANAGE_ALL_DATA,
-        code: 'M_SJ_DR',
-        access: 'M_SJ_DR',
+        code: 'M_BSDM_ZLSJ',
+        access: 'M_BSDM_ZLSJ',
         name: '总览数据',
         component: './data_manage/all_data/index',
       },
       {
         path: routeName.DATA_MANAGE_TRADE_MANAGE,
-        code: 'M_SJ_DR',
-        access: 'M_SJ_DR',
+        code: 'M_BSDM_JYGL',
+        access: 'M_BSDM_JYGL',
         name: '交易管理',
         component: './data_manage/trade_manage/index',
       },
