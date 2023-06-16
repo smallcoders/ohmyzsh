@@ -105,6 +105,11 @@ export default {
       // target: 'http://10.8.4.222:9208',
       changeOrigin: true,
       pathRewrite: { '^': '' },
+    },
+    '/antelope-report/': {
+      target: 'http://172.30.33.222:10086',
+      changeOrigin: true,
+      pathRewrite: { '^': '' },
     }
   },
 };

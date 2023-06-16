@@ -11,4 +11,14 @@ export async function getAuthenticationInfoPage(data?: { [key: string]: any }) {
   });
 }
 
+/**
+ * 查询所有配置数据
+ */
+export async function getListAllOverviewData(params?: any) {
+  return request<any>('/antelope-report/mng/largeScreen/listAllOverviewData', {
+    method: 'get',
+    params,
+  });
+}
+
 
