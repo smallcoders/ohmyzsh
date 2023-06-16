@@ -29,16 +29,33 @@ export default () => {
       title: '当前累计数据',
       dataIndex: 'total',
       width: 150,
-      render: (total: number) => {
-        return <span>{total || '--'}</span>;
+      render: (total: number, record: any) => {
+        return (
+          <span>
+            {record.configKey === 'SERVICE_COUNT' || record.configKey === 'ORDER_COUNT'
+              ? `${total}万`
+              : record.configKey === 'TRADE_AMOUNT'
+              ? `${total}亿`
+              : total}
+          </span>
+        );
       },
     },
     {
       title: '近12个月数据',
       dataIndex: 'withDetailData',
       width: 150,
-      render: (withDetailData: string) => {
-        return <span>{withDetailData || '--'}</span>;
+      render: (withDetailData: boolean, record: any) => {
+        return withDetailData
+          ? record?.monthDataList.map((item: any, index: number) => (
+              <span key={index}>
+                {record.configKey === 'TRADE_AMOUNT'
+                  ? `${item.month}: ${item.data}亿`
+                  : `${item.month}: ${item.data}`}
+                &nbsp;&nbsp;&nbsp;
+              </span>
+            ))
+          : '--';
       },
     },
     {
@@ -49,16 +66,16 @@ export default () => {
         return (
           <>
             <Access accessible={access.PU_SJ_DR}>
-            <Button
-                  size="small"
-                  type="link"
-                  onClick={() => {
-                    console.log(record);
-                    editDataModalRef.current.openModal(record);
-                  }}
-                >
-                  编辑
-                </Button>
+              <Button
+                size="small"
+                type="link"
+                onClick={() => {
+                  console.log(record);
+                  editDataModalRef.current.openModal(record);
+                }}
+              >
+                编辑
+              </Button>
             </Access>
           </>
         );
@@ -83,8 +100,8 @@ export default () => {
   };
 
   useEffect(() => {
-    getPage()
-  }, [])
+    getPage();
+  }, []);
 
   return (
     <PageContainer className={sc('container')}>

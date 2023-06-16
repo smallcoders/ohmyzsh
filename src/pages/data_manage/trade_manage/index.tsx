@@ -2,10 +2,10 @@ import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
 import { PageContainer } from '@ant-design/pro-layout';
 import React, { useEffect, useRef, useState } from 'react';
-import { Button, Col, Form, Input, Row, DatePicker, message as antdMessage, Tooltip } from 'antd';
+import { Button, Col, Form, Input, Row, DatePicker, message as antdMessage, Tooltip, Modal } from 'antd';
 import SelfTable from '@/components/self_table';
 import UploadModal from './components/uploadModal';
-import { getBusinessList } from '@/services/business-channel';
+import { getTradeList, deleteByIds } from '@/services/data-manage';
 import AddBusinessModal from './components/addBusinessModal';
 import AuditModal from './components/auditModal';
 import { useAccess, Access } from '@@/plugin-access/access';
@@ -13,59 +13,13 @@ import moment from 'moment';
 import type Common from '@/types/common';
 const sc = scopedClasses('business-channel-manage');
 
-const chanceTypeMap = {
-  1: '研发设计',
-  2: '生产制造',
-  3: '仓储物流',
-  4: '管理数字化',
-  5: '其他',
-};
-
-const statusMap = {
-  0: '跟进中',
-  1: '已释放',
-  2: '待审核',
-  3: '待分发',
-  4: '已驳回',
-  5: '已完成',
-};
-
-const statusColorMap = {
-  0: {
-    color: '#0FEA97',
-    background: 'rgba(15, 234, 151, 0.1)',
-  },
-  1: {
-    color: '#526275',
-    background: 'rgba(82,98, 117, 0.1)',
-  },
-  2: {
-    color: '#1CD8ED',
-    background: 'rgba(28, 216, 237, 0.1)',
-  },
-  3: {
-    color: '#0FEA97',
-    background: 'rgba(15, 234, 151, 0.1)',
-  },
-  4: {
-    color: '#FFD902',
-    background: 'rgba(255, 217, 2, 0.1)',
-  },
-  5: {
-    color: '#526275',
-    background: 'rgba(82,98, 117, 0.1)',
-  },
-};
-
 export default () => {
   // 拿到当前角色的access权限兑现
   const access: any = useAccess();
-  const [activeTab, setActiveTab] = useState<string>('ALL');
   const [searchForm] = Form.useForm();
   const [params, setParams] = useState<any>({
     pageIndex: 1,
     pageSize: 10,
-    queryType: 'ALL',
   });
   const uploadModalRef = useRef<any>(null);
   const addBusinessModalRef = useRef<any>(null);
@@ -78,87 +32,51 @@ export default () => {
     totalCount: 0,
     pageTotal: 0,
   });
+  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
-  const recordColumns = [
+  const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
+    setSelectedRowKeys(newSelectedRowKeys);
+  };
+
+  const columns = [
     {
-      title: '商机编号',
-      dataIndex: 'chanceNo',
+      title: '采购单号',
+      dataIndex: 'orderNum',
       width: 150,
-      render: (chanceNo: string, record: any) => {
-        return (
-          <span
-            style={chanceNo ? { color: '#0068ff', cursor: 'pointer' } : {}}
-            onClick={() => {
-              auditModalRef.current.openModal(record, 'detail');
-            }}
-          >
-            {chanceNo || '--'}
-          </span>
-        );
+      render: (orderNum: string) => {
+        return <span>{orderNum || '--'}</span>;
       },
     },
     {
-      title: '商机名称',
-      dataIndex: 'chanceName',
+      title: '供应商名称',
+      dataIndex: 'providerName',
       width: 150,
-      render: (chanceName: string) => {
-        return <span>{chanceName || '--'}</span>;
+      render: (providerName: string) => {
+        return <span>{providerName || '--'}</span>;
       },
     },
     {
-      title: '商机类型',
-      dataIndex: 'chanceType',
+      title: '物料描述',
+      dataIndex: 'materialDescription',
       width: 150,
-      render: (chanceType: number) => {
-        return <span>{chanceTypeMap[chanceType] || '--'}</span>;
+      render: (materialDescription: string) => {
+        return <span>{materialDescription || '--'}</span>;
       },
     },
     {
-      title: '商机状态',
-      dataIndex: 'status',
+      title: '含税金额（元）',
+      dataIndex: 'taxAmount',
       width: 150,
-      render: (status: number, record: any) => {
-        return status === 4 && record.auditTxt ? (
-          <Tooltip placement="top" title={`驳回事由:${record.auditTxt}`}>
-            <span style={statusColorMap[status]} className="status">
-              {statusMap[status] || '--'}
-            </span>
-          </Tooltip>
-        ) : (
-          <span style={statusColorMap[status]} className="status">
-            {statusMap[status] || '--'}
-          </span>
-        );
+      render: (taxAmount: number) => {
+        return <span>{taxAmount || '--'}</span>;
       },
     },
     {
-      title: '关联企业',
-      dataIndex: 'orgName',
-      width: 150,
-      render: (orgName: string) => {
-        return <span>{orgName || '--'}</span>;
-      },
-    },
-    {
-      title: '企业所属地区',
-      dataIndex: 'areaName',
-      width: 150,
-      render: (areaName: string, record: any) => {
-        return (
-          <span>
-            {record.cityName || areaName
-              ? `${record.cityName || ''}${record.cityName && areaName ? '/' : ''}${areaName || ''}`
-              : '--'}
-          </span>
-        );
-      },
-    },
-    {
-      title: '发布时间',
-      dataIndex: 'createTime',
+      title: '订单日期',
+      dataIndex: 'orderDate',
       width: 200,
-      render: (createTime: string) => {
-        return <>{createTime || '--'}</>;
+      render: (orderDate: string) => {
+        return <>{orderDate || '--'}</>;
       },
     },
     {
@@ -198,7 +116,7 @@ export default () => {
   const getPage = async (data: any) => {
     setLoading(true);
     try {
-      const { result, totalCount, pageTotal, code, message } = await getBusinessList(data);
+      const { result, totalCount, pageTotal, code, message } = await getTradeList(data);
       setLoading(false);
       if (code === 0) {
         setPageInfo({ ...pageInfo, totalCount, pageTotal, pageIndex: data.pageIndex });
@@ -212,6 +130,21 @@ export default () => {
     }
   };
 
+  const onDelete = async (ids: any) => {
+    console.log('1112222222222222222', ids);
+    
+    // try {
+    //   const res = await deleteByIds(ids);
+    //   if (res.code === 0) {
+    //     antdMessage.success(`删除成功`);
+    //   } else {
+    //     antdMessage.error(res?.message || `操作失败，请重试`);
+    //   }
+    // } catch (error) {
+    //   console.log(error);
+    // }
+  };
+
   useEffect(() => {
     getPage(params);
   }, [params]);
@@ -219,14 +152,10 @@ export default () => {
   const getSearchQuery = () => {
     const search = searchForm.getFieldsValue();
     if (search.time) {
-      search.startDate = moment(search.time[0]).startOf('days').format('YYYY-MM-DD HH:mm:ss');
-      search.endDate = moment(search.time[1]).endOf('days').format('YYYY-MM-DD HH:mm:ss');
+      search.orderDateStart = moment(search.time[0]).startOf('days').format('YYYY-MM-DD');
+      search.orderDateEnd = moment(search.time[1]).endOf('days').format('YYYY-MM-DD');
     }
     delete search.time;
-    if (search.area) {
-      search.orgArea = search.area[1];
-    }
-    delete search.area;
     return search;
   };
 
@@ -236,7 +165,7 @@ export default () => {
         <Form form={searchForm}>
           <Row>
             <Col span={5}>
-              <Form.Item labelCol={{ span: 8 }} name="chanceNo" label="商机编号">
+              <Form.Item labelCol={{ span: 8 }} name="providerName" label="供应商名称">
                 <Input placeholder="请输入" maxLength={35} />
               </Form.Item>
             </Col>
@@ -261,7 +190,6 @@ export default () => {
                     ...search,
                     pageIndex: 1,
                     pageSize: 10,
-                    queryType: activeTab,
                   };
                   setParams(newParams);
                 }}
@@ -275,7 +203,6 @@ export default () => {
                   setParams({
                     pageIndex: 1,
                     pageSize: 10,
-                    queryType: activeTab,
                   });
                 }}
               >
@@ -309,13 +236,22 @@ export default () => {
             <Access accessible={access.PU_SJ_DR}>
               <Button
                 style={{ marginLeft: '10px' }}
-                type="primary"
-                key="addStyle"
                 onClick={() => {
-                  addBusinessModalRef.current.openModal();
+                  if (!selectedRowKeys.length) {
+                    antdMessage.warning('请选择数据');
+                    return;
+                  }
+                  Modal.confirm({
+                    title: '删除数据',
+                    content: '确定删除该数据么？',
+                    onOk: () => {
+                      onDelete(selectedRowKeys);
+                    },
+                    okText: '删除',
+                  });
                 }}
               >
-                +新增
+                批量删除
               </Button>
             </Access>
           </div>
@@ -323,7 +259,12 @@ export default () => {
         <SelfTable
           bordered
           loading={loading}
-          columns={recordColumns}
+          columns={columns}
+          rowSelection={{
+            fixed: true,
+            selectedRowKeys,
+            onChange: onSelectChange,
+          }}
           dataSource={dataSource}
           key="id"
           pagination={
@@ -351,7 +292,6 @@ export default () => {
         ref={addBusinessModalRef}
       />
       <AuditModal
-        activeTab={activeTab}
         ref={auditModalRef}
         successCallBack={() => {
           const { totalCount, pageIndex, pageSize } = pageInfo;
