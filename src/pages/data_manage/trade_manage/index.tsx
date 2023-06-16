@@ -2,12 +2,11 @@ import scopedClasses from '@/utils/scopedClasses';
 import './index.less';
 import { PageContainer } from '@ant-design/pro-layout';
 import React, { useEffect, useRef, useState } from 'react';
-import { Button, Col, Form, Input, Row, DatePicker, message as antdMessage, Tooltip, Modal } from 'antd';
+import { Button, Col, Form, Input, Row, DatePicker, message as antdMessage, Modal } from 'antd';
 import SelfTable from '@/components/self_table';
 import UploadModal from './components/uploadModal';
 import { getTradeList, deleteByIds } from '@/services/data-manage';
 import AddBusinessModal from './components/addBusinessModal';
-import AuditModal from './components/auditModal';
 import { useAccess, Access } from '@@/plugin-access/access';
 import moment from 'moment';
 import type Common from '@/types/common';
@@ -23,7 +22,6 @@ export default () => {
   });
   const uploadModalRef = useRef<any>(null);
   const addBusinessModalRef = useRef<any>(null);
-  const auditModalRef = useRef<any>(null);
   const [dataSource, setDataSource] = useState<any>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [pageInfo, setPageInfo] = useState<Common.ResultPage>({
@@ -36,6 +34,52 @@ export default () => {
 
   const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
     setSelectedRowKeys(newSelectedRowKeys);
+  };
+
+  const getSearchQuery = () => {
+    const search = searchForm.getFieldsValue();
+    if (search.time) {
+      search.orderDateStart = moment(search.time[0]).startOf('days').format('YYYY-MM-DD');
+      search.orderDateEnd = moment(search.time[1]).endOf('days').format('YYYY-MM-DD');
+    }
+    delete search.time;
+    return search;
+  };
+
+  const getPage = async (data: any) => {
+    setLoading(true);
+    try {
+      const { result, totalCount, pageTotal, code, message } = await getTradeList(data);
+      setLoading(false);
+      if (code === 0) {
+        setPageInfo({ ...pageInfo, totalCount, pageTotal, pageIndex: data.pageIndex });
+        setDataSource(result);
+      } else {
+        throw new Error(message);
+      }
+    } catch (error) {
+      setLoading(false);
+      antdMessage.error(`请求失败，原因:{${error}}`);
+    }
+  };
+
+  const onDelete = async (ids: any) => {
+    try {
+      const res = await deleteByIds(ids);
+      if (res.code === 0) {
+        antdMessage.success(`删除成功`);
+        const search = getSearchQuery();
+        const newParams = {
+          ...search,
+          ...params
+        };
+        getPage(newParams)
+      } else {
+        antdMessage.error(res?.message || `操作失败，请重试`);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const columns = [
@@ -98,66 +142,33 @@ export default () => {
                 编辑
               </Button>
             </Access>
-            <Button
-              size="small"
-              type="link"
-              onClick={() => {
-                auditModalRef.current.openModal(record, 'detail');
-              }}
-            >
-              查看
-            </Button>
+            <Access accessible={access.PD_UM_YHFBBMD}>
+              <Button
+                type="link"
+                style={{ padding: 0, color: 'red' }}
+                onClick={() => {
+                  Modal.confirm({
+                    title: '删除数据',
+                    content: '确定删除该数据么？',
+                    onOk: () => {
+                      onDelete([record?.id]);
+                    },
+                    okText: '删除',
+                  });
+                }}
+              >
+                删除
+              </Button>
+            </Access>
           </>
         );
       },
     },
   ];
 
-  const getPage = async (data: any) => {
-    setLoading(true);
-    try {
-      const { result, totalCount, pageTotal, code, message } = await getTradeList(data);
-      setLoading(false);
-      if (code === 0) {
-        setPageInfo({ ...pageInfo, totalCount, pageTotal, pageIndex: data.pageIndex });
-        setDataSource(result);
-      } else {
-        throw new Error(message);
-      }
-    } catch (error) {
-      setLoading(false);
-      antdMessage.error(`请求失败，原因:{${error}}`);
-    }
-  };
-
-  const onDelete = async (ids: any) => {
-    console.log('1112222222222222222', ids);
-    
-    // try {
-    //   const res = await deleteByIds(ids);
-    //   if (res.code === 0) {
-    //     antdMessage.success(`删除成功`);
-    //   } else {
-    //     antdMessage.error(res?.message || `操作失败，请重试`);
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    // }
-  };
-
   useEffect(() => {
     getPage(params);
   }, [params]);
-
-  const getSearchQuery = () => {
-    const search = searchForm.getFieldsValue();
-    if (search.time) {
-      search.orderDateStart = moment(search.time[0]).startOf('days').format('YYYY-MM-DD');
-      search.orderDateEnd = moment(search.time[1]).endOf('days').format('YYYY-MM-DD');
-    }
-    delete search.time;
-    return search;
-  };
 
   const useSearchNode = (): React.ReactNode => {
     return (
@@ -266,7 +277,7 @@ export default () => {
             onChange: onSelectChange,
           }}
           dataSource={dataSource}
-          key="id"
+          rowKey={'id'}
           pagination={
             pageInfo.totalCount === 0
               ? false
@@ -290,15 +301,6 @@ export default () => {
           getPage(params);
         }}
         ref={addBusinessModalRef}
-      />
-      <AuditModal
-        ref={auditModalRef}
-        successCallBack={() => {
-          const { totalCount, pageIndex, pageSize } = pageInfo;
-          const newTotal = totalCount - 1 || 1;
-          const newPageTotal = Math.ceil(newTotal / pageSize) || 1;
-          setParams({ ...params, pageIndex: pageIndex > newPageTotal ? newPageTotal : pageIndex });
-        }}
       />
     </PageContainer>
   );

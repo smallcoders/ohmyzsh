@@ -322,7 +322,7 @@
   BASELINE_SERVICE_NUMBER_MANAGEMENT_COLLECTION_DETAIL: '/baseline/baseline-service-number/management/collection/detail', // 合集标签详情
   OPERATIONAL_CAMPAIGN_TARGET_MONITORING: '/data-center/target-monitoring', // 运营战役目标监控
 
-  // 数据管理
+  // 大屏数据管理
   DATA_MANAGE: '/data-manage',
   DATA_MANAGE_ALL_DATA: '/data-manage/all-data', // 总览数据
   DATA_MANAGE_TRADE_MANAGE: '/data-manage/trade-manage' // 交易管理
@@ -2901,7 +2901,7 @@ export default [
   {
     path: routeName.DATA_MANAGE,
     access: 'M_SJ_DR',
-    name: '数据管理',
+    name: '大屏数据管理',
     icon: 'hdd',
     routes: [
       {
