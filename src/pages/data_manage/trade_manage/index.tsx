@@ -179,7 +179,7 @@ export default () => {
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item labelCol={{ span: 6 }} name="time" label="发布时间">
+              <Form.Item labelCol={{ span: 6 }} name="time" label="订单日期">
                 <DatePicker.RangePicker
                   style={{ width: '100%' }}
                   allowClear
@@ -243,7 +243,7 @@ export default () => {
                 导入
               </Button>
               <Button
-                style={{ marginLeft: '10px' }}
+                type='primary'
                 onClick={() => {
                   if (!selectedRowKeys.length) {
                     antdMessage.warning('请选择数据');
