@@ -95,7 +95,8 @@ export default () => {
     {
       title: '供应商名称',
       dataIndex: 'providerName',
-      width: 150,
+      isEllipsis: true,
+      width: 200,
       render: (providerName: string) => {
         return <span>{providerName || '--'}</span>;
       },
@@ -103,7 +104,8 @@ export default () => {
     {
       title: '物料描述',
       dataIndex: 'materialDescription',
-      width: 150,
+      isEllipsis: true,
+      width: 200,
       render: (materialDescription: string) => {
         return <span>{materialDescription || '--'}</span>;
       },
@@ -111,7 +113,7 @@ export default () => {
     {
       title: '含税金额（元）',
       dataIndex: 'taxAmount',
-      width: 150,
+      width: 100,
       render: (taxAmount: number) => {
         return <span>{taxAmount || '--'}</span>;
       },
@@ -119,7 +121,7 @@ export default () => {
     {
       title: '订单日期',
       dataIndex: 'orderDate',
-      width: 200,
+      width: 100,
       render: (orderDate: string) => {
         return <>{orderDate || '--'}</>;
       },
@@ -128,6 +130,7 @@ export default () => {
       title: '操作',
       hideInSearch: true,
       width: 100,
+      fixed: 'right',
       render: (_: any, record: any) => {
         return (
           <>
