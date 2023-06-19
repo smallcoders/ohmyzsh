@@ -7,39 +7,22 @@ import moment from 'moment';
 const EditDataModal = forwardRef((props: any, ref: any) => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [record, setRecord] = useState<any>({});
-  const [orgName, setOrgName] = useState('');
-  const [dates, setDates] = useState<any>(null);
-  const [form] = Form.useForm();
-
-  //   {
-  //     "configKey": "REGISTERED_USER_COUNT",
-  //     "name": "注册用户数",
-  //     "total": "434",
-  //     "withDetailData": true,
-  //     "monthDataList": [
-  //         {
-  //             "month": "2023.01",
-  //             "data": "1"
-  //         }
-  //     ]
-  // }
+  const [initMonthData, setInitMonthData] = useState([])
+  const [monthData, setMonthData] = useState([])
+  const [editForm] = Form.useForm();
 
   useImperativeHandle(ref, () => ({
     openModal: (data: any) => {
       if (data) {
         const dateArr = data.withDetailData ? [moment(data.monthDataList[0].month, 'YYYY-MM'), moment(data.monthDataList[data.monthDataList.length - 1].month, 'YYYY-MM')] : []
-        setDates(dateArr)
-        console.log('2333333333', dateArr);
-        
         setRecord(data);
-        form.setFieldsValue({
+        setMonthData(data.monthDataList)
+        setInitMonthData(data.monthDataList)
+        editForm.setFieldsValue({
           name: data.name,
           total: data.total,
           monthList: dateArr
         });
-        if (data.orgName) {
-          setOrgName(data.orgName);
-        }
       }
       setModalVisible(true);
     },
@@ -48,30 +31,35 @@ const EditDataModal = forwardRef((props: any, ref: any) => {
   const handleCancel = () => {
     setRecord({});
     setModalVisible(false);
-    form.resetFields();
+    editForm.resetFields();
   };
 
   const handleSubmit = async () => {
-    await form.validateFields();
-    const { total } = form.getFieldsValue();
+    const res = editForm.getFieldsValue();
 
-    console.log('11111111111', form.getFieldsValue());
+    if (res.monthList) {
+      res.orderDateStart = moment(res.monthList[0]).startOf('month').format('YYYY-MM');
+      res.orderDateEnd = moment(res.monthList[1]).endOf('month').format('YYYY-MM');
+    }
+
+    console.log('11111111111', {...res, monthData});
     
-    // const data: any = {
-    //   ...record,
-    //   total,
-    // };
-    // updateOverviewData(data).then((res) => {
-    //   if (res.code === 0) {
-    //     message.success('编辑成功');
-    //     handleCancel();
-    //     if (props.successCallBack) {
-    //       props.successCallBack();
-    //     }
-    //   } else {
-    //     message.error(res.message);
-    //   }
-    // });
+    const data: any = {
+      ...record,
+      ...res,
+      monthDataList: monthData
+    };
+    updateOverviewData(data).then(({code}) => {
+      if (code === 0) {
+        message.success('编辑成功');
+        handleCancel();
+        if (props.successCallBack) {
+          props.successCallBack();
+        }
+      } else {
+        message.error(res.message);
+      }
+    });
   };
 
   // 限制时间选择器的开始和结束时间
@@ -90,6 +78,32 @@ const EditDataModal = forwardRef((props: any, ref: any) => {
     // return !!tooEarly || !!tooLate || current > moment().endOf('month');
   };
 
+  const handleChange = (dates: any) => {
+    const arr: any = []
+    const startMonth = moment(dates[0]).startOf('month');
+    const endMonth = moment(dates[1]).endOf('month');
+    const months = [];
+    const currentMonth = startMonth;
+    while (currentMonth.isSameOrBefore(endMonth)) {
+      months.push(currentMonth.format('YYYY.MM'));
+      currentMonth.add(1, 'month');
+    }
+    for (let i = 0; i < months.length; i++) {
+      arr.push({month: months[i], data: ''})
+    }
+    const result = arr.map((item1: any) => {
+      const item2: any = initMonthData.find((item: any) => item.month === item1.month);
+      return item2 ? item2 : item1;
+    });
+    setMonthData(result)
+  }
+
+  const handleInputChange = (index: number, value: any) => {
+    const arr = JSON.parse(JSON.stringify(monthData))
+    arr[index].data = value
+    setMonthData(arr)
+  }
+
   return (
     <Modal
       title={record.name}
@@ -106,7 +120,7 @@ const EditDataModal = forwardRef((props: any, ref: any) => {
         handleCancel();
       }}
     >
-      <Form form={form}>
+      <Form form={editForm}>
         <Form.Item
           name="total"
           label="当前累计数据"
@@ -142,20 +156,22 @@ const EditDataModal = forwardRef((props: any, ref: any) => {
               <RangePicker
                 style={{width: '100%'}}
                 picker="month"
-                value={dates}
+                // value={dates}
                 // disabledDate={handleDisabledDate}
-                // onCalendarChange={(val) => setDates(val)}
+                onCalendarChange={handleChange}
               />
             </Form.Item>
             <div style={{width: '90%', margin: '0 auto'}}>
-              {record.monthDataList.map((item: any, index: number) => {
+              {monthData.map((item: any, index: number) => {
                 return (
                   <div key={index} style={{display: 'inline-block', marginRight: '20px', marginTop: '10px'}}>
                     <span style={{display: 'flex'}}>
                       <span style={{marginRight: '10px'}}>{item.month}</span>
                       <Input
+                        key={index}
                         placeholder="请输入"
                         value={item.data}
+                        onChange={(e) => handleInputChange(index, e.target.value)}
                         maxLength={15}
                         suffix={
                           record.configKey === 'SERVICE_COUNT' || record.configKey === 'ORDER_COUNT'
