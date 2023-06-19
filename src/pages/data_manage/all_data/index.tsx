@@ -50,8 +50,8 @@ export default () => {
           ? record?.monthDataList.map((item: any, index: number) => (
               <span key={index}>
                 {record.configKey === 'TRADE_AMOUNT'
-                  ? `${item.month}: ${item.data}亿`
-                  : `${item.month}: ${item.data}`}
+                  ? `${item.month}: ${item.data || 0}亿`
+                  : `${item.month}: ${item.data || 0}`}
                 &nbsp;&nbsp;&nbsp;
               </span>
             ))
@@ -65,7 +65,7 @@ export default () => {
       render: (_: any, record: any) => {
         return (
           <>
-            <Access accessible={access.PU_SJ_DR}>
+            <Access accessible={access.P_BSDM_ZLSJ}>
               <Button
                 size="small"
                 type="link"

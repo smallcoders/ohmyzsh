@@ -9,6 +9,7 @@ const EditDataModal = forwardRef((props: any, ref: any) => {
   const [record, setRecord] = useState<any>({});
   const [initMonthData, setInitMonthData] = useState([])
   const [monthData, setMonthData] = useState([])
+  const [rangeDate, setRangeDate] = useState([])
   const [editForm] = Form.useForm();
 
   useImperativeHandle(ref, () => ({
@@ -35,6 +36,9 @@ const EditDataModal = forwardRef((props: any, ref: any) => {
   };
 
   const handleSubmit = async () => {
+    if (monthData.length !== 12) {
+      return message.error('选择范围必须为12个月');
+    }
     const res = editForm.getFieldsValue();
 
     if (res.monthList) {
@@ -42,8 +46,6 @@ const EditDataModal = forwardRef((props: any, ref: any) => {
       res.orderDateEnd = moment(res.monthList[1]).endOf('month').format('YYYY-MM');
     }
 
-    console.log('11111111111', {...res, monthData});
-    
     const data: any = {
       ...record,
       ...res,
@@ -62,23 +64,18 @@ const EditDataModal = forwardRef((props: any, ref: any) => {
     });
   };
 
-  // 限制时间选择器的开始和结束时间
-  // const handleDisabledDate = (current: any) => {
-  //   return current && current > moment().endOf('month');
+  // const disabledDate = (current: any) => {
+  //   if (!rangeDate[0] || !rangeDate[1]) {
+  //     return false;
+  //   }
+  //   const startMonth = moment(rangeDate[0]).startOf('month');
+  //   const endMonth = moment(rangeDate[1]).endOf('month');
+  //   const months = endMonth.diff(startMonth, 'months') + 1;
+  //   return months > 12 || current.isBefore(startMonth) || current.isAfter(endMonth);
   // }
 
-  const handleDisabledDate = (current: any) => {
-    return current < moment().subtract(12, 'month') || current > moment().endOf('month');
-
-    // if (!dates) {
-    //   return false;
-    // }
-    // const tooLate = dates[0] && current.diff(dates[0], 'month') > 12;
-    // const tooEarly = dates[1] && dates[1].diff(current, 'month') > 12;
-    // return !!tooEarly || !!tooLate || current > moment().endOf('month');
-  };
-
   const handleChange = (dates: any) => {
+    setRangeDate(dates)
     const arr: any = []
     const startMonth = moment(dates[0]).startOf('month');
     const endMonth = moment(dates[1]).endOf('month');
@@ -91,11 +88,14 @@ const EditDataModal = forwardRef((props: any, ref: any) => {
     for (let i = 0; i < months.length; i++) {
       arr.push({month: months[i], data: ''})
     }
-    const result = arr.map((item1: any) => {
-      const item2: any = initMonthData.find((item: any) => item.month === item1.month);
-      return item2 ? item2 : item1;
-    });
-    setMonthData(result)
+    if (arr.length !== 12) {
+      message.error('选择范围必须为12个月');
+    }
+    // const result = arr.map((item1: any) => {
+    //   const item2: any = initMonthData.find((item: any) => item.month === item1.month);
+    //   return item2 ? item2 : item1;
+    // });
+    setMonthData(arr)
   }
 
   const handleInputChange = (index: number, value: any) => {
@@ -156,18 +156,18 @@ const EditDataModal = forwardRef((props: any, ref: any) => {
               <RangePicker
                 style={{width: '100%'}}
                 picker="month"
-                // value={dates}
-                // disabledDate={handleDisabledDate}
+                // disabledDate={disabledDate}
                 onCalendarChange={handleChange}
               />
             </Form.Item>
             <div style={{width: '90%', margin: '0 auto'}}>
               {monthData.map((item: any, index: number) => {
                 return (
-                  <div key={index} style={{display: 'inline-block', marginRight: '20px', marginTop: '10px'}}>
+                  <div key={index} style={{display: 'inline-block', marginRight: '20px', marginTop: '10px', width: '45%'}}>
                     <span style={{display: 'flex'}}>
-                      <span style={{marginRight: '10px'}}>{item.month}</span>
+                      <span style={{width: '50%', paddingTop: '5px'}}>{item.month}</span>
                       <Input
+                        style={{width: '100%'}}
                         key={index}
                         placeholder="请输入"
                         value={item.data}

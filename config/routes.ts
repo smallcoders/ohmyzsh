@@ -2903,7 +2903,7 @@ export default [
     path: routeName.DATA_MANAGE,
     access: 'M_BSDM',
     name: '大屏数据管理',
-    icon: 'hdd',
+    icon: 'BarChartOutlined',
     routes: [
       {
         path: routeName.DATA_MANAGE,
