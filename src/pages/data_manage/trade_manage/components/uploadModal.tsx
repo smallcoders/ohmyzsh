@@ -1,16 +1,16 @@
 import { useState, useImperativeHandle, forwardRef } from 'react';
 import type { UploadProps } from 'antd';
-import { message as antdMessage, Modal, Upload } from 'antd';
+import { message as antdMessage, Modal, Upload, Button } from 'antd';
 import type { RcFile, UploadChangeParam } from 'antd/lib/upload/interface';
 import { CloudUploadOutlined } from '@ant-design/icons';
 import { downloadFile } from '@/services/common';
-import { FileExclamationOutlined } from '@ant-design/icons';
+import { FileExclamationOutlined, FileTextOutlined } from '@ant-design/icons';
 
 const UploadModal = forwardRef((props: any, ref: any) => {
   const [uploadNum, setUploadNum] = useState<any>(0);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [fileId, setFileId] = useState<string>('');
-  const [errorbj, setErrorObj] = useState<any>({});
+  const [uploadRes, setUploadRes] = useState<any>({});
   const accept = '.xlsx';
   
   useImperativeHandle(ref, () => ({
@@ -29,13 +29,14 @@ const UploadModal = forwardRef((props: any, ref: any) => {
         const { code, result } = info.file.response;
         if (code === 0) {
           if (!result?.fileId) {
-            setModalVisible(false);
-            antdMessage.success(`导入成功`);
-            setUploadNum(code);
-          } else {
             setUploadNum(1);
+          } else {
+            setUploadNum(2);
             setFileId(result?.fileId);
-          setErrorObj(result)
+          }
+          setUploadRes(result)
+          if (props.successCallBack) {
+            props.successCallBack();
           }
         }
       } catch (error) {
@@ -146,6 +147,26 @@ const UploadModal = forwardRef((props: any, ref: any) => {
             </Dragger>
           </div>
         </div>
+      ) : uploadNum === 1 ? (
+        <div className="resultSuccess">
+          <div className="icon">
+            <FileTextOutlined />
+          </div>
+          <div className="text1">导入成功,共{uploadRes.successNum}条</div>
+          <div>
+            <Button
+              type="primary"
+              size="large"
+              onClick={() => {
+                setModalVisible(false);
+                props.successCallBack()
+                setUploadRes({ successNum: undefined, failNum: undefined, filePath: '' });
+              }}
+            >
+              完成
+            </Button>
+          </div>
+        </div>
       ) : (
         <div className="resultFail">
           <div className="icon">
@@ -153,13 +174,23 @@ const UploadModal = forwardRef((props: any, ref: any) => {
           </div>
           <div className="text1">
             共导入
-            {errorbj.successNum !== undefined && errorbj.failNum + errorbj.successNum}
-            条，成功 {errorbj.successNum}
-            条，失败 {errorbj.failNum} 条
+            {uploadRes.successNum !== undefined && uploadRes.failNum + uploadRes.successNum} 条，成功 {uploadRes.successNum} 条，失败 <span style={{color: '#f00'}}>{uploadRes.failNum}</span> 条
           </div>
           <div className="text2">
-            <span>您可以下载失败数据，修改后重新导入</span>
+            <span>您可以下载失败数据，修改后重新导入 </span>
             <a onClick={handleClick}>下载失败数据</a>
+          </div>
+          <div>
+          <Button
+            size="large"
+            onClick={() => {
+              setModalVisible(false);
+              props.successCallBack()
+              setUploadRes({ successNum: undefined, failNum: undefined, filePath: '' });
+            }}
+          >
+            取消
+          </Button>
           </div>
         </div>
       )}

@@ -295,7 +295,14 @@ export default () => {
           }
         />
       </div>
-      <UploadModal ref={uploadModalRef} />
+      <UploadModal ref={uploadModalRef} successCallBack={() => {
+          const search = getSearchQuery();
+          const newParams = {
+            ...search,
+            ...params
+          };
+          getPage(newParams)
+        }} />
     </PageContainer>
   );
 };
