@@ -140,33 +140,36 @@ const EditDataModal = forwardRef((props: any, ref: any) => {
               rules={[{ required: true, message: '请选择月份' }]}
             >
               <RangePicker
+                style={{width: '100%'}}
                 picker="month"
                 value={dates}
                 // disabledDate={handleDisabledDate}
                 // onCalendarChange={(val) => setDates(val)}
               />
             </Form.Item>
-            {record.monthDataList.map((item: any, index: number) => {
-              return (
-                <div key={index} style={{display: 'inline-block'}}>
-                  <span style={{display: 'flex'}}>
-                    <span>{item.month}</span>
-                    <Input
-                      placeholder="请输入"
-                      value={item.data}
-                      maxLength={15}
-                      suffix={
-                        record.configKey === 'SERVICE_COUNT' || record.configKey === 'ORDER_COUNT'
-                          ? '万'
-                          : record.configKey === 'TRADE_AMOUNT'
-                          ? '亿'
-                          : ''
-                      }
-                    />
-                  </span>
-                </div>
-              );
-            })}
+            <div style={{width: '90%', margin: '0 auto'}}>
+              {record.monthDataList.map((item: any, index: number) => {
+                return (
+                  <div key={index} style={{display: 'inline-block', marginRight: '20px', marginTop: '10px'}}>
+                    <span style={{display: 'flex'}}>
+                      <span style={{marginRight: '10px'}}>{item.month}</span>
+                      <Input
+                        placeholder="请输入"
+                        value={item.data}
+                        maxLength={15}
+                        suffix={
+                          record.configKey === 'SERVICE_COUNT' || record.configKey === 'ORDER_COUNT'
+                            ? '万'
+                            : record.configKey === 'TRADE_AMOUNT'
+                            ? '亿'
+                            : ''
+                        }
+                      />
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
           </>
         )}
       </Form>

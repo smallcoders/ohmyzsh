@@ -44,7 +44,3 @@ export async function deleteByIds(data?: { [key: string]: any }) {
     data,
   });
 }
-
-
-
-

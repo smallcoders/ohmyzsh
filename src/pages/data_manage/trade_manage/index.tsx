@@ -138,7 +138,7 @@ export default () => {
               size="small"
               type="link"
               onClick={() => {
-                history.push(`${routeName.DATA_MANAGE_TRADE_MANAGE_DETAIL}?id=${record.id}`);
+                history.push(`${routeName.DATA_MANAGE_TRADE_MANAGE_DETAIL}?record=${JSON.stringify(record)}`);
               }}
             >
               详情
@@ -237,7 +237,7 @@ export default () => {
             <Access accessible={access.P_BSDM_JYGL}>
               <Button
                 style={{ marginRight: '20px' }}
-                type="default"
+                type="primary"
                 key="addStyle"
                 onClick={() => {
                   uploadModalRef.current.openModal();
@@ -246,7 +246,7 @@ export default () => {
                 导入
               </Button>
               <Button
-                type='primary'
+                type='default'
                 onClick={() => {
                   if (!selectedRowKeys.length) {
                     antdMessage.warning('请选择数据');
