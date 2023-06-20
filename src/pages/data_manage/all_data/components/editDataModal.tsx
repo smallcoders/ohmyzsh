@@ -128,8 +128,7 @@ const EditDataModal = forwardRef((props: any, ref: any) => {
           <Input
             placeholder="请输入"
             maxLength={15}
-            suffix={
-              record.configKey === 'SERVICE_COUNT' || record.configKey === 'ORDER_COUNT'
+            suffix={record.configKey === 'ORDER_COUNT'
                 ? '万'
                 : record.configKey === 'TRADE_AMOUNT'
                 ? '亿'
