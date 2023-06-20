@@ -61,9 +61,9 @@ const UploadModal = forwardRef((props: any, ref: any) => {
   };
 
   const handleBeforeUpload = (file: RcFile) => {
-    const isLimit = file.size / 1024 / 1024 < 10;
+    const isLimit = file.size / 1024 / 1024 < 20;
     if (!isLimit) {
-      antdMessage.error('上传的文件大小不得超过10M');
+      antdMessage.error('上传的文件大小不得超过20M');
       return Upload.LIST_IGNORE;
     }
     try {
@@ -143,7 +143,7 @@ const UploadModal = forwardRef((props: any, ref: any) => {
                 <CloudUploadOutlined />
                 将文件拖拽到此处，或<span style={{ color: 'rgba(143, 165, 255)' }}>点击上传</span>
               </p>
-              <p className="ant-upload-hint">支持 xlsx 格式，限10M以内</p>
+              <p className="ant-upload-hint">支持 xlsx 格式，限20M以内</p>
             </Dragger>
           </div>
         </div>
