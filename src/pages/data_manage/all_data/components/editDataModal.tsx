@@ -7,23 +7,47 @@ import moment from 'moment';
 const EditDataModal = forwardRef((props: any, ref: any) => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [record, setRecord] = useState<any>({});
-  const [initMonthData, setInitMonthData] = useState([])
   const [monthData, setMonthData] = useState([])
-  const [rangeDate, setRangeDate] = useState([])
   const [editForm] = Form.useForm();
+
+  /**
+   * 获取当前所在月份往前推12个月
+   */
+  const getCurrentMonth = () => {
+    const currentDate = new Date();
+    const currentMonth = moment(currentDate).startOf('month');
+    const pastMonths = [];
+    for (let i = 0; i < 12; i++) {
+      const month = currentMonth.clone().subtract(i, 'months');
+      pastMonths.push({month: month.format('YYYY.MM'), data: ''});
+    }
+    return pastMonths.reverse()
+  }
 
   useImperativeHandle(ref, () => ({
     openModal: (data: any) => {
       if (data) {
-        const dateArr = data.withDetailData ? [moment(data.monthDataList[0].month, 'YYYY-MM'), moment(data.monthDataList[data.monthDataList.length - 1].month, 'YYYY-MM')] : []
+        if (data.withDetailData) {
+          const res = getCurrentMonth()
+          const result: any = res.map((item1: any) => {
+            const item2: any = data.monthDataList.find((item: any) => item.month === item1.month);
+            return item2 ? item2 : item1;
+          });
+          const dateArr = [moment(result[0].month, 'YYYY-MM'), moment(result[result.length - 1].month, 'YYYY-MM')]
+          setMonthData(result)
+          editForm.setFieldsValue({
+            name: data.name,
+            total: data.total,
+            monthList: dateArr
+          });
+        } else {
+          editForm.setFieldsValue({
+            name: data.name,
+            total: data.total,
+            monthList: []
+          });
+        }
         setRecord(data);
-        setMonthData(data.monthDataList)
-        setInitMonthData(data.monthDataList)
-        editForm.setFieldsValue({
-          name: data.name,
-          total: data.total,
-          monthList: dateArr
-        });
       }
       setModalVisible(true);
     },
@@ -36,8 +60,8 @@ const EditDataModal = forwardRef((props: any, ref: any) => {
   };
 
   const handleSubmit = async () => {
-    if (record.withDetailData && monthData?.length !== 12) {
-      return message.error('选择范围必须为12个月');
+    if (record.withDetailData && monthData?.length < 12) {
+      return message.error('选择范围应不小于12个月');
     }
     const res = editForm.getFieldsValue();
 
@@ -59,18 +83,11 @@ const EditDataModal = forwardRef((props: any, ref: any) => {
     });
   };
 
-  // const disabledDate = (current: any) => {
-  //   if (!rangeDate[0] || !rangeDate[1]) {
-  //     return false;
-  //   }
-  //   const startMonth = moment(rangeDate[0]).startOf('month');
-  //   const endMonth = moment(rangeDate[1]).endOf('month');
-  //   const months = endMonth.diff(startMonth, 'months') + 1;
-  //   return months > 12 || current.isBefore(startMonth) || current.isAfter(endMonth);
-  // }
+  const disabledDate = (current: any) => {
+    return current && current > moment().endOf('month');
+  };
 
   const handleChange = (dates: any) => {
-    setRangeDate(dates)
     const arr: any = []
     const startMonth = moment(dates[0]).startOf('month');
     const endMonth = moment(dates[1]).endOf('month');
@@ -83,13 +100,9 @@ const EditDataModal = forwardRef((props: any, ref: any) => {
     for (let i = 0; i < months.length; i++) {
       arr.push({month: months[i], data: ''})
     }
-    if (arr?.length !== 12) {
-      message.error('选择范围必须为12个月');
+    if (arr?.length < 12) {
+      message.error('选择范围应不小于12个月');
     }
-    // const result = arr.map((item1: any) => {
-    //   const item2: any = initMonthData.find((item: any) => item.month === item1.month);
-    //   return item2 ? item2 : item1;
-    // });
     setMonthData(arr)
   }
 
@@ -150,7 +163,7 @@ const EditDataModal = forwardRef((props: any, ref: any) => {
               <RangePicker
                 style={{width: '100%'}}
                 picker="month"
-                // disabledDate={disabledDate}
+                disabledDate={disabledDate}
                 onCalendarChange={handleChange}
               />
             </Form.Item>
