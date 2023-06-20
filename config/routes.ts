@@ -321,6 +321,12 @@
   BASELINE_SERVICE_NUMBER_MANAGEMENT_COLLECTION_ADD: '/baseline/baseline-service-number/management/collection/add', // 新增合集标签
   BASELINE_SERVICE_NUMBER_MANAGEMENT_COLLECTION_DETAIL: '/baseline/baseline-service-number/management/collection/detail', // 合集标签详情
   OPERATIONAL_CAMPAIGN_TARGET_MONITORING: '/data-center/target-monitoring', // 运营战役目标监控
+
+  // 大屏数据管理
+  DATA_MANAGE: '/data-manage',
+  DATA_MANAGE_ALL_DATA: '/data-manage/all-data', // 总览数据
+  DATA_MANAGE_TRADE_MANAGE: '/data-manage/trade-manage', // 交易管理
+  DATA_MANAGE_TRADE_MANAGE_DETAIL: '/data-manage/trade-manage/detail', // 交易管理详情
 };
 
 export default [
@@ -2890,6 +2896,41 @@ export default [
         name: '跟进记录详情',
         hideInMenu: true,
         component: './business_channel/opportunity/follow-up-detail/index',
+      }
+    ],
+  },
+  {
+    path: routeName.DATA_MANAGE,
+    access: 'M_BSDM',
+    name: '大屏数据管理',
+    icon: 'BarChartOutlined',
+    routes: [
+      {
+        path: routeName.DATA_MANAGE,
+        access: 'M_BSDM_ZLSJ',
+        redirect: '/data_manage/all_data',
+      },
+      {
+        path: routeName.DATA_MANAGE_ALL_DATA,
+        code: 'M_BSDM_ZLSJ',
+        access: 'M_BSDM_ZLSJ',
+        name: '总览数据',
+        component: './data_manage/all_data/index',
+      },
+      {
+        path: routeName.DATA_MANAGE_TRADE_MANAGE,
+        code: 'M_BSDM_JYGL',
+        access: 'M_BSDM_JYGL',
+        name: '交易管理',
+        component: './data_manage/trade_manage/index',
+      },
+      {
+        path: routeName.DATA_MANAGE_TRADE_MANAGE_DETAIL,
+        code: 'M_BSDM_JYGL',
+        access: 'M_BSDM_JYGL',
+        name: '交易管理详情',
+        hideInMenu: true,
+        component: './data_manage/trade_manage/detail/index',
       }
     ],
   },
