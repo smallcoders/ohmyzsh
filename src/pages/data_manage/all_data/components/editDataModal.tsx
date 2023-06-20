@@ -180,13 +180,13 @@ const EditDataModal = forwardRef((props: any, ref: any) => {
                         value={item.data}
                         onChange={(e) => handleInputChange(index, e.target.value)}
                         maxLength={15}
-                        suffix={
-                          record.configKey === 'SERVICE_COUNT' || record.configKey === 'ORDER_COUNT'
-                            ? '万'
-                            : record.configKey === 'TRADE_AMOUNT'
-                            ? '亿'
-                            : ''
-                        }
+                        suffix={record.configKey === 'TRADE_AMOUNT'
+                        ? `亿`
+                        : record.configKey === 'SERVICE_COUNT'
+                        ? `次`
+                        : record.configKey === 'ORDER_COUNT'
+                        ? `个`
+                        : ``}
                       />
                     </span>
                   </div>

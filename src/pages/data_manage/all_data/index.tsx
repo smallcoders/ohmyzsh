@@ -51,8 +51,10 @@ export default () => {
               <span key={index}>
                 {record.configKey === 'TRADE_AMOUNT'
                   ? `${item.month}: ${item.data || 0}亿`
-                  : record.configKey === 'SERVICE_COUNT' || record.configKey === 'ORDER_COUNT'
-                  ? `${item.month}: ${item.data || 0}万`
+                  : record.configKey === 'SERVICE_COUNT'
+                  ? `${item.month}: ${item.data || 0}次`
+                  : record.configKey === 'ORDER_COUNT'
+                  ? `${item.month}: ${item.data || 0}个`
                   : `${item.month}: ${item.data || 0}`}
                 &nbsp;&nbsp;&nbsp;
               </span>
