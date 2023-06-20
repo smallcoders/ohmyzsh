@@ -36,15 +36,10 @@ const EditDataModal = forwardRef((props: any, ref: any) => {
   };
 
   const handleSubmit = async () => {
-    if (monthData.length !== 12) {
+    if (record.withDetailData && monthData?.length !== 12) {
       return message.error('选择范围必须为12个月');
     }
     const res = editForm.getFieldsValue();
-
-    if (res.monthList) {
-      res.orderDateStart = moment(res.monthList[0]).startOf('month').format('YYYY-MM');
-      res.orderDateEnd = moment(res.monthList[1]).endOf('month').format('YYYY-MM');
-    }
 
     const data: any = {
       ...record,
@@ -88,7 +83,7 @@ const EditDataModal = forwardRef((props: any, ref: any) => {
     for (let i = 0; i < months.length; i++) {
       arr.push({month: months[i], data: ''})
     }
-    if (arr.length !== 12) {
+    if (arr?.length !== 12) {
       message.error('选择范围必须为12个月');
     }
     // const result = arr.map((item1: any) => {

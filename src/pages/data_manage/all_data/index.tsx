@@ -72,7 +72,6 @@ export default () => {
                 size="small"
                 type="link"
                 onClick={() => {
-                  console.log(record);
                   editDataModalRef.current.openModal(record);
                 }}
               >
