@@ -15,6 +15,7 @@ const UploadModal = forwardRef((props: any, ref: any) => {
   
   useImperativeHandle(ref, () => ({
     openModal: () => {
+      setUploadNum(0)
       setModalVisible(true);
     },
   }));
