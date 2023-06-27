@@ -44,3 +44,11 @@ export async function deleteByIds(data?: { [key: string]: any }) {
     data,
   });
 }
+
+/** 分页查询用户列表 */
+export async function getUserList(data?: { [key: string]: any }) {
+  return request<any>('/antelope-report/mng/user/pageQuery', {
+    method: 'post',
+    data,
+  });
+}
